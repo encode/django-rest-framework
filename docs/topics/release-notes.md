@@ -42,9 +42,9 @@ You can determine your currently installed version using `pip freeze`:
 
 ### 3.7.4
 
-**Date**: UNRELEASED
+**Date**: [UNRELEASED][3.7.4-milestone]
 
-* Extract method for `manual_fields` processing [#5633][gh5633]
+* Schema: Extract method for `manual_fields` processing [#5633][gh5633]
 
     Allows for easier customisation of `manual_fields` processing, for example
     to provide per-method manual fields. `AutoSchema` adds `get_manual_fields`,
@@ -54,8 +54,70 @@ You can determine your currently installed version using `pip freeze`:
 
     Note: `AutoSchema.__init__` now ensures `manual_fields` is a list.
     Previously may have been stored internally as `None`.
+* Remove ulrparse compatability shim; use six instead [#5579][gh5579]
+* Drop compat wrapper for `TimeDelta.total_seconds()` [#5577][gh5577]
+* Clean up all whitespace throughout project [#5578][gh5578]
+* Compat cleanup [#5581][gh5581]
+* Add pygments CSS block in browsable API views [#5584][gh5584] [#5587][gh5587]
+* Remove `set_rollback()` from compat [#5591][gh5591]
+* Fix request body/POST access [#5590][gh5590]
+* Rename test to reference correct issue [#5610][gh5610]
+* Documentation Fixes [#5611][gh5611] [#5612][gh5612]
+* Remove references to unsupported Django versions in docs and code [#5602][gh5602]
+* Test Serializer exclude for declared fields [#5599][gh5599]
+* Fixed schema generation for filter backends [#5613][gh5613]
+* Minor cleanup for ModelSerializer tests [#5598][gh5598]
+* Reimplement request attribute access w/ `__getattr__` [#5617][gh5617]
+* Fixed SchemaJSRenderer renders invalid Javascript [#5607][gh5607]
+* Make Django 2.0 support official/explicit [#5619][gh5619]
+* Perform type check on passed request argument [#5618][gh5618]
+* Fix AttributeError hiding on request authenticators [#5600][gh5600]
+* Update test requirements [#5626][gh5626]
+* Docs: `Serializer._declared_fields` enable modifying fields on a serializer [#5629][gh5629]
+* Fix packaging [#5624][gh5624]
+* Fix readme rendering for PyPI, add readme build to CI [#5625][gh5625]
+* Update tutorial [#5622][gh5622]
+* Non-required fields with `allow_null=True` should not imply a default value [#5639][gh5639]
+* Docs: Add `allow_null` serialization output note [#5641][gh5641]
+* Update to use the Django 2.0 release in tox.ini [#5645][gh5645]
+* Fix `Serializer.data` for Browsable API rendering when provided invalid `data` [#5646][gh5646]
+* Docs: Note AutoSchema limitations on bare APIView [#5649][gh5649]
+* Add '.basename' and '.reverse_action()' to ViewSet [#5648][gh5648]
+* Docs: Fix typos in serializers documentation [#5652][gh5652]
 
-
+[gh5652]: https://github.com/encode/django-rest-framework/issues/5652
+[gh5648]: https://github.com/encode/django-rest-framework/issues/5648
+[gh5649]: https://github.com/encode/django-rest-framework/issues/5649
+[gh5633]: https://github.com/encode/django-rest-framework/issues/5633
+[gh5646]: https://github.com/encode/django-rest-framework/issues/5646
+[gh5645]: https://github.com/encode/django-rest-framework/issues/5645
+[gh5641]: https://github.com/encode/django-rest-framework/issues/5641
+[gh5639]: https://github.com/encode/django-rest-framework/issues/5639
+[gh5622]: https://github.com/encode/django-rest-framework/issues/5622
+[gh5625]: https://github.com/encode/django-rest-framework/issues/5625
+[gh5624]: https://github.com/encode/django-rest-framework/issues/5624
+[gh5629]: https://github.com/encode/django-rest-framework/issues/5629
+[gh5626]: https://github.com/encode/django-rest-framework/issues/5626
+[gh5600]: https://github.com/encode/django-rest-framework/issues/5600
+[gh5618]: https://github.com/encode/django-rest-framework/issues/5618
+[gh5619]: https://github.com/encode/django-rest-framework/issues/5619
+[gh5607]: https://github.com/encode/django-rest-framework/issues/5607
+[gh5617]: https://github.com/encode/django-rest-framework/issues/5617
+[gh5598]: https://github.com/encode/django-rest-framework/issues/5598
+[gh5613]: https://github.com/encode/django-rest-framework/issues/5613
+[gh5599]: https://github.com/encode/django-rest-framework/issues/5599
+[gh5602]: https://github.com/encode/django-rest-framework/issues/5602
+[gh5612]: https://github.com/encode/django-rest-framework/issues/5612
+[gh5611]: https://github.com/encode/django-rest-framework/issues/5611
+[gh5610]: https://github.com/encode/django-rest-framework/issues/5610
+[gh5590]: https://github.com/encode/django-rest-framework/issues/5590
+[gh5591]: https://github.com/encode/django-rest-framework/issues/5591
+[gh5587]: https://github.com/encode/django-rest-framework/issues/5587
+[gh5584]: https://github.com/encode/django-rest-framework/issues/5584
+[gh5581]: https://github.com/encode/django-rest-framework/issues/5581
+[gh5578]: https://github.com/encode/django-rest-framework/issues/5578
+[gh5577]: https://github.com/encode/django-rest-framework/issues/5577
+[gh5579]: https://github.com/encode/django-rest-framework/issues/5579
 [gh5633]: https://github.com/encode/django-rest-framework/issues/5633
 
 
@@ -882,6 +944,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [3.7.1-milestone]: https://github.com/encode/django-rest-framework/milestone/58?closed=1
 [3.7.2-milestone]: https://github.com/encode/django-rest-framework/milestone/59?closed=1
 [3.7.3-milestone]: https://github.com/encode/django-rest-framework/milestone/60?closed=1
+[3.7.4-milestone]: https://github.com/encode/django-rest-framework/milestone/62?closed=1
 
 
 <!-- 3.0.1 -->
