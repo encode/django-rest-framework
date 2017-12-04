@@ -40,6 +40,25 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 3.7.x series
 
+### 3.7.4
+
+**Date**: UNRELEASED
+
+* Extract method for `manual_fields` processing [#5633][gh5633]
+
+    Allows for easier customisation of `manual_fields` processing, for example
+    to provide per-method manual fields. `AutoSchema` adds `get_manual_fields`,
+    as the intended override point, and a utility method `update_fields`, to
+    handle by-name field replacement from a list, which, in general, you are not
+    expected to override.
+
+    Note: `AutoSchema.__init__` now ensures `manual_fields` is a list.
+    Previously may have been stored internally as `None`.
+
+
+[gh5633]: https://github.com/encode/django-rest-framework/issues/5633
+
+
 
 ### 3.7.3
 
