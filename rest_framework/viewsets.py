@@ -24,6 +24,7 @@ from django.utils.decorators import classonlymethod
 from django.views.decorators.csrf import csrf_exempt
 
 from rest_framework import generics, mixins, views
+from rest_framework.reverse import reverse
 
 
 class ViewSetMixin(object):
@@ -124,6 +125,15 @@ class ViewSetMixin(object):
         else:
             self.action = self.action_map.get(method)
         return request
+
+    def reverse_action(self, url_name, *args, **kwargs):
+        """
+        Reverse the action for the given `url_name`.
+        """
+        url_name = '%s-%s' % (self.basename, url_name)
+        kwargs.setdefault('request', self.request)
+
+        return reverse(url_name, *args, **kwargs)
 
 
 class ViewSet(ViewSetMixin, views.APIView):
