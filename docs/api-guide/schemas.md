@@ -167,6 +167,18 @@ appropriate Core API `Link` object for the view, request method and path:
 (In compiling the schema, `SchemaGenerator` calls `view.schema.get_link()` for
 each view, allowed method and path.)
 
+---
+
+**Note**: For basic `APIView` subclasses, default introspection is essentially
+limited to the URL kwarg path parameters. For `GenericAPIView`
+subclasses, which includes all the provided class based views, `AutoSchema` will
+attempt to introspect serialiser, pagination and filter fields, as well as
+provide richer path field descriptions. (The key hooks here are the relevant
+`GenericAPIView` attributes and methods: `get_serializer`, `pagination_class`,
+`filter_backends` and so on.)
+
+---
+
 To customise the `Link` generation you may:
 
 * Instantiate `AutoSchema` on your view with the `manual_fields` kwarg:
