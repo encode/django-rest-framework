@@ -398,6 +398,10 @@ class Serializer(BaseSerializer):
 
     def get_initial(self):
         if hasattr(self, 'initial_data'):
+            # initial_data may not be a valid type
+            if not isinstance(self.initial_data, Mapping):
+                return OrderedDict()
+
             return OrderedDict([
                 (field_name, field.get_value(self.initial_data))
                 for field_name, field in self.fields.items()
