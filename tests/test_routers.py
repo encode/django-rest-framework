@@ -7,6 +7,7 @@ from django.conf.urls import include, url
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.test import TestCase, override_settings
+from django.urls import resolve
 
 from rest_framework import permissions, serializers, viewsets
 from rest_framework.compat import get_regex_pattern
@@ -435,3 +436,18 @@ class TestRegexUrlPath(TestCase):
         response = self.client.get('/regex/{}/detail/{}/'.format(pk, kwarg))
         assert response.status_code == 200
         assert json.loads(response.content.decode('utf-8')) == {'pk': pk, 'kwarg': kwarg}
+
+
+@override_settings(ROOT_URLCONF='tests.test_routers')
+class TestViewInitkwargs(TestCase):
+    def test_suffix(self):
+        match = resolve('/example/notes/')
+        initkwargs = match.func.initkwargs
+
+        assert initkwargs['suffix'] == 'List'
+
+    def test_basename(self):
+        match = resolve('/example/notes/')
+        initkwargs = match.func.initkwargs
+
+        assert initkwargs['basename'] == 'routertestmodel'
