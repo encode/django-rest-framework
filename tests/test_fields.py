@@ -1767,7 +1767,7 @@ class TestListField(FieldValues):
     ]
     invalid_inputs = [
         ('not a list', ['Expected a list of items but got type "str".']),
-        ([1, 2, 'error'], ['A valid integer is required.']),
+        ([1, 2, 'error', 'error'], {2: ['A valid integer is required.'], 3: ['A valid integer is required.']}),
         ({'one': 'two'}, ['Expected a list of items but got type "dict".'])
     ]
     outputs = [
@@ -1840,7 +1840,7 @@ class TestDictField(FieldValues):
         ({'a': 1, 'b': '2', 3: 3}, {'a': '1', 'b': '2', '3': '3'}),
     ]
     invalid_inputs = [
-        ({'a': 1, 'b': None}, ['This field may not be null.']),
+        ({'a': 1, 'b': None, 'c': None}, {'b': ['This field may not be null.'], 'c': ['This field may not be null.']}),
         ('not a dict', ['Expected a dictionary of items but got type "str".']),
     ]
     outputs = [

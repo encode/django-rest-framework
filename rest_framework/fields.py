@@ -1626,13 +1626,27 @@ class ListField(Field):
             self.fail('not_a_list', input_type=type(data).__name__)
         if not self.allow_empty and len(data) == 0:
             self.fail('empty')
-        return [self.child.run_validation(item) for item in data]
+        return self.run_child_validation(data)
 
     def to_representation(self, data):
         """
         List of object instances -> List of dicts of primitive datatypes.
         """
         return [self.child.to_representation(item) if item is not None else None for item in data]
+
+    def run_child_validation(self, data):
+        result = []
+        errors = OrderedDict()
+
+        for idx, item in enumerate(data):
+            try:
+                result.append(self.child.run_validation(item))
+            except ValidationError as e:
+                errors[idx] = e.detail
+
+        if not errors:
+            return result
+        raise ValidationError(errors)
 
 
 class DictField(Field):
@@ -1669,10 +1683,7 @@ class DictField(Field):
             data = html.parse_html_dict(data)
         if not isinstance(data, dict):
             self.fail('not_a_dict', input_type=type(data).__name__)
-        return {
-            six.text_type(key): self.child.run_validation(value)
-            for key, value in data.items()
-        }
+        return self.run_child_validation(data)
 
     def to_representation(self, value):
         """
@@ -1682,6 +1693,22 @@ class DictField(Field):
             six.text_type(key): self.child.to_representation(val) if val is not None else None
             for key, val in value.items()
         }
+
+    def run_child_validation(self, data):
+        result = {}
+        errors = OrderedDict()
+
+        for key, value in data.items():
+            key = six.text_type(key)
+
+            try:
+                result[key] = self.child.run_validation(value)
+            except ValidationError as e:
+                errors[key] = e.detail
+
+        if not errors:
+            return result
+        raise ValidationError(errors)
 
 
 class JSONField(Field):
