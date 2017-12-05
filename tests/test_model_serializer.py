@@ -392,7 +392,7 @@ class TestPosgresFieldsMapping(TestCase):
 
         expected = dedent("""
             TestSerializer():
-                hstore_field = CharMappingField()
+                hstore_field = HStoreField()
         """)
         self.assertEqual(unicode_repr(TestSerializer()), expected)
 

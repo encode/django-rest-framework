@@ -1684,6 +1684,10 @@ class DictField(Field):
         }
 
 
+class HStoreField(DictField):
+    child = CharField(allow_blank=True, allow_null=True)
+
+
 class JSONField(Field):
     default_error_messages = {
         'invalid': _('Value must be valid JSON.')
