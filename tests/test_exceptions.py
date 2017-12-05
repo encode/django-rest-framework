@@ -5,7 +5,7 @@ from django.utils import six
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework.exceptions import (
-    ErrorDetail, Throttled, _get_error_details
+    ErrorDetail, Throttled, _get_error_details, ValidationError
 )
 
 
@@ -36,6 +36,11 @@ class ExceptionTestCase(TestCase):
             _get_error_details([[lazy_example]])[0][0],
             ErrorDetail
         )
+
+    def test_validation_error_no_detail(self):
+        exception = ValidationError(detail=None)
+        assert exception.get_full_details() == [{
+            'message': 'Invalid input.', 'code': 'invalid'}]
 
     def test_get_full_details_with_throttling(self):
         exception = Throttled()

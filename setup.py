@@ -1,26 +1,26 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import os
-import re
-import shutil
-import sys
-from io import open
+import os  # pragma nocover
+import re  # pragma nocover
+import shutil  # pragma nocover
+import sys  # pragma nocover
+from io import open  # pragma nocover
 
-from setuptools import setup, find_packages
+from setuptools import setup, find_packages  # pragma nocover
 
-try:
+try:  # pragma nocover
     from pypandoc import convert_file
 
     def read_md(f):
         return convert_file(f, 'rst')
-except ImportError:
+except ImportError:  # pragma nocover
     print("warning: pypandoc module not found, could not convert Markdown to RST")
 
-    def read_md(f):
+    def read_md(f):  # pragma nocover
         return open(f, 'r', encoding='utf-8').read()
 
 
-def get_version(package):
+def get_version(package):  # pragma nocover
     """
     Return package version as listed in `__version__` in `init.py`.
     """
@@ -28,10 +28,10 @@ def get_version(package):
     return re.search("__version__ = ['\"]([^'\"]+)['\"]", init_py).group(1)
 
 
-version = get_version('rest_framework')
+version = get_version('rest_framework')  # pragma nocover
 
 
-if sys.argv[-1] == 'publish':
+if sys.argv[-1] == 'publish':  # pragma nocover
     try:
         import pypandoc
     except ImportError:
@@ -50,7 +50,7 @@ if sys.argv[-1] == 'publish':
     sys.exit()
 
 
-setup(
+setup(  # pragma nocover
     name='djangorestframework',
     version=version,
     url='http://www.django-rest-framework.org',

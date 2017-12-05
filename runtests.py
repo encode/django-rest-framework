@@ -1,37 +1,37 @@
 #! /usr/bin/env python
-from __future__ import print_function
+from __future__ import print_function  # pragma nocover
 
-import os
-import subprocess
-import sys
+import os  # pragma nocover
+import subprocess  # pragma nocover
+import sys  # pragma nocover
 
-import pytest
+import pytest  # pragma nocover
 
-PYTEST_ARGS = {
+PYTEST_ARGS = {  # pragma nocover
     'default': ['tests', '--tb=short', '-s', '-rw'],
     'fast': ['tests', '--tb=short', '-q', '-s', '-rw'],
 }
 
-FLAKE8_ARGS = ['rest_framework', 'tests']
+FLAKE8_ARGS = ['rest_framework', 'tests']  # pragma nocover
 
-ISORT_ARGS = ['--recursive', '--check-only', '-o' 'uritemplate', '-p', 'tests', 'rest_framework', 'tests']
+ISORT_ARGS = ['--recursive', '--check-only', '-o' 'uritemplate', '-p', 'tests', 'rest_framework', 'tests']  # pragma nocover
 
-sys.path.append(os.path.dirname(__file__))
+sys.path.append(os.path.dirname(__file__))  # pragma nocover
 
 
-def exit_on_failure(ret, message=None):
+def exit_on_failure(ret, message=None):  # pragma nocover
     if ret:
         sys.exit(ret)
 
 
-def flake8_main(args):
+def flake8_main(args):  # pragma nocover
     print('Running flake8 code linting')
     ret = subprocess.call(['flake8'] + args)
     print('flake8 failed' if ret else 'flake8 passed')
     return ret
 
 
-def isort_main(args):
+def isort_main(args):  # pragma nocover
     print('Running isort code checking')
     ret = subprocess.call(['isort'] + args)
 
@@ -43,22 +43,22 @@ def isort_main(args):
     return ret
 
 
-def split_class_and_function(string):
+def split_class_and_function(string):  # pragma nocover
     class_string, function_string = string.split('.', 1)
     return "%s and %s" % (class_string, function_string)
 
 
-def is_function(string):
+def is_function(string):  # pragma nocover
     # `True` if it looks like a test function is included in the string.
     return string.startswith('test_') or '.test_' in string
 
 
-def is_class(string):
+def is_class(string):  # pragma nocover
     # `True` if first character is uppercase - assume it's a class name.
     return string[0] == string[0].upper()
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma nocover
     try:
         sys.argv.remove('--nolint')
     except ValueError:
