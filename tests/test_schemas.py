@@ -536,7 +536,7 @@ class TestAutoSchema(TestCase):
         assert isinstance(view.schema, CustomViewInspector)
 
     def test_set_custom_inspector_class_via_settings(self):
-        with override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS':'tests.test_schemas.CustomViewInspector'}):
+        with override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'tests.test_schemas.CustomViewInspector'}):
             view = APIView()
             assert isinstance(view.schema, CustomViewInspector)
 
