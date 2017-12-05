@@ -1913,6 +1913,15 @@ class TestHStoreField(FieldValues):
     ]
     field = serializers.HStoreField()
 
+    def test_child_is_charfield(self):
+        with pytest.raises(AssertionError) as exc_info:
+            serializers.HStoreField(child=serializers.IntegerField())
+
+        assert str(exc_info.value) == (
+            "The `child` argument must be an instance of `CharField`, "
+            "as the hstore extension stores values as strings."
+        )
+
     def test_no_source_on_child(self):
         with pytest.raises(AssertionError) as exc_info:
             serializers.HStoreField(child=serializers.CharField(source='other'))
