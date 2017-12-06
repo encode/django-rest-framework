@@ -340,7 +340,7 @@ For further enquires please contact <a href=mailto:funding@django-rest-framework
 
 ## Accountability
 
-In an effort to keep the project as transparent as possible, we are releasing [monthly progress reports](http://www.encode.io/reports/october-2017) and regularly include financial reports and cost breakdowns.
+In an effort to keep the project as transparent as possible, we are releasing [monthly progress reports](http://www.encode.io/reports/november-2017) and regularly include financial reports and cost breakdowns.
 
 <!-- Begin MailChimp Signup Form -->
 <link href="//cdn-images.mailchimp.com/embedcode/classic-10_7.css" rel="stylesheet" type="text/css">
