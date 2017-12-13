@@ -124,7 +124,7 @@ A boolean representation.
 
 When using HTML encoded form input be aware that omitting a value will always be treated as setting a field to `False`, even if it has a `default=True` option specified. This is because HTML checkbox inputs represent the unchecked state by omitting the value, so REST framework treats omission as if it is an empty checkbox input.
 
-Note that default `BooleanField` instances will be generated with a `required=False` option (since Django `models.BooleanField` is always `blank=True`). For JSON-only APIs you may wish explicitly declare BooleanFields in order to control this.
+Note that default `BooleanField` instances will be generated with a `required=False` option (since Django `models.BooleanField` is always `blank=True`). For JSON-only APIs you may wish explicitly declare BooleanFields in order to control this. ([An example configuring serialiser generation to use a `BooleanField` subclass with `required=True` may be found here][required-by-default-boolean-field].)
 
 Corresponds to `django.db.models.fields.BooleanField`.
 
