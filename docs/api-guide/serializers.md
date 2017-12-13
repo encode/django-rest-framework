@@ -588,7 +588,7 @@ Normally if a `ModelSerializer` does not generate the fields you need by default
 
 ### `.serializer_field_mapping`
 
-A mapping of Django model classes to REST framework serializer classes. You can override this mapping to alter the default serializer classes that should be used for each model class. ([An example using `serializer_field_mapping` with a `BooleanField` subclass may be found here][required-by-default-boolean-field].)
+A mapping of Django model classes to REST framework serializer classes. You can override this mapping to alter the default serializer classes that should be used for each model class.
 
 ### `.serializer_related_field`
 
@@ -1181,5 +1181,3 @@ The [drf-writable-nested][drf-writable-nested] package provides writable nested 
 [drf-serializer-extensions]: https://github.com/evenicoulddoit/django-rest-framework-serializer-extensions
 [djangorestframework-queryfields]: http://djangorestframework-queryfields.readthedocs.io/
 [drf-writable-nested]: http://github.com/beda-software/drf-writable-nested
-[required-by-default-boolean-field]: http://notes.noumenal.es/2017/12/13/required-by-default.html
-
