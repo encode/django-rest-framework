@@ -200,6 +200,7 @@ class APISettings(object):
             self._user_settings = self.__check_user_settings(user_settings)
         self.defaults = defaults or DEFAULTS
         self.import_strings = import_strings or IMPORT_STRINGS
+        self._cached_attrs = set()
 
     @property
     def user_settings(self):
@@ -223,6 +224,7 @@ class APISettings(object):
             val = perform_import(val, attr)
 
         # Cache the result
+        self._cached_attrs.add(attr)
         setattr(self, attr, val)
         return val
 
@@ -233,15 +235,21 @@ class APISettings(object):
                 raise RuntimeError("The '%s' setting has been removed. Please refer to '%s' for available settings." % (setting, SETTINGS_DOC))
         return user_settings
 
+    def reload(self):
+        for attr in self._cached_attrs:
+            delattr(self, attr)
+        self._cached_attrs.clear()
+        if hasattr(self, '_user_settings'):
+            delattr(self, '_user_settings')
+
 
 api_settings = APISettings(None, DEFAULTS, IMPORT_STRINGS)
 
 
 def reload_api_settings(*args, **kwargs):
-    global api_settings
-    setting, value = kwargs['setting'], kwargs['value']
+    setting = kwargs['setting']
     if setting == 'REST_FRAMEWORK':
-        api_settings = APISettings(value, DEFAULTS, IMPORT_STRINGS)
+        api_settings.reload()
 
 
 setting_changed.connect(reload_api_settings)
