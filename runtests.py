@@ -16,8 +16,6 @@ FLAKE8_ARGS = ['rest_framework', 'tests']
 
 ISORT_ARGS = ['--recursive', '--check-only', '-o' 'uritemplate', '-p', 'tests', 'rest_framework', 'tests']
 
-sys.path.append(os.path.dirname(__file__))
-
 
 def exit_on_failure(ret, message=None):
     if ret:
@@ -83,6 +81,20 @@ if __name__ == "__main__":
         style = 'fast'
         run_flake8 = False
         run_isort = False
+
+    try:
+        # Remove the package root directory from `sys.path`, ensuring that rest_framework
+        # is imported from the installed site packages. Used for testing the distribution
+        sys.argv.remove('--no-pkgroot')
+    except ValueError:
+        pass
+    else:
+        sys.path.pop(0)
+
+        # import rest_framework before pytest re-adds the package root directory.
+        import rest_framework
+        package_dir = os.path.join(os.getcwd(), 'rest_framework')
+        assert not rest_framework.__file__.startswith(package_dir)
 
     if len(sys.argv) > 1:
         pytest_args = sys.argv[1:]

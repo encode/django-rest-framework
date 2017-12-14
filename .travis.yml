@@ -22,10 +22,19 @@ matrix:
       - { python: "3.6", env: DJANGO=2.0 }
       - { python: "2.7", env: TOXENV=lint }
       - { python: "2.7", env: TOXENV=docs }
-      - python: "2.7"
+
+      - python: "3.6"
+        env: TOXENV=dist
+        script:
+          - python setup.py bdist_wheel
+          - tox --installpkg ./dist/djangorestframework-*.whl
+          - tox  # test sdist
+
+      - python: "3.6"
         env: TOXENV=readme
         addons:
           apt_packages: pandoc
+
     exclude:
       - { python: "2.7", env: DJANGO=master }
       - { python: "2.7", env: DJANGO=2.0 }
