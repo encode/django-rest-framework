@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 inspectors.py   # Per-endpoint view introspection
 
@@ -456,3 +457,13 @@ class ManualSchema(ViewInspector):
         )
 
         return self._link
+
+
+class DefaultSchema(object):
+    """Allows overriding AutoSchema using DEFAULT_SCHEMA_CLASS setting"""
+    def __get__(self, instance, owner):
+        inspector_class = api_settings.DEFAULT_SCHEMA_CLASS
+        assert issubclass(inspector_class, ViewInspector), "DEFAULT_SCHEMA_CLASS must be set to a ViewInspector (usually an AutoSchema) subclass"
+        inspector = inspector_class()
+        inspector.view = instance
+        return inspector

@@ -94,6 +94,12 @@ A content negotiation class, that determines how a renderer is selected for the 
 
 Default: `'rest_framework.negotiation.DefaultContentNegotiation'`
 
+#### DEFAULT_SCHEMA_CLASS
+
+A view inspector class that will be used for schema generation.
+
+Default: `'rest_framework.schemas.AutoSchema'`
+
 ---
 
 ## Generic view settings

@@ -516,12 +516,29 @@ class Test4605Regression(TestCase):
         assert prefix == '/'
 
 
+class CustomViewInspector(AutoSchema):
+    """A dummy AutoSchema subclass"""
+    pass
+
+
 class TestAutoSchema(TestCase):
 
     def test_apiview_schema_descriptor(self):
         view = APIView()
         assert hasattr(view, 'schema')
         assert isinstance(view.schema, AutoSchema)
+
+    def test_set_custom_inspector_class_on_view(self):
+        class CustomView(APIView):
+            schema = CustomViewInspector()
+
+        view = CustomView()
+        assert isinstance(view.schema, CustomViewInspector)
+
+    def test_set_custom_inspector_class_via_settings(self):
+        with override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'tests.test_schemas.CustomViewInspector'}):
+            view = APIView()
+            assert isinstance(view.schema, CustomViewInspector)
 
     def test_get_link_requires_instance(self):
         descriptor = APIView.schema  # Accessed from class

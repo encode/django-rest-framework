@@ -18,7 +18,7 @@ from django.views.generic import View
 from rest_framework import exceptions, status
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework.schemas import AutoSchema
+from rest_framework.schemas import DefaultSchema
 from rest_framework.settings import api_settings
 from rest_framework.utils import formatting
 
@@ -117,7 +117,7 @@ class APIView(View):
     # Allow dependency injection of other settings to make testing easier.
     settings = api_settings
 
-    schema = AutoSchema()
+    schema = DefaultSchema()
 
     @classmethod
     def as_view(cls, **initkwargs):
