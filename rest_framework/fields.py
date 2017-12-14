@@ -806,6 +806,8 @@ class RegexField(CharField):
 
     def __init__(self, regex, **kwargs):
         super(RegexField, self).__init__(**kwargs)
+        if isinstance(regex, six.string_types):
+            regex = re.compile(regex, re.UNICODE)
         validator = RegexValidator(regex, message=self.error_messages['invalid'])
         self.validators.append(validator)
 

@@ -709,6 +709,20 @@ class TestiCompiledRegexField(FieldValues):
     field = serializers.RegexField(regex=re.compile('[a-z][0-9]'))
 
 
+class TestUnicodeRegexField(FieldValues):
+    """
+    Valid and invalid values for `RegexField`.
+    """
+    valid_inputs = {
+        u'hello\u4f60\u597d': u'hello\u4f60\u597d'
+    }
+    invalid_inputs = {
+        u'hello\u4f60\u597d@': ["This value does not match the required pattern."]
+    }
+    outputs = {}
+    field = serializers.RegexField(regex='^\w*$')
+
+
 class TestSlugField(FieldValues):
     """
     Valid and invalid values for `SlugField`.
