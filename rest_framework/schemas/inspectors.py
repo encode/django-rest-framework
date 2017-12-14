@@ -460,7 +460,7 @@ class ManualSchema(ViewInspector):
 
 
 class DefaultSchema(object):
-    """Allows overriding AutoSchema in with DEFAULT_SCHEMA_CLASS setting"""
+    """Allows overriding AutoSchema using DEFAULT_SCHEMA_CLASS setting"""
     def __get__(self, instance, owner):
         inspector_class = api_settings.DEFAULT_SCHEMA_CLASS
         assert issubclass(inspector_class, ViewInspector), "DEFAULT_SCHEMA_CLASS must be set to a ViewInspector (usually an AutoSchema) subclass"
