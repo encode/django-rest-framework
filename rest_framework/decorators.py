@@ -9,6 +9,7 @@ used to annotate methods on viewsets that should be included by routers.
 from __future__ import unicode_literals
 
 import types
+import warnings
 
 from django.utils import six
 
@@ -45,7 +46,7 @@ def api_view(http_method_names=None, exclude_from_schema=False):
         assert isinstance(http_method_names, (list, tuple)), \
             '@api_view expected a list of strings, received %s' % type(http_method_names).__name__
 
-        allowed_methods = set(http_method_names) | set(('options',))
+        allowed_methods = set(http_method_names) | {'options'}
         WrappedAPIView.http_method_names = [method.lower() for method in allowed_methods]
 
         def handler(self, *args, **kwargs):
@@ -72,7 +73,17 @@ def api_view(http_method_names=None, exclude_from_schema=False):
         WrappedAPIView.permission_classes = getattr(func, 'permission_classes',
                                                     APIView.permission_classes)
 
-        WrappedAPIView.exclude_from_schema = exclude_from_schema
+        WrappedAPIView.schema = getattr(func, 'schema',
+                                        APIView.schema)
+
+        if exclude_from_schema:
+            warnings.warn(
+                "The `exclude_from_schema` argument to `api_view` is pending deprecation. "
+                "Use the `schema` decorator instead, passing `None`.",
+                PendingDeprecationWarning
+            )
+            WrappedAPIView.exclude_from_schema = exclude_from_schema
+
         return WrappedAPIView.as_view()
     return decorator
 
@@ -108,6 +119,13 @@ def throttle_classes(throttle_classes):
 def permission_classes(permission_classes):
     def decorator(func):
         func.permission_classes = permission_classes
+        return func
+    return decorator
+
+
+def schema(view_inspector):
+    def decorator(func):
+        func.schema = view_inspector
         return func
     return decorator
 

@@ -1,7 +1,7 @@
-from django.contrib.auth import authenticate
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import serializers
+from rest_framework.compat import authenticate
 
 
 class AuthTokenSerializer(serializers.Serializer):
@@ -17,16 +17,13 @@ class AuthTokenSerializer(serializers.Serializer):
         password = attrs.get('password')
 
         if username and password:
-            user = authenticate(username=username, password=password)
+            user = authenticate(request=self.context.get('request'),
+                                username=username, password=password)
 
-            if user:
-                # From Django 1.10 onwards the `authenticate` call simply
-                # returns `None` for is_active=False users.
-                # (Assuming the default `ModelBackend` authentication backend.)
-                if not user.is_active:
-                    msg = _('User account is disabled.')
-                    raise serializers.ValidationError(msg, code='authorization')
-            else:
+            # The authenticate call simply returns None for is_active=False
+            # users. (Assuming the default ModelBackend authentication
+            # backend.)
+            if not user:
                 msg = _('Unable to log in with provided credentials.')
                 raise serializers.ValidationError(msg, code='authorization')
         else:

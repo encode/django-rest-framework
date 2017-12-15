@@ -42,7 +42,7 @@ Arguments:
 
 ## .data
 
-The unrendered content of a `Request` object.
+The unrendered, serialized data of the response.
 
 ## .status_code
 

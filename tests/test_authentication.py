@@ -16,12 +16,11 @@ from rest_framework import (
     HTTP_HEADER_ENCODING, exceptions, permissions, renderers, status
 )
 from rest_framework.authentication import (
-    BaseAuthentication, BasicAuthentication, SessionAuthentication,
-    TokenAuthentication
+    BaseAuthentication, BasicAuthentication, RemoteUserAuthentication,
+    SessionAuthentication, TokenAuthentication
 )
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import obtain_auth_token
-from rest_framework.compat import is_authenticated
 from rest_framework.response import Response
 from rest_framework.test import APIClient, APIRequestFactory
 from rest_framework.views import APIView
@@ -63,6 +62,10 @@ urlpatterns = [
     url(
         r'^basic/$',
         MockView.as_view(authentication_classes=[BasicAuthentication])
+    ),
+    url(
+        r'^remote-user/$',
+        MockView.as_view(authentication_classes=[RemoteUserAuthentication])
     ),
     url(
         r'^token/$',
@@ -447,7 +450,7 @@ class FailingAuthAccessedInRenderer(TestCase):
 
             def render(self, data, media_type=None, renderer_context=None):
                 request = renderer_context['request']
-                if is_authenticated(request.user):
+                if request.user.is_authenticated:
                     return b'authenticated'
                 return b'not authenticated'
 
@@ -523,3 +526,20 @@ class BasicAuthenticationUnitTests(TestCase):
             auth.authenticate_credentials('foo', 'bar')
         assert 'User inactive or deleted.' in str(error)
         authentication.authenticate = old_authenticate
+
+
+@override_settings(ROOT_URLCONF='tests.test_authentication',
+                   AUTHENTICATION_BACKENDS=('django.contrib.auth.backends.RemoteUserBackend',))
+class RemoteUserAuthenticationUnitTests(TestCase):
+    def setUp(self):
+        self.username = 'john'
+        self.email = 'lennon@thebeatles.com'
+        self.password = 'password'
+        self.user = User.objects.create_user(
+            self.username, self.email, self.password
+        )
+
+    def test_remote_user_works(self):
+        response = self.client.post('/remote-user/',
+                                    REMOTE_USER=self.username)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)

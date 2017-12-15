@@ -64,7 +64,7 @@ def _get_full_details(detail):
 
 class ErrorDetail(six.text_type):
     """
-    A string-like object that can additionally
+    A string-like object that can additionally have a code.
     """
     code = None
 
@@ -92,7 +92,7 @@ class APIException(Exception):
         self.detail = _get_error_details(detail, code)
 
     def __str__(self):
-        return self.detail
+        return six.text_type(self.detail)
 
     def get_codes(self):
         """
@@ -123,21 +123,18 @@ class ValidationError(APIException):
     default_detail = _('Invalid input.')
     default_code = 'invalid'
 
-    def __init__(self, detail, code=None):
+    def __init__(self, detail=None, code=None):
         if detail is None:
             detail = self.default_detail
         if code is None:
             code = self.default_code
 
-        # For validation failures, we may collect may errors together, so the
-        # details should always be coerced to a list if not already.
+        # For validation failures, we may collect many errors together,
+        # so the details should always be coerced to a list if not already.
         if not isinstance(detail, dict) and not isinstance(detail, list):
             detail = [detail]
 
         self.detail = _get_error_details(detail, code)
-
-    def __str__(self):
-        return six.text_type(self.detail)
 
 
 class ParseError(APIException):

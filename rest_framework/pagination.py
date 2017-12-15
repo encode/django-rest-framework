@@ -16,7 +16,7 @@ from django.utils.encoding import force_text
 from django.utils.six.moves.urllib import parse as urlparse
 from django.utils.translation import ugettext_lazy as _
 
-from rest_framework.compat import coreapi, coreschema, template_render
+from rest_framework.compat import coreapi, coreschema
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
@@ -31,7 +31,7 @@ def _positive_int(integer_string, strict=False, cutoff=None):
     if ret < 0 or (ret == 0 and strict):
         raise ValueError()
     if cutoff:
-        ret = min(ret, cutoff)
+        return min(ret, cutoff)
     return ret
 
 
@@ -95,7 +95,7 @@ def _get_displayed_page_numbers(current, final):
     # Now sort the page numbers and drop anything outside the limits.
     included = [
         idx for idx in sorted(list(included))
-        if idx > 0 and idx <= final
+        if 0 < idx <= final
     ]
 
     # Finally insert any `...` breaks
@@ -285,7 +285,7 @@ class PageNumberPagination(BasePagination):
     def to_html(self):
         template = loader.get_template(self.template)
         context = self.get_html_context()
-        return template_render(template, context)
+        return template.render(context)
 
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
@@ -442,7 +442,7 @@ class LimitOffsetPagination(BasePagination):
     def to_html(self):
         template = loader.get_template(self.template)
         context = self.get_html_context()
-        return template_render(template, context)
+        return template.render(context)
 
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
@@ -473,7 +473,7 @@ class CursorPagination(BasePagination):
     """
     The cursor pagination implementation is necessarily complex.
     For an overview of the position/offset style we use, see this post:
-    http://cramer.io/2011/03/08/building-cursors-for-the-disqus-api
+    http://cra.mr/2011/03/08/building-cursors-for-the-disqus-api
     """
     cursor_query_param = 'cursor'
     cursor_query_description = _('The pagination cursor value.')
@@ -481,6 +481,15 @@ class CursorPagination(BasePagination):
     invalid_cursor_message = _('Invalid cursor')
     ordering = '-created'
     template = 'rest_framework/pagination/previous_and_next.html'
+
+    # Client can control the page size using this query parameter.
+    # Default is 'None'. Set to eg 'page_size' to enable usage.
+    page_size_query_param = None
+    page_size_query_description = _('Number of results to return per page.')
+
+    # Set to an integer to limit the maximum page size the client may request.
+    # Only relevant if 'page_size_query_param' has also been set.
+    max_page_size = None
 
     # The offset in the cursor is used in situations where we have a
     # nearly-unique index. (Eg millisecond precision creation timestamps)
@@ -566,6 +575,16 @@ class CursorPagination(BasePagination):
         return self.page
 
     def get_page_size(self, request):
+        if self.page_size_query_param:
+            try:
+                return _positive_int(
+                    request.query_params[self.page_size_query_param],
+                    strict=True,
+                    cutoff=self.max_page_size
+                )
+            except (KeyError, ValueError):
+                pass
+
         return self.page_size
 
     def get_next_link(self):
@@ -774,12 +793,12 @@ class CursorPagination(BasePagination):
     def to_html(self):
         template = loader.get_template(self.template)
         context = self.get_html_context()
-        return template_render(template, context)
+        return template.render(context)
 
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
         assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
-        return [
+        fields = [
             coreapi.Field(
                 name=self.cursor_query_param,
                 required=False,
@@ -790,3 +809,16 @@ class CursorPagination(BasePagination):
                 )
             )
         ]
+        if self.page_size_query_param is not None:
+            fields.append(
+                coreapi.Field(
+                    name=self.page_size_query_param,
+                    required=False,
+                    location='query',
+                    schema=coreschema.Integer(
+                        title='Page size',
+                        description=force_text(self.page_size_query_description)
+                    )
+                )
+            )
+        return fields

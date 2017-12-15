@@ -6,12 +6,13 @@ from __future__ import unicode_literals
 import base64
 import binascii
 
-from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth import get_user_model
 from django.middleware.csrf import CsrfViewMiddleware
 from django.utils.six import text_type
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import HTTP_HEADER_ENCODING, exceptions
+from rest_framework.compat import authenticate
 
 
 def get_authorization_header(request):
@@ -83,17 +84,18 @@ class BasicAuthentication(BaseAuthentication):
             raise exceptions.AuthenticationFailed(msg)
 
         userid, password = auth_parts[0], auth_parts[2]
-        return self.authenticate_credentials(userid, password)
+        return self.authenticate_credentials(userid, password, request)
 
-    def authenticate_credentials(self, userid, password):
+    def authenticate_credentials(self, userid, password, request=None):
         """
-        Authenticate the userid and password against username and password.
+        Authenticate the userid and password against username and password
+        with optional request for context.
         """
         credentials = {
             get_user_model().USERNAME_FIELD: userid,
             'password': password
         }
-        user = authenticate(**credentials)
+        user = authenticate(request=request, **credentials)
 
         if user is None:
             raise exceptions.AuthenticationFailed(_('Invalid username/password.'))
@@ -201,3 +203,24 @@ class TokenAuthentication(BaseAuthentication):
 
     def authenticate_header(self, request):
         return self.keyword
+
+
+class RemoteUserAuthentication(BaseAuthentication):
+    """
+    REMOTE_USER authentication.
+
+    To use this, set up your web server to perform authentication, which will
+    set the REMOTE_USER environment variable. You will need to have
+    'django.contrib.auth.backends.RemoteUserBackend in your
+    AUTHENTICATION_BACKENDS setting
+    """
+
+    # Name of request header to grab username from.  This will be the key as
+    # used in the request.META dictionary, i.e. the normalization of headers to
+    # all uppercase and the addition of "HTTP_" prefix apply.
+    header = "REMOTE_USER"
+
+    def authenticate(self, request):
+        user = authenticate(remote_user=request.META.get(self.header))
+        if user and user.is_active:
+            return (user, None)

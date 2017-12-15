@@ -8,7 +8,7 @@ from django.core import validators
 from django.db import models
 from django.utils.text import capfirst
 
-from rest_framework.compat import DecimalValidator, JSONField
+from rest_framework.compat import postgres_fields
 from rest_framework.validators import UniqueValidator
 
 NUMERIC_FIELD_TYPES = (
@@ -88,7 +88,7 @@ def get_field_kwargs(field_name, model_field):
     if decimal_places is not None:
         kwargs['decimal_places'] = decimal_places
 
-    if isinstance(model_field, models.TextField) or (JSONField and isinstance(model_field, JSONField)):
+    if isinstance(model_field, models.TextField) or (postgres_fields and isinstance(model_field, postgres_fields.JSONField)):
         kwargs['style'] = {'base_template': 'textarea.html'}
 
     if isinstance(model_field, models.AutoField) or not model_field.editable:
@@ -181,11 +181,10 @@ def get_field_kwargs(field_name, model_field):
                 if validator is not validators.validate_ipv46_address
             ]
         # Our decimal validation is handled in the field code, not validator code.
-        # (In Django 1.9+ this differs from previous style)
-        if isinstance(model_field, models.DecimalField) and DecimalValidator:
+        if isinstance(model_field, models.DecimalField):
             validator_kwarg = [
                 validator for validator in validator_kwarg
-                if not isinstance(validator, DecimalValidator)
+                if not isinstance(validator, validators.DecimalValidator)
             ]
 
     # Ensure that max_length is passed explicitly as a keyword arg,

@@ -37,21 +37,25 @@ if (window.location.hostname == "www.django-rest-framework.org") {
     min-height: 255px;
     position: relative;
     top: 37px;
-    margin-bottom: 20px}
+    margin-bottom: 20px
+}
 .quantity {
-    text-align: center}
+    text-align: center
+}
 .dollar {
     font-size: 19px;
     position: relative;
     top: -18px;
 }
 .price {
-    font-size: 49px;}
+    font-size: 49px;
+}
 .period {
     font-size: 17px;
     position: relative;
     top: -8px;
-    margin-left: 4px;}
+    margin-left: 4px;
+}
 .plan-name {
     text-align: center;
     font-size: 20px;
@@ -61,9 +65,11 @@ if (window.location.hostname == "www.django-rest-framework.org") {
     padding-bottom: 15px;
     width: 90%;
     margin: 0 auto;
-    margin-top: 8px;}
+    margin-top: 8px;
+}
 .specs {
-    margin-top: 20px;    min-height: 130px;
+    margin-top: 20px;
+    min-height: 130px;
 }
 .specs.freelancer {
     min-height: 0px;
@@ -73,14 +79,18 @@ if (window.location.hostname == "www.django-rest-framework.org") {
     color: #474747;
     text-align: center;
     font-weight: 300;
-    margin-bottom: 13px;}
+    margin-bottom: 13px;
+}
 .variable {
     color: #1FBEE7;
-    font-weight: 400;}
+    font-weight: 400;
+}
 form.signup {
-    margin-top: 35px}
+    margin-top: 35px
+}
 .clear-promo {
-    padding-top: 30px}
+    padding-top: 30px
+}
 #main-content h1:first-of-type {
     margin: 0 0 50px;
     font-size: 60px;
@@ -115,6 +125,7 @@ REST framework continues to be open-source and permissively licensed, but we fir
 
 * The [3.4](http://www.django-rest-framework.org/topics/3.4-announcement/) and [3.5](http://www.django-rest-framework.org/topics/3.5-announcement/) releases, including schema generation for both Swagger and RAML, a Python client library, a Command Line client, and addressing of a large number of outstanding issues.
 * The [3.6](http://www.django-rest-framework.org/topics/3.6-announcement/) release, including  JavaScript client library, and API documentation, complete with auto-generated code samples.
+* The recent [3.7 release](http://www.django-rest-framework.org/topics/3.7-announcement/), made possible due to our collaborative funding model, focuses on improvements to schema generation and the interactive API documentation.
 * Tom Christie, the creator of Django REST framework, working on the project full-time.
 * Around 80-90 issues and pull requests closed per month since Tom Christie started working on the project full-time.
 * A community & operations manager position part-time for 4 months, helping mature the business and grow sponsorship.
@@ -329,7 +340,7 @@ For further enquires please contact <a href=mailto:funding@django-rest-framework
 
 ## Accountability
 
-In an effort to keep the project as transparent as possible, we are releasing [monthly progress reports](http://www.encode.io/reports/june-2017) and regularly include financial reports and cost breakdowns.
+In an effort to keep the project as transparent as possible, we are releasing [monthly progress reports](http://www.encode.io/reports/november-2017) and regularly include financial reports and cost breakdowns.
 
 <!-- Begin MailChimp Signup Form -->
 <link href="//cdn-images.mailchimp.com/embedcode/classic-10_7.css" rel="stylesheet" type="text/css">

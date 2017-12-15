@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
-from django.db import models
+from django.db import connection, models, transaction
 from django.http import Http404
 from django.http.response import HttpResponseBase
 from django.utils import six
@@ -16,9 +16,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
 from rest_framework import exceptions, status
-from rest_framework.compat import set_rollback
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.schemas import DefaultSchema
 from rest_framework.settings import api_settings
 from rest_framework.utils import formatting
 
@@ -52,6 +52,12 @@ def get_view_description(view_cls, html=False):
     if html:
         return formatting.markup_description(description)
     return description
+
+
+def set_rollback():
+    atomic_requests = connection.settings_dict.get('ATOMIC_REQUESTS', False)
+    if atomic_requests and connection.in_atomic_block:
+        transaction.set_rollback(True)
 
 
 def exception_handler(exc, context):
@@ -111,8 +117,7 @@ class APIView(View):
     # Allow dependency injection of other settings to make testing easier.
     settings = api_settings
 
-    # Mark the view as being included or excluded from schema generation.
-    exclude_from_schema = False
+    schema = DefaultSchema()
 
     @classmethod
     def as_view(cls, **initkwargs):

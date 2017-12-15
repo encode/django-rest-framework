@@ -22,6 +22,7 @@
 
         <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/prettify.css" %}"/>
         <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/default.css" %}"/>
+        {% if code_style %}<style>{{ code_style }}</style>{% endif %}
       {% endblock %}
 
     {% endblock %}

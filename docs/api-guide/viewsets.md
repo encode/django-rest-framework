@@ -159,6 +159,21 @@ These decorators will route `GET` requests by default, but may also accept other
 
 The two new actions will then be available at the urls `^users/{pk}/set_password/$` and `^users/{pk}/unset_password/$`
 
+## Reversing action URLs
+
+If you need to get the URL of an action, use the `.reverse_action()` method. This is a convenience wrapper for `reverse()`, automatically passing the view's `request` object and prepending the `url_name` with the `.basename` attribute.
+
+Note that the `basename` is provided by the router during `ViewSet` registration. If you are not using a router, then you must provide the `basename` argument to the `.as_view()` method.
+
+Using the example from the previous section:
+
+```python
+>>> view.reverse_action('set-password', args=['1'])
+'http://localhost:8000/api/users/1/set_password'
+```
+
+The `url_name` argument should match the same argument to the `@list_route` and `@detail_route` decorators. Additionally, this can be used to reverse the default `list` and `detail` routes.
+
 ---
 
 # API Reference

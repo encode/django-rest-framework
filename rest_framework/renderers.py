@@ -9,7 +9,6 @@ REST framework also provides an HTML renderer that renders the browsable API.
 from __future__ import unicode_literals
 
 import base64
-import json
 from collections import OrderedDict
 
 from django import forms
@@ -17,7 +16,7 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.paginator import Page
 from django.http.multipartparser import parse_header
-from django.template import Template, loader
+from django.template import engines, loader
 from django.test.client import encode_multipart
 from django.utils import six
 from django.utils.html import mark_safe
@@ -25,12 +24,12 @@ from django.utils.html import mark_safe
 from rest_framework import VERSION, exceptions, serializers, status
 from rest_framework.compat import (
     INDENT_SEPARATORS, LONG_SEPARATORS, SHORT_SEPARATORS, coreapi,
-    pygments_css, template_render
+    pygments_css
 )
 from rest_framework.exceptions import ParseError
 from rest_framework.request import is_form_media_type, override_method
 from rest_framework.settings import api_settings
-from rest_framework.utils import encoders
+from rest_framework.utils import encoders, json
 from rest_framework.utils.breadcrumbs import get_breadcrumbs
 from rest_framework.utils.field_mapping import ClassLookupDict
 
@@ -62,6 +61,7 @@ class JSONRenderer(BaseRenderer):
     encoder_class = encoders.JSONEncoder
     ensure_ascii = not api_settings.UNICODE_JSON
     compact = api_settings.COMPACT_JSON
+    strict = api_settings.STRICT_JSON
 
     # We don't set a charset because JSON is a binary encoding,
     # that can be encoded as utf-8, utf-16 or utf-32.
@@ -102,7 +102,7 @@ class JSONRenderer(BaseRenderer):
         ret = json.dumps(
             data, cls=self.encoder_class,
             indent=indent, ensure_ascii=self.ensure_ascii,
-            separators=separators
+            allow_nan=not self.strict, separators=separators
         )
 
         # On python 2.x json.dumps() returns bytestrings if ensure_ascii=True,
@@ -173,7 +173,7 @@ class TemplateHTMLRenderer(BaseRenderer):
             context = self.resolve_context(data, request, response)
         else:
             context = self.get_template_context(data, renderer_context)
-        return template_render(template, context, request=request)
+        return template.render(context, request=request)
 
     def resolve_template(self, template_names):
         return loader.select_template(template_names)
@@ -206,8 +206,9 @@ class TemplateHTMLRenderer(BaseRenderer):
             return self.resolve_template(template_names)
         except Exception:
             # Fall back to using eg '404 Not Found'
-            return Template('%d %s' % (response.status_code,
-                                       response.status_text.title()))
+            body = '%d %s' % (response.status_code, response.status_text.title())
+            template = engines['django'].from_string(body)
+            return template
 
 
 # Note, subclass TemplateHTMLRenderer simply for the exception behavior
@@ -239,7 +240,7 @@ class StaticHTMLRenderer(TemplateHTMLRenderer):
                 context = self.resolve_context(data, request, response)
             else:
                 context = self.get_template_context(data, renderer_context)
-            return template_render(template, context, request=request)
+            return template.render(context, request=request)
 
         return data
 
@@ -322,6 +323,9 @@ class HTMLFormRenderer(BaseRenderer):
         serializers.FilePathField: {
             'base_template': 'select.html',
         },
+        serializers.JSONField: {
+            'base_template': 'textarea.html',
+        },
     })
 
     def render_field(self, field, parent_style):
@@ -347,7 +351,7 @@ class HTMLFormRenderer(BaseRenderer):
 
         template = loader.get_template(template_name)
         context = {'field': field, 'style': style}
-        return template_render(template, context)
+        return template.render(context)
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
@@ -368,7 +372,7 @@ class HTMLFormRenderer(BaseRenderer):
             'form': form,
             'style': style
         }
-        return template_render(template, context)
+        return template.render(context)
 
 
 class BrowsableAPIRenderer(BaseRenderer):
@@ -379,6 +383,7 @@ class BrowsableAPIRenderer(BaseRenderer):
     format = 'api'
     template = 'rest_framework/api.html'
     filter_template = 'rest_framework/filters/base.html'
+    code_style = 'emacs'
     charset = 'utf-8'
     form_renderer_class = HTMLFormRenderer
 
@@ -556,7 +561,15 @@ class BrowsableAPIRenderer(BaseRenderer):
                 accepted = self.accepted_media_type
                 context = self.renderer_context.copy()
                 context['indent'] = 4
-                content = renderer.render(serializer.data, accepted, context)
+
+                # strip HiddenField from output
+                data = serializer.data.copy()
+                for name, field in serializer.fields.items():
+                    if isinstance(field, serializers.HiddenField):
+                        data.pop(name, None)
+                content = renderer.render(data, accepted, context)
+                # Renders returns bytes, but CharField expects a str.
+                content = content.decode('utf-8')
             else:
                 content = None
 
@@ -576,7 +589,8 @@ class BrowsableAPIRenderer(BaseRenderer):
                 _content = forms.CharField(
                     label='Content',
                     widget=forms.Textarea(attrs={'data-override': 'content'}),
-                    initial=content
+                    initial=content,
+                    required=False
                 )
 
             return GenericContentForm()
@@ -621,7 +635,7 @@ class BrowsableAPIRenderer(BaseRenderer):
 
         template = loader.get_template(self.filter_template)
         context = {'elements': elements}
-        return template_render(template, context)
+        return template.render(context)
 
     def get_context(self, data, accepted_media_type, renderer_context):
         """
@@ -652,13 +666,14 @@ class BrowsableAPIRenderer(BaseRenderer):
             paginator = None
 
         csrf_cookie_name = settings.CSRF_COOKIE_NAME
-        csrf_header_name = getattr(settings, 'CSRF_HEADER_NAME', 'HTTP_X_CSRFToken')  # Fallback for Django 1.8
+        csrf_header_name = settings.CSRF_HEADER_NAME
         if csrf_header_name.startswith('HTTP_'):
             csrf_header_name = csrf_header_name[5:]
         csrf_header_name = csrf_header_name.replace('_', '-')
 
         context = {
             'content': self.get_content(renderer, data, accepted_media_type, renderer_context),
+            'code_style': pygments_css(self.code_style),
             'view': view,
             'request': request,
             'response': response,
@@ -701,7 +716,7 @@ class BrowsableAPIRenderer(BaseRenderer):
 
         template = loader.get_template(self.template)
         context = self.get_context(data, accepted_media_type, renderer_context)
-        ret = template_render(template, context, request=renderer_context['request'])
+        ret = template.render(context, request=renderer_context['request'])
 
         # Munge DELETE Response code to allow us to return content
         # (Do this *after* we've rendered the template so that we include
@@ -737,7 +752,7 @@ class AdminRenderer(BrowsableAPIRenderer):
 
         template = loader.get_template(self.template)
         context = self.get_context(data, accepted_media_type, renderer_context)
-        ret = template_render(template, context, request=renderer_context['request'])
+        ret = template.render(context, request=renderer_context['request'])
 
         # Creation and deletion should use redirects in the admin style.
         if response.status_code == status.HTTP_201_CREATED and 'Location' in response:
@@ -801,6 +816,7 @@ class DocumentationRenderer(BaseRenderer):
     format = 'html'
     charset = 'utf-8'
     template = 'rest_framework/docs/index.html'
+    error_template = 'rest_framework/docs/error.html'
     code_style = 'emacs'
     languages = ['shell', 'javascript', 'python']
 
@@ -815,9 +831,19 @@ class DocumentationRenderer(BaseRenderer):
         }
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
-        template = loader.get_template(self.template)
-        context = self.get_context(data, renderer_context['request'])
-        return template_render(template, context, request=renderer_context['request'])
+        if isinstance(data, coreapi.Document):
+            template = loader.get_template(self.template)
+            context = self.get_context(data, renderer_context['request'])
+            return template.render(context, request=renderer_context['request'])
+        else:
+            template = loader.get_template(self.error_template)
+            context = {
+                "data": data,
+                "request": renderer_context['request'],
+                "response": renderer_context['response'],
+                "debug": settings.DEBUG,
+            }
+            return template.render(context, request=renderer_context['request'])
 
 
 class SchemaJSRenderer(BaseRenderer):
@@ -828,12 +854,12 @@ class SchemaJSRenderer(BaseRenderer):
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         codec = coreapi.codecs.CoreJSONCodec()
-        schema = base64.b64encode(codec.encode(data))
+        schema = base64.b64encode(codec.encode(data)).decode('ascii')
 
         template = loader.get_template(self.template)
         context = {'schema': mark_safe(schema)}
         request = renderer_context['request']
-        return template_render(template, context, request=request)
+        return template.render(context, request=request)
 
 
 class MultiPartRenderer(BaseRenderer):

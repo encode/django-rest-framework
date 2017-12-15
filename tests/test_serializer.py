@@ -77,13 +77,22 @@ class TestSerializer:
         serializer = self.Serializer(data={'char': 'abc', 'integer': 123})
         assert serializer.is_valid()
         assert serializer.validated_data == {'char': 'abc', 'integer': 123}
+        assert serializer.data == {'char': 'abc', 'integer': 123}
         assert serializer.errors == {}
 
     def test_invalid_serializer(self):
         serializer = self.Serializer(data={'char': 'abc'})
         assert not serializer.is_valid()
         assert serializer.validated_data == {}
+        assert serializer.data == {'char': 'abc'}
         assert serializer.errors == {'integer': ['This field is required.']}
+
+    def test_invalid_datatype(self):
+        serializer = self.Serializer(data=[{'char': 'abc'}])
+        assert not serializer.is_valid()
+        assert serializer.validated_data == {}
+        assert serializer.data == {}
+        assert serializer.errors == {'non_field_errors': ['Invalid data. Expected a dictionary, but got list.']}
 
     def test_partial_validation(self):
         serializer = self.Serializer(data={'char': 'abc'}, partial=True)
@@ -372,6 +381,14 @@ class TestNotRequiredOutput:
         serializer.save()
         assert serializer.data == {'included': 'abc'}
 
+    def test_not_required_output_for_allow_null_field(self):
+        class ExampleSerializer(serializers.Serializer):
+            omitted = serializers.CharField(required=False, allow_null=True)
+            included = serializers.CharField()
+
+        serializer = ExampleSerializer({'included': 'abc'})
+        assert 'omitted' not in serializer.data
+
 
 class TestDefaultOutput:
     def setup(self):
@@ -410,6 +427,52 @@ class TestDefaultOutput:
         instance = MockObject(has_default='def', has_default_callable='ghi', no_default='abc')
         serializer = self.Serializer(instance)
         assert serializer.data == {'has_default': 'def', 'has_default_callable': 'ghi', 'no_default': 'abc'}
+
+    def test_default_for_dotted_source(self):
+        """
+        'default="something"' should be used when a traversed attribute is missing from input.
+        """
+        class Serializer(serializers.Serializer):
+            traversed = serializers.CharField(default='x', source='traversed.attr')
+
+        assert Serializer({}).data == {'traversed': 'x'}
+        assert Serializer({'traversed': {}}).data == {'traversed': 'x'}
+        assert Serializer({'traversed': None}).data == {'traversed': 'x'}
+
+        assert Serializer({'traversed': {'attr': 'abc'}}).data == {'traversed': 'abc'}
+
+    def test_default_for_multiple_dotted_source(self):
+        class Serializer(serializers.Serializer):
+            c = serializers.CharField(default='x', source='a.b.c')
+
+        assert Serializer({}).data == {'c': 'x'}
+        assert Serializer({'a': {}}).data == {'c': 'x'}
+        assert Serializer({'a': None}).data == {'c': 'x'}
+        assert Serializer({'a': {'b': {}}}).data == {'c': 'x'}
+        assert Serializer({'a': {'b': None}}).data == {'c': 'x'}
+
+        assert Serializer({'a': {'b': {'c': 'abc'}}}).data == {'c': 'abc'}
+
+    def test_default_for_nested_serializer(self):
+        class NestedSerializer(serializers.Serializer):
+            a = serializers.CharField(default='1')
+            c = serializers.CharField(default='2', source='b.c')
+
+        class Serializer(serializers.Serializer):
+            nested = NestedSerializer()
+
+        assert Serializer({'nested': None}).data == {'nested': None}
+        assert Serializer({'nested': {}}).data == {'nested': {'a': '1', 'c': '2'}}
+        assert Serializer({'nested': {'a': '3', 'b': {}}}).data == {'nested': {'a': '3', 'c': '2'}}
+        assert Serializer({'nested': {'a': '3', 'b': {'c': '4'}}}).data == {'nested': {'a': '3', 'c': '4'}}
+
+    def test_default_for_allow_null(self):
+        # allow_null=True should imply default=None
+        class Serializer(serializers.Serializer):
+            foo = serializers.CharField()
+            bar = serializers.CharField(source='foo.bar', allow_null=True)
+
+        assert Serializer({'foo': None}).data == {'foo': None, 'bar': None}
 
 
 class TestCacheSerializerData:
@@ -467,6 +530,22 @@ class TestSerializerValidationWithCompiledRegexField:
         assert serializer.is_valid()
         assert serializer.validated_data == {'name': '2'}
         assert serializer.errors == {}
+
+
+class Test2555Regression:
+    def test_serializer_context(self):
+        class NestedSerializer(serializers.Serializer):
+            def __init__(self, *args, **kwargs):
+                super(NestedSerializer, self).__init__(*args, **kwargs)
+                # .context should not cache
+                self.context
+
+        class ParentSerializer(serializers.Serializer):
+            nested = NestedSerializer()
+
+        serializer = ParentSerializer(data={}, context={'foo': 'bar'})
+        assert serializer.context == {'foo': 'bar'}
+        assert serializer.fields['nested'].context == {'foo': 'bar'}
 
 
 class Test4606Regression:

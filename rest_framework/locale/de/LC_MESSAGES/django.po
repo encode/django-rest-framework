@@ -4,6 +4,8 @@
 # 
 # Translators:
 # Fabian Büchler <fabian@buechler.io>, 2015
+# datKater <imperator.katz@gmail.com>, 2017
+# Lukas Bischofberger <me@worx.li>, 2017
 # Mads Jensen <mje@inducks.org>, 2015
 # Niklas P <contact@niklasplessing.net>, 2015-2016
 # Thomas Tanner, 2015
@@ -14,8 +16,8 @@ msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-07-12 16:13+0100\n"
-"PO-Revision-Date: 2016-07-12 15:14+0000\n"
-"Last-Translator: Thomas Christie <tom@tomchristie.com>\n"
+"PO-Revision-Date: 2017-08-03 14:58+0000\n"
+"Last-Translator: Lukas Bischofberger <me@worx.li>\n"
 "Language-Team: German (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -74,7 +76,7 @@ msgstr "Benutzer"
 
 #: authtoken/models.py:20
 msgid "Created"
-msgstr ""
+msgstr "Erzeugt"
 
 #: authtoken/models.py:29
 msgid "Token"
@@ -98,7 +100,7 @@ msgstr "Benutzerkonto ist gesperrt."
 
 #: authtoken/serializers.py:23
 msgid "Unable to log in with provided credentials."
-msgstr "Kann nicht mit den angegeben Zugangsdaten anmelden."
+msgstr "Die angegebenen Zugangsdaten stimmen nicht."
 
 #: authtoken/serializers.py:26
 msgid "Must include \"username\" and \"password\"."
@@ -122,7 +124,7 @@ msgstr "Anmeldedaten fehlen."
 
 #: exceptions.py:99
 msgid "You do not have permission to perform this action."
-msgstr "Sie sind nicht berechtigt, diese Aktion durchzuführen."
+msgstr "Sie sind nicht berechtigt diese Aktion durchzuführen."
 
 #: exceptions.py:104 views.py:81
 msgid "Not found."
@@ -151,7 +153,7 @@ msgstr "Dieses Feld ist erforderlich."
 
 #: fields.py:270
 msgid "This field may not be null."
-msgstr "Dieses Feld darf nicht Null sein."
+msgstr "Dieses Feld darf nicht null sein."
 
 #: fields.py:608 fields.py:639
 msgid "\"{input}\" is not a valid boolean."
@@ -193,7 +195,7 @@ msgstr "\"{value}\" ist keine gültige UUID."
 
 #: fields.py:796
 msgid "Enter a valid IPv4 or IPv6 address."
-msgstr "Geben Sie eine gültige UPv4 oder IPv6 Adresse an"
+msgstr "Geben Sie eine gültige IPv4 oder IPv6 Adresse an"
 
 #: fields.py:821
 msgid "A valid integer is required."
@@ -272,7 +274,7 @@ msgstr "Diese Auswahl darf nicht leer sein"
 
 #: fields.py:1339
 msgid "\"{input}\" is not a valid path choice."
-msgstr "\"{input}\" ist ein ungültiger Pfad Wahl."
+msgstr "\"{input}\" ist ein ungültiger Pfad."
 
 #: fields.py:1358
 msgid "No file was submitted."
@@ -308,7 +310,7 @@ msgstr "Diese Liste darf nicht leer sein."
 
 #: fields.py:1502
 msgid "Expected a dictionary of items but got type \"{input_type}\"."
-msgstr "Erwarte ein Dictionary mit Elementen, erhielt aber den Typ \"{input_type}\"."
+msgstr "Erwartete ein Dictionary mit Elementen, erhielt aber den Typ \"{input_type}\"."
 
 #: fields.py:1549
 msgid "Value must be valid JSON."
@@ -320,15 +322,15 @@ msgstr "Abschicken"
 
 #: filters.py:336
 msgid "ascending"
-msgstr ""
+msgstr "Aufsteigend"
 
 #: filters.py:337
 msgid "descending"
-msgstr ""
+msgstr "Absteigend"
 
 #: pagination.py:193
 msgid "Invalid page."
-msgstr ""
+msgstr "Ungültige Seite."
 
 #: pagination.py:427
 msgid "Invalid cursor"
@@ -430,7 +432,7 @@ msgstr "Ungültige Version im URL Pfad."
 
 #: versioning.py:115
 msgid "Invalid version in URL path. Does not match any version namespace."
-msgstr ""
+msgstr "Ungültige Version im URL-Pfad. Entspricht keinem Versions-Namensraum."
 
 #: versioning.py:147
 msgid "Invalid version in hostname."

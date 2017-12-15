@@ -5,7 +5,6 @@ returned by list views.
 from __future__ import unicode_literals
 
 import operator
-import warnings
 from functools import reduce
 
 from django.core.exceptions import ImproperlyConfigured
@@ -17,9 +16,7 @@ from django.utils import six
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 
-from rest_framework.compat import (
-    coreapi, coreschema, distinct, django_filters, guardian, template_render
-)
+from rest_framework.compat import coreapi, coreschema, distinct, guardian
 from rest_framework.settings import api_settings
 
 
@@ -38,44 +35,6 @@ class BaseFilterBackend(object):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
         assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
         return []
-
-
-if django_filters:
-    from django_filters.rest_framework.filterset import FilterSet as DFFilterSet
-
-    class FilterSet(DFFilterSet):
-        def __init__(self, *args, **kwargs):
-            warnings.warn(
-                "The built in 'rest_framework.filters.FilterSet' is deprecated. "
-                "You should use 'django_filters.rest_framework.FilterSet' instead.",
-                DeprecationWarning, stacklevel=2
-            )
-            return super(FilterSet, self).__init__(*args, **kwargs)
-
-    DFBase = django_filters.rest_framework.DjangoFilterBackend
-
-else:
-    def FilterSet():
-        assert False, 'django-filter must be installed to use the `FilterSet` class'
-
-    DFBase = BaseFilterBackend
-
-
-class DjangoFilterBackend(DFBase):
-    """
-    A filter backend that uses django-filter.
-    """
-    def __new__(cls, *args, **kwargs):
-        assert django_filters, 'Using DjangoFilterBackend, but django-filter is not installed'
-        assert django_filters.VERSION >= (0, 15, 3), 'django-filter 0.15.3 and above is required'
-
-        warnings.warn(
-            "The built in 'rest_framework.filters.DjangoFilterBackend' is deprecated. "
-            "You should use 'django_filters.rest_framework.DjangoFilterBackend' instead.",
-            DeprecationWarning, stacklevel=2
-        )
-
-        return super(DjangoFilterBackend, cls).__new__(cls, *args, **kwargs)
 
 
 class SearchFilter(BaseFilterBackend):
@@ -140,12 +99,14 @@ class SearchFilter(BaseFilterBackend):
         ]
 
         base = queryset
+        conditions = []
         for search_term in search_terms:
             queries = [
                 models.Q(**{orm_lookup: search_term})
                 for orm_lookup in orm_lookups
             ]
-            queryset = queryset.filter(reduce(operator.or_, queries))
+            conditions.append(reduce(operator.or_, queries))
+        queryset = queryset.filter(reduce(operator.and_, conditions))
 
         if self.must_call_distinct(queryset, search_fields):
             # Filtering against a many-to-many field requires us to
@@ -166,7 +127,7 @@ class SearchFilter(BaseFilterBackend):
             'term': term
         }
         template = loader.get_template(self.template)
-        return template_render(template, context)
+        return template.render(context)
 
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
@@ -238,7 +199,7 @@ class OrderingFilter(BaseFilterBackend):
             raise ImproperlyConfigured(msg % self.__class__.__name__)
 
         return [
-            (field.source or field_name, field.label)
+            (field.source.replace('.', '__') or field_name, field.label)
             for field_name, field in serializer_class(context=context).fields.items()
             if not getattr(field, 'write_only', False) and not field.source == '*'
         ]
@@ -297,7 +258,7 @@ class OrderingFilter(BaseFilterBackend):
     def to_html(self, request, queryset, view):
         template = loader.get_template(self.template)
         context = self.get_template_context(request, queryset, view)
-        return template_render(template, context)
+        return template.render(context)
 
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'

@@ -13,6 +13,7 @@
 MANIFEST
 coverage.*
 
+!.editorconfig
 !.gitignore
 !.travis.yml
 !.isort.cfg

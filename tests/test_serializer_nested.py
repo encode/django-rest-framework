@@ -194,11 +194,11 @@ class TestNestedSerializerWithList:
         serializer = self.Serializer(data=input_data)
 
         assert serializer.is_valid()
-        assert serializer.validated_data['nested']['example'] == set([1, 2])
+        assert serializer.validated_data['nested']['example'] == {1, 2}
 
     def test_nested_serializer_with_list_multipart(self):
         input_data = QueryDict('nested.example=1&nested.example=2')
         serializer = self.Serializer(data=input_data)
 
         assert serializer.is_valid()
-        assert serializer.validated_data['nested']['example'] == set([1, 2])
+        assert serializer.validated_data['nested']['example'] == {1, 2}

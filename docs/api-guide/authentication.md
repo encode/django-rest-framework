@@ -222,6 +222,21 @@ It is also possible to create Tokens manually through admin interface. In case y
     TokenAdmin.raw_id_fields = ('user',)
 
 
+#### Using Django manage.py command
+
+Since version 3.6.4 it's possible to generate a user token using the following command:
+
+    ./manage.py drf_create_token <username>
+
+this command will return the API token for the given user, creating it if it doesn't exist:
+
+    Generated token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b for user user1
+
+In case you want to regenerate the token (for example if it has been compromised or leaked) you can pass an additional parameter:
+
+    ./manage.py drf_create_token -r <username>
+
+
 ## SessionAuthentication
 
 This authentication scheme uses Django's default session backend for authentication.  Session authentication is appropriate for AJAX clients that are running in the same session context as your website.
@@ -239,6 +254,28 @@ If you're using an AJAX style API with SessionAuthentication, you'll need to mak
 
 CSRF validation in REST framework works slightly differently to standard Django due to the need to support both session and non-session based authentication to the same views. This means that only authenticated requests require CSRF tokens, and anonymous requests may be sent without CSRF tokens. This behaviour is not suitable for login views, which should always have CSRF validation applied.
 
+
+## RemoteUserAuthentication
+
+This authentication scheme allows you to delegate authentication to your web server, which sets the `REMOTE_USER`
+environment variable.
+
+To use it, you must have `django.contrib.auth.backends.RemoteUserBackend` (or a subclass) in your
+`AUTHENTICATION_BACKENDS` setting. By default, `RemoteUserBackend` creates `User` objects for usernames that don't
+already exist. To change this and other behaviour, consult the
+[Django documentation](https://docs.djangoproject.com/en/stable/howto/auth-remote-user/).
+
+If successfully authenticated, `RemoteUserAuthentication` provides the following credentials:
+
+* `request.user` will be a Django `User` instance.
+* `request.auth` will be `None`.
+
+Consult your web server's documentation for information about configuring an authentication method, e.g.:
+
+* [Apache Authentication How-To](https://httpd.apache.org/docs/2.4/howto/auth.html)
+* [NGINX (Restricting Access)](https://www.nginx.com/resources/admin-guide/#restricting_access)
+
+
 # Custom authentication
 
 To implement a custom authentication scheme, subclass `BaseAuthentication` and override the `.authenticate(self, request)` method.  The method should return a two-tuple of `(user, auth)` if authentication succeeds, or `None` otherwise.
@@ -253,6 +290,12 @@ Typically the approach you should take is:
 You *may* also override the `.authenticate_header(self, request)` method.  If implemented, it should return a string that will be used as the value of the `WWW-Authenticate` header in a `HTTP 401 Unauthorized` response.
 
 If the `.authenticate_header()` method is not overridden, the authentication scheme will return `HTTP 403 Forbidden` responses when an unauthenticated request is denied access.
+
+---
+
+**Note:** When your custom authenticator is invoked by the request object's `.user` or `.auth` properties, you may see an `AttributeError` re-raised as a `WrappedAttributeError`. This is necessary to prevent the original exception from being suppressed by the outer property access. Python will not recognize that the `AttributeError` orginates from your custom authenticator and will instead assume that the request object does not have a `.user` or `.auth` property. These errors should be fixed or otherwise handled by your authenticator.
+
+---
 
 ## Example
 

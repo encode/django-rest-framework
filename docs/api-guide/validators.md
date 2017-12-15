@@ -84,7 +84,7 @@ It has two required arguments, and a single optional `messages` argument:
 The validator should be applied to *serializer classes*, like so:
 
     from rest_framework.validators import UniqueTogetherValidator
-    
+
     class ExampleSerializer(serializers.Serializer):
         # ...
         class Meta:

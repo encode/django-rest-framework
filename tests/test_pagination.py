@@ -633,6 +633,164 @@ class CursorPaginationTestsMixin:
 
         assert isinstance(self.pagination.to_html(), type(''))
 
+    def test_cursor_pagination_with_page_size(self):
+        (previous, current, next, previous_url, next_url) = self.get_pages('/?page_size=20')
+
+        assert previous is None
+        assert current == [1, 1, 1, 1, 1, 1, 2, 3, 4, 4, 4, 4, 5, 6, 7, 7, 7, 7, 7, 7]
+        assert next == [7, 7, 7, 8, 9, 9, 9, 9, 9, 9]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+        assert previous == [1, 1, 1, 1, 1, 1, 2, 3, 4, 4, 4, 4, 5, 6, 7, 7, 7, 7, 7, 7]
+        assert current == [7, 7, 7, 8, 9, 9, 9, 9, 9, 9]
+        assert next is None
+
+    def test_cursor_pagination_with_page_size_over_limit(self):
+        (previous, current, next, previous_url, next_url) = self.get_pages('/?page_size=30')
+
+        assert previous is None
+        assert current == [1, 1, 1, 1, 1, 1, 2, 3, 4, 4, 4, 4, 5, 6, 7, 7, 7, 7, 7, 7]
+        assert next == [7, 7, 7, 8, 9, 9, 9, 9, 9, 9]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+        assert previous == [1, 1, 1, 1, 1, 1, 2, 3, 4, 4, 4, 4, 5, 6, 7, 7, 7, 7, 7, 7]
+        assert current == [7, 7, 7, 8, 9, 9, 9, 9, 9, 9]
+        assert next is None
+
+    def test_cursor_pagination_with_page_size_zero(self):
+        (previous, current, next, previous_url, next_url) = self.get_pages('/?page_size=0')
+
+        assert previous is None
+        assert current == [1, 1, 1, 1, 1]
+        assert next == [1, 2, 3, 4, 4]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+
+        assert previous == [1, 1, 1, 1, 1]
+        assert current == [1, 2, 3, 4, 4]
+        assert next == [4, 4, 5, 6, 7]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+
+        assert previous == [1, 2, 3, 4, 4]
+        assert current == [4, 4, 5, 6, 7]
+        assert next == [7, 7, 7, 7, 7]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+
+        assert previous == [4, 4, 4, 5, 6]  # Paging artifact
+        assert current == [7, 7, 7, 7, 7]
+        assert next == [7, 7, 7, 8, 9]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+
+        assert previous == [7, 7, 7, 7, 7]
+        assert current == [7, 7, 7, 8, 9]
+        assert next == [9, 9, 9, 9, 9]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+
+        assert previous == [7, 7, 7, 8, 9]
+        assert current == [9, 9, 9, 9, 9]
+        assert next is None
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
+
+        assert previous == [7, 7, 7, 7, 7]
+        assert current == [7, 7, 7, 8, 9]
+        assert next == [9, 9, 9, 9, 9]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
+
+        assert previous == [4, 4, 5, 6, 7]
+        assert current == [7, 7, 7, 7, 7]
+        assert next == [8, 9, 9, 9, 9]  # Paging artifact
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
+
+        assert previous == [1, 2, 3, 4, 4]
+        assert current == [4, 4, 5, 6, 7]
+        assert next == [7, 7, 7, 7, 7]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
+
+        assert previous == [1, 1, 1, 1, 1]
+        assert current == [1, 2, 3, 4, 4]
+        assert next == [4, 4, 5, 6, 7]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
+
+        assert previous is None
+        assert current == [1, 1, 1, 1, 1]
+        assert next == [1, 2, 3, 4, 4]
+
+    def test_cursor_pagination_with_page_size_negative(self):
+        (previous, current, next, previous_url, next_url) = self.get_pages('/?page_size=-5')
+
+        assert previous is None
+        assert current == [1, 1, 1, 1, 1]
+        assert next == [1, 2, 3, 4, 4]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+
+        assert previous == [1, 1, 1, 1, 1]
+        assert current == [1, 2, 3, 4, 4]
+        assert next == [4, 4, 5, 6, 7]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+
+        assert previous == [1, 2, 3, 4, 4]
+        assert current == [4, 4, 5, 6, 7]
+        assert next == [7, 7, 7, 7, 7]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+
+        assert previous == [4, 4, 4, 5, 6]  # Paging artifact
+        assert current == [7, 7, 7, 7, 7]
+        assert next == [7, 7, 7, 8, 9]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+
+        assert previous == [7, 7, 7, 7, 7]
+        assert current == [7, 7, 7, 8, 9]
+        assert next == [9, 9, 9, 9, 9]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+
+        assert previous == [7, 7, 7, 8, 9]
+        assert current == [9, 9, 9, 9, 9]
+        assert next is None
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
+
+        assert previous == [7, 7, 7, 7, 7]
+        assert current == [7, 7, 7, 8, 9]
+        assert next == [9, 9, 9, 9, 9]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
+
+        assert previous == [4, 4, 5, 6, 7]
+        assert current == [7, 7, 7, 7, 7]
+        assert next == [8, 9, 9, 9, 9]  # Paging artifact
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
+
+        assert previous == [1, 2, 3, 4, 4]
+        assert current == [4, 4, 5, 6, 7]
+        assert next == [7, 7, 7, 7, 7]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
+
+        assert previous == [1, 1, 1, 1, 1]
+        assert current == [1, 2, 3, 4, 4]
+        assert next == [4, 4, 5, 6, 7]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
+
+        assert previous is None
+        assert current == [1, 1, 1, 1, 1]
+        assert next == [1, 2, 3, 4, 4]
+
 
 class TestCursorPagination(CursorPaginationTestsMixin):
     """
@@ -671,6 +829,8 @@ class TestCursorPagination(CursorPaginationTestsMixin):
 
         class ExamplePagination(pagination.CursorPagination):
             page_size = 5
+            page_size_query_param = 'page_size'
+            max_page_size = 20
             ordering = 'created'
 
         self.pagination = ExamplePagination()
@@ -727,6 +887,8 @@ class TestCursorPaginationWithValueQueryset(CursorPaginationTestsMixin, TestCase
     def setUp(self):
         class ExamplePagination(pagination.CursorPagination):
             page_size = 5
+            page_size_query_param = 'page_size'
+            max_page_size = 20
             ordering = 'created'
 
         self.pagination = ExamplePagination()

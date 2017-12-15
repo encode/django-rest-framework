@@ -45,6 +45,8 @@ Defaults to `True`.
 
 Normally an error will be raised if `None` is passed to a serializer field. Set this keyword argument to `True` if `None` should be considered a valid value.
 
+Note that setting this argument to `True` will imply a default value of `null` for serialization output, but does imply a default for input deserialization.
+
 Defaults to `False`
 
 ### `default`
@@ -61,7 +63,7 @@ Note that setting a `default` value implies that the field is not required. Incl
 
 ### `source`
 
-The name of the attribute that will be used to populate the field.  May be a method that only takes a `self` argument, such as `URLField(source='get_absolute_url')`, or may use dotted notation to traverse attributes, such as `EmailField(source='user.email')`.
+The name of the attribute that will be used to populate the field.  May be a method that only takes a `self` argument, such as `URLField(source='get_absolute_url')`, or may use dotted notation to traverse attributes, such as `EmailField(source='user.email')`. When serializing fields with dotted notation, it may be necessary to provide a `default` value if any object is not present or is empty during attribute traversal.
 
 The value `source='*'` has a special meaning, and is used to indicate that the entire object should be passed through to the field.  This can be useful for creating nested representations, or for fields which require access to the complete object in order to determine the output representation.
 
@@ -121,6 +123,8 @@ For more details see the [HTML & Forms][html-and-forms] documentation.
 A boolean representation.
 
 When using HTML encoded form input be aware that omitting a value will always be treated as setting a field to `False`, even if it has a `default=True` option specified. This is because HTML checkbox inputs represent the unchecked state by omitting the value, so REST framework treats omission as if it is an empty checkbox input.
+
+Note that default `BooleanField` instances will be generated with a `required=False` option (since Django `models.BooleanField` is always `blank=True`). If you want to change this behaviour explicitly declare the `BooleanField` on the serializer class.
 
 Corresponds to `django.db.models.fields.BooleanField`.
 
@@ -269,6 +273,7 @@ Corresponds to `django.db.models.fields.DecimalField`.
 - `max_value` Validate that the number provided is no greater than this value.
 - `min_value` Validate that the number provided is no less than this value.
 - `localize` Set to `True` to enable localization of input and output based on the current locale. This will also force `coerce_to_string` to `True`. Defaults to `False`. Note that data formatting is enabled if you have set `USE_L10N=True` in your settings file.
+- `rounding` Sets the rounding mode used when quantising to the configured precision. Valid values are [`decimal` module rounding modes][python-decimal-rounding-modes]. Defaults to `None`.
 
 #### Example usage
 
@@ -355,8 +360,6 @@ Corresponds to `django.db.models.fields.DurationField`
 The `validated_data` for these fields will contain a `datetime.timedelta` instance.
 The representation is a string following this format `'[DD] [HH:[MM:]]ss[.uuuuuu]'`.
 
-**Note:** This field is only available with Django versions >= 1.8.
-
 **Signature:** `DurationField()`
 
 ---
@@ -434,7 +437,7 @@ Requires either the `Pillow` package or `PIL` package.  The `Pillow` package is 
 
 A field class that validates a list of objects.
 
-**Signature**: `ListField(child, min_length=None, max_length=None)`
+**Signature**: `ListField(child=<A_FIELD_INSTANCE>, min_length=None, max_length=None)`
 
 - `child` - A field instance that should be used for validating the objects in the list. If this argument is not provided then objects in the list will not be validated.
 - `min_length` - Validates that the list contains no fewer than this number of elements.
@@ -457,7 +460,7 @@ We can now reuse our custom `StringListField` class throughout our application, 
 
 A field class that validates a dictionary of objects. The keys in `DictField` are always assumed to be string values.
 
-**Signature**: `DictField(child)`
+**Signature**: `DictField(child=<A_FIELD_INSTANCE>)`
 
 - `child` - A field instance that should be used for validating the values in the dictionary. If this argument is not provided then values in the mapping will not be validated.
 
@@ -641,7 +644,7 @@ The `.fail()` method is a shortcut for raising `ValidationError` that takes a me
 
         return Color(red, green, blue)
 
-This style keeps you error messages more cleanly separated from your code, and should be preferred.
+This style keeps your error messages cleaner and more separated from your code, and should be preferred.
 
 # Third party packages
 
@@ -680,3 +683,4 @@ The [django-rest-framework-hstore][django-rest-framework-hstore] package provide
 [django-rest-framework-gis]: https://github.com/djangonauts/django-rest-framework-gis
 [django-rest-framework-hstore]: https://github.com/djangonauts/django-rest-framework-hstore
 [django-hstore]: https://github.com/djangonauts/django-hstore
+[python-decimal-rounding-modes]: https://docs.python.org/3/library/decimal.html#rounding-modes

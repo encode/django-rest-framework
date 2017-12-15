@@ -3,7 +3,6 @@ The `compat` module provides support for backwards compatibility with older
 versions of Django/Python, and compatibility wrappers around optional packages.
 """
 
-# flake8: noqa
 from __future__ import unicode_literals
 
 import inspect
@@ -11,27 +10,43 @@ import inspect
 import django
 from django.apps import apps
 from django.conf import settings
+from django.core import validators
 from django.core.exceptions import ImproperlyConfigured
-from django.db import connection, models, transaction
-from django.template import Context, RequestContext, Template
+from django.db import models
 from django.utils import six
 from django.views.generic import View
 
-
 try:
-    from django.urls import (
-        NoReverseMatch, RegexURLPattern, RegexURLResolver, ResolverMatch, Resolver404, get_script_prefix, reverse, reverse_lazy, resolve
+    from django.urls import (  # noqa
+        URLPattern,
+        URLResolver,
     )
 except ImportError:
-    from django.core.urlresolvers import (  # Will be removed in Django 2.0
-        NoReverseMatch, RegexURLPattern, RegexURLResolver, ResolverMatch, Resolver404, get_script_prefix, reverse, reverse_lazy, resolve
+    # Will be removed in Django 2.0
+    from django.urls import (  # noqa
+        RegexURLPattern as URLPattern,
+        RegexURLResolver as URLResolver,
     )
 
 
-try:
-    import urlparse  # Python 2.x
-except ImportError:
-    import urllib.parse as urlparse
+def get_regex_pattern(urlpattern):
+    if hasattr(urlpattern, 'pattern'):
+        # Django 2.0
+        return urlpattern.pattern.regex.pattern
+    else:
+        # Django < 2.0
+        return urlpattern.regex.pattern
+
+
+def make_url_resolver(regex, urlpatterns):
+    try:
+        # Django 2.0
+        from django.urls.resolvers import RegexPattern
+        return URLResolver(RegexPattern(regex), urlpatterns)
+
+    except ImportError:
+        # Django < 2.0
+        return URLResolver(regex, urlpatterns)
 
 
 def unicode_repr(instance):
@@ -58,49 +73,11 @@ def unicode_http_header(value):
     return value
 
 
-def total_seconds(timedelta):
-    # TimeDelta.total_seconds() is only available in Python 2.7
-    if hasattr(timedelta, 'total_seconds'):
-        return timedelta.total_seconds()
-    else:
-        return (timedelta.days * 86400.0) + float(timedelta.seconds) + (timedelta.microseconds / 1000000.0)
-
-
 def distinct(queryset, base):
     if settings.DATABASES[queryset.db]["ENGINE"] == "django.db.backends.oracle":
         # distinct analogue for Oracle users
         return base.filter(pk__in=set(queryset.values_list('pk', flat=True)))
     return queryset.distinct()
-
-
-# Obtaining manager instances and names from model options differs after 1.10.
-def get_names_and_managers(options):
-    if django.VERSION >= (1, 10):
-        # Django 1.10 onwards provides a `.managers` property on the Options.
-        return [
-            (manager.name, manager)
-            for manager
-            in options.managers
-        ]
-    # For Django 1.8 and 1.9, use the three-tuple information provided
-    # by .concrete_managers and .abstract_managers
-    return [
-        (manager_info[1], manager_info[2])
-        for manager_info
-        in (options.concrete_managers + options.abstract_managers)
-    ]
-
-
-# field.rel is deprecated from 1.9 onwards
-def get_remote_field(field, **kwargs):
-    if 'default' in kwargs:
-        if django.VERSION < (1, 9):
-            return getattr(field, 'rel', kwargs['default'])
-        return getattr(field, 'remote_field', kwargs['default'])
-
-    if django.VERSION < (1, 9):
-        return field.rel
-    return field.remote_field
 
 
 def _resolve_model(obj):
@@ -127,42 +104,11 @@ def _resolve_model(obj):
     raise ValueError("{0} is not a Django model".format(obj))
 
 
-def is_authenticated(user):
-    if django.VERSION < (1, 10):
-        return user.is_authenticated()
-    return user.is_authenticated
-
-
-def is_anonymous(user):
-    if django.VERSION < (1, 10):
-        return user.is_anonymous()
-    return user.is_anonymous
-
-
-def get_related_model(field):
-    if django.VERSION < (1, 9):
-        return _resolve_model(field.rel.to)
-    return field.remote_field.model
-
-
-def value_from_object(field, obj):
-    if django.VERSION < (1, 9):
-        return field._get_val_from_obj(obj)
-    return field.value_from_object(obj)
-
-
-# contrib.postgres only supported from 1.8 onwards.
+# django.contrib.postgres requires psycopg2
 try:
     from django.contrib.postgres import fields as postgres_fields
 except ImportError:
     postgres_fields = None
-
-
-# JSONField is only supported from 1.9 onwards
-try:
-    from django.contrib.postgres.fields import JSONField
-except ImportError:
-    JSONField = None
 
 
 # coreapi is optional (Note that uritemplate is a dependency of coreapi)
@@ -180,13 +126,6 @@ try:
     import coreschema
 except ImportError:
     coreschema = None
-
-
-# django-filter is optional
-try:
-    import django_filters
-except ImportError:
-    django_filters = None
 
 
 # django-crispy-forms is optional
@@ -208,7 +147,7 @@ except ImportError:
 guardian = None
 try:
     if 'guardian' in settings.INSTALLED_APPS:
-        import guardian
+        import guardian  # noqa
 except ImportError:
     pass
 
@@ -246,6 +185,7 @@ try:
         md = markdown.Markdown(
             extensions=extensions, extension_configs=extension_configs
         )
+        md_filter_add_syntax_highlight(md)
         return md.convert(text)
 except ImportError:
     apply_markdown = None
@@ -254,7 +194,7 @@ except ImportError:
 
 try:
     import pygments
-    from pygments.lexers import get_lexer_by_name
+    from pygments.lexers import get_lexer_by_name, TextLexer
     from pygments.formatters import HtmlFormatter
 
     def pygments_highlight(text, lang, style):
@@ -275,9 +215,42 @@ except ImportError:
     def pygments_css(style):
         return None
 
+if markdown is not None and pygments is not None:
+    # starting from this blogpost and modified to support current markdown extensions API
+    # https://zerokspot.com/weblog/2008/06/18/syntax-highlighting-in-markdown-with-pygments/
 
+    from markdown.preprocessors import Preprocessor
+    import re
+
+    class CodeBlockPreprocessor(Preprocessor):
+        pattern = re.compile(
+            r'^\s*``` *([^\n]+)\n(.+?)^\s*```', re.M | re.S)
+
+        formatter = HtmlFormatter()
+
+        def run(self, lines):
+            def repl(m):
+                try:
+                    lexer = get_lexer_by_name(m.group(1))
+                except (ValueError, NameError):
+                    lexer = TextLexer()
+                code = m.group(2).replace('\t', '    ')
+                code = pygments.highlight(code, lexer, self.formatter)
+                code = code.replace('\n\n', '\n&nbsp;\n').replace('\n', '<br />').replace('\\@', '@')
+                return '\n\n%s\n\n' % code
+            ret = self.pattern.sub(repl, "\n".join(lines))
+            return ret.split("\n")
+
+    def md_filter_add_syntax_highlight(md):
+        md.preprocessors.add('highlight', CodeBlockPreprocessor(), "_begin")
+        return True
+else:
+    def md_filter_add_syntax_highlight(md):
+        return False
+
+# pytz is required from Django 1.11. Remove when dropping Django 1.10 support.
 try:
-    import pytz
+    import pytz  # noqa
     from pytz.exceptions import InvalidTimeError
 except ImportError:
     InvalidTimeError = Exception
@@ -294,63 +267,39 @@ else:
     LONG_SEPARATORS = (b', ', b': ')
     INDENT_SEPARATORS = (b',', b': ')
 
-try:
-    # DecimalValidator is unavailable in Django < 1.9
-    from django.core.validators import DecimalValidator
-except ImportError:
-    DecimalValidator = None
 
-
-def set_rollback():
-    if hasattr(transaction, 'set_rollback'):
-        if connection.settings_dict.get('ATOMIC_REQUESTS', False):
-            # If running in >=1.6 then mark a rollback as required,
-            # and allow it to be handled by Django.
-            if connection.in_atomic_block:
-                transaction.set_rollback(True)
-    elif transaction.is_managed():
-        # Otherwise handle it explicitly if in managed mode.
-        if transaction.is_dirty():
-            transaction.rollback()
-        transaction.leave_transaction_management()
-    else:
-        # transaction not managed
-        pass
-
-
-def template_render(template, context=None, request=None):
+class CustomValidatorMessage(object):
     """
-    Passing Context or RequestContext to Template.render is deprecated in 1.9+,
-    see https://github.com/django/django/pull/3883 and
-    https://github.com/django/django/blob/1.9/django/template/backends/django.py#L82-L84
+    We need to avoid evaluation of `lazy` translated `message` in `django.core.validators.BaseValidator.__init__`.
+    https://github.com/django/django/blob/75ed5900321d170debef4ac452b8b3cf8a1c2384/django/core/validators.py#L297
 
-    :param template: Template instance
-    :param context: dict
-    :param request: Request instance
-    :return: rendered template as SafeText instance
+    Ref: https://github.com/encode/django-rest-framework/pull/5452
     """
-    if isinstance(template, Template):
-        if request:
-            context = RequestContext(request, context)
-        else:
-            context = Context(context)
-        return template.render(context)
-    # backends template, e.g. django.template.backends.django.Template
+
+    def __init__(self, *args, **kwargs):
+        self.message = kwargs.pop('message', self.message)
+        super(CustomValidatorMessage, self).__init__(*args, **kwargs)
+
+
+class MinValueValidator(CustomValidatorMessage, validators.MinValueValidator):
+    pass
+
+
+class MaxValueValidator(CustomValidatorMessage, validators.MaxValueValidator):
+    pass
+
+
+class MinLengthValidator(CustomValidatorMessage, validators.MinLengthValidator):
+    pass
+
+
+class MaxLengthValidator(CustomValidatorMessage, validators.MaxLengthValidator):
+    pass
+
+
+def authenticate(request=None, **credentials):
+    from django.contrib.auth import authenticate
+    if django.VERSION < (1, 11):
+        return authenticate(**credentials)
     else:
-        return template.render(context, request=request)
-
-
-def set_many(instance, field, value):
-    if django.VERSION < (1, 10):
-        setattr(instance, field, value)
-    else:
-        field = getattr(instance, field)
-        field.set(value)
-
-
-def include(module, namespace=None, app_name=None):
-    from django.conf.urls import include
-    if django.VERSION < (1,9):
-        return include(module, namespace, app_name)
-    else:
-        return include((module, app_name), namespace)
+        return authenticate(request=request, **credentials)

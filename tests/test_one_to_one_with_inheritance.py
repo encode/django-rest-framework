@@ -5,14 +5,11 @@ from django.test import TestCase
 
 from rest_framework import serializers
 from tests.models import RESTFrameworkModel
-
-
 # Models
 from tests.test_multitable_inheritance import ChildModel
 
 
 # Regression test for #4290
-
 class ChildAssociatedModel(RESTFrameworkModel):
     child_model = models.OneToOneField(ChildModel, on_delete=models.CASCADE)
     child_name = models.CharField(max_length=100)
@@ -43,4 +40,4 @@ class InheritedModelSerializationTests(TestCase):
         child = ChildModel(name1='parent name', name2='child name')
         serializer = DerivedModelSerializer(child)
         self.assertEqual(set(serializer.data.keys()),
-                         set(['name1', 'name2', 'id', 'childassociatedmodel']))
+                         {'name1', 'name2', 'id', 'childassociatedmodel'})

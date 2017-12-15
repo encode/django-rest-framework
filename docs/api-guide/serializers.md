@@ -73,7 +73,7 @@ Deserialization is similar. First we parse a stream into Python native datatypes
 
 ## Saving instances
 
-If we want to be able to return complete object instances based on the validated data we need to implement one or both of the `.create()` and `update()` methods. For example:
+If we want to be able to return complete object instances based on the validated data we need to implement one or both of the `.create()` and `.update()` methods. For example:
 
     class CommentSerializer(serializers.Serializer):
         email = serializers.EmailField()
@@ -325,7 +325,7 @@ For updates you'll want to think carefully about how to handle updates to relati
 * Ignore the data and leave the instance as it is.
 * Raise a validation error.
 
-Here's an example for an `update()` method on our previous `UserSerializer` class.
+Here's an example for an `.update()` method on our previous `UserSerializer` class.
 
         def update(self, instance, validated_data):
             profile_data = validated_data.pop('profile')
@@ -492,6 +492,8 @@ In the example above, if the `Account` model had 3 fields `account_name`, `users
 The names in the `fields` and `exclude` attributes will normally map to model fields on the model class.
 
 Alternatively names in the `fields` options can map to properties or methods which take no arguments that exist on the model class.
+
+Since version 3.3.0, it is **mandatory** to provide one of the attributes `fields` or `exclude`.
 
 ## Specifying nested serialization
 
@@ -822,9 +824,7 @@ Here's an example of how you might choose to implement multiple updates:
         # We need to identify elements in the list using their primary key,
         # so use a writable field here, rather than the default which would be read-only.
         id = serializers.IntegerField()
-
         ...
-        id = serializers.IntegerField(required=False)
 
         class Meta:
             list_serializer_class = BookListSerializer
@@ -993,7 +993,7 @@ The following class is an example of a generic serializer that can handle coerci
 
 ## Overriding serialization and deserialization behavior
 
-If you need to alter the serialization, deserialization or validation of a serializer class you can do so by overriding the `.to_representation()` or `.to_internal_value()` methods.
+If you need to alter the serialization or deserialization behavior of a serializer class, you can do so by overriding the `.to_representation()` or `.to_internal_value()` methods.
 
 Some reasons this might be useful include...
 
@@ -1011,7 +1011,7 @@ Takes the object instance that requires serialization, and should return a primi
 
 Takes the unvalidated incoming data as input and should return the validated data that will be made available as `serializer.validated_data`. The return value will also be passed to the `.create()` or `.update()` methods if `.save()` is called on the serializer class.
 
-If any of the validation fails, then the method should raise a `serializers.ValidationError(errors)`. Typically the `errors` argument here will be a dictionary mapping field names to error messages.
+If any of the validation fails, then the method should raise a `serializers.ValidationError(errors)`. The `errors` argument should be a dictionary mapping field names (or `settings.NON_FIELD_ERRORS_KEY`) to a list of error messages. If you don't need to alter deserialization behavior and instead want to provide object-level validation, it's recommended that you instead override the [`.validate()`](#object-level-validation) method.
 
 The `data` argument passed to this method will normally be the value of `request.data`, so the datatype it provides will depend on the parser classes you have configured for your API.
 
@@ -1155,7 +1155,7 @@ The [html-json-forms][html-json-forms] package provides an algorithm and seriali
 
 ## QueryFields
 
-[djangorestframework-queryfields][djangorestframework-queryfields] allows API clients to specify which fields will be sent in the response via inclusion/exclusion query parameters.  
+[djangorestframework-queryfields][djangorestframework-queryfields] allows API clients to specify which fields will be sent in the response via inclusion/exclusion query parameters.
 
 ## DRF Writable Nested
 
@@ -1180,4 +1180,4 @@ The [drf-writable-nested][drf-writable-nested] package provides writable nested 
 [drf-base64]: https://bitbucket.org/levit_scs/drf_base64
 [drf-serializer-extensions]: https://github.com/evenicoulddoit/django-rest-framework-serializer-extensions
 [djangorestframework-queryfields]: http://djangorestframework-queryfields.readthedocs.io/
-[drf-writable-nested]: http://github.com/Brogency/drf-writable-nested
+[drf-writable-nested]: http://github.com/beda-software/drf-writable-nested

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import json
 import re
 from collections import MutableMapping, OrderedDict
 
@@ -15,15 +14,17 @@ from django.utils import six
 from django.utils.safestring import SafeText
 from django.utils.translation import ugettext_lazy as _
 
+import coreapi
 from rest_framework import permissions, serializers, status
 from rest_framework.renderers import (
-    AdminRenderer, BaseRenderer, BrowsableAPIRenderer,
-    HTMLFormRenderer, JSONRenderer, StaticHTMLRenderer
+    AdminRenderer, BaseRenderer, BrowsableAPIRenderer, DocumentationRenderer,
+    HTMLFormRenderer, JSONRenderer, SchemaJSRenderer, StaticHTMLRenderer
 )
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.test import APIRequestFactory
+from rest_framework.utils import json
 from rest_framework.views import APIView
 
 DUMMYSTATUS = status.HTTP_200_OK
@@ -107,6 +108,7 @@ class HTMLView1(APIView):
 
     def get(self, request, **kwargs):
         return Response('text')
+
 
 urlpatterns = [
     url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
@@ -314,7 +316,7 @@ class JSONRendererTests(TestCase):
     def test_render_dict_abc_obj(self):
         class Dict(MutableMapping):
             def __init__(self):
-                self._dict = dict()
+                self._dict = {}
 
             def __getitem__(self, key):
                 return self._dict.__getitem__(key)
@@ -356,6 +358,19 @@ class JSONRendererTests(TestCase):
         x.set({'a': 1, 'b': 'string'})
         with self.assertRaises(TypeError):
             JSONRenderer().render(x)
+
+    def test_float_strictness(self):
+        renderer = JSONRenderer()
+
+        # Default to strict
+        for value in [float('inf'), float('-inf'), float('nan')]:
+            with pytest.raises(ValueError):
+                renderer.render(value)
+
+        renderer.strict = False
+        assert renderer.render(float('inf')) == b'Infinity'
+        assert renderer.render(float('-inf')) == b'-Infinity'
+        assert renderer.render(float('nan')) == b'NaN'
 
     def test_without_content_type_args(self):
         """
@@ -661,7 +676,7 @@ class AdminRendererTests(TestCase):
         request = factory.get('/')
         response = view(request)
         response.render()
-        self.assertInHTML('<tr><th>Foo</th><td>a string</td></tr>', str(response.content))
+        self.assertContains(response, '<tr><th>Foo</th><td>a string</td></tr>', html=True)
 
     def test_render_dict_with_items_key(self):
         factory = APIRequestFactory()
@@ -676,7 +691,7 @@ class AdminRendererTests(TestCase):
         request = factory.get('/')
         response = view(request)
         response.render()
-        self.assertInHTML('<tr><th>Items</th><td>a string</td></tr>', str(response.content))
+        self.assertContains(response, '<tr><th>Items</th><td>a string</td></tr>', html=True)
 
     def test_render_dict_with_iteritems_key(self):
         factory = APIRequestFactory()
@@ -691,4 +706,50 @@ class AdminRendererTests(TestCase):
         request = factory.get('/')
         response = view(request)
         response.render()
-        self.assertInHTML('<tr><th>Iteritems</th><td>a string</td></tr>', str(response.content))
+        self.assertContains(response, '<tr><th>Iteritems</th><td>a string</td></tr>', html=True)
+
+
+class TestDocumentationRenderer(TestCase):
+
+    def test_document_with_link_named_data(self):
+        """
+        Ref #5395: Doc's `document.data` would fail with a Link named "data".
+            As per #4972, use templatetag instead.
+        """
+        document = coreapi.Document(
+            title='Data Endpoint API',
+            url='https://api.example.org/',
+            content={
+                'data': coreapi.Link(
+                    url='/data/',
+                    action='get',
+                    fields=[],
+                    description='Return data.'
+                )
+            }
+        )
+
+        factory = APIRequestFactory()
+        request = factory.get('/')
+
+        renderer = DocumentationRenderer()
+
+        html = renderer.render(document, accepted_media_type="text/html", renderer_context={"request": request})
+        assert '<h1>Data Endpoint API</h1>' in html
+
+
+class TestSchemaJSRenderer(TestCase):
+
+    def test_schemajs_output(self):
+        """
+        Test output of the SchemaJS renderer as per #5608. Django 2.0 on Py3 prints binary data as b'xyz' in templates,
+        and the base64 encoding used by SchemaJSRenderer outputs base64 as binary. Test fix.
+        """
+        factory = APIRequestFactory()
+        request = factory.get('/')
+
+        renderer = SchemaJSRenderer()
+
+        output = renderer.render('data', renderer_context={"request": request})
+        assert "'ImRhdGEi'" in output
+        assert "'b'ImRhdGEi''" not in output

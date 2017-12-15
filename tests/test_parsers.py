@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-
 from __future__ import unicode_literals
+
+import math
 
 import pytest
 from django import forms
@@ -9,7 +10,7 @@ from django.core.files.uploadhandler import (
 )
 from django.http.request import RawPostDataException
 from django.test import TestCase
-from django.utils.six.moves import StringIO
+from django.utils.six import BytesIO, StringIO
 
 from rest_framework.exceptions import ParseError
 from rest_framework.parsers import (
@@ -42,7 +43,6 @@ class TestFileUploadParser(TestCase):
     def setUp(self):
         class MockRequest(object):
             pass
-        from io import BytesIO
         self.stream = BytesIO(
             "Test text file".encode('utf-8')
         )
@@ -127,6 +127,24 @@ class TestFileUploadParser(TestCase):
 
     def __replace_content_disposition(self, disposition):
         self.parser_context['request'].META['HTTP_CONTENT_DISPOSITION'] = disposition
+
+
+class TestJSONParser(TestCase):
+    def bytes(self, value):
+        return BytesIO(value.encode('utf-8'))
+
+    def test_float_strictness(self):
+        parser = JSONParser()
+
+        # Default to strict
+        for value in ['Infinity', '-Infinity', 'NaN']:
+            with pytest.raises(ParseError):
+                parser.parse(self.bytes(value))
+
+        parser.strict = False
+        assert parser.parse(self.bytes('Infinity')) == float('inf')
+        assert parser.parse(self.bytes('-Infinity')) == float('-inf')
+        assert math.isnan(parser.parse(self.bytes('NaN')))
 
 
 class TestPOSTAccessed(TestCase):

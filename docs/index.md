@@ -74,12 +74,11 @@ continued development by **[signing up for a paid plan][funding]**.
     <li><a href="https://getsentry.com/welcome/" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/sentry130.png)">Sentry</a></li>
     <li><a href="https://getstream.io/try-the-api/?utm_source=drf&utm_medium=banner&utm_campaign=drf" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/stream-130.png)">Stream</a></li>
     <li><a href="https://hello.machinalis.co.uk/" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/Machinalis130.png)">Machinalis</a></li>
-    <li><a href="https://rollbar.com" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/rollbar.png)">Rollbar</a></li>
-    <li><a href="https://micropyramid.com/django-rest-framework-development-services/" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/mp-text-logo.png)">MicroPyramid</a></li>
+    <li><a href="https://rollbar.com" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/rollbar2.png)">Rollbar</a></li>
 </ul>
 <div style="clear: both; padding-bottom: 20px;"></div>
 
-*Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Rover](http://jobs.rover.com/), [Sentry](https://getsentry.com/welcome/), [Stream](https://getstream.io/?utm_source=drf&utm_medium=banner&utm_campaign=drf), [Machinalis](https://hello.machinalis.co.uk/), [Rollbar](https://rollbar.com), and [MicroPyramid](https://micropyramid.com/django-rest-framework-development-services/).*
+*Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Rover](http://jobs.rover.com/), [Sentry](https://getsentry.com/welcome/), [Stream](https://getstream.io/?utm_source=drf&utm_medium=banner&utm_campaign=drf), [Machinalis](https://hello.machinalis.co.uk/), and [Rollbar](https://rollbar.com).*
 
 ---
 
@@ -88,7 +87,7 @@ continued development by **[signing up for a paid plan][funding]**.
 REST framework requires the following:
 
 * Python (2.7, 3.2, 3.3, 3.4, 3.5, 3.6)
-* Django (1.8, 1.9, 1.10, 1.11)
+* Django (1.10, 1.11, 2.0 alpha)
 
 The following packages are optional:
 
@@ -121,10 +120,10 @@ If you're intending to use the browsable API you'll probably also want to add RE
 
     urlpatterns = [
         ...
-        url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+        url(r'^api-auth/', include('rest_framework.urls'))
     ]
 
-Note that the URL path can be whatever you want, but you must include `'rest_framework.urls'` with the `'rest_framework'` namespace. You may leave out the namespace in Django 1.9+, and REST framework will set it for you.
+Note that the URL path can be whatever you want.
 
 ## Example
 
@@ -248,6 +247,7 @@ General guides to using REST framework.
 * [3.4 Announcement][3.4-announcement]
 * [3.5 Announcement][3.5-announcement]
 * [3.6 Announcement][3.6-announcement]
+* [3.7 Announcement][3.7-announcement]
 * [Kickstarter Announcement][kickstarter-announcement]
 * [Mozilla Grant][mozilla-grant]
 * [Funding][funding]
@@ -378,6 +378,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [3.4-announcement]: topics/3.4-announcement.md
 [3.5-announcement]: topics/3.5-announcement.md
 [3.6-announcement]: topics/3.6-announcement.md
+[3.7-announcement]: topics/3.7-announcement.md
 [kickstarter-announcement]: topics/kickstarter-announcement.md
 [mozilla-grant]: topics/mozilla-grant.md
 [funding]: topics/funding.md

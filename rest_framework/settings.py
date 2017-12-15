@@ -19,6 +19,7 @@ REST framework settings, checking for user settings first, then falling
 back to the defaults.
 """
 from __future__ import unicode_literals
+
 from importlib import import_module
 
 from django.conf import settings
@@ -51,8 +52,11 @@ DEFAULTS = {
     'DEFAULT_VERSIONING_CLASS': None,
 
     # Generic view behavior
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'DEFAULT_PAGINATION_CLASS': None,
     'DEFAULT_FILTER_BACKENDS': (),
+
+    # Schema
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema',
 
     # Throttling
     'DEFAULT_THROTTLE_RATES': {
@@ -110,6 +114,7 @@ DEFAULTS = {
     # Encoding
     'UNICODE_JSON': True,
     'COMPACT_JSON': True,
+    'STRICT_JSON': True,
     'COERCE_DECIMAL_TO_STRING': True,
     'UPLOADED_FILES_USE_URL': True,
 
@@ -138,6 +143,7 @@ IMPORT_STRINGS = (
     'DEFAULT_VERSIONING_CLASS',
     'DEFAULT_PAGINATION_CLASS',
     'DEFAULT_FILTER_BACKENDS',
+    'DEFAULT_SCHEMA_CLASS',
     'EXCEPTION_HANDLER',
     'TEST_REQUEST_RENDERER_CLASSES',
     'UNAUTHENTICATED_USER',
@@ -198,6 +204,7 @@ class APISettings(object):
             self._user_settings = self.__check_user_settings(user_settings)
         self.defaults = defaults or DEFAULTS
         self.import_strings = import_strings or IMPORT_STRINGS
+        self._cached_attrs = set()
 
     @property
     def user_settings(self):
@@ -221,6 +228,7 @@ class APISettings(object):
             val = perform_import(val, attr)
 
         # Cache the result
+        self._cached_attrs.add(attr)
         setattr(self, attr, val)
         return val
 
@@ -231,15 +239,21 @@ class APISettings(object):
                 raise RuntimeError("The '%s' setting has been removed. Please refer to '%s' for available settings." % (setting, SETTINGS_DOC))
         return user_settings
 
+    def reload(self):
+        for attr in self._cached_attrs:
+            delattr(self, attr)
+        self._cached_attrs.clear()
+        if hasattr(self, '_user_settings'):
+            delattr(self, '_user_settings')
+
 
 api_settings = APISettings(None, DEFAULTS, IMPORT_STRINGS)
 
 
 def reload_api_settings(*args, **kwargs):
-    global api_settings
-    setting, value = kwargs['setting'], kwargs['value']
+    setting = kwargs['setting']
     if setting == 'REST_FRAMEWORK':
-        api_settings = APISettings(value, DEFAULTS, IMPORT_STRINGS)
+        api_settings.reload()
 
 
 setting_changed.connect(reload_api_settings)

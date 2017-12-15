@@ -5,14 +5,13 @@ from collections import OrderedDict
 
 from django import template
 from django.template import loader
+from django.urls import NoReverseMatch, reverse
 from django.utils import six
 from django.utils.encoding import force_text, iri_to_uri
 from django.utils.html import escape, format_html, smart_urlquote
 from django.utils.safestring import SafeData, mark_safe
 
-from rest_framework.compat import (
-    NoReverseMatch, markdown, pygments_highlight, reverse, template_render
-)
+from rest_framework.compat import apply_markdown, pygments_highlight
 from rest_framework.renderers import HTMLFormRenderer
 from rest_framework.utils.urls import replace_query_param
 
@@ -68,9 +67,9 @@ def form_for_link(link):
 
 @register.simple_tag
 def render_markdown(markdown_text):
-    if not markdown:
+    if apply_markdown is None:
         return markdown_text
-    return mark_safe(markdown.markdown(markdown_text))
+    return mark_safe(apply_markdown(markdown_text))
 
 
 @register.simple_tag
@@ -215,11 +214,11 @@ def format_value(value):
         else:
             template = loader.get_template('rest_framework/admin/simple_list_value.html')
         context = {'value': value}
-        return template_render(template, context)
+        return template.render(context)
     elif isinstance(value, dict):
         template = loader.get_template('rest_framework/admin/dict_value.html')
         context = {'value': value}
-        return template_render(template, context)
+        return template.render(context)
     elif isinstance(value, six.string_types):
         if (
             (value.startswith('http:') or value.startswith('https:')) and not
@@ -242,6 +241,43 @@ def items(value):
     Also see: https://stackoverflow.com/questions/15416662/django-template-loop-over-dictionary-items-with-items-as-key
     """
     return value.items()
+
+
+@register.filter
+def data(value):
+    """
+    Simple filter to access `data` attribute of object,
+    specifically coreapi.Document.
+
+    As per `items` filter above, allows accessing `document.data` when
+    Document contains Link keyed-at "data".
+
+    See issue #5395
+    """
+    return value.data
+
+
+@register.filter
+def schema_links(section, sec_key=None):
+    """
+    Recursively find every link in a schema, even nested.
+    """
+    NESTED_FORMAT = '%s > %s'  # this format is used in docs/js/api.js:normalizeKeys
+    links = section.links
+    if section.data:
+        data = section.data.items()
+        for sub_section_key, sub_section in data:
+            new_links = schema_links(sub_section, sec_key=sub_section_key)
+            links.update(new_links)
+
+    if sec_key is not None:
+        new_links = OrderedDict()
+        for link_key, link in links.items():
+            new_key = NESTED_FORMAT % (sec_key, link_key)
+            new_links.update({new_key: link})
+        return new_links
+
+    return links
 
 
 @register.filter

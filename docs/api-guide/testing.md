@@ -82,7 +82,11 @@ For example, when forcibly authenticating using a token, you might do something 
 
     user = User.objects.get(username='olivia')
     request = factory.get('/accounts/django-superstars/')
-    force_authenticate(request, user=user, token=user.token)
+    force_authenticate(request, user=user, token=user.auth_token)
+
+---
+
+**Note**: `force_authenticate` directly sets `request.user` to the in-memory `user` instance. If you are re-using the same `user` instance across multiple tests that update the saved `user` state, you may need to call [`refresh_from_db()`][refresh_from_db_docs] between tests.
 
 ---
 
@@ -378,3 +382,4 @@ For example, to add support for using `format='html'` in test requests, you migh
 [client]: https://docs.djangoproject.com/en/stable/topics/testing/tools/#the-test-client
 [requestfactory]: https://docs.djangoproject.com/en/stable/topics/testing/advanced/#django.test.client.RequestFactory
 [configuration]: #configuration
+[refresh_from_db_docs]: https://docs.djangoproject.com/en/1.11/ref/models/instances/#django.db.models.Model.refresh_from_db

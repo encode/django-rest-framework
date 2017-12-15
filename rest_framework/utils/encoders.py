@@ -1,11 +1,11 @@
 """
 Helper classes for parsers.
 """
-from __future__ import unicode_literals
+from __future__ import absolute_import, unicode_literals
 
 import datetime
 import decimal
-import json
+import json  # noqa
 import uuid
 
 from django.db.models.query import QuerySet
@@ -13,7 +13,7 @@ from django.utils import six, timezone
 from django.utils.encoding import force_text
 from django.utils.functional import Promise
 
-from rest_framework.compat import coreapi, total_seconds
+from rest_framework.compat import coreapi
 
 
 class JSONEncoder(json.JSONEncoder):
@@ -37,11 +37,9 @@ class JSONEncoder(json.JSONEncoder):
             if timezone and timezone.is_aware(obj):
                 raise ValueError("JSON can't represent timezone-aware times.")
             representation = obj.isoformat()
-            if obj.microsecond:
-                representation = representation[:12]
             return representation
         elif isinstance(obj, datetime.timedelta):
-            return six.text_type(total_seconds(obj))
+            return six.text_type(obj.total_seconds())
         elif isinstance(obj, decimal.Decimal):
             # Serializers will coerce decimals to strings by default.
             return float(obj)
@@ -63,7 +61,7 @@ class JSONEncoder(json.JSONEncoder):
         elif hasattr(obj, '__getitem__'):
             try:
                 return dict(obj)
-            except:
+            except Exception:
                 pass
         elif hasattr(obj, '__iter__'):
             return tuple(item for item in obj)

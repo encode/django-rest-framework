@@ -94,6 +94,12 @@ A content negotiation class, that determines how a renderer is selected for the 
 
 Default: `'rest_framework.negotiation.DefaultContentNegotiation'`
 
+#### DEFAULT_SCHEMA_CLASS
+
+A view inspector class that will be used for schema generation.
+
+Default: `'rest_framework.schemas.AutoSchema'`
+
 ---
 
 ## Generic view settings
@@ -359,6 +365,14 @@ When set to `False`, JSON responses will return slightly more verbose representa
     {"is_admin": false, "email": "jane@example"}
 
 The default style is to return minified responses, in line with [Heroku's API design guidelines][heroku-minified-json].
+
+Default: `True`
+
+#### STRICT_JSON
+
+When set to `True`, JSON rendering and parsing will only observe syntactically valid JSON, raising an exception for the extended float values (`nan`, `inf`, `-inf`) accepted by Python's `json` module. This is the recommended setting, as these values are not generally supported. e.g., neither Javascript's `JSON.Parse` nor PostgreSQL's JSON data type accept these values.
+
+When set to `False`, JSON rendering and parsing will be permissive. However, these values are still invalid and will need to be specially handled in your code.
 
 Default: `True`
 

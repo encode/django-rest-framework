@@ -113,11 +113,11 @@ For example:
 
 Note that if your API doesn't include any object level permissions, you may optionally exclude the `self.check_object_permissions`, and simply return the object from the `get_object_or_404` lookup.
 
-#### `filter_queryset(self, queryset)`       
+#### `filter_queryset(self, queryset)`
 
-Given a queryset, filter it with whichever filter backends are in use, returning a new queryset.   
+Given a queryset, filter it with whichever filter backends are in use, returning a new queryset.
 
-For example:       
+For example:
 
     def filter_queryset(self, queryset):
         filter_backends = (CategoryFilter,)
@@ -330,7 +330,9 @@ For example, if you need to lookup objects based on multiple fields in the URL c
             for field in self.lookup_fields:
                 if self.kwargs[field]: # Ignore empty fields.
                     filter[field] = self.kwargs[field]
-            return get_object_or_404(queryset, **filter)  # Lookup the object
+            obj = get_object_or_404(queryset, **filter)  # Lookup the object
+            self.check_object_permissions(self.request, obj)
+            return obj
 
 You can then simply apply this mixin to a view or viewset anytime you need to apply the custom behavior.
 

@@ -227,6 +227,15 @@ class APIRequestFactory(DjangoRequestFactory):
         data, content_type = self._encode_data(data, format, content_type)
         return self.generic('OPTIONS', path, data, content_type, **extra)
 
+    def generic(self, method, path, data='',
+                content_type='application/octet-stream', secure=False, **extra):
+        # Include the CONTENT_TYPE, regardless of whether or not data is empty.
+        if content_type is not None:
+            extra['CONTENT_TYPE'] = str(content_type)
+
+        return super(APIRequestFactory, self).generic(
+            method, path, data, content_type, secure, **extra)
+
     def request(self, **kwargs):
         request = super(APIRequestFactory, self).request(**kwargs)
         request._dont_enforce_csrf_checks = not self.enforce_csrf_checks

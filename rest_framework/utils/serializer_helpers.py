@@ -1,12 +1,12 @@
 from __future__ import unicode_literals
 
 import collections
-import json
 from collections import OrderedDict
 
 from django.utils.encoding import force_text
 
 from rest_framework.compat import unicode_to_repr
+from rest_framework.utils import json
 
 
 class ReturnDict(OrderedDict):
@@ -86,10 +86,13 @@ class BoundField(object):
 class JSONBoundField(BoundField):
     def as_form_field(self):
         value = self.value
-        try:
-            value = json.dumps(self.value, sort_keys=True, indent=4)
-        except TypeError:
-            pass
+        # When HTML form input is used and the input is not valid
+        # value will be a JSONString, rather than a JSON primitive.
+        if not getattr(value, 'is_json_string', False):
+            try:
+                value = json.dumps(self.value, sort_keys=True, indent=4)
+            except (TypeError, ValueError):
+                pass
         return self.__class__(self._field, value, self.errors, self._prefix)
 
 
