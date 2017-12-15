@@ -13,7 +13,7 @@ def get_docs_view(
         authentication_classes=api_settings.DEFAULT_AUTHENTICATION_CLASSES,
         permission_classes=api_settings.DEFAULT_PERMISSION_CLASSES,
         renderer_classes=None):
-  
+
     if renderer_classes is None:
         renderer_classes = [DocumentationRenderer, CoreJSONRenderer]
 
