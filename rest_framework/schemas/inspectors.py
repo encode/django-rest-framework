@@ -445,7 +445,7 @@ class ManualSchema(ViewInspector):
     Allows providing a list of coreapi.Fields,
     plus an optional description.
     """
-    def __init__(self, fields, description=''):
+    def __init__(self, fields, description='', encoding=None):
         """
         Parameters:
 
@@ -455,6 +455,7 @@ class ManualSchema(ViewInspector):
         assert all(isinstance(f, coreapi.Field) for f in fields), "`fields` must be a list of coreapi.Field instances"
         self._fields = fields
         self._description = description
+        self._encoding = encoding
 
     def get_link(self, path, method, base_url):
 
@@ -464,7 +465,7 @@ class ManualSchema(ViewInspector):
         return coreapi.Link(
             url=urlparse.urljoin(base_url, path),
             action=method.lower(),
-            encoding=None,
+            encoding=self._encoding,
             fields=self._fields,
             description=self._description
         )

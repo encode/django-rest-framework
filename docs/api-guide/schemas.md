@@ -669,6 +669,8 @@ The `ManualSchema` constructor takes two arguments:
 
 **`description`**: A string description. Optional.
 
+**`encoding`**: Default `None`. A string encoding, e.g `application/json`. Optional.
+
 ---
 
 ## Core API
