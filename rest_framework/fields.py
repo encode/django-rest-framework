@@ -27,7 +27,7 @@ from django.utils.encoding import is_protected_type, smart_text
 from django.utils.formats import localize_input, sanitize_separators
 from django.utils.functional import lazy
 from django.utils.ipv6 import clean_ipv6_address
-from django.utils.timezone import utc
+from django.utils.timezone import utc, localtime
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import ISO_8601
@@ -1211,6 +1211,9 @@ class DateTimeField(Field):
 
         if output_format is None or isinstance(value, six.string_types):
             return value
+
+        if api_settings.LOCALIZE_DATETIME_REPRESENTATIONS:
+            value = localtime(value)
 
         if output_format.lower() == ISO_8601:
             value = self.enforce_timezone(value)
