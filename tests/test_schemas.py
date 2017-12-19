@@ -1,7 +1,6 @@
 import unittest
 
 import pytest
-
 from django.conf.urls import include, url
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
@@ -27,7 +26,6 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
 from .models import BasicModel
-
 
 factory = APIRequestFactory()
 
