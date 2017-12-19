@@ -70,9 +70,10 @@ There are two main advantages of using a `ViewSet` class over using a `View` cla
 
 Both of these come with a trade-off.  Using regular views and URL confs is more explicit and gives you more control.  ViewSets are helpful if you want to get up and running quickly, or when you have a large API and you want to enforce a consistent URL configuration throughout.
 
-## Marking extra actions for routing
 
-The default routers included with REST framework will provide routes for a standard set of create/retrieve/update/destroy style operations, as shown below:
+## ViewSet actions
+
+The default routers included with REST framework will provide routes for a standard set of create/retrieve/update/destroy style actions, as shown below:
 
     class UserViewSet(viewsets.ViewSet):
         """
@@ -100,6 +101,23 @@ The default routers included with REST framework will provide routes for a stand
 
         def destroy(self, request, pk=None):
             pass
+
+During dispatch the name of the current action is available via the `.action` attribute.
+You may inspect `.action` to adjust behaviour based on the current action.
+
+For example, you could restrict permissions to everything except the `list` action similar to this:
+
+    def get_permissions(self):
+        """
+        Instantiates and returns the list of permissions that this view requires.
+        """
+        if self.action == 'list':
+            permission_classes = [IsAuthenticated]
+        else:
+            permission_classes = [IsAdmin]
+        return [permission() for permission in permission_classes]
+
+## Marking extra actions for routing
 
 If you have ad-hoc methods that you need to be routed to, you can mark them as requiring routing using the `@detail_route` or `@list_route` decorators.
 
