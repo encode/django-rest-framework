@@ -93,11 +93,11 @@ When using viewsets, you should use the relevant action names as delimiters.
 
 ### `documentation` API Reference
 
-The `rest_framework.documentation` module provides three helper functions to help configure the interactive API documentation, `include_docs_url` (usage shown above), `get_docs_view` and `get_schemajs_view`.
+The `rest_framework.documentation` module provides three helper functions to help configure the interactive API documentation, `include_docs_urls` (usage shown above), `get_docs_view` and `get_schemajs_view`.
 
- `include_docs_url` employs `get_docs_view` and `get_schemajs_view` to generate the url patterns for the documentation page and JavaScript resource that exposes the API schema respectively. They expose the following options for customisation. (`get_docs_view` and `get_schemajs_view` ultimately call `rest_frameworks.schemas.get_schema_view()`, see the Schemas docs for more options there.)
+ `include_docs_urls` employs `get_docs_view` and `get_schemajs_view` to generate the url patterns for the documentation page and JavaScript resource that exposes the API schema respectively. They expose the following options for customisation. (`get_docs_view` and `get_schemajs_view` ultimately call `rest_frameworks.schemas.get_schema_view()`, see the Schemas docs for more options there.)
 
-#### `include_docs_url`
+#### `include_docs_urls`
 
 * `title`: Default `None`. May be used to provide a descriptive title for the schema definition.
 * `description`: Default `None`. May be used to provide a description for the schema definition.
