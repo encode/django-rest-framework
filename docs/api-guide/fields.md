@@ -690,7 +690,7 @@ real project, the coordinate nesting might be better handled with a nested seria
 
 The key points from the example, though, are:
 
-* `to_representation` is passed the entire `DataPoint` object must map from that
+* `to_representation` is passed the entire `DataPoint` object and must map from that
 to the desired output.
 
         >>> instance = DataPoint(label='Example', x_coordinate=1, y_coordinate=2)
