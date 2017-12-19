@@ -202,6 +202,8 @@ Default: `'version'`
 #### UNAUTHENTICATED_USER
 
 The class that should be used to initialize `request.user` for unauthenticated requests.
+(If removing authentication entirely, e.g. by removing `django.contrib.auth` from
+`INSTALLED_APPS`, set `UNAUTHENTICATED_USER` to `None`.)
 
 Default: `django.contrib.auth.models.AnonymousUser`
 
