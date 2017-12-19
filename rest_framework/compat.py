@@ -32,7 +32,7 @@ except ImportError:
 def get_regex_pattern(urlpattern):
     if hasattr(urlpattern, 'pattern'):
         # Django 2.0
-        return urlpattern.pattern.regex.pattern
+        return str(urlpattern.pattern)
     else:
         # Django < 2.0
         return urlpattern.regex.pattern
@@ -254,6 +254,14 @@ try:
     from pytz.exceptions import InvalidTimeError
 except ImportError:
     InvalidTimeError = Exception
+
+# Django 1.x url routing syntax. Remove when dropping Django 1.11 support.
+try:
+    from django.urls import include, path, re_path # noqa
+except ImportError:
+    from django.conf.urls import include, url # noqa
+    path = None
+    re_path = url
 
 
 # `separators` argument to `json.dumps()` differs between 2.x and 3.x

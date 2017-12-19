@@ -3,6 +3,7 @@ generators.py   # Top-down schema generation
 
 See schemas.__init__.py for package overview.
 """
+import re
 import warnings
 from collections import Counter, OrderedDict
 from importlib import import_module
@@ -135,6 +136,11 @@ def endpoint_ordering(endpoint):
     return (path, method_priority)
 
 
+_PATH_PARAMETER_COMPONENT_RE = re.compile(
+    r'<(?:(?P<converter>[^>:]+):)?(?P<parameter>\w+)>'
+)
+
+
 class EndpointEnumerator(object):
     """
     A class to determine the available API endpoints that a project exposes.
@@ -189,7 +195,9 @@ class EndpointEnumerator(object):
         Given a URL conf regex, return a URI template string.
         """
         path = simplify_regex(path_regex)
-        path = path.replace('<', '{').replace('>', '}')
+
+        # Strip Django 2.0 convertors as they are incompatible with uritemplate format
+        path = re.sub(_PATH_PARAMETER_COMPONENT_RE, r'{\g<parameter>}', path)
         return path
 
     def should_include_endpoint(self, path, callback):
