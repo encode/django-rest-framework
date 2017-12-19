@@ -254,15 +254,18 @@ REST framework APIs also support programmatically accessible descriptions, using
 
 When using the generic views, any `OPTIONS` requests will additionally respond with metadata regarding any `POST` or `PUT` actions available, describing which fields are on the serializer.
 
-You can modify the response behavior to `OPTIONS` requests by overriding the `metadata` view method.  For example:
+You can modify the response behavior to `OPTIONS` requests by overriding the `options` view method and/or by providing a custom Metadata class.  For example:
 
-    def metadata(self, request):
+    def options(self, request, *args, **kwargs):
         """
         Don't include the view description in OPTIONS responses.
         """
-        data = super(ExampleView, self).metadata(request)
+        meta = self.metadata_class()
+        data = meta.determine_metadata(request, self)
         data.pop('description')
         return data
+
+See [the Metadata docs][metadata-docs] for more details.
 
 ---
 
@@ -292,3 +295,4 @@ To implement a hypermedia API you'll need to decide on an appropriate media type
 [image-apiary]: ../img/apiary.png
 [image-self-describing-api]: ../img/self-describing.png
 [schemas-examples]: ../api-guide/schemas/#example
+[metadata-docs]: ../api-guide/metadata/
