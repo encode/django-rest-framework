@@ -561,6 +561,8 @@ Note that the `WritableField` class that was present in version 2.x no longer ex
 
 ## Examples
 
+### A Basic Custom Field
+
 Let's look at an example of serializing a class that represents an RGB color value:
 
     class Color(object):
@@ -600,7 +602,7 @@ As an example, let's create a field that can be used to represent the class name
             """
             return obj.__class__.__name__
 
-#### Raising validation errors
+### Raising validation errors
 
 Our `ColorField` class above currently does not perform any data validation.
 To indicate invalid data, we should raise a `serializers.ValidationError`, like so:
@@ -645,6 +647,75 @@ The `.fail()` method is a shortcut for raising `ValidationError` that takes a me
         return Color(red, green, blue)
 
 This style keeps your error messages cleaner and more separated from your code, and should be preferred.
+
+### Using `source='*'`
+
+Here we'll take an example of a _flat_ `DataPoint` model with `x_coordinate` and `y_coordinate` attributes.
+
+    class DataPoint(models.Model):
+        label = models.CharField(max_length=50)
+        x_coordinate = models.SmallIntegerField()
+        y_coordinate = models.SmallIntegerField()
+
+Using a custom field and `source='*'` we can provide a nested representation of
+the coordinate pair:
+
+    class CoordinateField(serializers.Field):
+
+        def to_representation(self, obj):
+            ret = {
+                "x": obj.x_coordinate,
+                "y": obj.y_coordinate
+            }
+            return ret
+
+        def to_internal_value(self, data):
+            ret = {
+                "x_coordinate": data["x"],
+                "y_coordinate": data["y"],
+            }
+            return ret
+
+
+    class DataPointSerializer(serializers.ModelSerializer):
+        coordinates = CoordinateField(source='*')
+
+        class Meta:
+            model = DataPoint
+            fields = ['label', 'coordinates']
+
+Note that this example doesn't handle validation. Partly for that reason, in a
+real project, the coordinate nesting might be better handled with a nested serialiser using two
+`IntegerField` instances, each with `source='*'`.
+
+The key points from the example, though, are:
+
+* `to_representation` is passed the entire `DataPoint` object must map from that
+to the desired output.
+
+        >>> instance = DataPoint(label='Example', x_coordinate=1, y_coordinate=2)
+        >>> out_serializer = DataPointSerializer(instance)
+        >>> out_serializer.data
+        ReturnDict([('label', 'testing'), ('coordinates', {'x': 1, 'y': 2})])
+
+* Unless our field is to be read-only, `to_internal_value` must map back to a dict
+suitable for updating our target object. With `source='*'`, the return from
+`to_internal_value` will update the root validated data dictionary, rather than a single key.
+
+        >>> data = {
+        ...     "label": "Second Example",
+        ...     "coordinates": {
+        ...         "x": 3,
+        ...         "y": 4,
+        ...     }
+        ... }
+        >>> in_serializer = DataPointSerializer(data=data)
+        >>> in_serializer.is_valid()
+        True
+        >>> in_serializer.validated_data
+        OrderedDict([('label', 'Second Example'),
+                     ('y_coordinate', 4),
+                     ('x_coordinate', 3)])
 
 # Third party packages
 
