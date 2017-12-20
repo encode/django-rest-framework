@@ -68,14 +68,11 @@ def apply_suffix_patterns(urlpatterns, suffix_pattern, suffix_required, suffix_r
             if not suffix_required:
                 ret.append(urlpattern)
 
-            # we create a new RegexPattern url; if the original pattern
-            # was a RoutePattern we need to preserve its converters
-
             # if the original pattern was a RoutePattern we need to preserve it
             if is_route_pattern(urlpattern):
                 assert path is not None
                 assert suffix_route is not None
-                route = str(urlpattern.pattern) + suffix_route
+                route = str(urlpattern.pattern).rstrip('$').rstrip('/') + suffix_route
                 new_pattern = path(route, view, kwargs, name)
             else:
                 new_pattern = url(regex, view, kwargs, name)
