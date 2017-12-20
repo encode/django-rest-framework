@@ -29,10 +29,27 @@ except ImportError:
     )
 
 
-def get_regex_pattern(urlpattern):
+def get_original_route(urlpattern):
+    """
+    Get the original route/regex that was typed in by the user into the path(), re_path() or url() directive. This
+    is in contrast with get_regex_pattern below, which for RoutePattern returns the raw regex generated from the path().
+    """
     if hasattr(urlpattern, 'pattern'):
         # Django 2.0
         return str(urlpattern.pattern)
+    else:
+        # Django < 2.0
+        return urlpattern.regex.pattern
+
+
+def get_regex_pattern(urlpattern):
+    """
+    Get the raw regex out of the urlpattern's RegexPattern or RoutePattern. This is always a regular expression,
+    unlike get_original_route above.
+    """
+    if hasattr(urlpattern, 'pattern'):
+        # Django 2.0
+        return urlpattern.pattern.regex.pattern
     else:
         # Django < 2.0
         return urlpattern.regex.pattern
