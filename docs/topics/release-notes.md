@@ -42,7 +42,7 @@ You can determine your currently installed version using `pip freeze`:
 
 ### 3.7.4
 
-**Date**: [UNRELEASED][3.7.4-milestone]
+**Date**: [20th December 2017][3.7.4-milestone]
 
 * Schema: Extract method for `manual_fields` processing [#5633][gh5633]
 
