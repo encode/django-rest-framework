@@ -173,15 +173,33 @@ class FormatSuffixTests(TestCase):
     @unittest.skipUnless(path, 'needs Django 2')
     def test_included_urls_django2_mixed_args(self):
         nested_patterns = [
-            path('path/<int:child>', dummy_view)
+            path('path/<int:child>', dummy_view),
+            url('^url/(?P<child>[0-9]+)$', dummy_view)
         ]
         urlpatterns = [
-            url('^test/(?P<parent>[a-z0-9]+)/', include(nested_patterns), {'foo': 'bar'}),
+            url('^purl/(?P<parent>[0-9]+)/', include(nested_patterns), {'foo': 'bar'}),
+            path('ppath/<int:parent>/', include(nested_patterns), {'foo': 'bar'}),
         ]
         test_paths = [
-            URLTestPath('/test/pid/path/42', (), {'parent': 'pid', 'child': 42, 'foo': 'bar', }),
-            URLTestPath('/test/pid/path/42.api', (), {'parent': 'pid', 'child': 42, 'foo': 'bar', 'format': 'api'}),
-            URLTestPath('/test/pid/path/42.asdf', (), {'parent': 'pid', 'child': 42, 'foo': 'bar', 'format': 'asdf'}),
+            # parent url() nesting child path()
+            URLTestPath('/purl/87/path/42', (), {'parent': '87', 'child': 42, 'foo': 'bar', }),
+            URLTestPath('/purl/87/path/42.api', (), {'parent': '87', 'child': 42, 'foo': 'bar', 'format': 'api'}),
+            URLTestPath('/purl/87/path/42.asdf', (), {'parent': '87', 'child': 42, 'foo': 'bar', 'format': 'asdf'}),
+
+            # parent path() nesting child url()
+            URLTestPath('/ppath/87/url/42', (), {'parent': 87, 'child': '42', 'foo': 'bar', }),
+            URLTestPath('/ppath/87/url/42.api', (), {'parent': 87, 'child': '42', 'foo': 'bar', 'format': 'api'}),
+            URLTestPath('/ppath/87/url/42.asdf', (), {'parent': 87, 'child': '42', 'foo': 'bar', 'format': 'asdf'}),
+
+            # parent path() nesting child path()
+            URLTestPath('/ppath/87/path/42', (), {'parent': 87, 'child': 42, 'foo': 'bar', }),
+            URLTestPath('/ppath/87/path/42.api', (), {'parent': 87, 'child': 42, 'foo': 'bar', 'format': 'api'}),
+            URLTestPath('/ppath/87/path/42.asdf', (), {'parent': 87, 'child': 42, 'foo': 'bar', 'format': 'asdf'}),
+
+            # parent url() nesting child url()
+            URLTestPath('/purl/87/url/42', (), {'parent': '87', 'child': '42', 'foo': 'bar', }),
+            URLTestPath('/purl/87/url/42.api', (), {'parent': '87', 'child': '42', 'foo': 'bar', 'format': 'api'}),
+            URLTestPath('/purl/87/url/42.asdf', (), {'parent': '87', 'child': '42', 'foo': 'bar', 'format': 'asdf'}),
         ]
         self._resolve_urlpatterns(urlpatterns, test_paths)
 
