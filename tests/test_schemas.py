@@ -9,7 +9,7 @@ from django.test import TestCase, override_settings
 from rest_framework import (
     filters, generics, pagination, permissions, serializers
 )
-from rest_framework.compat import coreapi, coreschema, get_regex_pattern
+from rest_framework.compat import coreapi, coreschema, get_regex_pattern, path
 from rest_framework.decorators import (
     api_view, detail_route, list_route, schema
 )
@@ -316,6 +316,59 @@ class TestSchemaGenerator(TestCase):
             url(r'^example/?$', ExampleListView.as_view()),
             url(r'^example/(?P<pk>\d+)/?$', ExampleDetailView.as_view()),
             url(r'^example/(?P<pk>\d+)/sub/?$', ExampleDetailView.as_view()),
+        ]
+
+    def test_schema_for_regular_views(self):
+        """
+        Ensure that schema generation works for APIView classes.
+        """
+        generator = SchemaGenerator(title='Example API', patterns=self.patterns)
+        schema = generator.get_schema()
+        expected = coreapi.Document(
+            url='',
+            title='Example API',
+            content={
+                'example': {
+                    'create': coreapi.Link(
+                        url='/example/',
+                        action='post',
+                        fields=[]
+                    ),
+                    'list': coreapi.Link(
+                        url='/example/',
+                        action='get',
+                        fields=[]
+                    ),
+                    'read': coreapi.Link(
+                        url='/example/{id}/',
+                        action='get',
+                        fields=[
+                            coreapi.Field('id', required=True, location='path', schema=coreschema.String())
+                        ]
+                    ),
+                    'sub': {
+                        'list': coreapi.Link(
+                            url='/example/{id}/sub/',
+                            action='get',
+                            fields=[
+                                coreapi.Field('id', required=True, location='path', schema=coreschema.String())
+                            ]
+                        )
+                    }
+                }
+            }
+        )
+        assert schema == expected
+
+
+@unittest.skipUnless(coreapi, 'coreapi is not installed')
+@unittest.skipUnless(path, 'needs Django 2')
+class TestSchemaGeneratorDjango2(TestCase):
+    def setUp(self):
+        self.patterns = [
+            path('example/', ExampleListView.as_view()),
+            path('example/<int:pk>/', ExampleDetailView.as_view()),
+            path('example/<int:pk>/sub/', ExampleDetailView.as_view()),
         ]
 
     def test_schema_for_regular_views(self):
