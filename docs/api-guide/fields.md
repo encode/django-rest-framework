@@ -685,8 +685,9 @@ the coordinate pair:
             fields = ['label', 'coordinates']
 
 Note that this example doesn't handle validation. Partly for that reason, in a
-real project, the coordinate nesting might be better handled with a nested serialiser using two
-`IntegerField` instances, each with `source='*'`.
+real project, the coordinate nesting might be better handled with a nested serialiser
+using `source='*'`, with two `IntegerField` instances, each with their own `source`
+pointing to the relevant field.
 
 The key points from the example, though, are:
 
@@ -716,6 +717,67 @@ suitable for updating our target object. With `source='*'`, the return from
         OrderedDict([('label', 'Second Example'),
                      ('y_coordinate', 4),
                      ('x_coordinate', 3)])
+
+For completeness lets do the same thing again but with the nested serialiser
+approach suggested above:
+
+    class NestedCoordinateSerializer(serializers.Serializer):
+        x = serializers.IntegerField(source='x_coordinate')
+        y = serializers.IntegerField(source='y_coordinate')
+
+
+    class DataPointSerializer(serializers.ModelSerializer):
+        coordinates = NestedCoordinateSerializer(source='*')
+
+        class Meta:
+            model = DataPoint
+            fields = ['label', 'coordinates']
+
+Here the mapping between the target and source attribute pairs (`x` and
+`x_coordinate`, `y` and `y_coordinate`) is handled in the `IntegerField`
+declarations. It's our `NestedCoordinateSerializer` that takes `source='*'`.
+
+Our new `DataPointSerializer` exhibits the same behaviour as the custom field
+approach.
+
+Serialising:
+
+    >>> out_serializer = DataPointSerializer(instance)
+    >>> out_serializer.data
+    ReturnDict([('label', 'testing'),
+                ('coordinates', OrderedDict([('x', 1), ('y', 2)]))])
+
+Deserialising:
+
+    >>> in_serializer = DataPointSerializer(data=data)
+    >>> in_serializer.is_valid()
+    True
+    >>> in_serializer.validated_data
+    OrderedDict([('label', 'still testing'),
+                 ('x_coordinate', 3),
+                 ('y_coordinate', 4)])
+
+But we also get the built-in validation for free:
+
+    >>> invalid_data = {
+    ...     "label": "still testing",
+    ...     "coordinates": {
+    ...         "x": 'a',
+    ...         "y": 'b',
+    ...     }
+    ... }
+    >>> invalid_serializer = DataPointSerializer(data=invalid_data)
+    >>> invalid_serializer.is_valid()
+    False
+    >>> invalid_serializer.errors
+    ReturnDict([('coordinates',
+                 {'x': ['A valid integer is required.'],
+                  'y': ['A valid integer is required.']})])
+
+For this reason, the nested serialiser approach would be the first to try. You
+would use the custom field approach when the nested serialiser becomes infeasible
+or overly complex.
+
 
 # Third party packages
 
