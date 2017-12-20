@@ -29,13 +29,40 @@ except ImportError:
     )
 
 
-def get_regex_pattern(urlpattern):
+def get_original_route(urlpattern):
+    """
+    Get the original route/regex that was typed in by the user into the path(), re_path() or url() directive. This
+    is in contrast with get_regex_pattern below, which for RoutePattern returns the raw regex generated from the path().
+    """
     if hasattr(urlpattern, 'pattern'):
         # Django 2.0
         return str(urlpattern.pattern)
     else:
         # Django < 2.0
         return urlpattern.regex.pattern
+
+
+def get_regex_pattern(urlpattern):
+    """
+    Get the raw regex out of the urlpattern's RegexPattern or RoutePattern. This is always a regular expression,
+    unlike get_original_route above.
+    """
+    if hasattr(urlpattern, 'pattern'):
+        # Django 2.0
+        return urlpattern.pattern.regex.pattern
+    else:
+        # Django < 2.0
+        return urlpattern.regex.pattern
+
+
+def is_route_pattern(urlpattern):
+    if hasattr(urlpattern, 'pattern'):
+        # Django 2.0
+        from django.urls.resolvers import RoutePattern
+        return isinstance(urlpattern.pattern, RoutePattern)
+    else:
+        # Django < 2.0
+        return False
 
 
 def make_url_resolver(regex, urlpatterns):
@@ -257,10 +284,11 @@ except ImportError:
 
 # Django 1.x url routing syntax. Remove when dropping Django 1.11 support.
 try:
-    from django.urls import include, path, re_path # noqa
+    from django.urls import include, path, re_path, register_converter  # noqa
 except ImportError:
     from django.conf.urls import include, url # noqa
     path = None
+    register_converter = None
     re_path = url
 
 
