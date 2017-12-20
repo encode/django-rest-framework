@@ -98,7 +98,9 @@ You can determine your currently installed version using `pip freeze`:
 * Fix schema docs typo [#5687][gh5687]
 * Fix URL pattern parsing in schema generation [#5689][gh5689]
 * Add example using `source=‘*’` to custom field docs. [#5688][gh5688]
+* Fix format_suffix_patterns behavior with Django 2 path() routes [#5691][gh5691]
 
+[gh5691]: https://github.com/encode/django-rest-framework/issues/5691
 [gh5688]: https://github.com/encode/django-rest-framework/issues/5688
 [gh5689]: https://github.com/encode/django-rest-framework/issues/5689
 [gh5687]: https://github.com/encode/django-rest-framework/issues/5687
