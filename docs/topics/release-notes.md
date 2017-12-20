@@ -82,13 +82,40 @@ You can determine your currently installed version using `pip freeze`:
 * Update to use the Django 2.0 release in tox.ini [#5645][gh5645]
 * Fix `Serializer.data` for Browsable API rendering when provided invalid `data` [#5646][gh5646]
 * Docs: Note AutoSchema limitations on bare APIView [#5649][gh5649]
-* Add '.basename' and '.reverse_action()' to ViewSet [#5648][gh5648]
+* Add `.basename` and `.reverse_action()` to ViewSet [#5648][gh5648]
 * Docs: Fix typos in serializers documentation [#5652][gh5652]
+* Fix `override_settings` compat [#5668][gh5668]
+* Add DEFAULT_SCHEMA_CLASS setting [#5658][gh5658]
+* Add docs note re generated BooleanField being `required=False` [#5665][gh5665]
+* Add 'dist' build [#5656][gh5656]
+* Fix typo in docstring [#5678][gh5678]
+* Docs: Add `UNAUTHENTICATED_USER = None` note [#5679][gh5679]
+* Update OPTIONS example from “Documenting Your API” [#5680][gh5680]
+* Docs: Add note on object permissions for FBVs [#5681][gh5681]
+* Docs: Add example to `to_representation` docs [#5682][gh5682]
+* Add link to Classy DRF in docs [#5683][gh5683]
+* Document ViewSet.action [#5685][gh5685]
+* Fix schema docs typo [#5687][gh5687]
+* Fix URL pattern parsing in schema generation [#5689][gh5689]
+* Add example using `source=‘*’` to custom field docs. [#5688][gh5688]
 
+[gh5688]: https://github.com/encode/django-rest-framework/issues/5688
+[gh5689]: https://github.com/encode/django-rest-framework/issues/5689
+[gh5687]: https://github.com/encode/django-rest-framework/issues/5687
+[gh5685]: https://github.com/encode/django-rest-framework/issues/5685
+[gh5683]: https://github.com/encode/django-rest-framework/issues/5683
+[gh5682]: https://github.com/encode/django-rest-framework/issues/5682
+[gh5681]: https://github.com/encode/django-rest-framework/issues/5681
+[gh5680]: https://github.com/encode/django-rest-framework/issues/5680
+[gh5679]: https://github.com/encode/django-rest-framework/issues/5679
+[gh5678]: https://github.com/encode/django-rest-framework/issues/5678
+[gh5656]: https://github.com/encode/django-rest-framework/issues/5656
+[gh5665]: https://github.com/encode/django-rest-framework/issues/5665
+[gh5658]: https://github.com/encode/django-rest-framework/issues/5658
+[gh5668]: https://github.com/encode/django-rest-framework/issues/5668
 [gh5652]: https://github.com/encode/django-rest-framework/issues/5652
 [gh5648]: https://github.com/encode/django-rest-framework/issues/5648
 [gh5649]: https://github.com/encode/django-rest-framework/issues/5649
-[gh5633]: https://github.com/encode/django-rest-framework/issues/5633
 [gh5646]: https://github.com/encode/django-rest-framework/issues/5646
 [gh5645]: https://github.com/encode/django-rest-framework/issues/5645
 [gh5641]: https://github.com/encode/django-rest-framework/issues/5641
