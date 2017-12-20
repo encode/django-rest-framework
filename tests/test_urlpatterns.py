@@ -1,12 +1,13 @@
 from __future__ import unicode_literals
 
+import unittest
 from collections import namedtuple
 
 from django.conf.urls import include, url
 from django.test import TestCase
 from django.urls import Resolver404
 
-from rest_framework.compat import make_url_resolver
+from rest_framework.compat import make_url_resolver, path, re_path
 from rest_framework.test import APIRequestFactory
 from rest_framework.urlpatterns import format_suffix_patterns
 
@@ -73,6 +74,26 @@ class FormatSuffixTests(TestCase):
             URLTestPath('/test', (), {}),
             URLTestPath('/test.api', (), {'format': 'api'}),
             URLTestPath('/test.asdf', (), {'format': 'asdf'}),
+        ]
+        self._resolve_urlpatterns(urlpatterns, test_paths)
+
+    @unittest.skipUnless(path, 'needs Django 2')
+    def test_django2_path(self):
+        urlpatterns = [
+            path('test', dummy_view),
+            path('convtest/<int:pk>', dummy_view),
+            re_path(r'^retest/(?P<pk>[0-9]+)$', dummy_view),
+        ]
+        test_paths = [
+            URLTestPath('/test', (), {}),
+            URLTestPath('/test.api', (), {'format': 'api'}),
+            URLTestPath('/test.asdf', (), {'format': 'asdf'}),
+            URLTestPath('/convtest/42', (), {'pk': 42}),
+            URLTestPath('/convtest/42.api', (), {'pk': 42, 'format': 'api'}),
+            URLTestPath('/convtest/42.asdf', (), {'pk': 42, 'format': 'asdf'}),
+            URLTestPath('/retest', (), {'pk': '42'}),
+            URLTestPath('/retest/42.api', (), {'pk': '42', 'format': 'api'}),
+            URLTestPath('/retest/42.asdf', (), {'pk': '42', 'format': 'asdf'}),
         ]
         self._resolve_urlpatterns(urlpatterns, test_paths)
 
