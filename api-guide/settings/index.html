@@ -531,6 +531,9 @@ print api_settings.DEFAULT_AUTHENTICATION_CLASSES
 <h4 id="default_content_negotiation_class"><a class="toclink" href="#default_content_negotiation_class">DEFAULT_CONTENT_NEGOTIATION_CLASS</a></h4>
 <p>A content negotiation class, that determines how a renderer is selected for the response, given an incoming request.</p>
 <p>Default: <code>'rest_framework.negotiation.DefaultContentNegotiation'</code></p>
+<h4 id="default_schema_class"><a class="toclink" href="#default_schema_class">DEFAULT_SCHEMA_CLASS</a></h4>
+<p>A view inspector class that will be used for schema generation.</p>
+<p>Default: <code>'rest_framework.schemas.AutoSchema'</code></p>
 <hr />
 <h2 id="generic-view-settings"><a class="toclink" href="#generic-view-settings">Generic view settings</a></h2>
 <p><em>The following settings control the behavior of the generic class-based views.</em></p>
@@ -583,7 +586,9 @@ If set to <code>None</code> then generic filtering is disabled.</p>
 <h2 id="authentication-settings"><a class="toclink" href="#authentication-settings">Authentication settings</a></h2>
 <p><em>The following settings control the behavior of unauthenticated requests.</em></p>
 <h4 id="unauthenticated_user"><a class="toclink" href="#unauthenticated_user">UNAUTHENTICATED_USER</a></h4>
-<p>The class that should be used to initialize <code>request.user</code> for unauthenticated requests.</p>
+<p>The class that should be used to initialize <code>request.user</code> for unauthenticated requests.
+(If removing authentication entirely, e.g. by removing <code>django.contrib.auth</code> from
+<code>INSTALLED_APPS</code>, set <code>UNAUTHENTICATED_USER</code> to <code>None</code>.)</p>
 <p>Default: <code>django.contrib.auth.models.AnonymousUser</code></p>
 <h4 id="unauthenticated_token"><a class="toclink" href="#unauthenticated_token">UNAUTHENTICATED_TOKEN</a></h4>
 <p>The class that should be used to initialize <code>request.auth</code> for unauthenticated requests.</p>

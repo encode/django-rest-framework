@@ -519,7 +519,7 @@ def snippet_detail(request, pk):
 <p>and</p>
 <pre><code>def snippet_detail(request, pk, format=None):
 </code></pre>
-<p>Now update the <code>urls.py</code> file slightly, to append a set of <code>format_suffix_patterns</code> in addition to the existing URLs.</p>
+<p>Now update the <code>snippets/urls.py</code> file slightly, to append a set of <code>format_suffix_patterns</code> in addition to the existing URLs.</p>
 <pre><code>from django.conf.urls import url
 from rest_framework.urlpatterns import format_suffix_patterns
 from snippets import views

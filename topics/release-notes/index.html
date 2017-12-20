@@ -478,13 +478,72 @@
 </code></pre>
 <hr />
 <h2 id="37x-series"><a class="toclink" href="#37x-series">3.7.x series</a></h2>
+<h3 id="374"><a class="toclink" href="#374">3.7.4</a></h3>
+<p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/milestone/62?closed=1">20th December 2017</a></p>
+<ul>
+<li>
+<p>Schema: Extract method for <code>manual_fields</code> processing <a href="https://github.com/encode/django-rest-framework/issues/5633">#5633</a></p>
+<p>Allows for easier customisation of <code>manual_fields</code> processing, for example
+to provide per-method manual fields. <code>AutoSchema</code> adds <code>get_manual_fields</code>,
+as the intended override point, and a utility method <code>update_fields</code>, to
+handle by-name field replacement from a list, which, in general, you are not
+expected to override.</p>
+<p>Note: <code>AutoSchema.__init__</code> now ensures <code>manual_fields</code> is a list.
+Previously may have been stored internally as <code>None</code>.
+<em> Remove ulrparse compatability shim; use six instead <a href="https://github.com/encode/django-rest-framework/issues/5579">#5579</a>
+</em> Drop compat wrapper for <code>TimeDelta.total_seconds()</code> <a href="https://github.com/encode/django-rest-framework/issues/5577">#5577</a>
+<em> Clean up all whitespace throughout project <a href="https://github.com/encode/django-rest-framework/issues/5578">#5578</a>
+</em> Compat cleanup <a href="https://github.com/encode/django-rest-framework/issues/5581">#5581</a>
+<em> Add pygments CSS block in browsable API views <a href="https://github.com/encode/django-rest-framework/issues/5584">#5584</a> <a href="https://github.com/encode/django-rest-framework/issues/5587">#5587</a>
+</em> Remove <code>set_rollback()</code> from compat <a href="https://github.com/encode/django-rest-framework/issues/5591">#5591</a>
+<em> Fix request body/POST access <a href="https://github.com/encode/django-rest-framework/issues/5590">#5590</a>
+</em> Rename test to reference correct issue <a href="https://github.com/encode/django-rest-framework/issues/5610">#5610</a>
+<em> Documentation Fixes <a href="https://github.com/encode/django-rest-framework/issues/5611">#5611</a> <a href="https://github.com/encode/django-rest-framework/issues/5612">#5612</a>
+</em> Remove references to unsupported Django versions in docs and code <a href="https://github.com/encode/django-rest-framework/issues/5602">#5602</a>
+<em> Test Serializer exclude for declared fields <a href="https://github.com/encode/django-rest-framework/issues/5599">#5599</a>
+</em> Fixed schema generation for filter backends <a href="https://github.com/encode/django-rest-framework/issues/5613">#5613</a>
+<em> Minor cleanup for ModelSerializer tests <a href="https://github.com/encode/django-rest-framework/issues/5598">#5598</a>
+</em> Reimplement request attribute access w/ <code>__getattr__</code> <a href="https://github.com/encode/django-rest-framework/issues/5617">#5617</a>
+<em> Fixed SchemaJSRenderer renders invalid Javascript <a href="https://github.com/encode/django-rest-framework/issues/5607">#5607</a>
+</em> Make Django 2.0 support official/explicit <a href="https://github.com/encode/django-rest-framework/issues/5619">#5619</a>
+<em> Perform type check on passed request argument <a href="https://github.com/encode/django-rest-framework/issues/5618">#5618</a>
+</em> Fix AttributeError hiding on request authenticators <a href="https://github.com/encode/django-rest-framework/issues/5600">#5600</a>
+<em> Update test requirements <a href="https://github.com/encode/django-rest-framework/issues/5626">#5626</a>
+</em> Docs: <code>Serializer._declared_fields</code> enable modifying fields on a serializer <a href="https://github.com/encode/django-rest-framework/issues/5629">#5629</a>
+<em> Fix packaging <a href="https://github.com/encode/django-rest-framework/issues/5624">#5624</a>
+</em> Fix readme rendering for PyPI, add readme build to CI <a href="https://github.com/encode/django-rest-framework/issues/5625">#5625</a>
+<em> Update tutorial <a href="https://github.com/encode/django-rest-framework/issues/5622">#5622</a>
+</em> Non-required fields with <code>allow_null=True</code> should not imply a default value <a href="https://github.com/encode/django-rest-framework/issues/5639">#5639</a>
+<em> Docs: Add <code>allow_null</code> serialization output note <a href="https://github.com/encode/django-rest-framework/issues/5641">#5641</a>
+</em> Update to use the Django 2.0 release in tox.ini <a href="https://github.com/encode/django-rest-framework/issues/5645">#5645</a>
+<em> Fix <code>Serializer.data</code> for Browsable API rendering when provided invalid <code>data</code> <a href="https://github.com/encode/django-rest-framework/issues/5646">#5646</a>
+</em> Docs: Note AutoSchema limitations on bare APIView <a href="https://github.com/encode/django-rest-framework/issues/5649">#5649</a>
+<em> Add <code>.basename</code> and <code>.reverse_action()</code> to ViewSet <a href="https://github.com/encode/django-rest-framework/issues/5648">#5648</a>
+</em> Docs: Fix typos in serializers documentation <a href="https://github.com/encode/django-rest-framework/issues/5652">#5652</a>
+<em> Fix <code>override_settings</code> compat <a href="https://github.com/encode/django-rest-framework/issues/5668">#5668</a>
+</em> Add DEFAULT_SCHEMA_CLASS setting <a href="https://github.com/encode/django-rest-framework/issues/5658">#5658</a>
+<em> Add docs note re generated BooleanField being <code>required=False</code> <a href="https://github.com/encode/django-rest-framework/issues/5665">#5665</a>
+</em> Add 'dist' build <a href="https://github.com/encode/django-rest-framework/issues/5656">#5656</a>
+<em> Fix typo in docstring <a href="https://github.com/encode/django-rest-framework/issues/5678">#5678</a>
+</em> Docs: Add <code>UNAUTHENTICATED_USER = None</code> note <a href="https://github.com/encode/django-rest-framework/issues/5679">#5679</a>
+<em> Update OPTIONS example from “Documenting Your API” <a href="https://github.com/encode/django-rest-framework/issues/5680">#5680</a>
+</em> Docs: Add note on object permissions for FBVs <a href="https://github.com/encode/django-rest-framework/issues/5681">#5681</a>
+<em> Docs: Add example to <code>to_representation</code> docs <a href="https://github.com/encode/django-rest-framework/issues/5682">#5682</a>
+</em> Add link to Classy DRF in docs <a href="https://github.com/encode/django-rest-framework/issues/5683">#5683</a>
+<em> Document ViewSet.action <a href="https://github.com/encode/django-rest-framework/issues/5685">#5685</a>
+</em> Fix schema docs typo <a href="https://github.com/encode/django-rest-framework/issues/5687">#5687</a>
+<em> Fix URL pattern parsing in schema generation <a href="https://github.com/encode/django-rest-framework/issues/5689">#5689</a>
+</em> Add example using <code>source=‘*’</code> to custom field docs. <a href="https://github.com/encode/django-rest-framework/issues/5688">#5688</a>
+* Fix format_suffix_patterns behavior with Django 2 path() routes <a href="https://github.com/encode/django-rest-framework/issues/5691">#5691</a></p>
+</li>
+</ul>
 <h3 id="373"><a class="toclink" href="#373">3.7.3</a></h3>
-<p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/milestone/60?closed=1">6th Novemember 2017</a></p>
+<p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/milestone/60?closed=1">6th November 2017</a></p>
 <ul>
 <li>Fix <code>AppRegistryNotReady</code> error from contrib.auth view imports <a href="https://github.com/encode/django-rest-framework/issues/5567">#5567</a></li>
 </ul>
 <h3 id="372"><a class="toclink" href="#372">3.7.2</a></h3>
-<p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/milestone/59?closed=1">6th Novemember 2017</a></p>
+<p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/milestone/59?closed=1">6th November 2017</a></p>
 <ul>
 <li>Fixed Django 2.1 compatibility due to removal of django.contrib.auth.login()/logout() views. <a href="https://github.com/encode/django-rest-framework/issues/5510">#5510</a></li>
 <li>Add missing import for TextLexer. <a href="https://github.com/encode/django-rest-framework/issues/5512">#5512</a></li>
@@ -1246,6 +1305,8 @@
 <!-- 3.7.2 -->
 
 <!-- 3.7.3 -->
+
+<!-- 3.7.4 -->
             
 
           </div> <!--/span-->

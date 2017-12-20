@@ -474,7 +474,7 @@ from pygments import highlight
 </code></pre>
 <p>When that's all done we'll need to update our database tables.
 Normally we'd create a database migration in order to do that, but for the purposes of this tutorial, let's just delete the database and start again.</p>
-<pre><code>rm -f tmp.db db.sqlite3
+<pre><code>rm -f db.sqlite3
 rm -r snippets/migrations
 python manage.py makemigrations snippets
 python manage.py migrate
@@ -546,11 +546,10 @@ url(r'^users/(?P&lt;pk&gt;[0-9]+)/$', views.UserDetail.as_view()),
 </code></pre>
 <p>And, at the end of the file, add a pattern to include the login and logout views for the browsable API.</p>
 <pre><code>urlpatterns += [
-    url(r'^api-auth/', include('rest_framework.urls',
-                               namespace='rest_framework')),
+    url(r'^api-auth/', include('rest_framework.urls'),
 ]
 </code></pre>
-<p>The <code>r'^api-auth/'</code> part of pattern can actually be whatever URL you want to use.  The only restriction is that the included urls must use the <code>'rest_framework'</code> namespace. In Django 1.9+, REST framework will set the namespace, so you may leave it out.</p>
+<p>The <code>r'^api-auth/'</code> part of pattern can actually be whatever URL you want to use.</p>
 <p>Now if you open up the browser again and refresh the page you'll see a 'Login' link in the top right of the page.  If you log in as one of the users you created earlier, you'll be able to create code snippets again.</p>
 <p>Once you've created a few code snippets, navigate to the '/users/' endpoint, and notice that the representation includes a list of the snippet ids that are associated with each user, in each user's 'snippets' field.</p>
 <h2 id="object-level-permissions"><a class="toclink" href="#object-level-permissions">Object level permissions</a></h2>
@@ -594,11 +593,11 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
 }
 </code></pre>
 <p>We can make a successful request by including the username and password of one of the users we created earlier.</p>
-<pre><code>http -a tom:password123 POST http://127.0.0.1:8000/snippets/ code="print 789"
+<pre><code>http -a admin:password123 POST http://127.0.0.1:8000/snippets/ code="print 789"
 
 {
     "id": 1,
-    "owner": "tom",
+    "owner": "admin",
     "title": "foo",
     "code": "print 789",
     "linenos": false,

@@ -473,7 +473,7 @@ $ find .
 <pre><code>python manage.py migrate
 </code></pre>
 <p>We'll also create an initial user named <code>admin</code> with a password of <code>password123</code>. We'll authenticate as that user later in our example.</p>
-<pre><code>python manage.py createsuperuser
+<pre><code>python manage.py createsuperuser --email admin@example.com --username admin
 </code></pre>
 <p>Once you've set up a database and initial user created and ready to go, open up the app's directory and we'll get coding...</p>
 <h2 id="serializers"><a class="toclink" href="#serializers">Serializers</a></h2>
@@ -539,18 +539,11 @@ urlpatterns = [
 <p>Again, if we need more control over the API URLs we can simply drop down to using regular class-based views, and writing the URL conf explicitly.</p>
 <p>Finally, we're including default login and logout views for use with the browsable API.  That's optional, but useful if your API requires authentication and you want to use the browsable API.</p>
 <h2 id="settings"><a class="toclink" href="#settings">Settings</a></h2>
-<p>We'd also like to set a few global settings.  We'd like to turn on pagination, and we want our API to only be accessible to admin users.  The settings module will be in <code>tutorial/settings.py</code></p>
+<p>Add <code>'rest_framework'</code> to <code>INSTALLED_APPS</code>. The settings module will be in <code>tutorial/settings.py</code></p>
 <pre><code>INSTALLED_APPS = (
     ...
     'rest_framework',
 )
-
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAdminUser',
-    ],
-    'PAGE_SIZE': 10
-}
 </code></pre>
 <p>Okay, we're done.</p>
 <hr />

@@ -482,6 +482,9 @@ class ListUsers(APIView):
         usernames = [user.username for user in User.objects.all()]
         return Response(usernames)
 </code></pre>
+<hr />
+<p><strong>Note</strong>: The full methods, attributes on, and relations between Django REST Framework's <code>APIView</code>, <code>GenericAPIView</code>, various <code>Mixins</code>, and <code>Viewsets</code> can be initially complex. In addition to the documentation here, the <a href="http://www.cdrf.co">Classy Django REST Framework</a> resource provides a browsable reference, with full methods and attributes, for each of Django REST Framework's class-based views.</p>
+<hr />
 <h2 id="api-policy-attributes"><a class="toclink" href="#api-policy-attributes">API policy attributes</a></h2>
 <p>The following attributes control the pluggable aspects of API views.</p>
 <h3 id="renderer_classes"><a class="toclink" href="#renderer_classes">.renderer_classes</a></h3>

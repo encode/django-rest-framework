@@ -636,6 +636,7 @@ Set to false if this field is not required to be present during deserialization.
 <p>Defaults to <code>True</code>.</p>
 <h3 id="allow_null"><a class="toclink" href="#allow_null"><code>allow_null</code></a></h3>
 <p>Normally an error will be raised if <code>None</code> is passed to a serializer field. Set this keyword argument to <code>True</code> if <code>None</code> should be considered a valid value.</p>
+<p>Note that setting this argument to <code>True</code> will imply a default value of <code>null</code> for serialization output, but does imply a default for input deserialization.</p>
 <p>Defaults to <code>False</code></p>
 <h3 id="default"><a class="toclink" href="#default"><code>default</code></a></h3>
 <p>If set, this gives the default value that will be used for the field if no input value is supplied. If not set the default behaviour is to not populate the attribute at all.</p>
@@ -683,6 +684,7 @@ color_channel = serializers.ChoiceField(
 <h2 id="booleanfield"><a class="toclink" href="#booleanfield">BooleanField</a></h2>
 <p>A boolean representation.</p>
 <p>When using HTML encoded form input be aware that omitting a value will always be treated as setting a field to <code>False</code>, even if it has a <code>default=True</code> option specified. This is because HTML checkbox inputs represent the unchecked state by omitting the value, so REST framework treats omission as if it is an empty checkbox input.</p>
+<p>Note that default <code>BooleanField</code> instances will be generated with a <code>required=False</code> option (since Django <code>models.BooleanField</code> is always <code>blank=True</code>). If you want to change this behaviour explicitly declare the <code>BooleanField</code> on the serializer class.</p>
 <p>Corresponds to <code>django.db.models.fields.BooleanField</code>.</p>
 <p><strong>Signature:</strong> <code>BooleanField()</code></p>
 <h2 id="nullbooleanfield"><a class="toclink" href="#nullbooleanfield">NullBooleanField</a></h2>
@@ -841,7 +843,6 @@ color_channel = serializers.ChoiceField(
 Corresponds to <code>django.db.models.fields.DurationField</code></p>
 <p>The <code>validated_data</code> for these fields will contain a <code>datetime.timedelta</code> instance.
 The representation is a string following this format <code>'[DD] [HH:[MM:]]ss[.uuuuuu]'</code>.</p>
-<p><strong>Note:</strong> This field is only available with Django versions &gt;= 1.8.</p>
 <p><strong>Signature:</strong> <code>DurationField()</code></p>
 <hr />
 <h1 id="choice-selection-fields"><a class="toclink" href="#choice-selection-fields">Choice selection fields</a></h1>
@@ -981,6 +982,7 @@ class UserSerializer(serializers.ModelSerializer):
 <p>The <code>to_internal_value()</code> method is called to restore a primitive datatype into its internal python representation. This method should raise a <code>serializers.ValidationError</code> if the data is invalid.</p>
 <p>Note that the <code>WritableField</code> class that was present in version 2.x no longer exists. You should subclass <code>Field</code> and override <code>to_internal_value()</code> if the field supports data input.</p>
 <h2 id="examples"><a class="toclink" href="#examples">Examples</a></h2>
+<h3 id="a-basic-custom-field"><a class="toclink" href="#a-basic-custom-field">A Basic Custom Field</a></h3>
 <p>Let's look at an example of serializing a class that represents an RGB color value:</p>
 <pre><code>class Color(object):
     """
@@ -1017,7 +1019,7 @@ class ColorField(serializers.Field):
         """
         return obj.__class__.__name__
 </code></pre>
-<h4 id="raising-validation-errors"><a class="toclink" href="#raising-validation-errors">Raising validation errors</a></h4>
+<h3 id="raising-validation-errors"><a class="toclink" href="#raising-validation-errors">Raising validation errors</a></h3>
 <p>Our <code>ColorField</code> class above currently does not perform any data validation.
 To indicate invalid data, we should raise a <code>serializers.ValidationError</code>, like so:</p>
 <pre><code>def to_internal_value(self, data):
@@ -1059,6 +1061,128 @@ def to_internal_value(self, data):
     return Color(red, green, blue)
 </code></pre>
 <p>This style keeps your error messages cleaner and more separated from your code, and should be preferred.</p>
+<h3 id="using-source"><a class="toclink" href="#using-source">Using <code>source='*'</code></a></h3>
+<p>Here we'll take an example of a <em>flat</em> <code>DataPoint</code> model with <code>x_coordinate</code> and <code>y_coordinate</code> attributes.</p>
+<pre><code>class DataPoint(models.Model):
+    label = models.CharField(max_length=50)
+    x_coordinate = models.SmallIntegerField()
+    y_coordinate = models.SmallIntegerField()
+</code></pre>
+<p>Using a custom field and <code>source='*'</code> we can provide a nested representation of
+the coordinate pair:</p>
+<pre><code>class CoordinateField(serializers.Field):
+
+    def to_representation(self, obj):
+        ret = {
+            "x": obj.x_coordinate,
+            "y": obj.y_coordinate
+        }
+        return ret
+
+    def to_internal_value(self, data):
+        ret = {
+            "x_coordinate": data["x"],
+            "y_coordinate": data["y"],
+        }
+        return ret
+
+
+class DataPointSerializer(serializers.ModelSerializer):
+    coordinates = CoordinateField(source='*')
+
+    class Meta:
+        model = DataPoint
+        fields = ['label', 'coordinates']
+</code></pre>
+<p>Note that this example doesn't handle validation. Partly for that reason, in a
+real project, the coordinate nesting might be better handled with a nested serialiser
+using <code>source='*'</code>, with two <code>IntegerField</code> instances, each with their own <code>source</code>
+pointing to the relevant field.</p>
+<p>The key points from the example, though, are:</p>
+<ul>
+<li>
+<p><code>to_representation</code> is passed the entire <code>DataPoint</code> object and must map from that
+to the desired output.</p>
+<pre><code>&gt;&gt;&gt; instance = DataPoint(label='Example', x_coordinate=1, y_coordinate=2)
+&gt;&gt;&gt; out_serializer = DataPointSerializer(instance)
+&gt;&gt;&gt; out_serializer.data
+ReturnDict([('label', 'testing'), ('coordinates', {'x': 1, 'y': 2})])
+</code></pre>
+</li>
+<li>
+<p>Unless our field is to be read-only, <code>to_internal_value</code> must map back to a dict
+suitable for updating our target object. With <code>source='*'</code>, the return from
+<code>to_internal_value</code> will update the root validated data dictionary, rather than a single key.</p>
+<pre><code>&gt;&gt;&gt; data = {
+...     "label": "Second Example",
+...     "coordinates": {
+...         "x": 3,
+...         "y": 4,
+...     }
+... }
+&gt;&gt;&gt; in_serializer = DataPointSerializer(data=data)
+&gt;&gt;&gt; in_serializer.is_valid()
+True
+&gt;&gt;&gt; in_serializer.validated_data
+OrderedDict([('label', 'Second Example'),
+             ('y_coordinate', 4),
+             ('x_coordinate', 3)])
+</code></pre>
+</li>
+</ul>
+<p>For completeness lets do the same thing again but with the nested serialiser
+approach suggested above:</p>
+<pre><code>class NestedCoordinateSerializer(serializers.Serializer):
+    x = serializers.IntegerField(source='x_coordinate')
+    y = serializers.IntegerField(source='y_coordinate')
+
+
+class DataPointSerializer(serializers.ModelSerializer):
+    coordinates = NestedCoordinateSerializer(source='*')
+
+    class Meta:
+        model = DataPoint
+        fields = ['label', 'coordinates']
+</code></pre>
+<p>Here the mapping between the target and source attribute pairs (<code>x</code> and
+<code>x_coordinate</code>, <code>y</code> and <code>y_coordinate</code>) is handled in the <code>IntegerField</code>
+declarations. It's our <code>NestedCoordinateSerializer</code> that takes <code>source='*'</code>.</p>
+<p>Our new <code>DataPointSerializer</code> exhibits the same behaviour as the custom field
+approach.</p>
+<p>Serialising:</p>
+<pre><code>&gt;&gt;&gt; out_serializer = DataPointSerializer(instance)
+&gt;&gt;&gt; out_serializer.data
+ReturnDict([('label', 'testing'),
+            ('coordinates', OrderedDict([('x', 1), ('y', 2)]))])
+</code></pre>
+<p>Deserialising:</p>
+<pre><code>&gt;&gt;&gt; in_serializer = DataPointSerializer(data=data)
+&gt;&gt;&gt; in_serializer.is_valid()
+True
+&gt;&gt;&gt; in_serializer.validated_data
+OrderedDict([('label', 'still testing'),
+             ('x_coordinate', 3),
+             ('y_coordinate', 4)])
+</code></pre>
+<p>But we also get the built-in validation for free:</p>
+<pre><code>&gt;&gt;&gt; invalid_data = {
+...     "label": "still testing",
+...     "coordinates": {
+...         "x": 'a',
+...         "y": 'b',
+...     }
+... }
+&gt;&gt;&gt; invalid_serializer = DataPointSerializer(data=invalid_data)
+&gt;&gt;&gt; invalid_serializer.is_valid()
+False
+&gt;&gt;&gt; invalid_serializer.errors
+ReturnDict([('coordinates',
+             {'x': ['A valid integer is required.'],
+              'y': ['A valid integer is required.']})])
+</code></pre>
+<p>For this reason, the nested serialiser approach would be the first to try. You
+would use the custom field approach when the nested serialiser becomes infeasible
+or overly complex.</p>
 <h1 id="third-party-packages"><a class="toclink" href="#third-party-packages">Third party packages</a></h1>
 <p>The following third party packages are also available.</p>
 <h2 id="drf-compound-fields"><a class="toclink" href="#drf-compound-fields">DRF Compound Fields</a></h2>

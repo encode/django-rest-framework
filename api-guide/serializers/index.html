@@ -678,7 +678,7 @@ serializer.validated_data
 # {'content': 'foo bar', 'email': 'leila@example.com', 'created': datetime.datetime(2012, 08, 22, 16, 20, 09, 822243)}
 </code></pre>
 <h2 id="saving-instances"><a class="toclink" href="#saving-instances">Saving instances</a></h2>
-<p>If we want to be able to return complete object instances based on the validated data we need to implement one or both of the <code>.create()</code> and <code>update()</code> methods. For example:</p>
+<p>If we want to be able to return complete object instances based on the validated data we need to implement one or both of the <code>.create()</code> and <code>.update()</code> methods. For example:</p>
 <pre><code>class CommentSerializer(serializers.Serializer):
     email = serializers.EmailField()
     content = serializers.CharField(max_length=200)
@@ -879,7 +879,7 @@ serializer.errors
 <li>Ignore the data and leave the instance as it is.</li>
 <li>Raise a validation error.</li>
 </ul>
-<p>Here's an example for an <code>update()</code> method on our previous <code>UserSerializer</code> class.</p>
+<p>Here's an example for an <code>.update()</code> method on our previous <code>UserSerializer</code> class.</p>
 <pre><code>    def update(self, instance, validated_data):
         profile_data = validated_data.pop('profile')
         # Unless the application properly enforces that this field is
@@ -1009,6 +1009,7 @@ AccountSerializer():
 <p>In the example above, if the <code>Account</code> model had 3 fields <code>account_name</code>, <code>users</code>, and <code>created</code>, this will result in the fields <code>account_name</code> and <code>created</code> to be serialized.</p>
 <p>The names in the <code>fields</code> and <code>exclude</code> attributes will normally map to model fields on the model class.</p>
 <p>Alternatively names in the <code>fields</code> options can map to properties or methods which take no arguments that exist on the model class.</p>
+<p>Since version 3.3.0, it is <strong>mandatory</strong> to provide one of the attributes <code>fields</code> or <code>exclude</code>.</p>
 <h2 id="specifying-nested-serialization"><a class="toclink" href="#specifying-nested-serialization">Specifying nested serialization</a></h2>
 <p>The default <code>ModelSerializer</code> uses primary keys for relationships, but you can also easily generate nested representations using the <code>depth</code> option:</p>
 <pre><code>class AccountSerializer(serializers.ModelSerializer):
@@ -1392,9 +1393,16 @@ def all_high_scores(request):
 <p>The signatures for these methods are as follows:</p>
 <h4 id="to_representationself-obj"><a class="toclink" href="#to_representationself-obj"><code>.to_representation(self, obj)</code></a></h4>
 <p>Takes the object instance that requires serialization, and should return a primitive representation. Typically this means returning a structure of built-in Python datatypes. The exact types that can be handled will depend on the render classes you have configured for your API.</p>
+<p>May be overridden in order modify the representation style. For example:</p>
+<pre><code>def to_representation(self, instance):
+    """Convert `username` to lowercase."""
+    ret = super().to_representation(instance)
+    ret['username'] = ret['username'].lower()
+    return ret
+</code></pre>
 <h4 id="to_internal_valueself-data"><a class="toclink" href="#to_internal_valueself-data"><code>.to_internal_value(self, data)</code></a></h4>
 <p>Takes the unvalidated incoming data as input and should return the validated data that will be made available as <code>serializer.validated_data</code>. The return value will also be passed to the <code>.create()</code> or <code>.update()</code> methods if <code>.save()</code> is called on the serializer class.</p>
-<p>If any of the validation fails, then the method should raise a <code>serializers.ValidationError(errors)</code>. The <code>errors</code> argument should be a dictionary mapping field names (or <code>settings.NON_FIELD_ERRORS_KEY</code>) to a list of error messages. If you don't need to alter deserialization behavior and instead want to provide object-level validation, it's recommended that you intead override the <a href="#object-level-validation"><code>.validate()</code></a> method.</p>
+<p>If any of the validation fails, then the method should raise a <code>serializers.ValidationError(errors)</code>. The <code>errors</code> argument should be a dictionary mapping field names (or <code>settings.NON_FIELD_ERRORS_KEY</code>) to a list of error messages. If you don't need to alter deserialization behavior and instead want to provide object-level validation, it's recommended that you instead override the <a href="#object-level-validation"><code>.validate()</code></a> method.</p>
 <p>The <code>data</code> argument passed to this method will normally be the value of <code>request.data</code>, so the datatype it provides will depend on the parser classes you have configured for your API.</p>
 <h2 id="serializer-inheritance"><a class="toclink" href="#serializer-inheritance">Serializer Inheritance</a></h2>
 <p>Similar to Django forms, you can extend and reuse serializers through inheritance. This allows you to declare a common set of fields or methods on a parent class that can then be used in a number of serializers. For example,</p>

@@ -534,6 +534,8 @@
 <p>The <code>APIView</code> class or <code>@api_view</code> decorator will ensure that this property is automatically set to a list of <code>Authentication</code> instances, based on the <code>authentication_classes</code> set on the view or based on the <code>DEFAULT_AUTHENTICATORS</code> setting.</p>
 <p>You won't typically need to access this property.</p>
 <hr />
+<p><strong>Note:</strong> You may see a <code>WrappedAttributeError</code> raised when calling the <code>.user</code> or <code>.auth</code> properties. These errors originate from an authenticator as a standard <code>AttributeError</code>, however it's necessary that they be re-raised as a different exception type in order to prevent them from being suppressed by the outer property access. Python will not recognize that the <code>AttributeError</code> orginates from the authenticator and will instaed assume that the request object does not have a <code>.user</code> or <code>.auth</code> property. The authenticator will need to be fixed.</p>
+<hr />
 <h1 id="browser-enhancements"><a class="toclink" href="#browser-enhancements">Browser enhancements</a></h1>
 <p>REST framework supports a few browser enhancements such as browser-based <code>PUT</code>, <code>PATCH</code> and <code>DELETE</code> forms.</p>
 <h2 id="method"><a class="toclink" href="#method">.method</a></h2>

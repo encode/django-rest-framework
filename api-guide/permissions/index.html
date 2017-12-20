@@ -624,7 +624,7 @@ else:
     # Check permissions for write request
 </code></pre>
 <hr />
-<p><strong>Note</strong>: The instance-level <code>has_object_permission</code> method will only be called if the view-level <code>has_permission</code> checks have already passed. Also note that in order for the instance-level checks to run, the view code should explicitly call <code>.check_object_permissions(request, obj)</code>. If you are using the generic views then this will be handled for you by default.</p>
+<p><strong>Note</strong>: The instance-level <code>has_object_permission</code> method will only be called if the view-level <code>has_permission</code> checks have already passed. Also note that in order for the instance-level checks to run, the view code should explicitly call <code>.check_object_permissions(request, obj)</code>. If you are using the generic views then this will be handled for you by default. (Function-based views will need to check object permissions explicitly, raising <code>PermissionDenied</code> on failure.)</p>
 <hr />
 <p>Custom permissions will raise a <code>PermissionDenied</code> exception if the test fails. To change the error message associated with the exception, implement a <code>message</code> attribute directly on your custom permission. Otherwise the <code>default_detail</code> attribute from <code>PermissionDenied</code> will be used.</p>
 <pre><code>from rest_framework import permissions

@@ -578,10 +578,10 @@ pip install django-filter  # Filtering support
 <p>If you're intending to use the browsable API you'll probably also want to add REST framework's login and logout views.  Add the following to your root <code>urls.py</code> file.</p>
 <pre><code>urlpatterns = [
     ...
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+    url(r'^api-auth/', include('rest_framework.urls'))
 ]
 </code></pre>
-<p>Note that the URL path can be whatever you want, but you must include <code>'rest_framework.urls'</code> with the <code>'rest_framework'</code> namespace. You may leave out the namespace in Django 1.9+, and REST framework will set it for you.</p>
+<p>Note that the URL path can be whatever you want.</p>
 <h2 id="example"><a class="toclink" href="#example">Example</a></h2>
 <p>Let's take a look at a quick example of using REST framework to build a simple model-backed API.</p>
 <p>We'll create a read-write API for accessing information on the users of our project.</p>

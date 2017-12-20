@@ -612,8 +612,8 @@ class UserList(generics.ListCreateAPIView):
 </code></pre>
 <p>Note that if your API doesn't include any object level permissions, you may optionally exclude the <code>self.check_object_permissions</code>, and simply return the object from the <code>get_object_or_404</code> lookup.</p>
 <h4 id="filter_querysetself-queryset"><a class="toclink" href="#filter_querysetself-queryset"><code>filter_queryset(self, queryset)</code></a></h4>
-<p>Given a queryset, filter it with whichever filter backends are in use, returning a new queryset.   </p>
-<p>For example:       </p>
+<p>Given a queryset, filter it with whichever filter backends are in use, returning a new queryset.</p>
+<p>For example:</p>
 <pre><code>def filter_queryset(self, queryset):
     filter_backends = (CategoryFilter,)
 

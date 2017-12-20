@@ -391,7 +391,15 @@
                     </li>
                   
                     <li>
+                      <a href="#viewset-actions">ViewSet actions</a>
+                    </li>
+                  
+                    <li>
                       <a href="#marking-extra-actions-for-routing">Marking extra actions for routing</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#reversing-action-urls">Reversing action URLs</a>
                     </li>
                   
                 
@@ -505,8 +513,8 @@ urlpatterns = router.urls
 <li>By using routers, we no longer need to deal with wiring up the URL conf ourselves.</li>
 </ul>
 <p>Both of these come with a trade-off.  Using regular views and URL confs is more explicit and gives you more control.  ViewSets are helpful if you want to get up and running quickly, or when you have a large API and you want to enforce a consistent URL configuration throughout.</p>
-<h2 id="marking-extra-actions-for-routing"><a class="toclink" href="#marking-extra-actions-for-routing">Marking extra actions for routing</a></h2>
-<p>The default routers included with REST framework will provide routes for a standard set of create/retrieve/update/destroy style operations, as shown below:</p>
+<h2 id="viewset-actions"><a class="toclink" href="#viewset-actions">ViewSet actions</a></h2>
+<p>The default routers included with REST framework will provide routes for a standard set of create/retrieve/update/destroy style actions, as shown below:</p>
 <pre><code>class UserViewSet(viewsets.ViewSet):
     """
     Example empty viewset demonstrating the standard
@@ -534,6 +542,20 @@ urlpatterns = router.urls
     def destroy(self, request, pk=None):
         pass
 </code></pre>
+<p>During dispatch the name of the current action is available via the <code>.action</code> attribute.
+You may inspect <code>.action</code> to adjust behaviour based on the current action.</p>
+<p>For example, you could restrict permissions to everything except the <code>list</code> action similar to this:</p>
+<pre><code>def get_permissions(self):
+    """
+    Instantiates and returns the list of permissions that this view requires.
+    """
+    if self.action == 'list':
+        permission_classes = [IsAuthenticated]
+    else:
+        permission_classes = [IsAdmin]
+    return [permission() for permission in permission_classes]
+</code></pre>
+<h2 id="marking-extra-actions-for-routing"><a class="toclink" href="#marking-extra-actions-for-routing">Marking extra actions for routing</a></h2>
 <p>If you have ad-hoc methods that you need to be routed to, you can mark them as requiring routing using the <code>@detail_route</code> or <code>@list_route</code> decorators.</p>
 <p>The <code>@detail_route</code> decorator contains <code>pk</code> in its URL pattern and is intended for methods which require a single instance. The <code>@list_route</code> decorator is intended for methods which operate on a list of objects.</p>
 <p>For example:</p>
@@ -586,6 +608,15 @@ class UserViewSet(viewsets.ModelViewSet):
        ...
 </code></pre>
 <p>The two new actions will then be available at the urls <code>^users/{pk}/set_password/$</code> and <code>^users/{pk}/unset_password/$</code></p>
+<h2 id="reversing-action-urls"><a class="toclink" href="#reversing-action-urls">Reversing action URLs</a></h2>
+<p>If you need to get the URL of an action, use the <code>.reverse_action()</code> method. This is a convenience wrapper for <code>reverse()</code>, automatically passing the view's <code>request</code> object and prepending the <code>url_name</code> with the <code>.basename</code> attribute.</p>
+<p>Note that the <code>basename</code> is provided by the router during <code>ViewSet</code> registration. If you are not using a router, then you must provide the <code>basename</code> argument to the <code>.as_view()</code> method.</p>
+<p>Using the example from the previous section:</p>
+<pre><code class="python">&gt;&gt;&gt; view.reverse_action('set-password', args=['1'])
+'http://localhost:8000/api/users/1/set_password'
+</code></pre>
+
+<p>The <code>url_name</code> argument should match the same argument to the <code>@list_route</code> and <code>@detail_route</code> decorators. Additionally, this can be used to reverse the default <code>list</code> and <code>detail</code> routes.</p>
 <hr />
 <h1 id="api-reference"><a class="toclink" href="#api-reference">API Reference</a></h1>
 <h2 id="viewset"><a class="toclink" href="#viewset">ViewSet</a></h2>

@@ -634,6 +634,15 @@ coreapi_link = auto_schema.get_link(...)
 </code></pre>
 <p>(In compiling the schema, <code>SchemaGenerator</code> calls <code>view.schema.get_link()</code> for
 each view, allowed method and path.)</p>
+<hr />
+<p><strong>Note</strong>: For basic <code>APIView</code> subclasses, default introspection is essentially
+limited to the URL kwarg path parameters. For <code>GenericAPIView</code>
+subclasses, which includes all the provided class based views, <code>AutoSchema</code> will
+attempt to introspect serialiser, pagination and filter fields, as well as
+provide richer path field descriptions. (The key hooks here are the relevant
+<code>GenericAPIView</code> attributes and methods: <code>get_serializer</code>, <code>pagination_class</code>,
+<code>filter_backends</code> and so on.)</p>
+<hr />
 <p>To customise the <code>Link</code> generation you may:</p>
 <ul>
 <li>
@@ -989,6 +998,25 @@ that do not expect a request body.</p>
 <p>Return a list of <code>coreapi.Link()</code> instances, as returned by the <code>get_schema_fields()</code> method on any pagination class used by the view.</p>
 <h3 id="get_filter_fieldsself-path-method"><a class="toclink" href="#get_filter_fieldsself-path-method">get_filter_fields(self, path, method)</a></h3>
 <p>Return a list of <code>coreapi.Link()</code> instances, as returned by the <code>get_schema_fields()</code> method of any filter classes used by the view.</p>
+<h3 id="get_manual_fieldsself-path-method"><a class="toclink" href="#get_manual_fieldsself-path-method">get_manual_fields(self, path, method)</a></h3>
+<p>Return a list of <code>coreapi.Field()</code> instances to be added to or replace generated fields. Defaults to (optional) <code>manual_fields</code> passed to <code>AutoSchema</code> constructor.</p>
+<p>May be overridden to customise manual fields by <code>path</code> or <code>method</code>. For example, a per-method adjustment may look like this:</p>
+<pre><code class="python">def get_manual_fields(self, path, method):
+    &quot;&quot;&quot;Example adding per-method fields.&quot;&quot;&quot;
+
+    extra_fields = []
+    if method=='GET':
+        extra_fields = # ... list of extra fields for GET ...
+    if method=='POST':
+        extra_fields = # ... list of extra fields for POST ...
+
+    manual_fields = super().get_manual_fields()
+    return manual_fields + extra_fields
+</code></pre>
+
+<h3 id="update_fieldsfields-update_with"><a class="toclink" href="#update_fieldsfields-update_with">update_fields(fields, update_with)</a></h3>
+<p>Utility <code>staticmethod</code>. Encapsulates logic to add or replace fields from a list
+by <code>Field.name</code>. May be overridden to adjust replacement criteria.</p>
 <h2 id="manualschema"><a class="toclink" href="#manualschema">ManualSchema</a></h2>
 <p>Allows manually providing a list of <code>coreapi.Field</code> instances for the schema,
 plus an optional description.</p>
