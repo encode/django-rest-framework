@@ -55,6 +55,16 @@ def get_regex_pattern(urlpattern):
         return urlpattern.regex.pattern
 
 
+def is_route_pattern(urlpattern):
+    if hasattr(urlpattern, 'pattern'):
+        # Django 2.0
+        from django.urls.resolvers import RoutePattern
+        return isinstance(urlpattern.pattern, RoutePattern)
+    else:
+        # Django < 2.0
+        return False
+
+
 def make_url_resolver(regex, urlpatterns):
     try:
         # Django 2.0
@@ -274,10 +284,11 @@ except ImportError:
 
 # Django 1.x url routing syntax. Remove when dropping Django 1.11 support.
 try:
-    from django.urls import include, path, re_path # noqa
+    from django.urls import include, path, re_path, register_converter  # noqa
 except ImportError:
     from django.conf.urls import include, url # noqa
     path = None
+    register_converter = None
     re_path = url
 
 

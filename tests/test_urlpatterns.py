@@ -91,7 +91,7 @@ class FormatSuffixTests(TestCase):
             URLTestPath('/convtest/42', (), {'pk': 42}),
             URLTestPath('/convtest/42.api', (), {'pk': 42, 'format': 'api'}),
             URLTestPath('/convtest/42.asdf', (), {'pk': 42, 'format': 'asdf'}),
-            URLTestPath('/retest', (), {'pk': '42'}),
+            URLTestPath('/retest/42', (), {'pk': '42'}),
             URLTestPath('/retest/42.api', (), {'pk': '42', 'format': 'api'}),
             URLTestPath('/retest/42.asdf', (), {'pk': '42', 'format': 'asdf'}),
         ]
