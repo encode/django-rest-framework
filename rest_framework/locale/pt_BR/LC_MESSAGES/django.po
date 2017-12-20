@@ -7,13 +7,14 @@
 # Ederson  Mota Pereira <edermp@gmail.com>, 2015
 # Filipe Rinaldi <filipe.rinaldi@gmail.com>, 2015
 # Hugo Leonardo Chalhoub Mendonça <hugoleonardocm@live.com>, 2015
+# Jonatas Baldin <jonatas.baldin@gmail.com>, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-07-12 16:13+0100\n"
-"PO-Revision-Date: 2017-08-03 14:58+0000\n"
-"Last-Translator: Thomas Christie <tom@tomchristie.com>\n"
+"PO-Revision-Date: 2017-12-06 09:53+0000\n"
+"Last-Translator: Jonatas Baldin <jonatas.baldin@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/pt_BR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -60,35 +61,35 @@ msgstr "Token inválido."
 
 #: authtoken/apps.py:7
 msgid "Auth Token"
-msgstr ""
+msgstr "Token de autenticação"
 
 #: authtoken/models.py:15
 msgid "Key"
-msgstr ""
+msgstr "Chave"
 
 #: authtoken/models.py:18
 msgid "User"
-msgstr ""
+msgstr "Usuário"
 
 #: authtoken/models.py:20
 msgid "Created"
-msgstr ""
+msgstr "Criado"
 
 #: authtoken/models.py:29
 msgid "Token"
-msgstr ""
+msgstr "Token"
 
 #: authtoken/models.py:30
 msgid "Tokens"
-msgstr ""
+msgstr "Tokens"
 
 #: authtoken/serializers.py:8
 msgid "Username"
-msgstr ""
+msgstr "Nome do usuário"
 
 #: authtoken/serializers.py:9
 msgid "Password"
-msgstr ""
+msgstr "Senha"
 
 #: authtoken/serializers.py:20
 msgid "User account is disabled."
@@ -318,15 +319,15 @@ msgstr "Enviar"
 
 #: filters.py:336
 msgid "ascending"
-msgstr ""
+msgstr "ascendente"
 
 #: filters.py:337
 msgid "descending"
-msgstr ""
+msgstr "descendente"
 
 #: pagination.py:193
 msgid "Invalid page."
-msgstr ""
+msgstr "Página inválida."
 
 #: pagination.py:427
 msgid "Invalid cursor"
@@ -428,7 +429,7 @@ msgstr "Versão inválida no caminho de URL."
 
 #: versioning.py:115
 msgid "Invalid version in URL path. Does not match any version namespace."
-msgstr ""
+msgstr "Versão inválida no caminho da URL. Não corresponde a nenhuma versão do namespace."
 
 #: versioning.py:147
 msgid "Invalid version in hostname."
