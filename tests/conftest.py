@@ -1,3 +1,6 @@
+import django
+
+
 def pytest_configure():
     from django.conf import settings
 
@@ -61,8 +64,4 @@ def pytest_configure():
             'guardian',
         )
 
-    try:
-        import django
-        django.setup()
-    except AttributeError:
-        pass
+    django.setup()
