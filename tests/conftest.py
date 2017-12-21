@@ -2,6 +2,7 @@ import os
 import sys
 
 import django
+from django.core import management
 
 
 def pytest_addoption(parser):
@@ -9,6 +10,9 @@ def pytest_addoption(parser):
                      help='Remove package root directory from sys.path, ensuring that '
                           'rest_framework is imported from the installed site-packages. '
                           'Used for testing the distribution.')
+    parser.addoption('--staticfiles', action='store_true', default=False,
+                     help='Run tests with static files collection, using manifest '
+                          'staticfiles storage. Used for testing the distribution.')
 
 
 def pytest_configure(config):
@@ -82,4 +86,13 @@ def pytest_configure(config):
         package_dir = os.path.join(os.getcwd(), 'rest_framework')
         assert not rest_framework.__file__.startswith(package_dir)
 
+    # Manifest storage will raise an exception if static files are not present (ie, a packaging failure).
+    if config.getoption('--staticfiles'):
+        import rest_framework
+        settings.STATIC_ROOT = os.path.join(os.path.dirname(rest_framework.__file__), 'static-root')
+        settings.STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+
     django.setup()
+
+    if config.getoption('--staticfiles'):
+        management.call_command('collectstatic', verbosity=0, interactive=False)
