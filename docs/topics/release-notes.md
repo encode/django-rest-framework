@@ -40,7 +40,13 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 3.7.x series
 
-### 3.7.4
+### 3.7.6
+
+**Date**: [21st December 2017][3.7.6-milestone]
+
+* Add missing *.ico icon files to packaging.
+
+### 3.7.5
 
 **Date**: [21st December 2017][3.7.5-milestone]
 
@@ -932,6 +938,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [3.7.3-milestone]: https://github.com/encode/django-rest-framework/milestone/60?closed=1
 [3.7.4-milestone]: https://github.com/encode/django-rest-framework/milestone/62?closed=1
 [3.7.5-milestone]: https://github.com/encode/django-rest-framework/milestone/63?closed=1
+[3.7.6-milestone]: https://github.com/encode/django-rest-framework/milestone/64?closed=1
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/encode/django-rest-framework/issues/2013
