@@ -1,11 +1,11 @@
 from __future__ import unicode_literals
 
 from django.test import TestCase
-from django.utils import six
+from django.utils import six, translation
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework.exceptions import (
-    ErrorDetail, Throttled, _get_error_details
+    APIException, ErrorDetail, Throttled, _get_error_details
 )
 
 
@@ -51,3 +51,12 @@ class ExceptionTestCase(TestCase):
         assert exception.get_full_details() == {
             'message': 'Slow down! Expected available in {} seconds.'.format(2 if six.PY3 else 2.),
             'code': 'throttled'}
+
+
+class TranslationTests(TestCase):
+
+    @translation.override('fr')
+    def test_message(self):
+        # this test largely acts as a sanity test to ensure the translation files are present.
+        self.assertEqual(_('A server error occurred.'), 'Une erreur du serveur est survenue.')
+        self.assertEqual(six.text_type(APIException()), 'Une erreur du serveur est survenue.')
