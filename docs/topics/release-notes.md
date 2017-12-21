@@ -42,6 +42,13 @@ You can determine your currently installed version using `pip freeze`:
 
 ### 3.7.4
 
+**Date**: [21st December 2017][3.7.5-milestone]
+
+* Add missing *.woff2 font files to packaging. [#5692][gh5692]
+* Add missing *.mo locale files to packaging. [#5695][gh5695], [#5696][gh5696]
+
+### 3.7.4
+
 **Date**: [20th December 2017][3.7.4-milestone]
 
 * Schema: Extract method for `manual_fields` processing [#5633][gh5633]
@@ -924,7 +931,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [3.7.2-milestone]: https://github.com/encode/django-rest-framework/milestone/59?closed=1
 [3.7.3-milestone]: https://github.com/encode/django-rest-framework/milestone/60?closed=1
 [3.7.4-milestone]: https://github.com/encode/django-rest-framework/milestone/62?closed=1
-
+[3.7.5-milestone]: https://github.com/encode/django-rest-framework/milestone/63?closed=1
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/encode/django-rest-framework/issues/2013
@@ -1733,3 +1740,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh5579]: https://github.com/encode/django-rest-framework/issues/5579
 [gh5633]: https://github.com/encode/django-rest-framework/issues/5633
 
+<!-- 3.7.5 -->
+[gh5692]: https://github.com/encode/django-rest-framework/issues/5692
+[gh5695]: https://github.com/encode/django-rest-framework/issues/5695
+[gh5696]: https://github.com/encode/django-rest-framework/issues/5696
