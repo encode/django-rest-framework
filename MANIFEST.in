@@ -2,6 +2,6 @@ include README.md
 include LICENSE.md
 recursive-include rest_framework/static *.js *.css *.png *.ico *.eot *.svg *.ttf *.woff *.woff2
 recursive-include rest_framework/templates *.html schema.js
-recursice-include rest_framework/locale *.mo
+recursive-include rest_framework/locale *.mo
 global-exclude __pycache__
 global-exclude *.py[co]
