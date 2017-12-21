@@ -40,6 +40,12 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 3.7.x series
 
+### 3.7.7
+
+**Date**: [21st December 2017][3.7.7-milestone]
+
+* Fix typo to include *.mo locale files to packaging. [#5697][gh5697], [#5695][gh5695]
+
 ### 3.7.6
 
 **Date**: [21st December 2017][3.7.6-milestone]
@@ -939,6 +945,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [3.7.4-milestone]: https://github.com/encode/django-rest-framework/milestone/62?closed=1
 [3.7.5-milestone]: https://github.com/encode/django-rest-framework/milestone/63?closed=1
 [3.7.6-milestone]: https://github.com/encode/django-rest-framework/milestone/64?closed=1
+[3.7.7-milestone]: https://github.com/encode/django-rest-framework/milestone/65?closed=1
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/encode/django-rest-framework/issues/2013
@@ -1751,3 +1758,4 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh5692]: https://github.com/encode/django-rest-framework/issues/5692
 [gh5695]: https://github.com/encode/django-rest-framework/issues/5695
 [gh5696]: https://github.com/encode/django-rest-framework/issues/5696
+[gh5697]: https://github.com/encode/django-rest-framework/issues/5697
