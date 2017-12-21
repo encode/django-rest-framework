@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 from __future__ import print_function
 
-import os
 import subprocess
 import sys
 
@@ -81,20 +80,6 @@ if __name__ == "__main__":
         style = 'fast'
         run_flake8 = False
         run_isort = False
-
-    try:
-        # Remove the package root directory from `sys.path`, ensuring that rest_framework
-        # is imported from the installed site packages. Used for testing the distribution
-        sys.argv.remove('--no-pkgroot')
-    except ValueError:
-        pass
-    else:
-        sys.path.pop(0)
-
-        # import rest_framework before pytest re-adds the package root directory.
-        import rest_framework
-        package_dir = os.path.join(os.getcwd(), 'rest_framework')
-        assert not rest_framework.__file__.startswith(package_dir)
 
     if len(sys.argv) > 1:
         pytest_args = sys.argv[1:]
