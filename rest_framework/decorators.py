@@ -130,7 +130,7 @@ def schema(view_inspector):
     return decorator
 
 
-def action(methods=None, detail=True, **kwargs):
+def action(methods=None, detail=True, url_path=None, url_name=None, **kwargs):
     """
     Mark a ViewSet method as a routable action.
 
@@ -143,6 +143,8 @@ def action(methods=None, detail=True, **kwargs):
     def decorator(func):
         func.bind_to_methods = methods
         func.detail = detail
+        func.url_path = url_path or func.__name__
+        func.url_name = url_name or func.__name__.replace('_', '-')
         func.kwargs = kwargs
         return func
     return decorator

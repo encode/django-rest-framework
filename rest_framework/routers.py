@@ -66,18 +66,6 @@ def escape_curly_brackets(url_path):
     return url_path
 
 
-def replace_methodname(format_string, methodname):
-    """
-    Partially format a format_string, swapping out any
-    '{methodname}' or '{methodnamehyphen}' components.
-    """
-    methodnamehyphen = methodname.replace('_', '-')
-    ret = format_string
-    ret = ret.replace('{methodname}', methodname)
-    ret = ret.replace('{methodnamehyphen}', methodnamehyphen)
-    return ret
-
-
 def flatten(list_of_lists):
     """
     Takes an iterable of iterables, returns a single iterable containing all items
@@ -131,8 +119,8 @@ class SimpleRouter(BaseRouter):
         # Dynamically generated list routes. Generated using
         # @action(detail=False) decorator on methods of the viewset.
         DynamicRoute(
-            url=r'^{prefix}/{methodname}{trailing_slash}$',
-            name='{basename}-{methodnamehyphen}',
+            url=r'^{prefix}/{url_path}{trailing_slash}$',
+            name='{basename}-{url_name}',
             detail=False,
             initkwargs={}
         ),
@@ -152,8 +140,8 @@ class SimpleRouter(BaseRouter):
         # Dynamically generated detail routes. Generated using
         # @action(detail=True) decorator on methods of the viewset.
         DynamicRoute(
-            url=r'^{prefix}/{lookup}/{methodname}{trailing_slash}$',
-            name='{basename}-{methodnamehyphen}',
+            url=r'^{prefix}/{lookup}/{url_path}{trailing_slash}$',
+            name='{basename}-{url_name}',
             detail=True,
             initkwargs={}
         ),
@@ -201,35 +189,31 @@ class SimpleRouter(BaseRouter):
         detail_actions = [action for action in extra_actions if action.detail]
         list_actions = [action for action in extra_actions if not action.detail]
 
-        def _get_dynamic_routes(route, dynamic_routes):
-            ret = []
-            for httpmethods, methodname in dynamic_routes:
-                method_kwargs = getattr(viewset, methodname).kwargs
-                initkwargs = route.initkwargs.copy()
-                initkwargs.update(method_kwargs)
-                url_path = initkwargs.pop("url_path", None) or methodname
-                url_path = escape_curly_brackets(url_path)
-                url_name = initkwargs.pop("url_name", None) or url_path
-                ret.append(Route(
-                    url=replace_methodname(route.url, url_path),
-                    mapping={httpmethod: methodname for httpmethod in httpmethods},
-                    name=replace_methodname(route.name, url_name),
-                    detail=route.detail,
-                    initkwargs=initkwargs,
-                ))
-
-            return ret
-
         routes = []
         for route in self.routes:
             if isinstance(route, DynamicRoute) and route.detail:
-                routes += _get_dynamic_routes(route, detail_actions)
+                routes += [self._get_dynamic_route(route, action) for action in detail_actions]
             elif isinstance(route, DynamicRoute) and not route.detail:
-                routes += _get_dynamic_routes(route, list_actions)
+                routes += [self._get_dynamic_route(route, action) for action in list_actions]
             else:
                 routes.append(route)
 
         return routes
+
+    def _get_dynamic_route(self, route, action):
+        initkwargs = route.initkwargs.copy()
+        initkwargs.update(action.kwargs)
+
+        url_path = escape_curly_brackets(action.url_path)
+
+        return Route(
+            url=route.url.replace('{url_path}', url_path),
+            mapping={http_method: action.__name__
+                     for http_method in action.bind_to_methods},
+            name=route.name.replace('{url_name}', action.url_name),
+            detail=route.detail,
+            initkwargs=initkwargs,
+        )
 
     def get_method_map(self, viewset, method_map):
         """

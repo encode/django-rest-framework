@@ -179,6 +179,8 @@ class ActionDecoratorTestCase(TestCase):
 
         assert test_action.bind_to_methods == ['get']
         assert test_action.detail is True
+        assert test_action.url_path == 'test_action'
+        assert test_action.url_name == 'test-action'
 
     def test_detail_route_deprecation(self):
         with pytest.warns(PendingDeprecationWarning) as record:
