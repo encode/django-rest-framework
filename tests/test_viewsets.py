@@ -111,6 +111,16 @@ class InitializeViewSetsTestCase(TestCase):
             self.assertIn(attribute, dir(view))
 
 
+class GetExtraActionTests(TestCase):
+
+    def test_extra_actions(self):
+        view = ActionViewSet()
+        actual = [action.__name__ for action in view.get_extra_actions()]
+        expected = ['custom_detail_action', 'custom_list_action', 'detail_action', 'list_action']
+
+        self.assertEqual(actual, expected)
+
+
 @override_settings(ROOT_URLCONF='tests.test_viewsets')
 class ReverseActionTests(TestCase):
     def test_default_basename(self):
