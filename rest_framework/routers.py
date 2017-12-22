@@ -16,6 +16,7 @@ For example, you might have a `urls.py` that looks something like this:
 from __future__ import unicode_literals
 
 import itertools
+import warnings
 from collections import OrderedDict, namedtuple
 
 from django.conf.urls import url
@@ -30,9 +31,30 @@ from rest_framework.schemas.views import SchemaView
 from rest_framework.settings import api_settings
 from rest_framework.urlpatterns import format_suffix_patterns
 
-Route = namedtuple('Route', ['url', 'mapping', 'name', 'initkwargs'])
-DynamicDetailRoute = namedtuple('DynamicDetailRoute', ['url', 'name', 'initkwargs'])
-DynamicListRoute = namedtuple('DynamicListRoute', ['url', 'name', 'initkwargs'])
+Route = namedtuple('Route', ['url', 'mapping', 'name', 'detail', 'initkwargs'])
+DynamicRoute = namedtuple('DynamicRoute', ['url', 'name', 'detail', 'initkwargs'])
+
+
+class DynamicDetailRoute(object):
+    def __new__(cls, url, name, initkwargs):
+        warnings.warn(
+            "`DynamicDetailRoute` is pending deprecation and will be removed in 3.10 "
+            "in favor of `DynamicRoute`, which accepts a `detail` boolean. Use "
+            "`DynamicRoute(url, name, True, initkwargs)` instead.",
+            PendingDeprecationWarning, stacklevel=2
+        )
+        return DynamicRoute(url, name, True, initkwargs)
+
+
+class DynamicListRoute(object):
+    def __new__(cls, url, name, initkwargs):
+        warnings.warn(
+            "`DynamicListRoute` is pending deprecation and will be removed in 3.10 in "
+            "favor of `DynamicRoute`, which accepts a `detail` boolean. Use "
+            "`DynamicRoute(url, name, False, initkwargs)` instead.",
+            PendingDeprecationWarning, stacklevel=2
+        )
+        return DynamicRoute(url, name, False, initkwargs)
 
 
 def escape_curly_brackets(url_path):
@@ -103,14 +125,15 @@ class SimpleRouter(BaseRouter):
                 'post': 'create'
             },
             name='{basename}-list',
+            detail=False,
             initkwargs={'suffix': 'List'}
         ),
-        # Dynamically generated list routes.
-        # Generated using @list_route decorator
-        # on methods of the viewset.
-        DynamicListRoute(
+        # Dynamically generated list routes. Generated using
+        # @action(detail=False) decorator on methods of the viewset.
+        DynamicRoute(
             url=r'^{prefix}/{methodname}{trailing_slash}$',
             name='{basename}-{methodnamehyphen}',
+            detail=False,
             initkwargs={}
         ),
         # Detail route.
@@ -123,13 +146,15 @@ class SimpleRouter(BaseRouter):
                 'delete': 'destroy'
             },
             name='{basename}-detail',
+            detail=True,
             initkwargs={'suffix': 'Instance'}
         ),
-        # Dynamically generated detail routes.
-        # Generated using @detail_route decorator on methods of the viewset.
-        DynamicDetailRoute(
+        # Dynamically generated detail routes. Generated using
+        # @action(detail=True) decorator on methods of the viewset.
+        DynamicRoute(
             url=r'^{prefix}/{lookup}/{methodname}{trailing_slash}$',
             name='{basename}-{methodnamehyphen}',
+            detail=True,
             initkwargs={}
         ),
     ]
@@ -193,6 +218,7 @@ class SimpleRouter(BaseRouter):
                     url=replace_methodname(route.url, url_path),
                     mapping={httpmethod: methodname for httpmethod in httpmethods},
                     name=replace_methodname(route.name, url_name),
+                    detail=route.detail,
                     initkwargs=initkwargs,
                 ))
 
@@ -200,10 +226,10 @@ class SimpleRouter(BaseRouter):
 
         ret = []
         for route in self.routes:
-            if isinstance(route, DynamicDetailRoute):
+            if isinstance(route, DynamicRoute) and route.detail:
                 # Dynamic detail routes (@detail_route decorator)
                 ret += _get_dynamic_routes(route, detail_routes)
-            elif isinstance(route, DynamicListRoute):
+            elif isinstance(route, DynamicRoute) and not route.detail:
                 # Dynamic list routes (@list_route decorator)
                 ret += _get_dynamic_routes(route, list_routes)
             else:
