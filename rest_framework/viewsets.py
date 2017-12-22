@@ -56,6 +56,9 @@ class ViewSetMixin(object):
         # eg. 'List' or 'Instance'.
         cls.suffix = None
 
+        # The detail initkwarg is reserved for introspecting the viewset type.
+        cls.detail = None
+
         # Setting a basename allows a view to reverse its action urls. This
         # value is provided by the router through the initkwargs.
         cls.basename = None

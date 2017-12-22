@@ -446,6 +446,12 @@ class TestViewInitkwargs(TestCase):
 
         assert initkwargs['suffix'] == 'List'
 
+    def test_detail(self):
+        match = resolve('/example/notes/')
+        initkwargs = match.func.initkwargs
+
+        assert not initkwargs['detail']
+
     def test_basename(self):
         match = resolve('/example/notes/')
         initkwargs = match.func.initkwargs
