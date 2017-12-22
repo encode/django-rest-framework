@@ -185,25 +185,21 @@ class SimpleRouter(BaseRouter):
         # converting to list as iterables are good for one pass, known host needs to be checked again and again for
         # different functions.
         known_actions = list(flatten([route.mapping.values() for route in self.routes if isinstance(route, Route)]))
+        extra_actions = viewset.get_extra_actions()
 
-        # Determine any `@detail_route` or `@list_route` decorated methods on the viewset
-        detail_routes = []
-        list_routes = []
-        for methodname in dir(viewset):
-            attr = getattr(viewset, methodname)
-            httpmethods = getattr(attr, 'bind_to_methods', None)
-            detail = getattr(attr, 'detail', True)
-            if httpmethods:
-                # checking method names against the known actions list
-                if methodname in known_actions:
-                    raise ImproperlyConfigured('Cannot use @detail_route or @list_route '
-                                               'decorators on method "%s" '
-                                               'as it is an existing route' % methodname)
-                httpmethods = [method.lower() for method in httpmethods]
-                if detail:
-                    detail_routes.append((httpmethods, methodname))
-                else:
-                    list_routes.append((httpmethods, methodname))
+        # checking action names against the known actions list
+        not_allowed = [
+            action.__name__ for action in extra_actions
+            if action.__name__ in known_actions
+        ]
+        if not_allowed:
+            msg = ('Cannot use the @action decorator on the following '
+                   'methods, as they are existing routes: %s')
+            raise ImproperlyConfigured(msg % ', '.join(not_allowed))
+
+        # partition detail and list actions
+        detail_actions = [action for action in extra_actions if action.detail]
+        list_actions = [action for action in extra_actions if not action.detail]
 
         def _get_dynamic_routes(route, dynamic_routes):
             ret = []
@@ -224,19 +220,16 @@ class SimpleRouter(BaseRouter):
 
             return ret
 
-        ret = []
+        routes = []
         for route in self.routes:
             if isinstance(route, DynamicRoute) and route.detail:
-                # Dynamic detail routes (@detail_route decorator)
-                ret += _get_dynamic_routes(route, detail_routes)
+                routes += _get_dynamic_routes(route, detail_actions)
             elif isinstance(route, DynamicRoute) and not route.detail:
-                # Dynamic list routes (@list_route decorator)
-                ret += _get_dynamic_routes(route, list_routes)
+                routes += _get_dynamic_routes(route, list_actions)
             else:
-                # Standard route
-                ret.append(route)
+                routes.append(route)
 
-        return ret
+        return routes
 
     def get_method_map(self, viewset, method_map):
         """
