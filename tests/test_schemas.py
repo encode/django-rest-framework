@@ -949,7 +949,10 @@ class TestURLNamingCollisions(TestCase):
 
         generator = SchemaGenerator(title='Naming Colisions', patterns=patterns)
         schema = generator.get_schema()
-        desc = schema['detail_0'].description  # not important here
+
+        # not important here
+        desc_0 = schema['detail']['detail_export'].description
+        desc_1 = schema['detail_0'].description
 
         expected = coreapi.Document(
             url='',
@@ -959,12 +962,12 @@ class TestURLNamingCollisions(TestCase):
                     'detail_export': coreapi.Link(
                         url='/from-routercollision/detail/export/',
                         action='get',
-                        description=desc)
+                        description=desc_0)
                 },
                 'detail_0': coreapi.Link(
                     url='/from-routercollision/detail/',
                     action='get',
-                    description=desc
+                    description=desc_1
                 )
             }
         )
