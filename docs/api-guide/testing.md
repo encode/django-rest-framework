@@ -292,7 +292,7 @@ similar way as with `RequestsClient`.
 
 ---
 
-# Test cases
+# API Test cases
 
 REST framework includes the following test case classes, that mirror the existing Django test case classes, but use `APIClient` instead of Django's default `Client`.
 
@@ -321,6 +321,32 @@ You can use any of REST framework's test case classes as you would for the regul
             self.assertEqual(response.status_code, status.HTTP_201_CREATED)
             self.assertEqual(Account.objects.count(), 1)
             self.assertEqual(Account.objects.get().name, 'DabApps')
+
+---
+
+# URLPatternsTestCase
+
+REST framework also provides a test case class for isolating `urlpatterns` on a per-class basis. Note that this inherits from Django's `SimpleTestCase`, and will most likely need to be mixed with another test case class.
+
+## Example
+
+    from django.urls import include, path, reverse
+    from rest_framework.test import APITestCase, URLPatternsTestCase
+
+
+    class AccountTests(APITestCase, URLPatternsTestCase):
+        urlpatterns = [
+            path('api/', include('api.urls')),
+        ]
+
+        def test_create_account(self):
+            """
+            Ensure we can create a new account object.
+            """
+            url = reverse('account-list')
+            response = self.client.get(url, format='json')
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(len(response.data), 1)
 
 ---
 
