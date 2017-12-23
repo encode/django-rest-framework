@@ -442,6 +442,8 @@ class Field(object):
         except (KeyError, AttributeError) as exc:
             if self.default is not empty:
                 return self.get_default()
+            if self.read_only and self.allow_null:
+                return None
             if not self.required:
                 raise SkipField()
             if self.allow_null:
