@@ -352,7 +352,7 @@ Here's an example for an `.update()` method on our previous `UserSerializer` cla
 
 Because the behavior of nested creates and updates can be ambiguous, and may require complex dependencies between related models, REST framework 3 requires you to always write these methods explicitly. The default `ModelSerializer` `.create()` and `.update()` methods do not include support for writable nested representations.
 
-There are however, third-party packages available such as [DRF Writable Nested][route-decorators] that support automatic writable nested representations.
+There are however, third-party packages available such as [DRF Writable Nested][thirdparty-writable-nested] that support automatic writable nested representations.
 
 #### Handling saving related instances in model manager classes
 
@@ -1173,6 +1173,7 @@ The [drf-writable-nested][drf-writable-nested] package provides writable nested 
 [relations]: relations.md
 [model-managers]: https://docs.djangoproject.com/en/stable/topics/db/managers/
 [encapsulation-blogpost]: http://www.dabapps.com/blog/django-models-and-encapsulation/
+[thirdparty-writable-nested]: serializers.md#drf-writable-nested
 [django-rest-marshmallow]: http://tomchristie.github.io/django-rest-marshmallow/
 [marshmallow]: https://marshmallow.readthedocs.io/en/latest/
 [serpy]: https://github.com/clarkduvall/serpy
