@@ -352,7 +352,7 @@ Here's an example for an `.update()` method on our previous `UserSerializer` cla
 
 Because the behavior of nested creates and updates can be ambiguous, and may require complex dependencies between related models, REST framework 3 requires you to always write these methods explicitly. The default `ModelSerializer` `.create()` and `.update()` methods do not include support for writable nested representations.
 
-It is possible that a third party package, providing automatic support some kinds of automatic writable nested representations may be released alongside the 3.1 release.
+There are however, third-party packages available such as [DRF Writable Nested][route-decorators] that support automatic writable nested representations.
 
 #### Handling saving related instances in model manager classes
 
