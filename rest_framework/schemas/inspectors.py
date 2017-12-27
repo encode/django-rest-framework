@@ -291,15 +291,17 @@ class AutoSchema(ViewInspector):
         request body input, as determined by the serializer class.
         """
         view = self.view
-
         if method not in ('PUT', 'PATCH', 'POST'):
             return []
 
-        if not hasattr(view, 'get_serializer'):
+        if not hasattr(view, 'get_serializer') and not hasattr(view, 'serializer_class'):
             return []
 
         try:
-            serializer = view.get_serializer()
+            if hasattr(view, 'get_serializer'):
+                serializer = view.get_serializer()
+            elif hasattr(view, 'serializer_class'):
+                serializer = view.serializer_class()
         except exceptions.APIException:
             serializer = None
             warnings.warn('{}.get_serializer() raised an exception during '
