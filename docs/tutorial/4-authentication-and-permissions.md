@@ -142,7 +142,7 @@ Add the following import at the top of the file:
 And, at the end of the file, add a pattern to include the login and logout views for the browsable API.
 
     urlpatterns += [
-        url(r'^api-auth/', include('rest_framework.urls'),
+        url(r'^api-auth/', include('rest_framework.urls')),
     ]
 
 The `r'^api-auth/'` part of pattern can actually be whatever URL you want to use.
