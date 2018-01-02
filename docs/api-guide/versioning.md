@@ -183,7 +183,7 @@ By default this implementation expects the hostname to match this simple regular
 
 Note that the first group is enclosed in brackets, indicating that this is the matched portion of the hostname.
 
-The `HostNameVersioning` scheme can be awkward to use in debug mode as you will typically be accessing a raw IP address such as `127.0.0.1`. There are various online services which you to [access localhost with a custom subdomain][lvh] which you may find helpful in this case.
+The `HostNameVersioning` scheme can be awkward to use in debug mode as you will typically be accessing a raw IP address such as `127.0.0.1`. There are various online tutorials on how to [access localhost with a custom subdomain][lvh] which you may find helpful in this case.
 
 Hostname based versioning can be particularly useful if you have requirements to route incoming requests to different servers based on the version, as you can configure different DNS records for different API versions.
 
