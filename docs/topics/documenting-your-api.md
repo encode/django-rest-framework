@@ -136,6 +136,21 @@ The `rest_framework.documentation` module provides three helper functions to hel
 
 There are a number of mature third-party packages for providing API documentation.
 
+#### drf-yasg - Yet Another Swagger Generator
+
+[drf-yasg][drf-yasg] is a [Swagger][swagger] generation tool implemented without using the schema generation provided 
+by Django Rest Framework.
+
+It aims to implement as much of the [OpenAPI][open-api] specification as possible - nested schemas, named models, 
+response bodies, enum/pattern/min/max validators, form parameters, etc. - and to generate documents usable with code 
+generation tools like `swagger-codegen`.
+
+This also translates into a very useful interactive documentation viewer in the form of `swagger-ui`:
+
+
+![Screenshot - drf-yasg][image-drf-yasg]
+
+
 #### DRF OpenAPI
 
 [DRF OpenAPI][drf-openapi] bridges the gap between OpenAPI specification and tool chain with the schema exposed
@@ -278,6 +293,8 @@ In this approach, rather than documenting the available API endpoints up front, 
 To implement a hypermedia API you'll need to decide on an appropriate media type for the API, and implement a custom renderer and parser for that media type.  The [REST, Hypermedia & HATEOAS][hypermedia-docs] section of the documentation includes pointers to background reading, as well as links to various hypermedia formats.
 
 [cite]: http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
+[drf-yasg]: https://github.com/axnsan12/drf-yasg/
+[image-drf-yasg]: ../img/drf-yasg.png
 [drf-openapi]: https://github.com/limdauto/drf_openapi/
 [image-drf-openapi]: ../img/drf-openapi.png
 [drfdocs-repo]: https://github.com/ekonstantinidis/django-rest-framework-docs
@@ -285,7 +302,8 @@ To implement a hypermedia API you'll need to decide on an appropriate media type
 [drfdocs-demo]: http://demo.drfdocs.com/
 [drfautodocs-repo]: https://github.com/iMakedonsky/drf-autodocs
 [django-rest-swagger]: https://github.com/marcgibbons/django-rest-swagger
-[swagger]: https://developers.helloreverb.com/swagger/
+[swagger]: https://swagger.io/
+[open-api]: https://openapis.org/
 [rest-framework-docs]: https://github.com/marcgibbons/django-rest-framework-docs
 [apiary]: http://apiary.io/
 [markdown]: http://daringfireball.net/projects/markdown/
