@@ -320,6 +320,12 @@ class HTMLFormRenderer(BaseRenderer):
         serializers.ListSerializer: {
             'base_template': 'list_fieldset.html'
         },
+        serializers.ListField: {
+            'base_template': 'list_field.html'
+        },
+        serializers.DictField: {
+            'base_template': 'dict_field.html'
+        },
         serializers.FilePathField: {
             'base_template': 'select.html',
         },
