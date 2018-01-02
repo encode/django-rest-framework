@@ -1,12 +1,22 @@
-def pytest_configure():
-    from django.conf import settings
+import os
+import sys
 
-    MIDDLEWARE = (
-        'django.middleware.common.CommonMiddleware',
-        'django.contrib.sessions.middleware.SessionMiddleware',
-        'django.contrib.auth.middleware.AuthenticationMiddleware',
-        'django.contrib.messages.middleware.MessageMiddleware',
-    )
+import django
+from django.core import management
+
+
+def pytest_addoption(parser):
+    parser.addoption('--no-pkgroot', action='store_true', default=False,
+                     help='Remove package root directory from sys.path, ensuring that '
+                          'rest_framework is imported from the installed site-packages. '
+                          'Used for testing the distribution.')
+    parser.addoption('--staticfiles', action='store_true', default=False,
+                     help='Run tests with static files collection, using manifest '
+                          'staticfiles storage. Used for testing the distribution.')
+
+
+def pytest_configure(config):
+    from django.conf import settings
 
     settings.configure(
         DEBUG_PROPAGATE_EXCEPTIONS=True,
@@ -31,8 +41,12 @@ def pytest_configure():
                 }
             },
         ],
-        MIDDLEWARE=MIDDLEWARE,
-        MIDDLEWARE_CLASSES=MIDDLEWARE,
+        MIDDLEWARE=(
+            'django.middleware.common.CommonMiddleware',
+            'django.contrib.sessions.middleware.SessionMiddleware',
+            'django.contrib.auth.middleware.AuthenticationMiddleware',
+            'django.contrib.messages.middleware.MessageMiddleware',
+        ),
         INSTALLED_APPS=(
             'django.contrib.auth',
             'django.contrib.contenttypes',
@@ -64,8 +78,21 @@ def pytest_configure():
             'guardian',
         )
 
-    try:
-        import django
-        django.setup()
-    except AttributeError:
-        pass
+    if config.getoption('--no-pkgroot'):
+        sys.path.pop(0)
+
+        # import rest_framework before pytest re-adds the package root directory.
+        import rest_framework
+        package_dir = os.path.join(os.getcwd(), 'rest_framework')
+        assert not rest_framework.__file__.startswith(package_dir)
+
+    # Manifest storage will raise an exception if static files are not present (ie, a packaging failure).
+    if config.getoption('--staticfiles'):
+        import rest_framework
+        settings.STATIC_ROOT = os.path.join(os.path.dirname(rest_framework.__file__), 'static-root')
+        settings.STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+
+    django.setup()
+
+    if config.getoption('--staticfiles'):
+        management.call_command('collectstatic', verbosity=0, interactive=False)
