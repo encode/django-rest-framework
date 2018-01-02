@@ -136,6 +136,20 @@ The `rest_framework.documentation` module provides three helper functions to hel
 
 There are a number of mature third-party packages for providing API documentation.
 
+---
+
+#### drf-yasg - Yet another Swagger generator
+[drf-yasg][drf-yasg] does not rely on the internal DRF's documenting package, the [Core API][core_api].
+The rationale was that the Core API has not been able to generate response schemas ([issue #4502][issue_4502]).
+
+This is a major issue when a swagger file is the source for code generation, which is typed (for example when using TypeScript).
+
+The [drf-yasg][drf-yasg] solves this problem.
+
+The other DRF swagger packages listed below are based on the [Core API][core_api]. Consequently, they suffer from the same issue.
+
+---
+
 #### DRF OpenAPI
 
 [DRF OpenAPI][drf-openapi] bridges the gap between OpenAPI specification and tool chain with the schema exposed
@@ -296,3 +310,6 @@ To implement a hypermedia API you'll need to decide on an appropriate media type
 [image-self-describing-api]: ../img/self-describing.png
 [schemas-examples]: ../api-guide/schemas/#example
 [metadata-docs]: ../api-guide/metadata/
+[drf-yasg]: https://github.com/axnsan12/drf-yasg
+[core_api]: http://www.django-rest-framework.org/api-guide/schemas/#core-api
+[issue_4502]: https://github.com/encode/django-rest-framework/issues/4502
