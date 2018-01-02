@@ -5,11 +5,12 @@
 from __future__ import unicode_literals
 
 import io
+from importlib import import_module
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.handlers.wsgi import WSGIHandler
-from django.test import testcases
+from django.test import override_settings, testcases
 from django.test.client import Client as DjangoClient
 from django.test.client import RequestFactory as DjangoRequestFactory
 from django.test.client import ClientHandler
@@ -358,3 +359,44 @@ class APISimpleTestCase(testcases.SimpleTestCase):
 
 class APILiveServerTestCase(testcases.LiveServerTestCase):
     client_class = APIClient
+
+
+class URLPatternsTestCase(testcases.SimpleTestCase):
+    """
+    Isolate URL patterns on a per-TestCase basis. For example,
+
+    class ATestCase(URLPatternsTestCase):
+        urlpatterns = [...]
+
+        def test_something(self):
+            ...
+
+    class AnotherTestCase(URLPatternsTestCase):
+        urlpatterns = [...]
+
+        def test_something_else(self):
+            ...
+    """
+    @classmethod
+    def setUpClass(cls):
+        # Get the module of the TestCase subclass
+        cls._module = import_module(cls.__module__)
+        cls._override = override_settings(ROOT_URLCONF=cls.__module__)
+
+        if hasattr(cls._module, 'urlpatterns'):
+            cls._module_urlpatterns = cls._module.urlpatterns
+
+        cls._module.urlpatterns = cls.urlpatterns
+
+        cls._override.enable()
+        super(URLPatternsTestCase, cls).setUpClass()
+
+    @classmethod
+    def tearDownClass(cls):
+        super(URLPatternsTestCase, cls).tearDownClass()
+        cls._override.disable()
+
+        if hasattr(cls, '_module_urlpatterns'):
+            cls._module.urlpatterns = cls._module_urlpatterns
+        else:
+            del cls._module.urlpatterns

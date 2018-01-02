@@ -7,31 +7,10 @@ from rest_framework.decorators import APIView
 from rest_framework.relations import PKOnlyObject
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from rest_framework.test import APIRequestFactory, APITestCase
+from rest_framework.test import (
+    APIRequestFactory, APITestCase, URLPatternsTestCase
+)
 from rest_framework.versioning import NamespaceVersioning
-
-
-@override_settings(ROOT_URLCONF='tests.test_versioning')
-class URLPatternsTestCase(APITestCase):
-    """
-    Isolates URL patterns used during testing on the test class itself.
-    For example:
-
-    class MyTestCase(URLPatternsTestCase):
-        urlpatterns = [
-            ...
-        ]
-
-        def test_something(self):
-            ...
-    """
-    def setUp(self):
-        global urlpatterns
-        urlpatterns = self.urlpatterns
-
-    def tearDown(self):
-        global urlpatterns
-        urlpatterns = []
 
 
 class RequestVersionView(APIView):
@@ -163,7 +142,7 @@ class TestRequestVersion:
         assert response.data == {'version': None}
 
 
-class TestURLReversing(URLPatternsTestCase):
+class TestURLReversing(URLPatternsTestCase, APITestCase):
     included = [
         url(r'^namespaced/$', dummy_view, name='another'),
         url(r'^example/(?P<pk>\d+)/$', dummy_pk_view, name='example-detail')
@@ -329,7 +308,7 @@ class TestAllowedAndDefaultVersion:
         assert response.data == {'version': 'v2'}
 
 
-class TestHyperlinkedRelatedField(URLPatternsTestCase):
+class TestHyperlinkedRelatedField(URLPatternsTestCase, APITestCase):
     included = [
         url(r'^namespaced/(?P<pk>\d+)/$', dummy_pk_view, name='namespaced'),
     ]
@@ -361,7 +340,7 @@ class TestHyperlinkedRelatedField(URLPatternsTestCase):
             self.field.to_internal_value('/v2/namespaced/3/')
 
 
-class TestNamespaceVersioningHyperlinkedRelatedFieldScheme(URLPatternsTestCase):
+class TestNamespaceVersioningHyperlinkedRelatedFieldScheme(URLPatternsTestCase, APITestCase):
     nested = [
         url(r'^namespaced/(?P<pk>\d+)/$', dummy_pk_view, name='nested'),
     ]
