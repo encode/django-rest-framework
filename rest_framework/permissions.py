@@ -210,3 +210,15 @@ class DjangoObjectPermissions(DjangoModelPermissions):
             return False
 
         return True
+
+class IsAnonymousOrReadOnly(BasePermission):
+    """
+    The request from anonymous user is accepted, or is a read-only request.
+    """
+
+    def has_permission(self, request, view):
+        return (
+            request.method in SAFE_METHODS or
+            request.user and
+            request.user.is_anonymous
+        )
