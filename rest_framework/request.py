@@ -153,6 +153,12 @@ class Request(object):
 
     def __init__(self, request, parsers=None, authenticators=None,
                  negotiator=None, parser_context=None):
+        # If we're being passed our own Request object, unwrap the underlying
+        # HttpRequest. This allows for some backwards compatibilty to 3.7.3
+        # for select users who carefully reuse ViewSets.
+        if isinstance(request, Request):
+            request = request._request
+
         assert isinstance(request, HttpRequest), (
             'The `request` argument must be an instance of '
             '`django.http.HttpRequest`, not `{}.{}`.'

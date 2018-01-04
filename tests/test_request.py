@@ -33,10 +33,13 @@ class TestInitializer(TestCase):
 
         message = (
             'The `request` argument must be an instance of '
-            '`django.http.HttpRequest`, not `rest_framework.request.Request`.'
+            '`django.http.HttpRequest`, not `NoneType`.'
         )
         with self.assertRaisesMessage(AssertionError, message):
-            Request(request)
+            Request(None)
+
+        other_request = Request(request)
+        assert other_request._request is request._request
 
 
 class PlainTextParser(BaseParser):
