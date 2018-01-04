@@ -239,22 +239,22 @@ The following example will only route to the `list` and `retrieve` actions, and 
         """
         routes = [
             Route(
-            	url=r'^{prefix}$',
-            	mapping={'get': 'list'},
-            	name='{basename}-list',
-            	initkwargs={'suffix': 'List'}
+                url=r'^{prefix}$',
+                mapping={'get': 'list'},
+                name='{basename}-list',
+                initkwargs={'suffix': 'List'}
             ),
             Route(
-            	url=r'^{prefix}/{lookup}$',
+                url=r'^{prefix}/{lookup}$',
                 mapping={'get': 'retrieve'},
                 name='{basename}-detail',
                 initkwargs={'suffix': 'Detail'}
             ),
             DynamicDetailRoute(
-            	url=r'^{prefix}/{lookup}/{methodnamehyphen}$',
-            	name='{basename}-{methodnamehyphen}',
-            	initkwargs={}
-        	)
+                url=r'^{prefix}/{lookup}/{methodnamehyphen}$',
+                name='{basename}-{methodnamehyphen}',
+                initkwargs={}
+            )
         ]
 
 Let's take a look at the routes our `CustomReadOnlyRouter` would generate for a simple viewset.
@@ -283,7 +283,7 @@ Let's take a look at the routes our `CustomReadOnlyRouter` would generate for a 
 
     router = CustomReadOnlyRouter()
     router.register('users', UserViewSet)
-	urlpatterns = router.urls
+    urlpatterns = router.urls
 
 The following mappings would be generated...
 
