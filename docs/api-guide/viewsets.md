@@ -102,10 +102,16 @@ The default routers included with REST framework will provide routes for a stand
         def destroy(self, request, pk=None):
             pass
 
-During dispatch the name of the current action is available via the `.action` attribute.
-You may inspect `.action` to adjust behaviour based on the current action.
+## Introspecting ViewSet actions
 
-For example, you could restrict permissions to everything except the `list` action similar to this:
+During dispatch, the following attributes are available on the `ViewSet`.
+
+* `basename` - the base to use for the URL names that are created.
+* `action` - the name of the current action (e.g., `list`, `create`).
+* `detail` - boolean indicating if the current action is configured for a list or detail view.
+* `suffix` - the display suffix for the viewset type - mirrors the `detail` attribute.
+
+You may inspect these attributes to adjust behaviour based on the current action. For example, you could restrict permissions to everything except the `list` action similar to this:
 
     def get_permissions(self):
         """
@@ -119,16 +125,13 @@ For example, you could restrict permissions to everything except the `list` acti
 
 ## Marking extra actions for routing
 
-If you have ad-hoc methods that you need to be routed to, you can mark them as requiring routing using the `@detail_route` or `@list_route` decorators.
+If you have ad-hoc methods that should be routable, you can mark them as such with the `@action` decorator. Like regular actions, extra actions may be intended for either a list of objects, or a single instance. To indicate this, set the `detail` argument to `True` or `False`. The router will configure its URL patterns accordingly. e.g., the `DefaultRouter` will configure detail actions to contain `pk` in their URL patterns.
 
-The `@detail_route` decorator contains `pk` in its URL pattern and is intended for methods which require a single instance. The `@list_route` decorator is intended for methods which operate on a list of objects.
-
-For example:
+A more complete example of extra actions:
 
     from django.contrib.auth.models import User
-    from rest_framework import status
-    from rest_framework import viewsets
-    from rest_framework.decorators import detail_route, list_route
+    from rest_framework import status, viewsets
+    from rest_framework.decorators import action
     from rest_framework.response import Response
     from myapp.serializers import UserSerializer, PasswordSerializer
 
@@ -139,7 +142,7 @@ For example:
         queryset = User.objects.all()
         serializer_class = UserSerializer
 
-        @detail_route(methods=['post'])
+        @action(methods=['post'], detail=True)
         def set_password(self, request, pk=None):
             user = self.get_object()
             serializer = PasswordSerializer(data=request.data)
@@ -151,7 +154,7 @@ For example:
                 return Response(serializer.errors,
                                 status=status.HTTP_400_BAD_REQUEST)
 
-        @list_route()
+        @action(detail=False)
         def recent_users(self, request):
             recent_users = User.objects.all().order('-last_login')
 
@@ -163,19 +166,21 @@ For example:
             serializer = self.get_serializer(recent_users, many=True)
             return Response(serializer.data)
 
-The decorators can additionally take extra arguments that will be set for the routed view only.  For example...
+The decorator can additionally take extra arguments that will be set for the routed view only.  For example:
 
-        @detail_route(methods=['post'], permission_classes=[IsAdminOrIsSelf])
+        @action(methods=['post'], detail=True, permission_classes=[IsAdminOrIsSelf])
         def set_password(self, request, pk=None):
            ...
 
-These decorators will route `GET` requests by default, but may also accept other HTTP methods, by using the `methods` argument.  For example:
+These decorator will route `GET` requests by default, but may also accept other HTTP methods by setting the `methods` argument.  For example:
 
-        @detail_route(methods=['post', 'delete'])
+        @action(methods=['post', 'delete'], detail=True)
         def unset_password(self, request, pk=None):
            ...
 
 The two new actions will then be available at the urls `^users/{pk}/set_password/$` and `^users/{pk}/unset_password/$`
+
+To view all extra actions, call the `.get_extra_actions()` method.
 
 ## Reversing action URLs
 
@@ -190,7 +195,14 @@ Using the example from the previous section:
 'http://localhost:8000/api/users/1/set_password'
 ```
 
-The `url_name` argument should match the same argument to the `@list_route` and `@detail_route` decorators. Additionally, this can be used to reverse the default `list` and `detail` routes.
+Alternatively, you can use the `url_name` attribute set by the `@action` decorator.
+
+```python
+>>> view.reverse_action(view.set_password.url_name, args=['1'])
+'http://localhost:8000/api/users/1/set_password'
+```
+
+The `url_name` argument for `.reverse_action()` should match the same argument to the `@action` decorator. Additionally, this method can be used to reverse the default actions, such as `list` and `create`.
 
 ---
 
