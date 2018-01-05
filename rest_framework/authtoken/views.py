@@ -12,13 +12,17 @@ class ObtainAuthToken(APIView):
     renderer_classes = (renderers.JSONRenderer,)
     serializer_class = AuthTokenSerializer
 
+    def get_data(self, user, token, created):
+        return {'token': token.key}
+
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data,
                                            context={'request': request})
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
         token, created = Token.objects.get_or_create(user=user)
-        return Response({'token': token.key})
+        data = self.get_data(user, token, created)
+        return Response(data)
 
 
 obtain_auth_token = ObtainAuthToken.as_view()
