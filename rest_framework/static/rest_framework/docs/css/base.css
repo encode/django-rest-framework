@@ -1,3 +1,7 @@
+body {
+    display: flex;
+}
+
 h1 {
     font-size: 45px;
 }
@@ -34,11 +38,16 @@ pre.highlight code {
   font-size: 12px;
   font-weight: 200;
   background-color: #2e353d;
-  position: fixed;
-  top: 0px;
-  width: 225px;
-  height: 100%;
+  position: relative;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  min-width: 225px;
+  max-width: 400px;
+  height: 100vh;
   color: #FFF;
+  display: flex;
+  flex-direction: column;
 }
 
 .sidebar .brand {
@@ -66,6 +75,12 @@ pre.highlight code {
 
 .sidebar .menu-list {
   width: inherit;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: space-between;
+  flex: 1 1;
 }
 
 .sidebar .menu-list ul,
@@ -198,11 +213,8 @@ body {
 
 .sidebar .menu-list.menu-list-bottom {
     margin-bottom: 0;
-    position: fixed;
-    width: inherit;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    height: auto;
+    justify-content: flex-end;
     border-top: 1px solid #23282e;
 }
 
@@ -241,6 +253,10 @@ body {
 
 
 @media (max-width: 767px) {
+  body {
+    flex-direction: column;
+  }
+
   .main-container {
     padding-left: 15px;
     padding-right: 15px;
@@ -251,6 +267,12 @@ body {
     width: 100%;
     margin-bottom: 10px;
     overflow: visible;
+    height: auto;
+    max-width: 100%;
+  }
+
+  .container {
+      width: 100%;
   }
 
   .sidebar .toggle-btn {
@@ -279,15 +301,31 @@ body {
     padding-left: 20px;
     line-height: 50px !important;
   }
+
+  .sidebar .menu-list-bottom {
+      flex: 0 1;
+  }
 }
 
 @media (min-width: 767px) {
   .sidebar .menu-list .menu-content {
     display: block;
+    z-index: 10;
   }
+
+  #menu-content .sub-menu {
+    display: block;
+    overflow: hidden;
+    height: 0;
+  }
+
+  #menu-content .in {
+    height: auto;
+  }
+
   #main {
-    width:calc(100% - 225px);
-    float: right;
+    flex: 1 1 50%;
+    width: 50%;
   }
 }
 
