@@ -5,14 +5,9 @@ versions of Django/Python, and compatibility wrappers around optional packages.
 
 from __future__ import unicode_literals
 
-import inspect
-
 import django
-from django.apps import apps
 from django.conf import settings
 from django.core import validators
-from django.core.exceptions import ImproperlyConfigured
-from django.db import models
 from django.utils import six
 from django.views.generic import View
 
@@ -105,30 +100,6 @@ def distinct(queryset, base):
         # distinct analogue for Oracle users
         return base.filter(pk__in=set(queryset.values_list('pk', flat=True)))
     return queryset.distinct()
-
-
-def _resolve_model(obj):
-    """
-    Resolve supplied `obj` to a Django model class.
-
-    `obj` must be a Django model class itself, or a string
-    representation of one.  Useful in situations like GH #1225 where
-    Django may not have resolved a string-based reference to a model in
-    another model's foreign key definition.
-
-    String representations should have the format:
-        'appname.ModelName'
-    """
-    if isinstance(obj, six.string_types) and len(obj.split('.')) == 2:
-        app_name, model_name = obj.split('.')
-        resolved_model = apps.get_model(app_name, model_name)
-        if resolved_model is None:
-            msg = "Django did not return a model for {0}.{1}"
-            raise ImproperlyConfigured(msg.format(app_name, model_name))
-        return resolved_model
-    elif inspect.isclass(obj) and issubclass(obj, models.Model):
-        return obj
-    raise ValueError("{0} is not a Django model".format(obj))
 
 
 # django.contrib.postgres requires psycopg2
