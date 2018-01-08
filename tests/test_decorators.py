@@ -173,7 +173,7 @@ class DecoratorTestCase(TestCase):
 class ActionDecoratorTestCase(TestCase):
 
     def test_defaults(self):
-        @action()
+        @action(detail=True)
         def test_action(request):
             pass
 
@@ -181,6 +181,14 @@ class ActionDecoratorTestCase(TestCase):
         assert test_action.detail is True
         assert test_action.url_path == 'test_action'
         assert test_action.url_name == 'test-action'
+
+    def test_detail_required(self):
+        with pytest.raises(AssertionError) as excinfo:
+            @action()
+            def test_action(request):
+                pass
+
+        assert str(excinfo.value) == "@action() missing required argument: 'detail'"
 
     def test_detail_route_deprecation(self):
         with pytest.warns(PendingDeprecationWarning) as record:

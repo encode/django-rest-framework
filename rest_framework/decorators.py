@@ -130,7 +130,7 @@ def schema(view_inspector):
     return decorator
 
 
-def action(methods=None, detail=True, url_path=None, url_name=None, **kwargs):
+def action(methods=None, detail=None, url_path=None, url_name=None, **kwargs):
     """
     Mark a ViewSet method as a routable action.
 
@@ -139,6 +139,10 @@ def action(methods=None, detail=True, url_path=None, url_name=None, **kwargs):
     """
     methods = ['get'] if (methods is None) else methods
     methods = [method.lower() for method in methods]
+
+    assert detail is not None, (
+        "@action() missing required argument: 'detail'"
+    )
 
     def decorator(func):
         func.bind_to_methods = methods
