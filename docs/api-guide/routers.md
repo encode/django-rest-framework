@@ -83,7 +83,7 @@ If using namespacing with hyperlinked serializers you'll also need to ensure tha
 
 ### Routing for extra actions
 
-Any method on the viewset decorated with `@action` will be included in the generated routes. For example, given a method like this on the `UserViewSet` class:
+A viewset may [mark extra actions for routing][route-decorators] by decorating a method with the `@action` decorator. These extra actions will be included in the generated routes. For example, given the `set_password` method on the `UserViewSet` class:
 
     from myapp.permissions import IsAdminOrIsSelf
     from rest_framework.decorators import action
@@ -101,7 +101,7 @@ The following route would be generated:
 * URL name: `'user-set-password'`
 
 By default, the URL pattern is based on the method name, and the URL name is the combination of the `ViewSet.basename` and the hyphenated method name.
-If you don't want to use the default URL or default name, you can instead pass the `url_path` and `url_name` arguments to the `@action` decorator.
+If you don't want to use the defaults for either of these values, you can instead provide the `url_path` and `url_name` arguments to the `@action` decorator.
 
 For example, if you want to change the URL for our custom action to `^users/{pk}/change-password/$`, you could write:
 
@@ -120,8 +120,6 @@ The above example would now generate the following URL pattern:
 
 * URL path: `^users/{pk}/change-password/$`
 * URL name: `'user-change_password'`
-
-For more information see the viewset documentation on [marking extra actions for routing][route-decorators].
 
 # API Guide
 
