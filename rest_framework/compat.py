@@ -113,8 +113,7 @@ except ImportError:
 try:
     import coreapi
     import uritemplate
-except (ImportError, SyntaxError):
-    # SyntaxError is possible under python 3.2
+except ImportError:
     coreapi = None
     uritemplate = None
 
