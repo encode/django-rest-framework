@@ -263,7 +263,7 @@ except ImportError:
 
 
 # `separators` argument to `json.dumps()` differs between 2.x and 3.x
-# See: http://bugs.python.org/issue22767
+# See: https://bugs.python.org/issue22767
 if six.PY3:
     SHORT_SEPARATORS = (',', ':')
     LONG_SEPARATORS = (', ', ': ')

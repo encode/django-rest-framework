@@ -94,4 +94,4 @@ There's also a [live sandbox version of the tutorial API][sandbox] available for
 [quote3]: https://groups.google.com/d/msg/django-rest-framework/flsXbvYqRoY/9lSyntOf5cUJ
 [image]: ../img/quickstart.png
 [tut]: ../tutorial/1-serialization.md
-[sandbox]: http://restframework.herokuapp.com/
+[sandbox]: https://restframework.herokuapp.com/

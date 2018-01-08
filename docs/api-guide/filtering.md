@@ -383,7 +383,7 @@ The [djangorestframework-word-filter][django-rest-framework-word-search-filter] 
 [django-filter-drf-docs]: https://django-filter.readthedocs.io/en/latest/guide/rest_framework.html
 [guardian]: https://django-guardian.readthedocs.io/
 [view-permissions]: https://django-guardian.readthedocs.io/en/latest/userguide/assign.html
-[view-permissions-blogpost]: http://blog.nyaruka.com/adding-a-view-permission-to-django-models
+[view-permissions-blogpost]: https://blog.nyaruka.com/adding-a-view-permission-to-django-models
 [search-django-admin]: https://docs.djangoproject.com/en/stable/ref/contrib/admin/#django.contrib.admin.ModelAdmin.search_fields
 [django-rest-framework-filters]: https://github.com/philipn/django-rest-framework-filters
 [django-rest-framework-word-search-filter]: https://github.com/trollknurr/django-rest-framework-word-search-filter

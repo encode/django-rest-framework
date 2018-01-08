@@ -807,7 +807,7 @@ The [django-rest-framework-hstore][django-rest-framework-hstore] package provide
 [html-and-forms]: ../topics/html-and-forms.md
 [FILE_UPLOAD_HANDLERS]: https://docs.djangoproject.com/en/stable/ref/settings/#std:setting-FILE_UPLOAD_HANDLERS
 [strftime]: https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior
-[iso8601]: http://www.w3.org/TR/NOTE-datetime
+[iso8601]: https://www.w3.org/TR/NOTE-datetime
 [drf-compound-fields]: https://drf-compound-fields.readthedocs.io
 [drf-extra-fields]: https://github.com/Hipo/drf-extra-fields
 [djangorestframework-recursive]: https://github.com/heywbj/django-rest-framework-recursive

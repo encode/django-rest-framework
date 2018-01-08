@@ -102,7 +102,7 @@ You can find more information on how the language preference is determined in th
 
 For API clients the most appropriate of these will typically be to use the `Accept-Language` header; Sessions and cookies will not be available unless using session authentication, and generally better practice to prefer an `Accept-Language` header for API clients rather than using language URL prefixes.
 
-[cite]: http://youtu.be/Wa0VfS2q94Y
+[cite]: https://youtu.be/Wa0VfS2q94Y
 [django-translation]: https://docs.djangoproject.com/en/1.7/topics/i18n/translation
 [custom-exception-handler]: ../api-guide/exceptions.md#custom-exception-handling
 [transifex-project]: https://www.transifex.com/projects/p/django-rest-framework/

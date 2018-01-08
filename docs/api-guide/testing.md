@@ -404,7 +404,7 @@ For example, to add support for using `format='html'` in test requests, you migh
         )
     }
 
-[cite]: http://jacobian.org/writing/django-apps-with-buildout/#s-create-a-test-wrapper
+[cite]: https://jacobian.org/writing/django-apps-with-buildout/#s-create-a-test-wrapper
 [client]: https://docs.djangoproject.com/en/stable/topics/testing/tools/#the-test-client
 [requestfactory]: https://docs.djangoproject.com/en/stable/topics/testing/advanced/#django.test.client.RequestFactory
 [configuration]: #configuration

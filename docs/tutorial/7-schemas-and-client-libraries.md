@@ -224,7 +224,7 @@ We've reached the end of our tutorial.  If you want to get more involved in the 
 [corejson]: http://www.coreapi.org/specification/encoding/#core-json-encoding
 [openapi]: https://openapis.org/
 [repo]: https://github.com/encode/rest-framework-tutorial
-[sandbox]: http://restframework.herokuapp.com/
+[sandbox]: https://restframework.herokuapp.com/
 [github]: https://github.com/encode/django-rest-framework
 [group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
 [twitter]: https://twitter.com/_tomchristie

@@ -403,21 +403,21 @@ HTTP Signature (currently a [IETF draft][http-signature-ietf-draft]) provides a 
 
 [drfpasswordless][drfpasswordless] adds (Medium, Square Cash inspired) passwordless support to Django REST Framework's own TokenAuthentication scheme. Users log in and sign up with a token sent to a contact point like an email address or a mobile number.
 
-[cite]: http://jacobian.org/writing/rest-worst-practices/
-[http401]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2
-[http403]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.4
-[basicauth]: http://tools.ietf.org/html/rfc2617
+[cite]: https://jacobian.org/writing/rest-worst-practices/
+[http401]: https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2
+[http403]: https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.4
+[basicauth]: https://tools.ietf.org/html/rfc2617
 [permission]: permissions.md
 [throttling]: throttling.md
 [csrf-ajax]: https://docs.djangoproject.com/en/stable/ref/csrf/#ajax
-[mod_wsgi_official]: http://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGIPassAuthorization
+[mod_wsgi_official]: https://modwsgi.readthedocs.io/en/develop/configuration-directives/WSGIPassAuthorization.html
 [django-oauth-toolkit-getting-started]: https://django-oauth-toolkit.readthedocs.io/en/latest/rest-framework/getting_started.html
-[django-rest-framework-oauth]: http://jpadilla.github.io/django-rest-framework-oauth/
-[django-rest-framework-oauth-authentication]: http://jpadilla.github.io/django-rest-framework-oauth/authentication/
-[django-rest-framework-oauth-permissions]: http://jpadilla.github.io/django-rest-framework-oauth/permissions/
+[django-rest-framework-oauth]: https://jpadilla.github.io/django-rest-framework-oauth/
+[django-rest-framework-oauth-authentication]: https://jpadilla.github.io/django-rest-framework-oauth/authentication/
+[django-rest-framework-oauth-permissions]: https://jpadilla.github.io/django-rest-framework-oauth/permissions/
 [juanriaza]: https://github.com/juanriaza
 [djangorestframework-digestauth]: https://github.com/juanriaza/django-rest-framework-digestauth
-[oauth-1.0a]: http://oauth.net/core/1.0a
+[oauth-1.0a]: https://oauth.net/core/1.0a/
 [django-oauth-toolkit]: https://github.com/evonove/django-oauth-toolkit
 [evonove]: https://github.com/evonove/
 [oauthlib]: https://github.com/idan/oauthlib
@@ -429,12 +429,12 @@ HTTP Signature (currently a [IETF draft][http-signature-ietf-draft]) provides a 
 [djangorestframework-simplejwt]: https://github.com/davesque/django-rest-framework-simplejwt
 [etoccalino]: https://github.com/etoccalino/
 [djangorestframework-httpsignature]: https://github.com/etoccalino/django-rest-framework-httpsignature
-[amazon-http-signature]: http://docs.aws.amazon.com/general/latest/gr/signature-version-4.html
+[amazon-http-signature]: https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html
 [http-signature-ietf-draft]: https://datatracker.ietf.org/doc/draft-cavage-http-signatures/
 [hawkrest]: https://hawkrest.readthedocs.io/en/latest/
 [hawk]: https://github.com/hueniverse/hawk
 [mohawk]: https://mohawk.readthedocs.io/en/latest/
-[mac]: http://tools.ietf.org/html/draft-hammer-oauth-v2-mac-token-05
+[mac]: https://tools.ietf.org/html/draft-hammer-oauth-v2-mac-token-05
 [djoser]: https://github.com/sunscrapers/djoser
 [django-rest-auth]: https://github.com/Tivix/django-rest-auth
 [django-rest-framework-social-oauth2]: https://github.com/PhilipGarnero/django-rest-framework-social-oauth2

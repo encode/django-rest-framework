@@ -175,7 +175,7 @@ def as_list_of_strings(value):
 @register.filter
 def add_class(value, css_class):
     """
-    http://stackoverflow.com/questions/4124220/django-adding-css-classes-when-rendering-form-fields-in-a-template
+    https://stackoverflow.com/questions/4124220/django-adding-css-classes-when-rendering-form-fields-in-a-template
 
     Inserts classes into template variables that contain HTML tags,
     useful for modifying forms without needing to change the Form objects.

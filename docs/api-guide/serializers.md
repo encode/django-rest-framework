@@ -1172,9 +1172,9 @@ The [drf-writable-nested][drf-writable-nested] package provides writable nested 
 [cite]: https://groups.google.com/d/topic/django-users/sVFaOfQi4wY/discussion
 [relations]: relations.md
 [model-managers]: https://docs.djangoproject.com/en/stable/topics/db/managers/
-[encapsulation-blogpost]: http://www.dabapps.com/blog/django-models-and-encapsulation/
+[encapsulation-blogpost]: https://www.dabapps.com/blog/django-models-and-encapsulation/
 [thirdparty-writable-nested]: serializers.md#drf-writable-nested
-[django-rest-marshmallow]: http://tomchristie.github.io/django-rest-marshmallow/
+[django-rest-marshmallow]: https://tomchristie.github.io/django-rest-marshmallow/
 [marshmallow]: https://marshmallow.readthedocs.io/en/latest/
 [serpy]: https://github.com/clarkduvall/serpy
 [mongoengine]: https://github.com/umutbozkurt/django-rest-framework-mongoengine
@@ -1188,5 +1188,5 @@ The [drf-writable-nested][drf-writable-nested] package provides writable nested 
 [drf-dynamic-fields]: https://github.com/dbrgn/drf-dynamic-fields
 [drf-base64]: https://bitbucket.org/levit_scs/drf_base64
 [drf-serializer-extensions]: https://github.com/evenicoulddoit/django-rest-framework-serializer-extensions
-[djangorestframework-queryfields]: http://djangorestframework-queryfields.readthedocs.io/
-[drf-writable-nested]: http://github.com/beda-software/drf-writable-nested
+[djangorestframework-queryfields]: https://djangorestframework-queryfields.readthedocs.io/
+[drf-writable-nested]: https://github.com/beda-software/drf-writable-nested

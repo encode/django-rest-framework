@@ -326,10 +326,10 @@ The [`DRF-extensions` package][drf-extensions] provides [routers][drf-extensions
 [cite]: http://guides.rubyonrails.org/routing.html
 [route-decorators]: viewsets.md#marking-extra-actions-for-routing
 [drf-nested-routers]: https://github.com/alanjds/drf-nested-routers
-[wq.db]: http://wq.io/wq.db
-[wq.db-router]: http://wq.io/docs/router
-[drf-extensions]: http://chibisov.github.io/drf-extensions/docs/
-[drf-extensions-routers]: http://chibisov.github.io/drf-extensions/docs/#routers
-[drf-extensions-nested-viewsets]: http://chibisov.github.io/drf-extensions/docs/#nested-routes
-[drf-extensions-collection-level-controllers]: http://chibisov.github.io/drf-extensions/docs/#collection-level-controllers
-[drf-extensions-customizable-endpoint-names]: http://chibisov.github.io/drf-extensions/docs/#controller-endpoint-name
+[wq.db]: https://wq.io/wq.db
+[wq.db-router]: https://wq.io/docs/router
+[drf-extensions]: https://chibisov.github.io/drf-extensions/docs/
+[drf-extensions-routers]: https://chibisov.github.io/drf-extensions/docs/#routers
+[drf-extensions-nested-viewsets]: https://chibisov.github.io/drf-extensions/docs/#nested-routes
+[drf-extensions-collection-level-controllers]: https://chibisov.github.io/drf-extensions/docs/#collection-level-controllers
+[drf-extensions-customizable-endpoint-names]: https://chibisov.github.io/drf-extensions/docs/#controller-endpoint-name

@@ -146,5 +146,5 @@ Wow, that's pretty concise.  We've gotten a huge amount for free, and our code l
 
 Next we'll move onto [part 4 of the tutorial][tut-4], where we'll take a look at how we can deal with authentication and permissions for our API.
 
-[dry]: http://en.wikipedia.org/wiki/Don't_repeat_yourself
+[dry]: https://en.wikipedia.org/wiki/Don't_repeat_yourself
 [tut-4]: 4-authentication-and-permissions.md

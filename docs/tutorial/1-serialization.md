@@ -372,8 +372,8 @@ We'll see how we can start to improve things in [part 2 of the tutorial][tut-2].
 
 [quickstart]: quickstart.md
 [repo]: https://github.com/encode/rest-framework-tutorial
-[sandbox]: http://restframework.herokuapp.com/
+[sandbox]: https://restframework.herokuapp.com/
 [virtualenv]: http://www.virtualenv.org/en/latest/index.html
 [tut-2]: 2-requests-and-responses.md
 [httpie]: https://github.com/jakubroztocil/httpie#installation
-[curl]: http://curl.haxx.se
+[curl]: https://curl.haxx.se/

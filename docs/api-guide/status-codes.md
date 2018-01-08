@@ -118,6 +118,6 @@ The following helper functions are available for identifying the category of the
     is_client_error()   # 4xx
     is_server_error()   # 5xx
 
-[rfc2324]: http://www.ietf.org/rfc/rfc2324.txt
-[rfc2616]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
-[rfc6585]: http://tools.ietf.org/html/rfc6585
+[rfc2324]: https://www.ietf.org/rfc/rfc2324.txt
+[rfc2616]: https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
+[rfc6585]: https://tools.ietf.org/html/rfc6585

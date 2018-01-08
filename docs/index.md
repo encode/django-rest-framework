@@ -18,9 +18,9 @@
 </style>
 
 <p class="badges" height=20px>
-    <iframe src="http://ghbtns.com/github-btn.html?user=encode&amp;repo=django-rest-framework&amp;type=watch&amp;count=true" class="github-star-button" allowtransparency="true" frameborder="0" scrolling="0" width="110px" height="20px"></iframe>
+    <iframe src="https://ghbtns.com/github-btn.html?user=encode&amp;repo=django-rest-framework&amp;type=watch&amp;count=true" class="github-star-button" allowtransparency="true" frameborder="0" scrolling="0" width="110px" height="20px"></iframe>
 
-    <a href="http://travis-ci.org/encode/django-rest-framework?branch=master">
+    <a href="https://travis-ci.org/encode/django-rest-framework?branch=master">
         <img src="https://secure.travis-ci.org/encode/django-rest-framework.svg?branch=master" class="status-badge">
     </a>
 
@@ -31,7 +31,7 @@
 
 ---
 
-**Note**: This is the documentation for the **version 3** of REST framework. Documentation for [version 2](http://tomchristie.github.io/rest-framework-2-docs/) is also available.
+**Note**: This is the documentation for the **version 3** of REST framework. Documentation for [version 2](https://tomchristie.github.io/rest-framework-2-docs/) is also available.
 
 ---
 
@@ -302,13 +302,13 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-[mozilla]: http://www.mozilla.org/en-US/about/
+[mozilla]: https://www.mozilla.org/en-US/about/
 [redhat]: https://www.redhat.com/
 [heroku]: https://www.heroku.com/
 [eventbrite]: https://www.eventbrite.co.uk/about/
-[coreapi]: http://pypi.python.org/pypi/coreapi/
-[markdown]: http://pypi.python.org/pypi/Markdown/
-[django-filter]: http://pypi.python.org/pypi/django-filter
+[coreapi]: https://pypi.python.org/pypi/coreapi/
+[markdown]: https://pypi.python.org/pypi/Markdown/
+[django-filter]: https://pypi.python.org/pypi/django-filter
 [django-crispy-forms]: https://github.com/maraujop/django-crispy-forms
 [django-guardian]: https://github.com/django-guardian/django-guardian
 [index]: .
@@ -317,7 +317,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [serializer-section]: api-guide/serializers#serializers
 [modelserializer-section]: api-guide/serializers#modelserializer
 [functionview-section]: api-guide/views#function-based-views
-[sandbox]: http://restframework.herokuapp.com/
+[sandbox]: https://restframework.herokuapp.com/
 [sponsors]: https://fund.django-rest-framework.org/topics/funding/#our-sponsors
 
 [quickstart]: tutorial/quickstart.md
@@ -385,7 +385,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 [group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
 [botbot]: https://botbot.me/freenode/restframework/
-[stack-overflow]: http://stackoverflow.com/
-[django-rest-framework-tag]: http://stackoverflow.com/questions/tagged/django-rest-framework
+[stack-overflow]: https://stackoverflow.com/
+[django-rest-framework-tag]: https://stackoverflow.com/questions/tagged/django-rest-framework
 [security-mail]: mailto:rest-framework-security@googlegroups.com
 [twitter]: https://twitter.com/_tomchristie

@@ -6,7 +6,7 @@ source: negotiation.py
 >
 > &mdash; [RFC 2616][cite], Fielding et al.
 
-[cite]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec12.html
+[cite]: https://www.w3.org/Protocols/rfc2616/rfc2616-sec12.html
 
 Content negotiation is the process of selecting one of multiple possible representations to return to a client, based on client or server preferences.
 
@@ -94,4 +94,4 @@ You can also set the content negotiation used for an individual view, or viewset
                 'accepted media type': request.accepted_renderer.media_type
             })
 
-[accept-header]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
+[accept-header]: https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html

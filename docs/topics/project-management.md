@@ -201,11 +201,11 @@ The following issues still need to be addressed:
 * Document ownership of the [mailing list][mailing-list] and IRC channel.
 * Document ownership and management of the security mailing list.
 
-[bus-factor]: http://en.wikipedia.org/wiki/Bus_factor
+[bus-factor]: https://en.wikipedia.org/wiki/Bus_factor
 [un-triaged]: https://github.com/encode/django-rest-framework/issues?q=is%3Aopen+no%3Alabel
 [transifex-project]: https://www.transifex.com/projects/p/django-rest-framework/
 [transifex-client]: https://pypi.python.org/pypi/transifex-client
 [translation-memory]: http://docs.transifex.com/guides/tm#let-tm-automatically-populate-translations
 [github-org]: https://github.com/encode/django-rest-framework/issues/2162
-[sandbox]: http://restframework.herokuapp.com/
+[sandbox]: https://restframework.herokuapp.com/
 [mailing-list]: https://groups.google.com/forum/#!forum/django-rest-framework
