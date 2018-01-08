@@ -31,7 +31,7 @@ The next goal is to build on the realtime support offered by Django Channels, ad
 ## Accountability
 
 In order to ensure that I can be fully focused on trying to secure a sustainable
-& well-funded open source business I will be leaving my current role at [DabApps](http://www.dabapps.com)
+& well-funded open source business I will be leaving my current role at [DabApps](https://www.dabapps.com/)
 at the end of May 2016.
 
 I have formed a UK limited company, [Encode](http://www.encode.io), which will

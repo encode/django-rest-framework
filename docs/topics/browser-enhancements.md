@@ -80,8 +80,8 @@ was later [dropped from the spec][html5].  There remains
 [ongoing discussion][put_delete] about adding support for `PUT` and `DELETE`,
 as well as how to support content types other than form-encoded data.
 
-[cite]: http://www.amazon.com/Restful-Web-Services-Leonard-Richardson/dp/0596529260
+[cite]: https://www.amazon.com/RESTful-Web-Services-Leonard-Richardson/dp/0596529260
 [ajax-form]: https://github.com/encode/ajax-form
 [rails]: http://guides.rubyonrails.org/form_helpers.html#how-do-forms-with-put-or-delete-methods-work
-[html5]: http://www.w3.org/TR/html5-diff/#changes-2010-06-24
+[html5]: https://www.w3.org/TR/html5-diff/#changes-2010-06-24
 [put_delete]: http://amundsen.com/examples/put-delete-forms/

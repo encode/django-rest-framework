@@ -217,7 +217,7 @@ class FileUploadParser(BaseParser):
     def get_encoded_filename(self, filename_parm):
         """
         Handle encoded filenames per RFC6266. See also:
-        http://tools.ietf.org/html/rfc2231#section-4
+        https://tools.ietf.org/html/rfc2231#section-4
         """
         encoded_filename = force_text(filename_parm['filename*'])
         try:

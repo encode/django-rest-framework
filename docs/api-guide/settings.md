@@ -473,6 +473,6 @@ An integer of 0 or more, that may be used to specify the number of application p
 Default: `None`
 
 [cite]: https://www.python.org/dev/peps/pep-0020/
-[rfc4627]: http://www.ietf.org/rfc/rfc4627.txt
+[rfc4627]: https://www.ietf.org/rfc/rfc4627.txt
 [heroku-minified-json]: https://github.com/interagent/http-api-design#keep-json-minified-in-all-responses
 [strftime]: https://docs.python.org/3/library/time.html#time.strftime

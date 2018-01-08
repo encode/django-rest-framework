@@ -272,7 +272,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [travis-ci]: https://travis-ci.org
 [travis-profile]: https://travis-ci.org/profile
 [pypi-register]: https://pypi.python.org/pypi?%3Aaction=register_form
-[semver]: http://semver.org/
+[semver]: https://semver.org/
 [tox-docs]: https://tox.readthedocs.io/en/latest/
 [drf-compat]: https://github.com/encode/django-rest-framework/blob/master/rest_framework/compat.py
 [rest-framework-grid]: https://www.djangopackages.com/grids/g/django-rest-framework/
@@ -301,7 +301,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [djangorestframework-bulk]: https://github.com/miki725/django-rest-framework-bulk
 [django-rest-multiple-models]: https://github.com/MattBroach/DjangoRestMultipleModels
 [drf-nested-routers]: https://github.com/alanjds/drf-nested-routers
-[wq.db.rest]: http://wq.io/docs/about-rest
+[wq.db.rest]: https://wq.io/docs/about-rest
 [djangorestframework-msgpack]: https://github.com/juanriaza/django-rest-framework-msgpack
 [djangorestframework-camel-case]: https://github.com/vbabiy/djangorestframework-camel-case
 [djangorestframework-csv]: https://github.com/mjumbewu/django-rest-framework-csv

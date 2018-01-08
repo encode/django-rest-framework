@@ -214,7 +214,7 @@ You may pass `None` in order to exclude the view from schema generation.
         return Response({"message": "Will not appear in schema!"})
 
 
-[cite]: http://reinout.vanrees.org/weblog/2011/08/24/class-based-views-usage.html
+[cite]: https://reinout.vanrees.org/weblog/2011/08/24/class-based-views-usage.html
 [cite2]: http://www.boredomandlaziness.org/2012/05/djangos-cbvs-are-not-mistake-but.html
 [settings]: settings.md
 [throttling]: throttling.md
