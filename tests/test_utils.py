@@ -2,12 +2,8 @@
 from __future__ import unicode_literals
 
 from django.conf.urls import url
-from django.core.exceptions import ImproperlyConfigured
 from django.test import TestCase, override_settings
-from django.utils import six
 
-import rest_framework.utils.model_meta
-from rest_framework.compat import _resolve_model
 from rest_framework.routers import SimpleRouter
 from rest_framework.serializers import ModelSerializer
 from rest_framework.utils import json
@@ -122,64 +118,6 @@ class BreadcrumbTests(TestCase):
             ('Resource List', '/resources/'),
             ('Resource Instance', '/resources/1/')
         ]
-
-
-class ResolveModelTests(TestCase):
-    """
-    `_resolve_model` should return a Django model class given the
-    provided argument is a Django model class itself, or a properly
-    formatted string representation of one.
-    """
-    def test_resolve_django_model(self):
-        resolved_model = _resolve_model(BasicModel)
-        assert resolved_model == BasicModel
-
-    def test_resolve_string_representation(self):
-        resolved_model = _resolve_model('tests.BasicModel')
-        assert resolved_model == BasicModel
-
-    def test_resolve_unicode_representation(self):
-        resolved_model = _resolve_model(six.text_type('tests.BasicModel'))
-        assert resolved_model == BasicModel
-
-    def test_resolve_non_django_model(self):
-        with self.assertRaises(ValueError):
-            _resolve_model(TestCase)
-
-    def test_resolve_improper_string_representation(self):
-        with self.assertRaises(ValueError):
-            _resolve_model('BasicModel')
-
-
-class ResolveModelWithPatchedDjangoTests(TestCase):
-    """
-    Test coverage for when Django's `get_model` returns `None`.
-
-    Under certain circumstances Django may return `None` with `get_model`:
-    http://git.io/get-model-source
-
-    It usually happens with circular imports so it is important that DRF
-    excepts early, otherwise fault happens downstream and is much more
-    difficult to debug.
-
-    """
-
-    def setUp(self):
-        """Monkeypatch get_model."""
-        self.get_model = rest_framework.compat.apps.get_model
-
-        def get_model(app_label, model_name):
-            return None
-
-        rest_framework.compat.apps.get_model = get_model
-
-    def tearDown(self):
-        """Revert monkeypatching."""
-        rest_framework.compat.apps.get_model = self.get_model
-
-    def test_blows_up_if_model_does_not_resolve(self):
-        with self.assertRaises(ImproperlyConfigured):
-            _resolve_model('tests.BasicModel')
 
 
 class JsonFloatTests(TestCase):
