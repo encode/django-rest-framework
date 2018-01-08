@@ -59,7 +59,7 @@ def parse_html_list(dictionary, prefix=''):
             ret[index][key] = value
         else:
             ret[index] = MultiValueDict({key: [value]})
-    return [ret[item] for item in sorted(ret.keys())]
+    return [ret[item] for item in sorted(ret)]
 
 
 def parse_html_dict(dictionary, prefix=''):

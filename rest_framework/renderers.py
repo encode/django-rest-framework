@@ -805,8 +805,8 @@ class AdminRenderer(BrowsableAPIRenderer):
             header = results
             style = 'detail'
 
-        columns = [key for key in header.keys() if key != 'url']
-        details = [key for key in header.keys() if key != 'url']
+        columns = [key for key in header if key != 'url']
+        details = [key for key in header if key != 'url']
 
         context['style'] = style
         context['columns'] = columns

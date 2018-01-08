@@ -175,7 +175,7 @@ class APIRequestFactory(DjangoRequestFactory):
                 "Set TEST_REQUEST_RENDERER_CLASSES to enable "
                 "extra request formats.".format(
                     format,
-                    ', '.join(["'" + fmt + "'" for fmt in self.renderer_classes.keys()])
+                    ', '.join(["'" + fmt + "'" for fmt in self.renderer_classes])
                 )
             )
 

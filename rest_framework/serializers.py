@@ -1136,9 +1136,9 @@ class ModelSerializer(Serializer):
         """
         return (
             [model_info.pk.name] +
-            list(declared_fields.keys()) +
-            list(model_info.fields.keys()) +
-            list(model_info.forward_relations.keys())
+            list(declared_fields) +
+            list(model_info.fields) +
+            list(model_info.forward_relations)
         )
 
     # Methods for constructing serializer fields...
@@ -1194,7 +1194,7 @@ class ModelSerializer(Serializer):
                 'error_messages', 'validators', 'allow_null', 'allow_blank',
                 'choices'
             }
-            for key in list(field_kwargs.keys()):
+            for key in list(field_kwargs):
                 if key not in valid_kwargs:
                     field_kwargs.pop(key)
 
@@ -1364,7 +1364,7 @@ class ModelSerializer(Serializer):
 
         # Include each of the `unique_together` field names,
         # so long as all the field names are included on the serializer.
-        for parent_class in [model] + list(model._meta.parents.keys()):
+        for parent_class in [model] + list(model._meta.parents):
             for unique_together_list in parent_class._meta.unique_together:
                 if set(field_names).issuperset(set(unique_together_list)):
                     unique_constraint_names |= set(unique_together_list)
@@ -1466,7 +1466,7 @@ class ModelSerializer(Serializer):
         """
         model_class_inheritance_tree = (
             [self.Meta.model] +
-            list(self.Meta.model._meta.parents.keys())
+            list(self.Meta.model._meta.parents)
         )
 
         # The field names we're passing though here only include fields
@@ -1566,9 +1566,9 @@ class HyperlinkedModelSerializer(ModelSerializer):
         """
         return (
             [self.url_field_name] +
-            list(declared_fields.keys()) +
-            list(model_info.fields.keys()) +
-            list(model_info.forward_relations.keys())
+            list(declared_fields) +
+            list(model_info.fields) +
+            list(model_info.forward_relations)
         )
 
     def build_nested_field(self, field_name, relation_info, nested_depth):
