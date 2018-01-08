@@ -133,7 +133,7 @@ class RelatedField(Field):
             return CustomManyRelatedField(*args, **kwargs)
         """
         list_kwargs = {'child_relation': cls(*args, **kwargs)}
-        for key in kwargs.keys():
+        for key in kwargs:
             if key in MANY_RELATION_KWARGS:
                 list_kwargs[key] = kwargs[key]
         return ManyRelatedField(**list_kwargs)

@@ -207,7 +207,7 @@ class TestMetadata:
         view = ExampleView.as_view()
         response = view(request=request)
         assert response.status_code == status.HTTP_200_OK
-        assert list(response.data['actions'].keys()) == ['PUT']
+        assert list(response.data['actions']) == ['PUT']
 
     def test_object_permissions(self):
         """

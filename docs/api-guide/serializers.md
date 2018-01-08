@@ -1083,7 +1083,7 @@ For example, if you wanted to be able to set which fields should be used by a se
             if fields is not None:
                 # Drop any fields that are not specified in the `fields` argument.
                 allowed = set(fields)
-                existing = set(self.fields.keys())
+                existing = set(self.fields)
                 for field_name in existing - allowed:
                     self.fields.pop(field_name)
 

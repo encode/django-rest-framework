@@ -401,7 +401,7 @@ class TestHTMLInput:
 
         serializer = TestSerializer(data=QueryDict('message='))
         assert serializer.is_valid()
-        assert list(serializer.validated_data.keys()) == ['message']
+        assert list(serializer.validated_data) == ['message']
 
     def test_empty_html_uuidfield_with_optional(self):
         class TestSerializer(serializers.Serializer):
@@ -409,7 +409,7 @@ class TestHTMLInput:
 
         serializer = TestSerializer(data=QueryDict('message='))
         assert serializer.is_valid()
-        assert list(serializer.validated_data.keys()) == []
+        assert list(serializer.validated_data) == []
 
     def test_empty_html_charfield_allow_null(self):
         class TestSerializer(serializers.Serializer):

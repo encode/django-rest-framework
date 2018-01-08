@@ -54,7 +54,7 @@ class TestSimpleBoundField:
 
         serializer = ExampleSerializer()
         del serializer.fields['text']
-        assert 'text' not in serializer.fields.keys()
+        assert 'text' not in serializer.fields
 
     def test_as_form_fields(self):
         class ExampleSerializer(serializers.Serializer):

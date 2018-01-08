@@ -1420,7 +1420,7 @@ class ChoiceField(Field):
         # Allows us to deal with eg. integer choices while supporting either
         # integer or string input, but still get the correct datatype out.
         self.choice_strings_to_values = {
-            six.text_type(key): key for key in self.choices.keys()
+            six.text_type(key): key for key in self.choices
         }
 
     choices = property(_get_choices, _set_choices)

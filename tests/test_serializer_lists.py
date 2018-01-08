@@ -15,7 +15,7 @@ class BasicObject:
     def __eq__(self, other):
         if self._data.keys() != other._data.keys():
             return False
-        for key in self._data.keys():
+        for key in self._data:
             if self._data[key] != other._data[key]:
                 return False
         return True

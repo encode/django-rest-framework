@@ -103,8 +103,8 @@ class TestContentParsing(TestCase):
         upload = SimpleUploadedFile("file.txt", b"file_content")
         request = Request(factory.post('/', {'upload': upload}))
         request.parsers = (FormParser(), MultiPartParser())
-        assert list(request.POST.keys()) == []
-        assert list(request.FILES.keys()) == ['upload']
+        assert list(request.POST) == []
+        assert list(request.FILES) == ['upload']
 
     def test_standard_behaviour_determines_form_content_PUT(self):
         """
