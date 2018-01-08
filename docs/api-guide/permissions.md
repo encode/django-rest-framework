@@ -276,10 +276,7 @@ The [Django Rest Framework API Key][django-rest-framework-api-key] package allow
 [contribauth]: https://docs.djangoproject.com/en/stable/topics/auth/customizing/#custom-permissions
 [objectpermissions]: https://docs.djangoproject.com/en/stable/topics/auth/customizing/#handling-object-permissions
 [guardian]: https://github.com/lukaszb/django-guardian
-[get_objects_for_user]: http://pythonhosted.org/django-guardian/api/guardian.shortcuts.html#get-objects-for-user
-[2.2-announcement]: ../topics/2.2-announcement.md
 [filtering]: filtering.md
-[drf-any-permissions]: https://github.com/kevin-brown/drf-any-permissions
 [composed-permissions]: https://github.com/niwibe/djangorestframework-composed-permissions
 [rest-condition]: https://github.com/caxap/rest_condition
 [dry-rest-permissions]: https://github.com/Helioscene/dry-rest-permissions

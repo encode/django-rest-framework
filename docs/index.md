@@ -311,8 +311,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [django-filter]: http://pypi.python.org/pypi/django-filter
 [django-crispy-forms]: https://github.com/maraujop/django-crispy-forms
 [django-guardian]: https://github.com/django-guardian/django-guardian
-[0.4]: https://github.com/encode/django-rest-framework/tree/0.4.X
-[image]: img/quickstart.png
 [index]: .
 [oauth1-section]: api-guide/authentication/#django-rest-framework-oauth
 [oauth2-section]: api-guide/authentication/#django-oauth-toolkit
@@ -385,15 +383,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [release-notes]: topics/release-notes.md
 [jobs]: topics/jobs.md
 
-[tox]: http://testrun.org/tox/latest/
-
 [group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
 [botbot]: https://botbot.me/freenode/restframework/
 [stack-overflow]: http://stackoverflow.com/
 [django-rest-framework-tag]: http://stackoverflow.com/questions/tagged/django-rest-framework
-[django-tag]: http://stackoverflow.com/questions/tagged/django
 [security-mail]: mailto:rest-framework-security@googlegroups.com
-[paid-support]: http://dabapps.com/services/build/api-development/
-[dabapps]: http://dabapps.com
-[contact-dabapps]: http://dabapps.com/contact/
 [twitter]: https://twitter.com/_tomchristie
