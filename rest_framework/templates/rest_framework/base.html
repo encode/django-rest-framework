@@ -269,11 +269,8 @@
     {% endif %}
 
     {% block script %}
-      <script>
-        window.drf = {
-          csrfHeaderName: "{{ csrf_header_name|default:'X-CSRFToken' }}",
-          csrfCookieName: "{{ csrf_cookie_name|default:'csrftoken' }}"
-        };
+      <script id="csrf-data" type="application/json">
+        {{ csrf_custom_params }}
       </script>
       <script src="{% static "rest_framework/js/jquery-1.12.4.min.js" %}"></script>
       <script src="{% static "rest_framework/js/ajax-form.js" %}"></script>
@@ -281,11 +278,7 @@
       <script src="{% static "rest_framework/js/bootstrap.min.js" %}"></script>
       <script src="{% static "rest_framework/js/prettify-min.js" %}"></script>
       <script src="{% static "rest_framework/js/default.js" %}"></script>
-      <script>
-        $(document).ready(function() {
-          $('form').ajaxForm();
-        });
-      </script>
+      <script src="{% static "rest_framework/js/load-ajax-form.js" %}"></script>
     {% endblock %}
 
   </body>

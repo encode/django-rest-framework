@@ -38,7 +38,8 @@ function sameOrigin(url) {
     !(/^(\/\/|http:|https:).*/.test(url));
 }
 
-var csrftoken = getCookie(window.drf.csrfCookieName);
+var csrfParams = JSON.parse(document.getElementById('csrf-data').innerHTML);
+var csrftoken = getCookie(csrfParams.csrf_cookie_name);
 
 $.ajaxSetup({
   beforeSend: function(xhr, settings) {
@@ -46,7 +47,7 @@ $.ajaxSetup({
       // Send the token to same-origin, relative URLs only.
       // Send the token only if the method warrants CSRF protection
       // Using the CSRFToken value acquired earlier
-      xhr.setRequestHeader(window.drf.csrfHeaderName, csrftoken);
+      xhr.setRequestHeader(csrfParams.csrf_header_name, csrftoken);
     }
   }
 });

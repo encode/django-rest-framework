@@ -677,6 +677,11 @@ class BrowsableAPIRenderer(BaseRenderer):
             csrf_header_name = csrf_header_name[5:]
         csrf_header_name = csrf_header_name.replace('_', '-')
 
+        custom_csrf_params = json.dumps({
+            'csrf_cookie_name': csrf_cookie_name,
+            'csrf_header_name': csrf_header_name,
+        })
+
         context = {
             'content': self.get_content(renderer, data, accepted_media_type, renderer_context),
             'code_style': pygments_css(self.code_style),
@@ -708,8 +713,7 @@ class BrowsableAPIRenderer(BaseRenderer):
             'display_edit_forms': bool(response.status_code != 403),
 
             'api_settings': api_settings,
-            'csrf_cookie_name': csrf_cookie_name,
-            'csrf_header_name': csrf_header_name
+            'csrf_custom_params': custom_csrf_params,
         }
         return context
 
