@@ -211,10 +211,10 @@ The following example uses a custom `X-API-Version` header to determine the requ
 
 If your versioning scheme is based on the request URL, you will also want to alter how versioned URLs are determined. In order to do so you should override the `.reverse()` method on the class. See the source code for examples.
 
-[cite]: http://www.slideshare.net/evolve_conference/201308-fielding-evolve/31
-[roy-fielding-on-versioning]: http://www.infoq.com/articles/roy-fielding-on-versioning
+[cite]: https://www.slideshare.net/evolve_conference/201308-fielding-evolve/31
+[roy-fielding-on-versioning]: https://www.infoq.com/articles/roy-fielding-on-versioning
 [klabnik-guidelines]: http://blog.steveklabnik.com/posts/2011-07-03-nobody-understands-rest-or-http#i_want_my_api_to_be_versioned
 [heroku-guidelines]: https://github.com/interagent/http-api-design/blob/master/en/foundations/require-versioning-in-the-accepts-header.md
-[json-parameters]: http://tools.ietf.org/html/rfc4627#section-6
-[vendor-media-type]: http://en.wikipedia.org/wiki/Internet_media_type#Vendor_tree
+[json-parameters]: https://tools.ietf.org/html/rfc4627#section-6
+[vendor-media-type]: https://en.wikipedia.org/wiki/Internet_media_type#Vendor_tree
 [lvh]: https://reinteractive.net/posts/199-developing-and-testing-rails-applications-with-subdomains

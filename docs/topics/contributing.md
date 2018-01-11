@@ -198,15 +198,15 @@ If you want to draw attention to a note or warning, use a pair of enclosing line
     ---
 
 
-[cite]: http://www.w3.org/People/Berners-Lee/FAQ.html
+[cite]: https://www.w3.org/People/Berners-Lee/FAQ.html
 [code-of-conduct]: https://www.djangoproject.com/conduct/
 [google-group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
-[so-filter]: http://stackexchange.com/filters/66475/rest-framework
+[so-filter]: https://stackexchange.com/filters/66475/rest-framework
 [issues]: https://github.com/encode/django-rest-framework/issues?state=open
-[pep-8]: http://www.python.org/dev/peps/pep-0008/
+[pep-8]: https://www.python.org/dev/peps/pep-0008/
 [travis-status]: ../img/travis-status.png
 [pull-requests]: https://help.github.com/articles/using-pull-requests
 [tox]: https://tox.readthedocs.io/en/latest/
-[markdown]: http://daringfireball.net/projects/markdown/basics
+[markdown]: https://daringfireball.net/projects/markdown/basics
 [docs]: https://github.com/encode/django-rest-framework/tree/master/docs
 [mou]: http://mouapp.com/

@@ -72,7 +72,7 @@ The `X-Forwarded-For` HTTP header and `REMOTE_ADDR` WSGI variable are used to un
 
 If you need to strictly identify unique client IP addresses, you'll need to first configure the number of application proxies that the API runs behind by setting the `NUM_PROXIES` setting.  This setting should be an integer of zero or more.  If set to non-zero then the client IP will be identified as being the last IP address in the `X-Forwarded-For` header, once any application proxy IP addresses have first been excluded.  If set to zero, then the `REMOTE_ADDR` value will always be used as the identifying IP address.
 
-It is important to understand that if you configure the `NUM_PROXIES` setting, then all clients behind a unique [NAT'd](http://en.wikipedia.org/wiki/Network_address_translation) gateway will be treated as a single client.
+It is important to understand that if you configure the `NUM_PROXIES` setting, then all clients behind a unique [NAT'd](https://en.wikipedia.org/wiki/Network_address_translation) gateway will be treated as a single client.
 
 Further context on how the `X-Forwarded-For` header works, and identifying a remote client IP can be [found here][identifing-clients].
 

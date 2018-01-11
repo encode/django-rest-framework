@@ -65,7 +65,7 @@ class JSONRenderer(BaseRenderer):
 
     # We don't set a charset because JSON is a binary encoding,
     # that can be encoded as utf-8, utf-16 or utf-32.
-    # See: http://www.ietf.org/rfc/rfc4627.txt
+    # See: https://www.ietf.org/rfc/rfc4627.txt
     # Also: http://lucumr.pocoo.org/2013/7/19/application-mimetypes-and-encodings/
     charset = None
 

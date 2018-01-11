@@ -892,13 +892,13 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [cite]: http://www.catb.org/~esr/writings/cathedral-bazaar/cathedral-bazaar/ar01s04.html
 [deprecation-policy]: #deprecation-policy
 [django-deprecation-policy]: https://docs.djangoproject.com/en/stable/internals/release-process/#internal-release-deprecation-policy
-[defusedxml-announce]: http://blog.python.org/2013/02/announcing-defusedxml-fixes-for-xml.html
+[defusedxml-announce]: https://blog.python.org/2013/02/announcing-defusedxml-fixes-for-xml.html
 [743]: https://github.com/encode/django-rest-framework/pull/743
 [staticfiles14]: https://docs.djangoproject.com/en/1.4/howto/static-files/#with-a-template-tag
 [staticfiles13]: https://docs.djangoproject.com/en/1.3/howto/static-files/#with-a-template-tag
 [2.1.0-notes]: https://groups.google.com/d/topic/django-rest-framework/Vv2M0CMY9bg/discussion
 [ticket-582]: https://github.com/encode/django-rest-framework/issues/582
-[rfc-6266]: http://tools.ietf.org/html/rfc6266#section-4.3
+[rfc-6266]: https://tools.ietf.org/html/rfc6266#section-4.3
 [old-release-notes]: https://github.com/encode/django-rest-framework/blob/version-2.4.x/docs/topics/release-notes.md
 [3.6-release]: 3.6-announcement.md
 

@@ -485,21 +485,21 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 [testing]: testing.md
 [HATEOAS]: http://timelessrepo.com/haters-gonna-hateoas
 [quote]: http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
-[application/vnd.github+json]: http://developer.github.com/v3/media/
+[application/vnd.github+json]: https://developer.github.com/v3/media/
 [application/vnd.collection+json]: http://www.amundsen.com/media-types/collection/
 [django-error-views]: https://docs.djangoproject.com/en/stable/topics/http/views/#customizing-error-views
-[rest-framework-jsonp]: http://jpadilla.github.io/django-rest-framework-jsonp/
-[cors]: http://www.w3.org/TR/cors/
+[rest-framework-jsonp]: https://jpadilla.github.io/django-rest-framework-jsonp/
+[cors]: https://www.w3.org/TR/cors/
 [cors-docs]: http://www.django-rest-framework.org/topics/ajax-csrf-cors/
-[jsonp-security]: http://stackoverflow.com/questions/613962/is-jsonp-safe-to-use
-[rest-framework-yaml]: http://jpadilla.github.io/django-rest-framework-yaml/
-[rest-framework-xml]: http://jpadilla.github.io/django-rest-framework-xml/
-[messagepack]: http://msgpack.org/
+[jsonp-security]: https://stackoverflow.com/questions/613962/is-jsonp-safe-to-use
+[rest-framework-yaml]: https://jpadilla.github.io/django-rest-framework-yaml/
+[rest-framework-xml]: https://jpadilla.github.io/django-rest-framework-xml/
+[messagepack]: https://msgpack.org/
 [juanriaza]: https://github.com/juanriaza
 [mjumbewu]: https://github.com/mjumbewu
 [vbabiy]: https://github.com/vbabiy
-[rest-framework-yaml]: http://jpadilla.github.io/django-rest-framework-yaml/
-[rest-framework-xml]: http://jpadilla.github.io/django-rest-framework-xml/
+[rest-framework-yaml]: https://jpadilla.github.io/django-rest-framework-yaml/
+[rest-framework-xml]: https://jpadilla.github.io/django-rest-framework-xml/
 [yaml]: http://www.yaml.org/
 [djangorestframework-msgpack]: https://github.com/juanriaza/django-rest-framework-msgpack
 [djangorestframework-csv]: https://github.com/mjumbewu/django-rest-framework-csv
@@ -508,7 +508,7 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 [drf-ujson-renderer]: https://github.com/gizmag/drf-ujson-renderer
 [djangorestframework-camel-case]: https://github.com/vbabiy/djangorestframework-camel-case
 [Django REST Pandas]: https://github.com/wq/django-rest-pandas
-[Pandas]: http://pandas.pydata.org/
+[Pandas]: https://pandas.pydata.org/
 [other formats]: https://github.com/wq/django-rest-pandas#supported-formats
 [sheppard]: https://github.com/sheppard
 [wq]: https://github.com/wq

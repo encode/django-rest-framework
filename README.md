@@ -139,7 +139,7 @@ That's it, we're done!
 
 You can now open the API in your browser at `http://127.0.0.1:8000/`, and view your new 'users' API. If you use the `Login` control in the top right corner you'll also be able to add, create and delete users from the system.
 
-You can also interact with the API using command line tools such as [`curl`](http://curl.haxx.se/). For example, to list the users endpoint:
+You can also interact with the API using command line tools such as [`curl`](https://curl.haxx.se/). For example, to list the users endpoint:
 
     $ curl -H 'Accept: application/json; indent=4' -u admin:password http://127.0.0.1:8000/users/
 	[
@@ -176,14 +176,14 @@ If you believe you've found something in Django REST framework which has securit
 Send a description of the issue via email to [rest-framework-security@googlegroups.com][security-mail].  The project maintainers will then work with you to resolve any issues where required, prior to any public disclosure.
 
 [build-status-image]: https://secure.travis-ci.org/encode/django-rest-framework.svg?branch=master
-[travis]: http://travis-ci.org/encode/django-rest-framework?branch=master
+[travis]: https://travis-ci.org/encode/django-rest-framework?branch=master
 [coverage-status-image]: https://img.shields.io/codecov/c/github/encode/django-rest-framework/master.svg
-[codecov]: http://codecov.io/github/encode/django-rest-framework?branch=master
+[codecov]: https://codecov.io/github/encode/django-rest-framework?branch=master
 [pypi-version]: https://img.shields.io/pypi/v/djangorestframework.svg
 [pypi]: https://pypi.python.org/pypi/djangorestframework
 [twitter]: https://twitter.com/_tomchristie
 [group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
-[sandbox]: http://restframework.herokuapp.com/
+[sandbox]: https://restframework.herokuapp.com/
 
 [funding]: https://fund.django-rest-framework.org/topics/funding/
 [sponsors]: https://fund.django-rest-framework.org/topics/funding/#our-sponsors

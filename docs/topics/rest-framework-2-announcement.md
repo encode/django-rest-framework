@@ -95,4 +95,4 @@ There's also a [live sandbox version of the tutorial API][sandbox] available for
 [image]: ../img/quickstart.png
 [readthedocs]: https://readthedocs.org/
 [tut]: ../tutorial/1-serialization.md
-[sandbox]: http://restframework.herokuapp.com/
+[sandbox]: https://restframework.herokuapp.com/

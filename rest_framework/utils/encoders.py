@@ -23,7 +23,7 @@ class JSONEncoder(json.JSONEncoder):
     """
     def default(self, obj):
         # For Date Time string spec, see ECMA 262
-        # http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.15
+        # https://ecma-international.org/ecma-262/5.1/#sec-15.9.1.15
         if isinstance(obj, Promise):
             return force_text(obj)
         elif isinstance(obj, datetime.datetime):

@@ -50,6 +50,6 @@ As with the `reverse` function, you should **include the request as a keyword ar
 
     api_root = reverse_lazy('api-root', request=request)
 
-[cite]: http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_5
+[cite]: https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_5
 [reverse]: https://docs.djangoproject.com/en/stable/topics/http/urls/#reverse
 [reverse-lazy]: https://docs.djangoproject.com/en/stable/topics/http/urls/#reverse-lazy

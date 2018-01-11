@@ -11,7 +11,7 @@ Looking for a new Django REST Framework related role? On this site we provide a 
 * [https://djangojobs.net/jobs/][django-jobs-net]
 * [http://djangojobbers.com][django-jobbers-com]
 * [https://www.indeed.com/q-Django-jobs.html][indeed-com]
-* [http://stackoverflow.com/jobs/developer-jobs-using-django][stackoverflow-com]
+* [https://stackoverflow.com/jobs/developer-jobs-using-django][stackoverflow-com]
 * [https://www.upwork.com/o/jobs/browse/skill/django-framework/][upwork-com]
 * [https://www.technojobs.co.uk/django-jobs][technobjobs-co-uk]
 * [https://remoteok.io/remote-django-jobs][remoteok-io]
@@ -29,7 +29,7 @@ Wonder how else you can help? One of the best ways you can help Django REST Fram
 [django-jobs-net]: https://djangojobs.net/jobs/
 [django-jobbers-com]: http://djangojobbers.com
 [indeed-com]: https://www.indeed.com/q-Django-jobs.html
-[stackoverflow-com]: http://stackoverflow.com/jobs/developer-jobs-using-django
+[stackoverflow-com]: https://stackoverflow.com/jobs/developer-jobs-using-django
 [upwork-com]: https://www.upwork.com/o/jobs/browse/skill/django-framework/
 [technobjobs-co-uk]: https://www.technojobs.co.uk/django-jobs
 [remoteok-io]: https://remoteok.io/remote-django-jobs
