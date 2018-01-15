@@ -456,12 +456,22 @@
                   
                 
                   <li class="main">
-                    <a href="#test-cases">Test cases</a>
+                    <a href="#api-test-cases">API Test cases</a>
                   </li>
 
                   
                     <li>
                       <a href="#example">Example</a>
+                    </li>
+                  
+                
+                  <li class="main">
+                    <a href="#urlpatternstestcase">URLPatternsTestCase</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#example_1">Example</a>
                     </li>
                   
                 
@@ -516,7 +526,7 @@
               <h1 id="testing"><a class="toclink" href="#testing">Testing</a></h1>
 <blockquote>
 <p>Code without tests is broken as designed.</p>
-<p>&mdash; <a href="http://jacobian.org/writing/django-apps-with-buildout/#s-create-a-test-wrapper">Jacob Kaplan-Moss</a></p>
+<p>&mdash; <a href="https://jacobian.org/writing/django-apps-with-buildout/#s-create-a-test-wrapper">Jacob Kaplan-Moss</a></p>
 </blockquote>
 <p>REST framework includes a few helper classes that extend Django's existing test framework, and improve support for making API requests.</p>
 <h1 id="apirequestfactory"><a class="toclink" href="#apirequestfactory">APIRequestFactory</a></h1>
@@ -730,7 +740,7 @@ client.session.auth = HTTPBasicAuth('user', 'pass')
 client.session.headers.update({'x-test': 'true'})
 </code></pre>
 <hr />
-<h1 id="test-cases"><a class="toclink" href="#test-cases">Test cases</a></h1>
+<h1 id="api-test-cases"><a class="toclink" href="#api-test-cases">API Test cases</a></h1>
 <p>REST framework includes the following test case classes, that mirror the existing Django test case classes, but use <code>APIClient</code> instead of Django's default <code>Client</code>.</p>
 <ul>
 <li><code>APISimpleTestCase</code></li>
@@ -756,6 +766,28 @@ class AccountTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Account.objects.count(), 1)
         self.assertEqual(Account.objects.get().name, 'DabApps')
+</code></pre>
+<hr />
+<h1 id="urlpatternstestcase"><a class="toclink" href="#urlpatternstestcase">URLPatternsTestCase</a></h1>
+<p>REST framework also provides a test case class for isolating <code>urlpatterns</code> on a per-class basis. Note that this inherits from Django's <code>SimpleTestCase</code>, and will most likely need to be mixed with another test case class.</p>
+<h2 id="example_1"><a class="toclink" href="#example_1">Example</a></h2>
+<pre><code>from django.urls import include, path, reverse
+from rest_framework.test import APITestCase, URLPatternsTestCase
+
+
+class AccountTests(APITestCase, URLPatternsTestCase):
+    urlpatterns = [
+        path('api/', include('api.urls')),
+    ]
+
+    def test_create_account(self):
+        """
+        Ensure we can create a new account object.
+        """
+        url = reverse('account-list')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
 </code></pre>
 <hr />
 <h1 id="testing-responses"><a class="toclink" href="#testing-responses">Testing responses</a></h1>

@@ -434,7 +434,7 @@
               <h1 id="status-codes"><a class="toclink" href="#status-codes">Status Codes</a></h1>
 <blockquote>
 <p>418 I'm a teapot - Any attempt to brew coffee with a teapot should result in the error code "418 I'm a teapot".  The resulting entity body MAY be short and stout.</p>
-<p>&mdash; <a href="http://www.ietf.org/rfc/rfc2324.txt">RFC 2324</a>, Hyper Text Coffee Pot Control Protocol</p>
+<p>&mdash; <a href="https://www.ietf.org/rfc/rfc2324.txt">RFC 2324</a>, Hyper Text Coffee Pot Control Protocol</p>
 </blockquote>
 <p>Using bare status codes in your responses isn't recommended.  REST framework includes a set of named constants that you can use to make your code more obvious and readable.</p>
 <pre><code>from rest_framework import status
@@ -455,8 +455,8 @@ class ExampleTestCase(APITestCase):
         response = self.client.get(url)
         self.assertTrue(status.is_success(response.status_code))
 </code></pre>
-<p>For more information on proper usage of HTTP status codes see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html">RFC 2616</a>
-and <a href="http://tools.ietf.org/html/rfc6585">RFC 6585</a>.</p>
+<p>For more information on proper usage of HTTP status codes see <a href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html">RFC 2616</a>
+and <a href="https://tools.ietf.org/html/rfc6585">RFC 6585</a>.</p>
 <h2 id="informational-1xx"><a class="toclink" href="#informational-1xx">Informational - 1xx</a></h2>
 <p>This class of status code indicates a provisional response.  There are no 1xx status codes used in REST framework by default.</p>
 <pre><code>HTTP_100_CONTINUE

@@ -416,7 +416,7 @@
               <h1 id="working-with-ajax-csrf-cors"><a class="toclink" href="#working-with-ajax-csrf-cors">Working with AJAX, CSRF &amp; CORS</a></h1>
 <blockquote>
 <p>"Take a close look at possible CSRF / XSRF vulnerabilities on your own websites.  They're the worst kind of vulnerability &mdash; very easy to exploit by attackers, yet not so intuitively easy to understand for software developers, at least until you've been bitten by one."</p>
-<p>&mdash; <a href="http://www.codinghorror.com/blog/2008/10/preventing-csrf-and-xsrf-attacks.html">Jeff Atwood</a></p>
+<p>&mdash; <a href="https://blog.codinghorror.com/preventing-csrf-and-xsrf-attacks/">Jeff Atwood</a></p>
 </blockquote>
 <h2 id="javascript-clients"><a class="toclink" href="#javascript-clients">Javascript clients</a></h2>
 <p>If you’re building a JavaScript client to interface with your Web API, you'll need to consider if the client can use the same authentication policy that is used by the rest of the website, and also determine if you need to use CSRF tokens or CORS headers.</p>
@@ -432,7 +432,7 @@
 <p>If you're using <code>SessionAuthentication</code> you'll need to include valid CSRF tokens for any <code>POST</code>, <code>PUT</code>, <code>PATCH</code> or <code>DELETE</code> operations.</p>
 <p>In order to make AJAX requests, you need to include CSRF token in the HTTP header, as <a href="https://docs.djangoproject.com/en/stable/ref/csrf/#ajax">described in the Django documentation</a>.</p>
 <h2 id="cors"><a class="toclink" href="#cors">CORS</a></h2>
-<p><a href="http://www.w3.org/TR/cors/">Cross-Origin Resource Sharing</a> is a mechanism for allowing clients to interact with APIs that are hosted on a different domain.  CORS works by requiring the server to include a specific set of headers that allow a browser to determine if and when cross-domain requests should be allowed.</p>
+<p><a href="https://www.w3.org/TR/cors/">Cross-Origin Resource Sharing</a> is a mechanism for allowing clients to interact with APIs that are hosted on a different domain.  CORS works by requiring the server to include a specific set of headers that allow a browser to determine if and when cross-domain requests should be allowed.</p>
 <p>The best way to deal with CORS in REST framework is to add the required response headers in middleware.  This ensures that CORS is supported transparently, without having to change any behavior in your views.</p>
 <p><a href="https://github.com/ottoyiu/">Otto Yiu</a> maintains the <a href="https://github.com/ottoyiu/django-cors-headers/">django-cors-headers</a> package, which is known to work correctly with REST framework APIs.</p>
             

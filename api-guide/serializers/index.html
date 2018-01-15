@@ -904,7 +904,7 @@ serializer.errors
         return instance
 </code></pre>
 <p>Because the behavior of nested creates and updates can be ambiguous, and may require complex dependencies between related models, REST framework 3 requires you to always write these methods explicitly. The default <code>ModelSerializer</code> <code>.create()</code> and <code>.update()</code> methods do not include support for writable nested representations.</p>
-<p>It is possible that a third party package, providing automatic support some kinds of automatic writable nested representations may be released alongside the 3.1 release.</p>
+<p>There are however, third-party packages available such as <a href="./#drf-writable-nested">DRF Writable Nested</a> that support automatic writable nested representations.</p>
 <h4 id="handling-saving-related-instances-in-model-manager-classes"><a class="toclink" href="#handling-saving-related-instances-in-model-manager-classes">Handling saving related instances in model manager classes</a></h4>
 <p>An alternative to saving multiple related instances in the serializer is to write custom model manager classes that handle creating the correct instances.</p>
 <p>For example, suppose we wanted to ensure that <code>User</code> instances and <code>Profile</code> instances are always created together as a pair. We might write a custom manager class that looks something like this:</p>
@@ -931,7 +931,7 @@ serializer.errors
         has_support_contract=validated_data['profile']['has_support_contract']
     )
 </code></pre>
-<p>For more details on this approach see the Django documentation on <a href="https://docs.djangoproject.com/en/stable/topics/db/managers/">model managers</a>, and <a href="http://www.dabapps.com/blog/django-models-and-encapsulation/">this blogpost on using model and manager classes</a>.</p>
+<p>For more details on this approach see the Django documentation on <a href="https://docs.djangoproject.com/en/stable/topics/db/managers/">model managers</a>, and <a href="https://www.dabapps.com/blog/django-models-and-encapsulation/">this blogpost on using model and manager classes</a>.</p>
 <h2 id="dealing-with-multiple-objects"><a class="toclink" href="#dealing-with-multiple-objects">Dealing with multiple objects</a></h2>
 <p>The <code>Serializer</code> class can also handle serializing or deserializing lists of objects.</p>
 <h4 id="serializing-multiple-objects"><a class="toclink" href="#serializing-multiple-objects">Serializing multiple objects</a></h4>
@@ -1456,7 +1456,7 @@ class MySerializer(MyBaseSerializer):
         if fields is not None:
             # Drop any fields that are not specified in the `fields` argument.
             allowed = set(fields)
-            existing = set(self.fields.keys())
+            existing = set(self.fields)
             for field_name in existing - allowed:
                 self.fields.pop(field_name)
 </code></pre>
@@ -1480,7 +1480,7 @@ class MySerializer(MyBaseSerializer):
 <h1 id="third-party-packages"><a class="toclink" href="#third-party-packages">Third party packages</a></h1>
 <p>The following third party packages are also available.</p>
 <h2 id="django-rest-marshmallow"><a class="toclink" href="#django-rest-marshmallow">Django REST marshmallow</a></h2>
-<p>The <a href="http://tomchristie.github.io/django-rest-marshmallow/">django-rest-marshmallow</a> package provides an alternative implementation for serializers, using the python <a href="https://marshmallow.readthedocs.io/en/latest/">marshmallow</a> library. It exposes the same API as the REST framework serializers, and can be used as a drop-in replacement in some use-cases.</p>
+<p>The <a href="https://tomchristie.github.io/django-rest-marshmallow/">django-rest-marshmallow</a> package provides an alternative implementation for serializers, using the python <a href="https://marshmallow.readthedocs.io/en/latest/">marshmallow</a> library. It exposes the same API as the REST framework serializers, and can be used as a drop-in replacement in some use-cases.</p>
 <h2 id="serpy"><a class="toclink" href="#serpy">Serpy</a></h2>
 <p>The <a href="https://github.com/clarkduvall/serpy">serpy</a> package is an alternative implementation for serializers that is built for speed. <a href="https://github.com/clarkduvall/serpy">Serpy</a> serializes complex datatypes to simple native types. The native types can be easily converted to JSON or any other format needed.</p>
 <h2 id="mongoenginemodelserializer"><a class="toclink" href="#mongoenginemodelserializer">MongoengineModelSerializer</a></h2>
@@ -1505,9 +1505,9 @@ blacklisted and child serializers can be optionally expanded.</p>
 <h2 id="drf-base64"><a class="toclink" href="#drf-base64">DRF-Base64</a></h2>
 <p><a href="https://bitbucket.org/levit_scs/drf_base64">DRF-Base64</a> provides a set of field and model serializers that handles the upload of base64-encoded files.</p>
 <h2 id="queryfields"><a class="toclink" href="#queryfields">QueryFields</a></h2>
-<p><a href="http://djangorestframework-queryfields.readthedocs.io/">djangorestframework-queryfields</a> allows API clients to specify which fields will be sent in the response via inclusion/exclusion query parameters.</p>
+<p><a href="https://djangorestframework-queryfields.readthedocs.io/">djangorestframework-queryfields</a> allows API clients to specify which fields will be sent in the response via inclusion/exclusion query parameters.</p>
 <h2 id="drf-writable-nested"><a class="toclink" href="#drf-writable-nested">DRF Writable Nested</a></h2>
-<p>The <a href="http://github.com/beda-software/drf-writable-nested">drf-writable-nested</a> package provides writable nested model serializer which allows to create/update models with nested related data.</p>
+<p>The <a href="https://github.com/beda-software/drf-writable-nested">drf-writable-nested</a> package provides writable nested model serializer which allows to create/update models with nested related data.</p>
             
 
           </div> <!--/span-->

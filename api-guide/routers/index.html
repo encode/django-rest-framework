@@ -713,14 +713,14 @@ urlpatterns = router.urls
 <h2 id="drf-nested-routers"><a class="toclink" href="#drf-nested-routers">DRF Nested Routers</a></h2>
 <p>The <a href="https://github.com/alanjds/drf-nested-routers">drf-nested-routers package</a> provides routers and relationship fields for working with nested resources.</p>
 <h2 id="modelrouter-wqdbrest"><a class="toclink" href="#modelrouter-wqdbrest">ModelRouter (wq.db.rest)</a></h2>
-<p>The <a href="http://wq.io/wq.db">wq.db package</a> provides an advanced <a href="http://wq.io/docs/router">ModelRouter</a> class (and singleton instance) that extends <code>DefaultRouter</code> with a <code>register_model()</code> API. Much like Django's <code>admin.site.register</code>, the only required argument to <code>rest.router.register_model</code> is a model class.  Reasonable defaults for a url prefix, serializer, and viewset will be inferred from the model and global configuration.</p>
+<p>The <a href="https://wq.io/wq.db">wq.db package</a> provides an advanced <a href="https://wq.io/docs/router">ModelRouter</a> class (and singleton instance) that extends <code>DefaultRouter</code> with a <code>register_model()</code> API. Much like Django's <code>admin.site.register</code>, the only required argument to <code>rest.router.register_model</code> is a model class.  Reasonable defaults for a url prefix, serializer, and viewset will be inferred from the model and global configuration.</p>
 <pre><code>from wq.db import rest
 from myapp.models import MyModel
 
 rest.router.register_model(MyModel)
 </code></pre>
 <h2 id="drf-extensions"><a class="toclink" href="#drf-extensions">DRF-extensions</a></h2>
-<p>The <a href="http://chibisov.github.io/drf-extensions/docs/"><code>DRF-extensions</code> package</a> provides <a href="http://chibisov.github.io/drf-extensions/docs/#routers">routers</a> for creating <a href="http://chibisov.github.io/drf-extensions/docs/#nested-routes">nested viewsets</a>, <a href="http://chibisov.github.io/drf-extensions/docs/#collection-level-controllers">collection level controllers</a> with <a href="http://chibisov.github.io/drf-extensions/docs/#controller-endpoint-name">customizable endpoint names</a>.</p>
+<p>The <a href="https://chibisov.github.io/drf-extensions/docs/"><code>DRF-extensions</code> package</a> provides <a href="https://chibisov.github.io/drf-extensions/docs/#routers">routers</a> for creating <a href="https://chibisov.github.io/drf-extensions/docs/#nested-routes">nested viewsets</a>, <a href="https://chibisov.github.io/drf-extensions/docs/#collection-level-controllers">collection level controllers</a> with <a href="https://chibisov.github.io/drf-extensions/docs/#controller-endpoint-name">customizable endpoint names</a>.</p>
             
 
           </div> <!--/span-->

@@ -454,11 +454,11 @@
               <h1 id="versioning"><a class="toclink" href="#versioning">Versioning</a></h1>
 <blockquote>
 <p>Versioning an interface is just a "polite" way to kill deployed clients.</p>
-<p>&mdash; <a href="http://www.slideshare.net/evolve_conference/201308-fielding-evolve/31">Roy Fielding</a>.</p>
+<p>&mdash; <a href="https://www.slideshare.net/evolve_conference/201308-fielding-evolve/31">Roy Fielding</a>.</p>
 </blockquote>
 <p>API versioning allows you to alter behavior between different clients. REST framework provides for a number of different versioning schemes.</p>
 <p>Versioning is determined by the incoming client request, and may either be based on the request URL, or based on the request headers.</p>
-<p>There are a number of valid approaches to approaching versioning. <a href="http://www.infoq.com/articles/roy-fielding-on-versioning">Non-versioned systems can also be appropriate</a>, particularly if you're engineering for very long-term systems with multiple clients outside of your control.</p>
+<p>There are a number of valid approaches to approaching versioning. <a href="https://www.infoq.com/articles/roy-fielding-on-versioning">Non-versioned systems can also be appropriate</a>, particularly if you're engineering for very long-term systems with multiple clients outside of your control.</p>
 <h2 id="versioning-with-rest-framework"><a class="toclink" href="#versioning-with-rest-framework">Versioning with REST framework</a></h2>
 <p>When API versioning is enabled, the <code>request.version</code> attribute will contain a string that corresponds to the version requested in the incoming client request.</p>
 <p>By default, versioning is not enabled, and <code>request.version</code> will always return <code>None</code>.</p>
@@ -530,7 +530,7 @@ Accept: application/json; version=1.0
 <p>In the example request above <code>request.version</code> attribute would return the string <code>'1.0'</code>.</p>
 <p>Versioning based on accept headers is <a href="http://blog.steveklabnik.com/posts/2011-07-03-nobody-understands-rest-or-http#i_want_my_api_to_be_versioned">generally considered</a> as <a href="https://github.com/interagent/http-api-design/blob/master/en/foundations/require-versioning-in-the-accepts-header.md">best practice</a>, although other styles may be suitable depending on your client requirements.</p>
 <h4 id="using-accept-headers-with-vendor-media-types"><a class="toclink" href="#using-accept-headers-with-vendor-media-types">Using accept headers with vendor media types</a></h4>
-<p>Strictly speaking the <code>json</code> media type is not specified as <a href="http://tools.ietf.org/html/rfc4627#section-6">including additional parameters</a>. If you are building a well-specified public API you might consider using a <a href="http://en.wikipedia.org/wiki/Internet_media_type#Vendor_tree">vendor media type</a>. To do so, configure your renderers to use a JSON based renderer with a custom media type:</p>
+<p>Strictly speaking the <code>json</code> media type is not specified as <a href="https://tools.ietf.org/html/rfc4627#section-6">including additional parameters</a>. If you are building a well-specified public API you might consider using a <a href="https://en.wikipedia.org/wiki/Internet_media_type#Vendor_tree">vendor media type</a>. To do so, configure your renderers to use a JSON based renderer with a custom media type:</p>
 <pre><code>class BookingsAPIRenderer(JSONRenderer):
     media_type = 'application/vnd.megacorp.bookings+json'
 </code></pre>
@@ -591,7 +591,7 @@ Accept: application/json
 <pre><code>^([a-zA-Z0-9]+)\.[a-zA-Z0-9]+\.[a-zA-Z0-9]+$
 </code></pre>
 <p>Note that the first group is enclosed in brackets, indicating that this is the matched portion of the hostname.</p>
-<p>The <code>HostNameVersioning</code> scheme can be awkward to use in debug mode as you will typically be accessing a raw IP address such as <code>127.0.0.1</code>. There are various online services which you to <a href="https://reinteractive.net/posts/199-developing-and-testing-rails-applications-with-subdomains">access localhost with a custom subdomain</a> which you may find helpful in this case.</p>
+<p>The <code>HostNameVersioning</code> scheme can be awkward to use in debug mode as you will typically be accessing a raw IP address such as <code>127.0.0.1</code>. There are various online tutorials on how to <a href="https://reinteractive.net/posts/199-developing-and-testing-rails-applications-with-subdomains">access localhost with a custom subdomain</a> which you may find helpful in this case.</p>
 <p>Hostname based versioning can be particularly useful if you have requirements to route incoming requests to different servers based on the version, as you can configure different DNS records for different API versions.</p>
 <h2 id="queryparameterversioning"><a class="toclink" href="#queryparameterversioning">QueryParameterVersioning</a></h2>
 <p>This scheme is a simple style that includes the version as a query parameter in the URL. For example:</p>

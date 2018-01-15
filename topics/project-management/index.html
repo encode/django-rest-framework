@@ -428,7 +428,7 @@
 </blockquote>
 <p>This document outlines our project management processes for REST framework.</p>
 <p>The aim is to ensure that the project has a high
-<a href="http://en.wikipedia.org/wiki/Bus_factor">"bus factor"</a>, and can continue to remain well supported for the foreseeable future. Suggestions for improvements to our process are welcome.</p>
+<a href="https://en.wikipedia.org/wiki/Bus_factor">"bus factor"</a>, and can continue to remain well supported for the foreseeable future. Suggestions for improvements to our process are welcome.</p>
 <hr />
 <h2 id="maintenance-team"><a class="toclink" href="#maintenance-team">Maintenance team</a></h2>
 <p>We have a quarterly maintenance cycle where new members may join the maintenance team. We currently cap the size of the team at 5 members, and may encourage folks to step out of the team for a cycle to allow new members to participate.</p>
@@ -512,6 +512,11 @@ During development cycle:
 Checklist:
 
 - [ ] Create pull request for [release notes](https://github.com/encode/django-rest-framework/blob/master/docs/topics/release-notes.md) based on the [*.*.* milestone](https://github.com/encode/django-rest-framework/milestones/***).
+- [ ] Update supported versions:
+    - [ ] `setup.py` `python_requires` list
+    - [ ] `setup.py` Python &amp; Django version trove classifiers
+    - [ ] `README` Python &amp; Django versions
+    - [ ] `docs` Python &amp; Django versions
 - [ ] Update the translations from [transifex](http://www.django-rest-framework.org/topics/project-management/#translations).
 - [ ] Ensure the pull request increments the version to `*.*.*` in [`restframework/__init__.py`](https://github.com/encode/django-rest-framework/blob/master/rest_framework/__init__.py).
 - [ ] Confirm with @tomchristie that release is finalized and ready to go.
@@ -578,7 +583,7 @@ django-admin.py compilemessages
 <ul>
 <li><a href="https://github.com/encode/django-rest-framework/issues/2162">Consider moving the repo into a proper GitHub organization</a>.</li>
 <li>Ensure <code>@jamie</code> has back-up access to the <code>django-rest-framework.org</code> domain setup and admin.</li>
-<li>Document ownership of the <a href="http://restframework.herokuapp.com/">live example</a> API.</li>
+<li>Document ownership of the <a href="https://restframework.herokuapp.com/">live example</a> API.</li>
 <li>Document ownership of the <a href="https://groups.google.com/forum/#!forum/django-rest-framework">mailing list</a> and IRC channel.</li>
 <li>Document ownership and management of the security mailing list.</li>
 </ul>

@@ -796,7 +796,7 @@ In this case you can underspecify the media types it should respond to, by using
 <h2 id="designing-your-media-types"><a class="toclink" href="#designing-your-media-types">Designing your media types</a></h2>
 <p>For the purposes of many Web APIs, simple <code>JSON</code> responses with hyperlinked relations may be sufficient.  If you want to fully embrace RESTful design and <a href="http://timelessrepo.com/haters-gonna-hateoas">HATEOAS</a> you'll need to consider the design and usage of your media types in more detail.</p>
 <p>In <a href="http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven">the words of Roy Fielding</a>, "A REST API should spend almost all of its descriptive effort in defining the media type(s) used for representing resources and driving application state, or in defining extended relation names and/or hypertext-enabled mark-up for existing standard media types.".</p>
-<p>For good examples of custom media types, see GitHub's use of a custom <a href="http://developer.github.com/v3/media/">application/vnd.github+json</a> media type, and Mike Amundsen's IANA approved <a href="http://www.amundsen.com/media-types/collection/">application/vnd.collection+json</a> JSON-based hypermedia.</p>
+<p>For good examples of custom media types, see GitHub's use of a custom <a href="https://developer.github.com/v3/media/">application/vnd.github+json</a> media type, and Mike Amundsen's IANA approved <a href="http://www.amundsen.com/media-types/collection/">application/vnd.collection+json</a> JSON-based hypermedia.</p>
 <h2 id="html-error-views"><a class="toclink" href="#html-error-views">HTML error views</a></h2>
 <p>Typically a renderer will behave the same regardless of if it's dealing with a regular response, or with a response caused by an exception being raised, such as an <code>Http404</code> or <code>PermissionDenied</code> exception, or a subclass of <code>APIException</code>.</p>
 <p>If you're using either the <code>TemplateHTMLRenderer</code> or the <code>StaticHTMLRenderer</code> and an exception is raised, the behavior is slightly different, and mirrors <a href="https://docs.djangoproject.com/en/stable/topics/http/views/#customizing-error-views">Django's default handling of error views</a>.</p>
@@ -812,7 +812,7 @@ In this case you can underspecify the media types it should respond to, by using
 <h1 id="third-party-packages"><a class="toclink" href="#third-party-packages">Third party packages</a></h1>
 <p>The following third party packages are also available.</p>
 <h2 id="yaml"><a class="toclink" href="#yaml">YAML</a></h2>
-<p><a href="http://jpadilla.github.io/django-rest-framework-yaml/">REST framework YAML</a> provides <a href="http://www.yaml.org/">YAML</a> parsing and rendering support. It was previously included directly in the REST framework package, and is now instead supported as a third-party package.</p>
+<p><a href="https://jpadilla.github.io/django-rest-framework-yaml/">REST framework YAML</a> provides <a href="http://www.yaml.org/">YAML</a> parsing and rendering support. It was previously included directly in the REST framework package, and is now instead supported as a third-party package.</p>
 <h4 id="installation-configuration"><a class="toclink" href="#installation-configuration">Installation &amp; configuration</a></h4>
 <p>Install using pip.</p>
 <pre><code>$ pip install djangorestframework-yaml
@@ -828,7 +828,7 @@ In this case you can underspecify the media types it should respond to, by using
 }
 </code></pre>
 <h2 id="xml"><a class="toclink" href="#xml">XML</a></h2>
-<p><a href="http://jpadilla.github.io/django-rest-framework-xml/">REST Framework XML</a> provides a simple informal XML format. It was previously included directly in the REST framework package, and is now instead supported as a third-party package.</p>
+<p><a href="https://jpadilla.github.io/django-rest-framework-xml/">REST Framework XML</a> provides a simple informal XML format. It was previously included directly in the REST framework package, and is now instead supported as a third-party package.</p>
 <h4 id="installation-configuration_1"><a class="toclink" href="#installation-configuration_1">Installation &amp; configuration</a></h4>
 <p>Install using pip.</p>
 <pre><code>$ pip install djangorestframework-xml
@@ -844,10 +844,10 @@ In this case you can underspecify the media types it should respond to, by using
 }
 </code></pre>
 <h2 id="jsonp"><a class="toclink" href="#jsonp">JSONP</a></h2>
-<p><a href="http://jpadilla.github.io/django-rest-framework-jsonp/">REST framework JSONP</a> provides JSONP rendering support. It was previously included directly in the REST framework package, and is now instead supported as a third-party package.</p>
+<p><a href="https://jpadilla.github.io/django-rest-framework-jsonp/">REST framework JSONP</a> provides JSONP rendering support. It was previously included directly in the REST framework package, and is now instead supported as a third-party package.</p>
 <hr />
-<p><strong>Warning</strong>: If you require cross-domain AJAX requests, you should generally be using the more modern approach of <a href="http://www.w3.org/TR/cors/">CORS</a> as an alternative to <code>JSONP</code>. See the <a href="http://www.django-rest-framework.org/topics/ajax-csrf-cors/">CORS documentation</a> for more details.</p>
-<p>The <code>jsonp</code> approach is essentially a browser hack, and is <a href="http://stackoverflow.com/questions/613962/is-jsonp-safe-to-use">only appropriate for globally readable API endpoints</a>, where <code>GET</code> requests are unauthenticated and do not require any user permissions.</p>
+<p><strong>Warning</strong>: If you require cross-domain AJAX requests, you should generally be using the more modern approach of <a href="https://www.w3.org/TR/cors/">CORS</a> as an alternative to <code>JSONP</code>. See the <a href="http://www.django-rest-framework.org/topics/ajax-csrf-cors/">CORS documentation</a> for more details.</p>
+<p>The <code>jsonp</code> approach is essentially a browser hack, and is <a href="https://stackoverflow.com/questions/613962/is-jsonp-safe-to-use">only appropriate for globally readable API endpoints</a>, where <code>GET</code> requests are unauthenticated and do not require any user permissions.</p>
 <hr />
 <h4 id="installation-configuration_2"><a class="toclink" href="#installation-configuration_2">Installation &amp; configuration</a></h4>
 <p>Install using pip.</p>
@@ -861,7 +861,7 @@ In this case you can underspecify the media types it should respond to, by using
 }
 </code></pre>
 <h2 id="messagepack"><a class="toclink" href="#messagepack">MessagePack</a></h2>
-<p><a href="http://msgpack.org/">MessagePack</a> is a fast, efficient binary serialization format.  <a href="https://github.com/juanriaza">Juan Riaza</a> maintains the <a href="https://github.com/juanriaza/django-rest-framework-msgpack">djangorestframework-msgpack</a> package which provides MessagePack renderer and parser support for REST framework.</p>
+<p><a href="https://msgpack.org/">MessagePack</a> is a fast, efficient binary serialization format.  <a href="https://github.com/juanriaza">Juan Riaza</a> maintains the <a href="https://github.com/juanriaza/django-rest-framework-msgpack">djangorestframework-msgpack</a> package which provides MessagePack renderer and parser support for REST framework.</p>
 <h2 id="csv"><a class="toclink" href="#csv">CSV</a></h2>
 <p>Comma-separated values are a plain-text tabular data format, that can be easily imported into spreadsheet applications. <a href="https://github.com/mjumbewu">Mjumbe Poe</a> maintains the <a href="https://github.com/mjumbewu/django-rest-framework-csv">djangorestframework-csv</a> package which provides CSV renderer support for REST framework.</p>
 <h2 id="ultrajson"><a class="toclink" href="#ultrajson">UltraJSON</a></h2>
@@ -869,7 +869,7 @@ In this case you can underspecify the media types it should respond to, by using
 <h2 id="camelcase-json"><a class="toclink" href="#camelcase-json">CamelCase JSON</a></h2>
 <p><a href="https://github.com/vbabiy/djangorestframework-camel-case">djangorestframework-camel-case</a> provides camel case JSON renderers and parsers for REST framework.  This allows serializers to use Python-style underscored field names, but be exposed in the API as Javascript-style camel case field names.  It is maintained by <a href="https://github.com/vbabiy">Vitaly Babiy</a>.</p>
 <h2 id="pandas-csv-excel-png"><a class="toclink" href="#pandas-csv-excel-png">Pandas (CSV, Excel, PNG)</a></h2>
-<p><a href="https://github.com/wq/django-rest-pandas">Django REST Pandas</a> provides a serializer and renderers that support additional data processing and output via the <a href="http://pandas.pydata.org/">Pandas</a> DataFrame API.  Django REST Pandas includes renderers for Pandas-style CSV files, Excel workbooks (both <code>.xls</code> and <code>.xlsx</code>), and a number of <a href="https://github.com/wq/django-rest-pandas#supported-formats">other formats</a>. It is maintained by <a href="https://github.com/sheppard">S. Andrew Sheppard</a> as part of the <a href="https://github.com/wq">wq Project</a>.</p>
+<p><a href="https://github.com/wq/django-rest-pandas">Django REST Pandas</a> provides a serializer and renderers that support additional data processing and output via the <a href="https://pandas.pydata.org/">Pandas</a> DataFrame API.  Django REST Pandas includes renderers for Pandas-style CSV files, Excel workbooks (both <code>.xls</code> and <code>.xlsx</code>), and a number of <a href="https://github.com/wq/django-rest-pandas#supported-formats">other formats</a>. It is maintained by <a href="https://github.com/sheppard">S. Andrew Sheppard</a> as part of the <a href="https://github.com/wq">wq Project</a>.</p>
 <h2 id="latex"><a class="toclink" href="#latex">LaTeX</a></h2>
 <p><a href="https://github.com/mypebble/rest-framework-latex">Rest Framework Latex</a> provides a renderer that outputs PDFs using Laulatex. It is maintained by <a href="https://github.com/mypebble">Pebble (S/F Software)</a>.</p>
             

@@ -416,7 +416,7 @@
               <h1 id="the-browsable-api"><a class="toclink" href="#the-browsable-api">The Browsable API</a></h1>
 <blockquote>
 <p>It is a profoundly erroneous truism... that we should cultivate the habit of thinking of what we are doing.  The precise opposite is the case.  Civilization advances by extending the number of important operations which we can perform without thinking about them.</p>
-<p>&mdash; <a href="http://en.wikiquote.org/wiki/Alfred_North_Whitehead">Alfred North Whitehead</a>, An Introduction to Mathematics (1911)</p>
+<p>&mdash; <a href="https://en.wikiquote.org/wiki/Alfred_North_Whitehead">Alfred North Whitehead</a>, An Introduction to Mathematics (1911)</p>
 </blockquote>
 <p>API may stand for Application <em>Programming</em> Interface, but humans have to be able to read the APIs, too; someone has to do the programming.  Django REST Framework supports generating human-friendly HTML output for each resource when the <code>HTML</code> format is requested.  These pages allow for easy browsing of resources, as well as forms for submitting data to the resources using <code>POST</code>, <code>PUT</code>, and <code>DELETE</code>.</p>
 <h2 id="urls"><a class="toclink" href="#urls">URLs</a></h2>
@@ -424,7 +424,7 @@
 <h2 id="formats"><a class="toclink" href="#formats">Formats</a></h2>
 <p>By default, the API will return the format specified by the headers, which in the case of the browser is HTML.  The format can be specified using <code>?format=</code> in the request, so you can look at the raw JSON response in a browser by adding <code>?format=json</code> to the URL.  There are helpful extensions for viewing JSON in <a href="https://addons.mozilla.org/en-US/firefox/addon/jsonview/">Firefox</a> and <a href="https://chrome.google.com/webstore/detail/chklaanhfefbnpoihckbnefhakgolnmc">Chrome</a>.</p>
 <h2 id="customizing"><a class="toclink" href="#customizing">Customizing</a></h2>
-<p>The browsable API is built with <a href="http://getbootstrap.com">Twitter's Bootstrap</a> (v 3.3.5), making it easy to customize the look-and-feel.</p>
+<p>The browsable API is built with <a href="https://getbootstrap.com/">Twitter's Bootstrap</a> (v 3.3.5), making it easy to customize the look-and-feel.</p>
 <p>To customize the default style, create a template called <code>rest_framework/api.html</code> that extends from <code>rest_framework/base.html</code>.  For example:</p>
 <p><strong>templates/rest_framework/api.html</strong></p>
 <pre><code>{% extends "rest_framework/base.html" %}
@@ -437,13 +437,13 @@
     &lt;link rel="stylesheet" href="/path/to/my/bootstrap.css" type="text/css"&gt;
 {% endblock %}
 </code></pre>
-<p>Suitable pre-made replacement themes are available at <a href="http://bootswatch.com/">Bootswatch</a>.  To use any of the Bootswatch themes, simply download the theme's <code>bootstrap.min.css</code> file, add it to your project, and replace the default one as described above.</p>
+<p>Suitable pre-made replacement themes are available at <a href="https://bootswatch.com/">Bootswatch</a>.  To use any of the Bootswatch themes, simply download the theme's <code>bootstrap.min.css</code> file, add it to your project, and replace the default one as described above.</p>
 <p>You can also change the navbar variant, which by default is <code>navbar-inverse</code>, using the <code>bootstrap_navbar_variant</code> block.  The empty <code>{% block bootstrap_navbar_variant %}{% endblock %}</code> will use the original Bootstrap navbar style.</p>
 <p>Full example:</p>
 <pre><code>{% extends "rest_framework/base.html" %}
 
 {% block bootstrap_theme %}
-    &lt;link rel="stylesheet" href="http://bootswatch.com/flatly/bootstrap.min.css" type="text/css"&gt;
+    &lt;link rel="stylesheet" href="https://bootswatch.com/flatly/bootstrap.min.css" type="text/css"&gt;
 {% endblock %}
 
 {% block bootstrap_navbar_variant %}{% endblock %}
@@ -463,7 +463,7 @@
 <li><code>bodyclass</code>                  - Class attribute for the <code>&lt;body&gt;</code> tag, empty by default.</li>
 <li><code>bootstrap_theme</code>            - CSS for the Bootstrap theme.</li>
 <li><code>bootstrap_navbar_variant</code>   - CSS class for the navbar.</li>
-<li><code>branding</code>                   - Branding section of the navbar, see <a href="http://getbootstrap.com/2.3.2/components.html#navbar">Bootstrap components</a>.</li>
+<li><code>branding</code>                   - Branding section of the navbar, see <a href="https://getbootstrap.com/2.3.2/components.html#navbar">Bootstrap components</a>.</li>
 <li><code>breadcrumbs</code>                - Links showing resource nesting, allowing the user to go back up the resources.  It's recommended to preserve these, but they can be overridden using the breadcrumbs block.</li>
 <li><code>script</code>                     - JavaScript files for the page.</li>
 <li><code>style</code>                      - CSS stylesheets for the page.</li>
@@ -471,7 +471,7 @@
 <li><code>userlinks</code>                  - This is a list of links on the right of the header, by default containing login/logout links.  To add links instead of replace, use <code>{{ block.super }}</code> to preserve the authentication links.</li>
 </ul>
 <h4 id="components"><a class="toclink" href="#components">Components</a></h4>
-<p>All of the standard <a href="http://getbootstrap.com/2.3.2/components.html">Bootstrap components</a> are available.</p>
+<p>All of the standard <a href="https://getbootstrap.com/2.3.2/components.html">Bootstrap components</a> are available.</p>
 <h4 id="tooltips"><a class="toclink" href="#tooltips">Tooltips</a></h4>
 <p>The browsable API makes use of the Bootstrap tooltips component.  Any element with the <code>js-tooltip</code> class and a <code>title</code> attribute has that title content will display a tooltip on hover events.</p>
 <h3 id="login-template"><a class="toclink" href="#login-template">Login Template</a></h3>

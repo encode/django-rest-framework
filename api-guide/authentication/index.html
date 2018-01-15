@@ -512,7 +512,7 @@
               <h1 id="authentication"><a class="toclink" href="#authentication">Authentication</a></h1>
 <blockquote>
 <p>Auth needs to be pluggable.</p>
-<p>&mdash; Jacob Kaplan-Moss, <a href="http://jacobian.org/writing/rest-worst-practices/">"REST worst practices"</a></p>
+<p>&mdash; Jacob Kaplan-Moss, <a href="https://jacobian.org/writing/rest-worst-practices/">"REST worst practices"</a></p>
 </blockquote>
 <p>Authentication is the mechanism of associating an incoming request with a set of identifying credentials, such as the user the request came from, or the token that it was signed with.  The <a href="../permissions/">permission</a> and <a href="../throttling/">throttling</a> policies can then use those credentials to determine if the request should be permitted.</p>
 <p>REST framework provides a number of authentication schemes out of the box, and also allows you to implement custom schemes.</p>
@@ -568,14 +568,14 @@ def example_view(request, format=None):
 <h2 id="unauthorized-and-forbidden-responses"><a class="toclink" href="#unauthorized-and-forbidden-responses">Unauthorized and Forbidden responses</a></h2>
 <p>When an unauthenticated request is denied permission there are two different error codes that may be appropriate.</p>
 <ul>
-<li><a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2">HTTP 401 Unauthorized</a></li>
-<li><a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.4">HTTP 403 Permission Denied</a></li>
+<li><a href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2">HTTP 401 Unauthorized</a></li>
+<li><a href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.4">HTTP 403 Permission Denied</a></li>
 </ul>
 <p>HTTP 401 responses must always include a <code>WWW-Authenticate</code> header, that instructs the client how to authenticate.  HTTP 403 responses do not include the <code>WWW-Authenticate</code> header.</p>
 <p>The kind of response that will be used depends on the authentication scheme.  Although multiple authentication schemes may be in use, only one scheme may be used to determine the type of response.  <strong>The first authentication class set on the view is used when determining the type of response</strong>.</p>
 <p>Note that when a request may successfully authenticate, but still be denied permission to perform the request, in which case a <code>403 Permission Denied</code> response will always be used, regardless of the authentication scheme.</p>
 <h2 id="apache-mod_wsgi-specific-configuration"><a class="toclink" href="#apache-mod_wsgi-specific-configuration">Apache mod_wsgi specific configuration</a></h2>
-<p>Note that if deploying to <a href="http://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGIPassAuthorization">Apache using mod_wsgi</a>, the authorization header is not passed through to a WSGI application by default, as it is assumed that authentication will be handled by Apache, rather than at an application level.</p>
+<p>Note that if deploying to <a href="https://modwsgi.readthedocs.io/en/develop/configuration-directives/WSGIPassAuthorization.html">Apache using mod_wsgi</a>, the authorization header is not passed through to a WSGI application by default, as it is assumed that authentication will be handled by Apache, rather than at an application level.</p>
 <p>If you are deploying to Apache, and using any non-session based authentication, you will need to explicitly configure mod_wsgi to pass the required headers through to the application.  This can be done by specifying the <code>WSGIPassAuthorization</code> directive in the appropriate context and setting it to <code>'On'</code>.</p>
 <pre><code># this can go in either server config, virtual host, directory or .htaccess
 WSGIPassAuthorization On
@@ -583,7 +583,7 @@ WSGIPassAuthorization On
 <hr />
 <h1 id="api-reference"><a class="toclink" href="#api-reference">API Reference</a></h1>
 <h2 id="basicauthentication"><a class="toclink" href="#basicauthentication">BasicAuthentication</a></h2>
-<p>This authentication scheme uses <a href="http://tools.ietf.org/html/rfc2617">HTTP Basic Authentication</a>, signed against a user's username and password.  Basic authentication is generally only appropriate for testing.</p>
+<p>This authentication scheme uses <a href="https://tools.ietf.org/html/rfc2617">HTTP Basic Authentication</a>, signed against a user's username and password.  Basic authentication is generally only appropriate for testing.</p>
 <p>If successfully authenticated, <code>BasicAuthentication</code> provides the following credentials.</p>
 <ul>
 <li><code>request.user</code> will be a Django <code>User</code> instance.</li>
@@ -763,13 +763,13 @@ REST_FRAMEWORK = {
 </code></pre>
 <p>For more details see the <a href="https://django-oauth-toolkit.readthedocs.io/en/latest/rest-framework/getting_started.html">Django REST framework - Getting started</a> documentation.</p>
 <h2 id="django-rest-framework-oauth"><a class="toclink" href="#django-rest-framework-oauth">Django REST framework OAuth</a></h2>
-<p>The <a href="http://jpadilla.github.io/django-rest-framework-oauth/">Django REST framework OAuth</a> package provides both OAuth1 and OAuth2 support for REST framework.</p>
+<p>The <a href="https://jpadilla.github.io/django-rest-framework-oauth/">Django REST framework OAuth</a> package provides both OAuth1 and OAuth2 support for REST framework.</p>
 <p>This package was previously included directly in REST framework but is now supported and maintained as a third party package.</p>
 <h4 id="installation-configuration_1"><a class="toclink" href="#installation-configuration_1">Installation &amp; configuration</a></h4>
 <p>Install the package using <code>pip</code>.</p>
 <pre><code>pip install djangorestframework-oauth
 </code></pre>
-<p>For details on configuration and usage see the Django REST framework OAuth documentation for <a href="http://jpadilla.github.io/django-rest-framework-oauth/authentication/">authentication</a> and <a href="http://jpadilla.github.io/django-rest-framework-oauth/permissions/">permissions</a>.</p>
+<p>For details on configuration and usage see the Django REST framework OAuth documentation for <a href="https://jpadilla.github.io/django-rest-framework-oauth/authentication/">authentication</a> and <a href="https://jpadilla.github.io/django-rest-framework-oauth/permissions/">permissions</a>.</p>
 <h2 id="digest-authentication"><a class="toclink" href="#digest-authentication">Digest Authentication</a></h2>
 <p>HTTP digest authentication is a widely implemented scheme that was intended to replace HTTP basic authentication, and which provides a simple encrypted authentication mechanism. <a href="https://github.com/juanriaza">Juan Riaza</a> maintains the <a href="https://github.com/juanriaza/django-rest-framework-digestauth">djangorestframework-digestauth</a> package which provides HTTP digest authentication support for REST framework.</p>
 <h2 id="django-oauth2-consumer"><a class="toclink" href="#django-oauth2-consumer">Django OAuth2 Consumer</a></h2>
@@ -777,9 +777,9 @@ REST_FRAMEWORK = {
 <h2 id="json-web-token-authentication"><a class="toclink" href="#json-web-token-authentication">JSON Web Token Authentication</a></h2>
 <p>JSON Web Token is a fairly new standard which can be used for token-based authentication. Unlike the built-in TokenAuthentication scheme, JWT Authentication doesn't need to use a database to validate a token. <a href="https://github.com/GetBlimp">Blimp</a> maintains the <a href="https://github.com/GetBlimp/django-rest-framework-jwt">djangorestframework-jwt</a> package which provides a JWT Authentication class as well as a mechanism for clients to obtain a JWT given the username and password. An alternative package for JWT authentication is <a href="https://github.com/davesque/django-rest-framework-simplejwt">djangorestframework-simplejwt</a> which provides different features as well as a pluggable token blacklist app.</p>
 <h2 id="hawk-http-authentication"><a class="toclink" href="#hawk-http-authentication">Hawk HTTP Authentication</a></h2>
-<p>The <a href="https://hawkrest.readthedocs.io/en/latest/">HawkREST</a> library builds on the <a href="https://mohawk.readthedocs.io/en/latest/">Mohawk</a> library to let you work with <a href="https://github.com/hueniverse/hawk">Hawk</a> signed requests and responses in your API. <a href="https://github.com/hueniverse/hawk">Hawk</a> lets two parties securely communicate with each other using messages signed by a shared key. It is based on <a href="http://tools.ietf.org/html/draft-hammer-oauth-v2-mac-token-05">HTTP MAC access authentication</a> (which was based on parts of <a href="http://oauth.net/core/1.0a">OAuth 1.0</a>).</p>
+<p>The <a href="https://hawkrest.readthedocs.io/en/latest/">HawkREST</a> library builds on the <a href="https://mohawk.readthedocs.io/en/latest/">Mohawk</a> library to let you work with <a href="https://github.com/hueniverse/hawk">Hawk</a> signed requests and responses in your API. <a href="https://github.com/hueniverse/hawk">Hawk</a> lets two parties securely communicate with each other using messages signed by a shared key. It is based on <a href="https://tools.ietf.org/html/draft-hammer-oauth-v2-mac-token-05">HTTP MAC access authentication</a> (which was based on parts of <a href="https://oauth.net/core/1.0a/">OAuth 1.0</a>).</p>
 <h2 id="http-signature-authentication"><a class="toclink" href="#http-signature-authentication">HTTP Signature Authentication</a></h2>
-<p>HTTP Signature (currently a <a href="https://datatracker.ietf.org/doc/draft-cavage-http-signatures/">IETF draft</a>) provides a way to achieve origin authentication and message integrity for HTTP messages. Similar to <a href="http://docs.aws.amazon.com/general/latest/gr/signature-version-4.html">Amazon's HTTP Signature scheme</a>, used by many of its services, it permits stateless, per-request authentication. <a href="https://github.com/etoccalino/">Elvio Toccalino</a> maintains the <a href="https://github.com/etoccalino/django-rest-framework-httpsignature">djangorestframework-httpsignature</a> package which provides an easy to use HTTP Signature Authentication mechanism.</p>
+<p>HTTP Signature (currently a <a href="https://datatracker.ietf.org/doc/draft-cavage-http-signatures/">IETF draft</a>) provides a way to achieve origin authentication and message integrity for HTTP messages. Similar to <a href="https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html">Amazon's HTTP Signature scheme</a>, used by many of its services, it permits stateless, per-request authentication. <a href="https://github.com/etoccalino/">Elvio Toccalino</a> maintains the <a href="https://github.com/etoccalino/django-rest-framework-httpsignature">djangorestframework-httpsignature</a> package which provides an easy to use HTTP Signature Authentication mechanism.</p>
 <h2 id="djoser"><a class="toclink" href="#djoser">Djoser</a></h2>
 <p><a href="https://github.com/sunscrapers/djoser">Djoser</a> library provides a set of views to handle basic actions such as registration, login, logout, password reset and account activation. The package works with a custom user model and it uses token based authentication. This is a ready to use REST implementation of Django authentication system.</p>
 <h2 id="django-rest-auth"><a class="toclink" href="#django-rest-auth">django-rest-auth</a></h2>

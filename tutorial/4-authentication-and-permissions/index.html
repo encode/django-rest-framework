@@ -546,7 +546,7 @@ url(r'^users/(?P&lt;pk&gt;[0-9]+)/$', views.UserDetail.as_view()),
 </code></pre>
 <p>And, at the end of the file, add a pattern to include the login and logout views for the browsable API.</p>
 <pre><code>urlpatterns += [
-    url(r'^api-auth/', include('rest_framework.urls'),
+    url(r'^api-auth/', include('rest_framework.urls')),
 ]
 </code></pre>
 <p>The <code>r'^api-auth/'</code> part of pattern can actually be whatever URL you want to use.</p>
