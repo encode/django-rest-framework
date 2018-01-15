@@ -3,7 +3,7 @@ import uuid
 import pytest
 from _pytest.monkeypatch import MonkeyPatch
 from django.conf.urls import url
-from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.test import override_settings
 from django.utils.datastructures import MultiValueDict
 
@@ -166,6 +166,22 @@ class TestHyperlinkedRelatedField(APISimpleTestCase):
     def test_representation_unsaved_object_with_non_nullable_pk(self):
         representation = self.field.to_representation(MockObject(pk=''))
         assert representation is None
+
+    def test_serialize_empty_relationship_attribute(self):
+        class TestSerializer(serializers.Serializer):
+            via_unreachable = serializers.HyperlinkedRelatedField(
+                source='does_not_exist.unreachable',
+                view_name='example',
+                read_only=True,
+            )
+
+        class TestSerializable:
+            @property
+            def does_not_exist(self):
+                raise ObjectDoesNotExist
+
+        serializer = TestSerializer(TestSerializable())
+        assert serializer.data == {'via_unreachable': None}
 
     def test_hyperlinked_related_lookup_exists(self):
         instance = self.field.to_internal_value('http://example.org/example/foobar/')
