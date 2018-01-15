@@ -163,8 +163,8 @@ class RelatedField(Field):
         if self.use_pk_only_optimization() and self.source_attrs:
             # Optimized case, return a mock object only containing the pk attribute.
             try:
-                instance = get_attribute(instance, self.source_attrs[:-1])
-                value = instance.serializable_value(self.source_attrs[-1])
+                attribute_instance = get_attribute(instance, self.source_attrs[:-1])
+                value = attribute_instance.serializable_value(self.source_attrs[-1])
                 if is_simple_callable(value):
                     # Handle edge case where the relationship `source` argument
                     # points to a `get_relationship()` method on the model
