@@ -47,8 +47,6 @@ class PostView(APIView):
 **NOTE:** The [`cache_page`][page] decorator only caches the
 `GET` and `HEAD` responses with status 200.
 
-
-[django]: https://docs.djangoproject.com/en/dev/topics/cache/
 [page]: https://docs.djangoproject.com/en/dev/topics/cache/#the-per-view-cache
 [cookie]: https://docs.djangoproject.com/en/dev/topics/http/decorators/#django.views.decorators.vary.vary_on_cookie
 [decorator]: https://docs.djangoproject.com/en/dev/topics/class-based-views/intro/#decorating-the-class

@@ -155,10 +155,8 @@ There are [a variety of packages for autocomplete widgets][autocomplete-packages
 [bootstrap]: http://getbootstrap.com
 [cerulean]: ../img/cerulean.png
 [slate]: ../img/slate.png
-[bcustomize]: http://getbootstrap.com/2.3.2/customize.html
 [bswatch]: http://bootswatch.com/
 [bcomponents]: http://getbootstrap.com/2.3.2/components.html
 [bcomponentsnav]: http://getbootstrap.com/2.3.2/components.html#navbar
 [autocomplete-packages]: https://www.djangopackages.com/grids/g/auto-complete/
 [django-autocomplete-light]: https://github.com/yourlabs/django-autocomplete-light
-[django-autocomplete-light-install]: https://django-autocomplete-light.readthedocs.io/en/master/install.html

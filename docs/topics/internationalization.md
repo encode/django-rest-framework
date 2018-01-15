@@ -110,4 +110,3 @@ For API clients the most appropriate of these will typically be to use the `Acce
 [django-language-preference]: https://docs.djangoproject.com/en/1.7/topics/i18n/translation/#how-django-discovers-language-preference
 [django-locale-paths]: https://docs.djangoproject.com/en/1.7/ref/settings/#std:setting-LOCALE_PATHS
 [django-locale-name]: https://docs.djangoproject.com/en/1.7/topics/i18n/#term-locale-name
-[contributing]: ../../CONTRIBUTING.md

@@ -892,13 +892,6 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [cite]: http://www.catb.org/~esr/writings/cathedral-bazaar/cathedral-bazaar/ar01s04.html
 [deprecation-policy]: #deprecation-policy
 [django-deprecation-policy]: https://docs.djangoproject.com/en/stable/internals/release-process/#internal-release-deprecation-policy
-[defusedxml-announce]: http://blog.python.org/2013/02/announcing-defusedxml-fixes-for-xml.html
-[743]: https://github.com/encode/django-rest-framework/pull/743
-[staticfiles14]: https://docs.djangoproject.com/en/1.4/howto/static-files/#with-a-template-tag
-[staticfiles13]: https://docs.djangoproject.com/en/1.3/howto/static-files/#with-a-template-tag
-[2.1.0-notes]: https://groups.google.com/d/topic/django-rest-framework/Vv2M0CMY9bg/discussion
-[ticket-582]: https://github.com/encode/django-rest-framework/issues/582
-[rfc-6266]: http://tools.ietf.org/html/rfc6266#section-4.3
 [old-release-notes]: https://github.com/encode/django-rest-framework/blob/version-2.4.x/docs/topics/release-notes.md
 [3.6-release]: 3.6-announcement.md
 
@@ -1153,7 +1146,6 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh3249]: https://github.com/encode/django-rest-framework/issues/3249
 [gh3250]: https://github.com/encode/django-rest-framework/issues/3250
 [gh3275]: https://github.com/encode/django-rest-framework/issues/3275
-[gh3288]: https://github.com/encode/django-rest-framework/issues/3288
 [gh3290]: https://github.com/encode/django-rest-framework/issues/3290
 [gh3303]: https://github.com/encode/django-rest-framework/issues/3303
 [gh3313]: https://github.com/encode/django-rest-framework/issues/3313
@@ -1410,7 +1402,6 @@ For older release notes, [please see the version 2.x documentation][old-release-
 
 <!-- 3.4.4 -->
 
-[gh2829]: https://github.com/encode/django-rest-framework/issues/2829
 [gh3329]: https://github.com/encode/django-rest-framework/issues/3329
 [gh3330]: https://github.com/encode/django-rest-framework/issues/3330
 [gh3365]: https://github.com/encode/django-rest-framework/issues/3365
@@ -1651,7 +1642,6 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh5457]: https://github.com/encode/django-rest-framework/issues/5457
 [gh5376]: https://github.com/encode/django-rest-framework/issues/5376
 [gh5422]: https://github.com/encode/django-rest-framework/issues/5422
-[gh5408]: https://github.com/encode/django-rest-framework/issues/5408
 [gh3732]: https://github.com/encode/django-rest-framework/issues/3732
 [djangodocs-set-timezone]: https://docs.djangoproject.com/en/1.11/topics/i18n/timezones/#default-time-zone-and-current-time-zone
 [gh5273]: https://github.com/encode/django-rest-framework/issues/5273

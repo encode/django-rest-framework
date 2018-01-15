@@ -407,7 +407,6 @@ HTTP Signature (currently a [IETF draft][http-signature-ietf-draft]) provides a 
 [http401]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2
 [http403]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.4
 [basicauth]: http://tools.ietf.org/html/rfc2617
-[oauth]: http://oauth.net/2/
 [permission]: permissions.md
 [throttling]: throttling.md
 [csrf-ajax]: https://docs.djangoproject.com/en/stable/ref/csrf/#ajax
@@ -419,10 +418,6 @@ HTTP Signature (currently a [IETF draft][http-signature-ietf-draft]) provides a 
 [juanriaza]: https://github.com/juanriaza
 [djangorestframework-digestauth]: https://github.com/juanriaza/django-rest-framework-digestauth
 [oauth-1.0a]: http://oauth.net/core/1.0a
-[django-oauth-plus]: http://code.larlet.fr/django-oauth-plus
-[django-oauth2-provider]: https://github.com/caffeinehit/django-oauth2-provider
-[django-oauth2-provider-docs]: https://django-oauth2-provider.readthedocs.io/en/latest/
-[rfc6749]: http://tools.ietf.org/html/rfc6749
 [django-oauth-toolkit]: https://github.com/evonove/django-oauth-toolkit
 [evonove]: https://github.com/evonove/
 [oauthlib]: https://github.com/idan/oauthlib
