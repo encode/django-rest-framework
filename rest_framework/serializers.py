@@ -54,9 +54,9 @@ from rest_framework.validators import (
 from rest_framework.fields import (  # NOQA # isort:skip
     BooleanField, CharField, ChoiceField, DateField, DateTimeField, DecimalField,
     DictField, DurationField, EmailField, Field, FileField, FilePathField, FloatField,
-    HiddenField, IPAddressField, ImageField, IntegerField, JSONField, ListField,
-    ModelField, MultipleChoiceField, NullBooleanField, ReadOnlyField, RegexField,
-    SerializerMethodField, SlugField, TimeField, URLField, UUIDField,
+    HiddenField, HStoreField, IPAddressField, ImageField, IntegerField, JSONField,
+    ListField, ModelField, MultipleChoiceField, NullBooleanField, ReadOnlyField,
+    RegexField, SerializerMethodField, SlugField, TimeField, URLField, UUIDField,
 )
 from rest_framework.relations import (  # NOQA # isort:skip
     HyperlinkedIdentityField, HyperlinkedRelatedField, ManyRelatedField,
@@ -1541,10 +1541,7 @@ if hasattr(models, 'IPAddressField'):
     ModelSerializer.serializer_field_mapping[models.IPAddressField] = IPAddressField
 
 if postgres_fields:
-    class CharMappingField(DictField):
-        child = CharField(allow_blank=True)
-
-    ModelSerializer.serializer_field_mapping[postgres_fields.HStoreField] = CharMappingField
+    ModelSerializer.serializer_field_mapping[postgres_fields.HStoreField] = HStoreField
     ModelSerializer.serializer_field_mapping[postgres_fields.ArrayField] = ListField
     ModelSerializer.serializer_field_mapping[postgres_fields.JSONField] = JSONField
 

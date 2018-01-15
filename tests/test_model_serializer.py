@@ -21,7 +21,7 @@ from django.test import TestCase
 from django.utils import six
 
 from rest_framework import serializers
-from rest_framework.compat import unicode_repr
+from rest_framework.compat import postgres_fields, unicode_repr
 
 
 def dedent(blocktext):
@@ -377,6 +377,54 @@ class TestGenericIPAddressFieldValidation(TestCase):
         self.assertEqual(1, len(s.errors['address']),
                          'Unexpected number of validation errors: '
                          '{0}'.format(s.errors))
+
+
+@pytest.mark.skipUnless(postgres_fields, 'postgres is required')
+class TestPosgresFieldsMapping(TestCase):
+    def test_hstore_field(self):
+        class HStoreFieldModel(models.Model):
+            hstore_field = postgres_fields.HStoreField()
+
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = HStoreFieldModel
+                fields = ['hstore_field']
+
+        expected = dedent("""
+            TestSerializer():
+                hstore_field = HStoreField()
+        """)
+        self.assertEqual(unicode_repr(TestSerializer()), expected)
+
+    def test_array_field(self):
+        class ArrayFieldModel(models.Model):
+            array_field = postgres_fields.ArrayField(base_field=models.CharField())
+
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = ArrayFieldModel
+                fields = ['array_field']
+
+        expected = dedent("""
+            TestSerializer():
+                array_field = ListField(child=CharField(label='Array field', validators=[<django.core.validators.MaxLengthValidator object>]))
+        """)
+        self.assertEqual(unicode_repr(TestSerializer()), expected)
+
+    def test_json_field(self):
+        class JSONFieldModel(models.Model):
+            json_field = postgres_fields.JSONField()
+
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = JSONFieldModel
+                fields = ['json_field']
+
+        expected = dedent("""
+            TestSerializer():
+                json_field = JSONField(style={'base_template': 'textarea.html'})
+        """)
+        self.assertEqual(unicode_repr(TestSerializer()), expected)
 
 
 # Tests for relational field mappings.

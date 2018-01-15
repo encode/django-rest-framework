@@ -473,6 +473,16 @@ You can also use the declarative style, as with `ListField`. For example:
     class DocumentField(DictField):
         child = CharField()
 
+## HStoreField
+
+A preconfigured `DictField` that is compatible with Django's postgres `HStoreField`.
+
+**Signature**: `HStoreField(child=<A_FIELD_INSTANCE>)`
+
+- `child` - A field instance that is used for validating the values in the dictionary. The default child field accepts both empty strings and null values.
+
+Note that the child field **must** be an instance of `CharField`, as the hstore extension stores values as strings.
+
 ## JSONField
 
 A field class that validates that the incoming data structure consists of valid JSON primitives. In its alternate binary mode, it will represent and validate JSON-encoded binary strings.

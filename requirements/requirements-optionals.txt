@@ -1,5 +1,6 @@
 # Optional packages which may be used with REST framework.
 pytz==2017.2
+psycopg2==2.7.3
 markdown==2.6.4
 django-guardian==1.4.9
 django-filter==1.1.0

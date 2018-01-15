@@ -1933,6 +1933,49 @@ class TestUnvalidatedDictField(FieldValues):
     field = serializers.DictField()
 
 
+class TestHStoreField(FieldValues):
+    """
+    Values for `ListField` with CharField as child.
+    """
+    valid_inputs = [
+        ({'a': 1, 'b': '2', 3: 3}, {'a': '1', 'b': '2', '3': '3'}),
+        ({'a': 1, 'b': None}, {'a': '1', 'b': None}),
+    ]
+    invalid_inputs = [
+        ('not a dict', ['Expected a dictionary of items but got type "str".']),
+    ]
+    outputs = [
+        ({'a': 1, 'b': '2', 3: 3}, {'a': '1', 'b': '2', '3': '3'}),
+    ]
+    field = serializers.HStoreField()
+
+    def test_child_is_charfield(self):
+        with pytest.raises(AssertionError) as exc_info:
+            serializers.HStoreField(child=serializers.IntegerField())
+
+        assert str(exc_info.value) == (
+            "The `child` argument must be an instance of `CharField`, "
+            "as the hstore extension stores values as strings."
+        )
+
+    def test_no_source_on_child(self):
+        with pytest.raises(AssertionError) as exc_info:
+            serializers.HStoreField(child=serializers.CharField(source='other'))
+
+        assert str(exc_info.value) == (
+            "The `source` argument is not meaningful when applied to a `child=` field. "
+            "Remove `source=` from the field declaration."
+        )
+
+    def test_allow_null(self):
+        """
+        If `allow_null=True` then `None` is a valid input.
+        """
+        field = serializers.HStoreField(allow_null=True)
+        output = field.run_validation(None)
+        assert output is None
+
+
 class TestJSONField(FieldValues):
     """
     Values for `JSONField`.

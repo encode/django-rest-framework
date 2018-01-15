@@ -1711,6 +1711,17 @@ class DictField(Field):
         raise ValidationError(errors)
 
 
+class HStoreField(DictField):
+    child = CharField(allow_blank=True, allow_null=True)
+
+    def __init__(self, *args, **kwargs):
+        super(HStoreField, self).__init__(*args, **kwargs)
+        assert isinstance(self.child, CharField), (
+            "The `child` argument must be an instance of `CharField`, "
+            "as the hstore extension stores values as strings."
+        )
+
+
 class JSONField(Field):
     default_error_messages = {
         'invalid': _('Value must be valid JSON.')
