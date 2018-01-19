@@ -205,7 +205,17 @@ The `obtain_auth_token` view will return a JSON response when valid `username` a
 
     { 'token' : '9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b' }
 
-Note that the default `obtain_auth_token` view explicitly uses JSON requests and responses, rather than using default renderer and parser classes in your settings.  If you need a customized version of the `obtain_auth_token` view, you can do so by overriding the `ObtainAuthToken` view class, and using that in your url conf instead.
+Note that the default `obtain_auth_token` view explicitly uses JSON requests and responses, rather than using default renderer and parser classes in your settings.  If you need a customized version of the `obtain_auth_token` view, you can do so by inheriting from `ObtainAuthToken` and overriding the `get_data` function, and using that in your url conf instead.
+
+Example:
+
+```
+class CustomAuthToken(ObtainAuthToken):
+
+    def get_data(self, user, token, created):
+        return {'token': token.key, 'user_id': user.pk}
+
+```
 
 By default there are no permissions or throttling applied to the  `obtain_auth_token` view. If you do wish to apply throttling you'll need to override the view class,
 and include them using the `throttle_classes` attribute.
