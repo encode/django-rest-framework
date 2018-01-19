@@ -400,7 +400,7 @@ This should be a function with the following signature:
 
     view_name(cls, suffix=None)
 
-* `cls`: The view class.  Typically the name function would inspect the name of the class when generating a descriptive name, by accessing `cls.__name__`.
+* `cls`: The view class. Typically the name function would inspect the name of the class when generating a descriptive name, by accessing `cls.__name__`. You can set a different name by setting `view_name` variable in your view.
 * `suffix`: The optional suffix used when differentiating individual views in a viewset.
 
 Default: `'rest_framework.views.get_view_name'`
