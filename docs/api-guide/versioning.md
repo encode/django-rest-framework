@@ -37,7 +37,7 @@ The `reverse` function included by REST framework ties in with the versioning sc
 
 The above function will apply any URL transformations appropriate to the request version. For example:
 
-* If `NamespacedVersioning` was being used, and the API version was 'v1', then the URL lookup used would be `'v1:bookings-list'`, which might resolve to a URL like `http://example.org/v1/bookings/`.
+* If `NamespaceVersioning` was being used, and the API version was 'v1', then the URL lookup used would be `'v1:bookings-list'`, which might resolve to a URL like `http://example.org/v1/bookings/`.
 * If `QueryParameterVersioning` was being used, and the API version was `1.0`, then the returned URL might be something like `http://example.org/bookings/?version=1.0`
 
 #### Versioned APIs and hyperlinked serializers
