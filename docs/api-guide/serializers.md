@@ -197,7 +197,7 @@ Your `validate_<field_name>` methods should return the validated value or raise 
 
 #### Object-level validation
 
-To do any other validation that requires access to multiple fields, add a method called `.validate()` to your `Serializer` subclass.  This method takes a single argument, which is a dictionary of field values.  It should raise a `ValidationError` if necessary, or just return the validated values.  For example:
+To do any other validation that requires access to multiple fields, add a method called `.validate()` to your `Serializer` subclass.  This method takes a single argument, which is a dictionary of field values.  It should raise a `serializers.ValidationError` if necessary, or just return the validated values.  For example:
 
     from rest_framework import serializers
 
@@ -906,7 +906,7 @@ Or use it to serialize multiple instances:
 
 ##### Read-write `BaseSerializer` classes
 
-To create a read-write serializer we first need to implement a `.to_internal_value()` method. This method returns the validated values that will be used to construct the object instance, and may raise a `ValidationError` if the supplied data is in an incorrect format.
+To create a read-write serializer we first need to implement a `.to_internal_value()` method. This method returns the validated values that will be used to construct the object instance, and may raise a `serializers.ValidationError` if the supplied data is in an incorrect format.
 
 Once you've implemented `.to_internal_value()`, the basic validation API will be available on the serializer, and you will be able to use `.is_valid()`, `.validated_data` and `.errors`.
 
@@ -921,15 +921,15 @@ Here's a complete example of our previous `HighScoreSerializer`, that's been upd
 
             # Perform the data validation.
             if not score:
-                raise ValidationError({
+                raise serializers.ValidationError({
                     'score': 'This field is required.'
                 })
             if not player_name:
-                raise ValidationError({
+                raise serializers.ValidationError({
                     'player_name': 'This field is required.'
                 })
             if len(player_name) > 10:
-                raise ValidationError({
+                raise serializers.ValidationError({
                     'player_name': 'May not be more than 10 characters.'
                 })
 
