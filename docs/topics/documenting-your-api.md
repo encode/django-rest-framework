@@ -107,6 +107,7 @@ The `rest_framework.documentation` module provides three helper functions to hel
 * `generator_class`: Default `rest_framework.schemas.SchemaGenerator`. May be used to specify a `SchemaGenerator` subclass to be passed to the `SchemaView`.
 * `authentication_classes`: Default `api_settings.DEFAULT_AUTHENTICATION_CLASSES`. May be used to pass custom authentication classes to the `SchemaView`.
 * `permission_classes`: Default `api_settings.DEFAULT_PERMISSION_CLASSES` May be used to pass custom permission classes to the `SchemaView`.
+* `renderer_classes`: Default `None`. May be used to pass custom renderer classes to the `SchemaView`.
 
 #### `get_docs_view`
 
@@ -117,7 +118,8 @@ The `rest_framework.documentation` module provides three helper functions to hel
 * `patterns`: Default `None`. A list of URLs to inspect when generating the schema. If `None` project's URL conf will be used.
 * `generator_class`: Default `rest_framework.schemas.SchemaGenerator`. May be used to specify a `SchemaGenerator` subclass to be passed to the `SchemaView`.
 * `authentication_classes`: Default `api_settings.DEFAULT_AUTHENTICATION_CLASSES`. May be used to pass custom authentication classes to the `SchemaView`.
-* `permission_classes`: Default `api_settings.DEFAULT_PERMISSION_CLASSES` May be used to pass custom permission classes to the `SchemaView`.
+* `permission_classes`: Default `api_settings.DEFAULT_PERMISSION_CLASSES`. May be used to pass custom permission classes to the `SchemaView`.
+* `renderer_classes`: Default `None`. May be used to pass custom renderer classes to the `SchemaView`. If `None` the `SchemaView` will be configured with `DocumentationRenderer` and `CoreJSONRenderer` renderers, corresponding to the (default) `html` and `corejson` formats.
 
 #### `get_schemajs_view`
 
@@ -130,6 +132,25 @@ The `rest_framework.documentation` module provides three helper functions to hel
 * `authentication_classes`: Default `api_settings.DEFAULT_AUTHENTICATION_CLASSES`. May be used to pass custom authentication classes to the `SchemaView`.
 * `permission_classes`: Default `api_settings.DEFAULT_PERMISSION_CLASSES` May be used to pass custom permission classes to the `SchemaView`.
 
+
+### Customising code samples
+
+The built-in API documentation includes automatically generated code samples for
+each of the available API client libraries.
+
+You may customise these samples by subclassing `DocumentationRenderer`, setting
+`languages` to the list of languages you wish to support:
+
+    from rest_framework.renderers import DocumentationRenderer
+
+
+    class CustomRenderer(DocumentationRenderer):
+        languages = ['ruby', 'go']
+
+For each language you need to provide an `intro` template, detailing installation instructions and such,
+plus a generic template for making API requests, that can be filled with individual request details.
+See the [templates for the bundled languages][client-library-templates] for examples.
+
 ---
 
 ## Third party packages
@@ -138,11 +159,11 @@ There are a number of mature third-party packages for providing API documentatio
 
 #### drf-yasg - Yet Another Swagger Generator
 
-[drf-yasg][drf-yasg] is a [Swagger][swagger] generation tool implemented without using the schema generation provided 
+[drf-yasg][drf-yasg] is a [Swagger][swagger] generation tool implemented without using the schema generation provided
 by Django Rest Framework.
 
-It aims to implement as much of the [OpenAPI][open-api] specification as possible - nested schemas, named models, 
-response bodies, enum/pattern/min/max validators, form parameters, etc. - and to generate documents usable with code 
+It aims to implement as much of the [OpenAPI][open-api] specification as possible - nested schemas, named models,
+response bodies, enum/pattern/min/max validators, form parameters, etc. - and to generate documents usable with code
 generation tools like `swagger-codegen`.
 
 This also translates into a very useful interactive documentation viewer in the form of `swagger-ui`:
@@ -314,3 +335,4 @@ To implement a hypermedia API you'll need to decide on an appropriate media type
 [image-self-describing-api]: ../img/self-describing.png
 [schemas-examples]: ../api-guide/schemas/#example
 [metadata-docs]: ../api-guide/metadata/
+[client-library-templates]: https://github.com/encode/django-rest-framework/tree/master/rest_framework/templates/rest_framework/docs/langs
