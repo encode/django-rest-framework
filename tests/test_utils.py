@@ -40,7 +40,7 @@ class CustomNameResourceInstance(APIView):
 
 
 class CustomNameByVariableResourceInstance(APIView):
-    view_name = "Foo"
+    view_name = "Bar"
 
 
 class ResourceViewSet(ModelViewSet):
@@ -94,11 +94,11 @@ class BreadcrumbTests(TestCase):
         ]
 
     def test_resource_instance_customnamebyvar_breadcrumbs(self):
-        url = '/resource/customname'
+        url = '/resource/customnamebyvar'
         assert get_breadcrumbs(url) == [
             ('Root', '/'),
             ('Resource Root', '/resource/'),
-            ('Foo', '/resource/customname')
+            ('Bar', '/resource/customnamebyvar')
         ]
 
     def test_nested_resource_breadcrumbs(self):
