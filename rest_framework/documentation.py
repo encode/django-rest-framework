@@ -11,8 +11,11 @@ def get_docs_view(
         title=None, description=None, schema_url=None, public=True,
         patterns=None, generator_class=SchemaGenerator,
         authentication_classes=api_settings.DEFAULT_AUTHENTICATION_CLASSES,
-        permission_classes=api_settings.DEFAULT_PERMISSION_CLASSES):
-    renderer_classes = [DocumentationRenderer, CoreJSONRenderer]
+        permission_classes=api_settings.DEFAULT_PERMISSION_CLASSES,
+        renderer_classes=None):
+
+    if renderer_classes is None:
+        renderer_classes = [DocumentationRenderer, CoreJSONRenderer]
 
     return get_schema_view(
         title=title,
@@ -51,7 +54,9 @@ def include_docs_urls(
         title=None, description=None, schema_url=None, public=True,
         patterns=None, generator_class=SchemaGenerator,
         authentication_classes=api_settings.DEFAULT_AUTHENTICATION_CLASSES,
-        permission_classes=api_settings.DEFAULT_PERMISSION_CLASSES):
+        permission_classes=api_settings.DEFAULT_PERMISSION_CLASSES,
+        renderer_classes=None):
+
     docs_view = get_docs_view(
         title=title,
         description=description,
@@ -61,6 +66,7 @@ def include_docs_urls(
         generator_class=generator_class,
         authentication_classes=authentication_classes,
         permission_classes=permission_classes,
+        renderer_classes=renderer_classes
     )
     schema_js_view = get_schemajs_view(
         title=title,
