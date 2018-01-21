@@ -34,7 +34,7 @@ To upgrade Django REST framework to the latest version, use pip:
 
 You can determine your currently installed version using `pip freeze`:
 
-    pip freeze | grep djangorestframework
+    pip show djangorestframework
 
 ---
 
