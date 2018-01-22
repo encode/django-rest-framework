@@ -251,6 +251,7 @@ class CreateOnlyDefault(object):
     def set_context(self, serializer_field):
         self.is_update = serializer_field.parent.instance is not None
         if callable(self.default) and hasattr(self.default, 'set_context') and not self.is_update:
+            self.default = copy.deepcopy(self.default)
             self.default.set_context(serializer_field)
 
     def __call__(self):
@@ -475,6 +476,7 @@ class Field(object):
             raise SkipField()
         if callable(self.default):
             if hasattr(self.default, 'set_context'):
+                self.default = copy.deepcopy(self.default)
                 self.default.set_context(self)
             return self.default()
         return self.default
@@ -532,6 +534,7 @@ class Field(object):
         errors = []
         for validator in self.validators:
             if hasattr(validator, 'set_context'):
+                validator = copy.deepcopy(validator)
                 validator.set_context(self)
 
             try:
