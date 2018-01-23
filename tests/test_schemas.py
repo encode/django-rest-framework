@@ -49,6 +49,10 @@ class ExampleSerializer(serializers.Serializer):
     hidden = serializers.HiddenField(default='hello')
 
 
+class AnotherSerializerWithDictField(serializers.Serializer):
+    a = serializers.DictField()
+
+
 class AnotherSerializerWithListFields(serializers.Serializer):
     a = serializers.ListField(child=serializers.IntegerField())
     b = serializers.ListSerializer(child=serializers.CharField())
@@ -69,6 +73,13 @@ class ExampleViewSet(ModelViewSet):
     def custom_action(self, request, pk):
         """
         A description of custom action.
+        """
+        return super(ExampleSerializer, self).retrieve(self, request)
+
+    @action(methods=['post'], detail=True, serializer_class=AnotherSerializerWithDictField)
+    def custom_action_with_dict_field(self, request, pk):
+        """
+        A custom action using a dict field in the serializer.
         """
         return super(ExampleSerializer, self).retrieve(self, request)
 
@@ -196,6 +207,16 @@ class TestRouterGeneratedSchema(TestCase):
                             coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
                             coreapi.Field('c', required=True, location='form', schema=coreschema.String(title='C')),
                             coreapi.Field('d', required=False, location='form', schema=coreschema.String(title='D')),
+                        ]
+                    ),
+                    'custom_action_with_dict_field': coreapi.Link(
+                        url='/example/{id}/custom_action_with_dict_field/',
+                        action='post',
+                        encoding='application/json',
+                        description='A custom action using a dict field in the serializer.',
+                        fields=[
+                            coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
+                            coreapi.Field('a', required=True, location='form', schema=coreschema.Object(title='A')),
                         ]
                     ),
                     'custom_action_with_list_fields': coreapi.Link(

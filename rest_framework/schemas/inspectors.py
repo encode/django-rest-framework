@@ -34,6 +34,11 @@ def field_to_schema(field):
             title=title,
             description=description
         )
+    elif isinstance(field, serializers.DictField):
+        return coreschema.Object(
+            title=title,
+            description=description
+        )
     elif isinstance(field, serializers.Serializer):
         return coreschema.Object(
             properties=OrderedDict([
