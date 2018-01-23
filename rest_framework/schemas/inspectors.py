@@ -456,8 +456,6 @@ class ManualSchema(ViewInspector):
             description=self._description
         )
 
-        return self._link
-
 
 class DefaultSchema(object):
     """Allows overriding AutoSchema using DEFAULT_SCHEMA_CLASS setting"""
