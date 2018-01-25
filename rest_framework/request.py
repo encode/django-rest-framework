@@ -11,6 +11,7 @@ The wrapped request then offers a richer API, in particular :
 from __future__ import unicode_literals
 
 import sys
+import warnings
 from contextlib import contextmanager
 
 from django.conf import settings
@@ -159,7 +160,7 @@ class Request(object):
             .format(request.__class__.__module__, request.__class__.__name__)
         )
 
-        self._request = request
+        self.http_request = request
         self.parsers = parsers or ()
         self.authenticators = authenticators or ()
         self.negotiator = negotiator or self._default_negotiator()
@@ -180,6 +181,22 @@ class Request(object):
         if force_user is not None or force_token is not None:
             forced_auth = ForcedAuthentication(force_user, force_token)
             self.authenticators = (forced_auth,)
+
+    @property
+    def _request(self):
+        warnings.warn(
+            "`_request` has been deprecated in favor of `http_request`, and will be removed in 3.10",
+            PendingDeprecationWarning, stacklevel=2
+        )
+        return self.http_request
+
+    @_request.setter
+    def _request(self, value):
+        warnings.warn(
+            "`_request` has been deprecated in favor of `http_request`, and will be removed in 3.10",
+            PendingDeprecationWarning, stacklevel=2
+        )
+        self.http_request = value
 
     def _default_negotiator(self):
         return api_settings.DEFAULT_CONTENT_NEGOTIATION_CLASS()

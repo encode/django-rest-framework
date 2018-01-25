@@ -292,3 +292,22 @@ class TestHttpRequest(TestCase):
         message = "'Request' object has no attribute 'inner_property'"
         with self.assertRaisesMessage(AttributeError, message):
             request.inner_property
+
+    def test_request_deprecation(self):
+        with pytest.warns(PendingDeprecationWarning) as record:
+            Request(factory.get('/'))._request
+
+        assert len(record) == 1
+        assert str(record[0].message) == (
+            "`_request` has been deprecated in favor of "
+            "`http_request`, and will be removed in 3.10"
+        )
+
+        with pytest.warns(PendingDeprecationWarning) as record:
+            Request(factory.get('/'))._request = None
+
+        assert len(record) == 1
+        assert str(record[0].message) == (
+            "`_request` has been deprecated in favor of "
+            "`http_request`, and will be removed in 3.10"
+        )
