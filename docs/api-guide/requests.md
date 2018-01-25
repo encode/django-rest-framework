@@ -130,6 +130,9 @@ As REST framework's `Request` extends Django's `HttpRequest`, all the other stan
 
 Note that due to implementation reasons the `Request` class does not inherit from `HttpRequest` class, but instead extends the class using composition.
 
+# Accessing the HttpRequest
+
+The underlying `HttpRequest` can be accessed through the `.http_request` attribute. While direct manipulation of the `HttpRequest` is discouraged, there are some advanced use cases that may require it. For example, one view may delegate request handling to a secondary view function. In this case, it is necessary to pass the original `HttpRequest` to the delegated view instead of the DRF `Request` object. Be aware that duplicate processing of the `HttpRequest` may have have unintended side effects. For example, if the request stream has already been consumed, it may not be accessible for a second read and will raise an exception.
 
 [cite]: https://groups.google.com/d/topic/django-developers/dxI4qVzrBY4/discussion
 [parsers documentation]: parsers.md

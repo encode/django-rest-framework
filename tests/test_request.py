@@ -13,6 +13,7 @@ from django.contrib.auth.middleware import AuthenticationMiddleware
 from django.contrib.auth.models import User
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.http.request import RawPostDataException
 from django.test import TestCase, override_settings
 from django.utils import six
 
@@ -137,6 +138,11 @@ class MockView(APIView):
         return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+class EchoView(APIView):
+    def post(self, request):
+        return Response(status=status.HTTP_200_OK, data=request.data)
+
+
 class FileUploadView(APIView):
     def post(self, request):
         filenames = [file.temporary_file_path() for file in request.FILES.values()]
@@ -149,6 +155,7 @@ class FileUploadView(APIView):
 
 urlpatterns = [
     url(r'^$', MockView.as_view()),
+    url(r'^echo/$', EchoView.as_view()),
     url(r'^upload/$', FileUploadView.as_view())
 ]
 
@@ -311,3 +318,43 @@ class TestHttpRequest(TestCase):
             "`_request` has been deprecated in favor of "
             "`http_request`, and will be removed in 3.10"
         )
+
+    @override_settings(ROOT_URLCONF='tests.test_request')
+    def test_duplicate_request_stream_parsing_exception(self):
+        """
+        Check assumption that duplicate stream parsing will result in a
+        `RawPostDataException` being raised.
+        """
+        response = APIClient().post('/echo/', data={'a': 'b'}, format='json')
+        request = response.renderer_context['request']
+
+        # ensure that request stream was consumed by json parser
+        assert request.content_type.startswith('application/json')
+        assert response.data == {'a': 'b'}
+
+        # pass same HttpRequest to view, stream already consumed
+        with pytest.raises(RawPostDataException):
+            EchoView.as_view()(request.http_request)
+
+    @override_settings(ROOT_URLCONF='tests.test_request')
+    def test_duplicate_request_form_data_access(self):
+        """
+        Form data is copied to the underlying django request for middleware
+        and file closing reasons. Duplicate processing of a request with form
+        data is 'safe' in so far as accessing `request.POST` does not trigger
+        the duplicate stream parse exception.
+        """
+        response = APIClient().post('/echo/', data={'a': 'b'})
+        request = response.renderer_context['request']
+
+        # ensure that request stream was consumed by form parser
+        assert request.content_type.startswith('multipart/form-data')
+        assert response.data == {'a': ['b']}
+
+        # pass same HttpRequest to view, form data set on underlying request
+        response = EchoView.as_view()(request.http_request)
+        request = response.renderer_context['request']
+
+        # ensure that request stream was consumed by form parser
+        assert request.content_type.startswith('multipart/form-data')
+        assert response.data == {'a': ['b']}
