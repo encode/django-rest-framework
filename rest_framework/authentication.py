@@ -121,7 +121,7 @@ class SessionAuthentication(BaseAuthentication):
         """
 
         # Get the session-based user from the underlying HttpRequest object
-        user = getattr(request._request, 'user', None)
+        user = getattr(request.http_request, 'user', None)
 
         # Unauthenticated, CSRF validation not required
         if not user or not user.is_active:
