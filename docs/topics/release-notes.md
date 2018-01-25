@@ -38,6 +38,31 @@ You can determine your currently installed version using `pip freeze`:
 
 ---
 
+## 3.8.x series
+
+### 3.8.0
+
+**Date**: [unreleased][3.8.0-milestone]
+
+* Refactor dynamic route generation and improve viewset action introspectibility. [#5705][gh5705]
+
+    `ViewSet`s have been provided with new attributes and methods that allow
+    it to introspect its set of actions and the details of the current action.
+
+    * Merged `list_route` and `detail_route` into a single `action` decorator.
+    * Get all extra actions on a `ViewSet` with `.get_extra_actions()`.
+    * Extra actions now set the `url_name` and `url_path` on the decorated method.
+    * Enable action url reversing through `.reverse_action()` method (added in 3.7.4)
+    * Example reverse call: `self.reverse_action(self.custom_action.url_name)`
+    * Add `detail` initkwarg to indicate if the current action is operating on a
+      collection or a single instance.
+
+    Additional changes:
+
+    * Deprecated `list_route` & `detail_route` in favor of `action` decorator with `detail` boolean.
+    * Deprecated dynamic list/detail route variants in favor of `DynamicRoute` with `detail` boolean.
+    * Refactored the router's dynamic route generation.
+
 ## 3.7.x series
 
 ### 3.7.7
@@ -940,6 +965,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [3.7.5-milestone]: https://github.com/encode/django-rest-framework/milestone/63?closed=1
 [3.7.6-milestone]: https://github.com/encode/django-rest-framework/milestone/64?closed=1
 [3.7.7-milestone]: https://github.com/encode/django-rest-framework/milestone/65?closed=1
+[3.8.0-milestone]: https://github.com/encode/django-rest-framework/milestone/61?closed=1
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/encode/django-rest-framework/issues/2013
@@ -1750,3 +1776,6 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh5695]: https://github.com/encode/django-rest-framework/issues/5695
 [gh5696]: https://github.com/encode/django-rest-framework/issues/5696
 [gh5697]: https://github.com/encode/django-rest-framework/issues/5697
+
+<!-- 3.8.0 -->
+[gh5705]: https://github.com/encode/django-rest-framework/issues/5705

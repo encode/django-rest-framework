@@ -130,29 +130,49 @@ def schema(view_inspector):
     return decorator
 
 
+def action(methods=None, detail=None, url_path=None, url_name=None, **kwargs):
+    """
+    Mark a ViewSet method as a routable action.
+
+    Set the `detail` boolean to determine if this action should apply to
+    instance/detail requests or collection/list requests.
+    """
+    methods = ['get'] if (methods is None) else methods
+    methods = [method.lower() for method in methods]
+
+    assert detail is not None, (
+        "@action() missing required argument: 'detail'"
+    )
+
+    def decorator(func):
+        func.bind_to_methods = methods
+        func.detail = detail
+        func.url_path = url_path or func.__name__
+        func.url_name = url_name or func.__name__.replace('_', '-')
+        func.kwargs = kwargs
+        return func
+    return decorator
+
+
 def detail_route(methods=None, **kwargs):
     """
     Used to mark a method on a ViewSet that should be routed for detail requests.
     """
-    methods = ['get'] if (methods is None) else methods
-
-    def decorator(func):
-        func.bind_to_methods = methods
-        func.detail = True
-        func.kwargs = kwargs
-        return func
-    return decorator
+    warnings.warn(
+        "`detail_route` is pending deprecation and will be removed in 3.10 in favor of "
+        "`action`, which accepts a `detail` bool. Use `@action(detail=True)` instead.",
+        PendingDeprecationWarning, stacklevel=2
+    )
+    return action(methods, detail=True, **kwargs)
 
 
 def list_route(methods=None, **kwargs):
     """
     Used to mark a method on a ViewSet that should be routed for list requests.
     """
-    methods = ['get'] if (methods is None) else methods
-
-    def decorator(func):
-        func.bind_to_methods = methods
-        func.detail = False
-        func.kwargs = kwargs
-        return func
-    return decorator
+    warnings.warn(
+        "`list_route` is pending deprecation and will be removed in 3.10 in favor of "
+        "`action`, which accepts a `detail` bool. Use `@action(detail=False)` instead.",
+        PendingDeprecationWarning, stacklevel=2
+    )
+    return action(methods, detail=False, **kwargs)

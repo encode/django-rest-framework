@@ -81,81 +81,62 @@ Router URL patterns can also be namespaces.
 
 If using namespacing with hyperlinked serializers you'll also need to ensure that any `view_name` parameters on the serializers correctly reflect the namespace. In the example above you'd need to include a parameter such as `view_name='api:user-detail'` for serializer fields hyperlinked to the user detail view.
 
-### Extra link and actions
+### Routing for extra actions
 
-Any methods on the viewset decorated with `@detail_route` or `@list_route` will also be routed.
-For example, given a method like this on the `UserViewSet` class:
+A viewset may [mark extra actions for routing][route-decorators] by decorating a method with the `@action` decorator. These extra actions will be included in the generated routes. For example, given the `set_password` method on the `UserViewSet` class:
 
     from myapp.permissions import IsAdminOrIsSelf
-    from rest_framework.decorators import detail_route
+    from rest_framework.decorators import action
 
     class UserViewSet(ModelViewSet):
         ...
 
-        @detail_route(methods=['post'], permission_classes=[IsAdminOrIsSelf])
+        @action(methods=['post'], detail=True, permission_classes=[IsAdminOrIsSelf])
         def set_password(self, request, pk=None):
             ...
 
-The following URL pattern would additionally be generated:
+The following route would be generated:
 
-* URL pattern: `^users/{pk}/set_password/$`  Name: `'user-set-password'`
+* URL pattern: `^users/{pk}/set_password/$`
+* URL name: `'user-set-password'`
 
-If you do not want to use the default URL generated for your custom action, you can instead use the url_path parameter to customize it.
+By default, the URL pattern is based on the method name, and the URL name is the combination of the `ViewSet.basename` and the hyphenated method name.
+If you don't want to use the defaults for either of these values, you can instead provide the `url_path` and `url_name` arguments to the `@action` decorator.
 
 For example, if you want to change the URL for our custom action to `^users/{pk}/change-password/$`, you could write:
 
     from myapp.permissions import IsAdminOrIsSelf
-    from rest_framework.decorators import detail_route
+    from rest_framework.decorators import action
 
     class UserViewSet(ModelViewSet):
         ...
 
-        @detail_route(methods=['post'], permission_classes=[IsAdminOrIsSelf], url_path='change-password')
+        @action(methods=['post'], detail=True, permission_classes=[IsAdminOrIsSelf],
+                url_path='change-password', url_name='change_password')
         def set_password(self, request, pk=None):
             ...
 
 The above example would now generate the following URL pattern:
 
-* URL pattern: `^users/{pk}/change-password/$`  Name: `'user-change-password'`
-
-In the case you do not want to use the default name generated for your custom action, you can use the url_name parameter to customize it.
-
-For example, if you want to change the name of our custom action to `'user-change-password'`, you could write:
-
-    from myapp.permissions import IsAdminOrIsSelf
-    from rest_framework.decorators import detail_route
-
-    class UserViewSet(ModelViewSet):
-        ...
-
-        @detail_route(methods=['post'], permission_classes=[IsAdminOrIsSelf], url_name='change-password')
-        def set_password(self, request, pk=None):
-            ...
-
-The above example would now generate the following URL pattern:
-
-* URL pattern: `^users/{pk}/set_password/$`  Name: `'user-change-password'`
-
-You can also use url_path and url_name parameters together to obtain extra control on URL generation for custom views.
-
-For more information see the viewset documentation on [marking extra actions for routing][route-decorators].
+* URL path: `^users/{pk}/change-password/$`
+* URL name: `'user-change_password'`
 
 # API Guide
 
 ## SimpleRouter
 
-This router includes routes for the standard set of `list`, `create`, `retrieve`, `update`, `partial_update` and `destroy` actions.  The viewset can also mark additional methods to be routed, using the `@detail_route` or `@list_route` decorators.
+This router includes routes for the standard set of `list`, `create`, `retrieve`, `update`, `partial_update` and `destroy` actions.  The viewset can also mark additional methods to be routed, using the `@action` decorator.
 
 <table border=1>
     <tr><th>URL Style</th><th>HTTP Method</th><th>Action</th><th>URL Name</th></tr>
     <tr><td rowspan=2>{prefix}/</td><td>GET</td><td>list</td><td rowspan=2>{basename}-list</td></tr></tr>
     <tr><td>POST</td><td>create</td></tr>
-    <tr><td>{prefix}/{methodname}/</td><td>GET, or as specified by `methods` argument</td><td>`@list_route` decorated method</td><td>{basename}-{methodname}</td></tr>
+    <tr><td>{prefix}/{url_path}/</td><td>GET, or as specified by `methods` argument</td><td>`@action(detail=False)` decorated method</td><td>{basename}-{url_name}</td></tr>
     <tr><td rowspan=4>{prefix}/{lookup}/</td><td>GET</td><td>retrieve</td><td rowspan=4>{basename}-detail</td></tr></tr>
     <tr><td>PUT</td><td>update</td></tr>
     <tr><td>PATCH</td><td>partial_update</td></tr>
     <tr><td>DELETE</td><td>destroy</td></tr>
-    <tr><td>{prefix}/{lookup}/{methodname}/</td><td>GET, or as specified by `methods` argument</td><td>`@detail_route` decorated method</td><td>{basename}-{methodname}</td></tr>
+    <tr><td>{prefix}/{lookup}/{url_path}/</td><td>GET, or as specified by `methods` argument</td><td>`@action(detail=True)` decorated method</td><td>{basename}-{url_name}</td></tr>
 </table>
 
 By default the URLs created by `SimpleRouter` are appended with a trailing slash.
@@ -180,12 +161,12 @@ This router is similar to `SimpleRouter` as above, but additionally includes a d
     <tr><td>[.format]</td><td>GET</td><td>automatically generated root view</td><td>api-root</td></tr></tr>
     <tr><td rowspan=2>{prefix}/[.format]</td><td>GET</td><td>list</td><td rowspan=2>{basename}-list</td></tr></tr>
     <tr><td>POST</td><td>create</td></tr>
-    <tr><td>{prefix}/{methodname}/[.format]</td><td>GET, or as specified by `methods` argument</td><td>`@list_route` decorated method</td><td>{basename}-{methodname}</td></tr>
+    <tr><td>{prefix}/{url_path}/[.format]</td><td>GET, or as specified by `methods` argument</td><td>`@action(detail=False)` decorated method</td><td>{basename}-{url_name}</td></tr>
     <tr><td rowspan=4>{prefix}/{lookup}/[.format]</td><td>GET</td><td>retrieve</td><td rowspan=4>{basename}-detail</td></tr></tr>
     <tr><td>PUT</td><td>update</td></tr>
     <tr><td>PATCH</td><td>partial_update</td></tr>
     <tr><td>DELETE</td><td>destroy</td></tr>
-    <tr><td>{prefix}/{lookup}/{methodname}/[.format]</td><td>GET, or as specified by `methods` argument</td><td>`@detail_route` decorated method</td><td>{basename}-{methodname}</td></tr>
+    <tr><td>{prefix}/{lookup}/{url_path}/[.format]</td><td>GET, or as specified by `methods` argument</td><td>`@action(detail=True)` decorated method</td><td>{basename}-{url_name}</td></tr>
 </table>
 
 As with `SimpleRouter` the trailing slashes on the URL routes can be removed by setting the `trailing_slash` argument to `False` when instantiating the router.
@@ -212,18 +193,18 @@ The arguments to the `Route` named tuple are:
 
 * `{basename}` - The base to use for the URL names that are created.
 
-**initkwargs**: A dictionary of any additional arguments that should be passed when instantiating the view.  Note that the `suffix` argument is reserved for identifying the viewset type, used when generating the view name and breadcrumb links.
+**initkwargs**: A dictionary of any additional arguments that should be passed when instantiating the view.  Note that the `detail`, `basename`, and `suffix` arguments are reserved for viewset introspection and are also used by the browsable API to generate the view name and breadcrumb links.
 
 ## Customizing dynamic routes
 
-You can also customize how the `@list_route` and `@detail_route` decorators are routed.
-To route either or both of these decorators, include a `DynamicListRoute` and/or `DynamicDetailRoute` named tuple in the `.routes` list.
+You can also customize how the `@action` decorator is routed. Include the `DynamicRoute` named tuple in the `.routes` list, setting the `detail` argument as appropriate for the list-based and detail-based routes. In addition to `detail`, the arguments to `DynamicRoute` are:
 
-The arguments to `DynamicListRoute` and `DynamicDetailRoute` are:
+**url**: A string representing the URL to be routed. May include the same format strings as `Route`, and additionally accepts the `{url_path}` format string.
 
-**url**: A string representing the URL to be routed. May include the same format strings as `Route`, and additionally accepts the `{methodname}` and `{methodnamehyphen}` format strings.
+**name**: The name of the URL as used in `reverse` calls. May include the following format strings:
 
-**name**: The name of the URL as used in `reverse` calls. May include the following format strings: `{basename}`, `{methodname}` and `{methodnamehyphen}`.
+* `{basename}` - The base to use for the URL names that are created.
+* `{url_name}` - The `url_name` provided to the `@action`.
 
 **initkwargs**: A dictionary of any additional arguments that should be passed when instantiating the view.
 
@@ -231,7 +212,7 @@ The arguments to `DynamicListRoute` and `DynamicDetailRoute` are:
 
 The following example will only route to the `list` and `retrieve` actions, and does not use the trailing slash convention.
 
-    from rest_framework.routers import Route, DynamicDetailRoute, SimpleRouter
+    from rest_framework.routers import Route, DynamicRoute, SimpleRouter
 
     class CustomReadOnlyRouter(SimpleRouter):
         """
@@ -239,22 +220,23 @@ The following example will only route to the `list` and `retrieve` actions, and 
         """
         routes = [
             Route(
-            	url=r'^{prefix}$',
-            	mapping={'get': 'list'},
-            	name='{basename}-list',
-            	initkwargs={'suffix': 'List'}
+                url=r'^{prefix}$',
+                mapping={'get': 'list'},
+                name='{basename}-list',
+                initkwargs={'suffix': 'List'}
             ),
             Route(
-            	url=r'^{prefix}/{lookup}$',
+                url=r'^{prefix}/{lookup}$',
                 mapping={'get': 'retrieve'},
                 name='{basename}-detail',
                 initkwargs={'suffix': 'Detail'}
             ),
-            DynamicDetailRoute(
-            	url=r'^{prefix}/{lookup}/{methodnamehyphen}$',
-            	name='{basename}-{methodnamehyphen}',
-            	initkwargs={}
-        	)
+            DynamicRoute(
+                url=r'^{prefix}/{lookup}/{url_path}$',
+                name='{basename}-{url_name}',
+                detail=True,
+                initkwargs={}
+            )
         ]
 
 Let's take a look at the routes our `CustomReadOnlyRouter` would generate for a simple viewset.
@@ -269,7 +251,7 @@ Let's take a look at the routes our `CustomReadOnlyRouter` would generate for a 
         serializer_class = UserSerializer
         lookup_field = 'username'
 
-        @detail_route()
+        @action(detail=True)
         def group_names(self, request, pk=None):
             """
             Returns a list of all the group names that the given
@@ -283,7 +265,7 @@ Let's take a look at the routes our `CustomReadOnlyRouter` would generate for a 
 
     router = CustomReadOnlyRouter()
     router.register('users', UserViewSet)
-	urlpatterns = router.urls
+    urlpatterns = router.urls
 
 The following mappings would be generated...
 

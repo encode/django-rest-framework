@@ -1,12 +1,14 @@
 from __future__ import unicode_literals
 
+import pytest
 from django.test import TestCase
 
 from rest_framework import status
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.decorators import (
-    api_view, authentication_classes, parser_classes, permission_classes,
-    renderer_classes, schema, throttle_classes
+    action, api_view, authentication_classes, detail_route, list_route,
+    parser_classes, permission_classes, renderer_classes, schema,
+    throttle_classes
 )
 from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAuthenticated
@@ -166,3 +168,50 @@ class DecoratorTestCase(TestCase):
             return Response({})
 
         assert isinstance(view.cls.schema, CustomSchema)
+
+
+class ActionDecoratorTestCase(TestCase):
+
+    def test_defaults(self):
+        @action(detail=True)
+        def test_action(request):
+            pass
+
+        assert test_action.bind_to_methods == ['get']
+        assert test_action.detail is True
+        assert test_action.url_path == 'test_action'
+        assert test_action.url_name == 'test-action'
+
+    def test_detail_required(self):
+        with pytest.raises(AssertionError) as excinfo:
+            @action()
+            def test_action(request):
+                pass
+
+        assert str(excinfo.value) == "@action() missing required argument: 'detail'"
+
+    def test_detail_route_deprecation(self):
+        with pytest.warns(PendingDeprecationWarning) as record:
+            @detail_route()
+            def view(request):
+                pass
+
+        assert len(record) == 1
+        assert str(record[0].message) == (
+            "`detail_route` is pending deprecation and will be removed in "
+            "3.10 in favor of `action`, which accepts a `detail` bool. Use "
+            "`@action(detail=True)` instead."
+        )
+
+    def test_list_route_deprecation(self):
+        with pytest.warns(PendingDeprecationWarning) as record:
+            @list_route()
+            def view(request):
+                pass
+
+        assert len(record) == 1
+        assert str(record[0].message) == (
+            "`list_route` is pending deprecation and will be removed in "
+            "3.10 in favor of `action`, which accepts a `detail` bool. Use "
+            "`@action(detail=False)` instead."
+        )

@@ -3,7 +3,7 @@ from django.db import models
 from django.test import TestCase, override_settings
 
 from rest_framework import status
-from rest_framework.decorators import detail_route, list_route
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.routers import SimpleRouter
 from rest_framework.test import APIRequestFactory
@@ -39,19 +39,19 @@ class ActionViewSet(GenericViewSet):
     def retrieve(self, request, *args, **kwargs):
         pass
 
-    @list_route()
+    @action(detail=False)
     def list_action(self, request, *args, **kwargs):
         pass
 
-    @list_route(url_name='list-custom')
+    @action(detail=False, url_name='list-custom')
     def custom_list_action(self, request, *args, **kwargs):
         pass
 
-    @detail_route()
+    @action(detail=True)
     def detail_action(self, request, *args, **kwargs):
         pass
 
-    @detail_route(url_name='detail-custom')
+    @action(detail=True, url_name='detail-custom')
     def custom_detail_action(self, request, *args, **kwargs):
         pass
 
@@ -109,6 +109,16 @@ class InitializeViewSetsTestCase(TestCase):
         for attribute in ('args', 'kwargs', 'request', 'action_map'):
             self.assertNotIn(attribute, dir(bare_view))
             self.assertIn(attribute, dir(view))
+
+
+class GetExtraActionTests(TestCase):
+
+    def test_extra_actions(self):
+        view = ActionViewSet()
+        actual = [action.__name__ for action in view.get_extra_actions()]
+        expected = ['custom_detail_action', 'custom_list_action', 'detail_action', 'list_action']
+
+        self.assertEqual(actual, expected)
 
 
 @override_settings(ROOT_URLCONF='tests.test_viewsets')

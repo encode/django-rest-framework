@@ -67,7 +67,7 @@ If you have specific requirements for creating schema endpoints that are accesse
 
 For example, the following additional route could be used on a viewset to provide a linkable schema endpoint.
 
-    @list_route(methods=['GET'])
+    @action(methods=['GET'], detail=False)
     def schema(self, request):
         meta = self.metadata_class()
         data = meta.determine_metadata(request, self)

@@ -11,7 +11,7 @@ from django.urls import resolve
 
 from rest_framework import permissions, serializers, viewsets
 from rest_framework.compat import get_regex_pattern
-from rest_framework.decorators import detail_route, list_route
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.routers import DefaultRouter, SimpleRouter
 from rest_framework.test import APIRequestFactory, URLPatternsTestCase
@@ -67,12 +67,12 @@ class EmptyPrefixViewSet(viewsets.ModelViewSet):
 
 
 class RegexUrlPathViewSet(viewsets.ViewSet):
-    @list_route(url_path='list/(?P<kwarg>[0-9]{4})')
+    @action(detail=False, url_path='list/(?P<kwarg>[0-9]{4})')
     def regex_url_path_list(self, request, *args, **kwargs):
         kwarg = self.kwargs.get('kwarg', '')
         return Response({'kwarg': kwarg})
 
-    @detail_route(url_path='detail/(?P<kwarg>[0-9]{4})')
+    @action(detail=True, url_path='detail/(?P<kwarg>[0-9]{4})')
     def regex_url_path_detail(self, request, *args, **kwargs):
         pk = self.kwargs.get('pk', '')
         kwarg = self.kwargs.get('kwarg', '')
@@ -99,23 +99,23 @@ class BasicViewSet(viewsets.ViewSet):
     def list(self, request, *args, **kwargs):
         return Response({'method': 'list'})
 
-    @detail_route(methods=['post'])
+    @action(methods=['post'], detail=True)
     def action1(self, request, *args, **kwargs):
         return Response({'method': 'action1'})
 
-    @detail_route(methods=['post'])
+    @action(methods=['post'], detail=True)
     def action2(self, request, *args, **kwargs):
         return Response({'method': 'action2'})
 
-    @detail_route(methods=['post', 'delete'])
+    @action(methods=['post', 'delete'], detail=True)
     def action3(self, request, *args, **kwargs):
         return Response({'method': 'action2'})
 
-    @detail_route()
+    @action(detail=True)
     def link1(self, request, *args, **kwargs):
         return Response({'method': 'link1'})
 
-    @detail_route()
+    @action(detail=True)
     def link2(self, request, *args, **kwargs):
         return Response({'method': 'link2'})
 
@@ -297,7 +297,7 @@ class TestActionKeywordArgs(TestCase):
         class TestViewSet(viewsets.ModelViewSet):
             permission_classes = []
 
-            @detail_route(methods=['post'], permission_classes=[permissions.AllowAny])
+            @action(methods=['post'], detail=True, permission_classes=[permissions.AllowAny])
             def custom(self, request, *args, **kwargs):
                 return Response({
                     'permission_classes': self.permission_classes
@@ -315,14 +315,14 @@ class TestActionKeywordArgs(TestCase):
 
 class TestActionAppliedToExistingRoute(TestCase):
     """
-    Ensure `@detail_route` decorator raises an except when applied
+    Ensure `@action` decorator raises an except when applied
     to an existing route
     """
 
     def test_exception_raised_when_action_applied_to_existing_route(self):
         class TestViewSet(viewsets.ModelViewSet):
 
-            @detail_route(methods=['post'])
+            @action(methods=['post'], detail=True)
             def retrieve(self, request, *args, **kwargs):
                 return Response({
                     'hello': 'world'
@@ -339,27 +339,27 @@ class DynamicListAndDetailViewSet(viewsets.ViewSet):
     def list(self, request, *args, **kwargs):
         return Response({'method': 'list'})
 
-    @list_route(methods=['post'])
+    @action(methods=['post'], detail=False)
     def list_route_post(self, request, *args, **kwargs):
         return Response({'method': 'action1'})
 
-    @detail_route(methods=['post'])
+    @action(methods=['post'], detail=True)
     def detail_route_post(self, request, *args, **kwargs):
         return Response({'method': 'action2'})
 
-    @list_route()
+    @action(detail=False)
     def list_route_get(self, request, *args, **kwargs):
         return Response({'method': 'link1'})
 
-    @detail_route()
+    @action(detail=True)
     def detail_route_get(self, request, *args, **kwargs):
         return Response({'method': 'link2'})
 
-    @list_route(url_path="list_custom-route")
+    @action(detail=False, url_path="list_custom-route")
     def list_custom_route_get(self, request, *args, **kwargs):
         return Response({'method': 'link1'})
 
-    @detail_route(url_path="detail_custom-route")
+    @action(detail=True, url_path="detail_custom-route")
     def detail_custom_route_get(self, request, *args, **kwargs):
         return Response({'method': 'link2'})
 
@@ -454,6 +454,12 @@ class TestViewInitkwargs(URLPatternsTestCase, TestCase):
         initkwargs = match.func.initkwargs
 
         assert initkwargs['suffix'] == 'List'
+
+    def test_detail(self):
+        match = resolve('/example/notes/')
+        initkwargs = match.func.initkwargs
+
+        assert not initkwargs['detail']
 
     def test_basename(self):
         match = resolve('/example/notes/')

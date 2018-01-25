@@ -10,9 +10,7 @@ from rest_framework import (
     filters, generics, pagination, permissions, serializers
 )
 from rest_framework.compat import coreapi, coreschema, get_regex_pattern, path
-from rest_framework.decorators import (
-    api_view, detail_route, list_route, schema
-)
+from rest_framework.decorators import action, api_view, schema
 from rest_framework.request import Request
 from rest_framework.routers import DefaultRouter, SimpleRouter
 from rest_framework.schemas import (
@@ -67,25 +65,25 @@ class ExampleViewSet(ModelViewSet):
     filter_backends = [filters.OrderingFilter]
     serializer_class = ExampleSerializer
 
-    @detail_route(methods=['post'], serializer_class=AnotherSerializer)
+    @action(methods=['post'], detail=True, serializer_class=AnotherSerializer)
     def custom_action(self, request, pk):
         """
         A description of custom action.
         """
         return super(ExampleSerializer, self).retrieve(self, request)
 
-    @detail_route(methods=['post'], serializer_class=AnotherSerializerWithListFields)
+    @action(methods=['post'], detail=True, serializer_class=AnotherSerializerWithListFields)
     def custom_action_with_list_fields(self, request, pk):
         """
         A custom action using both list field and list serializer in the serializer.
         """
         return super(ExampleSerializer, self).retrieve(self, request)
 
-    @list_route()
+    @action(detail=False)
     def custom_list_action(self, request):
         return super(ExampleViewSet, self).list(self, request)
 
-    @list_route(methods=['post', 'get'], serializer_class=EmptySerializer)
+    @action(methods=['post', 'get'], detail=False, serializer_class=EmptySerializer)
     def custom_list_action_multiple_methods(self, request):
         return super(ExampleViewSet, self).list(self, request)
 
@@ -865,11 +863,11 @@ class NamingCollisionViewSet(GenericViewSet):
     """
     permision_class = ()
 
-    @list_route()
+    @action(detail=False)
     def detail(self, request):
         return {}
 
-    @list_route(url_path='detail/export')
+    @action(detail=False, url_path='detail/export')
     def detail_export(self, request):
         return {}
 
@@ -949,7 +947,10 @@ class TestURLNamingCollisions(TestCase):
 
         generator = SchemaGenerator(title='Naming Colisions', patterns=patterns)
         schema = generator.get_schema()
-        desc = schema['detail_0'].description  # not important here
+
+        # not important here
+        desc_0 = schema['detail']['detail_export'].description
+        desc_1 = schema['detail_0'].description
 
         expected = coreapi.Document(
             url='',
@@ -959,12 +960,12 @@ class TestURLNamingCollisions(TestCase):
                     'detail_export': coreapi.Link(
                         url='/from-routercollision/detail/export/',
                         action='get',
-                        description=desc)
+                        description=desc_0)
                 },
                 'detail_0': coreapi.Link(
                     url='/from-routercollision/detail/',
                     action='get',
-                    description=desc
+                    description=desc_1
                 )
             }
         )
@@ -1046,7 +1047,7 @@ def test_head_and_options_methods_are_excluded():
 
     class AViewSet(ModelViewSet):
 
-        @detail_route(methods=['options', 'get'])
+        @action(methods=['options', 'get'], detail=True)
         def custom_action(self, request, pk):
             pass
 
