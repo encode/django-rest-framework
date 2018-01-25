@@ -67,7 +67,7 @@ In order to alter the style of the response, you could write the following custo
         response = exception_handler(exc, context)
 
         # Now add the HTTP status code to the response.
-        if response is not None:
+        if response:
             response.data['status_code'] = response.status_code
 
         return response
