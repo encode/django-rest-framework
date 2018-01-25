@@ -271,23 +271,23 @@ class TestSecure(TestCase):
         assert request.scheme == 'https'
 
 
-class TestWSGIRequestProxy(TestCase):
-    def test_attribute_access(self):
-        wsgi_request = factory.get('/')
-        request = Request(wsgi_request)
+class TestHttpRequest(TestCase):
+    def test_attribute_access_proxy(self):
+        http_request = factory.get('/')
+        request = Request(http_request)
 
         inner_sentinel = object()
-        wsgi_request.inner_property = inner_sentinel
+        http_request.inner_property = inner_sentinel
         assert request.inner_property is inner_sentinel
 
         outer_sentinel = object()
         request.inner_property = outer_sentinel
         assert request.inner_property is outer_sentinel
 
-    def test_exception(self):
+    def test_exception_proxy(self):
         # ensure the exception message is not for the underlying WSGIRequest
-        wsgi_request = factory.get('/')
-        request = Request(wsgi_request)
+        http_request = factory.get('/')
+        request = Request(http_request)
 
         message = "'Request' object has no attribute 'inner_property'"
         with self.assertRaisesMessage(AttributeError, message):
