@@ -395,7 +395,7 @@ Once the API documentation URLs are installed, you'll be able to include both th
         /static/rest_framework/js/coreapi-0.1.1.js
         /docs/schema.js
     -->
-    {% load staticfiles %}
+    {% load static %}
     <script src="{% static 'rest_framework/js/coreapi-0.1.1.js' %}"></script>
     <script src="{% url 'api-docs:schema-js' %}"></script>
 
