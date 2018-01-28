@@ -801,7 +801,7 @@ The [drf-compound-fields][drf-compound-fields] package provides "compound" seria
 
 The [drf-extra-fields][drf-extra-fields] package provides extra serializer fields for REST framework, including `Base64ImageField` and `PointField` classes.
 
-## djangrestframework-recursive
+## djangorestframework-recursive
 
 the [djangorestframework-recursive][djangorestframework-recursive] package provides a `RecursiveField` for serializing and deserializing recursive structures
 
