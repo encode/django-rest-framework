@@ -16,26 +16,26 @@ from rest_framework.compat import guardian
 from rest_framework.filters import DjangoObjectPermissionsFilter
 from rest_framework.routers import DefaultRouter
 from rest_framework.test import APIRequestFactory
-from tests.models import BasicModel
+from tests.models import BasicModel as GeneralBasicModel
 
 factory = APIRequestFactory()
 
 
 class BasicSerializer(serializers.ModelSerializer):
     class Meta:
-        model = BasicModel
+        model = GeneralBasicModel
         fields = '__all__'
 
 
 class RootView(generics.ListCreateAPIView):
-    queryset = BasicModel.objects.all()
+    queryset = GeneralBasicModel.objects.all()
     serializer_class = BasicSerializer
     authentication_classes = [authentication.BasicAuthentication]
     permission_classes = [permissions.DjangoModelPermissions]
 
 
 class InstanceView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = BasicModel.objects.all()
+    queryset = GeneralBasicModel.objects.all()
     serializer_class = BasicSerializer
     authentication_classes = [authentication.BasicAuthentication]
     permission_classes = [permissions.DjangoModelPermissions]
@@ -47,11 +47,11 @@ class GetQuerySetListView(generics.ListCreateAPIView):
     permission_classes = [permissions.DjangoModelPermissions]
 
     def get_queryset(self):
-        return BasicModel.objects.all()
+        return GeneralBasicModel.objects.all()
 
 
 class EmptyListView(generics.ListCreateAPIView):
-    queryset = BasicModel.objects.none()
+    queryset = GeneralBasicModel.objects.none()
     serializer_class = BasicSerializer
     authentication_classes = [authentication.BasicAuthentication]
     permission_classes = [permissions.DjangoModelPermissions]
@@ -89,7 +89,7 @@ class ModelPermissionsIntegrationTests(TestCase):
         self.disallowed_credentials = basic_auth_header('disallowed', 'password')
         self.updateonly_credentials = basic_auth_header('updateonly', 'password')
 
-        BasicModel(text='foo').save()
+        GeneralBasicModel(text='foo').save()
 
     def test_has_create_permissions(self):
         request = factory.post('/', {'text': 'foobar'}, format='json',
@@ -459,7 +459,7 @@ class BasicObjectPermWithDetail(permissions.BasePermission):
 
 
 class PermissionInstanceView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = BasicModel.objects.all()
+    queryset = GeneralBasicModel.objects.all()
     serializer_class = BasicSerializer
 
 
@@ -490,7 +490,7 @@ denied_object_view_with_detail = DeniedObjectViewWithDetail.as_view()
 
 class CustomPermissionsTests(TestCase):
     def setUp(self):
-        BasicModel(text='foo').save()
+        GeneralBasicModel(text='foo').save()
         User.objects.create_user('username', 'username@example.com', 'password')
         credentials = basic_auth_header('username', 'password')
         self.request = factory.get('/1', format='json', HTTP_AUTHORIZATION=credentials)
@@ -519,3 +519,226 @@ class CustomPermissionsTests(TestCase):
             detail = response.data.get('detail')
             self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
             self.assertEqual(detail, self.custom_message)
+
+
+class BasicModel(GeneralBasicModel):
+    class Meta:
+        app_label = 'other_app'
+        proxy = True
+
+
+class BasicProxySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BasicModel
+        fields = '__all__'
+
+
+class RootWithProxyModelView(generics.ListCreateAPIView):
+    queryset = BasicModel.objects.all()
+    serializer_class = BasicProxySerializer
+    authentication_classes = [authentication.BasicAuthentication]
+    permission_classes = [permissions.DjangoModelPermissions]
+
+
+class InstanceWithProxyModelView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = BasicModel.objects.all()
+    serializer_class = BasicProxySerializer
+    authentication_classes = [authentication.BasicAuthentication]
+    permission_classes = [permissions.DjangoModelPermissions]
+
+
+class GetQuerySetListWithProxyModelView(generics.ListCreateAPIView):
+    serializer_class = BasicProxySerializer
+    authentication_classes = [authentication.BasicAuthentication]
+    permission_classes = [permissions.DjangoModelPermissions]
+
+    def get_queryset(self):
+        return BasicModel.objects.all()
+
+
+class EmptyListWithProxyModelView(generics.ListCreateAPIView):
+    queryset = BasicModel.objects.none()
+    serializer_class = BasicProxySerializer
+    authentication_classes = [authentication.BasicAuthentication]
+    permission_classes = [permissions.DjangoModelPermissions]
+
+
+root_with_proxy_model_view = RootWithProxyModelView.as_view()
+api_root_with_proxy_model_view = DefaultRouter().get_api_root_view()
+instance_with_proxy_model_view = InstanceWithProxyModelView.as_view()
+get_queryset_list_with_proxy_model_view = GetQuerySetListWithProxyModelView.as_view()
+empty_list_with_proxy_model_view = EmptyListWithProxyModelView.as_view()
+
+
+class ProxyModelPermissionsIntegrationTests(TestCase):
+    def setUp(self):
+        # print [(p.codename, p.content_type.app_label) for p in Permission.objects.all()]
+        User.objects.create_user('disallowed', 'disallowed@example.com', 'password')
+        user = User.objects.create_user('permitted', 'permitted@example.com', 'password')
+        user.user_permissions.set([
+            Permission.objects.get(codename='add_basicmodel'),
+            Permission.objects.get(codename='change_basicmodel'),
+            Permission.objects.get(codename='delete_basicmodel')
+        ])
+
+        user = User.objects.create_user('updateonly', 'updateonly@example.com', 'password')
+        user.user_permissions.set([
+            Permission.objects.get(codename='change_basicmodel'),
+        ])
+
+        self.permitted_credentials = basic_auth_header('permitted', 'password')
+        self.disallowed_credentials = basic_auth_header('disallowed', 'password')
+        self.updateonly_credentials = basic_auth_header('updateonly', 'password')
+
+        BasicModel(text='foo').save()
+
+    def test_has_create_permissions(self):
+        request = factory.post('/', {'text': 'foobar'}, format='json',
+                               HTTP_AUTHORIZATION=self.permitted_credentials)
+        response = root_with_proxy_model_view(request, pk=1)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_api_root_view_discard_default_django_model_permission(self):
+        """
+        We check that DEFAULT_PERMISSION_CLASSES can
+        apply to APIRoot view. More specifically we check expected behavior of
+        ``_ignore_model_permissions`` attribute support.
+        """
+        request = factory.get('/', format='json',
+                              HTTP_AUTHORIZATION=self.permitted_credentials)
+        request.resolver_match = ResolverMatch('get', (), {})
+        response = api_root_with_proxy_model_view(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_queryset_has_create_permissions(self):
+        request = factory.post('/', {'text': 'foobar'}, format='json',
+                               HTTP_AUTHORIZATION=self.permitted_credentials)
+        response = get_queryset_list_with_proxy_model_view(request, pk=1)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_has_put_permissions(self):
+        request = factory.put('/1', {'text': 'foobar'}, format='json',
+                              HTTP_AUTHORIZATION=self.permitted_credentials)
+        response = instance_with_proxy_model_view(request, pk='1')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_has_delete_permissions(self):
+        request = factory.delete('/1', HTTP_AUTHORIZATION=self.permitted_credentials)
+        response = instance_with_proxy_model_view(request, pk=1)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_does_not_have_create_permissions(self):
+        request = factory.post('/', {'text': 'foobar'}, format='json',
+                               HTTP_AUTHORIZATION=self.disallowed_credentials)
+        response = root_with_proxy_model_view(request, pk=1)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_does_not_have_put_permissions(self):
+        request = factory.put('/1', {'text': 'foobar'}, format='json',
+                              HTTP_AUTHORIZATION=self.disallowed_credentials)
+        response = instance_with_proxy_model_view(request, pk='1')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_does_not_have_delete_permissions(self):
+        request = factory.delete('/1', HTTP_AUTHORIZATION=self.disallowed_credentials)
+        response = instance_with_proxy_model_view(request, pk=1)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_options_permitted(self):
+        request = factory.options(
+            '/',
+            HTTP_AUTHORIZATION=self.permitted_credentials
+        )
+        response = root_with_proxy_model_view(request, pk='1')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('actions', response.data)
+        self.assertEqual(list(response.data['actions']), ['POST'])
+
+        request = factory.options(
+            '/1',
+            HTTP_AUTHORIZATION=self.permitted_credentials
+        )
+        response = instance_with_proxy_model_view(request, pk='1')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('actions', response.data)
+        self.assertEqual(list(response.data['actions']), ['PUT'])
+
+    def test_options_disallowed(self):
+        request = factory.options(
+            '/',
+            HTTP_AUTHORIZATION=self.disallowed_credentials
+        )
+        response = root_with_proxy_model_view(request, pk='1')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNotIn('actions', response.data)
+
+        request = factory.options(
+            '/1',
+            HTTP_AUTHORIZATION=self.disallowed_credentials
+        )
+        response = instance_with_proxy_model_view(request, pk='1')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNotIn('actions', response.data)
+
+    def test_options_updateonly(self):
+        request = factory.options(
+            '/',
+            HTTP_AUTHORIZATION=self.updateonly_credentials
+        )
+        response = root_with_proxy_model_view(request, pk='1')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNotIn('actions', response.data)
+
+        request = factory.options(
+            '/1',
+            HTTP_AUTHORIZATION=self.updateonly_credentials
+        )
+        response = instance_with_proxy_model_view(request, pk='1')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('actions', response.data)
+        self.assertEqual(list(response.data['actions']), ['PUT'])
+
+    def test_empty_view_does_not_assert(self):
+        request = factory.get('/1', HTTP_AUTHORIZATION=self.permitted_credentials)
+        response = empty_list_with_proxy_model_view(request, pk=1)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_calling_method_not_allowed(self):
+        request = factory.generic('METHOD_NOT_ALLOWED', '/', HTTP_AUTHORIZATION=self.permitted_credentials)
+        response = root_with_proxy_model_view(request)
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+        request = factory.generic('METHOD_NOT_ALLOWED', '/1', HTTP_AUTHORIZATION=self.permitted_credentials)
+        response = instance_with_proxy_model_view(request, pk='1')
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_check_auth_before_queryset_call(self):
+        class View(RootWithProxyModelView):
+            def get_queryset(_):
+                self.fail('should not reach due to auth check')
+        view = View.as_view()
+
+        request = factory.get('/', HTTP_AUTHORIZATION='')
+        response = view(request)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_queryset_assertions(self):
+        class View(views.APIView):
+            authentication_classes = [authentication.BasicAuthentication]
+            permission_classes = [permissions.DjangoModelPermissions]
+        view = View.as_view()
+
+        request = factory.get('/', HTTP_AUTHORIZATION=self.permitted_credentials)
+        msg = 'Cannot apply DjangoModelPermissions on a view that does not set `.queryset` or have a `.get_queryset()` method.'
+        with self.assertRaisesMessage(AssertionError, msg):
+            view(request)
+
+        # Faulty `get_queryset()` methods should trigger the above "view does not have a queryset" assertion.
+        class View(RootWithProxyModelView):
+            def get_queryset(self):
+                return None
+        view = View.as_view()
+
+        request = factory.get('/', HTTP_AUTHORIZATION=self.permitted_credentials)
+        with self.assertRaisesMessage(AssertionError, 'View.get_queryset() returned None'):
+            view(request)
