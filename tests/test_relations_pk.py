@@ -26,16 +26,24 @@ class ManyToManySourceSerializer(serializers.ModelSerializer):
 
 
 # ForeignKey
+class ForeignKeySourceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ForeignKeySource
+        fields = ('id', 'name', 'target')
+
+
 class ForeignKeyTargetSerializer(serializers.ModelSerializer):
     class Meta:
         model = ForeignKeyTarget
         fields = ('id', 'name', 'sources')
 
 
-class ForeignKeySourceSerializer(serializers.ModelSerializer):
+class ForeignKeyTargetWithSourcesSerializer(serializers.ModelSerializer):
+    sources = ForeignKeySourceSerializer(many=True)
+
     class Meta:
-        model = ForeignKeySource
-        fields = ('id', 'name', 'target')
+        model = ForeignKeyTarget
+        fields = ('id', 'name', 'sources')
 
 
 # Nullable ForeignKey
