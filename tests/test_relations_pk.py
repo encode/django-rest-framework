@@ -227,9 +227,13 @@ class PKForeignKeyTests(TestCase):
 
     def test_reverse_foreign_key_retrieve(self):
         queryset = ForeignKeyTarget.objects.all()
-        serializer = ForeignKeyTargetSerializer(queryset, many=True)
+        serializer = ForeignKeyTargetWithSourcesSerializer(queryset, many=True)
         expected = [
-            {'id': 1, 'name': 'target-1', 'sources': [1, 2, 3]},
+            {'id': 1, 'name': 'target-1', 'sources': [
+                {'id': 1, 'name': 'source-1', 'target': 1},
+                {'id': 2, 'name': 'source-2', 'target': 1},
+                {'id': 3, 'name': 'source-3', 'target': 1},
+            ]},
             {'id': 2, 'name': 'target-2', 'sources': []},
         ]
         with self.assertNumQueries(3):
@@ -237,7 +241,7 @@ class PKForeignKeyTests(TestCase):
 
     def test_reverse_foreign_key_retrieve_prefetch_related(self):
         queryset = ForeignKeyTarget.objects.all().prefetch_related('sources')
-        serializer = ForeignKeyTargetSerializer(queryset, many=True)
+        serializer = ForeignKeyTargetWithSourcesSerializer(queryset, many=True)
         with self.assertNumQueries(2):
             serializer.data
 
