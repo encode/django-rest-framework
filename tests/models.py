@@ -3,6 +3,8 @@ from __future__ import unicode_literals
 import uuid
 
 from django.db import models
+from django.db.models.manager import BaseManager
+from django.db.models.query import QuerySet
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -45,11 +47,17 @@ class UUIDForeignKeyTarget(RESTFrameworkModel):
     name = models.CharField(max_length=100)
 
 
+class ForeignKeySourceManager(BaseManager.from_queryset(QuerySet)):
+    pass
+
+
 class ForeignKeySource(RESTFrameworkModel):
     name = models.CharField(max_length=100)
     target = models.ForeignKey(ForeignKeyTarget, related_name='sources',
                                help_text='Target', verbose_name='Target',
                                on_delete=models.CASCADE)
+
+    objects = ForeignKeySourceManager()
 
 
 # Nullable ForeignKey
