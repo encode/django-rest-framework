@@ -14,6 +14,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ungettext
 
 from rest_framework import status
+from rest_framework.compat import unicode_to_repr
 from rest_framework.utils.serializer_helpers import ReturnDict, ReturnList
 
 
@@ -72,6 +73,22 @@ class ErrorDetail(six.text_type):
         self = super(ErrorDetail, cls).__new__(cls, string)
         self.code = code
         return self
+
+    def __eq__(self, other):
+        r = super(ErrorDetail, self).__eq__(other)
+        try:
+            return r and self.code == other.code
+        except AttributeError:
+            return r
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __repr__(self):
+        return unicode_to_repr('ErrorDetail(string=%r, code=%r)' % (
+            six.text_type(self),
+            self.code,
+        ))
 
 
 class APIException(Exception):
