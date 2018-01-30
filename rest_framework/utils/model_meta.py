@@ -93,6 +93,7 @@ def _get_forward_relationships(opts):
             # manytomany do not have to_fields
             to_field=None,
             has_through_model=(
+                (getattr(field.remote_field, 'through', None) is not None) and
                 not field.remote_field.through._meta.auto_created
             ),
             reverse=False
