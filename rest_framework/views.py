@@ -8,10 +8,8 @@ from django.core.exceptions import PermissionDenied
 from django.db import connection, models, transaction
 from django.http import Http404
 from django.http.response import HttpResponseBase
-from django.utils import six
 from django.utils.cache import cc_delim_re, patch_vary_headers
 from django.utils.encoding import smart_text
-from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
@@ -70,6 +68,11 @@ def exception_handler(exc, context):
     Any unhandled exceptions may return `None`, which will cause a 500 error
     to be raised.
     """
+    if isinstance(exc, Http404):
+        exc = exceptions.NotFound()
+    elif isinstance(exc, PermissionDenied):
+        exc = exceptions.PermissionDenied()
+
     if isinstance(exc, exceptions.APIException):
         headers = {}
         if getattr(exc, 'auth_header', None):
@@ -84,20 +87,6 @@ def exception_handler(exc, context):
 
         set_rollback()
         return Response(data, status=exc.status_code, headers=headers)
-
-    elif isinstance(exc, Http404):
-        msg = _('Not found.')
-        data = {'detail': six.text_type(msg)}
-
-        set_rollback()
-        return Response(data, status=status.HTTP_404_NOT_FOUND)
-
-    elif isinstance(exc, PermissionDenied):
-        msg = _('Permission denied.')
-        data = {'detail': six.text_type(msg)}
-
-        set_rollback()
-        return Response(data, status=status.HTTP_403_FORBIDDEN)
 
     return None
 
