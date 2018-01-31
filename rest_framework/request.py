@@ -11,6 +11,7 @@ The wrapped request then offers a richer API, in particular :
 from __future__ import unicode_literals
 
 import sys
+import warnings
 from contextlib import contextmanager
 
 from django.conf import settings
@@ -97,7 +98,7 @@ def clone_request(request, method):
     Internal helper method to clone a request, replacing with a different
     HTTP method.  Used for checking permissions against other methods.
     """
-    ret = Request(request=request._request,
+    ret = Request(request=request.http_request,
                   parsers=request.parsers,
                   authenticators=request.authenticators,
                   negotiator=request.negotiator,
@@ -159,7 +160,7 @@ class Request(object):
             .format(request.__class__.__module__, request.__class__.__name__)
         )
 
-        self._request = request
+        self.http_request = request
         self.parsers = parsers or ()
         self.authenticators = authenticators or ()
         self.negotiator = negotiator or self._default_negotiator()
@@ -181,12 +182,28 @@ class Request(object):
             forced_auth = ForcedAuthentication(force_user, force_token)
             self.authenticators = (forced_auth,)
 
+    @property
+    def _request(self):
+        warnings.warn(
+            "`_request` has been deprecated in favor of `http_request`, and will be removed in 3.10",
+            PendingDeprecationWarning, stacklevel=2
+        )
+        return self.http_request
+
+    @_request.setter
+    def _request(self, value):
+        warnings.warn(
+            "`_request` has been deprecated in favor of `http_request`, and will be removed in 3.10",
+            PendingDeprecationWarning, stacklevel=2
+        )
+        self.http_request = value
+
     def _default_negotiator(self):
         return api_settings.DEFAULT_CONTENT_NEGOTIATION_CLASS()
 
     @property
     def content_type(self):
-        meta = self._request.META
+        meta = self.http_request.META
         return meta.get('CONTENT_TYPE', meta.get('HTTP_CONTENT_TYPE', ''))
 
     @property
@@ -203,7 +220,7 @@ class Request(object):
         """
         More semantically correct name for request.GET.
         """
-        return self._request.GET
+        return self.http_request.GET
 
     @property
     def data(self):
@@ -233,7 +250,7 @@ class Request(object):
         instance, ensuring that it is available to any middleware in the stack.
         """
         self._user = value
-        self._request.user = value
+        self.http_request.user = value
 
     @property
     def auth(self):
@@ -253,7 +270,7 @@ class Request(object):
         request, such as an authentication token.
         """
         self._auth = value
-        self._request.auth = value
+        self.http_request.auth = value
 
     @property
     def successful_authenticator(self):
@@ -278,16 +295,17 @@ class Request(object):
             else:
                 self._full_data = self._data
 
-            # copy data & files refs to the underlying request so that closable
-            # objects are handled appropriately.
-            self._request._post = self.POST
-            self._request._files = self.FILES
+            # if a form media type, copy data & files refs to the underlying
+            # http request so that closable objects are handled appropriately.
+            if is_form_media_type(self.content_type):
+                self.http_request._post = self.POST
+                self.http_request._files = self.FILES
 
     def _load_stream(self):
         """
         Return the content body of the request, as a stream.
         """
-        meta = self._request.META
+        meta = self.http_request.META
         try:
             content_length = int(
                 meta.get('CONTENT_LENGTH', meta.get('HTTP_CONTENT_LENGTH', 0))
@@ -297,8 +315,8 @@ class Request(object):
 
         if content_length == 0:
             self._stream = None
-        elif not self._request._read_started:
-            self._stream = self._request
+        elif not self.http_request._read_started:
+            self._stream = self.http_request
         else:
             self._stream = six.BytesIO(self.body)
 
@@ -322,18 +340,18 @@ class Request(object):
         try:
             stream = self.stream
         except RawPostDataException:
-            if not hasattr(self._request, '_post'):
+            if not hasattr(self.http_request, '_post'):
                 raise
             # If request.POST has been accessed in middleware, and a method='POST'
             # request was made with 'multipart/form-data', then the request stream
             # will already have been exhausted.
             if self._supports_form_parsing():
-                return (self._request.POST, self._request.FILES)
+                return (self.http_request.POST, self.http_request.FILES)
             stream = None
 
         if stream is None or media_type is None:
             if media_type and is_form_media_type(media_type):
-                empty_data = QueryDict('', encoding=self._request._encoding)
+                empty_data = QueryDict('', encoding=self.http_request._encoding)
             else:
                 empty_data = {}
             empty_files = MultiValueDict()
@@ -351,7 +369,7 @@ class Request(object):
             # re-raise.  Ensures we don't simply repeat the error when
             # attempting to render the browsable renderer response, or when
             # logging the request or similar.
-            self._data = QueryDict('', encoding=self._request._encoding)
+            self._data = QueryDict('', encoding=self.http_request._encoding)
             self._files = MultiValueDict()
             self._full_data = self._data
             raise
@@ -407,7 +425,7 @@ class Request(object):
         to proxy it to the underlying HttpRequest object.
         """
         try:
-            return getattr(self._request, attr)
+            return getattr(self.http_request, attr)
         except AttributeError:
             return self.__getattribute__(attr)
 
@@ -425,7 +443,7 @@ class Request(object):
             self._load_data_and_files()
         if is_form_media_type(self.content_type):
             return self._data
-        return QueryDict('', encoding=self._request._encoding)
+        return QueryDict('', encoding=self.http_request._encoding)
 
     @property
     def FILES(self):
@@ -446,4 +464,4 @@ class Request(object):
     def force_plaintext_errors(self, value):
         # Hack to allow our exception handler to force choice of
         # plaintext or html error responses.
-        self._request.is_ajax = lambda: value
+        self.http_request.is_ajax = lambda: value
