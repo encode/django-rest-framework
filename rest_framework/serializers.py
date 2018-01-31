@@ -20,7 +20,7 @@ from collections import Mapping, OrderedDict
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
-from django.db.models import DurationField as ModelDurationField
+from django.db.models import manager, DurationField as ModelDurationField
 from django.db.models.fields import Field as DjangoModelField
 from django.db.models.fields import FieldDoesNotExist
 from django.utils import six, timezone
@@ -654,7 +654,7 @@ class ListSerializer(BaseSerializer):
         """
         # Dealing with nested relationships, data can be a Manager,
         # so, first get a queryset from the Manager if needed
-        iterable = data.all() if isinstance(data, models.Manager) else data
+        iterable = data.all() if isinstance(data, manager.BaseManager) else data
 
         return [
             self.child.to_representation(item) for item in iterable
