@@ -631,7 +631,7 @@ def get_manual_fields(self, path, method):
     if method=='POST':
         extra_fields = # ... list of extra fields for POST ...
 
-    manual_fields = super().get_manual_fields()
+    manual_fields = super().get_manual_fields(path, method)
     return manual_fields + extra_fields
 ```
 
