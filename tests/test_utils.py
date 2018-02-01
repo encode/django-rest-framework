@@ -39,6 +39,10 @@ class CustomNameResourceInstance(APIView):
         return "Foo"
 
 
+class CustomNameByVariableResourceInstance(APIView):
+    view_name = "Bar"
+
+
 class ResourceViewSet(ModelViewSet):
     serializer_class = ModelSerializer
     queryset = BasicModel.objects.all()
@@ -50,6 +54,7 @@ urlpatterns = [
     url(r'^$', Root.as_view()),
     url(r'^resource/$', ResourceRoot.as_view()),
     url(r'^resource/customname$', CustomNameResourceInstance.as_view()),
+    url(r'^resource/customnamebyvar$', CustomNameByVariableResourceInstance.as_view()),
     url(r'^resource/(?P<key>[0-9]+)$', ResourceInstance.as_view()),
     url(r'^resource/(?P<key>[0-9]+)/$', NestedResourceRoot.as_view()),
     url(r'^resource/(?P<key>[0-9]+)/(?P<other>[A-Za-z]+)$', NestedResourceInstance.as_view()),
@@ -86,6 +91,14 @@ class BreadcrumbTests(TestCase):
             ('Root', '/'),
             ('Resource Root', '/resource/'),
             ('Foo', '/resource/customname')
+        ]
+
+    def test_resource_instance_customnamebyvar_breadcrumbs(self):
+        url = '/resource/customnamebyvar'
+        assert get_breadcrumbs(url) == [
+            ('Root', '/'),
+            ('Resource Root', '/resource/'),
+            ('Bar', '/resource/customnamebyvar')
         ]
 
     def test_nested_resource_breadcrumbs(self):
