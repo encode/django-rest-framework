@@ -23,7 +23,7 @@ from rest_framework.utils import formatting
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
-from .models import BasicModel
+from .models import BasicModel, ForeignKeySource
 
 factory = APIRequestFactory()
 
@@ -551,6 +551,51 @@ class TestSchemaGeneratorWithRestrictedViewSets(TestCase):
                         fields=[]
                     ),
                 },
+            }
+        )
+        assert schema == expected
+
+
+class ForeignKeySourceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ForeignKeySource
+        fields = ('id', 'name', 'target')
+
+
+class ForeignKeySourceView(generics.CreateAPIView):
+    queryset = ForeignKeySource.objects.all()
+    serializer_class = ForeignKeySourceSerializer
+
+
+@unittest.skipUnless(coreapi, 'coreapi is not installed')
+class TestSchemaGeneratorWithForeignKey(TestCase):
+    def setUp(self):
+        self.patterns = [
+            url(r'^example/?$', ForeignKeySourceView.as_view()),
+        ]
+
+    def test_schema_for_regular_views(self):
+        """
+        Ensure that AutoField foreign keys are output as Integer.
+        """
+        generator = SchemaGenerator(title='Example API', patterns=self.patterns)
+        schema = generator.get_schema()
+
+        expected = coreapi.Document(
+            url='',
+            title='Example API',
+            content={
+                'example': {
+                    'create': coreapi.Link(
+                        url='/example/',
+                        action='post',
+                        encoding='application/json',
+                        fields=[
+                            coreapi.Field('name', required=True, location='form', schema=coreschema.String(title='Name')),
+                            coreapi.Field('target', required=True, location='form', schema=coreschema.Integer(description='Target', title='Target')),
+                        ]
+                    )
+                }
             }
         )
         assert schema == expected

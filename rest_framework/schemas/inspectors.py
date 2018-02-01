@@ -50,6 +50,14 @@ def field_to_schema(field):
             title=title,
             description=description
         )
+    elif isinstance(field, serializers.PrimaryKeyRelatedField):
+        schema_cls = coreschema.String
+        model = getattr(field.queryset, 'model', None)
+        if model is not None:
+            model_field = model._meta.pk
+            if isinstance(model_field, models.AutoField):
+                schema_cls = coreschema.Integer
+        return schema_cls(title=title, description=description)
     elif isinstance(field, serializers.RelatedField):
         return coreschema.String(title=title, description=description)
     elif isinstance(field, serializers.MultipleChoiceField):
