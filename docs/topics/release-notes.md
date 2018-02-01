@@ -62,6 +62,35 @@ You can determine your currently installed version using `pip show`:
     * Deprecated `list_route` & `detail_route` in favor of `action` decorator with `detail` boolean.
     * Deprecated dynamic list/detail route variants in favor of `DynamicRoute` with `detail` boolean.
     * Refactored the router's dynamic route generation.
+* Fix formatting of the 3.7.4 release note [#5704][gh5704]
+* Docs: Update DRF Writable Nested Serializers references [#5711][gh5711]
+* Docs: Fixed typo in auth URLs example. [#5713][gh5713]
+* Improve composite field child errors [#5655][gh5655]
+* Disable HTML inputs for dict/list fields [#5702][gh5702]
+* Fix typo in HostNameVersioning doc [#5709][gh5709]
+* Use rsplit to get module and classname for imports [#5712][gh5712]
+* Formalize URLPatternsTestCase [#5703][gh5703]
+* Add exception translation test [#5700][gh5700]
+* Test staticfiles [#5701][gh5701]
+* Add drf-yasg to documentation and schema 3rd party packages [#5720][gh5720]
+* Remove unused `compat._resolve_model()` [#5733][gh5733]
+* Drop compat workaround for unsupported Python 3.2 [#5734][gh5734]
+* Prefer `iter(dict)` over `iter(dict.keys())` [#5736][gh5736]
+* Pass `python_requires` argument to setuptools [#5739][gh5739]
+* Remove unused links from docs [#5735][gh5735]
+* Prefer https protocol for links in docs when available [#5729][gh5729]
+* Add HStoreField, postgres fields tests [#5654][gh5654]
+* Always fully qualify ValidationError in docs [#5751][gh5751]
+* Remove unreachable code from ManualSchema [#5766][gh5766]
+* Allowed customising API documentation code samples [#5752][gh5752]
+* Updated docs to use `pip show` [#5757][gh5757]
+* Load 'static' instead of 'staticfiles' in templates [#5773][gh5773]
+* Fixed a typo in `fields` docs [#5783][gh5783]
+* Refer to "NamespaceVersioning" instead of "NamespacedVersioning" in the documentation [#5754][gh5754]
+* ErrorDetail: add `__eq__`/`__ne__` and `__repr__` [#5787][gh5787]
+* Replace `background-attachment: fixed` in docs [#5777][gh5777]
+* Make 404 & 403 responses consistent with `exceptions.APIException` output [#5763][gh5763]
+* Small fix to API documentation: schemas [#5796][gh5796]
 
 ## 3.7.x series
 
@@ -1779,3 +1808,32 @@ For older release notes, [please see the version 2.x documentation][old-release-
 
 <!-- 3.8.0 -->
 [gh5705]: https://github.com/encode/django-rest-framework/issues/5705
+[gh5796]: https://github.com/encode/django-rest-framework/issues/5796
+[gh5763]: https://github.com/encode/django-rest-framework/issues/5763
+[gh5777]: https://github.com/encode/django-rest-framework/issues/5777
+[gh5787]: https://github.com/encode/django-rest-framework/issues/5787
+[gh5754]: https://github.com/encode/django-rest-framework/issues/5754
+[gh5783]: https://github.com/encode/django-rest-framework/issues/5783
+[gh5773]: https://github.com/encode/django-rest-framework/issues/5773
+[gh5757]: https://github.com/encode/django-rest-framework/issues/5757
+[gh5752]: https://github.com/encode/django-rest-framework/issues/5752
+[gh5766]: https://github.com/encode/django-rest-framework/issues/5766
+[gh5751]: https://github.com/encode/django-rest-framework/issues/5751
+[gh5654]: https://github.com/encode/django-rest-framework/issues/5654
+[gh5729]: https://github.com/encode/django-rest-framework/issues/5729
+[gh5735]: https://github.com/encode/django-rest-framework/issues/5735
+[gh5739]: https://github.com/encode/django-rest-framework/issues/5739
+[gh5736]: https://github.com/encode/django-rest-framework/issues/5736
+[gh5734]: https://github.com/encode/django-rest-framework/issues/5734
+[gh5733]: https://github.com/encode/django-rest-framework/issues/5733
+[gh5720]: https://github.com/encode/django-rest-framework/issues/5720
+[gh5701]: https://github.com/encode/django-rest-framework/issues/5701
+[gh5700]: https://github.com/encode/django-rest-framework/issues/5700
+[gh5703]: https://github.com/encode/django-rest-framework/issues/5703
+[gh5712]: https://github.com/encode/django-rest-framework/issues/5712
+[gh5709]: https://github.com/encode/django-rest-framework/issues/5709
+[gh5702]: https://github.com/encode/django-rest-framework/issues/5702
+[gh5655]: https://github.com/encode/django-rest-framework/issues/5655
+[gh5713]: https://github.com/encode/django-rest-framework/issues/5713
+[gh5711]: https://github.com/encode/django-rest-framework/issues/5711
+[gh5704]: https://github.com/encode/django-rest-framework/issues/5704
