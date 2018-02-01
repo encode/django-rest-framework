@@ -48,9 +48,15 @@ Getting involved in triaging incoming issues is a good way to start contributing
 
 # Development
 
-To start developing on Django REST framework, clone the repo:
+To start developing on Django REST framework, first create a Fork from the
+[Django REST Framework repo][repo] on GitHub.
 
-    git clone git@github.com:encode/django-rest-framework.git
+Then clone your fork. The clone command will look like this, with your GitHub
+username instead of YOUR-USERNAME:
+
+    git clone https://github.com/YOUR-USERNAME/Spoon-Knife
+
+See GitHub's [_Fork a Repo_][how-to-fork] Guide for more help.
 
 Changes should broadly follow the [PEP 8][pep-8] style conventions, and we recommend you set up your editor to automatically indicate non-conforming styles.
 
@@ -210,3 +216,5 @@ If you want to draw attention to a note or warning, use a pair of enclosing line
 [markdown]: https://daringfireball.net/projects/markdown/basics
 [docs]: https://github.com/encode/django-rest-framework/tree/master/docs
 [mou]: http://mouapp.com/
+[repo]: https://github.com/encode/django-rest-framework
+[how-to-fork]: https://help.github.com/articles/fork-a-repo/
