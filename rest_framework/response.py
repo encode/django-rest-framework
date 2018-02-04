@@ -21,7 +21,7 @@ class Response(SimpleTemplateResponse):
 
     def __init__(self, data=None, status=None,
                  template_name=None, headers=None,
-                 exception=False, content_type=None):
+                 exception=False, content_type=None, drf_cookies=None):
         """
         Alters the init arguments slightly.
         For example, drop 'template_name', and instead use 'data'.
@@ -47,6 +47,13 @@ class Response(SimpleTemplateResponse):
         if headers:
             for name, value in six.iteritems(headers):
                 self[name] = value
+
+        if drf_cookies:
+            # don't assume rest framework is the innermost handler in the pipeline
+            # so don't clobber other cookies that might already have been set
+            # otherwise self.cookies = drf_cookies would have sufficed
+            for c in drf_cookies:
+                self.cookies[c] = drf_cookies[c].copy()
 
     @property
     def rendered_content(self):
