@@ -269,6 +269,10 @@ The [Django Rest Framework Roles][django-rest-framework-roles] package makes it 
 
 The [Django Rest Framework API Key][django-rest-framework-api-key] package allows you to ensure that every request made to the server requires an API key header. You can generate one from the django admin interface.
 
+## Django Rest Framework Role Filters
+
+The [Django Rest Framework Role Filters][django-rest-framework-role-filters] package provides simple filtering over multiple types of roles.
+
 [cite]: https://developer.apple.com/library/mac/#documentation/security/Conceptual/AuthenticationAndAuthorizationGuide/Authorization/Authorization.html
 [authentication]: authentication.md
 [throttling]: throttling.md
@@ -282,3 +286,4 @@ The [Django Rest Framework API Key][django-rest-framework-api-key] package allow
 [dry-rest-permissions]: https://github.com/Helioscene/dry-rest-permissions
 [django-rest-framework-roles]: https://github.com/computer-lab/django-rest-framework-roles
 [django-rest-framework-api-key]: https://github.com/manosim/django-rest-framework-api-key
+[django-rest-framework-role-filters]: https://github.com/allisson/django-rest-framework-role-filters
