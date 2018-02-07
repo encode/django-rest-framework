@@ -6,7 +6,7 @@ import shutil
 import sys
 from io import open
 
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 try:
     from pypandoc import convert_file
