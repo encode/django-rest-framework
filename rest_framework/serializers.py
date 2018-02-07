@@ -17,8 +17,8 @@ import inspect
 import traceback
 from collections import Mapping, OrderedDict
 
-from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import models
 from django.db.models import DurationField as ModelDurationField
 from django.db.models.fields import Field as DjangoModelField

@@ -11,11 +11,10 @@ import codecs
 from django.conf import settings
 from django.core.files.uploadhandler import StopFutureHandlers
 from django.http import QueryDict
+from django.http.multipartparser import ChunkIter
 from django.http.multipartparser import \
     MultiPartParser as DjangoMultiPartParser
-from django.http.multipartparser import (
-    ChunkIter, MultiPartParserError, parse_header
-)
+from django.http.multipartparser import MultiPartParserError, parse_header
 from django.utils import six
 from django.utils.encoding import force_text
 from django.utils.six.moves.urllib import parse as urlparse
