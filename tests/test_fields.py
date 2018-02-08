@@ -9,7 +9,7 @@ import pytest
 from django.http import QueryDict
 from django.test import TestCase, override_settings
 from django.utils import six
-from django.utils.timezone import activate, deactivate, utc
+from django.utils.timezone import activate, deactivate, override, utc
 
 import rest_framework
 from rest_framework import compat, serializers
@@ -1294,6 +1294,27 @@ class TestDefaultTZDateTimeField(TestCase):
         assert self.field.default_timezone() == self.kolkata
         deactivate()
         assert self.field.default_timezone() == utc
+
+
+@pytest.mark.skipif(pytz is None, reason='pytz not installed')
+@override_settings(TIME_ZONE='UTC', USE_TZ=True)
+class TestCustomTimezoneForDateTimeField(TestCase):
+
+    @classmethod
+    def setup_class(cls):
+        cls.kolkata = pytz.timezone('Asia/Kolkata')
+        cls.date_format = '%d/%m/%Y %H:%M'
+
+    def test_should_render_date_time_in_default_timezone(self):
+        field = serializers.DateTimeField(default_timezone=self.kolkata, format=self.date_format)
+        dt = datetime.datetime(2018, 2, 8, 14, 15, 16, tzinfo=pytz.utc)
+
+        with override(self.kolkata):
+            rendered_date = field.to_representation(dt)
+
+        rendered_date_in_timezone = dt.astimezone(self.kolkata).strftime(self.date_format)
+
+        assert rendered_date == rendered_date_in_timezone
 
 
 class TestNaiveDayLightSavingTimeTimeZoneDateTimeField(FieldValues):
