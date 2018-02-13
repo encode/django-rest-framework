@@ -472,6 +472,18 @@ class TestHTMLInput:
         assert serializer.is_valid()
         assert serializer.validated_data == {'a': 1, 'scores': [1, 3]}
 
+    def test_querydict_list_input_supports_indexed_keys(self):
+        """
+        When data is passed in the format `scores[0]=1&scores[1]=3`
+        The field should return the correct list, ignoring the default
+        """
+        class TestSerializer(serializers.Serializer):
+            scores = serializers.ListField(default=lambda: [1, 3])
+
+        serializer = TestSerializer(data=QueryDict("scores[0]=5&scores[1]=6"))
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'scores': ['5', '6']}
+
     def test_querydict_list_input_no_values_no_default_and_not_required(self):
         """
         When there are no keys passed, there is no default, and required=False
@@ -483,6 +495,19 @@ class TestHTMLInput:
         serializer = TestSerializer(data=QueryDict(''))
         assert serializer.is_valid()
         assert serializer.validated_data == {}
+
+    def test_querydict_list_input_posts_key_but_no_values(self):
+        """
+        When there are no keys passed, there is no default, and required=False
+        The field should return an array of 1 item, blank
+        * Not sure if this is desired behavior, but it is logical at least
+        """
+        class TestSerializer(serializers.Serializer):
+            scores = serializers.ListField(required=False)
+
+        serializer = TestSerializer(data=QueryDict('scores=&'))
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'scores': ['']}
 
 
 class TestCreateOnlyDefault:
