@@ -148,7 +148,7 @@ class SimpleRouter(BaseRouter):
     ]
 
     def __init__(self, trailing_slash=True):
-        self.trailing_slash = trailing_slash and '/' or ''
+        self.trailing_slash = '/' if trailing_slash else ''
         super(SimpleRouter, self).__init__()
 
     def get_default_base_name(self, viewset):
