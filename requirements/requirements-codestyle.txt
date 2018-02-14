@@ -4,4 +4,4 @@ flake8-tidy-imports==1.1.0
 pycodestyle==2.3.1
 
 # Sort and lint imports
-isort==4.2.15
+isort==4.3.3

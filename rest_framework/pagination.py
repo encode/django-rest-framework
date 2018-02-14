@@ -8,8 +8,8 @@ from __future__ import unicode_literals
 from base64 import b64decode, b64encode
 from collections import OrderedDict, namedtuple
 
-from django.core.paginator import Paginator as DjangoPaginator
 from django.core.paginator import InvalidPage
+from django.core.paginator import Paginator as DjangoPaginator
 from django.template import loader
 from django.utils import six
 from django.utils.encoding import force_text

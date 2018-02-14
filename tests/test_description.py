@@ -9,7 +9,6 @@ from rest_framework.compat import apply_markdown
 from rest_framework.utils.formatting import dedent
 from rest_framework.views import APIView
 
-
 # We check that docstrings get nicely un-indented.
 DESCRIPTION = """an example docstring
 ====================

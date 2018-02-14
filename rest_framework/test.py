@@ -12,8 +12,8 @@ from django.core.exceptions import ImproperlyConfigured
 from django.core.handlers.wsgi import WSGIHandler
 from django.test import override_settings, testcases
 from django.test.client import Client as DjangoClient
-from django.test.client import RequestFactory as DjangoRequestFactory
 from django.test.client import ClientHandler
+from django.test.client import RequestFactory as DjangoRequestFactory
 from django.utils import six
 from django.utils.encoding import force_bytes
 from django.utils.http import urlencode
