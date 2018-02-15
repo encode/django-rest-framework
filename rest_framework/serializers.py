@@ -885,14 +885,14 @@ class ModelSerializer(Serializer):
         descriptive messages when something goes wrong, but this method is
         essentially just:
 
-            return ExampleModel.objects.create(**validated_data)
+            return ExampleModel.objects.create(\*\*validated_data)
 
         If there are many to many fields present on the instance then they
         cannot be set until the model is instantiated, in which case the
         implementation is like so:
 
             example_relationship = validated_data.pop('example_relationship')
-            instance = ExampleModel.objects.create(**validated_data)
+            instance = ExampleModel.objects.create(\*\*validated_data)
             instance.example_relationship = example_relationship
             return instance
 
