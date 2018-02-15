@@ -1296,6 +1296,25 @@ class TestDefaultTZDateTimeField(TestCase):
         assert self.field.default_timezone() == utc
 
 
+@pytest.mark.skipif(pytz is None, reason='pytz not installed')
+@override_settings(TIME_ZONE='UTC', USE_TZ=True)
+class TestCustomTimezoneForDateTimeField(TestCase):
+
+    @classmethod
+    def setup_class(cls):
+        cls.kolkata = pytz.timezone('Asia/Kolkata')
+        cls.date_format = '%d/%m/%Y %H:%M'
+
+    def test_should_render_date_time_in_default_timezone(self):
+        field = serializers.DateTimeField(default_timezone=self.kolkata, format=self.date_format)
+        dt = datetime.datetime(2018, 2, 8, 14, 15, 16, tzinfo=pytz.utc)
+
+        rendered_date = field.to_representation(dt)
+        rendered_date_in_timezone = dt.astimezone(self.kolkata).strftime(self.date_format)
+
+        assert rendered_date == rendered_date_in_timezone
+
+
 class TestNaiveDayLightSavingTimeTimeZoneDateTimeField(FieldValues):
     """
     Invalid values for `DateTimeField` with datetime in DST shift (non-existing or ambiguous) and timezone with DST.
