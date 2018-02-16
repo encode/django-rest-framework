@@ -47,7 +47,7 @@ urlpatterns = [
 ]
 ```
 
-If you visit the API root endpoint in a browser you should now see `corejson`
+If you visit the `/schema/` endpoint in a browser you should now see `corejson`
 representation become available as an option.
 
 ![Schema format](../img/corejson-format.png)
