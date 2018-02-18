@@ -29,6 +29,8 @@ There are a wide range of resources available for learning and using Django REST
 * [Check Credentials Using Django REST Framework][check-credentials-using-django-rest-framework]
 * [Creating a Production Ready API with Python and Django REST Framework – Part 1][creating-a-production-ready-api-with-python-and-drf-part1]
 * [Creating a Production Ready API with Python and Django REST Framework – Part 2][creating-a-production-ready-api-with-python-and-drf-part2]
+* [Django REST Framework Tutorial - Build a Blog API][django-rest-framework-tutorial-build-a-blog]
+* [Django REST Framework & React Tutorial - Build a Todo List API][django-rest-framework-react-tutorial-build-a-todo-list]
 
 
 ## Videos
@@ -103,6 +105,8 @@ Want your Django REST Framework talk/tutorial/article to be added to our website
 [drf-schema]: https://drf-schema-adapter.readthedocs.io/en/latest/
 [creating-a-production-ready-api-with-python-and-drf-part1]: https://www.andreagrandi.it/2016/09/28/creating-production-ready-api-python-django-rest-framework-part-1/
 [creating-a-production-ready-api-with-python-and-drf-part2]: https://www.andreagrandi.it/2016/10/01/creating-a-production-ready-api-with-python-and-django-rest-framework-part-2/
+[django-rest-framework-tutorial-build-a-blog]: https://wsvincent.com/django-rest-framework-tutorial/
+[django-rest-framework-react-tutorial-build-a-todo-list]: https://wsvincent.com/django-rest-framework-react-tutorial/
 [django-rest-api-so-easy]: https://www.youtube.com/watch?v=cqP758k1BaQ
 [full-fledged-rest-api-with-django-oauth-tookit]: https://www.youtube.com/watch?v=M6Ud3qC2tTk
 [drf-in-your-pjs]: https://www.youtube.com/watch?v=xMtHsWa72Ww
