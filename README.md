@@ -4,6 +4,7 @@
 [![coverage-status-image]][codecov]
 [![pypi-version]][pypi]
 [![Gitter](https://badges.gitter.im/tomchristie/django-rest-framework.svg)](https://gitter.im/tomchristie/django-rest-framework?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+[![Open Source Helpers](https://www.codetriage.com/encode/django-rest-framework/badges/users.svg)](https://www.codetriage.com/encode/django-rest-framework)
 
 **Awesome web-browsable Web APIs.**
 
