@@ -72,14 +72,23 @@ Alternatively you can use Django's `include` function, like so…
         url(r'^', include(router.urls)),
     ]
 
-Router URL patterns can also be namespaces.
+Router URL patterns can also be included using _application_ and _instance_ namespaces.
+
+To use an _application namespace_ pass a 2-tuple containing the `router.urls` and the app name.
+To use an _instance namespace_ pass the optional `namespace` parameter.
+
+For example:
 
     urlpatterns = [
         url(r'^forgot-password/$', ForgotPasswordFormView.as_view()),
-        url(r'^api/', include(router.urls, namespace='api')),
+        url(r'^api/', include((router.urls, 'app_name'),  namespace='instance_name')),
     ]
 
-If using namespacing with hyperlinked serializers you'll also need to ensure that any `view_name` parameters on the serializers correctly reflect the namespace. In the example above you'd need to include a parameter such as `view_name='api:user-detail'` for serializer fields hyperlinked to the user detail view.
+If you pass the optional `namespace` parameter to create an _instance namespace_ then you **must** provide the _application namespace_ as well.
+See Django's [URL namespaces docs][url-namespace-docs] for more.
+
+If using namespacing with hyperlinked serializers you'll also need to ensure that any `view_name` parameters on the serializers correctly reflect the namespace.
+In the example above you'd need to include a parameter such as `view_name='app_name:user-detail'` for serializer fields hyperlinked to the user detail view.
 
 ### Routing for extra actions
 
@@ -315,3 +324,4 @@ The [`DRF-extensions` package][drf-extensions] provides [routers][drf-extensions
 [drf-extensions-nested-viewsets]: https://chibisov.github.io/drf-extensions/docs/#nested-routes
 [drf-extensions-collection-level-controllers]: https://chibisov.github.io/drf-extensions/docs/#collection-level-controllers
 [drf-extensions-customizable-endpoint-names]: https://chibisov.github.io/drf-extensions/docs/#controller-endpoint-name
+[url-namespace-docs]: https://docs.djangoproject.com/en/1.11/topics/http/urls/#url-namespaces
