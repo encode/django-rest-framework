@@ -1082,7 +1082,7 @@ class ModelSerializer(Serializer):
             # Ensure that all declared fields have also been included in the
             # `Meta.fields` option.
 
-            # Do not require any fields that are declared a parent class,
+            # Do not require any fields that are declared in a parent class,
             # in order to allow serializer subclasses to only include
             # a subset of fields.
             required_field_names = set(declared_fields)
