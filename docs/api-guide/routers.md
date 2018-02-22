@@ -79,7 +79,7 @@ For example:
 
     urlpatterns = [
         url(r'^forgot-password/$', ForgotPasswordFormView.as_view()),
-        url(r'^api/', include((router.urls, 'app_name')),
+        url(r'^api/', include((router.urls, 'app_name'))),
     ]
 
 (`include` also allows an optional `namespace` parameter to also create an _instance namespace_.
