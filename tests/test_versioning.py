@@ -143,15 +143,19 @@ class TestRequestVersion:
 
 
 class TestURLReversing(URLPatternsTestCase, APITestCase):
-    included = [
+    versioned = [
         url(r'^namespaced/$', dummy_view, name='another'),
         url(r'^example/(?P<pk>\d+)/$', dummy_pk_view, name='example-detail')
     ]
 
-    urlpatterns = [
-        url(r'^v1/', include((included, 'v1'), namespace='v1')),
+    included = [
         url(r'^another/$', dummy_view, name='another'),
         url(r'^(?P<version>[v1|v2]+)/another/$', dummy_view, name='another'),
+    ]
+
+    urlpatterns = [
+        url(r'^v1/', include((versioned, 'rest_framework'), namespace='v1')),
+        url(r'^', include((included, 'rest_framework'))),
     ]
 
     def test_reverse_unversioned(self):
@@ -314,8 +318,8 @@ class TestHyperlinkedRelatedField(URLPatternsTestCase, APITestCase):
     ]
 
     urlpatterns = [
-        url(r'^v1/', include((included, 'v1'), namespace='v1')),
-        url(r'^v2/', include((included, 'v2'), namespace='v2'))
+        url(r'^v1/', include((included, 'rest_framework'), namespace='v1')),
+        url(r'^v2/', include((included, 'rest_framework'), namespace='v2'))
     ]
 
     def setUp(self):
@@ -344,15 +348,19 @@ class TestNamespaceVersioningHyperlinkedRelatedFieldScheme(URLPatternsTestCase, 
     nested = [
         url(r'^namespaced/(?P<pk>\d+)/$', dummy_pk_view, name='nested'),
     ]
-    included = [
+    versioned = [
         url(r'^namespaced/(?P<pk>\d+)/$', dummy_pk_view, name='namespaced'),
         url(r'^nested/', include((nested, 'nested-namespace'), namespace='nested-namespace'))
     ]
 
-    urlpatterns = [
-        url(r'^v1/', include((included, 'restframeworkv1'), namespace='v1')),
-        url(r'^v2/', include((included, 'restframeworkv2'), namespace='v2')),
+    included = [
         url(r'^non-api/(?P<pk>\d+)/$', dummy_pk_view, name='non-api-view')
+    ]
+
+    urlpatterns = [
+        url(r'^v1/', include((versioned, 'rest_framework'), namespace='v1')),
+        url(r'^v2/', include((versioned, 'rest_framework'), namespace='v2')),
+        url(r'^', include((included, 'rest_framework'))),
     ]
 
     def _create_field(self, view_name, version):
@@ -381,6 +389,7 @@ class TestNamespaceVersioningHyperlinkedRelatedFieldScheme(URLPatternsTestCase, 
     def test_non_api_url_is_properly_reversed_regardless_of_the_version(self):
         """
         Regression test for #2711
+        Note: non-api-views still need to be included in the 'rest_framework' namespace
         """
         field = self._create_field('non-api-view', 'v1')
         assert field.to_representation(PKOnlyObject(10)) == 'http://testserver/non-api/10/'

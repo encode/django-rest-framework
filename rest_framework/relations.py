@@ -339,7 +339,8 @@ class HyperlinkedRelatedField(RelatedField):
                 self.view_name, request
             )
         except AttributeError:
-            expected_viewname = self.view_name
+            # by default, expect the 'rest_framework' namespace
+            expected_viewname = 'rest_framework:' + self.view_name
 
         if match.view_name != expected_viewname:
             self.fail('incorrect_match')

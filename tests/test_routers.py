@@ -145,13 +145,17 @@ class TestSimpleRouter(TestCase):
 
 class TestRootView(URLPatternsTestCase, TestCase):
     urlpatterns = [
-        url(r'^non-namespaced/', include(namespaced_router.urls)),
-        url(r'^namespaced/', include((namespaced_router.urls, 'namespaced'), namespace='namespaced')),
+        url(r'^non-namespaced/', include(namespaced_router.urlpatterns)),
+        url(r'^namespaced1/', include(namespaced_router.urlpatterns, namespace='namespaced1')),
+        url(r'^namespaced2/', include(namespaced_router.urlpatterns, namespace='namespaced2')),
     ]
 
     def test_retrieve_namespaced_root(self):
-        response = self.client.get('/namespaced/')
-        assert response.data == {"example": "http://testserver/namespaced/example/"}
+        response = self.client.get('/namespaced1/')
+        assert response.data == {"example": "http://testserver/namespaced1/example/"}
+
+        response = self.client.get('/namespaced2/')
+        assert response.data == {"example": "http://testserver/namespaced2/example/"}
 
     def test_retrieve_non_namespaced_root(self):
         response = self.client.get('/non-namespaced/')
@@ -163,8 +167,8 @@ class TestCustomLookupFields(URLPatternsTestCase, TestCase):
     Ensure that custom lookup fields are correctly routed.
     """
     urlpatterns = [
-        url(r'^example/', include(notes_router.urls)),
-        url(r'^example2/', include(kwarged_notes_router.urls)),
+        url(r'^example/', include(notes_router.urlpatterns)),
+        url(r'^example2/', include(kwarged_notes_router.urlpatterns)),
     ]
 
     def setUp(self):
@@ -221,8 +225,8 @@ class TestLookupUrlKwargs(URLPatternsTestCase, TestCase):
     Setup a deep lookup_field, but map it to a simple URL kwarg.
     """
     urlpatterns = [
-        url(r'^example/', include(notes_router.urls)),
-        url(r'^example2/', include(kwarged_notes_router.urls)),
+        url(r'^example/', include(notes_router.urlpatterns)),
+        url(r'^example2/', include(kwarged_notes_router.urlpatterns)),
     ]
 
     def setUp(self):
@@ -410,7 +414,7 @@ class TestDynamicListAndDetailRouter(TestCase):
 
 class TestEmptyPrefix(URLPatternsTestCase, TestCase):
     urlpatterns = [
-        url(r'^empty-prefix/', include(empty_prefix_router.urls)),
+        url(r'^empty-prefix/', include(empty_prefix_router.urlpatterns)),
     ]
 
     def test_empty_prefix_list(self):
@@ -427,7 +431,7 @@ class TestEmptyPrefix(URLPatternsTestCase, TestCase):
 
 class TestRegexUrlPath(URLPatternsTestCase, TestCase):
     urlpatterns = [
-        url(r'^regex/', include(regex_url_path_router.urls)),
+        url(r'^regex/', include(regex_url_path_router.urlpatterns)),
     ]
 
     def test_regex_url_path_list(self):

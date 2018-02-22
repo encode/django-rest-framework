@@ -62,7 +62,7 @@ router.register(r'actions-alt', ActionViewSet, base_name='actions-alt')
 
 
 urlpatterns = [
-    url(r'^api/', include(router.urls)),
+    url(r'^api/', include(router.urlpatterns)),
 ]
 
 

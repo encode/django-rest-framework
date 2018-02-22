@@ -135,6 +135,13 @@ class NamespaceVersioning(BaseVersioning):
         )
 
     def get_versioned_viewname(self, viewname, request):
+        """
+        The incoming `viewname` should be prefixed with the 'rest_framework'
+        application namespace. We want to replace this with the version
+        instance namespace.
+        """
+        if viewname.startswith('rest_framework:'):
+            viewname = viewname[len('rest_framework:'):]
         return request.version + ':' + viewname
 
 

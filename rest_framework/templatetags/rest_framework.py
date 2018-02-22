@@ -96,7 +96,7 @@ def optional_login(request):
     Include a login snippet if REST framework's login view is in the URLconf.
     """
     try:
-        login_url = reverse('rest_framework:login')
+        login_url = reverse('rest_framework_auth:login')
     except NoReverseMatch:
         return ''
 
@@ -112,7 +112,7 @@ def optional_docs_login(request):
     Include a login snippet if REST framework's login view is in the URLconf.
     """
     try:
-        login_url = reverse('rest_framework:login')
+        login_url = reverse('rest_framework_auth:login')
     except NoReverseMatch:
         return 'log in'
 
@@ -128,7 +128,7 @@ def optional_logout(request, user):
     Include a logout snippet if REST framework's logout view is in the URLconf.
     """
     try:
-        logout_url = reverse('rest_framework:logout')
+        logout_url = reverse('rest_framework_auth:logout')
     except NoReverseMatch:
         snippet = format_html('<li class="navbar-text">{user}</li>', user=escape(user))
         return mark_safe(snippet)
