@@ -73,7 +73,7 @@ Alternatively you can use Django's `include` function, like so…
     ]
 
 To include the router URL patterns with an application namespace pass a
-`(router.urls, app_name)` 2-tuple to `include`.
+`(router.urls, 'app_name')` 2-tuple to `include`.
 
 For example:
 
@@ -82,9 +82,8 @@ For example:
         url(r'^api/', include((router.urls, 'app_name'))),
     ]
 
-(`include` also allows an optional `namespace` parameter to also create an _instance namespace_.
-This defaults to `None` and will be set to `app_name` if not provided.
-See Django's [URL namespaces docs][url-namespace-docs] for more details.)
+(You may additionally pass an optional `namespace` parameter to `include` to also
+create an _instance namespace_. See Django's [URL namespaces docs][url-namespace-docs] for more details.)
 
 If using namespacing with hyperlinked serializers you'll also need to ensure that any `view_name` parameters on the serializers correctly reflect the namespace.
 In the example above you'd need to include a parameter such as `view_name='app_name:user-detail'` for serializer fields hyperlinked to the user detail view.
