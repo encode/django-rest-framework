@@ -174,7 +174,7 @@ class RelatedField(Field):
                 pass
 
         # Standard case, return the object instance.
-        return get_attribute(instance, self.source_attrs)
+        return super(RelatedField, self).get_attribute(instance)
 
     def get_choices(self, cutoff=None):
         queryset = self.get_queryset()
