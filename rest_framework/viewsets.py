@@ -63,6 +63,9 @@ class ViewSetMixin(object):
         # value is provided by the router through the initkwargs.
         cls.basename = None
 
+        # Setting a router allows optional resolution of the app_name
+        cls.router = None
+
         # actions must not be empty
         if not actions:
             raise TypeError("The `actions` argument must be provided when "
@@ -99,6 +102,9 @@ class ViewSetMixin(object):
             self.args = args
             self.kwargs = kwargs
 
+            if self.router is not None:
+                request.app_name = self.router.app_name
+
             # And continue as usual
             return self.dispatch(request, *args, **kwargs)
 
@@ -115,6 +121,7 @@ class ViewSetMixin(object):
         view.cls = cls
         view.initkwargs = initkwargs
         view.suffix = initkwargs.get('suffix', None)
+        view.router = initkwargs.get('router', None)
         view.actions = actions
         return csrf_exempt(view)
 
