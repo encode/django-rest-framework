@@ -309,6 +309,9 @@ class HyperlinkedRelatedField(RelatedField):
         if hasattr(obj, 'pk') and obj.pk in (None, ''):
             return None
 
+        if hasattr(request, 'app_name') and request.app_name is not None:
+            view_name = request.app_name + ':' + view_name
+
         lookup_value = getattr(obj, self.lookup_field)
         kwargs = {self.lookup_url_kwarg: lookup_value}
         return self.reverse(view_name, kwargs=kwargs, request=request, format=format)

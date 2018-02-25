@@ -385,8 +385,13 @@ class URLPatternsTestCase(testcases.SimpleTestCase):
 
         if hasattr(cls._module, 'urlpatterns'):
             cls._module_urlpatterns = cls._module.urlpatterns
+        if hasattr(cls._module, 'app_name'):
+            cls._module_app_name = cls._module.app_name
 
         cls._module.urlpatterns = cls.urlpatterns
+
+        if hasattr(cls, 'app_name'):
+            cls._module.app_name = cls.app_name
 
         cls._override.enable()
         super(URLPatternsTestCase, cls).setUpClass()
@@ -400,3 +405,9 @@ class URLPatternsTestCase(testcases.SimpleTestCase):
             cls._module.urlpatterns = cls._module_urlpatterns
         else:
             del cls._module.urlpatterns
+
+        if hasattr(cls, '_module_app_name'):
+            cls._module.app_name = cls._module_app_name
+        else:
+            if hasattr(cls._module, 'app_name'):
+                del cls._module.app_name

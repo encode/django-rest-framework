@@ -147,8 +147,9 @@ class SimpleRouter(BaseRouter):
         ),
     ]
 
-    def __init__(self, trailing_slash=True):
+    def __init__(self, trailing_slash=True, app_name=None):
         self.trailing_slash = '/' if trailing_slash else ''
+        self.app_name = app_name
         super(SimpleRouter, self).__init__()
 
     def get_default_base_name(self, viewset):
@@ -285,6 +286,7 @@ class SimpleRouter(BaseRouter):
                 initkwargs.update({
                     'basename': basename,
                     'detail': route.detail,
+                    'router': self,
                 })
 
                 view = viewset.as_view(mapping, **initkwargs)
