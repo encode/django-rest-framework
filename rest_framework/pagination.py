@@ -460,8 +460,8 @@ class LimitOffsetPagination(BasePagination):
 
     def get_count(self, queryset):
         """
-            Determine an object count, supporting either querysets or regular lists.
-            """
+        Determine an object count, supporting either querysets or regular lists.
+        """
         try:
             return queryset.count()
         except (AttributeError, TypeError):
