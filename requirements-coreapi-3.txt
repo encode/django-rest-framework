@@ -1,0 +1,17 @@
+attrs==17.4.0
+certifi==2018.1.18
+chardet==3.0.4
+-e git+https://github.com/core-api/python-client.git@b56b1d64fcebd765d458f546b3c38762fd65f042#egg=coreapi
+coverage==4.5.1
+Django==2.0.2
+idna==2.6
+pluggy==0.6.0
+py==1.5.2
+pytest==3.4.0
+pytest-cov==2.5.1
+pytest-django==3.1.2
+pytz==2018.3
+requests==2.18.4
+six==1.11.0
+uritemplate==3.0.0
+urllib3==1.22
