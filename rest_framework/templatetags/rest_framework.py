@@ -49,11 +49,16 @@ def with_location(fields, location):
     ]
 
 
+# TOOD: Where to pull these helpers?
+def render_to_form(schema):
+    assert False, "Can't rely on coreschema encodings here."
+
+
 @register.simple_tag
 def form_for_link(link):
-    import coreschema
+    from coreapi import typesys
     properties = OrderedDict([
-        (field.name, field.schema or coreschema.String())
+        (field.name, field.schema or typesys.String())
         for field in link.fields
     ])
     required = [
@@ -61,8 +66,8 @@ def form_for_link(link):
         for field in link.fields
         if field.required
     ]
-    schema = coreschema.Object(properties=properties, required=required)
-    return mark_safe(coreschema.render_to_form(schema))
+    schema = typesys.Object(properties=properties, required=required)
+    return mark_safe(render_to_form(schema))
 
 
 @register.simple_tag

@@ -16,7 +16,7 @@ from django.utils import six
 
 from rest_framework import exceptions
 from rest_framework.compat import (
-    URLPattern, URLResolver, coreapi, coreschema, get_original_route
+    URLPattern, URLResolver, coreapi, get_original_route
 )
 from rest_framework.request import clone_request
 from rest_framework.settings import api_settings
@@ -260,7 +260,6 @@ class SchemaGenerator(object):
 
     def __init__(self, title=None, url=None, description=None, patterns=None, urlconf=None):
         assert coreapi, '`coreapi` must be installed for schema support.'
-        assert coreschema, '`coreschema` must be installed for schema support.'
 
         if url and not url.endswith('/'):
             url += '/'

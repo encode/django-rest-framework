@@ -5,7 +5,7 @@ import unittest
 
 from django.test import TestCase
 
-from rest_framework.compat import coreapi, coreschema
+from rest_framework.compat import coreapi, typesys
 from rest_framework.relations import Hyperlink
 from rest_framework.templatetags import rest_framework
 from rest_framework.templatetags.rest_framework import (
@@ -361,14 +361,14 @@ class SchemaLinksTests(TestCase):
                         url='/users/{id}/',
                         action='get',
                         fields=[
-                            coreapi.Field('id', required=True, location='path', schema=coreschema.String())
+                            coreapi.Field('id', required=True, location='path', schema=typesys.String())
                         ]
                     ),
                     'update': coreapi.Link(
                         url='/users/{id}/',
                         action='patch',
                         fields=[
-                            coreapi.Field('id', required=True, location='path', schema=coreschema.String())
+                            coreapi.Field('id', required=True, location='path', schema=typesys.String())
                         ]
                     )
                 }
@@ -402,21 +402,21 @@ class SchemaLinksTests(TestCase):
                         url='/users/{id}/',
                         action='get',
                         fields=[
-                            coreapi.Field('id', required=True, location='path', schema=coreschema.String())
+                            coreapi.Field('id', required=True, location='path', schema=typesys.String())
                         ]
                     ),
                     'update': coreapi.Link(
                         url='/users/{id}/',
                         action='patch',
                         fields=[
-                            coreapi.Field('id', required=True, location='path', schema=coreschema.String())
+                            coreapi.Field('id', required=True, location='path', schema=typesys.String())
                         ]
                     ),
                     'friends': coreapi.Link(
                         url='/users/{id}/friends',
                         action='get',
                         fields=[
-                            coreapi.Field('id', required=True, location='path', schema=coreschema.String())
+                            coreapi.Field('id', required=True, location='path', schema=typesys.String())
                         ]
                     )
                 }
@@ -451,14 +451,14 @@ class SchemaLinksTests(TestCase):
                         url='/users/{id}/',
                         action='get',
                         fields=[
-                            coreapi.Field('id', required=True, location='path', schema=coreschema.String())
+                            coreapi.Field('id', required=True, location='path', schema=typesys.String())
                         ]
                     ),
                     'update': coreapi.Link(
                         url='/users/{id}/',
                         action='patch',
                         fields=[
-                            coreapi.Field('id', required=True, location='path', schema=coreschema.String())
+                            coreapi.Field('id', required=True, location='path', schema=typesys.String())
                         ]
                     ),
                     'friends': {
@@ -466,14 +466,14 @@ class SchemaLinksTests(TestCase):
                             url='/users/{id}/friends',
                             action='get',
                             fields=[
-                                coreapi.Field('id', required=True, location='path', schema=coreschema.String())
+                                coreapi.Field('id', required=True, location='path', schema=typesys.String())
                             ]
                         ),
                         'create': coreapi.Link(
                             url='/users/{id}/friends',
                             action='post',
                             fields=[
-                                coreapi.Field('id', required=True, location='path', schema=coreschema.String())
+                                coreapi.Field('id', required=True, location='path', schema=typesys.String())
                             ]
                         )
                     }
@@ -502,7 +502,7 @@ class SchemaLinksTests(TestCase):
                                 url='/animals/dog/{id}/vet',
                                 action='get',
                                 fields=[
-                                    coreapi.Field('id', required=True, location='path', schema=coreschema.String())
+                                    coreapi.Field('id', required=True, location='path', schema=typesys.String())
                                 ]
                             )
                         },
@@ -510,7 +510,7 @@ class SchemaLinksTests(TestCase):
                             url='/animals/dog/{id}',
                             action='get',
                             fields=[
-                                coreapi.Field('id', required=True, location='path', schema=coreschema.String())
+                                coreapi.Field('id', required=True, location='path', schema=typesys.String())
                             ]
                         )
                     },
@@ -519,7 +519,7 @@ class SchemaLinksTests(TestCase):
                             url='/animals/cat/',
                             action='get',
                             fields=[
-                                coreapi.Field('id', required=True, location='path', schema=coreschema.String())
+                                coreapi.Field('id', required=True, location='path', schema=typesys.String())
                             ]
                         ),
                         'create': coreapi.Link(
@@ -551,7 +551,7 @@ class SchemaLinksTests(TestCase):
                                 url='/animals/dog/{id}/vet',
                                 action='get',
                                 fields=[
-                                    coreapi.Field('id', required=True, location='path', schema=coreschema.String())
+                                    coreapi.Field('id', required=True, location='path', schema=typesys.String())
                                 ]
                             )
                         },
@@ -559,7 +559,7 @@ class SchemaLinksTests(TestCase):
                             url='/animals/dog/{id}',
                             action='get',
                             fields=[
-                                coreapi.Field('id', required=True, location='path', schema=coreschema.String())
+                                coreapi.Field('id', required=True, location='path', schema=typesys.String())
                             ]
                         )
                     },
@@ -568,7 +568,7 @@ class SchemaLinksTests(TestCase):
                             url='/animals/cat/',
                             action='get',
                             fields=[
-                                coreapi.Field('id', required=True, location='path', schema=coreschema.String())
+                                coreapi.Field('id', required=True, location='path', schema=typesys.String())
                             ]
                         ),
                         'create': coreapi.Link(
@@ -585,7 +585,7 @@ class SchemaLinksTests(TestCase):
                                 url='/farmers/silo/{id}/soy',
                                 action='get',
                                 fields=[
-                                    coreapi.Field('id', required=True, location='path', schema=coreschema.String())
+                                    coreapi.Field('id', required=True, location='path', schema=typesys.String())
                                 ]
                             )
                         },
@@ -593,7 +593,7 @@ class SchemaLinksTests(TestCase):
                             url='/farmers/silo',
                             action='get',
                             fields=[
-                                coreapi.Field('id', required=True, location='path', schema=coreschema.String())
+                                coreapi.Field('id', required=True, location='path', schema=typesys.String())
                             ]
                         )
                     }

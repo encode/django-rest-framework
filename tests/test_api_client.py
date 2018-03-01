@@ -8,7 +8,7 @@ from django.conf.urls import url
 from django.http import HttpResponse
 from django.test import override_settings
 
-from rest_framework.compat import coreapi, coreschema
+from rest_framework.compat import coreapi, typesys
 from rest_framework.parsers import FileUploadParser
 from rest_framework.renderers import CoreJSONRenderer
 from rest_framework.response import Response
@@ -25,7 +25,7 @@ def get_schema():
             'headers': coreapi.Link('/headers/'),
             'location': {
                 'query': coreapi.Link('/example/', fields=[
-                    coreapi.Field(name='example', schema=coreschema.String(description='example field'))
+                    coreapi.Field(name='example', schema=typesys.String(description='example field'))
                 ]),
                 'form': coreapi.Link('/example/', action='post', fields=[
                     coreapi.Field(name='example')

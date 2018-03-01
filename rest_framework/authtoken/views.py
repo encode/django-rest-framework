@@ -1,5 +1,5 @@
 import coreapi
-import coreschema
+from coreapi import typesys
 from rest_framework import parsers, renderers
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.serializers import AuthTokenSerializer
@@ -20,7 +20,7 @@ class ObtainAuthToken(APIView):
                 name="username",
                 required=True,
                 location='form',
-                schema=coreschema.String(
+                schema=typesys.String(
                     title="Username",
                     description="Valid username for authentication",
                 ),
@@ -29,7 +29,7 @@ class ObtainAuthToken(APIView):
                 name="password",
                 required=True,
                 location='form',
-                schema=coreschema.String(
+                schema=typesys.String(
                     title="Password",
                     description="Valid password for authentication",
                 ),
