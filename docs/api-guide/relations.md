@@ -290,6 +290,8 @@ Would serialize to a nested representation like this:
 
 By default nested serializers are read-only. If you want to support write-operations to a nested serializer field you'll need to create `create()` and/or `update()` methods in order to explicitly specify how the child relationships should be saved.
 
+Note that django-rest-framework's [MultiPartRenderer] doesn't handle writing nested data properly, so if you're going to be testing this functionality, you'll need to add `format='json'` to your test requests.
+
     class TrackSerializer(serializers.ModelSerializer):
         class Meta:
             model = Track
@@ -598,3 +600,4 @@ The [rest-framework-generic-relations][drf-nested-relations] library provides re
 [generic-relations]: https://docs.djangoproject.com/en/stable/ref/contrib/contenttypes/#id1
 [drf-nested-routers]: https://github.com/alanjds/drf-nested-routers
 [drf-nested-relations]: https://github.com/Ian-Foote/rest-framework-generic-relations
+[MultiPartRenderer]: http://www.django-rest-framework.org/api-guide/renderers/#multipartrenderer
