@@ -69,6 +69,7 @@ DEFAULTS = {
     'PAGE_SIZE': None,
 
     # Filtering
+    'DEFAULT_SEARCH_LOOKUP': 'icontains',
     'SEARCH_PARAM': 'search',
     'ORDERING_PARAM': 'ordering',
 

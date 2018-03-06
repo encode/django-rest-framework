@@ -134,6 +134,25 @@ class SearchFilterTests(TestCase):
             {'id': 2, 'title': 'zz', 'text': 'bcd'}
         ]
 
+    def test_search_with_nonstandard_search_lookup(self):
+        with override_settings(REST_FRAMEWORK={'DEFAULT_SEARCH_LOOKUP': 'iregex'}):
+            reload_module(filters)
+
+            class SearchListView(generics.ListAPIView):
+                queryset = SearchFilterModel.objects.all()
+                serializer_class = SearchFilterSerializer
+                filter_backends = (filters.SearchFilter,)
+                search_fields = ('title', '*text')
+
+            view = SearchListView.as_view()
+            request = factory.get('/', {'search': 'z{2} b'})
+            response = view(request)
+            assert response.data == [
+                {'id': 2, 'title': 'zz', 'text': 'bcd'}
+            ]
+
+        reload_module(filters)
+
     def test_search_with_nonstandard_search_param(self):
         with override_settings(REST_FRAMEWORK={'SEARCH_PARAM': 'query'}):
             reload_module(filters)

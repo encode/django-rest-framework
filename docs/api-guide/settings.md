@@ -159,6 +159,12 @@ See the pagination documentation for further guidance on [setting the pagination
 
 ---
 
+### DEFAULT_SEARCH_LOOKUP
+
+The type of lookup to use for searching if a lookup prefix is not specified.  May be any of the Django search lookups (e.g. `icontains`, `istartswith`, `iexact`, `search`, `iregex`).
+
+Default: `icontains`
+
 ### SEARCH_PARAM
 
 The name of a query parameter, which can be used to specify the search term used by `SearchFilter`.
