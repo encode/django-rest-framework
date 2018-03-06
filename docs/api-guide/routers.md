@@ -88,8 +88,16 @@ Or both an application and instance namespace:
 
 See Django's [URL namespaces docs][url-namespace-docs] and the [`include` API reference][include-api-reference] for more details.
 
-If using namespacing with hyperlinked serializers you'll also need to ensure that any `view_name` parameters on the serializers correctly reflect the namespace.
-In the example above you'd need to include a parameter such as `view_name='app_name:user-detail'` for serializer fields hyperlinked to the user detail view.
+---
+
+**Note**: If using namespacing with hyperlinked serializers you'll also need to ensure that any `view_name` parameters
+on the serializers correctly reflect the namespace. In the examples above you'd need to include a parameter such as
+`view_name='app_name:user-detail'` for serializer fields hyperlinked to the user detail view.
+
+The automatic `view_name` generation uses a pattern like `%(model_name)-detail`. Unless your models names actually clash
+you may be better off **not** namespacing your Django REST Framework views when using hyperlinked serializers.
+
+---
 
 ### Routing for extra actions
 
@@ -326,3 +334,4 @@ The [`DRF-extensions` package][drf-extensions] provides [routers][drf-extensions
 [drf-extensions-collection-level-controllers]: https://chibisov.github.io/drf-extensions/docs/#collection-level-controllers
 [drf-extensions-customizable-endpoint-names]: https://chibisov.github.io/drf-extensions/docs/#controller-endpoint-name
 [url-namespace-docs]: https://docs.djangoproject.com/en/1.11/topics/http/urls/#url-namespaces
+[include-api-reference]: https://docs.djangoproject.com/en/2.0/ref/urls/#include
