@@ -72,18 +72,21 @@ Alternatively you can use Django's `include` function, like so…
         url(r'^', include(router.urls)),
     ]
 
-To include the router URL patterns with an application namespace pass a
-`(router.urls, 'app_name')` 2-tuple to `include`.
-
-For example:
+You may use `include` with an application namespace:
 
     urlpatterns = [
         url(r'^forgot-password/$', ForgotPasswordFormView.as_view()),
         url(r'^api/', include((router.urls, 'app_name'))),
     ]
 
-(You may additionally pass an optional `namespace` parameter to `include` to also
-create an _instance namespace_. See Django's [URL namespaces docs][url-namespace-docs] for more details.)
+Or both an application and instance namespace:
+
+    urlpatterns = [
+        url(r'^forgot-password/$', ForgotPasswordFormView.as_view()),
+        url(r'^api/', include((router.urls, 'app_name'), namespace='instance_name')),
+    ]
+
+See Django's [URL namespaces docs][url-namespace-docs] and the [`include` API reference][include-api-reference] for more details.
 
 If using namespacing with hyperlinked serializers you'll also need to ensure that any `view_name` parameters on the serializers correctly reflect the namespace.
 In the example above you'd need to include a parameter such as `view_name='app_name:user-detail'` for serializer fields hyperlinked to the user detail view.
