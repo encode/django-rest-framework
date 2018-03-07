@@ -306,3 +306,61 @@ class DjangoObjectPermissionsFilter(BaseFilterBackend):
         else:
             extra = {}
         return get_objects_for_user(user, permission, queryset, **extra)
+    
+    class SearchFieldFilter(SearchFilter):
+    # The URL query parameter used for the search on specific field.
+    # Use this filter to let the client choose the specific search field
+    # Example: ?search__name=x&search__last_name=y
+    search_param = api_settings.SEARCH_PARAM + '__'
+    lookup_prefixes = {
+        '^': 'istartswith',
+        '=': 'iexact',
+        '@': 'search',
+        '$': 'iregex',
+    }
+
+    def get_search_terms(self, request):
+        """
+        Search terms are set by the user as a suffix after the ?search__FIELDNAME=... query parameter,
+        and may be comma and/or whitespace delimited.
+        """
+        params = [(key.replace(self.search_param, ''), request.query_params[key]) for
+                  key in request.query_params.keys()
+                  if key.startswith(self.search_param)]
+        
+        return params
+    
+    def filter_queryset(self, request, queryset, view):
+        
+        valid_fields = getattr(view, 'search_fields', [])
+        search_terms = self.get_search_terms(request)
+        
+        if not search_terms or not allowed_search_fields:
+            return queryset
+        
+        if valid_fields != '__all__':
+            search_terms = [search_term for search_term in search_terms if
+                            search_term[0] in valid_fields]     
+
+        orm_lookups = [
+            self.construct_search(six.text_type(search_term[0]))
+            for search_term in search_terms
+        ]
+
+        base = queryset
+        conditions = []
+        for search_term in search_terms:
+            queries = [
+                models.Q(**{orm_lookup: search_term[1]})
+                for orm_lookup in orm_lookups
+            ]
+            conditions.append(reduce(operator.or_, queries))
+        queryset = queryset.filter(reduce(operator.and_, conditions))
+
+        if self.must_call_distinct(queryset, [search_term[0] for search_term in search_terms]):
+            # Filtering against a many-to-many field requires us to
+            # call queryset.distinct() in order to avoid duplicate items
+            # in the resulting queryset.
+            # We try to avoid this if possible, for performance reasons.
+            queryset = distinct(queryset, base)
+        return queryset
