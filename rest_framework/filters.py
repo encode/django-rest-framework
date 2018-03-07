@@ -331,10 +331,16 @@ class DjangoObjectPermissionsFilter(BaseFilterBackend):
         return params
     
     def filter_queryset(self, request, queryset, view):
+        
+        valid_fields = getattr(view, 'search_fields', [])
         search_terms = self.get_search_terms(request)
-
-        if not search_terms:
+        
+        if not search_terms or not allowed_search_fields:
             return queryset
+        
+        if valid_fields != '__all__':
+            search_terms = [search_term for search_term in search_terms if
+                            search_term[0] in valid_fields]     
 
         orm_lookups = [
             self.construct_search(six.text_type(search_term[0]))
