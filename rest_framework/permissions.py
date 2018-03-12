@@ -103,6 +103,12 @@ class DjangoModelPermissions(BasePermission):
         Given a model and an HTTP method, return the list of permission
         codes that the user is required to have.
         """
+        while model_cls._meta.proxy:
+            if model_cls.__name__ == model_cls._meta.concrete_model.__name__:
+                model_cls = model_cls._meta.concrete_model
+            else:
+                break
+
         kwargs = {
             'app_label': model_cls._meta.app_label,
             'model_name': model_cls._meta.model_name
