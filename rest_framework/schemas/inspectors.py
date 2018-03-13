@@ -95,6 +95,8 @@ def field_to_schema(field):
             description=description,
             format='date-time'
         )
+    elif isinstance(field, serializers.JSONField):
+        return coreschema.Object(title=title, description=description)
 
     if field.style.get('base_template') == 'textarea.html':
         return coreschema.String(
@@ -102,6 +104,7 @@ def field_to_schema(field):
             description=description,
             format='textarea'
         )
+
     return coreschema.String(title=title, description=description)
 
 
