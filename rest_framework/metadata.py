@@ -40,6 +40,7 @@ class SimpleMetadata(BaseMetadata):
         serializers.BooleanField: 'boolean',
         serializers.NullBooleanField: 'boolean',
         serializers.CharField: 'string',
+        serializers.UUIDField: 'string',
         serializers.URLField: 'url',
         serializers.EmailField: 'email',
         serializers.RegexField: 'regex',

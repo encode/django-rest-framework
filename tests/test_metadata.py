@@ -84,6 +84,7 @@ class TestMetadata:
                 )
             )
             nested_field = NestedField()
+            uuid_field = serializers.UUIDField(label="UUID field")
 
         class ExampleView(views.APIView):
             """Example view."""
@@ -172,7 +173,13 @@ class TestMetadata:
                                 'label': 'B'
                             }
                         }
-                    }
+                    },
+                    'uuid_field': {
+                        "type": "string",
+                        "required": True,
+                        "read_only": False,
+                        "label": "UUID field",
+                    },
                 }
             }
         }
