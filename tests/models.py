@@ -69,6 +69,17 @@ class NullableUUIDForeignKeySource(RESTFrameworkModel):
                                on_delete=models.CASCADE)
 
 
+class NestedForeignKeySource(RESTFrameworkModel):
+    """
+    Used for testing FK chain. A -> B -> C.
+    """
+    name = models.CharField(max_length=100)
+    target = models.ForeignKey(NullableForeignKeySource, null=True, blank=True,
+                               related_name='nested_sources',
+                               verbose_name='Intermediate target object',
+                               on_delete=models.CASCADE)
+
+
 # OneToOne
 class OneToOneTarget(RESTFrameworkModel):
     name = models.CharField(max_length=100)

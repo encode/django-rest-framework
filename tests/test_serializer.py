@@ -14,6 +14,9 @@ from rest_framework import fields, relations, serializers
 from rest_framework.compat import unicode_repr
 from rest_framework.fields import Field
 
+from .models import (
+    ForeignKeyTarget, NestedForeignKeySource, NullableForeignKeySource
+)
 from .utils import MockObject
 
 try:
@@ -452,6 +455,22 @@ class TestDefaultOutput:
         assert Serializer({'a': {'b': None}}).data == {'c': 'x'}
 
         assert Serializer({'a': {'b': {'c': 'abc'}}}).data == {'c': 'abc'}
+
+        # Same test using model objects to exercise both paths in
+        # rest_framework.fields.get_attribute() (#5880)
+        class ModelSerializer(serializers.Serializer):
+            target = serializers.CharField(default='x', source='target.target.name')
+
+        a = NestedForeignKeySource(name="Root Object", target=None)
+        assert ModelSerializer(a).data == {'target': 'x'}
+
+        b = NullableForeignKeySource(name="Intermediary Object", target=None)
+        a.target = b
+        assert ModelSerializer(a).data == {'target': 'x'}
+
+        c = ForeignKeyTarget(name="Target Object")
+        b.target = c
+        assert ModelSerializer(a).data == {'target': 'Target Object'}
 
     def test_default_for_nested_serializer(self):
         class NestedSerializer(serializers.Serializer):
