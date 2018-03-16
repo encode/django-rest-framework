@@ -367,8 +367,7 @@ class Serializer(BaseSerializer):
     @cached_property
     def _writable_fields(self):
         return [
-            field for field in self.fields.values()
-            if (not field.read_only) or (field.default is not empty)
+            field for field in self.fields.values() if not field.read_only
         ]
 
     @cached_property
