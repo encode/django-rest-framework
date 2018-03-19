@@ -190,7 +190,7 @@ The following is an example of a rate throttle, that will randomly throttle 1 in
         def allow_request(self, request, view):
             return random.randint(1, 10) != 1
 
-[cite]: https://dev.twitter.com/docs/error-codes-responses
+[cite]: https://developer.twitter.com/en/docs/basics/rate-limiting
 [permissions]: permissions.md
 [identifing-clients]: http://oxpedia.org/wiki/index.php?title=AppSuite:Grizzly#Multiple_Proxies_in_front_of_the_cluster
 [cache-setting]: https://docs.djangoproject.com/en/stable/ref/settings/#caches
