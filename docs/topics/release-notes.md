@@ -56,6 +56,26 @@ You can determine your currently installed version using `pip show`:
             serializer.save(owner=self.request.user)
 
     Alternatively you may override `save()` or `create()` or `update()` on the serialiser as appropriate.
+* Correct allow_null behaviour when required=False [#5888][gh5888]
+
+    Without an explicit `default`, `allow_null` implies a default of `null` for outgoing serialisation. Previously such
+    fields were being skipped when read-only or otherwise not required.
+
+    **Possible backwards compatibility break** if you were relying on such fields being excluded from the outgoing
+    representation. In order to restore the old behaviour you can override `data` to exclude the field when `None`.
+
+    For example:
+
+        @property
+        def data(self):
+            """
+            Drop `maybe_none` field if None.
+            """
+            data = super().data()
+            if 'maybe_none' in data and data['maybe_none'] is None:
+                del data['maybe_none']
+            return data
+
 * Refactor dynamic route generation and improve viewset action introspectibility. [#5705][gh5705]
 
     `ViewSet`s have been provided with new attributes and methods that allow
@@ -1820,6 +1840,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 
 <!-- 3.8.0 -->
 [gh5886]: https://github.com/encode/django-rest-framework/issues/5886
+[gh5888]: https://github.com/encode/django-rest-framework/issues/5888
 [gh5705]: https://github.com/encode/django-rest-framework/issues/5705
 [gh5796]: https://github.com/encode/django-rest-framework/issues/5796
 [gh5763]: https://github.com/encode/django-rest-framework/issues/5763
