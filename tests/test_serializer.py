@@ -387,10 +387,16 @@ class TestNotRequiredOutput:
     def test_not_required_output_for_allow_null_field(self):
         class ExampleSerializer(serializers.Serializer):
             omitted = serializers.CharField(required=False, allow_null=True)
+            ommited_read_only = serializers.CharField(
+                required=False,
+                read_only=True,
+                allow_null=True
+            )
             included = serializers.CharField()
 
         serializer = ExampleSerializer({'included': 'abc'})
         assert 'omitted' not in serializer.data
+        assert serializer.data['ommited_read_only'] is None
 
 
 class TestDefaultOutput:
