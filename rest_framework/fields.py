@@ -442,10 +442,10 @@ class Field(object):
         except (KeyError, AttributeError) as exc:
             if self.default is not empty:
                 return self.get_default()
-            if not self.required:
-                raise SkipField()
             if self.allow_null:
                 return None
+            if not self.required:
+                raise SkipField()
             msg = (
                 'Got {exc_type} when attempting to get a value for field '
                 '`{field}` on serializer `{serializer}`.\nThe serializer '
