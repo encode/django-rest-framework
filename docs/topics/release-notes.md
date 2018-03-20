@@ -43,7 +43,19 @@ You can determine your currently installed version using `pip show`:
 ### 3.8.0
 
 **Date**: [unreleased][3.8.0-milestone]
+* **Breaking Change**: Alter `read_only` plus `default` behaviour. [#5886][gh5886]
 
+    `read_only` fields will now **always** be excluded from writable fields.
+
+    Previously `read_only` fields with a `default` value would use the `default` for create and update operations.
+
+    In order to maintain the old behaviour you may need to pass the value of `read_only` fields when calling `save()` in
+    the view:
+
+        def perform_create(self, serializer):
+            serializer.save(owner=self.request.user)
+
+    Alternatively you may override `save()` or `create()` or `update()` on the serialiser as appropriate.
 * Refactor dynamic route generation and improve viewset action introspectibility. [#5705][gh5705]
 
     `ViewSet`s have been provided with new attributes and methods that allow
@@ -1807,6 +1819,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh5697]: https://github.com/encode/django-rest-framework/issues/5697
 
 <!-- 3.8.0 -->
+[gh5886]: https://github.com/encode/django-rest-framework/issues/5886
 [gh5705]: https://github.com/encode/django-rest-framework/issues/5705
 [gh5796]: https://github.com/encode/django-rest-framework/issues/5796
 [gh5763]: https://github.com/encode/django-rest-framework/issues/5763
