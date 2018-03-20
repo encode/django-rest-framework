@@ -588,8 +588,8 @@ Let's look at an example of serializing a class that represents an RGB color val
         """
         Color objects are serialized into 'rgb(#, #, #)' notation.
         """
-        def to_representation(self, obj):
-            return "rgb(%d, %d, %d)" % (obj.red, obj.green, obj.blue)
+        def to_representation(self, value):
+            return "rgb(%d, %d, %d)" % (value.red, value.green, value.blue)
 
         def to_internal_value(self, data):
             data = data.strip('rgb(').rstrip(')')
@@ -601,16 +601,16 @@ By default field values are treated as mapping to an attribute on the object.  I
 As an example, let's create a field that can be used to represent the class name of the object being serialized:
 
     class ClassNameField(serializers.Field):
-        def get_attribute(self, obj):
+        def get_attribute(self, instance):
             # We pass the object instance onto `to_representation`,
             # not just the field attribute.
-            return obj
+            return instance
 
-        def to_representation(self, obj):
+        def to_representation(self, value):
             """
-            Serialize the object's class name.
+            Serialize the value's class name.
             """
-            return obj.__class__.__name__
+            return value.__class__.__name__
 
 ### Raising validation errors
 
@@ -672,10 +672,10 @@ the coordinate pair:
 
     class CoordinateField(serializers.Field):
 
-        def to_representation(self, obj):
+        def to_representation(self, value):
             ret = {
-                "x": obj.x_coordinate,
-                "y": obj.y_coordinate
+                "x": value.x_coordinate,
+                "y": value.y_coordinate
             }
             return ret
 
