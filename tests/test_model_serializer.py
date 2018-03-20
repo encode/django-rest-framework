@@ -23,6 +23,8 @@ from django.utils import six
 from rest_framework import serializers
 from rest_framework.compat import postgres_fields, unicode_repr
 
+from .models import NestedForeignKeySource
+
 
 def dedent(blocktext):
     return '\n'.join([line[12:] for line in blocktext.splitlines()[1:-1]])
@@ -1164,6 +1166,25 @@ class Test5004UniqueChoiceField(TestCase):
 
 
 class TestFieldSource(TestCase):
+    def test_traverse_nullable_fk(self):
+        """
+        A dotted source with nullable elements uses default when any item in the chain is None. #5849.
+
+        Similar to model example from test_serializer.py `test_default_for_multiple_dotted_source` method,
+        but using RelatedField, rather than CharField.
+        """
+        class TestSerializer(serializers.ModelSerializer):
+            target = serializers.PrimaryKeyRelatedField(
+                source='target.target', read_only=True, allow_null=True, default=None
+            )
+
+            class Meta:
+                model = NestedForeignKeySource
+                fields = ('target', )
+
+        model = NestedForeignKeySource.objects.create()
+        assert TestSerializer(model).data['target'] is None
+
     def test_named_field_source(self):
         class TestSerializer(serializers.ModelSerializer):
 
