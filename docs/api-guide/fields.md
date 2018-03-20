@@ -57,7 +57,7 @@ Note that setting a `default` value implies that the field is not required. Incl
 
 Normally an error will be raised if `None` is passed to a serializer field. Set this keyword argument to `True` if `None` should be considered a valid value.
 
-Note that setting this argument to `True` will imply a default value of `null` for serialization output, but does not imply a default for input deserialization.
+Note that, without an explicit `default`, setting this argument to `True` will imply a `default` value of `null` for serialization output, but does not imply a default for input deserialization.
 
 Defaults to `False`
 
