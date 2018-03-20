@@ -189,7 +189,6 @@ A default class that can be used to *only set a default argument during create o
 It takes a single argument, which is the default value or callable that should be used during create operations.
 
     created_at = serializers.DateTimeField(
-        read_only=True,
         default=serializers.CreateOnlyDefault(timezone.now)
     )
 
