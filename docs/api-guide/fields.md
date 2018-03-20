@@ -41,14 +41,6 @@ Setting this to `False` also allows the object attribute or dictionary key to be
 
 Defaults to `True`.
 
-### `allow_null`
-
-Normally an error will be raised if `None` is passed to a serializer field. Set this keyword argument to `True` if `None` should be considered a valid value.
-
-Note that setting this argument to `True` will imply a default value of `null` for serialization output, but does not imply a default for input deserialization.
-
-Defaults to `False`
-
 ### `default`
 
 If set, this gives the default value that will be used for the field if no input value is supplied. If not set the default behaviour is to not populate the attribute at all.
@@ -60,6 +52,14 @@ May be set to a function or other callable, in which case the value will be eval
 When serializing the instance, default will be used if the the object attribute or dictionary key is not present in the instance.
 
 Note that setting a `default` value implies that the field is not required. Including both the `default` and `required` keyword arguments is invalid and will raise an error.
+
+### `allow_null`
+
+Normally an error will be raised if `None` is passed to a serializer field. Set this keyword argument to `True` if `None` should be considered a valid value.
+
+Note that, without an explicit `default`, setting this argument to `True` will imply a `default` value of `null` for serialization output, but does not imply a default for input deserialization.
+
+Defaults to `False`
 
 ### `source`
 
