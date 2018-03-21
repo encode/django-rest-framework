@@ -18,7 +18,7 @@ from django.core.validators import (
 )
 from django.forms import FilePathField as DjangoFilePathField
 from django.forms import ImageField as DjangoImageField
-from django.utils import six, timezone
+from django.utils import datetime_safe, six, timezone
 from django.utils.dateparse import (
     parse_date, parse_datetime, parse_duration, parse_time
 )
@@ -1152,6 +1152,12 @@ class DateTimeField(Field):
             self.timezone = default_timezone
         super(DateTimeField, self).__init__(*args, **kwargs)
 
+    def ensure_pre_1900_safe(self, value):
+        if isinstance(value, datetime.date):
+            if six.PY2 and value.year < 1900:
+                value = datetime_safe.new_datetime(value)
+        return value
+
     def enforce_timezone(self, value):
         """
         When `self.default_timezone` is `None`, always return naive datetimes.
@@ -1162,16 +1168,18 @@ class DateTimeField(Field):
         if field_timezone is not None:
             if timezone.is_aware(value):
                 try:
-                    return value.astimezone(field_timezone)
+                    value = value.astimezone(field_timezone)
                 except OverflowError:
                     self.fail('overflow')
-            try:
-                return timezone.make_aware(value, field_timezone)
-            except InvalidTimeError:
-                self.fail('make_aware', timezone=field_timezone)
+            else:
+                try:
+                    value = timezone.make_aware(value, field_timezone)
+                except InvalidTimeError:
+                    self.fail('make_aware', timezone=field_timezone)
         elif (field_timezone is None) and timezone.is_aware(value):
-            return timezone.make_naive(value, utc)
-        return value
+            value = timezone.make_naive(value, utc)
+
+        return self.ensure_pre_1900_safe(value)
 
     def default_timezone(self):
         return timezone.get_current_timezone() if settings.USE_TZ else None
@@ -1236,6 +1244,12 @@ class DateField(Field):
             self.input_formats = input_formats
         super(DateField, self).__init__(*args, **kwargs)
 
+    def ensure_pre_1900_safe(self, value):
+        if isinstance(value, datetime.date):
+            if six.PY2 and value.year < 1900:
+                value = datetime_safe.new_date(value)
+        return value
+
     def to_internal_value(self, value):
         input_formats = getattr(self, 'input_formats', api_settings.DATE_INPUT_FORMATS)
 
@@ -1243,7 +1257,7 @@ class DateField(Field):
             self.fail('datetime')
 
         if isinstance(value, datetime.date):
-            return value
+            return self.ensure_pre_1900_safe(value)
 
         for input_format in input_formats:
             if input_format.lower() == ISO_8601:
@@ -1253,14 +1267,14 @@ class DateField(Field):
                     pass
                 else:
                     if parsed is not None:
-                        return parsed
+                        return self.ensure_pre_1900_safe(parsed)
             else:
                 try:
                     parsed = self.datetime_parser(value, input_format)
                 except (ValueError, TypeError):
                     pass
                 else:
-                    return parsed.date()
+                    return self.ensure_pre_1900_safe(parsed.date())
 
         humanized_format = humanize_datetime.date_formats(input_formats)
         self.fail('invalid', format=humanized_format)
@@ -1282,6 +1296,8 @@ class DateField(Field):
             'as this may mean losing timezone information. Use a custom '
             'read-only field and deal with timezone issues explicitly.'
         )
+
+        value = self.ensure_pre_1900_safe(value)
 
         if output_format.lower() == ISO_8601:
             return value.isoformat()

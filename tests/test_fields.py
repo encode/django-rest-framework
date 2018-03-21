@@ -1120,6 +1120,7 @@ class TestDateField(FieldValues):
     valid_inputs = {
         '2001-01-01': datetime.date(2001, 1, 1),
         datetime.date(2001, 1, 1): datetime.date(2001, 1, 1),
+        '1800-01-01': datetime.date(1800, 1, 1),
     }
     invalid_inputs = {
         'abc': ['Date has wrong format. Use one of these formats instead: YYYY[-MM[-DD]].'],
@@ -1129,6 +1130,8 @@ class TestDateField(FieldValues):
     outputs = {
         datetime.date(2001, 1, 1): '2001-01-01',
         '2001-01-01': '2001-01-01',
+        datetime.date(1800, 1, 1): '1800-01-01',
+        '1800-01-01': '1800-01-01',
         six.text_type('2016-01-10'): '2016-01-10',
         None: None,
         '': None,
@@ -1172,6 +1175,18 @@ class TestNoOutputFormatDateField(FieldValues):
         datetime.date(2001, 1, 1): datetime.date(2001, 1, 1)
     }
     field = serializers.DateField(format=None)
+
+
+class TestPre1900DateField(FieldValues):
+    """
+    Values for `DateField` prior to 1900
+    """
+    valid_inputs = {}
+    invalid_inputs = {}
+    outputs = {
+        datetime.date(1800, 1, 1): '01 Jan 1800',
+    }
+    field = serializers.DateField(format='%d %b %Y')
 
 
 class TestDateTimeField(FieldValues):
@@ -1346,6 +1361,18 @@ class TestNaiveDayLightSavingTimeTimeZoneDateTimeField(FieldValues):
             return 'America/New_York'
 
     field = serializers.DateTimeField(default_timezone=MockTimezone())
+
+
+class TestPre1900DateTimeField(FieldValues):
+    """
+    Values for `DateTimeField` prior to 1900.
+    """
+    valid_inputs = {}
+    invalid_inputs = {}
+    outputs = {
+        datetime.datetime(1800, 1, 1, 13, 00): '01:00PM, 01 Jan 1800',
+    }
+    field = serializers.DateTimeField(format='%I:%M%p, %d %b %Y')
 
 
 class TestTimeField(FieldValues):
