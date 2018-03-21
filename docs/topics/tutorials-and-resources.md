@@ -31,6 +31,7 @@ There are a wide range of resources available for learning and using Django REST
 * [Creating a Production Ready API with Python and Django REST Framework – Part 2][creating-a-production-ready-api-with-python-and-drf-part2]
 * [Django REST Framework Tutorial - Build a Blog API][django-rest-framework-tutorial-build-a-blog]
 * [Django REST Framework & React Tutorial - Build a Todo List API][django-rest-framework-react-tutorial-build-a-todo-list]
+* [Tutorial: Django REST with React (Django 2.0)][django-rest-react-valentinog]
 
 
 ## Videos
@@ -120,3 +121,4 @@ Want your Django REST Framework talk/tutorial/article to be added to our website
 [submit-pr]: https://github.com/encode/django-rest-framework
 [anna-email]: mailto:anna@django-rest-framework.org
 [pycon-us-2017]: https://www.youtube.com/watch?v=Rk6MHZdust4
+[django-rest-react-valentinog]: https://www.valentinog.com/blog/tutorial-api-django-rest-react/
