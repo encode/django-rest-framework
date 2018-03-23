@@ -45,16 +45,6 @@ def _divide_with_ceil(a, b):
     return a // b
 
 
-def _get_count(queryset):
-    """
-    Determine an object count, supporting either querysets or regular lists.
-    """
-    try:
-        return queryset.count()
-    except (AttributeError, TypeError):
-        return len(queryset)
-
-
 def _get_displayed_page_numbers(current, final):
     """
     This utility function determines a list of page numbers to display.
@@ -332,7 +322,7 @@ class LimitOffsetPagination(BasePagination):
     template = 'rest_framework/pagination/numbers.html'
 
     def paginate_queryset(self, queryset, request, view=None):
-        self.count = _get_count(queryset)
+        self.count = self.get_count(queryset)
         self.limit = self.get_limit(request)
         if self.limit is None:
             return None
@@ -467,6 +457,15 @@ class LimitOffsetPagination(BasePagination):
                 )
             )
         ]
+
+    def get_count(self, queryset):
+        """
+        Determine an object count, supporting either querysets or regular lists.
+        """
+        try:
+            return queryset.count()
+        except (AttributeError, TypeError):
+            return len(queryset)
 
 
 class CursorPagination(BasePagination):
