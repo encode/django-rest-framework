@@ -275,6 +275,27 @@ class TestMetadata:
         view = ExampleView.as_view(versioning_class=scheme)
         view(request=request)
 
+    def test_dont_show_hidden_fields(self):
+        """
+        HiddenField shouldn't show up in SimpleMetadata at all.
+        """
+        class ExampleSerializer(serializers.Serializer):
+            integer_field = serializers.IntegerField(max_value=10)
+            hidden_field = serializers.HiddenField(default=1)
+
+        class ExampleView(views.APIView):
+            """Example view."""
+            def post(self, request):
+                pass
+
+            def get_serializer(self):
+                return ExampleSerializer()
+
+        view = ExampleView.as_view()
+        response = view(request=request)
+        assert response.status_code == status.HTTP_200_OK
+        assert set(response.data['actions']['POST'].keys()) == {'integer_field'}
+
     def test_list_serializer_metadata_returns_info_about_fields_of_child_serializer(self):
         class ExampleSerializer(serializers.Serializer):
             integer_field = serializers.IntegerField(max_value=10)

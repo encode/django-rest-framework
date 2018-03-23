@@ -111,6 +111,7 @@ class SimpleMetadata(BaseMetadata):
         return OrderedDict([
             (field_name, self.get_field_info(field))
             for field_name, field in serializer.fields.items()
+            if not isinstance(field, serializers.HiddenField)
         ])
 
     def get_field_info(self, field):
