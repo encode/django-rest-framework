@@ -760,7 +760,7 @@ class TestUUIDField(FieldValues):
     }
     invalid_inputs = {
         '825d7aeb-05a9-45b5-a5b7': ['Is not a valid UUID.'],
-        (1, 2, 3): ['"(1, 2, 3)" is not a valid UUID.']
+        (1, 2, 3): ['Is not a valid UUID.']
     }
     outputs = {
         uuid.UUID('825d7aeb-05a9-45b5-a5b7-05df87923cda'): '825d7aeb-05a9-45b5-a5b7-05df87923cda'
