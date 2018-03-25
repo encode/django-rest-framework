@@ -242,7 +242,7 @@ class OrderingFilter(BaseFilterBackend):
 
     def get_template_context(self, request, queryset, view):
         current = self.get_ordering(request, queryset, view)
-        current = None if current is None else current[0]
+        current = None if not current else current[0]
         options = []
         context = {
             'request': request,
