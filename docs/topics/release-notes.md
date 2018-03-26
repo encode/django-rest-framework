@@ -123,6 +123,30 @@ You can determine your currently installed version using `pip show`:
 * Replace `background-attachment: fixed` in docs [#5777][gh5777]
 * Make 404 & 403 responses consistent with `exceptions.APIException` output [#5763][gh5763]
 * Small fix to API documentation: schemas [#5796][gh5796]
+* Fix schema generation for PrimaryKeyRelatedField [#5764][gh5764]
+* Represent serializer DictField as an Object in schema [#5765][gh5765]
+* Added docs example reimplementing ObtainAuthToken [#5802][gh5802]
+* Add schema to the ObtainAuthToken view [#5676][gh5676]
+* Fix request formdata handling [#5800][gh5800]
+* Fix authtoken views imports [#5818][gh5818]
+* Update pytest, isort [#5815][gh5815] [#5817][gh5817] [#5894][gh5894]
+* Fixed active timezone handling for non ISO8601 datetimes. [#5833][gh5833]
+* Made TemplateHTMLRenderer render IntegerField inputs when value is `0`. [#5834][gh5834]
+* Corrected endpoint in tutorial instructions [#5835][gh5835]
+* Add Django Rest Framework Role Filters to Third party packages [#5809][gh5809]
+* Use single copy of static assets. Update jQuery [#5823][gh5823]
+* Changes ternary conditionals to be PEP308 compliant [#5827][gh5827]
+* Added links to 'A Todo List API with React' and 'Blog API' tutorials [#5837][gh5837]
+* Fix comment typo in ModelSerializer [#5844][gh5844]
+* Add admin to installed apps to avoid test failures. [#5870][gh5870]
+* Fixed schema for UUIDField in SimpleMetadata. [#5872][gh5872]
+* Corrected docs on router include with namespaces. [#5843][gh5843]
+* Test using model objects for dotted source default [#5880][gh5880]
+* Allow traversing nullable related fields [#5849][gh5849]
+* Added: Tutorial: Django REST with React (Django 2.0) [#5891][gh5891]
+* Add `LimitOffsetPagination.get_count` to allow method override [#5846][gh5846]
+* Don't show hidden fields in metadata [#5854][gh5854]
+
 
 ## 3.7.x series
 
@@ -1871,3 +1895,28 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh5713]: https://github.com/encode/django-rest-framework/issues/5713
 [gh5711]: https://github.com/encode/django-rest-framework/issues/5711
 [gh5704]: https://github.com/encode/django-rest-framework/issues/5704
+[gh5854]: https://github.com/encode/django-rest-framework/issues/5854
+[gh5846]: https://github.com/encode/django-rest-framework/issues/5846
+[gh5891]: https://github.com/encode/django-rest-framework/issues/5891
+[gh5849]: https://github.com/encode/django-rest-framework/issues/5849
+[gh5880]: https://github.com/encode/django-rest-framework/issues/5880
+[gh5843]: https://github.com/encode/django-rest-framework/issues/5843
+[gh5872]: https://github.com/encode/django-rest-framework/issues/5872
+[gh5870]: https://github.com/encode/django-rest-framework/issues/5870
+[gh5844]: https://github.com/encode/django-rest-framework/issues/5844
+[gh5837]: https://github.com/encode/django-rest-framework/issues/5837
+[gh5827]: https://github.com/encode/django-rest-framework/issues/5827
+[gh5823]: https://github.com/encode/django-rest-framework/issues/5823
+[gh5809]: https://github.com/encode/django-rest-framework/issues/5809
+[gh5835]: https://github.com/encode/django-rest-framework/issues/5835
+[gh5834]: https://github.com/encode/django-rest-framework/issues/5834
+[gh5833]: https://github.com/encode/django-rest-framework/issues/5833
+[gh5894]: https://github.com/encode/django-rest-framework/issues/5894
+[gh5817]: https://github.com/encode/django-rest-framework/issues/5817
+[gh5815]: https://github.com/encode/django-rest-framework/issues/5815
+[gh5818]: https://github.com/encode/django-rest-framework/issues/5818
+[gh5800]: https://github.com/encode/django-rest-framework/issues/5800
+[gh5676]: https://github.com/encode/django-rest-framework/issues/5676
+[gh5802]: https://github.com/encode/django-rest-framework/issues/5802
+[gh5765]: https://github.com/encode/django-rest-framework/issues/5765
+[gh5764]: https://github.com/encode/django-rest-framework/issues/5764
