@@ -236,7 +236,8 @@ By default this exception results in a response with the HTTP status code "400 B
 # Generic Error Views
 
 Django REST Framework provides two error views suitable for providing generic JSON `500` Server Error and
-`400` Bad Request responses.
+`400` Bad Request responses. (Django's default error views provide HTML responses, which may not be appropriate for an
+API-only application.)
 
 Use these as per [Django's Customizing error views documentation][django-custom-error-views].
 
