@@ -222,7 +222,7 @@ For example:
 
         class Meta:
             fields = ('client', 'date', 'amount')
-            extra_kwargs = {'client': {'required': 'False'}}
+            extra_kwargs = {'client': {'required': False}}
             validators = []  # Remove a default "unique together" constraint.
 
 ## Updating nested serializers
