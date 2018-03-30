@@ -99,7 +99,7 @@ The way we deal with that is by overriding a `.perform_create()` method on our s
 On the `SnippetList` view class, add the following method:
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        return serializer.save(owner=self.request.user)
 
 The `create()` method of our serializer will now be passed an additional `'owner'` field, along with the validated data from the request.
 
