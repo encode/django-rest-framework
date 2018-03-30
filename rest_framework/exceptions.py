@@ -16,7 +16,7 @@ from django.utils.translation import ungettext
 from rest_framework import status
 from rest_framework.compat import unicode_to_repr
 from rest_framework.utils.serializer_helpers import ReturnDict, ReturnList
-
+from rest_framework.settings import api_settings
 
 def _get_error_details(data, default_code=None):
     """
@@ -149,7 +149,7 @@ class ValidationError(APIException):
         # For validation failures, we may collect many errors together,
         # so the details should always be coerced to a list if not already.
         if not isinstance(detail, dict) and not isinstance(detail, list):
-            detail = [detail]
+            detail = { api_settings.NON_FIELD_ERRORS_KEY: detail }
 
         self.detail = _get_error_details(detail, code)
 
