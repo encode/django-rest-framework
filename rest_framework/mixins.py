@@ -77,7 +77,7 @@ class UpdateModelMixin(object):
         return Response(serializer.data)
 
     def perform_update(self, serializer):
-        serializer.save()
+        return serializer.save()
 
     def partial_update(self, request, *args, **kwargs):
         kwargs['partial'] = True
