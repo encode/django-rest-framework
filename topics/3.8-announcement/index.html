@@ -4,11 +4,11 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta charset="utf-8">
-  <title>3.2 Announcement - Django REST framework</title>
+  <title>3.8 Announcement - Django REST framework</title>
   <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
-  <link rel="canonical" href="http://www.django-rest-framework.org/topics/3.2-announcement/" />
+  <link rel="canonical" href="http://www.django-rest-framework.org/topics/3.8-announcement/" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Django, API, REST, 3.2 Announcement">
+  <meta name="description" content="Django, API, REST, 3.8 Announcement">
   <meta name="author" content="Tom Christie">
 
   <!-- Le styles -->
@@ -58,10 +58,10 @@
       <div class="navbar-inner">
         <div class="container-fluid">
           <a class="repo-link btn btn-primary btn-small" href="https://github.com/encode/django-rest-framework/tree/master">GitHub</a>
-          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../3.3-announcement/">
+          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../kickstarter-announcement/">
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
-          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../3.1-announcement/">
+          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../3.7-announcement/">
             <i class="icon-arrow-left icon-white"></i> Previous
           </a>
           <a id="search_modal_show" class="repo-link btn btn-inverse btn-small" href="#mkdocs_search_modal" data-toggle="modal" data-target="#mkdocs_search_modal"><i class="icon-search icon-white"></i> Search</a>
@@ -298,8 +298,8 @@
                     <a href="../3.1-announcement/">3.1 Announcement</a>
                   </li>
                   
-                  <li class="active" >
-                    <a href="./">3.2 Announcement</a>
+                  <li >
+                    <a href="../3.2-announcement/">3.2 Announcement</a>
                   </li>
                   
                   <li >
@@ -322,8 +322,8 @@
                     <a href="../3.7-announcement/">3.7 Announcement</a>
                   </li>
                   
-                  <li >
-                    <a href="../3.8-announcement/">3.8 Announcement</a>
+                  <li class="active" >
+                    <a href="./">3.8 Announcement</a>
                   </li>
                   
                   <li >
@@ -386,16 +386,16 @@
 
                 
                   <li class="main">
-                    <a href="#django-rest-framework-32">Django REST framework 3.2</a>
+                    <a href="#django-rest-framework-38">Django REST framework 3.8</a>
                   </li>
 
                   
                     <li>
-                      <a href="#adminrenderer">AdminRenderer</a>
+                      <a href="#funding">Funding</a>
                     </li>
                   
                     <li>
-                      <a href="#supported-versions">Supported versions</a>
+                      <a href="#breaking-changes">Breaking Changes</a>
                     </li>
                   
                     <li>
@@ -403,11 +403,11 @@
                     </li>
                   
                     <li>
-                      <a href="#modifications-to-list-behaviors">Modifications to list behaviors</a>
+                      <a href="#minor-fixes-and-improvements">Minor fixes and improvements</a>
                     </li>
                   
                     <li>
-                      <a href="#whats-next">What's next?</a>
+                      <a href="#whats-next">What's next</a>
                     </li>
                   
                 
@@ -425,89 +425,68 @@
             
               
 
-              <h1 id="django-rest-framework-32"><a class="toclink" href="#django-rest-framework-32">Django REST framework 3.2</a></h1>
-<p>The 3.2 release is the first version to include an admin interface for the browsable API.</p>
-<p><img alt="The AdminRenderer" src="../../img/admin.png" /></p>
-<p>This interface is intended to act as a more user-friendly interface to the API. It can be used either as a replacement to the existing <code>BrowsableAPIRenderer</code>, or used together with it, allowing you to switch between the two styles as required.</p>
-<p>We've also fixed a huge number of issues, and made numerous cleanups and improvements.</p>
-<p>Over the course of the 3.1.x series we've <a href="https://github.com/encode/django-rest-framework/issues?utf8=%E2%9C%93&amp;q=closed%3A%3E2015-03-05">resolved nearly 600 tickets</a> on our GitHub issue tracker. This means we're currently running at a rate of <strong>closing around 100 issues or pull requests per month</strong>.</p>
-<p>None of this would have been possible without the support of our wonderful Kickstarter backers. If you're looking for a job in Django development we'd strongly recommend taking <a href="http://www.django-rest-framework.org/topics/kickstarter-announcement/#sponsors">a look through our sponsors</a> and finding out who's hiring.</p>
-<h2 id="adminrenderer"><a class="toclink" href="#adminrenderer">AdminRenderer</a></h2>
-<p>To include <code>AdminRenderer</code> simply add it to your settings:</p>
-<pre><code>REST_FRAMEWORK = {
-    'DEFAULT_RENDERER_CLASSES': [
-        'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.AdminRenderer',
-        'rest_framework.renderers.BrowsableAPIRenderer'
-    ],
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 100
+              <style>
+.promo li a {
+    float: left;
+    width: 130px;
+    height: 20px;
+    text-align: center;
+    margin: 10px 30px;
+    padding: 150px 0 0 0;
+    background-position: 0 50%;
+    background-size: 130px auto;
+    background-repeat: no-repeat;
+    font-size: 120%;
+    color: black;
 }
+.promo li {
+    list-style: none;
+}
+</style>
+
+<h1 id="django-rest-framework-38"><a class="toclink" href="#django-rest-framework-38">Django REST framework 3.8</a></h1>
+<p>The 3.8 release is a maintenance focused release resolving a large number of previously outstanding issues and laying
+the foundations for future changes.</p>
+<hr />
+<h2 id="funding"><a class="toclink" href="#funding">Funding</a></h2>
+<p>If you use REST framework commercially and would like to see this work continue, we strongly encourage you to invest in its continued development by
+<strong><a href="../funding/">signing up for a paid&nbsp;plan</a></strong>.</p>
+<p><em>We'd like to say thanks in particular our premium backers, <a href="http://jobs.rover.com/">Rover</a>, <a href="https://getsentry.com/welcome/">Sentry</a>, <a href="https://getstream.io/?utm_source=drf&amp;utm_medium=banner&amp;utm_campaign=drf">Stream</a>, <a href="https://hello.machinalis.co.uk/">Machinalis</a>, and <a href="https://rollbar.com">Rollbar</a>.</em></p>
+<hr />
+<h2 id="breaking-changes"><a class="toclink" href="#breaking-changes">Breaking Changes</a></h2>
+<h3 id="altered-the-behaviour-of-read_only-plus-default-on-field"><code>default</code> on Field.<a class="toclink" href="#altered-the-behaviour-of-read_only-plus-default-on-field">Altered the behaviour of <code>read_only</code> plus </a></h3>
+<p><a href="https://github.com/encode/django-rest-framework/issues/5886">#5886</a> <code>read_only</code> fields will now <strong>always</strong> be excluded from writable fields.</p>
+<p>Previously <code>read_only</code> fields when combined with a <code>default</code> value would use the <code>default</code> for create and update
+operations. This was counter-intuitive in some circumstances and led to difficulties supporting dotted <code>source</code>
+attributes on nullable relations.</p>
+<p>In order to maintain the old behaviour you may need to pass the value of <code>read_only</code> fields when calling <code>save()</code> in
+the view:</p>
+<pre><code>def perform_create(self, serializer):
+    serializer.save(owner=self.request.user)
 </code></pre>
-<p>There are some limitations to the <code>AdminRenderer</code>, in particular it is not yet able to handle list or dictionary inputs, as we do not have any HTML form fields that support those.</p>
-<p>Also note that this is an initial release and we do not yet have a public API for modifying the behavior or documentation on overriding the templates.</p>
-<p>The idea is to get this released to users early, so we can start getting feedback and release a more fully featured version in 3.3.</p>
-<h2 id="supported-versions"><a class="toclink" href="#supported-versions">Supported versions</a></h2>
-<p>This release drops support for Django 1.4.</p>
-<p>Our supported Django versions are now 1.5.6+, 1.6.3+, 1.7 and 1.8.</p>
+<p>Alternatively you may override <code>save()</code> or <code>create()</code> or <code>update()</code> on the serialiser as appropriate.</p>
+<hr />
 <h2 id="deprecations"><a class="toclink" href="#deprecations">Deprecations</a></h2>
-<p>There are no new deprecations in 3.2, although a number of existing deprecations have now escalated in line with our deprecation policy.</p>
+<h3 id="action-decorator-replaces-list_route-and-detail_route"><code>list_route</code> and <a class="toclink" href="#action-decorator-replaces-list_route-and-detail_route"><code>action</code> decorator replaces <code>detail_route</code></a></h3>
+<p><a href="https://github.com/encode/django-rest-framework/issues/5705">#5705</a> <code>list_route</code> and <code>detail_route</code> have been merge into a single <code>action</code> decorator. This improves viewset action introspection, and will allow extra actions to be displayed in the Browsable API in future versions.</p>
+<p>Both <code>list_route</code> and <code>detail_route</code> are now pending deprecation. They will be deprecated in 3.9 and removed entirely
+in 3.10.</p>
+<p>The new <code>action</code> decorator takes a boolean <code>detail</code> argument.</p>
 <ul>
-<li><code>request.DATA</code> was put on the deprecation path in 3.0. It has now been removed and its usage will result in an error. Use the more pythonic style of <code>request.data</code> instead.</li>
-<li><code>request.QUERY_PARAMS</code> was put on the deprecation path in 3.0. It has now been removed and its usage will result in an error. Use the more pythonic style of <code>request.query_params</code> instead.</li>
-<li>The following <code>ModelSerializer.Meta</code> options have now been removed: <code>write_only_fields</code>, <code>view_name</code>, <code>lookup_field</code>. Use the more general <code>extra_kwargs</code> option instead.</li>
+<li>Replace <code>detail_route</code> uses with <code>@action(detail=True)</code>.</li>
+<li>Replace <code>list_route</code> uses with <code>@action(detail=False)</code>.</li>
 </ul>
-<p>The following pagination view attributes and settings have been moved into attributes on the pagination class since 3.1. Their usage was formerly in 'pending deprecation', and has now escalated to 'deprecated'. They will continue to function but will raise errors.</p>
-<ul>
-<li><code>view.paginate_by</code> - Use <code>paginator.page_size</code> instead.</li>
-<li><code>view.page_query_param</code> - Use <code>paginator.page_query_param</code> instead.</li>
-<li><code>view.paginate_by_param</code> - Use <code>paginator.page_size_query_param</code> instead.</li>
-<li><code>view.max_paginate_by</code> - Use <code>paginator.max_page_size</code> instead.</li>
-<li><code>settings.PAGINATE_BY</code> - Use <code>paginator.page_size</code> instead.</li>
-<li><code>settings.PAGINATE_BY_PARAM</code> - Use <code>paginator.page_size_query_param</code> instead.</li>
-<li><code>settings.MAX_PAGINATE_BY</code> - Use <code>paginator.max_page_size</code> instead.</li>
-</ul>
-<h2 id="modifications-to-list-behaviors"><a class="toclink" href="#modifications-to-list-behaviors">Modifications to list behaviors</a></h2>
-<p>There are a couple of bug fixes that are worth calling out as they introduce differing behavior.</p>
-<p>These are a little subtle and probably won't affect most users, but are worth understanding before upgrading your project.</p>
-<h3 id="manytomany-fields-and-blanktrue"><a class="toclink" href="#manytomany-fields-and-blanktrue">ManyToMany fields and blank=True</a></h3>
-<p>We've now added an <code>allow_empty</code> argument, which can be used with <code>ListSerializer</code>, or with  <code>many=True</code> relationships. This is <code>True</code> by default, but can be set to <code>False</code> if you want to disallow empty lists as valid input.</p>
-<p>As a follow-up to this we are now able to properly mirror the behavior of Django's <code>ModelForm</code> with respect to how many-to-many fields are validated.</p>
-<p>Previously a many-to-many field on a model would map to a serializer field that would allow either empty or non-empty list inputs. Now, a many-to-many field will map to a serializer field that requires at least one input, unless the model field has <code>blank=True</code> set.</p>
-<p>Here's what the mapping looks like in practice:</p>
-<ul>
-<li><code>models.ManyToManyField()</code> → <code>serializers.PrimaryKeyRelatedField(many=True, allow_empty=False)</code></li>
-<li><code>models.ManyToManyField(blank=True)</code> → <code>serializers.PrimaryKeyRelatedField(many=True)</code></li>
-</ul>
-<p>The upshot is this: If you have many to many fields in your models, then make sure you've included the argument <code>blank=True</code> if you want to allow empty inputs in the equivalent <code>ModelSerializer</code> fields.</p>
-<h3 id="list-fields-and-allow_null"><a class="toclink" href="#list-fields-and-allow_null">List fields and allow_null</a></h3>
-<p>When using <code>allow_null</code> with <code>ListField</code> or a nested <code>many=True</code> serializer the previous behavior was to allow <code>null</code> values as items in the list. The behavior is now to allow <code>null</code> values instead of the list.</p>
-<p>For example, take the following field:</p>
-<pre><code>NestedSerializer(many=True, allow_null=True)
-</code></pre>
-<p>Previously the validation behavior would be:</p>
-<ul>
-<li><code>[{…}, null, {…}]</code> is <strong>valid</strong>.</li>
-<li><code>null</code> is <strong>invalid</strong>.</li>
-</ul>
-<p>Our validation behavior as of 3.2.0 is now:</p>
-<ul>
-<li><code>[{…}, null, {…}]</code> is <strong>invalid</strong>.</li>
-<li><code>null</code> is <strong>valid</strong>.</li>
-</ul>
-<p>If you want to allow <code>null</code> child items, you'll need to instead specify <code>allow_null</code> on the child class, using an explicit <code>ListField</code> instead of <code>many=True</code>. For example:</p>
-<pre><code>ListField(child=NestedSerializer(allow_null=True))
-</code></pre>
-<h2 id="whats-next"><a class="toclink" href="#whats-next">What's next?</a></h2>
-<p>The 3.3 release is currently planned for the start of October, and will be the last Kickstarter-funded release.</p>
-<p>This release is planned to include:</p>
-<ul>
-<li>Search and filtering controls in the browsable API and admin interface.</li>
-<li>Improvements and public API for the admin interface.</li>
-<li>Improvements and public API for our templated HTML forms and fields.</li>
-<li>Nested object and list support in HTML forms.</li>
-</ul>
-<p>Thanks once again to all our sponsors and supporters.</p>
+<h3 id="exclude_from_schema"><a class="toclink" href="#exclude_from_schema"><code>exclude_from_schema</code></a></h3>
+<p>Both <code>APIView.exclude_from_schema</code> and the <code>exclude_from_schema</code> argument to the <code>@api_view</code> decorator are now deprecated. They will be removed entirely in 3.9.</p>
+<p>For <code>APIView</code> you should instead set a <code>schema = None</code> attribute on the view class.</p>
+<p>For function based views the <code>@schema</code> decorator can be used to exclude the view from the schema, by using <code>@schema(None)</code>.</p>
+<hr />
+<h2 id="minor-fixes-and-improvements"><a class="toclink" href="#minor-fixes-and-improvements">Minor fixes and improvements</a></h2>
+<p>There are a large number of minor fixes and improvements in this release. See the <a href="../release-notes/">release notes</a> page
+for a complete listing.</p>
+<h2 id="whats-next"><a class="toclink" href="#whats-next">What's next</a></h2>
+<p>We're currently working towards moving to using <a href="https://www.openapis.org/">OpenAPI</a> as our default schema output. We'll also be revisiting our API documentation generation and client libraries.</p>
+<p>We're doing some consolidation in order to make this happen. It's planned that 3.9 will drop the <code>coreapi</code> and <code>coreschema</code> libraries, and instead use <code>apistar</code> for  the API documentation generation, schema generation, and API client libraries.</p>
             
 
           </div> <!--/span-->

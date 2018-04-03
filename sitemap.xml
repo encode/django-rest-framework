@@ -356,6 +356,12 @@
     </url>
         
     <url>
+     <loc>http://www.django-rest-framework.org//topics/3.8-announcement/</loc>
+     <lastmod>2018-04-03</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
      <loc>http://www.django-rest-framework.org//topics/kickstarter-announcement/</loc>
      <lastmod>2018-04-03</lastmod>
      <changefreq>daily</changefreq>
