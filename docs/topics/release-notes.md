@@ -58,6 +58,7 @@ You can determine your currently installed version using `pip show`:
             serializer.save(owner=self.request.user)
 
     Alternatively you may override `save()` or `create()` or `update()` on the serialiser as appropriate.
+
 * Correct allow_null behaviour when required=False [#5888][gh5888]
 
     Without an explicit `default`, `allow_null` implies a default of `null` for outgoing serialisation. Previously such
@@ -96,6 +97,7 @@ You can determine your currently installed version using `pip show`:
     * Deprecated `list_route` & `detail_route` in favor of `action` decorator with `detail` boolean.
     * Deprecated dynamic list/detail route variants in favor of `DynamicRoute` with `detail` boolean.
     * Refactored the router's dynamic route generation.
+
 * Fix formatting of the 3.7.4 release note [#5704][gh5704]
 * Docs: Update DRF Writable Nested Serializers references [#5711][gh5711]
 * Docs: Fixed typo in auth URLs example. [#5713][gh5713]
