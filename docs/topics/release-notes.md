@@ -146,6 +146,8 @@ You can determine your currently installed version using `pip show`:
 * Added: Tutorial: Django REST with React (Django 2.0) [#5891][gh5891]
 * Add `LimitOffsetPagination.get_count` to allow method override [#5846][gh5846]
 * Don't show hidden fields in metadata [#5854][gh5854]
+* Enable OrderingFilter to handle an empty tuple (or list) for the 'ordering' field. [#5899][gh5899]
+* Added generic 500 and 400 JSON error handlers. [#5904][gh5904]
 
 
 ## 3.7.x series
@@ -1920,3 +1922,5 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh5802]: https://github.com/encode/django-rest-framework/issues/5802
 [gh5765]: https://github.com/encode/django-rest-framework/issues/5765
 [gh5764]: https://github.com/encode/django-rest-framework/issues/5764
+[gh5904]: https://github.com/encode/django-rest-framework/issues/5904
+[gh5899]: https://github.com/encode/django-rest-framework/issues/5899
