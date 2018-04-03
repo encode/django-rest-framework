@@ -42,7 +42,9 @@ You can determine your currently installed version using `pip show`:
 
 ### 3.8.0
 
-**Date**: [unreleased][3.8.0-milestone]
+**Date**: [3rd April 2018][3.8.0-milestone]
+
+
 * **Breaking Change**: Alter `read_only` plus `default` behaviour. [#5886][gh5886]
 
     `read_only` fields will now **always** be excluded from writable fields.
