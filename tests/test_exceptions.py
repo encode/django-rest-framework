@@ -1,11 +1,13 @@
+# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.test import TestCase
+from django.test import RequestFactory, TestCase
 from django.utils import six, translation
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework.exceptions import (
-    APIException, ErrorDetail, Throttled, _get_error_details
+    APIException, ErrorDetail, Throttled, _get_error_details, bad_request,
+    server_error
 )
 
 
@@ -87,3 +89,18 @@ class TranslationTests(TestCase):
         # this test largely acts as a sanity test to ensure the translation files are present.
         self.assertEqual(_('A server error occurred.'), 'Une erreur du serveur est survenue.')
         self.assertEqual(six.text_type(APIException()), 'Une erreur du serveur est survenue.')
+
+
+def test_server_error():
+    request = RequestFactory().get('/')
+    response = server_error(request)
+    assert response.status_code == 500
+    assert response["content-type"] == 'application/json'
+
+
+def test_bad_request():
+    request = RequestFactory().get('/')
+    exception = Exception('Something went wrong — Not used')
+    response = bad_request(request, exception)
+    assert response.status_code == 400
+    assert response["content-type"] == 'application/json'

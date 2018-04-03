@@ -230,5 +230,33 @@ The generic views use the `raise_exception=True` flag, which means that you can 
 
 By default this exception results in a response with the HTTP status code "400 Bad Request".
 
+
+---
+
+# Generic Error Views
+
+Django REST Framework provides two error views suitable for providing generic JSON `500` Server Error and
+`400` Bad Request responses. (Django's default error views provide HTML responses, which may not be appropriate for an
+API-only application.)
+
+Use these as per [Django's Customizing error views documentation][django-custom-error-views].
+
+## `rest_framework.exceptions.server_error`
+
+Returns a response with status code `500` and `application/json` content type.
+
+Set as `handler500`:
+
+    handler500 = 'rest_framework.exceptions.server_error'
+
+## `rest_framework.exceptions.server_error`
+
+Returns a response with status code `400` and `application/json` content type.
+
+Set as `handler400`:
+
+    handler400 = 'rest_framework.exceptions.bad_request'
+
 [cite]: https://doughellmann.com/blog/2009/06/19/python-exception-handling-techniques/
 [authentication]: authentication.md
+[django-custom-error-views]: https://docs.djangoproject.com/en/dev/topics/http/views/#customizing-error-views
