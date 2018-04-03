@@ -395,6 +395,10 @@
                     </li>
                   
                     <li>
+                      <a href="#introspecting-viewset-actions">Introspecting ViewSet actions</a>
+                    </li>
+                  
+                    <li>
                       <a href="#marking-extra-actions-for-routing">Marking extra actions for routing</a>
                     </li>
                   
@@ -542,9 +546,15 @@ urlpatterns = router.urls
     def destroy(self, request, pk=None):
         pass
 </code></pre>
-<p>During dispatch the name of the current action is available via the <code>.action</code> attribute.
-You may inspect <code>.action</code> to adjust behaviour based on the current action.</p>
-<p>For example, you could restrict permissions to everything except the <code>list</code> action similar to this:</p>
+<h2 id="introspecting-viewset-actions"><a class="toclink" href="#introspecting-viewset-actions">Introspecting ViewSet actions</a></h2>
+<p>During dispatch, the following attributes are available on the <code>ViewSet</code>.</p>
+<ul>
+<li><code>basename</code> - the base to use for the URL names that are created.</li>
+<li><code>action</code> - the name of the current action (e.g., <code>list</code>, <code>create</code>).</li>
+<li><code>detail</code> - boolean indicating if the current action is configured for a list or detail view.</li>
+<li><code>suffix</code> - the display suffix for the viewset type - mirrors the <code>detail</code> attribute.</li>
+</ul>
+<p>You may inspect these attributes to adjust behaviour based on the current action. For example, you could restrict permissions to everything except the <code>list</code> action similar to this:</p>
 <pre><code>def get_permissions(self):
     """
     Instantiates and returns the list of permissions that this view requires.
@@ -556,13 +566,11 @@ You may inspect <code>.action</code> to adjust behaviour based on the current ac
     return [permission() for permission in permission_classes]
 </code></pre>
 <h2 id="marking-extra-actions-for-routing"><a class="toclink" href="#marking-extra-actions-for-routing">Marking extra actions for routing</a></h2>
-<p>If you have ad-hoc methods that you need to be routed to, you can mark them as requiring routing using the <code>@detail_route</code> or <code>@list_route</code> decorators.</p>
-<p>The <code>@detail_route</code> decorator contains <code>pk</code> in its URL pattern and is intended for methods which require a single instance. The <code>@list_route</code> decorator is intended for methods which operate on a list of objects.</p>
-<p>For example:</p>
+<p>If you have ad-hoc methods that should be routable, you can mark them as such with the <code>@action</code> decorator. Like regular actions, extra actions may be intended for either a list of objects, or a single instance. To indicate this, set the <code>detail</code> argument to <code>True</code> or <code>False</code>. The router will configure its URL patterns accordingly. e.g., the <code>DefaultRouter</code> will configure detail actions to contain <code>pk</code> in their URL patterns.</p>
+<p>A more complete example of extra actions:</p>
 <pre><code>from django.contrib.auth.models import User
-from rest_framework import status
-from rest_framework import viewsets
-from rest_framework.decorators import detail_route, list_route
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from myapp.serializers import UserSerializer, PasswordSerializer
 
@@ -573,7 +581,7 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-    @detail_route(methods=['post'])
+    @action(methods=['post'], detail=True)
     def set_password(self, request, pk=None):
         user = self.get_object()
         serializer = PasswordSerializer(data=request.data)
@@ -585,7 +593,7 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response(serializer.errors,
                             status=status.HTTP_400_BAD_REQUEST)
 
-    @list_route()
+    @action(detail=False)
     def recent_users(self, request):
         recent_users = User.objects.all().order('-last_login')
 
@@ -597,17 +605,18 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(recent_users, many=True)
         return Response(serializer.data)
 </code></pre>
-<p>The decorators can additionally take extra arguments that will be set for the routed view only.  For example...</p>
-<pre><code>    @detail_route(methods=['post'], permission_classes=[IsAdminOrIsSelf])
+<p>The decorator can additionally take extra arguments that will be set for the routed view only.  For example:</p>
+<pre><code>    @action(methods=['post'], detail=True, permission_classes=[IsAdminOrIsSelf])
     def set_password(self, request, pk=None):
        ...
 </code></pre>
-<p>These decorators will route <code>GET</code> requests by default, but may also accept other HTTP methods, by using the <code>methods</code> argument.  For example:</p>
-<pre><code>    @detail_route(methods=['post', 'delete'])
+<p>These decorator will route <code>GET</code> requests by default, but may also accept other HTTP methods by setting the <code>methods</code> argument.  For example:</p>
+<pre><code>    @action(methods=['post', 'delete'], detail=True)
     def unset_password(self, request, pk=None):
        ...
 </code></pre>
 <p>The two new actions will then be available at the urls <code>^users/{pk}/set_password/$</code> and <code>^users/{pk}/unset_password/$</code></p>
+<p>To view all extra actions, call the <code>.get_extra_actions()</code> method.</p>
 <h2 id="reversing-action-urls"><a class="toclink" href="#reversing-action-urls">Reversing action URLs</a></h2>
 <p>If you need to get the URL of an action, use the <code>.reverse_action()</code> method. This is a convenience wrapper for <code>reverse()</code>, automatically passing the view's <code>request</code> object and prepending the <code>url_name</code> with the <code>.basename</code> attribute.</p>
 <p>Note that the <code>basename</code> is provided by the router during <code>ViewSet</code> registration. If you are not using a router, then you must provide the <code>basename</code> argument to the <code>.as_view()</code> method.</p>
@@ -616,7 +625,12 @@ class UserViewSet(viewsets.ModelViewSet):
 'http://localhost:8000/api/users/1/set_password'
 </code></pre>
 
-<p>The <code>url_name</code> argument should match the same argument to the <code>@list_route</code> and <code>@detail_route</code> decorators. Additionally, this can be used to reverse the default <code>list</code> and <code>detail</code> routes.</p>
+<p>Alternatively, you can use the <code>url_name</code> attribute set by the <code>@action</code> decorator.</p>
+<pre><code class="python">&gt;&gt;&gt; view.reverse_action(view.set_password.url_name, args=['1'])
+'http://localhost:8000/api/users/1/set_password'
+</code></pre>
+
+<p>The <code>url_name</code> argument for <code>.reverse_action()</code> should match the same argument to the <code>@action</code> decorator. Additionally, this method can be used to reverse the default actions, such as <code>list</code> and <code>create</code>.</p>
 <hr />
 <h1 id="api-reference"><a class="toclink" href="#api-reference">API Reference</a></h1>
 <h2 id="viewset"><a class="toclink" href="#viewset">ViewSet</a></h2>

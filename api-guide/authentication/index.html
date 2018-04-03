@@ -660,9 +660,34 @@ urlpatterns += [
 <p>The <code>obtain_auth_token</code> view will return a JSON response when valid <code>username</code> and <code>password</code> fields are POSTed to the view using form data or JSON:</p>
 <pre><code>{ 'token' : '9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b' }
 </code></pre>
-<p>Note that the default <code>obtain_auth_token</code> view explicitly uses JSON requests and responses, rather than using default renderer and parser classes in your settings.  If you need a customized version of the <code>obtain_auth_token</code> view, you can do so by overriding the <code>ObtainAuthToken</code> view class, and using that in your url conf instead.</p>
+<p>Note that the default <code>obtain_auth_token</code> view explicitly uses JSON requests and responses, rather than using default renderer and parser classes in your settings.</p>
 <p>By default there are no permissions or throttling applied to the  <code>obtain_auth_token</code> view. If you do wish to apply throttling you'll need to override the view class,
 and include them using the <code>throttle_classes</code> attribute.</p>
+<p>If you need a customized version of the <code>obtain_auth_token</code> view, you can do so by subclassing the <code>ObtainAuthToken</code> view class, and using that in your url conf instead.</p>
+<p>For example, you may return additional user information beyond the <code>token</code> value:</p>
+<pre><code>from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authtoken.models import Token
+from rest_framework.response import Response
+
+class CustomAuthToken(ObtainAuthToken):
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data,
+                                           context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({
+            'token': token.key,
+            'user_id': user.pk,
+            'email': user.email
+        })
+</code></pre>
+<p>And in your <code>urls.py</code>:</p>
+<pre><code>urlpatterns += [
+    url(r'^api-token-auth/', CustomAuthToken.as_view())
+]
+</code></pre>
 <h5 id="with-django-admin"><a class="toclink" href="#with-django-admin">With Django admin</a></h5>
 <p>It is also possible to create Tokens manually through admin interface. In case you are using a large user base, we recommend that you monkey patch the <code>TokenAdmin</code> class to customize it to your needs, more specifically by declaring the <code>user</code> field as <code>raw_field</code>.</p>
 <p><code>your_app/admin.py</code>:</p>

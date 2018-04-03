@@ -622,7 +622,6 @@ class ExampleSerializer(serializers.Serializer):
 <p>A default class that can be used to <em>only set a default argument during create operations</em>. During updates the field is omitted.</p>
 <p>It takes a single argument, which is the default value or callable that should be used during create operations.</p>
 <pre><code>created_at = serializers.DateTimeField(
-    read_only=True,
     default=serializers.CreateOnlyDefault(timezone.now)
 )
 </code></pre>
@@ -648,7 +647,7 @@ in the <code>.validate()</code> method, or else in the view.</p>
 
     class Meta:
         fields = ('client', 'date', 'amount')
-        extra_kwargs = {'client': {'required': 'False'}}
+        extra_kwargs = {'client': {'required': False}}
         validators = []  # Remove a default "unique together" constraint.
 </code></pre>
 <h2 id="updating-nested-serializers"><a class="toclink" href="#updating-nested-serializers">Updating nested serializers</a></h2>

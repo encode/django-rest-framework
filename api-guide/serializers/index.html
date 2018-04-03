@@ -773,7 +773,7 @@ class BlogPostSerializer(serializers.Serializer):
 <p><strong>Note:</strong> If your <code>&lt;field_name&gt;</code> is declared on your serializer with the parameter <code>required=False</code> then this validation step will not take place if the field is not included.</p>
 <hr />
 <h4 id="object-level-validation"><a class="toclink" href="#object-level-validation">Object-level validation</a></h4>
-<p>To do any other validation that requires access to multiple fields, add a method called <code>.validate()</code> to your <code>Serializer</code> subclass.  This method takes a single argument, which is a dictionary of field values.  It should raise a <code>ValidationError</code> if necessary, or just return the validated values.  For example:</p>
+<p>To do any other validation that requires access to multiple fields, add a method called <code>.validate()</code> to your <code>Serializer</code> subclass.  This method takes a single argument, which is a dictionary of field values.  It should raise a <code>serializers.ValidationError</code> if necessary, or just return the validated values.  For example:</p>
 <pre><code>from rest_framework import serializers
 
 class EventSerializer(serializers.Serializer):
@@ -1306,7 +1306,7 @@ def all_high_scores(request):
     return Response(serializer.data)
 </code></pre>
 <h5 id="read-write-baseserializer-classes"><a class="toclink" href="#read-write-baseserializer-classes">Read-write <code>BaseSerializer</code> classes</a></h5>
-<p>To create a read-write serializer we first need to implement a <code>.to_internal_value()</code> method. This method returns the validated values that will be used to construct the object instance, and may raise a <code>ValidationError</code> if the supplied data is in an incorrect format.</p>
+<p>To create a read-write serializer we first need to implement a <code>.to_internal_value()</code> method. This method returns the validated values that will be used to construct the object instance, and may raise a <code>serializers.ValidationError</code> if the supplied data is in an incorrect format.</p>
 <p>Once you've implemented <code>.to_internal_value()</code>, the basic validation API will be available on the serializer, and you will be able to use <code>.is_valid()</code>, <code>.validated_data</code> and <code>.errors</code>.</p>
 <p>If you want to also support <code>.save()</code> you'll need to also implement either or both of the <code>.create()</code> and <code>.update()</code> methods.</p>
 <p>Here's a complete example of our previous <code>HighScoreSerializer</code>, that's been updated to support both read and write operations.</p>
@@ -1317,15 +1317,15 @@ def all_high_scores(request):
 
         # Perform the data validation.
         if not score:
-            raise ValidationError({
+            raise serializers.ValidationError({
                 'score': 'This field is required.'
             })
         if not player_name:
-            raise ValidationError({
+            raise serializers.ValidationError({
                 'player_name': 'This field is required.'
             })
         if len(player_name) &gt; 10:
-            raise ValidationError({
+            raise serializers.ValidationError({
                 'player_name': 'May not be more than 10 characters.'
             })
 

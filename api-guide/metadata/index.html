@@ -491,7 +491,7 @@ Content-Type: application/json
 <h2 id="creating-schema-endpoints"><a class="toclink" href="#creating-schema-endpoints">Creating schema endpoints</a></h2>
 <p>If you have specific requirements for creating schema endpoints that are accessed with regular <code>GET</code> requests, you might consider re-using the metadata API for doing so.</p>
 <p>For example, the following additional route could be used on a viewset to provide a linkable schema endpoint.</p>
-<pre><code>@list_route(methods=['GET'])
+<pre><code>@action(methods=['GET'], detail=False)
 def schema(self, request):
     meta = self.metadata_class()
     data = meta.determine_metadata(request, self)

@@ -399,6 +399,10 @@
                     </li>
                   
                     <li>
+                      <a href="#38x-series">3.8.x series</a>
+                    </li>
+                  
+                    <li>
                       <a href="#37x-series">3.7.x series</a>
                     </li>
                   
@@ -473,10 +477,116 @@
 <p>To upgrade Django REST framework to the latest version, use pip:</p>
 <pre><code>pip install -U djangorestframework
 </code></pre>
-<p>You can determine your currently installed version using <code>pip freeze</code>:</p>
-<pre><code>pip freeze | grep djangorestframework
+<p>You can determine your currently installed version using <code>pip show</code>:</p>
+<pre><code>pip show djangorestframework
 </code></pre>
 <hr />
+<h2 id="38x-series"><a class="toclink" href="#38x-series">3.8.x series</a></h2>
+<h3 id="380"><a class="toclink" href="#380">3.8.0</a></h3>
+<p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/milestone/61?closed=1">3rd April 2018</a></p>
+<ul>
+<li>
+<p><strong>Breaking Change</strong>: Alter <code>read_only</code> plus <code>default</code> behaviour. <a href="https://github.com/encode/django-rest-framework/issues/5886">#5886</a></p>
+<p><code>read_only</code> fields will now <strong>always</strong> be excluded from writable fields.</p>
+<p>Previously <code>read_only</code> fields with a <code>default</code> value would use the <code>default</code> for create and update operations.</p>
+<p>In order to maintain the old behaviour you may need to pass the value of <code>read_only</code> fields when calling <code>save()</code> in
+the view:</p>
+<pre><code>def perform_create(self, serializer):
+    serializer.save(owner=self.request.user)
+</code></pre>
+<p>Alternatively you may override <code>save()</code> or <code>create()</code> or <code>update()</code> on the serialiser as appropriate.
+* Correct allow_null behaviour when required=False <a href="https://github.com/encode/django-rest-framework/issues/5888">#5888</a></p>
+<p>Without an explicit <code>default</code>, <code>allow_null</code> implies a default of <code>null</code> for outgoing serialisation. Previously such
+fields were being skipped when read-only or otherwise not required.</p>
+<p><strong>Possible backwards compatibility break</strong> if you were relying on such fields being excluded from the outgoing
+representation. In order to restore the old behaviour you can override <code>data</code> to exclude the field when <code>None</code>.</p>
+<p>For example:</p>
+<pre><code>@property
+def data(self):
+    """
+    Drop `maybe_none` field if None.
+    """
+    data = super().data()
+    if 'maybe_none' in data and data['maybe_none'] is None:
+        del data['maybe_none']
+    return data
+</code></pre>
+</li>
+<li>
+<p>Refactor dynamic route generation and improve viewset action introspectibility. <a href="https://github.com/encode/django-rest-framework/issues/5705">#5705</a></p>
+<p><code>ViewSet</code>s have been provided with new attributes and methods that allow
+it to introspect its set of actions and the details of the current action.</p>
+<ul>
+<li>Merged <code>list_route</code> and <code>detail_route</code> into a single <code>action</code> decorator.</li>
+<li>Get all extra actions on a <code>ViewSet</code> with <code>.get_extra_actions()</code>.</li>
+<li>Extra actions now set the <code>url_name</code> and <code>url_path</code> on the decorated method.</li>
+<li>Enable action url reversing through <code>.reverse_action()</code> method (added in 3.7.4)</li>
+<li>Example reverse call: <code>self.reverse_action(self.custom_action.url_name)</code></li>
+<li>Add <code>detail</code> initkwarg to indicate if the current action is operating on a
+  collection or a single instance.</li>
+</ul>
+<p>Additional changes:</p>
+<ul>
+<li>Deprecated <code>list_route</code> &amp; <code>detail_route</code> in favor of <code>action</code> decorator with <code>detail</code> boolean.</li>
+<li>Deprecated dynamic list/detail route variants in favor of <code>DynamicRoute</code> with <code>detail</code> boolean.</li>
+<li>Refactored the router's dynamic route generation.</li>
+<li>Fix formatting of the 3.7.4 release note <a href="https://github.com/encode/django-rest-framework/issues/5704">#5704</a></li>
+<li>Docs: Update DRF Writable Nested Serializers references <a href="https://github.com/encode/django-rest-framework/issues/5711">#5711</a></li>
+<li>Docs: Fixed typo in auth URLs example. <a href="https://github.com/encode/django-rest-framework/issues/5713">#5713</a></li>
+<li>Improve composite field child errors <a href="https://github.com/encode/django-rest-framework/issues/5655">#5655</a></li>
+<li>Disable HTML inputs for dict/list fields <a href="https://github.com/encode/django-rest-framework/issues/5702">#5702</a></li>
+<li>Fix typo in HostNameVersioning doc <a href="https://github.com/encode/django-rest-framework/issues/5709">#5709</a></li>
+<li>Use rsplit to get module and classname for imports <a href="https://github.com/encode/django-rest-framework/issues/5712">#5712</a></li>
+<li>Formalize URLPatternsTestCase <a href="https://github.com/encode/django-rest-framework/issues/5703">#5703</a></li>
+<li>Add exception translation test <a href="https://github.com/encode/django-rest-framework/issues/5700">#5700</a></li>
+<li>Test staticfiles <a href="https://github.com/encode/django-rest-framework/issues/5701">#5701</a></li>
+<li>Add drf-yasg to documentation and schema 3rd party packages <a href="https://github.com/encode/django-rest-framework/issues/5720">#5720</a></li>
+<li>Remove unused <code>compat._resolve_model()</code> <a href="https://github.com/encode/django-rest-framework/issues/5733">#5733</a></li>
+<li>Drop compat workaround for unsupported Python 3.2 <a href="https://github.com/encode/django-rest-framework/issues/5734">#5734</a></li>
+<li>Prefer <code>iter(dict)</code> over <code>iter(dict.keys())</code> <a href="https://github.com/encode/django-rest-framework/issues/5736">#5736</a></li>
+<li>Pass <code>python_requires</code> argument to setuptools <a href="https://github.com/encode/django-rest-framework/issues/5739">#5739</a></li>
+<li>Remove unused links from docs <a href="https://github.com/encode/django-rest-framework/issues/5735">#5735</a></li>
+<li>Prefer https protocol for links in docs when available <a href="https://github.com/encode/django-rest-framework/issues/5729">#5729</a></li>
+<li>Add HStoreField, postgres fields tests <a href="https://github.com/encode/django-rest-framework/issues/5654">#5654</a></li>
+<li>Always fully qualify ValidationError in docs <a href="https://github.com/encode/django-rest-framework/issues/5751">#5751</a></li>
+<li>Remove unreachable code from ManualSchema <a href="https://github.com/encode/django-rest-framework/issues/5766">#5766</a></li>
+<li>Allowed customising API documentation code samples <a href="https://github.com/encode/django-rest-framework/issues/5752">#5752</a></li>
+<li>Updated docs to use <code>pip show</code> <a href="https://github.com/encode/django-rest-framework/issues/5757">#5757</a></li>
+<li>Load 'static' instead of 'staticfiles' in templates <a href="https://github.com/encode/django-rest-framework/issues/5773">#5773</a></li>
+<li>Fixed a typo in <code>fields</code> docs <a href="https://github.com/encode/django-rest-framework/issues/5783">#5783</a></li>
+<li>Refer to "NamespaceVersioning" instead of "NamespacedVersioning" in the documentation <a href="https://github.com/encode/django-rest-framework/issues/5754">#5754</a></li>
+<li>ErrorDetail: add <code>__eq__</code>/<code>__ne__</code> and <code>__repr__</code> <a href="https://github.com/encode/django-rest-framework/issues/5787">#5787</a></li>
+<li>Replace <code>background-attachment: fixed</code> in docs <a href="https://github.com/encode/django-rest-framework/issues/5777">#5777</a></li>
+<li>Make 404 &amp; 403 responses consistent with <code>exceptions.APIException</code> output <a href="https://github.com/encode/django-rest-framework/issues/5763">#5763</a></li>
+<li>Small fix to API documentation: schemas <a href="https://github.com/encode/django-rest-framework/issues/5796">#5796</a></li>
+<li>Fix schema generation for PrimaryKeyRelatedField <a href="https://github.com/encode/django-rest-framework/issues/5764">#5764</a></li>
+<li>Represent serializer DictField as an Object in schema <a href="https://github.com/encode/django-rest-framework/issues/5765">#5765</a></li>
+<li>Added docs example reimplementing ObtainAuthToken <a href="https://github.com/encode/django-rest-framework/issues/5802">#5802</a></li>
+<li>Add schema to the ObtainAuthToken view <a href="https://github.com/encode/django-rest-framework/issues/5676">#5676</a></li>
+<li>Fix request formdata handling <a href="https://github.com/encode/django-rest-framework/issues/5800">#5800</a></li>
+<li>Fix authtoken views imports <a href="https://github.com/encode/django-rest-framework/issues/5818">#5818</a></li>
+<li>Update pytest, isort <a href="https://github.com/encode/django-rest-framework/issues/5815">#5815</a> <a href="https://github.com/encode/django-rest-framework/issues/5817">#5817</a> <a href="https://github.com/encode/django-rest-framework/issues/5894">#5894</a></li>
+<li>Fixed active timezone handling for non ISO8601 datetimes. <a href="https://github.com/encode/django-rest-framework/issues/5833">#5833</a></li>
+<li>Made TemplateHTMLRenderer render IntegerField inputs when value is <code>0</code>. <a href="https://github.com/encode/django-rest-framework/issues/5834">#5834</a></li>
+<li>Corrected endpoint in tutorial instructions <a href="https://github.com/encode/django-rest-framework/issues/5835">#5835</a></li>
+<li>Add Django Rest Framework Role Filters to Third party packages <a href="https://github.com/encode/django-rest-framework/issues/5809">#5809</a></li>
+<li>Use single copy of static assets. Update jQuery <a href="https://github.com/encode/django-rest-framework/issues/5823">#5823</a></li>
+<li>Changes ternary conditionals to be PEP308 compliant <a href="https://github.com/encode/django-rest-framework/issues/5827">#5827</a></li>
+<li>Added links to 'A Todo List API with React' and 'Blog API' tutorials <a href="https://github.com/encode/django-rest-framework/issues/5837">#5837</a></li>
+<li>Fix comment typo in ModelSerializer <a href="https://github.com/encode/django-rest-framework/issues/5844">#5844</a></li>
+<li>Add admin to installed apps to avoid test failures. <a href="https://github.com/encode/django-rest-framework/issues/5870">#5870</a></li>
+<li>Fixed schema for UUIDField in SimpleMetadata. <a href="https://github.com/encode/django-rest-framework/issues/5872">#5872</a></li>
+<li>Corrected docs on router include with namespaces. <a href="https://github.com/encode/django-rest-framework/issues/5843">#5843</a></li>
+<li>Test using model objects for dotted source default <a href="https://github.com/encode/django-rest-framework/issues/5880">#5880</a></li>
+<li>Allow traversing nullable related fields <a href="https://github.com/encode/django-rest-framework/issues/5849">#5849</a></li>
+<li>Added: Tutorial: Django REST with React (Django 2.0) <a href="https://github.com/encode/django-rest-framework/issues/5891">#5891</a></li>
+<li>Add <code>LimitOffsetPagination.get_count</code> to allow method override <a href="https://github.com/encode/django-rest-framework/issues/5846">#5846</a></li>
+<li>Don't show hidden fields in metadata <a href="https://github.com/encode/django-rest-framework/issues/5854">#5854</a></li>
+<li>Enable OrderingFilter to handle an empty tuple (or list) for the 'ordering' field. <a href="https://github.com/encode/django-rest-framework/issues/5899">#5899</a></li>
+<li>Added generic 500 and 400 JSON error handlers. <a href="https://github.com/encode/django-rest-framework/issues/5904">#5904</a></li>
+</ul>
+</li>
+</ul>
 <h2 id="37x-series"><a class="toclink" href="#37x-series">3.7.x series</a></h2>
 <h3 id="377"><a class="toclink" href="#377">3.7.7</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/milestone/65?closed=1">21st December 2017</a></p>
@@ -1327,6 +1437,8 @@ Previously may have been stored internally as <code>None</code>.</p>
 <!-- 3.7.4 -->
 
 <!-- 3.7.5 -->
+
+<!-- 3.8.0 -->
             
 
           </div> <!--/span-->

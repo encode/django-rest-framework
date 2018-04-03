@@ -477,7 +477,7 @@ reverse('bookings-list', request=request)
 </code></pre>
 <p>The above function will apply any URL transformations appropriate to the request version. For example:</p>
 <ul>
-<li>If <code>NamespacedVersioning</code> was being used, and the API version was 'v1', then the URL lookup used would be <code>'v1:bookings-list'</code>, which might resolve to a URL like <code>http://example.org/v1/bookings/</code>.</li>
+<li>If <code>NamespaceVersioning</code> was being used, and the API version was 'v1', then the URL lookup used would be <code>'v1:bookings-list'</code>, which might resolve to a URL like <code>http://example.org/v1/bookings/</code>.</li>
 <li>If <code>QueryParameterVersioning</code> was being used, and the API version was <code>1.0</code>, then the returned URL might be something like <code>http://example.org/bookings/?version=1.0</code></li>
 </ul>
 <h4 id="versioned-apis-and-hyperlinked-serializers"><a class="toclink" href="#versioned-apis-and-hyperlinked-serializers">Versioned APIs and hyperlinked serializers</a></h4>

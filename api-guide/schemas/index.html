@@ -1014,7 +1014,7 @@ that do not expect a request body.</p>
     if method=='POST':
         extra_fields = # ... list of extra fields for POST ...
 
-    manual_fields = super().get_manual_fields()
+    manual_fields = super().get_manual_fields(path, method)
     return manual_fields + extra_fields
 </code></pre>
 
@@ -1044,6 +1044,7 @@ plus an optional description.</p>
 <p>The <code>ManualSchema</code> constructor takes two arguments:</p>
 <p><strong><code>fields</code></strong>: A list of <code>coreapi.Field</code> instances. Required.</p>
 <p><strong><code>description</code></strong>: A string description. Optional.</p>
+<p><strong><code>encoding</code></strong>: Default <code>None</code>. A string encoding, e.g <code>application/json</code>. Optional.</p>
 <hr />
 <h2 id="core-api"><a class="toclink" href="#core-api">Core API</a></h2>
 <p>This documentation gives a brief overview of the components within the <code>coreapi</code>

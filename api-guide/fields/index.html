@@ -529,6 +529,10 @@
                     </li>
                   
                     <li>
+                      <a href="#hstorefield">HStoreField</a>
+                    </li>
+                  
+                    <li>
                       <a href="#jsonfield">JSONField</a>
                     </li>
                   
@@ -579,7 +583,7 @@
                     </li>
                   
                     <li>
-                      <a href="#djangrestframework-recursive">djangrestframework-recursive</a>
+                      <a href="#djangorestframework-recursive">djangorestframework-recursive</a>
                     </li>
                   
                     <li>
@@ -634,16 +638,16 @@
 Set to false if this field is not required to be present during deserialization.</p>
 <p>Setting this to <code>False</code> also allows the object attribute or dictionary key to be omitted from output when serializing the instance. If the key is not present it will simply not be included in the output representation.</p>
 <p>Defaults to <code>True</code>.</p>
-<h3 id="allow_null"><a class="toclink" href="#allow_null"><code>allow_null</code></a></h3>
-<p>Normally an error will be raised if <code>None</code> is passed to a serializer field. Set this keyword argument to <code>True</code> if <code>None</code> should be considered a valid value.</p>
-<p>Note that setting this argument to <code>True</code> will imply a default value of <code>null</code> for serialization output, but does not imply a default for input deserialization.</p>
-<p>Defaults to <code>False</code></p>
 <h3 id="default"><a class="toclink" href="#default"><code>default</code></a></h3>
 <p>If set, this gives the default value that will be used for the field if no input value is supplied. If not set the default behaviour is to not populate the attribute at all.</p>
 <p>The <code>default</code> is not applied during partial update operations. In the partial update case only fields that are provided in the incoming data will have a validated value returned.</p>
 <p>May be set to a function or other callable, in which case the value will be evaluated each time it is used. When called, it will receive no arguments. If the callable has a <code>set_context</code> method, that will be called each time before getting the value with the field instance as only argument. This works the same way as for <a href="../validators/#using-set_context">validators</a>.</p>
 <p>When serializing the instance, default will be used if the the object attribute or dictionary key is not present in the instance.</p>
 <p>Note that setting a <code>default</code> value implies that the field is not required. Including both the <code>default</code> and <code>required</code> keyword arguments is invalid and will raise an error.</p>
+<h3 id="allow_null"><a class="toclink" href="#allow_null"><code>allow_null</code></a></h3>
+<p>Normally an error will be raised if <code>None</code> is passed to a serializer field. Set this keyword argument to <code>True</code> if <code>None</code> should be considered a valid value.</p>
+<p>Note that, without an explicit <code>default</code>, setting this argument to <code>True</code> will imply a <code>default</code> value of <code>null</code> for serialization output, but does not imply a default for input deserialization.</p>
+<p>Defaults to <code>False</code></p>
 <h3 id="source"><a class="toclink" href="#source"><code>source</code></a></h3>
 <p>The name of the attribute that will be used to populate the field.  May be a method that only takes a <code>self</code> argument, such as <code>URLField(source='get_absolute_url')</code>, or may use dotted notation to traverse attributes, such as <code>EmailField(source='user.email')</code>. When serializing fields with dotted notation, it may be necessary to provide a <code>default</code> value if any object is not present or is empty during attribute traversal.</p>
 <p>The value <code>source='*'</code> has a special meaning, and is used to indicate that the entire object should be passed through to the field.  This can be useful for creating nested representations, or for fields which require access to the complete object in order to determine the output representation.</p>
@@ -924,6 +928,13 @@ Django's regular <a href="https://docs.djangoproject.com/en/stable/ref/settings/
 <pre><code>class DocumentField(DictField):
     child = CharField()
 </code></pre>
+<h2 id="hstorefield"><a class="toclink" href="#hstorefield">HStoreField</a></h2>
+<p>A preconfigured <code>DictField</code> that is compatible with Django's postgres <code>HStoreField</code>.</p>
+<p><strong>Signature</strong>: <code>HStoreField(child=&lt;A_FIELD_INSTANCE&gt;)</code></p>
+<ul>
+<li><code>child</code> - A field instance that is used for validating the values in the dictionary. The default child field accepts both empty strings and null values.</li>
+</ul>
+<p>Note that the child field <strong>must</strong> be an instance of <code>CharField</code>, as the hstore extension stores values as strings.</p>
 <h2 id="jsonfield"><a class="toclink" href="#jsonfield">JSONField</a></h2>
 <p>A field class that validates that the incoming data structure consists of valid JSON primitives. In its alternate binary mode, it will represent and validate JSON-encoded binary strings.</p>
 <p><strong>Signature</strong>: <code>JSONField(binary)</code></p>
@@ -1189,7 +1200,7 @@ or overly complex.</p>
 <p>The <a href="https://drf-compound-fields.readthedocs.io">drf-compound-fields</a> package provides "compound" serializer fields, such as lists of simple values, which can be described by other fields rather than serializers with the <code>many=True</code> option. Also provided are fields for typed dictionaries and values that can be either a specific type or a list of items of that type.</p>
 <h2 id="drf-extra-fields"><a class="toclink" href="#drf-extra-fields">DRF Extra Fields</a></h2>
 <p>The <a href="https://github.com/Hipo/drf-extra-fields">drf-extra-fields</a> package provides extra serializer fields for REST framework, including <code>Base64ImageField</code> and <code>PointField</code> classes.</p>
-<h2 id="djangrestframework-recursive"><a class="toclink" href="#djangrestframework-recursive">djangrestframework-recursive</a></h2>
+<h2 id="djangorestframework-recursive"><a class="toclink" href="#djangorestframework-recursive">djangorestframework-recursive</a></h2>
 <p>the <a href="https://github.com/heywbj/django-rest-framework-recursive">djangorestframework-recursive</a> package provides a <code>RecursiveField</code> for serializing and deserializing recursive structures</p>
 <h2 id="django-rest-framework-gis"><a class="toclink" href="#django-rest-framework-gis">django-rest-framework-gis</a></h2>
 <p>The <a href="https://github.com/djangonauts/django-rest-framework-gis">django-rest-framework-gis</a> package provides geographic addons for django rest framework like a  <code>GeometryField</code> field and a GeoJSON serializer.</p>

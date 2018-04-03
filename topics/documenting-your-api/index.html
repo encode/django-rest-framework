@@ -505,6 +505,7 @@ For example:</p>
 <li><code>generator_class</code>: Default <code>rest_framework.schemas.SchemaGenerator</code>. May be used to specify a <code>SchemaGenerator</code> subclass to be passed to the <code>SchemaView</code>.</li>
 <li><code>authentication_classes</code>: Default <code>api_settings.DEFAULT_AUTHENTICATION_CLASSES</code>. May be used to pass custom authentication classes to the <code>SchemaView</code>.</li>
 <li><code>permission_classes</code>: Default <code>api_settings.DEFAULT_PERMISSION_CLASSES</code> May be used to pass custom permission classes to the <code>SchemaView</code>.</li>
+<li><code>renderer_classes</code>: Default <code>None</code>. May be used to pass custom renderer classes to the <code>SchemaView</code>.</li>
 </ul>
 <h4 id="get_docs_view"><a class="toclink" href="#get_docs_view"><code>get_docs_view</code></a></h4>
 <ul>
@@ -515,7 +516,8 @@ For example:</p>
 <li><code>patterns</code>: Default <code>None</code>. A list of URLs to inspect when generating the schema. If <code>None</code> project's URL conf will be used.</li>
 <li><code>generator_class</code>: Default <code>rest_framework.schemas.SchemaGenerator</code>. May be used to specify a <code>SchemaGenerator</code> subclass to be passed to the <code>SchemaView</code>.</li>
 <li><code>authentication_classes</code>: Default <code>api_settings.DEFAULT_AUTHENTICATION_CLASSES</code>. May be used to pass custom authentication classes to the <code>SchemaView</code>.</li>
-<li><code>permission_classes</code>: Default <code>api_settings.DEFAULT_PERMISSION_CLASSES</code> May be used to pass custom permission classes to the <code>SchemaView</code>.</li>
+<li><code>permission_classes</code>: Default <code>api_settings.DEFAULT_PERMISSION_CLASSES</code>. May be used to pass custom permission classes to the <code>SchemaView</code>.</li>
+<li><code>renderer_classes</code>: Default <code>None</code>. May be used to pass custom renderer classes to the <code>SchemaView</code>. If <code>None</code> the <code>SchemaView</code> will be configured with <code>DocumentationRenderer</code> and <code>CoreJSONRenderer</code> renderers, corresponding to the (default) <code>html</code> and <code>corejson</code> formats.</li>
 </ul>
 <h4 id="get_schemajs_view"><a class="toclink" href="#get_schemajs_view"><code>get_schemajs_view</code></a></h4>
 <ul>
@@ -528,14 +530,28 @@ For example:</p>
 <li><code>authentication_classes</code>: Default <code>api_settings.DEFAULT_AUTHENTICATION_CLASSES</code>. May be used to pass custom authentication classes to the <code>SchemaView</code>.</li>
 <li><code>permission_classes</code>: Default <code>api_settings.DEFAULT_PERMISSION_CLASSES</code> May be used to pass custom permission classes to the <code>SchemaView</code>.</li>
 </ul>
+<h3 id="customising-code-samples"><a class="toclink" href="#customising-code-samples">Customising code samples</a></h3>
+<p>The built-in API documentation includes automatically generated code samples for
+each of the available API client libraries.</p>
+<p>You may customise these samples by subclassing <code>DocumentationRenderer</code>, setting
+<code>languages</code> to the list of languages you wish to support:</p>
+<pre><code>from rest_framework.renderers import DocumentationRenderer
+
+
+class CustomRenderer(DocumentationRenderer):
+    languages = ['ruby', 'go']
+</code></pre>
+<p>For each language you need to provide an <code>intro</code> template, detailing installation instructions and such,
+plus a generic template for making API requests, that can be filled with individual request details.
+See the <a href="https://github.com/encode/django-rest-framework/tree/master/rest_framework/templates/rest_framework/docs/langs">templates for the bundled languages</a> for examples.</p>
 <hr />
 <h2 id="third-party-packages"><a class="toclink" href="#third-party-packages">Third party packages</a></h2>
 <p>There are a number of mature third-party packages for providing API documentation.</p>
 <h4 id="drf-yasg-yet-another-swagger-generator"><a class="toclink" href="#drf-yasg-yet-another-swagger-generator">drf-yasg - Yet Another Swagger Generator</a></h4>
-<p><a href="https://github.com/axnsan12/drf-yasg/">drf-yasg</a> is a <a href="https://swagger.io/">Swagger</a> generation tool implemented without using the schema generation provided 
+<p><a href="https://github.com/axnsan12/drf-yasg/">drf-yasg</a> is a <a href="https://swagger.io/">Swagger</a> generation tool implemented without using the schema generation provided
 by Django Rest Framework.</p>
-<p>It aims to implement as much of the <a href="https://openapis.org/">OpenAPI</a> specification as possible - nested schemas, named models, 
-response bodies, enum/pattern/min/max validators, form parameters, etc. - and to generate documents usable with code 
+<p>It aims to implement as much of the <a href="https://openapis.org/">OpenAPI</a> specification as possible - nested schemas, named models,
+response bodies, enum/pattern/min/max validators, form parameters, etc. - and to generate documents usable with code
 generation tools like <code>swagger-codegen</code>.</p>
 <p>This also translates into a very useful interactive documentation viewer in the form of <code>swagger-ui</code>:</p>
 <p><img alt="Screenshot - drf-yasg" src="../../img/drf-yasg.png" /></p>
