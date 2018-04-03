@@ -153,7 +153,7 @@ See the pagination documentation for further guidance on [setting the pagination
 
 ---
 
-**This setting is pending deprecation.**
+**This setting has been removed.**
 
 See the pagination documentation for further guidance on [setting the pagination style](pagination.md#modifying-the-pagination-style).
 
