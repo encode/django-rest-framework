@@ -498,8 +498,10 @@ the view:</p>
 <pre><code>def perform_create(self, serializer):
     serializer.save(owner=self.request.user)
 </code></pre>
-<p>Alternatively you may override <code>save()</code> or <code>create()</code> or <code>update()</code> on the serialiser as appropriate.
-* Correct allow_null behaviour when required=False <a href="https://github.com/encode/django-rest-framework/issues/5888">#5888</a></p>
+<p>Alternatively you may override <code>save()</code> or <code>create()</code> or <code>update()</code> on the serialiser as appropriate.</p>
+</li>
+<li>
+<p>Correct allow_null behaviour when required=False <a href="https://github.com/encode/django-rest-framework/issues/5888">#5888</a></p>
 <p>Without an explicit <code>default</code>, <code>allow_null</code> implies a default of <code>null</code> for outgoing serialisation. Previously such
 fields were being skipped when read-only or otherwise not required.</p>
 <p><strong>Possible backwards compatibility break</strong> if you were relying on such fields being excluded from the outgoing
@@ -534,7 +536,11 @@ it to introspect its set of actions and the details of the current action.</p>
 <li>Deprecated <code>list_route</code> &amp; <code>detail_route</code> in favor of <code>action</code> decorator with <code>detail</code> boolean.</li>
 <li>Deprecated dynamic list/detail route variants in favor of <code>DynamicRoute</code> with <code>detail</code> boolean.</li>
 <li>Refactored the router's dynamic route generation.</li>
-<li>Fix formatting of the 3.7.4 release note <a href="https://github.com/encode/django-rest-framework/issues/5704">#5704</a></li>
+</ul>
+</li>
+<li>
+<p>Fix formatting of the 3.7.4 release note <a href="https://github.com/encode/django-rest-framework/issues/5704">#5704</a></p>
+</li>
 <li>Docs: Update DRF Writable Nested Serializers references <a href="https://github.com/encode/django-rest-framework/issues/5711">#5711</a></li>
 <li>Docs: Fixed typo in auth URLs example. <a href="https://github.com/encode/django-rest-framework/issues/5713">#5713</a></li>
 <li>Improve composite field child errors <a href="https://github.com/encode/django-rest-framework/issues/5655">#5655</a></li>
@@ -588,8 +594,6 @@ it to introspect its set of actions and the details of the current action.</p>
 <li>Don't show hidden fields in metadata <a href="https://github.com/encode/django-rest-framework/issues/5854">#5854</a></li>
 <li>Enable OrderingFilter to handle an empty tuple (or list) for the 'ordering' field. <a href="https://github.com/encode/django-rest-framework/issues/5899">#5899</a></li>
 <li>Added generic 500 and 400 JSON error handlers. <a href="https://github.com/encode/django-rest-framework/issues/5904">#5904</a></li>
-</ul>
-</li>
 </ul>
 <h2 id="37x-series"><a class="toclink" href="#37x-series">3.7.x series</a></h2>
 <h3 id="377"><a class="toclink" href="#377">3.7.7</a></h3>
