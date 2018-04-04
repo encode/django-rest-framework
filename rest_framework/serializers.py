@@ -498,6 +498,13 @@ class Serializer(BaseSerializer):
             # resolve the pk value.
             check_for_none = attribute.pk if isinstance(attribute, PKOnlyObject) else attribute
             if check_for_none is None:
+                if not field.allow_null:
+                    try:
+                        ret[field.field_name] = field.get_default()
+                    except SkipField:
+                        pass
+                    else:
+                        continue
                 ret[field.field_name] = None
             else:
                 ret[field.field_name] = field.to_representation(attribute)
