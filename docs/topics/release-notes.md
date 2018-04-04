@@ -40,6 +40,16 @@ You can determine your currently installed version using `pip show`:
 
 ## 3.8.x series
 
+### 3.8.1
+
+**Date**: [4th April 2018][3.8.1-milestone]
+
+* Use old `url_name` behavior in route decorators [#5915][gh5915]
+
+    For `list_route` and `detail_route` maintain the old behavior of `url_name`,
+    basing it on the `url_path` instead of the function name.
+
+
 ### 3.8.0
 
 **Date**: [3rd April 2018][3.8.0-milestone]
@@ -1061,6 +1071,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [3.7.6-milestone]: https://github.com/encode/django-rest-framework/milestone/64?closed=1
 [3.7.7-milestone]: https://github.com/encode/django-rest-framework/milestone/65?closed=1
 [3.8.0-milestone]: https://github.com/encode/django-rest-framework/milestone/61?closed=1
+[3.8.1-milestone]: https://github.com/encode/django-rest-framework/milestone/67?closed=1
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/encode/django-rest-framework/issues/2013
@@ -1932,3 +1943,6 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh5764]: https://github.com/encode/django-rest-framework/issues/5764
 [gh5904]: https://github.com/encode/django-rest-framework/issues/5904
 [gh5899]: https://github.com/encode/django-rest-framework/issues/5899
+
+<!-- 3.8.1 -->
+[gh5915]: https://github.com/encode/django-rest-framework/issues/5915
