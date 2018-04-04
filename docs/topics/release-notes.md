@@ -87,6 +87,8 @@ You can determine your currently installed version using `pip show`:
     * Merged `list_route` and `detail_route` into a single `action` decorator.
     * Get all extra actions on a `ViewSet` with `.get_extra_actions()`.
     * Extra actions now set the `url_name` and `url_path` on the decorated method.
+    * `url_name` is now based on the function name, instead of the `url_path`,
+      as the path is not always suitable (e.g., capturing arguments in the path).
     * Enable action url reversing through `.reverse_action()` method (added in 3.7.4)
     * Example reverse call: `self.reverse_action(self.custom_action.url_name)`
     * Add `detail` initkwarg to indicate if the current action is operating on a
@@ -97,6 +99,8 @@ You can determine your currently installed version using `pip show`:
     * Deprecated `list_route` & `detail_route` in favor of `action` decorator with `detail` boolean.
     * Deprecated dynamic list/detail route variants in favor of `DynamicRoute` with `detail` boolean.
     * Refactored the router's dynamic route generation.
+    * `list_route` and `detail_route` maintain the old behavior of `url_name`,
+      basing it on the `url_path` instead of the function name.
 
 * Fix formatting of the 3.7.4 release note [#5704][gh5704]
 * Docs: Update DRF Writable Nested Serializers references [#5711][gh5711]
