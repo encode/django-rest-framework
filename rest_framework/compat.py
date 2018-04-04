@@ -113,17 +113,11 @@ except ImportError:
 try:
     import coreapi
     import uritemplate
+    from coreapi import typesys
 except ImportError:
     coreapi = None
     uritemplate = None
-
-
-# coreschema is optional
-try:
-    import coreschema
-except ImportError:
-    coreschema = None
-
+    typesys = None
 
 # django-crispy-forms is optional
 try:
@@ -256,7 +250,7 @@ except ImportError:
 try:
     from django.urls import include, path, re_path, register_converter  # noqa
 except ImportError:
-    from django.conf.urls import include, url # noqa
+    from django.conf.urls import include, url  # noqa
     path = None
     register_converter = None
     re_path = url

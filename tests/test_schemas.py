@@ -9,7 +9,7 @@ from django.test import TestCase, override_settings
 from rest_framework import (
     filters, generics, pagination, permissions, serializers
 )
-from rest_framework.compat import coreapi, coreschema, get_regex_pattern, path
+from rest_framework.compat import coreapi, get_regex_pattern, path, typesys
 from rest_framework.decorators import action, api_view, schema
 from rest_framework.request import Request
 from rest_framework.routers import DefaultRouter, SimpleRouter
@@ -134,9 +134,9 @@ class TestRouterGeneratedSchema(TestCase):
                         url='/example/',
                         action='get',
                         fields=[
-                            coreapi.Field('page', required=False, location='query', schema=coreschema.Integer(title='Page', description='A page number within the paginated result set.')),
-                            coreapi.Field('page_size', required=False, location='query', schema=coreschema.Integer(title='Page size', description='Number of results to return per page.')),
-                            coreapi.Field('ordering', required=False, location='query', schema=coreschema.String(title='Ordering', description='Which field to use when ordering the results.'))
+                            coreapi.Field('page', required=False, location='query', schema=typesys.Integer(title='Page', description='A page number within the paginated result set.')),
+                            coreapi.Field('page_size', required=False, location='query', schema=typesys.Integer(title='Page size', description='Number of results to return per page.')),
+                            coreapi.Field('ordering', required=False, location='query', schema=typesys.String(title='Ordering', description='Which field to use when ordering the results.'))
                         ]
                     ),
                     'custom_list_action': coreapi.Link(
@@ -153,8 +153,8 @@ class TestRouterGeneratedSchema(TestCase):
                         url='/example/{id}/',
                         action='get',
                         fields=[
-                            coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
-                            coreapi.Field('ordering', required=False, location='query', schema=coreschema.String(title='Ordering', description='Which field to use when ordering the results.'))
+                            coreapi.Field('id', required=True, location='path', schema=typesys.String()),
+                            coreapi.Field('ordering', required=False, location='query', schema=typesys.String(title='Ordering', description='Which field to use when ordering the results.'))
                         ]
                     )
                 }
@@ -176,9 +176,9 @@ class TestRouterGeneratedSchema(TestCase):
                         url='/example/',
                         action='get',
                         fields=[
-                            coreapi.Field('page', required=False, location='query', schema=coreschema.Integer(title='Page', description='A page number within the paginated result set.')),
-                            coreapi.Field('page_size', required=False, location='query', schema=coreschema.Integer(title='Page size', description='Number of results to return per page.')),
-                            coreapi.Field('ordering', required=False, location='query', schema=coreschema.String(title='Ordering', description='Which field to use when ordering the results.'))
+                            coreapi.Field('page', required=False, location='query', schema=typesys.Integer(title='Page', description='A page number within the paginated result set.')),
+                            coreapi.Field('page_size', required=False, location='query', schema=typesys.Integer(title='Page size', description='Number of results to return per page.')),
+                            coreapi.Field('ordering', required=False, location='query', schema=typesys.String(title='Ordering', description='Which field to use when ordering the results.'))
                         ]
                     ),
                     'create': coreapi.Link(
@@ -186,16 +186,16 @@ class TestRouterGeneratedSchema(TestCase):
                         action='post',
                         encoding='application/json',
                         fields=[
-                            coreapi.Field('a', required=True, location='form', schema=coreschema.String(title='A', description='A field description')),
-                            coreapi.Field('b', required=False, location='form', schema=coreschema.String(title='B'))
+                            coreapi.Field('a', required=True, location='form', schema=typesys.String(title='A', description='A field description')),
+                            coreapi.Field('b', required=False, location='form', schema=typesys.String(title='B'))
                         ]
                     ),
                     'read': coreapi.Link(
                         url='/example/{id}/',
                         action='get',
                         fields=[
-                            coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
-                            coreapi.Field('ordering', required=False, location='query', schema=coreschema.String(title='Ordering', description='Which field to use when ordering the results.'))
+                            coreapi.Field('id', required=True, location='path', schema=typesys.String()),
+                            coreapi.Field('ordering', required=False, location='query', schema=typesys.String(title='Ordering', description='Which field to use when ordering the results.'))
                         ]
                     ),
                     'custom_action': coreapi.Link(
@@ -204,9 +204,9 @@ class TestRouterGeneratedSchema(TestCase):
                         encoding='application/json',
                         description='A description of custom action.',
                         fields=[
-                            coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
-                            coreapi.Field('c', required=True, location='form', schema=coreschema.String(title='C')),
-                            coreapi.Field('d', required=False, location='form', schema=coreschema.String(title='D')),
+                            coreapi.Field('id', required=True, location='path', schema=typesys.String()),
+                            coreapi.Field('c', required=True, location='form', schema=typesys.String(title='C')),
+                            coreapi.Field('d', required=False, location='form', schema=typesys.String(title='D')),
                         ]
                     ),
                     'custom_action_with_dict_field': coreapi.Link(
@@ -215,8 +215,8 @@ class TestRouterGeneratedSchema(TestCase):
                         encoding='application/json',
                         description='A custom action using a dict field in the serializer.',
                         fields=[
-                            coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
-                            coreapi.Field('a', required=True, location='form', schema=coreschema.Object(title='A')),
+                            coreapi.Field('id', required=True, location='path', schema=typesys.String()),
+                            coreapi.Field('a', required=True, location='form', schema=typesys.Object(title='A')),
                         ]
                     ),
                     'custom_action_with_list_fields': coreapi.Link(
@@ -225,9 +225,9 @@ class TestRouterGeneratedSchema(TestCase):
                         encoding='application/json',
                         description='A custom action using both list field and list serializer in the serializer.',
                         fields=[
-                            coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
-                            coreapi.Field('a', required=True, location='form', schema=coreschema.Array(title='A', items=coreschema.Integer())),
-                            coreapi.Field('b', required=True, location='form', schema=coreschema.Array(title='B', items=coreschema.String())),
+                            coreapi.Field('id', required=True, location='path', schema=typesys.String()),
+                            coreapi.Field('a', required=True, location='form', schema=typesys.Array(title='A', items=typesys.Integer())),
+                            coreapi.Field('b', required=True, location='form', schema=typesys.Array(title='B', items=typesys.String())),
                         ]
                     ),
                     'custom_list_action': coreapi.Link(
@@ -249,10 +249,10 @@ class TestRouterGeneratedSchema(TestCase):
                         action='put',
                         encoding='application/json',
                         fields=[
-                            coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
-                            coreapi.Field('a', required=True, location='form', schema=coreschema.String(title='A', description=('A field description'))),
-                            coreapi.Field('b', required=False, location='form', schema=coreschema.String(title='B')),
-                            coreapi.Field('ordering', required=False, location='query', schema=coreschema.String(title='Ordering', description='Which field to use when ordering the results.'))
+                            coreapi.Field('id', required=True, location='path', schema=typesys.String()),
+                            coreapi.Field('a', required=True, location='form', schema=typesys.String(title='A', description=('A field description'))),
+                            coreapi.Field('b', required=False, location='form', schema=typesys.String(title='B')),
+                            coreapi.Field('ordering', required=False, location='query', schema=typesys.String(title='Ordering', description='Which field to use when ordering the results.'))
                         ]
                     ),
                     'partial_update': coreapi.Link(
@@ -260,18 +260,18 @@ class TestRouterGeneratedSchema(TestCase):
                         action='patch',
                         encoding='application/json',
                         fields=[
-                            coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
-                            coreapi.Field('a', required=False, location='form', schema=coreschema.String(title='A', description='A field description')),
-                            coreapi.Field('b', required=False, location='form', schema=coreschema.String(title='B')),
-                            coreapi.Field('ordering', required=False, location='query', schema=coreschema.String(title='Ordering', description='Which field to use when ordering the results.'))
+                            coreapi.Field('id', required=True, location='path', schema=typesys.String()),
+                            coreapi.Field('a', required=False, location='form', schema=typesys.String(title='A', description='A field description')),
+                            coreapi.Field('b', required=False, location='form', schema=typesys.String(title='B')),
+                            coreapi.Field('ordering', required=False, location='query', schema=typesys.String(title='Ordering', description='Which field to use when ordering the results.'))
                         ]
                     ),
                     'delete': coreapi.Link(
                         url='/example/{id}/',
                         action='delete',
                         fields=[
-                            coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
-                            coreapi.Field('ordering', required=False, location='query', schema=coreschema.String(title='Ordering', description='Which field to use when ordering the results.'))
+                            coreapi.Field('id', required=True, location='path', schema=typesys.String()),
+                            coreapi.Field('ordering', required=False, location='query', schema=typesys.String(title='Ordering', description='Which field to use when ordering the results.'))
                         ]
                     )
                 }
@@ -362,7 +362,7 @@ class TestSchemaGenerator(TestCase):
                         url='/example/{id}/',
                         action='get',
                         fields=[
-                            coreapi.Field('id', required=True, location='path', schema=coreschema.String())
+                            coreapi.Field('id', required=True, location='path', schema=typesys.String())
                         ]
                     ),
                     'sub': {
@@ -370,7 +370,7 @@ class TestSchemaGenerator(TestCase):
                             url='/example/{id}/sub/',
                             action='get',
                             fields=[
-                                coreapi.Field('id', required=True, location='path', schema=coreschema.String())
+                                coreapi.Field('id', required=True, location='path', schema=typesys.String())
                             ]
                         )
                     }
@@ -415,7 +415,7 @@ class TestSchemaGeneratorDjango2(TestCase):
                         url='/example/{id}/',
                         action='get',
                         fields=[
-                            coreapi.Field('id', required=True, location='path', schema=coreschema.String())
+                            coreapi.Field('id', required=True, location='path', schema=typesys.String())
                         ]
                     ),
                     'sub': {
@@ -423,7 +423,7 @@ class TestSchemaGeneratorDjango2(TestCase):
                             url='/example/{id}/sub/',
                             action='get',
                             fields=[
-                                coreapi.Field('id', required=True, location='path', schema=coreschema.String())
+                                coreapi.Field('id', required=True, location='path', schema=typesys.String())
                             ]
                         )
                     }
@@ -468,7 +468,7 @@ class TestSchemaGeneratorNotAtRoot(TestCase):
                         url='/api/v1/example/{id}/',
                         action='get',
                         fields=[
-                            coreapi.Field('id', required=True, location='path', schema=coreschema.String())
+                            coreapi.Field('id', required=True, location='path', schema=typesys.String())
                         ]
                     ),
                     'sub': {
@@ -476,7 +476,7 @@ class TestSchemaGeneratorNotAtRoot(TestCase):
                             url='/api/v1/example/{id}/sub/',
                             action='get',
                             fields=[
-                                coreapi.Field('id', required=True, location='path', schema=coreschema.String())
+                                coreapi.Field('id', required=True, location='path', schema=typesys.String())
                             ]
                         )
                     }
@@ -513,9 +513,9 @@ class TestSchemaGeneratorWithMethodLimitedViewSets(TestCase):
                         url='/example1/',
                         action='get',
                         fields=[
-                            coreapi.Field('page', required=False, location='query', schema=coreschema.Integer(title='Page', description='A page number within the paginated result set.')),
-                            coreapi.Field('page_size', required=False, location='query', schema=coreschema.Integer(title='Page size', description='Number of results to return per page.')),
-                            coreapi.Field('ordering', required=False, location='query', schema=coreschema.String(title='Ordering', description='Which field to use when ordering the results.'))
+                            coreapi.Field('page', required=False, location='query', schema=typesys.Integer(title='Page', description='A page number within the paginated result set.')),
+                            coreapi.Field('page_size', required=False, location='query', schema=typesys.Integer(title='Page size', description='Number of results to return per page.')),
+                            coreapi.Field('ordering', required=False, location='query', schema=typesys.String(title='Ordering', description='Which field to use when ordering the results.'))
                         ]
                     ),
                     'custom_list_action': coreapi.Link(
@@ -532,8 +532,8 @@ class TestSchemaGeneratorWithMethodLimitedViewSets(TestCase):
                         url='/example1/{id}/',
                         action='get',
                         fields=[
-                            coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
-                            coreapi.Field('ordering', required=False, location='query', schema=coreschema.String(title='Ordering', description='Which field to use when ordering the results.'))
+                            coreapi.Field('id', required=True, location='path', schema=typesys.String()),
+                            coreapi.Field('ordering', required=False, location='query', schema=typesys.String(title='Ordering', description='Which field to use when ordering the results.'))
                         ]
                     )
                 }
@@ -612,8 +612,8 @@ class TestSchemaGeneratorWithForeignKey(TestCase):
                         action='post',
                         encoding='application/json',
                         fields=[
-                            coreapi.Field('name', required=True, location='form', schema=coreschema.String(title='Name')),
-                            coreapi.Field('target', required=True, location='form', schema=coreschema.Integer(description='Target', title='Target')),
+                            coreapi.Field('name', required=True, location='form', schema=typesys.String(title='Name')),
+                            coreapi.Field('target', required=True, location='form', schema=typesys.Integer(description='Target', title='Target')),
                         ]
                     )
                 }
@@ -677,7 +677,7 @@ class TestAutoSchema(TestCase):
                 "my_field",
                 required=True,
                 location="path",
-                schema=coreschema.String()
+                schema=typesys.String()
             ),
         ])
 
@@ -690,7 +690,7 @@ class TestAutoSchema(TestCase):
                 "my_field",
                 required=False,
                 location="path",
-                schema=coreschema.String()
+                schema=typesys.String()
             ),
         ])
 
@@ -706,7 +706,7 @@ class TestAutoSchema(TestCase):
                     "my_extra_field",
                     required=True,
                     location="path",
-                    schema=coreschema.String()
+                    schema=typesys.String()
                 ),
             ])
 
@@ -728,19 +728,19 @@ class TestAutoSchema(TestCase):
                 "first_field",
                 required=True,
                 location="path",
-                schema=coreschema.String()
+                schema=typesys.String()
             ),
             coreapi.Field(
                 "second_field",
                 required=True,
                 location="path",
-                schema=coreschema.String()
+                schema=typesys.String()
             ),
             coreapi.Field(
                 "third_field",
                 required=True,
                 location="path",
-                schema=coreschema.String()
+                schema=typesys.String()
             ),
         ]
         description = "A test endpoint"

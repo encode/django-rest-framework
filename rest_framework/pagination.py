@@ -16,7 +16,7 @@ from django.utils.encoding import force_text
 from django.utils.six.moves.urllib import parse as urlparse
 from django.utils.translation import ugettext_lazy as _
 
-from rest_framework.compat import coreapi, coreschema
+from rest_framework.compat import coreapi, typesys
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
@@ -279,13 +279,12 @@ class PageNumberPagination(BasePagination):
 
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
-        assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
         fields = [
             coreapi.Field(
                 name=self.page_query_param,
                 required=False,
                 location='query',
-                schema=coreschema.Integer(
+                schema=typesys.Integer(
                     title='Page',
                     description=force_text(self.page_query_description)
                 )
@@ -297,7 +296,7 @@ class PageNumberPagination(BasePagination):
                     name=self.page_size_query_param,
                     required=False,
                     location='query',
-                    schema=coreschema.Integer(
+                    schema=typesys.Integer(
                         title='Page size',
                         description=force_text(self.page_size_query_description)
                     )
@@ -436,13 +435,12 @@ class LimitOffsetPagination(BasePagination):
 
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
-        assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
         return [
             coreapi.Field(
                 name=self.limit_query_param,
                 required=False,
                 location='query',
-                schema=coreschema.Integer(
+                schema=typesys.Integer(
                     title='Limit',
                     description=force_text(self.limit_query_description)
                 )
@@ -451,7 +449,7 @@ class LimitOffsetPagination(BasePagination):
                 name=self.offset_query_param,
                 required=False,
                 location='query',
-                schema=coreschema.Integer(
+                schema=typesys.Integer(
                     title='Offset',
                     description=force_text(self.offset_query_description)
                 )
@@ -796,13 +794,12 @@ class CursorPagination(BasePagination):
 
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
-        assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
         fields = [
             coreapi.Field(
                 name=self.cursor_query_param,
                 required=False,
                 location='query',
-                schema=coreschema.String(
+                schema=typesys.String(
                     title='Cursor',
                     description=force_text(self.cursor_query_description)
                 )
@@ -814,7 +811,7 @@ class CursorPagination(BasePagination):
                     name=self.page_size_query_param,
                     required=False,
                     location='query',
-                    schema=coreschema.Integer(
+                    schema=typesys.Integer(
                         title='Page size',
                         description=force_text(self.page_size_query_description)
                     )

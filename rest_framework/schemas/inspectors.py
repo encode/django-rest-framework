@@ -14,7 +14,7 @@ from django.utils.six.moves.urllib import parse as urlparse
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import exceptions, serializers
-from rest_framework.compat import coreapi, coreschema, uritemplate
+from rest_framework.compat import coreapi, typesys, uritemplate
 from rest_framework.settings import api_settings
 from rest_framework.utils import formatting
 
@@ -29,18 +29,18 @@ def field_to_schema(field):
 
     if isinstance(field, (serializers.ListSerializer, serializers.ListField)):
         child_schema = field_to_schema(field.child)
-        return coreschema.Array(
+        return typesys.Array(
             items=child_schema,
             title=title,
             description=description
         )
     elif isinstance(field, serializers.DictField):
-        return coreschema.Object(
+        return typesys.Object(
             title=title,
             description=description
         )
     elif isinstance(field, serializers.Serializer):
-        return coreschema.Object(
+        return typesys.Object(
             properties=OrderedDict([
                 (key, field_to_schema(value))
                 for key, value
@@ -50,59 +50,59 @@ def field_to_schema(field):
             description=description
         )
     elif isinstance(field, serializers.ManyRelatedField):
-        return coreschema.Array(
-            items=coreschema.String(),
+        return typesys.Array(
+            items=typesys.String(),
             title=title,
             description=description
         )
     elif isinstance(field, serializers.PrimaryKeyRelatedField):
-        schema_cls = coreschema.String
+        schema_cls = typesys.String
         model = getattr(field.queryset, 'model', None)
         if model is not None:
             model_field = model._meta.pk
             if isinstance(model_field, models.AutoField):
-                schema_cls = coreschema.Integer
+                schema_cls = typesys.Integer
         return schema_cls(title=title, description=description)
     elif isinstance(field, serializers.RelatedField):
-        return coreschema.String(title=title, description=description)
+        return typesys.String(title=title, description=description)
     elif isinstance(field, serializers.MultipleChoiceField):
-        return coreschema.Array(
-            items=coreschema.Enum(enum=list(field.choices)),
+        return typesys.Array(
+            items=typesys.Enum(enum=list(field.choices)),
             title=title,
             description=description
         )
     elif isinstance(field, serializers.ChoiceField):
-        return coreschema.Enum(
+        return typesys.Enum(
             enum=list(field.choices),
             title=title,
             description=description
         )
     elif isinstance(field, serializers.BooleanField):
-        return coreschema.Boolean(title=title, description=description)
+        return typesys.Boolean(title=title, description=description)
     elif isinstance(field, (serializers.DecimalField, serializers.FloatField)):
-        return coreschema.Number(title=title, description=description)
+        return typesys.Number(title=title, description=description)
     elif isinstance(field, serializers.IntegerField):
-        return coreschema.Integer(title=title, description=description)
+        return typesys.Integer(title=title, description=description)
     elif isinstance(field, serializers.DateField):
-        return coreschema.String(
+        return typesys.String(
             title=title,
             description=description,
             format='date'
         )
     elif isinstance(field, serializers.DateTimeField):
-        return coreschema.String(
+        return typesys.String(
             title=title,
             description=description,
             format='date-time'
         )
 
     if field.style.get('base_template') == 'textarea.html':
-        return coreschema.String(
+        return typesys.String(
             title=title,
             description=description,
             format='textarea'
         )
-    return coreschema.String(title=title, description=description)
+    return typesys.String(title=title, description=description)
 
 
 def get_pk_description(model, model_field):
@@ -266,7 +266,7 @@ class AutoSchema(ViewInspector):
         for variable in uritemplate.variables(path):
             title = ''
             description = ''
-            schema_cls = coreschema.String
+            schema_cls = typesys.String
             kwargs = {}
             if model is not None:
                 # Attempt to infer a field description if possible.
@@ -286,7 +286,7 @@ class AutoSchema(ViewInspector):
                 if hasattr(view, 'lookup_value_regex') and view.lookup_field == variable:
                     kwargs['pattern'] = view.lookup_value_regex
                 elif isinstance(model_field, models.AutoField):
-                    schema_cls = coreschema.Integer
+                    schema_cls = typesys.Integer
 
             field = coreapi.Field(
                 name=variable,
@@ -326,7 +326,7 @@ class AutoSchema(ViewInspector):
                     name='data',
                     location='body',
                     required=True,
-                    schema=coreschema.Array()
+                    schema=typesys.Array()
                 )
             ]
 

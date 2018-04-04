@@ -897,4 +897,4 @@ class CoreJSONRenderer(BaseRenderer):
     def render(self, data, media_type=None, renderer_context=None):
         indent = bool(renderer_context.get('indent', 0))
         codec = coreapi.codecs.CoreJSONCodec()
-        return codec.dump(data, indent=indent)
+        return codec.encode(data, indent=indent)
