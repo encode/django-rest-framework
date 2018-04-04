@@ -486,6 +486,15 @@
 </code></pre>
 <hr />
 <h2 id="38x-series"><a class="toclink" href="#38x-series">3.8.x series</a></h2>
+<h3 id="381"><a class="toclink" href="#381">3.8.1</a></h3>
+<p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/milestone/67?closed=1">4th April 2018</a></p>
+<ul>
+<li>
+<p>Use old <code>url_name</code> behavior in route decorators <a href="https://github.com/encode/django-rest-framework/issues/5915">#5915</a></p>
+<p>For <code>list_route</code> and <code>detail_route</code> maintain the old behavior of <code>url_name</code>,
+basing it on the <code>url_path</code> instead of the function name.</p>
+</li>
+</ul>
 <h3 id="380"><a class="toclink" href="#380">3.8.0</a></h3>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/milestone/61?closed=1">3rd April 2018</a></p>
 <ul>
@@ -526,6 +535,8 @@ it to introspect its set of actions and the details of the current action.</p>
 <li>Merged <code>list_route</code> and <code>detail_route</code> into a single <code>action</code> decorator.</li>
 <li>Get all extra actions on a <code>ViewSet</code> with <code>.get_extra_actions()</code>.</li>
 <li>Extra actions now set the <code>url_name</code> and <code>url_path</code> on the decorated method.</li>
+<li><code>url_name</code> is now based on the function name, instead of the <code>url_path</code>,
+  as the path is not always suitable (e.g., capturing arguments in the path).</li>
 <li>Enable action url reversing through <code>.reverse_action()</code> method (added in 3.7.4)</li>
 <li>Example reverse call: <code>self.reverse_action(self.custom_action.url_name)</code></li>
 <li>Add <code>detail</code> initkwarg to indicate if the current action is operating on a
@@ -536,6 +547,8 @@ it to introspect its set of actions and the details of the current action.</p>
 <li>Deprecated <code>list_route</code> &amp; <code>detail_route</code> in favor of <code>action</code> decorator with <code>detail</code> boolean.</li>
 <li>Deprecated dynamic list/detail route variants in favor of <code>DynamicRoute</code> with <code>detail</code> boolean.</li>
 <li>Refactored the router's dynamic route generation.</li>
+<li><code>list_route</code> and <code>detail_route</code> maintain the old behavior of <code>url_name</code>,
+  basing it on the <code>url_path</code> instead of the function name.</li>
 </ul>
 </li>
 <li>
@@ -1447,6 +1460,8 @@ Previously may have been stored internally as <code>None</code>.</p>
 <!-- 3.7.5 -->
 
 <!-- 3.8.0 -->
+
+<!-- 3.8.1 -->
             
 
           </div> <!--/span-->
