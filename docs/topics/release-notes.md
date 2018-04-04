@@ -74,7 +74,7 @@ You can determine your currently installed version using `pip show`:
             """
             Drop `maybe_none` field if None.
             """
-            data = super().data()
+            data = super().data
             if 'maybe_none' in data and data['maybe_none'] is None:
                 del data['maybe_none']
             return data
