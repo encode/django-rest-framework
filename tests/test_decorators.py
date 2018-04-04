@@ -215,3 +215,13 @@ class ActionDecoratorTestCase(TestCase):
             "3.10 in favor of `action`, which accepts a `detail` bool. Use "
             "`@action(detail=False)` instead."
         )
+
+    def test_route_url_name_from_path(self):
+        # pre-3.8 behavior was to base the `url_name` off of the `url_path`
+        with pytest.warns(PendingDeprecationWarning):
+            @list_route(url_path='foo_bar')
+            def view(request):
+                pass
+
+        assert view.url_path == 'foo_bar'
+        assert view.url_name == 'foo-bar'

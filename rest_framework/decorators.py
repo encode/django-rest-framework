@@ -147,8 +147,14 @@ def action(methods=None, detail=None, url_path=None, url_name=None, **kwargs):
     def decorator(func):
         func.bind_to_methods = methods
         func.detail = detail
-        func.url_path = url_path or func.__name__
-        func.url_name = url_name or func.__name__.replace('_', '-')
+        func.url_path = url_path if url_path else func.__name__
+        func.url_name = url_name
+        if not url_name:
+            # Remove in 3.10
+            if kwargs.get('_url_name_from_path', False):
+                func.url_name = func.url_path.replace('_', '-')
+            else:
+                func.url_name = func.__name__.replace('_', '-')
         func.kwargs = kwargs
         return func
     return decorator
@@ -163,7 +169,7 @@ def detail_route(methods=None, **kwargs):
         "`action`, which accepts a `detail` bool. Use `@action(detail=True)` instead.",
         PendingDeprecationWarning, stacklevel=2
     )
-    return action(methods, detail=True, **kwargs)
+    return action(methods, detail=True, _url_name_from_path=True, **kwargs)
 
 
 def list_route(methods=None, **kwargs):
@@ -175,4 +181,4 @@ def list_route(methods=None, **kwargs):
         "`action`, which accepts a `detail` bool. Use `@action(detail=False)` instead.",
         PendingDeprecationWarning, stacklevel=2
     )
-    return action(methods, detail=False, **kwargs)
+    return action(methods, detail=False, _url_name_from_path=True, **kwargs)
