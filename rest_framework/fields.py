@@ -1174,7 +1174,13 @@ class DateTimeField(Field):
         return value
 
     def default_timezone(self):
-        return timezone.get_current_timezone() if settings.USE_TZ else None
+        if settings.USE_TZ:
+            if api_settings.DATETIME_TZ:
+                return api_settings.DATETIME_TZ
+            else:
+                return timezone.get_current_timezone()
+        else:
+            return None
 
     def to_internal_value(self, value):
         input_formats = getattr(self, 'input_formats', api_settings.DATETIME_INPUT_FORMATS)

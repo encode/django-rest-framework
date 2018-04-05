@@ -306,6 +306,14 @@ May be a list including the string `'iso-8601'` or Python [strftime format][strf
 
 Default: `['iso-8601']`
 
+#### DATETIME_TZ
+
+If set, used as the canonical timezone for `DateTimeField` serialization. If this is not set but Django timezone support is active, Django's timezone is instead used
+
+May be any of `None`, or a `datetime.tzinfo` object (such as `pytz.timezone('Asia/Kolkata')`)
+
+Default: None
+
 #### DATE_FORMAT
 
 A format string that should be used by default for rendering the output of `DateField` serializer fields.  If `None`, then `DateField` serializer fields will return Python `date` objects, and the date encoding will be determined by the renderer.
