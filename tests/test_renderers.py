@@ -14,8 +14,8 @@ from django.utils import six
 from django.utils.safestring import SafeText
 from django.utils.translation import ugettext_lazy as _
 
-import coreapi
 from rest_framework import permissions, serializers, status
+from rest_framework.compat import coreapi
 from rest_framework.renderers import (
     AdminRenderer, BaseRenderer, BrowsableAPIRenderer, DocumentationRenderer,
     HTMLFormRenderer, JSONRenderer, SchemaJSRenderer, StaticHTMLRenderer
