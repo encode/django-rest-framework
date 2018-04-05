@@ -14,6 +14,7 @@ from django.utils.timezone import activate, deactivate, override, utc
 import rest_framework
 from rest_framework import compat, serializers
 from rest_framework.fields import DjangoImageField, is_simple_callable
+from rest_framework.settings import api_settings
 
 try:
     import pytz
@@ -1278,6 +1279,42 @@ class TestTZWithDateTimeField(FieldValues):
             datetime.datetime(2016, 12, 19, 4, 30, tzinfo=utc): '2016-12-19T10:00:00+05:30',
         }
         cls.field = serializers.DateTimeField(default_timezone=kolkata)
+
+
+@pytest.mark.skipif(pytz is None, reason='pytz not installed')
+@override_settings(TIME_ZONE='Asia/Kolkata', USE_TZ=True)
+class TestDateTimeWithOverrideField(FieldValues, TestCase):
+    """
+    Valid and invalid values for `DateTimeField` when not using UTC as the timezone.
+    """
+    @classmethod
+    def setup_class(cls):
+        # use class setup method, as class-level attribute will still be evaluated even if test is skipped
+        kolkata = pytz.timezone('Asia/Kolkata')
+        paris = pytz.timezone('Europe/Paris')
+        # set the timezone to a specific timezone that isn't the django-level setting
+        cls.old_setting = api_settings.DATETIME_TZ
+
+        api_settings.DATETIME_TZ = paris
+
+
+        cls.valid_inputs = {
+            '2016-12-19T10:00:00': paris.localize(datetime.datetime(2016, 12, 19, 10)),
+            # datetimes are reworked into the paris tz
+            '2016-12-19T10:00:00+05:30': paris.localize(datetime.datetime(2016, 12, 19, 5, 30)),
+            # naive datetimes are assumed to be in the paris tz
+            datetime.datetime(2016, 12, 19, 10): paris.localize(datetime.datetime(2016, 12, 19, 10)),
+        }
+        cls.invalid_inputs = {}
+        cls.outputs = {
+            datetime.datetime(2016, 12, 19, 10): '2016-12-19T10:00:00+01:00',
+            datetime.datetime(2016, 12, 19, 4, 30, tzinfo=utc): '2016-12-19T05:30:00+01:00',
+        }
+        cls.field = serializers.DateTimeField()
+
+    @classmethod
+    def teardown_class(cls):
+        api_settings.DATETIME_TZ = cls.old_setting
 
 
 @pytest.mark.skipif(pytz is None, reason='pytz not installed')
