@@ -441,6 +441,30 @@ class Serializer(BaseSerializer):
 
         return value
 
+    def _read_only_defaults(self):
+        fields = [
+            field for field in self.fields.values()
+            if (field.read_only) and (field.default != empty) and (field.source != '*') and ('.' not in field.source)
+        ]
+
+        defaults = OrderedDict()
+        for field in fields:
+            try:
+                default = field.get_default()
+            except SkipField:
+                continue
+            defaults[field.field_name] = default
+
+        return defaults
+
+    def run_validators(self, value):
+        """
+        Add read_only fields with defaults to value before running validators.
+        """
+        to_validate = self._read_only_defaults()
+        to_validate.update(value)
+        super(Serializer, self).run_validators(to_validate)
+
     def to_internal_value(self, data):
         """
         Dict of native values <- Dict of primitive datatypes.
@@ -1475,6 +1499,12 @@ class ModelSerializer(Serializer):
         field_names = {
             field.source for field in self._writable_fields
             if (field.source != '*') and ('.' not in field.source)
+        }
+
+        # Special Case: Add read_only fields with defaults.
+        field_names |= {
+            field.source for field in self.fields.values()
+            if (field.read_only) and (field.default != empty) and (field.source != '*') and ('.' not in field.source)
         }
 
         # Note that we make sure to check `unique_together` both on the
