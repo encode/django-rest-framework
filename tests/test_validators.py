@@ -277,6 +277,30 @@ class TestUniquenessTogetherValidation(TestCase):
         """)
         assert repr(serializer) == expected
 
+    def test_read_only_fields_with_default(self):
+        """
+        Special case of read_only + default DOES validate unique_together.
+        """
+        class ReadOnlyFieldWithDefaultSerializer(serializers.ModelSerializer):
+            race_name = serializers.CharField(max_length=100, read_only=True, default='example')
+
+            class Meta:
+                model = UniquenessTogetherModel
+                fields = ('id', 'race_name', 'position')
+
+        data = {'position': 2}
+        serializer = ReadOnlyFieldWithDefaultSerializer(data=data)
+
+        assert len(serializer.validators) == 1
+        assert isinstance(serializer.validators[0], UniqueTogetherValidator)
+        assert serializer.validators[0].fields == ('race_name', 'position')
+        assert not serializer.is_valid()
+        assert serializer.errors == {
+            'non_field_errors': [
+                'The fields race_name, position must make a unique set.'
+            ]
+        }
+
     def test_allow_explict_override(self):
         """
         Ensure validators can be explicitly removed..
