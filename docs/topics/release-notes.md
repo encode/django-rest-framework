@@ -40,6 +40,15 @@ You can determine your currently installed version using `pip show`:
 
 ## 3.8.x series
 
+### 3.8.2
+
+**Date**: [6th April 2018][3.8.2-milestone]
+
+* Fix `read_only` + `default` `unique_together` validation. [#5922][gh5922]
+* authtoken.views import coreapi from rest_framework.compat, not directly. [#5921][gh5921]
+* Docs: Add missing argument 'detail' to Route [#5920][gh5920]
+
+
 ### 3.8.1
 
 **Date**: [4th April 2018][3.8.1-milestone]
@@ -1072,6 +1081,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [3.7.7-milestone]: https://github.com/encode/django-rest-framework/milestone/65?closed=1
 [3.8.0-milestone]: https://github.com/encode/django-rest-framework/milestone/61?closed=1
 [3.8.1-milestone]: https://github.com/encode/django-rest-framework/milestone/67?closed=1
+[3.8.2-milestone]: https://github.com/encode/django-rest-framework/milestone/68?closed=1
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/encode/django-rest-framework/issues/2013
@@ -1946,3 +1956,8 @@ For older release notes, [please see the version 2.x documentation][old-release-
 
 <!-- 3.8.1 -->
 [gh5915]: https://github.com/encode/django-rest-framework/issues/5915
+
+<!-- 3.8.2 -->
+[gh5922]: https://github.com/encode/django-rest-framework/issues/5922
+[gh5921]: https://github.com/encode/django-rest-framework/issues/5921
+[gh5920]: https://github.com/encode/django-rest-framework/issues/5920
