@@ -1174,7 +1174,7 @@ The [drf-writable-nested][drf-writable-nested] package provides writable nested 
 [model-managers]: https://docs.djangoproject.com/en/stable/topics/db/managers/
 [encapsulation-blogpost]: https://www.dabapps.com/blog/django-models-and-encapsulation/
 [thirdparty-writable-nested]: serializers.md#drf-writable-nested
-[django-rest-marshmallow]: https://tomchristie.github.io/django-rest-marshmallow/
+[django-rest-marshmallow]: https://marshmallow-code.github.io/django-rest-marshmallow/
 [marshmallow]: https://marshmallow.readthedocs.io/en/latest/
 [serpy]: https://github.com/clarkduvall/serpy
 [mongoengine]: https://github.com/umutbozkurt/django-rest-framework-mongoengine
