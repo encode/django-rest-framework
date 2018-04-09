@@ -1614,7 +1614,8 @@ class ListField(Field):
             if len(val) > 0:
                 # Support QueryDict lists in HTML input.
                 return val
-            return html.parse_html_list(dictionary, prefix=self.field_name)
+            return html.parse_html_list(dictionary, prefix=self.field_name, default=empty)
+
         return dictionary.get(self.field_name, empty)
 
     def to_internal_value(self, data):
