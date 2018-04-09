@@ -26,7 +26,7 @@ you should use the `api_settings` object.  For example.
 
     from rest_framework.settings import api_settings
 
-    print api_settings.DEFAULT_AUTHENTICATION_CLASSES
+    print(api_settings.DEFAULT_AUTHENTICATION_CLASSES)
 
 The `api_settings` object will check for any user-defined settings, and otherwise fall back to the default values.  Any setting that uses string import paths to refer to a class will automatically import and return the referenced class, instead of the string literal.
 
