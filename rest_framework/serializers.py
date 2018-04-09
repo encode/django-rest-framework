@@ -630,7 +630,7 @@ class ListSerializer(BaseSerializer):
 
         return value
 
-    def to_internal_value(self, data):
+    def to_internal_value(self, data, error_function=any):
         """
         List of dicts of native values <- List of dicts of primitive datatypes.
         """
@@ -666,7 +666,7 @@ class ListSerializer(BaseSerializer):
                 ret.append(validated)
                 errors.append({})
 
-        if any(errors):
+        if error_function(errors):
             raise ValidationError(errors)
 
         return ret
