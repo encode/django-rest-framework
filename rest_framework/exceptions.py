@@ -91,6 +91,9 @@ class ErrorDetail(six.text_type):
             self.code,
         ))
 
+    def __hash__(self):
+        return hash(str(self))
+
 
 class APIException(Exception):
     """
