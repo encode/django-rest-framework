@@ -118,6 +118,8 @@ Add `'rest_framework'` to your `INSTALLED_APPS` setting.
 
 If you're intending to use the browsable API you'll probably also want to add REST framework's login and logout views.  Add the following to your root `urls.py` file.
 
+    from django.conf.urls import url, include
+    ...
     urlpatterns = [
         ...
         url(r'^api-auth/', include('rest_framework.urls'))
