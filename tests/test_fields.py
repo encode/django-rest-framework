@@ -466,6 +466,24 @@ class TestHTMLInput:
         assert serializer.is_valid()
         assert serializer.validated_data == {'scores': [1]}
 
+    def test_querydict_indexed_list_input(self):
+        class TestSerializer(serializers.Serializer):
+            scores = serializers.ListField(child=serializers.IntegerField())
+
+        instance = {'scores': []}
+        serializer = TestSerializer(instance=instance, data=QueryDict('scores[0]=1&scores[1]=3'), partial=True)
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'scores': [1, 3]}
+
+    def test_querydict_indexed_list_input_only_one_input(self):
+        class TestSerializer(serializers.Serializer):
+            scores = serializers.ListField(child=serializers.IntegerField())
+
+        instance = {'scores': []}
+        serializer = TestSerializer(instance=instance, data=QueryDict('scores[0]=1'), partial=True)
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'scores': [1]}
+
 
 class TestCreateOnlyDefault:
     def setup(self):

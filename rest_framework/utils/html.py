@@ -6,6 +6,9 @@ import re
 from django.utils.datastructures import MultiValueDict
 
 
+HTML_LIST_REGEXP_FORMAT = r'^%s\[([0-9]+)\](.*)$'
+
+
 def is_html_input(dictionary):
     # MultiDict type datastructures are used to represent HTML form input,
     # which may have more than one value for each key.
@@ -46,7 +49,7 @@ def parse_html_list(dictionary, prefix=''):
     ]
     """
     ret = {}
-    regex = re.compile(r'^%s\[([0-9]+)\](.*)$' % re.escape(prefix))
+    regex = re.compile(HTML_LIST_REGEXP_FORMAT % re.escape(prefix))
     for field, value in dictionary.items():
         match = regex.match(field)
         if not match:
