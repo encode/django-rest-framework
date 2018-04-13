@@ -1122,8 +1122,10 @@ class TestDateField(FieldValues):
         datetime.date(2001, 1, 1): datetime.date(2001, 1, 1),
     }
     invalid_inputs = {
-        'abc': ['Date has wrong format. Use one of these formats instead: YYYY[-MM[-DD]].'],
-        '2001-99-99': ['Date has wrong format. Use one of these formats instead: YYYY[-MM[-DD]].'],
+        'abc': ['Date has wrong format. Use one of these formats instead: YYYY-MM-DD.'],
+        '2001-99-99': ['Date has wrong format. Use one of these formats instead: YYYY-MM-DD.'],
+        '2001-01': ['Date has wrong format. Use one of these formats instead: YYYY-MM-DD.'],
+        '2001': ['Date has wrong format. Use one of these formats instead: YYYY-MM-DD.'],
         datetime.datetime(2001, 1, 1, 12, 00): ['Expected a date but got a datetime.'],
     }
     outputs = {
