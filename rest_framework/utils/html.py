@@ -12,7 +12,7 @@ def is_html_input(dictionary):
     return hasattr(dictionary, 'getlist')
 
 
-def parse_html_list(dictionary, prefix='', default=[]):
+def parse_html_list(dictionary, prefix='', default=None):
     """
     Used to support list values in HTML forms.
     Supports lists of primitives and/or dictionaries.
@@ -61,7 +61,9 @@ def parse_html_list(dictionary, prefix='', default=[]):
             ret[index][key] = value
         else:
             ret[index] = MultiValueDict({key: [value]})
-    return [ret[item] for item in sorted(ret)] if len(ret.keys()) > 0 else default
+
+    # return the items of the ``ret`` dict, sorted by key, or ``default`` if the dict is empty
+    return [ret[item] for item in sorted(ret)] if ret else default
 
 
 def parse_html_dict(dictionary, prefix=''):
