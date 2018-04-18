@@ -24,8 +24,9 @@ The initial aim is to provide a single full-time position on REST framework.
 [![][stream-img]][stream-url]
 [![][machinalis-img]][machinalis-url]
 [![][rollbar-img]][rollbar-url]
+[![][cadre-img]][cadre-url]
 
-Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Rover][rover-url], [Sentry][sentry-url], [Stream][stream-url], [Machinalis][machinalis-url], and [Rollbar][rollbar-url].
+Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Rover][rover-url], [Sentry][sentry-url], [Stream][stream-url], [Machinalis][machinalis-url], [Rollbar][rollbar-url], and [Cadre][cadre-url].
 
 ---
 
@@ -192,12 +193,14 @@ Send a description of the issue via email to [rest-framework-security@googlegrou
 [stream-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/stream-readme.png
 [machinalis-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/machinalis-readme.png
 [rollbar-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/rollbar-readme.png
+[cadre-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/cadre-readme.png
 
 [rover-url]: http://jobs.rover.com/
 [sentry-url]: https://getsentry.com/welcome/
 [stream-url]: https://getstream.io/try-the-api/?utm_source=drf&utm_medium=banner&utm_campaign=drf
 [machinalis-url]: https://hello.machinalis.co.uk/
 [rollbar-url]: https://rollbar.com/
+[cadre-url]: https://cadre.com/
 
 [oauth1-section]: http://www.django-rest-framework.org/api-guide/authentication/#django-rest-framework-oauth
 [oauth2-section]: http://www.django-rest-framework.org/api-guide/authentication/#django-oauth-toolkit
