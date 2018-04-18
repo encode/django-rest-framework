@@ -454,7 +454,7 @@ the foundations for future changes.</p>
 <p><em>We'd like to say thanks in particular our premium backers, <a href="http://jobs.rover.com/">Rover</a>, <a href="https://getsentry.com/welcome/">Sentry</a>, <a href="https://getstream.io/?utm_source=drf&amp;utm_medium=banner&amp;utm_campaign=drf">Stream</a>, <a href="https://hello.machinalis.co.uk/">Machinalis</a>, and <a href="https://rollbar.com">Rollbar</a>.</em></p>
 <hr />
 <h2 id="breaking-changes"><a class="toclink" href="#breaking-changes">Breaking Changes</a></h2>
-<h3 id="altered-the-behaviour-of-read_only-plus-default-on-field"><code>default</code> on Field.<a class="toclink" href="#altered-the-behaviour-of-read_only-plus-default-on-field">Altered the behaviour of <code>read_only</code> plus </a></h3>
+<h3 id="altered-the-behaviour-of-read_only-plus-default-on-field"><a class="toclink" href="#altered-the-behaviour-of-read_only-plus-default-on-field">Altered the behaviour of <code>read_only</code> plus <code>default</code> on Field.</a></h3>
 <p><a href="https://github.com/encode/django-rest-framework/issues/5886">#5886</a> <code>read_only</code> fields will now <strong>always</strong> be excluded from writable fields.</p>
 <p>Previously <code>read_only</code> fields when combined with a <code>default</code> value would use the <code>default</code> for create and update
 operations. This was counter-intuitive in some circumstances and led to difficulties supporting dotted <code>source</code>
@@ -464,10 +464,10 @@ the view:</p>
 <pre><code>def perform_create(self, serializer):
     serializer.save(owner=self.request.user)
 </code></pre>
-<p>Alternatively you may override <code>save()</code> or <code>create()</code> or <code>update()</code> on the serialiser as appropriate.</p>
+<p>Alternatively you may override <code>save()</code> or <code>create()</code> or <code>update()</code> on the serializer as appropriate.</p>
 <hr />
 <h2 id="deprecations"><a class="toclink" href="#deprecations">Deprecations</a></h2>
-<h3 id="action-decorator-replaces-list_route-and-detail_route"><code>list_route</code> and <a class="toclink" href="#action-decorator-replaces-list_route-and-detail_route"><code>action</code> decorator replaces <code>detail_route</code></a></h3>
+<h3 id="action-decorator-replaces-list_route-and-detail_route"><a class="toclink" href="#action-decorator-replaces-list_route-and-detail_route"><code>action</code> decorator replaces <code>list_route</code> and <code>detail_route</code></a></h3>
 <p><a href="https://github.com/encode/django-rest-framework/issues/5705">#5705</a> <code>list_route</code> and <code>detail_route</code> have been merge into a single <code>action</code> decorator. This improves viewset action introspection, and will allow extra actions to be displayed in the Browsable API in future versions.</p>
 <p>Both <code>list_route</code> and <code>detail_route</code> are now pending deprecation. They will be deprecated in 3.9 and removed entirely
 in 3.10.</p>
