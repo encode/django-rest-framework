@@ -180,7 +180,7 @@ Send a description of the issue via email to [rest-framework-security@googlegrou
 [coverage-status-image]: https://img.shields.io/codecov/c/github/encode/django-rest-framework/master.svg
 [codecov]: https://codecov.io/github/encode/django-rest-framework?branch=master
 [pypi-version]: https://img.shields.io/pypi/v/djangorestframework.svg
-[pypi]: https://pypi.python.org/pypi/djangorestframework
+[pypi]: https://pypi.org/project/djangorestframework/
 [twitter]: https://twitter.com/_tomchristie
 [group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
 [sandbox]: https://restframework.herokuapp.com/

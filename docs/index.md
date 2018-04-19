@@ -24,7 +24,7 @@
         <img src="https://secure.travis-ci.org/encode/django-rest-framework.svg?branch=master" class="status-badge">
     </a>
 
-    <a href="https://pypi.python.org/pypi/djangorestframework">
+    <a href="https://pypi.org/project/djangorestframework/">
         <img src="https://img.shields.io/pypi/v/djangorestframework.svg" class="status-badge">
     </a>
 </p>
@@ -308,9 +308,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [redhat]: https://www.redhat.com/
 [heroku]: https://www.heroku.com/
 [eventbrite]: https://www.eventbrite.co.uk/about/
-[coreapi]: https://pypi.python.org/pypi/coreapi/
-[markdown]: https://pypi.python.org/pypi/Markdown/
-[django-filter]: https://pypi.python.org/pypi/django-filter
+[coreapi]: https://pypi.org/project/coreapi/
+[markdown]: https://pypi.org/project/Markdown/
+[django-filter]: https://pypi.org/project/django-filter/
 [django-crispy-forms]: https://github.com/maraujop/django-crispy-forms
 [django-guardian]: https://github.com/django-guardian/django-guardian
 [index]: .
