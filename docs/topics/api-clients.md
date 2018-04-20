@@ -274,7 +274,7 @@ For example, using the "Django REST framework JWT" package
     result = client.action(schema, action, params)
 
     auth = coreapi.auth.TokenAuthentication(
-        scheme='Token',
+        scheme='JWT',
         token=result['token']
     )
     client = coreapi.Client(auth=auth)
