@@ -269,8 +269,8 @@ For example, using the "Django REST framework JWT" package
     client = coreapi.Client()
     schema = client.get('https://api.example.org/')
 
-    action = ['api-token-auth', 'obtain-token']
-    params = {username: "example", email: "example@example.com"}
+    action = ['api-token-auth', 'create']
+    params = {"username": "example", "password": "secret"}
     result = client.action(schema, action, params)
 
     auth = coreapi.auth.TokenAuthentication(
