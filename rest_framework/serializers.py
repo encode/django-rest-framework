@@ -635,7 +635,7 @@ class ListSerializer(BaseSerializer):
         List of dicts of native values <- List of dicts of primitive datatypes.
         """
         if html.is_html_input(data):
-            data = html.parse_html_list(data, default=empty)
+            data = html.parse_html_list(data, default=[])
 
         if not isinstance(data, list):
             message = self.error_messages['not_a_list'].format(
