@@ -209,6 +209,12 @@ class NotAcceptable(APIException):
         super(NotAcceptable, self).__init__(detail, code)
 
 
+class Conflict(APIException):
+    status_code = status.HTTP_409_CONFLICT
+    default_detail = _('Conflict with the current state of the target resource.')
+    default_code = 'conflict'
+
+
 class UnsupportedMediaType(APIException):
     status_code = status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
     default_detail = _('Unsupported media type "{media_type}" in request.')
