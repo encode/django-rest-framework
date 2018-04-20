@@ -642,7 +642,7 @@ class Field(object):
 
 class BooleanField(Field):
     default_error_messages = {
-        'invalid': _('"{input}" is not a valid boolean.')
+        'invalid': _('Must be a valid boolean.')
     }
     default_empty_html = False
     initial = False
@@ -687,7 +687,7 @@ class BooleanField(Field):
 
 class NullBooleanField(Field):
     default_error_messages = {
-        'invalid': _('"{input}" is not a valid boolean.')
+        'invalid': _('Must be a valid boolean.')
     }
     initial = None
     TRUE_VALUES = {
@@ -841,7 +841,7 @@ class UUIDField(Field):
     valid_formats = ('hex_verbose', 'hex', 'int', 'urn')
 
     default_error_messages = {
-        'invalid': _('"{value}" is not a valid UUID.'),
+        'invalid': _('Must be a valid UUID.'),
     }
 
     def __init__(self, **kwargs):
