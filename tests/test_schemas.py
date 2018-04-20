@@ -17,6 +17,7 @@ from rest_framework.schemas import (
     AutoSchema, ManualSchema, SchemaGenerator, get_schema_view
 )
 from rest_framework.schemas.generators import EndpointEnumerator
+from rest_framework.schemas.inspectors import field_to_schema
 from rest_framework.schemas.utils import is_list_view
 from rest_framework.test import APIClient, APIRequestFactory
 from rest_framework.utils import formatting
@@ -762,6 +763,46 @@ class TestAutoSchema(TestCase):
         view = CustomView()
         link = view.schema.get_link(path, method, base_url)
         assert link == expected
+
+    def test_field_to_schema(self):
+        label = 'Test label'
+        help_text = 'This is a helpful test text'
+
+        cases = [
+            # tuples are ([field], [expected schema])
+            # TODO: Add remaining cases
+            (
+                serializers.BooleanField(label=label, help_text=help_text),
+                coreschema.Boolean(title=label, description=help_text)
+            ),
+            (
+                serializers.DecimalField(1000, 1000, label=label, help_text=help_text),
+                coreschema.Number(title=label, description=help_text)
+            ),
+            (
+                serializers.FloatField(label=label, help_text=help_text),
+                coreschema.Number(title=label, description=help_text)
+            ),
+            (
+                serializers.IntegerField(label=label, help_text=help_text),
+                coreschema.Integer(title=label, description=help_text)
+            ),
+            (
+                serializers.DateField(label=label, help_text=help_text),
+                coreschema.String(title=label, description=help_text, format='date')
+            ),
+            (
+                serializers.DateTimeField(label=label, help_text=help_text),
+                coreschema.String(title=label, description=help_text, format='date-time')
+            ),
+            (
+                serializers.JSONField(label=label, help_text=help_text),
+                coreschema.Object(title=label, description=help_text)
+            ),
+        ]
+
+        for case in cases:
+            self.assertEqual(field_to_schema(case[0]), case[1])
 
 
 def test_docstring_is_not_stripped_by_get_description():
