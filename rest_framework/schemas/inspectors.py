@@ -286,10 +286,10 @@ class AutoSchema(ViewInspector):
                 elif model_field is not None and model_field.primary_key:
                     description = get_pk_description(model, model_field)
 
-                if hasattr(view, 'lookup_value_regex') and view.lookup_field == variable:
-                    kwargs['pattern'] = view.lookup_value_regex
-                elif isinstance(model_field, models.AutoField):
+                if isinstance(model_field, (models.IntegerField, models.BigIntegerField, models.AutoField)):
                     schema_cls = coreschema.Integer
+                elif hasattr(view, 'lookup_value_regex') and view.lookup_field == variable:
+                    kwargs['pattern'] = view.lookup_value_regex
 
             field = coreapi.Field(
                 name=variable,
