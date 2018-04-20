@@ -534,8 +534,21 @@ class Field(object):
             if hasattr(validator, 'set_context'):
                 validator.set_context(self)
 
+            # Add missing fields to `value` for partial update if these fields exists in validator, but missing in
+            # `value`
+            value_ext = copy.copy(value)
+            if getattr(self.root, 'partial', False):
+                if hasattr(validator, 'date_field') and validator.date_field not in value_ext:
+                    value_ext[validator.date_field] = \
+                        self.fields.fields.get(validator.date_field).to_internal_value(
+                            getattr(self.instance, validator.date_field))
+                if hasattr(validator, 'field') and validator.field not in value_ext:
+                    value_ext[validator.field] = \
+                        self.fields.fields.get(validator.field).to_internal_value(
+                            getattr(self.instance, validator.field))
+
             try:
-                validator(value)
+                validator(value_ext)
             except ValidationError as exc:
                 # If the validation error contains a mapping of fields to
                 # errors then simply raise it immediately rather than

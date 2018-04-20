@@ -372,6 +372,7 @@ class TestUniquenessTogetherValidation(TestCase):
 class UniqueForDateModel(models.Model):
     slug = models.CharField(max_length=100, unique_for_date='published')
     published = models.DateField()
+    body = models.CharField(max_length=100, null=True)
 
 
 class UniqueForDateSerializer(serializers.ModelSerializer):
@@ -384,7 +385,8 @@ class TestUniquenessForDateValidation(TestCase):
     def setUp(self):
         self.instance = UniqueForDateModel.objects.create(
             slug='existing',
-            published='2000-01-01'
+            published='2000-01-01',
+            body='some body'
         )
 
     def test_repr(self):
@@ -394,6 +396,7 @@ class TestUniquenessForDateValidation(TestCase):
                 id = IntegerField(label='ID', read_only=True)
                 slug = CharField(max_length=100)
                 published = DateField(required=True)
+                body = CharField(allow_null=True, max_length=100, required=False)
                 class Meta:
                     validators = [<UniqueForDateValidator(queryset=UniqueForDateModel.objects.all(), field='slug', date_field='published')>]
         """)
@@ -433,6 +436,28 @@ class TestUniquenessForDateValidation(TestCase):
         assert serializer.validated_data == {
             'slug': 'existing',
             'published': datetime.date(2000, 1, 1)
+        }
+
+    def test_missing_date_field_in_partial_update(self):
+        """
+        When performing partial update if `date_field` is missed it takes its current value
+        """
+        data = {'slug': 'existing2'}
+        serializer = UniqueForDateSerializer(instance=self.instance, data=data, partial=True)
+        assert serializer.is_valid()
+        assert serializer.validated_data == {
+            'slug': 'existing2'
+        }
+
+    def test_missing_field_in_partial_update(self):
+        """
+        When performing partial update if `field` is missed it takes its current value
+        """
+        data = {'body': 'new body'}
+        serializer = UniqueForDateSerializer(instance=self.instance, data=data, partial=True)
+        assert serializer.is_valid()
+        assert serializer.validated_data == {
+            'body': 'new body'
         }
 
 # Tests for `UniqueForMonthValidator`
