@@ -42,6 +42,7 @@ class SearchFilter(BaseFilterBackend):
     search_param = api_settings.SEARCH_PARAM
     template = 'rest_framework/filters/search.html'
     lookup_prefixes = {
+        '*': 'icontains',
         '^': 'istartswith',
         '=': 'iexact',
         '@': 'search',
@@ -63,7 +64,7 @@ class SearchFilter(BaseFilterBackend):
         if lookup:
             field_name = field_name[1:]
         else:
-            lookup = 'icontains'
+            lookup = api_settings.DEFAULT_SEARCH_LOOKUP
         return LOOKUP_SEP.join([field_name, lookup])
 
     def must_call_distinct(self, queryset, search_fields):
