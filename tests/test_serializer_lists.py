@@ -1,3 +1,4 @@
+from django.http import QueryDict
 from django.utils.datastructures import MultiValueDict
 
 from rest_framework import serializers
@@ -532,3 +533,32 @@ class TestSerializerPartialUsage:
                 assert value == updated_data_list[index][key]
 
         assert serializer.errors == {}
+
+
+class TestEmptyListSerializer:
+    """
+    Tests the behaviour of ListSerializers when there is no data passed to it
+    """
+
+    def setup(self):
+        class ExampleListSerializer(serializers.ListSerializer):
+            child = serializers.IntegerField()
+
+        self.Serializer = ExampleListSerializer
+
+    def test_nested_serializer_with_list_json(self):
+        # pass an empty array to the serializer
+        input_data = []
+
+        serializer = self.Serializer(data=input_data)
+
+        assert serializer.is_valid()
+        assert serializer.validated_data == []
+
+    def test_nested_serializer_with_list_multipart(self):
+        # pass an "empty" QueryDict to the serializer (should be the same as an empty array)
+        input_data = QueryDict('')
+        serializer = self.Serializer(data=input_data)
+
+        assert serializer.is_valid()
+        assert serializer.validated_data == []

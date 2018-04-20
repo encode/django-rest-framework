@@ -607,7 +607,7 @@ class ListSerializer(BaseSerializer):
         # We override the default field access in order to support
         # lists in HTML forms.
         if html.is_html_input(dictionary):
-            return html.parse_html_list(dictionary, prefix=self.field_name)
+            return html.parse_html_list(dictionary, prefix=self.field_name, default=empty)
         return dictionary.get(self.field_name, empty)
 
     def run_validation(self, data=empty):
@@ -635,7 +635,7 @@ class ListSerializer(BaseSerializer):
         List of dicts of native values <- List of dicts of primitive datatypes.
         """
         if html.is_html_input(data):
-            data = html.parse_html_list(data)
+            data = html.parse_html_list(data, default=[])
 
         if not isinstance(data, list):
             message = self.error_messages['not_a_list'].format(
