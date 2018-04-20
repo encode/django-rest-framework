@@ -29,7 +29,7 @@
         </thead>
         <tbody>
             {% for field in link.fields|with_location:'path' %}
-            <tr><td class="parameter-name"><code>{{ field.name }}</code>{% if field.required %} <span class="label label-warning">required</span>{% endif %}</td><td>{% if field.schema.description %}{{ field.schema.description }}{% endif %}</td></tr>
+            <tr><td class="parameter-name"><code>{{ field.name }}</code>{% if field.required %} <span class="label label-warning">required</span>{% endif %}</td><td>{% if field.schema.description %}{{ field.schema.description|safe }}{% endif %}</td></tr>
             {% endfor %}
         </tbody>
     </table>
@@ -43,7 +43,7 @@
         </thead>
         <tbody>
             {% for field in link.fields|with_location:'query' %}
-            <tr><td class="parameter-name"><code>{{ field.name }}</code>{% if field.required %} <span class="label label-warning">required</span>{% endif %}</td><td>{% if field.schema.description %}{{ field.schema.description }}{% endif %}</td></tr>
+            <tr><td class="parameter-name"><code>{{ field.name }}</code>{% if field.required %} <span class="label label-warning">required</span>{% endif %}</td><td>{% if field.schema.description %}{{ field.schema.description|safe }}{% endif %}</td></tr>
             {% endfor %}
         </tbody>
     </table>
@@ -57,7 +57,7 @@
         </thead>
         <tbody>
             {% for field in link.fields|with_location:'header' %}
-            <tr><td class="parameter-name"><code>{{ field.name }}</code>{% if field.required %} <span class="label label-warning">required</span>{% endif %}</td><td>{% if field.schema.description %}{{ field.schema.description }}{% endif %}</td></tr>
+            <tr><td class="parameter-name"><code>{{ field.name }}</code>{% if field.required %} <span class="label label-warning">required</span>{% endif %}</td><td>{% if field.schema.description %}{{ field.schema.description|safe }}{% endif %}</td></tr>
             {% endfor %}
         </tbody>
     </table>
@@ -71,7 +71,7 @@
         </thead>
         <tbody>
             {% for field in link.fields|with_location:'body' %}
-            <tr><td class="parameter-name"><code>{{ field.name }}</code>{% if field.required %} <span class="label label-warning">required</span>{% endif %}</td><td>{% if field.schema.description %}{{ field.schema.description }}{% endif %}</td></tr>
+            <tr><td class="parameter-name"><code>{{ field.name }}</code>{% if field.required %} <span class="label label-warning">required</span>{% endif %}</td><td>{% if field.schema.description %}{{ field.schema.description|safe }}{% endif %}</td></tr>
             {% endfor %}
         </tbody>
     </table>
@@ -84,7 +84,7 @@
         </thead>
         <tbody>
             {% for field in link.fields|with_location:'form' %}
-            <tr><td class="parameter-name"><code>{{ field.name }}</code>{% if field.required %} <span class="label label-warning">required</span>{% endif %}</td><td>{% if field.schema.description %}{{ field.schema.description }}{% endif %}</td></tr>
+            <tr><td class="parameter-name"><code>{{ field.name }}</code>{% if field.required %} <span class="label label-warning">required</span>{% endif %}</td><td>{% if field.schema.description %}{{ field.schema.description|safe }}{% endif %}</td></tr>
             {% endfor %}
         </tbody>
     </table>
