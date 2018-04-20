@@ -81,6 +81,10 @@ class ErrorDetailTests(TestCase):
         assert str(ErrorDetail('msg1')) == 'msg1'
         assert str(ErrorDetail('msg1', 'code')) == 'msg1'
 
+    def test_hash(self):
+        assert hash(ErrorDetail('msg')) == hash('msg')
+        assert hash(ErrorDetail('msg', 'code')) == hash('msg')
+
 
 class TranslationTests(TestCase):
 
