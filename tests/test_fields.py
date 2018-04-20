@@ -573,7 +573,7 @@ class TestBooleanField(FieldValues):
         False: False,
     }
     invalid_inputs = {
-        'foo': ['Is not a valid boolean.'],
+        'foo': ['Must be a valid boolean.'],
         None: ['This field may not be null.']
     }
     outputs = {
@@ -598,7 +598,7 @@ class TestBooleanField(FieldValues):
         for input_value in inputs:
             with pytest.raises(serializers.ValidationError) as exc_info:
                 field.run_validation(input_value)
-            expected = ['Is not a valid boolean.'.format(input_value)]
+            expected = ['Must be a valid boolean.'.format(input_value)]
             assert exc_info.value.detail == expected
 
 
@@ -615,7 +615,7 @@ class TestNullBooleanField(TestBooleanField):
         None: None
     }
     invalid_inputs = {
-        'foo': ['Is not a valid boolean.'],
+        'foo': ['Must be a valid boolean.'],
     }
     outputs = {
         'true': True,
@@ -759,8 +759,8 @@ class TestUUIDField(FieldValues):
         284758210125106368185219588917561929842: uuid.UUID('d63a6fb6-88d5-40c7-a91c-9edf73283072')
     }
     invalid_inputs = {
-        '825d7aeb-05a9-45b5-a5b7': ['Is not a valid UUID.'],
-        (1, 2, 3): ['Is not a valid UUID.']
+        '825d7aeb-05a9-45b5-a5b7': ['Must be a valid UUID.'],
+        (1, 2, 3): ['Must be a valid UUID.']
     }
     outputs = {
         uuid.UUID('825d7aeb-05a9-45b5-a5b7-05df87923cda'): '825d7aeb-05a9-45b5-a5b7-05df87923cda'
