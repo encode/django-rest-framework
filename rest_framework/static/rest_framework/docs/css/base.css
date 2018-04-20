@@ -162,6 +162,10 @@ pre.highlight code {
   transition: all 1s ease;
 }
 
+.sidebar #menu-content {
+  padding-bottom: 70px;
+}
+
 body {
   margin: 0px;
   padding: 0px;
