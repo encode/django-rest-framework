@@ -312,8 +312,8 @@ The following example demonstrates how you might handle creating a user with a n
 
         def create(self, validated_data):
             profile_data = validated_data.pop('profile')
-            user = User.objects.create(**validated_data)
-            Profile.objects.create(user=user, **profile_data)
+            profile = Profile.objects.create(**profile_data)
+	    user = User.objects.create(profile=profile, **validated_data)
             return user
 
 #### Writing `.update()` methods for nested representations
