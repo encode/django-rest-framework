@@ -10,6 +10,7 @@ from __future__ import unicode_literals
 
 import base64
 from collections import OrderedDict
+from warnings import warn
 
 from django import forms
 from django.conf import settings
@@ -623,7 +624,8 @@ class BrowsableAPIRenderer(BaseRenderer):
         elif paginator is not None and data is not None:
             try:
                 paginator.get_results(data)
-            except (TypeError, KeyError):
+            except (TypeError, KeyError) as exc:
+                warn('get_filter_form() aborting because pagination failed: %s' % exc)
                 return
         elif not isinstance(data, list):
             return
