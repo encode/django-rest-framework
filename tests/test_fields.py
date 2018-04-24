@@ -1459,6 +1459,23 @@ class TestNoOutputFormatTimeField(FieldValues):
     field = serializers.TimeField(format=None)
 
 
+class TestMinMaxDurationField(FieldValues):
+    """
+    Valid and invalid values for `DurationField` with min and max limits.
+    """
+    valid_inputs = {
+        '3 08:32:01.000123': datetime.timedelta(days=3, hours=8, minutes=32, seconds=1, microseconds=123),
+        86401: datetime.timedelta(days=1, seconds=1),
+    }
+    invalid_inputs = {
+        3600: ['Ensure this value is greater than or equal to 1 day, 0:00:00.'],
+        '4 08:32:01.000123': ['Ensure this value is less than or equal to 4 days, 0:00:00.'],
+        '3600': ['Ensure this value is greater than or equal to 1 day, 0:00:00.'],
+    }
+    outputs = {}
+    field = serializers.DurationField(min_value=datetime.timedelta(days=1), max_value=datetime.timedelta(days=4))
+
+
 class TestDurationField(FieldValues):
     """
     Valid and invalid values for `DurationField`.

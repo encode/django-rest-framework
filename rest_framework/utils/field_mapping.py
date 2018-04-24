@@ -12,7 +12,7 @@ from rest_framework.compat import postgres_fields
 from rest_framework.validators import UniqueValidator
 
 NUMERIC_FIELD_TYPES = (
-    models.IntegerField, models.FloatField, models.DecimalField
+    models.IntegerField, models.FloatField, models.DecimalField, models.DurationField,
 )
 
 

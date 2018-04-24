@@ -7,6 +7,7 @@ an appropriate set of serializer fields for each case.
 """
 from __future__ import unicode_literals
 
+import datetime
 import decimal
 from collections import OrderedDict
 
@@ -16,7 +17,6 @@ from django.core.validators import (
     MaxValueValidator, MinLengthValidator, MinValueValidator
 )
 from django.db import models
-from django.db.models import DurationField as ModelDurationField
 from django.test import TestCase
 from django.utils import six
 
@@ -349,7 +349,7 @@ class TestDurationFieldMapping(TestCase):
             """
             A model that defines DurationField.
             """
-            duration_field = ModelDurationField()
+            duration_field = models.DurationField()
 
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
@@ -360,6 +360,27 @@ class TestDurationFieldMapping(TestCase):
             TestSerializer():
                 id = IntegerField(label='ID', read_only=True)
                 duration_field = DurationField()
+        """)
+        self.assertEqual(unicode_repr(TestSerializer()), expected)
+
+    def test_duration_field_with_validators(self):
+        class ValidatedDurationFieldModel(models.Model):
+            """
+            A model that defines DurationField with validators.
+            """
+            duration_field = models.DurationField(
+                validators=[MinValueValidator(datetime.timedelta(days=1)), MaxValueValidator(datetime.timedelta(days=3))]
+            )
+
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = ValidatedDurationFieldModel
+                fields = '__all__'
+
+        expected = dedent("""
+            TestSerializer():
+                id = IntegerField(label='ID', read_only=True)
+                duration_field = DurationField(max_value=datetime.timedelta(3), min_value=datetime.timedelta(1))
         """)
         self.assertEqual(unicode_repr(TestSerializer()), expected)
 

@@ -1354,7 +1354,26 @@ class TimeField(Field):
 class DurationField(Field):
     default_error_messages = {
         'invalid': _('Duration has wrong format. Use one of these formats instead: {format}.'),
+        'max_value': _('Ensure this value is less than or equal to {max_value}.'),
+        'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
     }
+
+    def __init__(self, **kwargs):
+        self.max_value = kwargs.pop('max_value', None)
+        self.min_value = kwargs.pop('min_value', None)
+        super(DurationField, self).__init__(**kwargs)
+        if self.max_value is not None:
+            message = lazy(
+                self.error_messages['max_value'].format,
+                six.text_type)(max_value=self.max_value)
+            self.validators.append(
+                MaxValueValidator(self.max_value, message=message))
+        if self.min_value is not None:
+            message = lazy(
+                self.error_messages['min_value'].format,
+                six.text_type)(min_value=self.min_value)
+            self.validators.append(
+                MinValueValidator(self.min_value, message=message))
 
     def to_internal_value(self, value):
         if isinstance(value, datetime.timedelta):
