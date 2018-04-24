@@ -903,16 +903,20 @@ class IPAddressField(CharField):
 
 # Number types...
 
-class MaxMinMixin(object):
+class IntegerField(Field):
     default_error_messages = {
+        'invalid': _('A valid integer is required.'),
         'max_value': _('Ensure this value is less than or equal to {max_value}.'),
         'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
+        'max_string_length': _('String value too large.')
     }
+    MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
+    re_decimal = re.compile(r'\.0*\s*$')  # allow e.g. '1.0' as an int, but not '1.2'
 
     def __init__(self, **kwargs):
         self.max_value = kwargs.pop('max_value', None)
         self.min_value = kwargs.pop('min_value', None)
-        super(MaxMinMixin, self).__init__(**kwargs)
+        super(IntegerField, self).__init__(**kwargs)
         if self.max_value is not None:
             message = lazy(
                 self.error_messages['max_value'].format,
@@ -925,15 +929,6 @@ class MaxMinMixin(object):
                 six.text_type)(min_value=self.min_value)
             self.validators.append(
                 MinValueValidator(self.min_value, message=message))
-
-
-class IntegerField(MaxMinMixin, Field):
-    default_error_messages = {
-        'invalid': _('A valid integer is required.'),
-        'max_string_length': _('String value too large.')
-    }
-    MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
-    re_decimal = re.compile(r'\.0*\s*$')  # allow e.g. '1.0' as an int, but not '1.2'
 
     def to_internal_value(self, data):
         if isinstance(data, six.text_type) and len(data) > self.MAX_STRING_LENGTH:
@@ -949,12 +944,31 @@ class IntegerField(MaxMinMixin, Field):
         return int(value)
 
 
-class FloatField(MaxMinMixin, Field):
+class FloatField(Field):
     default_error_messages = {
         'invalid': _('A valid number is required.'),
+        'max_value': _('Ensure this value is less than or equal to {max_value}.'),
+        'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
         'max_string_length': _('String value too large.')
     }
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
+
+    def __init__(self, **kwargs):
+        self.max_value = kwargs.pop('max_value', None)
+        self.min_value = kwargs.pop('min_value', None)
+        super(FloatField, self).__init__(**kwargs)
+        if self.max_value is not None:
+            message = lazy(
+                self.error_messages['max_value'].format,
+                six.text_type)(max_value=self.max_value)
+            self.validators.append(
+                MaxValueValidator(self.max_value, message=message))
+        if self.min_value is not None:
+            message = lazy(
+                self.error_messages['min_value'].format,
+                six.text_type)(min_value=self.min_value)
+            self.validators.append(
+                MinValueValidator(self.min_value, message=message))
 
     def to_internal_value(self, data):
 
@@ -970,9 +984,11 @@ class FloatField(MaxMinMixin, Field):
         return float(value)
 
 
-class DecimalField(MaxMinMixin, Field):
+class DecimalField(Field):
     default_error_messages = {
         'invalid': _('A valid number is required.'),
+        'max_value': _('Ensure this value is less than or equal to {max_value}.'),
+        'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
         'max_digits': _('Ensure that there are no more than {max_digits} digits in total.'),
         'max_decimal_places': _('Ensure that there are no more than {max_decimal_places} decimal places.'),
         'max_whole_digits': _('Ensure that there are no more than {max_whole_digits} digits before the decimal point.'),
@@ -990,12 +1006,28 @@ class DecimalField(MaxMinMixin, Field):
         if self.localize:
             self.coerce_to_string = True
 
+        self.max_value = max_value
+        self.min_value = min_value
+
         if self.max_digits is not None and self.decimal_places is not None:
             self.max_whole_digits = self.max_digits - self.decimal_places
         else:
             self.max_whole_digits = None
 
-        super(DecimalField, self).__init__(max_value=max_value, min_value=min_value, **kwargs)
+        super(DecimalField, self).__init__(**kwargs)
+
+        if self.max_value is not None:
+            message = lazy(
+                self.error_messages['max_value'].format,
+                six.text_type)(max_value=self.max_value)
+            self.validators.append(
+                MaxValueValidator(self.max_value, message=message))
+        if self.min_value is not None:
+            message = lazy(
+                self.error_messages['min_value'].format,
+                six.text_type)(min_value=self.min_value)
+            self.validators.append(
+                MinValueValidator(self.min_value, message=message))
 
         if rounding is not None:
             valid_roundings = [v for k, v in vars(decimal).items() if k.startswith('ROUND_')]
@@ -1319,10 +1351,29 @@ class TimeField(Field):
         return value.strftime(output_format)
 
 
-class DurationField(MaxMinMixin, Field):
+class DurationField(Field):
     default_error_messages = {
         'invalid': _('Duration has wrong format. Use one of these formats instead: {format}.'),
+        'max_value': _('Ensure this value is less than or equal to {max_value}.'),
+        'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
     }
+
+    def __init__(self, **kwargs):
+        self.max_value = kwargs.pop('max_value', None)
+        self.min_value = kwargs.pop('min_value', None)
+        super(DurationField, self).__init__(**kwargs)
+        if self.max_value is not None:
+            message = lazy(
+                self.error_messages['max_value'].format,
+                six.text_type)(max_value=self.max_value)
+            self.validators.append(
+                MaxValueValidator(self.max_value, message=message))
+        if self.min_value is not None:
+            message = lazy(
+                self.error_messages['min_value'].format,
+                six.text_type)(min_value=self.min_value)
+            self.validators.append(
+                MinValueValidator(self.min_value, message=message))
 
     def to_internal_value(self, value):
         if isinstance(value, datetime.timedelta):

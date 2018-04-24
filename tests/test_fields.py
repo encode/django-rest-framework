@@ -1461,7 +1461,7 @@ class TestNoOutputFormatTimeField(FieldValues):
 
 class TestMinMaxDurationField(FieldValues):
     """
-    Valid and invalid values for `IntegerField` with min and max limits.
+    Valid and invalid values for `DurationField` with min and max limits.
     """
     valid_inputs = {
         '3 08:32:01.000123': datetime.timedelta(days=3, hours=8, minutes=32, seconds=1, microseconds=123),
