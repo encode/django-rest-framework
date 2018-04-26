@@ -202,6 +202,7 @@ This exposes exactly the same interface as if you were using a requests session
 directly.
 
     from rest_framework.test import RequestsClient
+    
     client = RequestsClient()
     response = client.get('http://testserver/users/')
     assert response.status_code == 200
