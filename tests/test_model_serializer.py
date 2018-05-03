@@ -402,7 +402,7 @@ class TestGenericIPAddressFieldValidation(TestCase):
                          '{0}'.format(s.errors))
 
 
-@pytest.mark.skipUnless(postgres_fields, 'postgres is required')
+@pytest.mark.skipif('not postgres_fields')
 class TestPosgresFieldsMapping(TestCase):
     def test_hstore_field(self):
         class HStoreFieldModel(models.Model):
