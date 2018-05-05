@@ -153,7 +153,7 @@ We're now ready to test the API we've built.  Let's fire up the server from the 
 
 We can now access our API, both from the command-line, using tools like `curl`...
 
-    bash: curl -H 'Accept: application/json; indent=4' -u admin:password123 http://127.0.0.1:8000/users/
+    bash: curl -H 'Accept: application/json; indent=4' http://127.0.0.1:8000/users/
     {
         "count": 2,
         "next": null,
@@ -176,7 +176,7 @@ We can now access our API, both from the command-line, using tools like `curl`..
 
 Or using the [httpie][httpie], command line tool...
 
-    bash: http -a admin:password123 http://127.0.0.1:8000/users/
+    bash: http http://127.0.0.1:8000/users/
 
     HTTP/1.1 200 OK
     ...
