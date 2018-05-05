@@ -85,10 +85,10 @@ Make sure to also import the `UserSerializer` class
 
 	from snippets.serializers import UserSerializer
 
-Finally we need to add those views into the API, by referencing them from the URL conf. Add the following to the patterns in `urls.py`.
+Finally we need to add those views into the API, by referencing them from the URL conf. Add the following to the patterns in `snippets/urls.py`.
 
-    url(r'^users/$', views.UserList.as_view()),
-    url(r'^users/(?P<pk>[0-9]+)/$', views.UserDetail.as_view()),
+    path('users/', views.UserList.as_view()),
+    path('users/<int:pk>/', views.UserDetail.as_view()),
 
 ## Associating Snippets with Users
 
@@ -142,10 +142,10 @@ Add the following import at the top of the file:
 And, at the end of the file, add a pattern to include the login and logout views for the browsable API.
 
     urlpatterns += [
-        url(r'^api-auth/', include('rest_framework.urls')),
+        path('api-auth/', include('rest_framework.urls')),
     ]
 
-The `r'^api-auth/'` part of pattern can actually be whatever URL you want to use.
+The `'api-auth/'` part of pattern can actually be whatever URL you want to use.
 
 Now if you open up the browser again and refresh the page you'll see a 'Login' link in the top right of the page.  If you log in as one of the users you created earlier, you'll be able to create code snippets again.
 
