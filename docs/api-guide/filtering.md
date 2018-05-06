@@ -187,6 +187,8 @@ When in use, the browsable API will include a `SearchFilter` control:
 
 The `SearchFilter` class will only be applied if the view has a `search_fields` attribute set.  The `search_fields` attribute should be a list of names of text type fields on the model, such as `CharField` or `TextField`.
 
+    from rest_framework import filters
+    
     class UserListView(generics.ListAPIView):
         queryset = User.objects.all()
         serializer_class = UserSerializer
