@@ -253,7 +253,7 @@ The `TokenAuthentication` class can be used to support REST framework's built-in
 `TokenAuthentication`, as well as OAuth and JWT schemes.
 
     auth = coreapi.auth.TokenAuthentication(
-        scheme='JWT'
+        scheme='JWT',
         token='<token>'
     )
     client = coreapi.Client(auth=auth)
