@@ -1,3 +1,4 @@
+import pytest
 from django.conf.urls import include, url
 from django.db import models
 from django.test import TestCase, override_settings
@@ -34,26 +35,26 @@ class ActionViewSet(GenericViewSet):
     queryset = Action.objects.all()
 
     def list(self, request, *args, **kwargs):
-        pass
+        raise NotImplementedError()  # pragma: no cover
 
     def retrieve(self, request, *args, **kwargs):
-        pass
+        raise NotImplementedError()  # pragma: no cover
 
     @action(detail=False)
     def list_action(self, request, *args, **kwargs):
-        pass
+        raise NotImplementedError()  # pragma: no cover
 
     @action(detail=False, url_name='list-custom')
     def custom_list_action(self, request, *args, **kwargs):
-        pass
+        raise NotImplementedError()  # pragma: no cover
 
     @action(detail=True)
     def detail_action(self, request, *args, **kwargs):
-        pass
+        raise NotImplementedError()  # pragma: no cover
 
     @action(detail=True, url_name='detail-custom')
     def custom_detail_action(self, request, *args, **kwargs):
-        pass
+        raise NotImplementedError()  # pragma: no cover
 
 
 router = SimpleRouter()
@@ -87,14 +88,13 @@ class InitializeViewSetsTestCase(TestCase):
         assert response.status_code == status.HTTP_200_OK
 
     def test_initialize_view_set_with_empty_actions(self):
-        try:
+        with pytest.raises(TypeError) as excinfo:
             BasicViewSet.as_view()
-        except TypeError as e:
-            assert str(e) == ("The `actions` argument must be provided "
-                              "when calling `.as_view()` on a ViewSet. "
-                              "For example `.as_view({'get': 'list'})`")
-        else:
-            self.fail("actions must not be empty.")
+
+        assert str(excinfo.value) == (
+            "The `actions` argument must be provided "
+            "when calling `.as_view()` on a ViewSet. "
+            "For example `.as_view({'get': 'list'})`")
 
     def test_args_kwargs_request_action_map_on_self(self):
         """
