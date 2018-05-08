@@ -183,7 +183,6 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 
 * [djangorestframework-digestauth][djangorestframework-digestauth] - Provides Digest Access Authentication support.
 * [django-oauth-toolkit][django-oauth-toolkit] - Provides OAuth 2.0 support.
-* [doac][doac] - Provides OAuth 2.0 support.
 * [djangorestframework-jwt][djangorestframework-jwt] - Provides JSON Web Token Authentication support.
 * [djangorestframework-simplejwt][djangorestframework-simplejwt] - An alternative package that provides JSON Web Token Authentication support.
 * [hawkrest][hawkrest] - Provides Hawk HTTP Authorization.
@@ -285,7 +284,6 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [discussion-group]: https://groups.google.com/forum/#!forum/django-rest-framework
 [djangorestframework-digestauth]: https://github.com/juanriaza/django-rest-framework-digestauth
 [django-oauth-toolkit]: https://github.com/evonove/django-oauth-toolkit
-[doac]: https://github.com/Rediker-Software/doac
 [djangorestframework-jwt]: https://github.com/GetBlimp/django-rest-framework-jwt
 [djangorestframework-simplejwt]: https://github.com/davesque/django-rest-framework-simplejwt
 [hawkrest]: https://github.com/kumar303/hawkrest
