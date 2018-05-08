@@ -5,3 +5,6 @@ coverage:
     changes: false
 
 comment: off
+
+fixes:
+  - "::rest_framework/"
