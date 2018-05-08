@@ -275,20 +275,20 @@ We'll also need a view which corresponds to an individual snippet, and can be us
 
 Finally we need to wire these views up.  Create the `snippets/urls.py` file:
 
-    from django.conf.urls import url
+    from django.urls import path
     from snippets import views
 
     urlpatterns = [
-        url(r'^snippets/$', views.snippet_list),
-        url(r'^snippets/(?P<pk>[0-9]+)/$', views.snippet_detail),
+        path('snippets/', views.snippet_list),
+        path('snippets/<int:pk>/', views.snippet_detail),
     ]
 
 We also need to wire up the root urlconf, in the `tutorial/urls.py` file, to include our snippet app's URLs.
 
-    from django.conf.urls import url, include
+    from django.urls import path, include
 
     urlpatterns = [
-        url(r'^', include('snippets.urls')),
+        path('', include('snippets.urls')),
     ]
 
 It's worth noting that there are a couple of edge cases we're not dealing with properly at the moment.  If we send malformed `json`, or if a request is made with a method that the view doesn't handle, then we'll end up with a 500 "server error" response.  Still, this'll do for now.

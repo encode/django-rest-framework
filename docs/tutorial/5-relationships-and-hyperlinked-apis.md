@@ -44,11 +44,11 @@ Instead of using a concrete generic view, we'll use the base class for represent
 As usual we need to add the new views that we've created in to our URLconf.
 We'll add a url pattern for our new API root in `snippets/urls.py`:
 
-    url(r'^$', views.api_root),
+    path('', views.api_root),
 
 And then add a url pattern for the snippet highlights:
 
-    url(r'^snippets/(?P<pk>[0-9]+)/highlight/$', views.SnippetHighlight.as_view()),
+    path('snippets/<int:pk>/highlight/', views.SnippetHighlight.as_view()),
 
 ## Hyperlinking our API
 
@@ -112,20 +112,20 @@ After adding all those names into our URLconf, our final `snippets/urls.py` file
 
     # API endpoints
     urlpatterns = format_suffix_patterns([
-        url(r'^$', views.api_root),
-        url(r'^snippets/$',
+        path('', views.api_root),
+        path('snippets/',
             views.SnippetList.as_view(),
             name='snippet-list'),
-        url(r'^snippets/(?P<pk>[0-9]+)/$',
+        path('snippets/<int:pk>/',
             views.SnippetDetail.as_view(),
             name='snippet-detail'),
-        url(r'^snippets/(?P<pk>[0-9]+)/highlight/$',
+        path('snippets/<int:pk>/highlight/',
             views.SnippetHighlight.as_view(),
             name='snippet-highlight'),
-        url(r'^users/$',
+        path('users/',
             views.UserList.as_view(),
             name='user-list'),
-        url(r'^users/(?P<pk>[0-9]+)/$',
+        path('users/<int:pk>/',
             views.UserDetail.as_view(),
             name='user-detail')
     ])

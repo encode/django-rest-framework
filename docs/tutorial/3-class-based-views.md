@@ -64,13 +64,13 @@ That's looking good.  Again, it's still pretty similar to the function based vie
 
 We'll also need to refactor our `snippets/urls.py` slightly now that we're using class-based views.
 
-    from django.conf.urls import url
+    from django.urls import path
     from rest_framework.urlpatterns import format_suffix_patterns
     from snippets import views
 
     urlpatterns = [
-        url(r'^snippets/$', views.SnippetList.as_view()),
-        url(r'^snippets/(?P<pk>[0-9]+)/$', views.SnippetDetail.as_view()),
+        path('snippets/', views.SnippetList.as_view()),
+        path('snippets/<int:pk>/', views.SnippetDetail.as_view()),
     ]
 
     urlpatterns = format_suffix_patterns(urlpatterns)
