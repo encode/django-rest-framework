@@ -35,26 +35,26 @@ class ActionViewSet(GenericViewSet):
     queryset = Action.objects.all()
 
     def list(self, request, *args, **kwargs):
-        assert 0, 'never called'  # pragma: no cover
+        raise NotImplementedError()  # pragma: no cover
 
     def retrieve(self, request, *args, **kwargs):
-        assert 0, 'never called'  # pragma: no cover
+        raise NotImplementedError()  # pragma: no cover
 
     @action(detail=False)
     def list_action(self, request, *args, **kwargs):
-        assert 0, 'never called'  # pragma: no cover
+        raise NotImplementedError()  # pragma: no cover
 
     @action(detail=False, url_name='list-custom')
     def custom_list_action(self, request, *args, **kwargs):
-        assert 0, 'never called'  # pragma: no cover
+        raise NotImplementedError()  # pragma: no cover
 
     @action(detail=True)
     def detail_action(self, request, *args, **kwargs):
-        assert 0, 'never called'  # pragma: no cover
+        raise NotImplementedError()  # pragma: no cover
 
     @action(detail=True, url_name='detail-custom')
     def custom_detail_action(self, request, *args, **kwargs):
-        assert 0, 'never called'  # pragma: no cover
+        raise NotImplementedError()  # pragma: no cover
 
 
 router = SimpleRouter()
