@@ -240,6 +240,10 @@ def items(value):
     lookup.  See issue #4931
     Also see: https://stackoverflow.com/questions/15416662/django-template-loop-over-dictionary-items-with-items-as-key
     """
+    if value is None:
+        # `{% for k, v in value.items %}` doesn't raise when value is None or
+        # not in the context, so neither should `{% for k, v in value|items %}`
+        return []
     return value.items()
 
 
