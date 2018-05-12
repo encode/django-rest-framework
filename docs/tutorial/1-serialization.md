@@ -220,8 +220,8 @@ Edit the `snippets/views.py` file, and add the following.
     from django.views.decorators.csrf import csrf_exempt
     from rest_framework.renderers import JSONRenderer
     from rest_framework.parsers import JSONParser
-    from snippets.models import Snippet
-    from snippets.serializers import SnippetSerializer
+    from .models import Snippet
+    from .serializers import SnippetSerializer
 
 The root of our API is going to be a view that supports listing all the existing snippets, or creating a new snippet.
 
