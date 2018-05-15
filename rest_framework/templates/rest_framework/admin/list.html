@@ -14,7 +14,11 @@
           {% endif %}
         {% endfor %}
         <td>
+          {% if row.url %}
           <a href="{{ row.url }}"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></a>
+          {% else %}
+          <span class="glyphicon glyphicon-chevron-right text-muted" aria-hidden="true"></span>
+          {% endif %}
         </td>
       </tr>
     {% endfor %}
