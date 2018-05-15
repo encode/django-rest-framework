@@ -132,6 +132,14 @@ Again, if we need more control over the API URLs we can simply drop down to usin
 
 Finally, we're including default login and logout views for use with the browsable API.  That's optional, but useful if your API requires authentication and you want to use the browsable API.
 
+## Pagination
+Pagination allows you to control how many objects per page are returned. To enable it add following lines to the `tutorial/settings.py`
+    
+    REST_FRAMEWORK = {
+        'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+        'PAGE_SIZE': 10
+    }
+    
 ## Settings
 
 Add `'rest_framework'` to `INSTALLED_APPS`. The settings module will be in `tutorial/settings.py`
