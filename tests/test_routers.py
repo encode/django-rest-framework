@@ -87,13 +87,13 @@ kwarged_notes_router = SimpleRouter()
 kwarged_notes_router.register(r'notes', KWargedNoteViewSet)
 
 namespaced_router = DefaultRouter()
-namespaced_router.register(r'example', MockViewSet, base_name='example')
+namespaced_router.register(r'example', MockViewSet, basename='example')
 
 empty_prefix_router = SimpleRouter()
-empty_prefix_router.register(r'', EmptyPrefixViewSet, base_name='empty_prefix')
+empty_prefix_router.register(r'', EmptyPrefixViewSet, basename='empty_prefix')
 
 regex_url_path_router = SimpleRouter()
-regex_url_path_router.register(r'', RegexUrlPathViewSet, base_name='regex')
+regex_url_path_router.register(r'', RegexUrlPathViewSet, basename='regex')
 
 
 class BasicViewSet(viewsets.ViewSet):
@@ -305,7 +305,7 @@ class TestActionKeywordArgs(TestCase):
                 })
 
         self.router = SimpleRouter()
-        self.router.register(r'test', TestViewSet, base_name='test')
+        self.router.register(r'test', TestViewSet, basename='test')
         self.view = self.router.urls[-1].callback
 
     def test_action_kwargs(self):
@@ -330,7 +330,7 @@ class TestActionAppliedToExistingRoute(TestCase):
                 })
 
         self.router = SimpleRouter()
-        self.router.register(r'test', TestViewSet, base_name='test')
+        self.router.register(r'test', TestViewSet, basename='test')
 
         with pytest.raises(ImproperlyConfigured):
             self.router.urls

@@ -59,7 +59,7 @@ class ActionViewSet(GenericViewSet):
 
 router = SimpleRouter()
 router.register(r'actions', ActionViewSet)
-router.register(r'actions-alt', ActionViewSet, base_name='actions-alt')
+router.register(r'actions-alt', ActionViewSet, basename='actions-alt')
 
 
 urlpatterns = [
@@ -125,7 +125,7 @@ class GetExtraActionTests(TestCase):
 class ReverseActionTests(TestCase):
     def test_default_basename(self):
         view = ActionViewSet()
-        view.basename = router.get_default_base_name(ActionViewSet)
+        view.basename = router.get_default_basename(ActionViewSet)
         view.request = None
 
         assert view.reverse_action('list') == '/api/actions/'
@@ -151,7 +151,7 @@ class ReverseActionTests(TestCase):
 
     def test_request_passing(self):
         view = ActionViewSet()
-        view.basename = router.get_default_base_name(ActionViewSet)
+        view.basename = router.get_default_basename(ActionViewSet)
         view.request = factory.get('/')
 
         # Passing the view's request object should result in an absolute URL.
