@@ -28,7 +28,15 @@ else:
 
 
 app_name = 'rest_framework'
+
+if django.VERSION < = (1, 11):
+
 urlpatterns = [
     url(r'^login/$', login, login_kwargs, name='login'),
     url(r'^logout/$', logout, name='logout'),
 ]
+else:
+    from django.urls import path
+    url('login/', login, login_kwargs, name='login'),
+    url('logout', logout, name='logout'),
+
