@@ -208,8 +208,7 @@ class SimpleRouter(BaseRouter):
 
         return Route(
             url=route.url.replace('{url_path}', url_path),
-            mapping={http_method: action.__name__
-                     for http_method in action.bind_to_methods},
+            mapping=action.mapping,
             name=route.name.replace('{url_name}', action.url_name),
             detail=route.detail,
             initkwargs=initkwargs,

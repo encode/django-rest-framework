@@ -31,7 +31,7 @@ from rest_framework.reverse import reverse
 
 
 def _is_extra_action(attr):
-    return hasattr(attr, 'bind_to_methods')
+    return hasattr(attr, 'mapping')
 
 
 class ViewSetMixin(object):

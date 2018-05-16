@@ -7,7 +7,7 @@ from django.conf.urls import include, url
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.test import TestCase, override_settings
-from django.urls import resolve
+from django.urls import resolve, reverse
 
 from rest_framework import permissions, serializers, viewsets
 from rest_framework.compat import get_regex_pattern
@@ -107,8 +107,23 @@ class BasicViewSet(viewsets.ViewSet):
     def action2(self, request, *args, **kwargs):
         return Response({'method': 'action2'})
 
+    @action(methods=['post'], detail=True)
+    def action3(self, request, pk, *args, **kwargs):
+        return Response({'post': pk})
 
-class TestSimpleRouter(TestCase):
+    @action3.mapping.delete
+    def action3_delete(self, request, pk, *args, **kwargs):
+        return Response({'delete': pk})
+
+
+class TestSimpleRouter(URLPatternsTestCase, TestCase):
+    router = SimpleRouter()
+    router.register('basics', BasicViewSet, base_name='basic')
+
+    urlpatterns = [
+        url(r'^api/', include(router.urls)),
+    ]
+
     def setUp(self):
         self.router = SimpleRouter()
 
@@ -126,6 +141,21 @@ class TestSimpleRouter(TestCase):
             'post': 'action2',
             'delete': 'action2',
         }
+
+        assert routes[2].url == '^{prefix}/{lookup}/action3{trailing_slash}$'
+        assert routes[2].mapping == {
+            'post': 'action3',
+            'delete': 'action3_delete',
+        }
+
+    def test_multiple_action_handlers(self):
+        # Standard action
+        response = self.client.post(reverse('basic-action3', args=[1]))
+        assert response.data == {'post': '1'}
+
+        # Additional handler registered with MethodMapper
+        response = self.client.delete(reverse('basic-action3', args=[1]))
+        assert response.data == {'delete': '1'}
 
 
 class TestRootView(URLPatternsTestCase, TestCase):
