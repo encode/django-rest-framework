@@ -22,6 +22,8 @@ from collections import OrderedDict, namedtuple
 from django.conf.urls import url
 from django.core.exceptions import ImproperlyConfigured
 from django.urls import NoReverseMatch
+from django.utils import six
+from django.utils.deprecation import RenameMethodsBase
 
 from rest_framework import views
 from rest_framework.response import Response
@@ -73,21 +75,37 @@ def flatten(list_of_lists):
     return itertools.chain(*list_of_lists)
 
 
-class BaseRouter(object):
+class RenameRouterMethods(RenameMethodsBase):
+    renamed_methods = (
+        ('get_default_base_name', 'get_default_basename', DeprecationWarning),
+    )
+
+
+class BaseRouter(six.with_metaclass(RenameRouterMethods)):
     def __init__(self):
         self.registry = []
 
-    def register(self, prefix, viewset, base_name=None):
-        if base_name is None:
-            base_name = self.get_default_base_name(viewset)
-        self.registry.append((prefix, viewset, base_name))
+    def register(self, prefix, viewset, basename=None, base_name=None):
+        if base_name is not None:
+            msg = "The `base_name` argument has been deprecated in favor of `basename`."
+            warnings.warn(msg, DeprecationWarning, 2)
 
-    def get_default_base_name(self, viewset):
+        assert not (basename and base_name), (
+            "Do not provide both the `basename` and `base_name` arguments.")
+
+        if basename is None:
+            basename = base_name
+
+        if basename is None:
+            basename = self.get_default_basename(viewset)
+        self.registry.append((prefix, viewset, basename))
+
+    def get_default_basename(self, viewset):
         """
-        If `base_name` is not specified, attempt to automatically determine
+        If `basename` is not specified, attempt to automatically determine
         it from the viewset.
         """
-        raise NotImplementedError('get_default_base_name must be overridden')
+        raise NotImplementedError('get_default_basename must be overridden')
 
     def get_urls(self):
         """
@@ -151,14 +169,14 @@ class SimpleRouter(BaseRouter):
         self.trailing_slash = '/' if trailing_slash else ''
         super(SimpleRouter, self).__init__()
 
-    def get_default_base_name(self, viewset):
+    def get_default_basename(self, viewset):
         """
-        If `base_name` is not specified, attempt to automatically determine
+        If `basename` is not specified, attempt to automatically determine
         it from the viewset.
         """
         queryset = getattr(viewset, 'queryset', None)
 
-        assert queryset is not None, '`base_name` argument not specified, and could ' \
+        assert queryset is not None, '`basename` argument not specified, and could ' \
             'not automatically determine the name from the viewset, as ' \
             'it does not have a `.queryset` attribute.'
 
