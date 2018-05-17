@@ -365,9 +365,7 @@ class SchemaGenerator(object):
         """
         Given a callback, return an actual view instance.
         """
-        view = callback.cls()
-        for attr, val in getattr(callback, 'initkwargs', {}).items():
-            setattr(view, attr, val)
+        view = callback.cls(**getattr(callback, 'initkwargs', {}))
         view.args = ()
         view.kwargs = {}
         view.format_kwarg = None
