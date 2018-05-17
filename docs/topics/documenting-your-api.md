@@ -333,6 +333,6 @@ To implement a hypermedia API you'll need to decide on an appropriate media type
 [image-django-rest-swagger]: ../img/django-rest-swagger.png
 [image-apiary]: ../img/apiary.png
 [image-self-describing-api]: ../img/self-describing.png
-[schemas-examples]: ../api-guide/schemas/#example
+[schemas-examples]: ../api-guide/schemas/#examples
 [metadata-docs]: ../api-guide/metadata/
 [client-library-templates]: https://github.com/encode/django-rest-framework/tree/master/rest_framework/templates/rest_framework/docs/langs
