@@ -100,7 +100,16 @@ class ViewSetMixin(object):
             self.kwargs = kwargs
 
             # And continue as usual
-            return self.dispatch(request, *args, **kwargs)
+            result = self.dispatch(request, *args, **kwargs)
+
+            # break our circular reference before finishing
+            for method in actions:
+                delattr(self, method)
+
+            if hasattr(self, 'head'):
+                delattr(self, 'head')
+
+            return result
 
         # take name and docstring from class
         update_wrapper(view, cls, updated=())
