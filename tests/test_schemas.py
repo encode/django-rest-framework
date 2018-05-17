@@ -721,6 +721,31 @@ class TestAutoSchema(TestCase):
         assert "my_extra_field" in [f.name for f in fields]
 
     @pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
+    def test_viewset_action_with_schema(self):
+        class CustomViewSet(GenericViewSet):
+            @action(detail=True, schema=AutoSchema(manual_fields=[
+                coreapi.Field(
+                    "my_extra_field",
+                    required=True,
+                    location="path",
+                    schema=coreschema.String()
+                ),
+            ]))
+            def extra_action(self, pk, **kwargs):
+                pass
+
+        router = SimpleRouter()
+        router.register(r'detail', CustomViewSet, base_name='detail')
+
+        generator = SchemaGenerator()
+        view = generator.create_view(router.urls[0].callback, 'GET')
+        link = view.schema.get_link('/a/url/{id}/', 'GET', '')
+        fields = link.fields
+
+        assert len(fields) == 2
+        assert "my_extra_field" in [f.name for f in fields]
+
+    @pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
     def test_view_with_manual_schema(self):
 
         path = '/example'
