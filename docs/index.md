@@ -31,10 +31,6 @@
 
 ---
 
-**Note**: This is the documentation for the **version 3** of REST framework. Documentation for [version 2](https://tomchristie.github.io/rest-framework-2-docs/) is also available.
-
----
-
 <p>
 <h1 style="position: absolute;
     width: 1px;
