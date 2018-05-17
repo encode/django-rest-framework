@@ -299,18 +299,18 @@ Now we can start up a sample server that serves our snippets.
 
 Quit out of the shell...
 
-	quit()
+    quit()
 
 ...and start up Django's development server.
 
-	python manage.py runserver
+    python manage.py runserver
 
-	Validating models...
+    Validating models...
 
-	0 errors found
-	Django version 1.11, using settings 'tutorial.settings'
-	Development server is running at http://127.0.0.1:8000/
-	Quit the server with CONTROL-C.
+    0 errors found
+    Django version 1.11, using settings 'tutorial.settings'
+    Development server is running at http://127.0.0.1:8000/
+    Quit the server with CONTROL-C.
 
 In another terminal window, we can test the server.
 
