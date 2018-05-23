@@ -12,6 +12,7 @@ env:
     - DJANGO=1.10
     - DJANGO=1.11
     - DJANGO=2.0
+    - DJANGO=2.1
     - DJANGO=master
 
 matrix:
@@ -20,6 +21,7 @@ matrix:
       - { python: "3.6", env: DJANGO=master }
       - { python: "3.6", env: DJANGO=1.11 }
       - { python: "3.6", env: DJANGO=2.0 }
+      - { python: "3.6", env: DJANGO=2.1 }
       - { python: "2.7", env: TOXENV=lint }
       - { python: "2.7", env: TOXENV=docs }
 
@@ -38,10 +40,13 @@ matrix:
     exclude:
       - { python: "2.7", env: DJANGO=master }
       - { python: "2.7", env: DJANGO=2.0 }
+      - { python: "2.7", env: DJANGO=2.1 }
       - { python: "3.4", env: DJANGO=master }
+      - { python: "3.4", env: DJANGO=2.1 }
 
     allow_failures:
       - env: DJANGO=master
+      - env: DJANGO=2.1
 
 install:
     - pip install tox tox-travis
