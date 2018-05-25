@@ -249,7 +249,7 @@ Set as `handler500`:
 
     handler500 = 'rest_framework.exceptions.server_error'
 
-## `rest_framework.exceptions.server_error`
+## `rest_framework.exceptions.bad_request`
 
 Returns a response with status code `400` and `application/json` content type.
 
