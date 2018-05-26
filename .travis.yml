@@ -32,11 +32,6 @@ matrix:
           - tox --installpkg ./dist/djangorestframework-*.whl
           - tox  # test sdist
 
-      - python: "3.6"
-        env: TOXENV=readme
-        addons:
-          apt_packages: pandoc
-
     exclude:
       - { python: "2.7", env: DJANGO=master }
       - { python: "2.7", env: DJANGO=2.0 }

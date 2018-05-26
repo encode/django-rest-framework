@@ -6,6 +6,3 @@ twine==1.9.1
 
 # Transifex client for managing translation resources.
 transifex-client==0.11
-
-# readme_renderer to check readme syntax
-readme_renderer
