@@ -1708,10 +1708,17 @@ class DictField(Field):
         self.child.bind(field_name='', parent=self)
 
     def get_value(self, dictionary):
+        if self.field_name not in dictionary:
+            if getattr(self.root, 'partial', False):
+                return empty
         # We override the default field access in order to support
         # dictionaries in HTML forms.
         if html.is_html_input(dictionary):
-            return html.parse_html_dict(dictionary, prefix=self.field_name)
+            val = dictionary.getlist(self.field_name, {})
+            if len(val) > 0:
+                # Support QueryDict lists in HTML input.
+                return val
+            return html.parse_html_list(dictionary, prefix=self.field_name, default=empty)
         return dictionary.get(self.field_name, empty)
 
     def to_internal_value(self, data):

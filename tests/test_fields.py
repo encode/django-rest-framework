@@ -16,7 +16,7 @@ from django.utils.timezone import activate, deactivate, override, utc
 import rest_framework
 from rest_framework import exceptions, serializers
 from rest_framework.compat import ProhibitNullCharactersValidator
-from rest_framework.fields import DjangoImageField, is_simple_callable
+from rest_framework.fields import DjangoImageField, empty, is_simple_callable
 
 try:
     import typings
@@ -167,6 +167,11 @@ class TestEmpty:
         field = serializers.IntegerField(default=123)
         output = field.run_validation()
         assert output is 123
+
+    def test_dictfield_empty(self):
+        field = serializers.DictField()
+        field.field_name = 'dict_field'
+        assert field.get_value(QueryDict()) is empty
 
 
 class TestSource:
