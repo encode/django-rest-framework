@@ -157,7 +157,8 @@ class ViewInspector(object):
 
     def __set__(self, instance, other):
         self.instance_schemas[instance] = other
-        other.view = instance
+        if other is not None:
+            other.view = instance
 
     @property
     def view(self):

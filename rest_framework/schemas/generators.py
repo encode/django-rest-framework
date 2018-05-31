@@ -218,6 +218,10 @@ class EndpointEnumerator(object):
         if callback.cls.schema is None:
             return False
 
+        if 'schema' in callback.initkwargs:
+            if callback.initkwargs['schema'] is None:
+                return False
+
         if path.endswith('.{format}') or path.endswith('.{format}/'):
             return False  # Ignore .json style URLs.
 

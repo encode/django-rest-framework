@@ -99,6 +99,10 @@ class ExampleViewSet(ModelViewSet):
     def custom_list_action_multiple_methods(self, request):
         return super(ExampleViewSet, self).list(self, request)
 
+    @action(detail=False, schema=None)
+    def excluded_action(self, request):
+        pass
+
     def get_serializer(self, *args, **kwargs):
         assert self.request
         assert self.action
@@ -744,6 +748,20 @@ class TestAutoSchema(TestCase):
 
         assert len(fields) == 2
         assert "my_extra_field" in [f.name for f in fields]
+
+    @pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
+    def test_viewset_action_with_null_schema(self):
+        class CustomViewSet(GenericViewSet):
+            @action(detail=True, schema=None)
+            def extra_action(self, pk, **kwargs):
+                pass
+
+        router = SimpleRouter()
+        router.register(r'detail', CustomViewSet, base_name='detail')
+
+        generator = SchemaGenerator()
+        view = generator.create_view(router.urls[0].callback, 'GET')
+        assert view.schema is None
 
     @pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
     def test_view_with_manual_schema(self):
