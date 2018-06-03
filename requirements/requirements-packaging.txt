@@ -2,13 +2,7 @@
 wheel==0.30.0
 
 # Twine for secured PyPI uploads.
-twine==1.9.1
+twine==1.11.0
 
 # Transifex client for managing translation resources.
 transifex-client==0.11
-
-# Pandoc to have a nice pypi page
-pypandoc
-
-# readme_renderer to check readme syntax
-readme_renderer

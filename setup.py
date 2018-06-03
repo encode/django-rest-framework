@@ -8,16 +8,9 @@ from io import open
 
 from setuptools import find_packages, setup
 
-try:
-    from pypandoc import convert_file
 
-    def read_md(f):
-        return convert_file(f, 'rst')
-except ImportError:
-    print("warning: pypandoc module not found, could not convert Markdown to RST")
-
-    def read_md(f):
-        return open(f, 'r', encoding='utf-8').read()
+def read(f):
+    return open(f, 'r', encoding='utf-8').read()
 
 
 def get_version(package):
@@ -32,10 +25,6 @@ version = get_version('rest_framework')
 
 
 if sys.argv[-1] == 'publish':
-    try:
-        import pypandoc
-    except ImportError:
-        print("pypandoc not installed.\nUse `pip install pypandoc`.\nExiting.")
     if os.system("pip freeze | grep twine"):
         print("twine not installed.\nUse `pip install twine`.\nExiting.")
         sys.exit()
@@ -56,7 +45,8 @@ setup(
     url='http://www.django-rest-framework.org',
     license='BSD',
     description='Web APIs for Django, made easy.',
-    long_description=read_md('README.md'),
+    long_description=read('README.md'),
+    long_description_content_type='text/markdown',
     author='Tom Christie',
     author_email='tom@tomchristie.com',  # SEE NOTE BELOW (*)
     packages=find_packages(exclude=['tests*']),
