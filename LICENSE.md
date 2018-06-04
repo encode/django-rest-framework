@@ -1,6 +1,6 @@
 # License
 
-Copyright (c) 2011-2017, Tom Christie
+Copyright © 2011-present, [Encode OSS Ltd](http://www.encode.io/).
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
