@@ -419,6 +419,39 @@ You can provide arbitrary additional context by passing a `context` argument whe
 
 The context dictionary can be used within any serializer field logic, such as a custom `.to_representation()` method, by accessing the `self.context` attribute.
 
+From views, it's often useful to override `get_serializer_context` to add any additional data needed by your serializer to the context dict.  For example, here's a serializer that looks at the captured values from url, which come to the view as self.kwargs (keyword arguments to the constructor).
+
+    # serializers.py
+    class ThingSerializer(serializers.ModelSerializer):
+        ...
+        def create(self, validated_data):
+            value1 = validated_data['field1']
+            kwargs = self.context.get('kwargs')  # see views.py:get_serializer_context()
+            captured_value = kwargs.get('captured_arg') if kwargs or None
+            ...
+
+    # urls.py
+    urlpatterns = [
+        url(r'^api/v0/thing/(?P<captured_arg>[0-9]+)', views.MyThingViewSet)
+    ]
+ 
+    # views.py
+    class MyThingViewSet(viewsets.ModelViewSet):
+        """Passes the kwargs from view's captured values (in the url) to the serializer."""
+        serializer_class = ThingSerializer
+	
+        def get_serializer_context(self):
+            """Called for creating the context used by the Serializer constructor"""
+            ctxt = super().get_serializer_context()  # self.context will have request, format, and view (class)
+            ctxt['kwargs'] = self.kwargs
+            return ctxt
+	    
+        def get_queryset(self):
+            qs = models.Thing.objects.all()
+            kwargs = self.context.get('kwargs')
+            captured_value = kwargs.get('captured_arg')
+            ...
+                                                                                              
 ---
 
 # ModelSerializer
