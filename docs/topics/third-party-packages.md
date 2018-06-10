@@ -271,7 +271,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [create-a-repo]: https://help.github.com/articles/create-a-repo/
 [travis-ci]: https://travis-ci.org
 [travis-profile]: https://travis-ci.org/profile
-[pypi-register]: https://pypi.python.org/pypi?%3Aaction=register_form
+[pypi-register]: https://pypi.org/account/register/
 [semver]: https://semver.org/
 [tox-docs]: https://tox.readthedocs.io/en/latest/
 [drf-compat]: https://github.com/encode/django-rest-framework/blob/master/rest_framework/compat.py
