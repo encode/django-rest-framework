@@ -319,5 +319,5 @@ The [`django-rest-framework-link-header-pagination` package][drf-link-header-pag
 [paginate-by-max-mixin]: https://chibisov.github.io/drf-extensions/docs/#paginatebymaxmixin
 [drf-proxy-pagination]: https://github.com/tuffnatty/drf-proxy-pagination
 [drf-link-header-pagination]: https://github.com/tbeadle/django-rest-framework-link-header-pagination
-[disqus-cursor-api]: http://cramer.io/2011/03/08/building-cursors-for-the-disqus-api
+[disqus-cursor-api]: http://cra.mr/2011/03/08/building-cursors-for-the-disqus-api
 [float_cursor_pagination_example]: https://gist.github.com/keturn/8bc88525a183fd41c73ffb729b8865be#file-fpcursorpagination-py
