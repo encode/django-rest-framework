@@ -313,6 +313,17 @@ class JSONRendererTests(TestCase):
         data = json.loads(ret.decode('utf-8'))
         self.assertEqual(data, [[o.id, o.name]])
 
+    def test_render_valid_json_when_data_is_none(self):
+        result = JSONRenderer().render(None)
+        self.assertEqual(result, b'null')
+
+    def test_render_no_content_on_204_response(self):
+        context = {
+            'response': Response(status=204),
+        }
+        result = JSONRenderer().render(None, renderer_context=context)
+        self.assertEqual(result, b'')
+
     def test_render_dict_abc_obj(self):
         class Dict(MutableMapping):
             def __init__(self):
