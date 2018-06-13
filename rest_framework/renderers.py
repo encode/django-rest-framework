@@ -88,8 +88,12 @@ class JSONRenderer(BaseRenderer):
         """
         Render `data` into JSON, returning a bytestring.
         """
-        if data is None:
-            return bytes()
+        response = None
+        if renderer_context:
+            response = renderer_context.get('response', None)
+
+        if response is not None and response.status_code == 204:
+            return b''
 
         renderer_context = renderer_context or {}
         indent = self.get_indent(accepted_media_type, renderer_context)
