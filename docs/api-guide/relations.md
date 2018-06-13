@@ -384,7 +384,7 @@ The `get_url` method is used to map the object instance to its URL representatio
 May raise a `NoReverseMatch` if the `view_name` and `lookup_field`
 attributes are not configured to correctly match the URL conf.
 
-**get_object(self, queryset, view_name, view_args, view_kwargs)**
+**get_object(self, view_name, view_args, view_kwargs)**
 
 If you want to support a writable hyperlinked field then you'll also want to override `get_object`, in order to map incoming URLs back to the object they represent. For read-only hyperlinked fields there is no need to override this method.
 
