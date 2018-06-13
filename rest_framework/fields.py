@@ -1397,7 +1397,7 @@ class ChoiceField(Field):
     html_cutoff_text = _('More than {count} items...')
 
     def __init__(self, choices, **kwargs):
-        self.choices = choices
+        self._choices = choices
         self.html_cutoff = kwargs.pop('html_cutoff', self.html_cutoff)
         self.html_cutoff_text = kwargs.pop('html_cutoff_text', self.html_cutoff_text)
 

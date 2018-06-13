@@ -1,6 +1,7 @@
 import datetime
 import os
 import re
+import sys
 import unittest
 import uuid
 from decimal import ROUND_DOWN, ROUND_UP, Decimal
@@ -24,6 +25,13 @@ try:
     import typings
 except ImportError:
     typings = False
+
+if sys.version_info[0] < 3:
+    # python 2
+    import mock
+else:
+    # python 3
+    from unittest import mock
 
 
 # Tests for helper functions.
@@ -1523,6 +1531,17 @@ class TestChoiceField(FieldValues):
             ('good', 'Good quality'),
         ]
     )
+
+    @mock.patch('rest_framework.fields.ChoiceField.choices')
+    def test_set_initial_choices(self, choices_mock):
+        field = serializers.ChoiceField(
+            allow_null=True,
+            choices=[
+                1, 2,
+            ]
+        )
+        assert field._choices == [1, 2]
+        assert field.choices == choices_mock
 
     def test_allow_blank(self):
         """
