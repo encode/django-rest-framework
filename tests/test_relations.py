@@ -197,6 +197,15 @@ class TestHyperlinkedRelatedField(APISimpleTestCase):
         msg = excinfo.value.detail[0]
         assert msg == 'Invalid hyperlink - Object does not exist.'
 
+    def test_hyperlinked_related_internal_type_error(self):
+        class Field(serializers.HyperlinkedRelatedField):
+            def get_object(self, incorrect, signature):
+                pass
+
+        field = Field(view_name='example', queryset=self.queryset)
+        with pytest.raises(TypeError):
+            field.to_internal_value('http://example.org/example/doesnotexist/')
+
 
 class TestHyperlinkedIdentityField(APISimpleTestCase):
     def setUp(self):
