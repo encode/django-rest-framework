@@ -293,7 +293,7 @@ The following mappings would be generated...
     <tr><th>URL</th><th>HTTP Method</th><th>Action</th><th>URL Name</th></tr>
     <tr><td>/users</td><td>GET</td><td>list</td><td>user-list</td></tr>
     <tr><td>/users/{username}</td><td>GET</td><td>retrieve</td><td>user-detail</td></tr>
-    <tr><td>/users/{username}/group-names</td><td>GET</td><td>group_names</td><td>user-group-names</td></tr>
+    <tr><td>/users/{username}/group_names</td><td>GET</td><td>group_names</td><td>user-group-names</td></tr>
 </table>
 
 For another example of setting the `.routes` attribute, see the source code for the `SimpleRouter` class.
