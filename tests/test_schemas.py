@@ -663,6 +663,7 @@ class TestAutoSchema(TestCase):
         with pytest.raises(AssertionError):
             descriptor.get_link(None, None, None)  # ???: Do the dummy arguments require a tighter assert?
 
+    @pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
     def test_update_fields(self):
         """
         That updating fields by-name helper is correct
@@ -698,6 +699,7 @@ class TestAutoSchema(TestCase):
         assert len(fields) == 1
         assert fields[0].required is False
 
+    @pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
     def test_get_manual_fields(self):
         """That get_manual_fields is applied during get_link"""
 
@@ -718,6 +720,7 @@ class TestAutoSchema(TestCase):
         assert len(fields) == 2
         assert "my_extra_field" in [f.name for f in fields]
 
+    @pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
     def test_view_with_manual_schema(self):
 
         path = '/example'
@@ -764,6 +767,7 @@ class TestAutoSchema(TestCase):
         link = view.schema.get_link(path, method, base_url)
         assert link == expected
 
+    @unittest.skipUnless(coreschema, 'coreschema is not installed')
     def test_field_to_schema(self):
         label = 'Test label'
         help_text = 'This is a helpful test text'
@@ -983,6 +987,7 @@ naming_collisions_router = SimpleRouter()
 naming_collisions_router.register(r'collision', NamingCollisionViewSet, base_name="collision")
 
 
+@pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
 class TestURLNamingCollisions(TestCase):
     """
     Ref: https://github.com/encode/django-rest-framework/issues/4704
@@ -1167,6 +1172,7 @@ def test_head_and_options_methods_are_excluded():
     assert inspector.get_allowed_methods(callback) == ["GET"]
 
 
+@pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
 class TestAutoSchemaAllowsFilters(object):
     class MockAPIView(APIView):
         filter_backends = [filters.OrderingFilter]

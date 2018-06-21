@@ -76,6 +76,7 @@ class JSONEncoderTests(TestCase):
         unique_id = uuid4()
         assert self.encoder.default(unique_id) == str(unique_id)
 
+    @pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
     def test_encode_coreapi_raises_error(self):
         """
         Tests encoding a coreapi objects raises proper error
