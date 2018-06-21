@@ -21,12 +21,20 @@ matrix:
       - { python: "3.6", env: DJANGO=master }
       - { python: "3.6", env: DJANGO=1.11 }
       - { python: "3.6", env: DJANGO=2.0 }
+      - { python: "3.6", env: DJANGO=2.0 OPTIONALS=1 }
       - { python: "3.6", env: DJANGO=2.1 }
       - { python: "2.7", env: TOXENV=lint }
       - { python: "2.7", env: TOXENV=docs }
 
       - python: "3.6"
         env: TOXENV=dist
+        script:
+          - python setup.py bdist_wheel
+          - tox --installpkg ./dist/djangorestframework-*.whl
+          - tox  # test sdist
+
+      - python: "3.6"
+        env: TOXENV=dist-optionals
         script:
           - python setup.py bdist_wheel
           - tox --installpkg ./dist/djangorestframework-*.whl
