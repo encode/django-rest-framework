@@ -3,7 +3,6 @@
 REST framework includes an abstraction for dealing with `ViewSets`, that allows the developer to concentrate on modeling the state and interactions of the API, and leave the URL construction to be handled automatically, based on common conventions.
 
 `ViewSet` classes are almost the same thing as `View` classes, except that they provide operations such as `read`, or `update`, and not method handlers such as `get` or `put`.
-
 A `ViewSet` class is only bound to a set of method handlers at the last moment, when it is instantiated into a set of views, typically by using a `Router` class which handles the complexities of defining the URL conf for you.
 
 ## Refactoring to use ViewSets
@@ -116,7 +115,7 @@ Here's our re-wired `snippets/urls.py` file.
 
     # The API URLs are now determined automatically by the router.
     urlpatterns = [
-        url(r'^', include(router.urls))
+        path('', include(router.urls)),
     ]
 
 Registering the viewsets with the router is similar to providing a urlpattern.  We include two arguments - the URL prefix for the views, and the viewset itself.
