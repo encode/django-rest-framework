@@ -294,7 +294,7 @@ class TestListSerializerClass:
 
 class TestSerializerPartialUsage:
     """
-    When not submitting key for list fields or multiple choice, partial
+    When not submitting keys for list, dict or multiple choice fields, partial
     serialization should result in an empty state (key not there), not
     an empty list.
 
@@ -316,6 +316,16 @@ class TestSerializerPartialUsage:
         serializer = MultipleChoiceSerializer(data=MultiValueDict(), partial=True)
         result = serializer.to_internal_value(data={})
         assert "multiplechoice" not in result
+        assert serializer.is_valid()
+        assert serializer.validated_data == {}
+        assert serializer.errors == {}
+
+    def test_partial_dictfield(self):
+        class DictFieldSerializer(serializers.Serializer):
+            data = serializers.DictField()
+        serializer = DictFieldSerializer(data=MultiValueDict(), partial=True)
+        result = serializer.to_internal_value(data={})
+        assert "data" not in result
         assert serializer.is_valid()
         assert serializer.validated_data == {}
         assert serializer.errors == {}
