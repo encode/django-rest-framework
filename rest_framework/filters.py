@@ -16,7 +16,7 @@ from django.utils import six
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 
-from rest_framework.compat import coreapi, coreschema, distinct, guardian
+from rest_framework.compat import coreapi, coreschema, distinct
 from rest_framework.settings import api_settings
 
 
@@ -282,7 +282,11 @@ class DjangoObjectPermissionsFilter(BaseFilterBackend):
     has read object level permissions.
     """
     def __init__(self):
-        assert guardian, 'Using DjangoObjectPermissionsFilter, but django-guardian is not installed'
+        try:
+            import guardian
+        except ImportError:
+            raise ImportError('Using DjangoObjectPermissionsFilter, but django-guardian is not installed')
+        self.guardian_version = guardian.VERSION
 
     perm_format = '%(app_label)s.view_%(model_name)s'
 
@@ -300,7 +304,7 @@ class DjangoObjectPermissionsFilter(BaseFilterBackend):
             'model_name': model_cls._meta.model_name
         }
         permission = self.perm_format % kwargs
-        if tuple(guardian.VERSION) >= (1, 3):
+        if tuple(self.guardian_version) >= (1, 3):
             # Maintain behavior compatibility with versions prior to 1.3
             extra = {'accept_global_perms': False}
         else:
