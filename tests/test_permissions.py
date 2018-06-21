@@ -12,14 +12,15 @@ from rest_framework import (
     HTTP_HEADER_ENCODING, authentication, generics, permissions, serializers,
     status, views
 )
-try:
-    import guardian
-except ImportError:
-    guardian = None
 from rest_framework.filters import DjangoObjectPermissionsFilter
 from rest_framework.routers import DefaultRouter
 from rest_framework.test import APIRequestFactory
 from tests.models import BasicModel
+
+try:
+    import guardian
+except ImportError:
+    guardian = None
 
 factory = APIRequestFactory()
 
