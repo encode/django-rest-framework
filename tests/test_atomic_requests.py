@@ -6,7 +6,6 @@ from django.conf.urls import url
 from django.db import connection, connections, transaction
 from django.http import Http404
 from django.test import TestCase, TransactionTestCase, override_settings
-from django.utils.decorators import method_decorator
 
 from rest_framework import status
 from rest_framework.exceptions import APIException
@@ -37,7 +36,7 @@ class APIExceptionView(APIView):
 
 
 class NonAtomicAPIExceptionView(APIView):
-    @method_decorator(transaction.non_atomic_requests)
+    @transaction.non_atomic_requests
     def dispatch(self, *args, **kwargs):
         return super(NonAtomicAPIExceptionView, self).dispatch(*args, **kwargs)
 
