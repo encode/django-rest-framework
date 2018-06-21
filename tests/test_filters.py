@@ -10,6 +10,7 @@ from django.test.utils import override_settings
 from django.utils.six.moves import reload_module
 
 from rest_framework import filters, generics, serializers
+from rest_framework.compat import coreschema
 from rest_framework.test import APIRequestFactory
 
 factory = APIRequestFactory()
@@ -28,6 +29,7 @@ class BaseFilterTests(TestCase):
         with pytest.raises(NotImplementedError):
             self.filter_backend.filter_queryset(None, None, None)
 
+    @pytest.mark.skipif(not coreschema, reason='coreschema is not installed')
     def test_get_schema_fields_checks_for_coreapi(self):
         filters.coreapi = None
         with pytest.raises(AssertionError):
