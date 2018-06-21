@@ -105,7 +105,7 @@ Because we're using `ViewSet` classes rather than `View` classes, we actually do
 
 Here's our re-wired `snippets/urls.py` file.
 
-    from django.conf.urls import url, include
+    from django.urls import path, include
     from rest_framework.routers import DefaultRouter
     from snippets import views
 
