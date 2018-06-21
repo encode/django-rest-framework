@@ -709,6 +709,7 @@ class AdminRendererTests(TestCase):
         self.assertContains(response, '<tr><th>Iteritems</th><td>a string</td></tr>', html=True)
 
 
+@pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
 class TestDocumentationRenderer(TestCase):
 
     def test_document_with_link_named_data(self):
@@ -738,6 +739,7 @@ class TestDocumentationRenderer(TestCase):
         assert '<h1>Data Endpoint API</h1>' in html
 
 
+@pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
 class TestSchemaJSRenderer(TestCase):
 
     def test_schemajs_output(self):
