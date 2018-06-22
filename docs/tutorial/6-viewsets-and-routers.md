@@ -105,7 +105,7 @@ Because we're using `ViewSet` classes rather than `View` classes, we actually do
 
 Here's our re-wired `snippets/urls.py` file.
 
-    from django.conf.urls import url, include
+    from django.urls import path, include
     from rest_framework.routers import DefaultRouter
     from snippets import views
 
@@ -116,7 +116,7 @@ Here's our re-wired `snippets/urls.py` file.
 
     # The API URLs are now determined automatically by the router.
     urlpatterns = [
-        url(r'^', include(router.urls))
+        path('', include(router.urls)),
     ]
 
 Registering the viewsets with the router is similar to providing a urlpattern.  We include two arguments - the URL prefix for the views, and the viewset itself.
