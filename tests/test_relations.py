@@ -200,7 +200,7 @@ class TestHyperlinkedRelatedField(APISimpleTestCase):
     def test_hyperlinked_related_internal_type_error(self):
         class Field(serializers.HyperlinkedRelatedField):
             def get_object(self, incorrect, signature):
-                pass
+                raise NotImplementedError()
 
         field = Field(view_name='example', queryset=self.queryset)
         with pytest.raises(TypeError):
