@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 import base64
 import unittest
 
+import django
 from django.contrib.auth.models import Group, Permission, User
 from django.db import models
 from django.test import TestCase
@@ -248,10 +249,12 @@ class BasicPermModel(models.Model):
 
     class Meta:
         app_label = 'tests'
-        permissions = (
-            ('view_basicpermmodel', 'Can view basic perm model'),
-            # add, change, delete built in to django
-        )
+
+        if django.VERSION < (2, 1):
+            permissions = (
+                ('view_basicpermmodel', 'Can view basic perm model'),
+                # add, change, delete built in to django
+            )
 
 
 class BasicPermSerializer(serializers.ModelSerializer):
