@@ -110,6 +110,8 @@ During dispatch, the following attributes are available on the `ViewSet`.
 * `action` - the name of the current action (e.g., `list`, `create`).
 * `detail` - boolean indicating if the current action is configured for a list or detail view.
 * `suffix` - the display suffix for the viewset type - mirrors the `detail` attribute.
+* `name` - the display name for the viewset. This argument is mutually exclusive to `suffix`.
+* `description` - the display description for the individual view of a viewset.
 
 You may inspect these attributes to adjust behaviour based on the current action. For example, you could restrict permissions to everything except the `list` action similar to this:
 
@@ -142,7 +144,7 @@ A more complete example of extra actions:
         queryset = User.objects.all()
         serializer_class = UserSerializer
 
-        @action(methods=['post'], detail=True)
+        @action(detail=True, methods=['post'])
         def set_password(self, request, pk=None):
             user = self.get_object()
             serializer = PasswordSerializer(data=request.data)
@@ -168,19 +170,35 @@ A more complete example of extra actions:
 
 The decorator can additionally take extra arguments that will be set for the routed view only.  For example:
 
-        @action(methods=['post'], detail=True, permission_classes=[IsAdminOrIsSelf])
+        @action(detail=True, methods=['post'], permission_classes=[IsAdminOrIsSelf])
         def set_password(self, request, pk=None):
            ...
 
 These decorator will route `GET` requests by default, but may also accept other HTTP methods by setting the `methods` argument.  For example:
 
-        @action(methods=['post', 'delete'], detail=True)
+        @action(detail=True, methods=['post', 'delete'])
         def unset_password(self, request, pk=None):
            ...
 
 The two new actions will then be available at the urls `^users/{pk}/set_password/$` and `^users/{pk}/unset_password/$`
 
 To view all extra actions, call the `.get_extra_actions()` method.
+
+### Routing additional HTTP methods for extra actions
+
+Extra actions can be mapped to different `ViewSet` methods. For example, the above password set/unset methods could be consolidated into a single route. Note that additional mappings do not accept arguments.
+
+```python
+    @action(detail=True, methods=['put'], name='Change Password')
+    def password(self, request, pk=None):
+        """Update the user's password."""
+        ...
+
+    @password.mapping.delete
+    def delete_password(self, request, pk=None):
+        """Delete the user's password."""
+        ...
+```
 
 ## Reversing action URLs
 
