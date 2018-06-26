@@ -132,10 +132,17 @@ $(function () {
           params[paramKey] = value
         }
       } else if (dataType === 'array' && paramValue) {
-        try {
-          params[paramKey] = JSON.parse(paramValue)
-        } catch (err) {
-          // Ignore malformed JSON
+        if($elem.is('select')){
+          if(!(paramKey in params)) {
+            params[paramKey] = []
+          }
+          params[paramKey].push(paramValue)
+        } else {
+          try {
+              params[paramKey] = JSON.parse(paramValue)
+          } catch (err) {
+              // Ignore malformed JSON
+          }
         }
       } else if (dataType === 'object' && paramValue) {
         try {
