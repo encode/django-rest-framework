@@ -105,7 +105,11 @@ def field_to_schema(field):
             format='textarea'
         )
 
-    return coreschema.String(title=title, description=description)
+    return coreschema.String(
+        title=title,
+        description=description,
+        format=getattr(field, 'style', {}).get('input_type'),
+    )
 
 
 def get_pk_description(model, model_field):
