@@ -48,6 +48,7 @@ class ExampleSerializer(serializers.Serializer):
     b = serializers.CharField(required=False)
     read_only = serializers.CharField(read_only=True)
     hidden = serializers.HiddenField(default='hello')
+    password = serializers.CharField(write_only=True, style={'input_type': 'password'})
 
 
 class AnotherSerializerWithDictField(serializers.Serializer):
@@ -188,7 +189,8 @@ class TestRouterGeneratedSchema(TestCase):
                         encoding='application/json',
                         fields=[
                             coreapi.Field('a', required=True, location='form', schema=coreschema.String(title='A', description='A field description')),
-                            coreapi.Field('b', required=False, location='form', schema=coreschema.String(title='B'))
+                            coreapi.Field('b', required=False, location='form', schema=coreschema.String(title='B')),
+                            coreapi.Field('password', required=True, location='form', schema=coreschema.String(title='Password', format='password'))
                         ]
                     ),
                     'read': coreapi.Link(
@@ -253,7 +255,8 @@ class TestRouterGeneratedSchema(TestCase):
                             coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
                             coreapi.Field('a', required=True, location='form', schema=coreschema.String(title='A', description=('A field description'))),
                             coreapi.Field('b', required=False, location='form', schema=coreschema.String(title='B')),
-                            coreapi.Field('ordering', required=False, location='query', schema=coreschema.String(title='Ordering', description='Which field to use when ordering the results.'))
+                            coreapi.Field('ordering', required=False, location='query', schema=coreschema.String(title='Ordering', description='Which field to use when ordering the results.')),
+                            coreapi.Field('password', required=True, location='form', schema=coreschema.String(title='Password', format='password')),
                         ]
                     ),
                     'partial_update': coreapi.Link(
@@ -264,7 +267,8 @@ class TestRouterGeneratedSchema(TestCase):
                             coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
                             coreapi.Field('a', required=False, location='form', schema=coreschema.String(title='A', description='A field description')),
                             coreapi.Field('b', required=False, location='form', schema=coreschema.String(title='B')),
-                            coreapi.Field('ordering', required=False, location='query', schema=coreschema.String(title='Ordering', description='Which field to use when ordering the results.'))
+                            coreapi.Field('ordering', required=False, location='query', schema=coreschema.String(title='Ordering', description='Which field to use when ordering the results.')),
+                            coreapi.Field('password', required=False, location='form', schema=coreschema.String(title='Password', format='password')),
                         ]
                     ),
                     'delete': coreapi.Link(
