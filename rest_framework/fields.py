@@ -19,6 +19,7 @@ from django.core.validators import (
 from django.forms import FilePathField as DjangoFilePathField
 from django.forms import ImageField as DjangoImageField
 from django.utils import six, timezone
+from django.db import models
 from django.utils.dateparse import (
     parse_date, parse_datetime, parse_duration, parse_time
 )
@@ -1653,7 +1654,8 @@ class ListField(Field):
         """
         List of object instances -> List of dicts of primitive datatypes.
         """
-        return [self.child.to_representation(item) if item is not None else None for item in data]
+        items = data.all() if isinstance(data, models.Manager) else data
+        return [self.child.to_representation(item) if item is not None else None for item in items]
 
     def run_child_validation(self, data):
         result = []
