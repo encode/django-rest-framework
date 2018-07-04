@@ -16,10 +16,10 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.validators import (
     EmailValidator, RegexValidator, URLValidator, ip_address_validators
 )
+from django.db import models
 from django.forms import FilePathField as DjangoFilePathField
 from django.forms import ImageField as DjangoImageField
 from django.utils import six, timezone
-from django.db import models
 from django.utils.dateparse import (
     parse_date, parse_datetime, parse_duration, parse_time
 )
