@@ -721,6 +721,21 @@ class TestCharField(FieldValues):
             field.run_validation('   ')
         assert exc_info.value.detail == ['This field may not be blank.']
 
+    def test_allow_null_bytes(self):
+        field = serializers.CharField(allow_null_bytes=True)
+        for value in ('\0', 'foo\0', '\0foo', 'foo\0foo'):
+            field.run_validation('\0')
+
+    def test_disallow_null_bytes(self):
+        field = serializers.CharField(allow_null_bytes=False)
+
+        for value in ('\0', 'foo\0', '\0foo', 'foo\0foo'):
+            with pytest.raises(serializers.ValidationError) as exc_info:
+                field.run_validation('\0')
+            assert exc_info.value.detail == [
+                serializers.CharField.default_error_messages['nulls']
+            ]
+
 
 class TestEmailField(FieldValues):
     """
