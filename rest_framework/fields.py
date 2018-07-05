@@ -754,12 +754,14 @@ class CharField(Field):
         'invalid': _('Not a valid string.'),
         'blank': _('This field may not be blank.'),
         'max_length': _('Ensure this field has no more than {max_length} characters.'),
-        'min_length': _('Ensure this field has at least {min_length} characters.')
+        'min_length': _('Ensure this field has at least {min_length} characters.'),
+        'nulls': _('This field may not include NULL bytes.'),
     }
     initial = ''
 
     def __init__(self, **kwargs):
         self.allow_blank = kwargs.pop('allow_blank', False)
+        self.allow_null_bytes = kwargs.pop('allow_null_bytes', True)
         self.trim_whitespace = kwargs.pop('trim_whitespace', True)
         self.max_length = kwargs.pop('max_length', None)
         self.min_length = kwargs.pop('min_length', None)
@@ -785,6 +787,8 @@ class CharField(Field):
             if not self.allow_blank:
                 self.fail('blank')
             return ''
+        if not self.allow_null_bytes and '\0' in six.text_type(data):
+            self.fail('nulls')
         return super(CharField, self).run_validation(data)
 
     def to_internal_value(self, data):
