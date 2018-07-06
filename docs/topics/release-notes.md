@@ -38,6 +38,16 @@ You can determine your currently installed version using `pip show`:
 
 ---
 
+## 3.9.x series
+
+### 3.9.0
+
+**Date**: Unreleased
+
+* Deprecate the `Router.register` `base_name` argument in favor of `basename`. [#5990][gh5990]
+* Deprecate the `Router.get_default_base_name` method in favor of `Router.get_default_basename`. [#5990][gh5990]
+
+
 ## 3.8.x series
 
 ### 3.8.2
@@ -1961,3 +1971,6 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh5922]: https://github.com/encode/django-rest-framework/issues/5922
 [gh5921]: https://github.com/encode/django-rest-framework/issues/5921
 [gh5920]: https://github.com/encode/django-rest-framework/issues/5920
+
+<!-- 3.9.0 -->
+[gh5990]: https://github.com/encode/django-rest-framework/issues/5990

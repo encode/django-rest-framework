@@ -122,7 +122,7 @@ else:
         pass
 
 router = DefaultRouter()
-router.register('example', ExampleViewSet, base_name='example')
+router.register('example', ExampleViewSet, basename='example')
 urlpatterns = [
     url(r'^$', schema_view),
     url(r'^', include(router.urls))
@@ -509,7 +509,7 @@ class TestSchemaGeneratorNotAtRoot(TestCase):
 class TestSchemaGeneratorWithMethodLimitedViewSets(TestCase):
     def setUp(self):
         router = DefaultRouter()
-        router.register('example1', MethodLimitedViewSet, base_name='example1')
+        router.register('example1', MethodLimitedViewSet, basename='example1')
         self.patterns = [
             url(r'^', include(router.urls))
         ]
@@ -566,8 +566,8 @@ class TestSchemaGeneratorWithMethodLimitedViewSets(TestCase):
 class TestSchemaGeneratorWithRestrictedViewSets(TestCase):
     def setUp(self):
         router = DefaultRouter()
-        router.register('example1', Http404ExampleViewSet, base_name='example1')
-        router.register('example2', PermissionDeniedExampleViewSet, base_name='example2')
+        router.register('example1', Http404ExampleViewSet, basename='example1')
+        router.register('example2', PermissionDeniedExampleViewSet, basename='example2')
         self.patterns = [
             url('^example/?$', ExampleListView.as_view()),
             url(r'^', include(router.urls))
@@ -1042,7 +1042,7 @@ class NamingCollisionViewSet(GenericViewSet):
 
 
 naming_collisions_router = SimpleRouter()
-naming_collisions_router.register(r'collision', NamingCollisionViewSet, base_name="collision")
+naming_collisions_router.register(r'collision', NamingCollisionViewSet, basename="collision")
 
 
 @pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
