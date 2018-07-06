@@ -174,23 +174,23 @@ This subscription is recommended for individuals with an interest in seeing REST
 If you are using REST framework as a full-time employee, consider recommending that your company takes out a [corporate&nbsp;plan](#corporate-plans).
 
 <div class="pricing">
-				<div class="span4">
-					<div class="chart first">
-						<div class="quantity">
-							<span class="dollar">{{ symbol }}</span>
-							<span class="price">{{ rates.personal1 }}</span>
-							<span class="period">/month{% if vat %} +VAT{% endif %}</span>
-						</div>
-						<div class="plan-name">Individual</div>
-						<div class="specs freelancer">
-							<div class="spec">
-								Support ongoing development
-							</div>
-							<div class="spec">
-								Credited on the site
-							</div>
-						</div>
-						<form class="signup" action="/signup/{{ currency }}-{{ rates.personal1 }}/" method="POST">
+                <div class="span4">
+                    <div class="chart first">
+                        <div class="quantity">
+                            <span class="dollar">{{ symbol }}</span>
+                            <span class="price">{{ rates.personal1 }}</span>
+                            <span class="period">/month{% if vat %} +VAT{% endif %}</span>
+                        </div>
+                        <div class="plan-name">Individual</div>
+                        <div class="specs freelancer">
+                            <div class="spec">
+                                Support ongoing development
+                            </div>
+                            <div class="spec">
+                                Credited on the site
+                            </div>
+                        </div>
+                        <form class="signup" action="/signup/{{ currency }}-{{ rates.personal1 }}/" method="POST">
   <script
     src="https://checkout.stripe.com/checkout.js" class="stripe-button"
     data-key="{{ stripe_public }}"
@@ -204,9 +204,9 @@ If you are using REST framework as a full-time employee, consider recommending t
     data-panel-label='Sign up - {% verbatim %}{{amount}}{% endverbatim %}/mo'>
   </script>
 </form>
-					</div>
-				</div>
-			</div>
+                    </div>
+                </div>
+            </div>
 <div style="clear: both; padding-top: 50px"></div>
 
 *Billing is monthly and you can cancel at any time.*
@@ -222,23 +222,23 @@ In exchange for funding you'll also receive advertising space on our site, allow
 Our professional and premium plans also include **priority support**. At any time your engineers can escalate an issue or discussion group thread, and we'll ensure it gets a guaranteed response within the next working day.
 
 <div class="pricing">
-				<div class="span4">
-					<div class="chart first">
-						<div class="quantity">
-							<span class="dollar">{{ symbol }}</span>
-							<span class="price">{{ rates.corporate1 }}</span>
-							<span class="period">/month{% if vat %} +VAT{% endif %}</span>
-						</div>
-						<div class="plan-name">Basic</div>
-						<div class="specs startup">
-							<div class="spec">
-								Support ongoing development
-							</div>
-							<div class="spec">
-								<span class="variable">Funding page</span> ad placement
-							</div>
-						</div>
-						<form class="signup" action="/signup/{{ currency }}-{{ rates.corporate1 }}/" method="POST">
+                <div class="span4">
+                    <div class="chart first">
+                        <div class="quantity">
+                            <span class="dollar">{{ symbol }}</span>
+                            <span class="price">{{ rates.corporate1 }}</span>
+                            <span class="period">/month{% if vat %} +VAT{% endif %}</span>
+                        </div>
+                        <div class="plan-name">Basic</div>
+                        <div class="specs startup">
+                            <div class="spec">
+                                Support ongoing development
+                            </div>
+                            <div class="spec">
+                                <span class="variable">Funding page</span> ad placement
+                            </div>
+                        </div>
+                        <form class="signup" action="/signup/{{ currency }}-{{ rates.corporate1 }}/" method="POST">
   <script
     src="https://checkout.stripe.com/checkout.js" class="stripe-button"
     data-key="{{ stripe_public }}"
@@ -252,28 +252,28 @@ Our professional and premium plans also include **priority support**. At any tim
     data-panel-label='Sign up - {% verbatim %}{{amount}}{% endverbatim %}/mo'>
   </script>
 </form>
-					</div>
-				</div>
-				<div class="span4">
-					<div class="chart">
-						<div class="quantity">
-							<span class="dollar">{{ symbol }}</span>
-							<span class="price">{{ rates.corporate2 }}</span>
-							<span class="period">/month{% if vat %} +VAT{% endif %}</span>
-						</div>
-						<div class="plan-name">Professional</div>
-						<div class="specs">
+                    </div>
+                </div>
+                <div class="span4">
+                    <div class="chart">
+                        <div class="quantity">
+                            <span class="dollar">{{ symbol }}</span>
+                            <span class="price">{{ rates.corporate2 }}</span>
+                            <span class="period">/month{% if vat %} +VAT{% endif %}</span>
+                        </div>
+                        <div class="plan-name">Professional</div>
+                        <div class="specs">
                             <div class="spec">
                                 Support ongoing development
                             </div>
-							<div class="spec">
-								<span class="variable">Sidebar</span> ad placement
-							</div>
-							<div class="spec">
-								<span class="variable">Priority support</span> for your engineers
-							</div>
-						</div>
-						<form class="signup" action="/signup/{{ currency }}-{{ rates.corporate2 }}/" method="POST">
+                            <div class="spec">
+                                <span class="variable">Sidebar</span> ad placement
+                            </div>
+                            <div class="spec">
+                                <span class="variable">Priority support</span> for your engineers
+                            </div>
+                        </div>
+                        <form class="signup" action="/signup/{{ currency }}-{{ rates.corporate2 }}/" method="POST">
   <script
     src="https://checkout.stripe.com/checkout.js" class="stripe-button"
     data-key="{{ stripe_public }}"
@@ -287,31 +287,31 @@ Our professional and premium plans also include **priority support**. At any tim
     data-panel-label='Sign up - {% verbatim %}{{amount}}{% endverbatim %}/mo'>
   </script>
 </form>
-					</div>
-				</div>
-				<div class="span4">
-					<div class="chart last">
-						<div class="quantity">
-							<span class="dollar">{{ symbol }}</span>
-							<span class="price">{{ rates.corporate3 }}</span>
-							<span class="period">/month{% if vat %} +VAT{% endif %}</span>
-						</div>
-						<div class="plan-name">Premium</div>
-						<div class="specs">
+                    </div>
+                </div>
+                <div class="span4">
+                    <div class="chart last">
+                        <div class="quantity">
+                            <span class="dollar">{{ symbol }}</span>
+                            <span class="price">{{ rates.corporate3 }}</span>
+                            <span class="period">/month{% if vat %} +VAT{% endif %}</span>
+                        </div>
+                        <div class="plan-name">Premium</div>
+                        <div class="specs">
                         <div class="spec">
                             Support ongoing development
                         </div>
-							<div class="spec">
-								<span class="variable">Homepage</span> ad placement
-							</div>
-							<div class="spec">
-								<span class="variable">Sidebar</span> ad placement
-							</div>
-							<div class="spec">
-								<span class="variable">Priority support</span> for your engineers
-							</div>
-						</div>
-						<form class="signup" action="/signup/{{ currency }}-{{ rates.corporate3 }}/" method="POST">
+                            <div class="spec">
+                                <span class="variable">Homepage</span> ad placement
+                            </div>
+                            <div class="spec">
+                                <span class="variable">Sidebar</span> ad placement
+                            </div>
+                            <div class="spec">
+                                <span class="variable">Priority support</span> for your engineers
+                            </div>
+                        </div>
+                        <form class="signup" action="/signup/{{ currency }}-{{ rates.corporate3 }}/" method="POST">
   <script
     src="https://checkout.stripe.com/checkout.js" class="stripe-button"
     data-key="{{ stripe_public }}"
@@ -325,9 +325,9 @@ Our professional and premium plans also include **priority support**. At any tim
     data-panel-label='Sign up - {% verbatim %}{{amount}}{% endverbatim %}/mo'>
   </script>
 </form>
-					</div>
-				</div>
-			</div>
+                    </div>
+                </div>
+            </div>
 
 <div style="clear: both; padding-top: 50px"></div>
 
@@ -346,22 +346,22 @@ In an effort to keep the project as transparent as possible, we are releasing [m
 <!-- Begin MailChimp Signup Form -->
 <link href="//cdn-images.mailchimp.com/embedcode/classic-10_7.css" rel="stylesheet" type="text/css">
 <style type="text/css">
-	#mc_embed_signup{background:#fff; clear:left; font:14px Helvetica,Arial,sans-serif; }
-	/* Add your own MailChimp form style overrides in your site stylesheet or in this style block.
-	   We recommend moving this block and the preceding CSS link to the HEAD of your HTML file. */
+    #mc_embed_signup{background:#fff; clear:left; font:14px Helvetica,Arial,sans-serif; }
+    /* Add your own MailChimp form style overrides in your site stylesheet or in this style block.
+       We recommend moving this block and the preceding CSS link to the HEAD of your HTML file. */
 </style>
 <div id="mc_embed_signup">
 <form action="//encode.us13.list-manage.com/subscribe/post?u=b6b66bb5e4c7cb484a85c8dd7&amp;id=e382ef68ef" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
     <div id="mc_embed_signup_scroll">
-	<h2>Stay up to date, with our monthly progress reports...</h2>
+    <h2>Stay up to date, with our monthly progress reports...</h2>
 <div class="mc-field-group">
-	<label for="mce-EMAIL">Email Address </label>
-	<input type="email" value="" name="EMAIL" class="required email" id="mce-EMAIL">
+    <label for="mce-EMAIL">Email Address </label>
+    <input type="email" value="" name="EMAIL" class="required email" id="mce-EMAIL">
 </div>
-	<div id="mce-responses" class="clear">
-		<div class="response" id="mce-error-response" style="display:none"></div>
-		<div class="response" id="mce-success-response" style="display:none"></div>
-	</div>    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+    <div id="mce-responses" class="clear">
+        <div class="response" id="mce-error-response" style="display:none"></div>
+        <div class="response" id="mce-success-response" style="display:none"></div>
+    </div>    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
     <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_b6b66bb5e4c7cb484a85c8dd7_e382ef68ef" tabindex="-1" value=""></div>
     <div class="clear"><input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button"></div>
     </div>

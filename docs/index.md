@@ -31,10 +31,6 @@
 
 ---
 
-**Note**: This is the documentation for the **version 3** of REST framework. Documentation for [version 2](https://tomchristie.github.io/rest-framework-2-docs/) is also available.
-
----
-
 <p>
 <h1 style="position: absolute;
     width: 1px;
@@ -151,11 +147,11 @@ Here's our project's root `urls.py` module:
     from django.contrib.auth.models import User
     from rest_framework import routers, serializers, viewsets
 
-	# Serializers define the API representation.
-	class UserSerializer(serializers.HyperlinkedModelSerializer):
-	    class Meta:
-	        model = User
-	        fields = ('url', 'username', 'email', 'is_staff')
+    # Serializers define the API representation.
+    class UserSerializer(serializers.HyperlinkedModelSerializer):
+        class Meta:
+            model = User
+            fields = ('url', 'username', 'email', 'is_staff')
 
     # ViewSets define the view behavior.
     class UserViewSet(viewsets.ModelViewSet):
@@ -178,83 +174,6 @@ You can now open the API in your browser at [http://127.0.0.1:8000/](http://127.
 ## Quickstart
 
 Can't wait to get started? The [quickstart guide][quickstart] is the fastest way to get up and running, and building APIs with REST framework.
-
-## Tutorial
-
-The tutorial will walk you through the building blocks that make up REST framework.   It'll take a little while to get through, but it'll give you a comprehensive understanding of how everything fits together, and is highly recommended reading.
-
-* [1 - Serialization][tut-1]
-* [2 - Requests & Responses][tut-2]
-* [3 - Class-based views][tut-3]
-* [4 - Authentication & permissions][tut-4]
-* [5 - Relationships & hyperlinked APIs][tut-5]
-* [6 - Viewsets & routers][tut-6]
-* [7 - Schemas & client libraries][tut-7]
-
-There is a live example API of the finished tutorial API for testing purposes, [available here][sandbox].
-
-## API Guide
-
-The API guide is your complete reference manual to all the functionality provided by REST framework.
-
-* [Requests][request]
-* [Responses][response]
-* [Views][views]
-* [Generic views][generic-views]
-* [Viewsets][viewsets]
-* [Routers][routers]
-* [Parsers][parsers]
-* [Renderers][renderers]
-* [Serializers][serializers]
-* [Serializer fields][fields]
-* [Serializer relations][relations]
-* [Validators][validators]
-* [Authentication][authentication]
-* [Permissions][permissions]
-* [Throttling][throttling]
-* [Filtering][filtering]
-* [Pagination][pagination]
-* [Versioning][versioning]
-* [Content negotiation][contentnegotiation]
-* [Metadata][metadata]
-* [Schemas][schemas]
-* [Format suffixes][formatsuffixes]
-* [Returning URLs][reverse]
-* [Exceptions][exceptions]
-* [Status codes][status]
-* [Testing][testing]
-* [Settings][settings]
-
-## Topics
-
-General guides to using REST framework.
-
-* [Documenting your API][documenting-your-api]
-* [API Clients][api-clients]
-* [Internationalization][internationalization]
-* [AJAX, CSRF & CORS][ajax-csrf-cors]
-* [HTML & Forms][html-and-forms]
-* [Browser enhancements][browser-enhancements]
-* [The Browsable API][browsableapi]
-* [REST, Hypermedia & HATEOAS][rest-hypermedia-hateoas]
-* [Third Party Packages][third-party-packages]
-* [Tutorials and Resources][tutorials-and-resources]
-* [Contributing to REST framework][contributing]
-* [Project management][project-management]
-* [3.0 Announcement][3.0-announcement]
-* [3.1 Announcement][3.1-announcement]
-* [3.2 Announcement][3.2-announcement]
-* [3.3 Announcement][3.3-announcement]
-* [3.4 Announcement][3.4-announcement]
-* [3.5 Announcement][3.5-announcement]
-* [3.6 Announcement][3.6-announcement]
-* [3.7 Announcement][3.7-announcement]
-* [3.8 Announcement][3.8-announcement]
-* [Kickstarter Announcement][kickstarter-announcement]
-* [Mozilla Grant][mozilla-grant]
-* [Funding][funding]
-* [Release Notes][release-notes]
-* [Jobs][jobs]
 
 ## Development
 
@@ -323,68 +242,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [sponsors]: https://fund.django-rest-framework.org/topics/funding/#our-sponsors
 
 [quickstart]: tutorial/quickstart.md
-[tut-1]: tutorial/1-serialization.md
-[tut-2]: tutorial/2-requests-and-responses.md
-[tut-3]: tutorial/3-class-based-views.md
-[tut-4]: tutorial/4-authentication-and-permissions.md
-[tut-5]: tutorial/5-relationships-and-hyperlinked-apis.md
-[tut-6]: tutorial/6-viewsets-and-routers.md
-[tut-7]: tutorial/7-schemas-and-client-libraries.md
 
-[request]: api-guide/requests.md
-[response]: api-guide/responses.md
-[views]: api-guide/views.md
 [generic-views]: api-guide/generic-views.md
 [viewsets]: api-guide/viewsets.md
 [routers]: api-guide/routers.md
-[parsers]: api-guide/parsers.md
-[renderers]: api-guide/renderers.md
 [serializers]: api-guide/serializers.md
-[fields]: api-guide/fields.md
-[relations]: api-guide/relations.md
-[validators]: api-guide/validators.md
 [authentication]: api-guide/authentication.md
-[permissions]: api-guide/permissions.md
-[throttling]: api-guide/throttling.md
-[filtering]: api-guide/filtering.md
-[pagination]: api-guide/pagination.md
-[versioning]: api-guide/versioning.md
-[contentnegotiation]: api-guide/content-negotiation.md
-[metadata]: api-guide/metadata.md
-[schemas]: api-guide/schemas.md
-[formatsuffixes]: api-guide/format-suffixes.md
-[reverse]: api-guide/reverse.md
-[exceptions]: api-guide/exceptions.md
-[status]: api-guide/status-codes.md
-[testing]: api-guide/testing.md
-[settings]: api-guide/settings.md
 
-[documenting-your-api]: topics/documenting-your-api.md
-[api-clients]: topics/api-clients.md
-[internationalization]: topics/internationalization.md
-[ajax-csrf-cors]: topics/ajax-csrf-cors.md
-[html-and-forms]: topics/html-and-forms.md
-[browser-enhancements]: topics/browser-enhancements.md
-[browsableapi]: topics/browsable-api.md
-[rest-hypermedia-hateoas]: topics/rest-hypermedia-hateoas.md
-[contributing]: topics/contributing.md
-[project-management]: topics/project-management.md
-[third-party-packages]: topics/third-party-packages.md
-[tutorials-and-resources]: topics/tutorials-and-resources.md
-[3.0-announcement]: topics/3.0-announcement.md
-[3.1-announcement]: topics/3.1-announcement.md
-[3.2-announcement]: topics/3.2-announcement.md
-[3.3-announcement]: topics/3.3-announcement.md
-[3.4-announcement]: topics/3.4-announcement.md
-[3.5-announcement]: topics/3.5-announcement.md
-[3.6-announcement]: topics/3.6-announcement.md
-[3.7-announcement]: topics/3.7-announcement.md
-[3.8-announcement]: topics/3.8-announcement.md
-[kickstarter-announcement]: topics/kickstarter-announcement.md
-[mozilla-grant]: topics/mozilla-grant.md
-[funding]: topics/funding.md
-[release-notes]: topics/release-notes.md
-[jobs]: topics/jobs.md
+[contributing]: community/contributing.md
+[funding]: community/funding.md
 
 [group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
 [botbot]: https://botbot.me/freenode/restframework/
