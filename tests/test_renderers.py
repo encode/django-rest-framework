@@ -728,6 +728,75 @@ class AdminRendererTests(TestCase):
         response.render()
         self.assertContains(response, '<tr><th>Iteritems</th><td>a string</td></tr>', html=True)
 
+    def test_get_result_url(self):
+        factory = APIRequestFactory()
+
+        class DummyGenericViewsetLike(APIView):
+            lookup_field = 'test'
+
+            def reverse_action(view, *args, **kwargs):
+                self.assertEqual(kwargs['kwargs']['test'], 1)
+                return '/example/'
+
+        # get the view instance instead of the view function
+        view = DummyGenericViewsetLike.as_view()
+        request = factory.get('/')
+        response = view(request)
+        view = response.renderer_context['view']
+
+        self.assertEqual(self.renderer.get_result_url({'test': 1}, view), '/example/')
+        self.assertIsNone(self.renderer.get_result_url({}, view))
+
+    def test_get_result_url_no_result(self):
+        factory = APIRequestFactory()
+
+        class DummyView(APIView):
+            lookup_field = 'test'
+
+        # get the view instance instead of the view function
+        view = DummyView.as_view()
+        request = factory.get('/')
+        response = view(request)
+        view = response.renderer_context['view']
+
+        self.assertIsNone(self.renderer.get_result_url({'test': 1}, view))
+        self.assertIsNone(self.renderer.get_result_url({}, view))
+
+    def test_get_context_result_urls(self):
+        factory = APIRequestFactory()
+
+        class DummyView(APIView):
+            lookup_field = 'test'
+
+            def reverse_action(view, url_name, args=None, kwargs=None):
+                return '/%s/%d' % (url_name, kwargs['test'])
+
+        # get the view instance instead of the view function
+        view = DummyView.as_view()
+        request = factory.get('/')
+        response = view(request)
+
+        data = [
+            {'test': 1},
+            {'url': '/example', 'test': 2},
+            {'url': None, 'test': 3},
+            {},
+        ]
+        context = {
+            'view': DummyView(),
+            'request': Request(request),
+            'response': response
+        }
+
+        context = self.renderer.get_context(data, None, context)
+        results = context['results']
+
+        self.assertEqual(len(results), 4)
+        self.assertEqual(results[0]['url'], '/detail/1')
+        self.assertEqual(results[1]['url'], '/example')
+        self.assertEqual(results[2]['url'], None)
+        self.assertNotIn('url', results[3])
+
 
 @pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
 class TestDocumentationRenderer(TestCase):

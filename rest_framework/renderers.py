@@ -18,6 +18,7 @@ from django.core.paginator import Page
 from django.http.multipartparser import parse_header
 from django.template import engines, loader
 from django.test.client import encode_multipart
+from django.urls import NoReverseMatch
 from django.utils import six
 from django.utils.html import mark_safe
 
@@ -815,6 +816,12 @@ class AdminRenderer(BrowsableAPIRenderer):
         columns = [key for key in header if key != 'url']
         details = [key for key in header if key != 'url']
 
+        if isinstance(results, list) and 'view' in renderer_context:
+            for result in results:
+                url = self.get_result_url(result, context['view'])
+                if url is not None:
+                    result.setdefault('url', url)
+
         context['style'] = style
         context['columns'] = columns
         context['details'] = details
@@ -822,6 +829,26 @@ class AdminRenderer(BrowsableAPIRenderer):
         context['error_form'] = getattr(self, 'error_form', None)
         context['error_title'] = getattr(self, 'error_title', None)
         return context
+
+    def get_result_url(self, result, view):
+        """
+        Attempt to reverse the result's detail view URL.
+
+        This only works with views that are generic-like (has `.lookup_field`)
+        and viewset-like (has `.basename` / `.reverse_action()`).
+        """
+        if not hasattr(view, 'reverse_action') or \
+           not hasattr(view, 'lookup_field'):
+            return
+
+        lookup_field = view.lookup_field
+        lookup_url_kwarg = getattr(view, 'lookup_url_kwarg', None) or lookup_field
+
+        try:
+            kwargs = {lookup_url_kwarg: result[lookup_field]}
+            return view.reverse_action('detail', kwargs=kwargs)
+        except (KeyError, NoReverseMatch):
+            return
 
 
 class DocumentationRenderer(BaseRenderer):
