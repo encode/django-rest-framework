@@ -139,14 +139,11 @@ except ImportError:
     requests = None
 
 
-# Django-guardian is optional. Import only if guardian is in INSTALLED_APPS
-# Fixes (#1712). We keep the try/except for the test suite.
-guardian = None
-try:
-    if 'guardian' in settings.INSTALLED_APPS:
-        import guardian  # noqa
-except ImportError:
-    pass
+def is_guardian_installed():
+    """
+    django-guardian is optional and only imported if in INSTALLED_APPS.
+    """
+    return 'guardian' in settings.INSTALLED_APPS
 
 
 # PATCH method is not implemented by Django
