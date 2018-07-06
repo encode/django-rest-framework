@@ -5,7 +5,6 @@ versions of Django/Python, and compatibility wrappers around optional packages.
 
 from __future__ import unicode_literals
 
-import django
 from django.conf import settings
 from django.core import validators
 from django.utils import six
@@ -242,12 +241,6 @@ else:
     def md_filter_add_syntax_highlight(md):
         return False
 
-# pytz is required from Django 1.11. Remove when dropping Django 1.10 support.
-try:
-    import pytz  # noqa
-    from pytz.exceptions import InvalidTimeError
-except ImportError:
-    InvalidTimeError = Exception
 
 # Django 1.x url routing syntax. Remove when dropping Django 1.11 support.
 try:
@@ -298,11 +291,3 @@ class MinLengthValidator(CustomValidatorMessage, validators.MinLengthValidator):
 
 class MaxLengthValidator(CustomValidatorMessage, validators.MaxLengthValidator):
     pass
-
-
-def authenticate(request=None, **credentials):
-    from django.contrib.auth import authenticate
-    if django.VERSION < (1, 11):
-        return authenticate(**credentials)
-    else:
-        return authenticate(request=request, **credentials)

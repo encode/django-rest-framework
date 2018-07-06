@@ -53,7 +53,7 @@ There is a live example API for testing purposes, [available here][sandbox].
 # Requirements
 
 * Python (2.7, 3.4, 3.5, 3.6)
-* Django (1.10, 1.11, 2.0)
+* Django (1.11, 2.0)
 
 # Installation
 

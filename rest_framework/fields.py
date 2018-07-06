@@ -29,11 +29,12 @@ from django.utils.functional import lazy
 from django.utils.ipv6 import clean_ipv6_address
 from django.utils.timezone import utc
 from django.utils.translation import ugettext_lazy as _
+from pytz.exceptions import InvalidTimeError
 
 from rest_framework import ISO_8601
 from rest_framework.compat import (
-    InvalidTimeError, MaxLengthValidator, MaxValueValidator,
-    MinLengthValidator, MinValueValidator, unicode_repr, unicode_to_repr
+    MaxLengthValidator, MaxValueValidator, MinLengthValidator,
+    MinValueValidator, unicode_repr, unicode_to_repr
 )
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.settings import api_settings
