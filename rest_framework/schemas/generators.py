@@ -218,6 +218,10 @@ class EndpointEnumerator(object):
         if callback.cls.schema is None:
             return False
 
+        if 'schema' in callback.initkwargs:
+            if callback.initkwargs['schema'] is None:
+                return False
+
         if path.endswith('.{format}') or path.endswith('.{format}/'):
             return False  # Ignore .json style URLs.
 
@@ -365,9 +369,7 @@ class SchemaGenerator(object):
         """
         Given a callback, return an actual view instance.
         """
-        view = callback.cls()
-        for attr, val in getattr(callback, 'initkwargs', {}).items():
-            setattr(view, attr, val)
+        view = callback.cls(**getattr(callback, 'initkwargs', {}))
         view.args = ()
         view.kwargs = {}
         view.format_kwarg = None

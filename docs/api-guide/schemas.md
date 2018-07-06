@@ -243,6 +243,14 @@ You may disable schema generation for a view by setting `schema` to `None`:
             ...
             schema = None  # Will not appear in schema
 
+This also applies to extra actions for `ViewSet`s:
+
+        class CustomViewSet(viewsets.ModelViewSet):
+
+            @action(detail=True, schema=None)
+            def extra_action(self, request, pk=None):
+                ...
+
 ---
 
 **Note**: For full details on `SchemaGenerator` plus the `AutoSchema` and
