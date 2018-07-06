@@ -62,7 +62,7 @@ class TestFileUploadParser(TestCase):
         self.stream.seek(0)
         data_and_files = parser.parse(self.stream, None, self.parser_context)
         file_obj = data_and_files.files['file']
-        assert file_obj._size == 14
+        assert file_obj.size == 14
 
     def test_parse_missing_filename(self):
         """
