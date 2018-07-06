@@ -28,8 +28,7 @@ The project layout should look like:
 
     $ pwd
     <some path>/tutorial
-    $ find .
-    .
+    $ find . -type d -name "env" -prune -o -type f -print
     ./manage.py
     ./tutorial
     ./tutorial/__init__.py
