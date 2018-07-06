@@ -1,6 +1,7 @@
 # coding: utf-8
 from __future__ import unicode_literals
 
+import sys
 from collections import OrderedDict
 
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
@@ -29,6 +30,20 @@ def method_overridden(method_name, klass, instance):
     method = getattr(klass, method_name)
     default_method = getattr(method, '__func__', method)  # Python 3 compat
     return default_method is not getattr(instance, method_name).__func__
+
+
+class ObjectValueError(ValueError):
+    """
+    Raised when `queryset.get()` failed due to an underlying `ValueError`.
+    Wrapping prevents calling code conflating this with unrelated errors.
+    """
+
+
+class ObjectTypeError(TypeError):
+    """
+    Raised when `queryset.get()` failed due to an underlying `TypeError`.
+    Wrapping prevents calling code conflating this with unrelated errors.
+    """
 
 
 class Hyperlink(six.text_type):
@@ -296,7 +311,16 @@ class HyperlinkedRelatedField(RelatedField):
         """
         lookup_value = view_kwargs[self.lookup_url_kwarg]
         lookup_kwargs = {self.lookup_field: lookup_value}
-        return self.get_queryset().get(**lookup_kwargs)
+        queryset = self.get_queryset()
+
+        try:
+            return queryset.get(**lookup_kwargs)
+        except ValueError:
+            exc = ObjectValueError(str(sys.exc_info()[1]))
+            six.reraise(type(exc), exc, sys.exc_info()[2])
+        except TypeError:
+            exc = ObjectTypeError(str(sys.exc_info()[1]))
+            six.reraise(type(exc), exc, sys.exc_info()[2])
 
     def get_url(self, obj, view_name, request, format):
         """
@@ -346,7 +370,7 @@ class HyperlinkedRelatedField(RelatedField):
 
         try:
             return self.get_object(match.view_name, match.args, match.kwargs)
-        except (ObjectDoesNotExist, TypeError, ValueError):
+        except (ObjectDoesNotExist, ObjectValueError, ObjectTypeError):
             self.fail('does_not_exist')
 
     def to_representation(self, value):
