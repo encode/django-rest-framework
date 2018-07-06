@@ -233,10 +233,21 @@ def get_error_detail(exc_info):
     with the `code` populated.
     """
     code = getattr(exc_info, 'code', None) or 'invalid'
-    return [
-        ErrorDetail(msg, code=code)
-        for msg in exc_info.messages
-    ]
+
+    try:
+        error_dict = exc_info.error_dict
+    except AttributeError:
+        return [
+            ErrorDetail(error.message % (error.params or ()),
+                        code=error.code if error.code else code)
+            for error in exc_info.error_list]
+    return {
+        k: [
+            ErrorDetail(error.message % (error.params or ()),
+                        code=error.code if error.code else code)
+            for error in errors
+        ] for k, errors in error_dict.items()
+    }
 
 
 class CreateOnlyDefault(object):
