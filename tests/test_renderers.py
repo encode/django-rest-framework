@@ -16,16 +16,19 @@ from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import permissions, serializers, status
 from rest_framework.compat import coreapi
+from rest_framework.decorators import action
 from rest_framework.renderers import (
     AdminRenderer, BaseRenderer, BrowsableAPIRenderer, DocumentationRenderer,
     HTMLFormRenderer, JSONRenderer, SchemaJSRenderer, StaticHTMLRenderer
 )
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.routers import SimpleRouter
 from rest_framework.settings import api_settings
-from rest_framework.test import APIRequestFactory
+from rest_framework.test import APIRequestFactory, URLPatternsTestCase
 from rest_framework.utils import json
 from rest_framework.views import APIView
+from rest_framework.viewsets import ViewSet
 
 DUMMYSTATUS = status.HTTP_200_OK
 DUMMYCONTENT = 'dummycontent'
@@ -622,7 +625,18 @@ class StaticHTMLRendererTests(TestCase):
         assert result == '500 Internal Server Error'
 
 
-class BrowsableAPIRendererTests(TestCase):
+class BrowsableAPIRendererTests(URLPatternsTestCase):
+    class ExampleViewSet(ViewSet):
+        def list(self, request):
+            return Response()
+
+        @action(detail=False, name="Extra list action")
+        def list_action(self, request):
+            raise NotImplementedError
+
+    router = SimpleRouter()
+    router.register('examples', ExampleViewSet, base_name='example')
+    urlpatterns = [url(r'^api/', include(router.urls))]
 
     def setUp(self):
         self.renderer = BrowsableAPIRenderer()
@@ -639,6 +653,12 @@ class BrowsableAPIRendererTests(TestCase):
         result = self.renderer.get_filter_form(data='not list',
                                                view=DummyView(), request={})
         assert result is None
+
+    def test_extra_actions_dropdown(self):
+        resp = self.client.get('/api/examples/', HTTP_ACCEPT='text/html')
+        assert 'id="extra-actions-menu"' in resp.content.decode('utf-8')
+        assert '/api/examples/list_action/' in resp.content.decode('utf-8')
+        assert '>Extra list action<' in resp.content.decode('utf-8')
 
 
 class AdminRendererTests(TestCase):

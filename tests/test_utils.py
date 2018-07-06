@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.conf.urls import url
 from django.test import TestCase, override_settings
 
+from rest_framework.decorators import action
 from rest_framework.routers import SimpleRouter
 from rest_framework.serializers import ModelSerializer
 from rest_framework.utils import json
@@ -42,6 +43,14 @@ class CustomNameResourceInstance(APIView):
 class ResourceViewSet(ModelViewSet):
     serializer_class = ModelSerializer
     queryset = BasicModel.objects.all()
+
+    @action(detail=False)
+    def list_action(self, request, *args, **kwargs):
+        raise NotImplementedError
+
+    @action(detail=True)
+    def detail_action(self, request, *args, **kwargs):
+        raise NotImplementedError
 
 
 router = SimpleRouter()
@@ -117,6 +126,23 @@ class BreadcrumbTests(TestCase):
             ('Root', '/'),
             ('Resource List', '/resources/'),
             ('Resource Instance', '/resources/1/')
+        ]
+
+    def test_modelviewset_list_action_breadcrumbs(self):
+        url = '/resources/list_action/'
+        assert get_breadcrumbs(url) == [
+            ('Root', '/'),
+            ('Resource List', '/resources/'),
+            ('List action', '/resources/list_action/'),
+        ]
+
+    def test_modelviewset_detail_action_breadcrumbs(self):
+        url = '/resources/1/detail_action/'
+        assert get_breadcrumbs(url) == [
+            ('Root', '/'),
+            ('Resource List', '/resources/'),
+            ('Resource Instance', '/resources/1/'),
+            ('Detail action', '/resources/1/detail_action/'),
         ]
 
 

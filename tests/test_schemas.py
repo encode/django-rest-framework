@@ -75,29 +75,35 @@ class ExampleViewSet(ModelViewSet):
         """
         A description of custom action.
         """
-        return super(ExampleSerializer, self).retrieve(self, request)
+        raise NotImplementedError
 
     @action(methods=['post'], detail=True, serializer_class=AnotherSerializerWithDictField)
     def custom_action_with_dict_field(self, request, pk):
         """
         A custom action using a dict field in the serializer.
         """
-        return super(ExampleSerializer, self).retrieve(self, request)
+        raise NotImplementedError
 
     @action(methods=['post'], detail=True, serializer_class=AnotherSerializerWithListFields)
     def custom_action_with_list_fields(self, request, pk):
         """
         A custom action using both list field and list serializer in the serializer.
         """
-        return super(ExampleSerializer, self).retrieve(self, request)
+        raise NotImplementedError
 
     @action(detail=False)
     def custom_list_action(self, request):
-        return super(ExampleViewSet, self).list(self, request)
+        raise NotImplementedError
 
     @action(methods=['post', 'get'], detail=False, serializer_class=EmptySerializer)
     def custom_list_action_multiple_methods(self, request):
-        return super(ExampleViewSet, self).list(self, request)
+        """Custom description."""
+        raise NotImplementedError
+
+    @custom_list_action_multiple_methods.mapping.delete
+    def custom_list_action_multiple_methods_delete(self, request):
+        """Deletion description."""
+        raise NotImplementedError
 
     def get_serializer(self, *args, **kwargs):
         assert self.request
@@ -147,7 +153,8 @@ class TestRouterGeneratedSchema(TestCase):
                     'custom_list_action_multiple_methods': {
                         'read': coreapi.Link(
                             url='/example/custom_list_action_multiple_methods/',
-                            action='get'
+                            action='get',
+                            description='Custom description.',
                         )
                     },
                     'read': coreapi.Link(
@@ -238,12 +245,19 @@ class TestRouterGeneratedSchema(TestCase):
                     'custom_list_action_multiple_methods': {
                         'read': coreapi.Link(
                             url='/example/custom_list_action_multiple_methods/',
-                            action='get'
+                            action='get',
+                            description='Custom description.',
                         ),
                         'create': coreapi.Link(
                             url='/example/custom_list_action_multiple_methods/',
-                            action='post'
-                        )
+                            action='post',
+                            description='Custom description.',
+                        ),
+                        'delete': coreapi.Link(
+                            url='/example/custom_list_action_multiple_methods/',
+                            action='delete',
+                            description='Deletion description.',
+                        ),
                     },
                     'update': coreapi.Link(
                         url='/example/{id}/',
@@ -526,7 +540,8 @@ class TestSchemaGeneratorWithMethodLimitedViewSets(TestCase):
                     'custom_list_action_multiple_methods': {
                         'read': coreapi.Link(
                             url='/example1/custom_list_action_multiple_methods/',
-                            action='get'
+                            action='get',
+                            description='Custom description.',
                         )
                     },
                     'read': coreapi.Link(

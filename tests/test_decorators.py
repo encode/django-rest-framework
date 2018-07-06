@@ -175,26 +175,85 @@ class ActionDecoratorTestCase(TestCase):
     def test_defaults(self):
         @action(detail=True)
         def test_action(request):
-            pass
+            """Description"""
 
-        assert test_action.bind_to_methods == ['get']
+        assert test_action.mapping == {'get': 'test_action'}
         assert test_action.detail is True
+        assert test_action.name == 'Test action'
         assert test_action.url_path == 'test_action'
         assert test_action.url_name == 'test-action'
+        assert test_action.kwargs == {
+            'name': 'Test action',
+            'description': 'Description',
+        }
 
     def test_detail_required(self):
         with pytest.raises(AssertionError) as excinfo:
             @action()
             def test_action(request):
-                pass
+                raise NotImplementedError
 
         assert str(excinfo.value) == "@action() missing required argument: 'detail'"
+
+    def test_method_mapping_http_methods(self):
+        # All HTTP methods should be mappable
+        @action(detail=False, methods=[])
+        def test_action():
+            raise NotImplementedError
+
+        for name in APIView.http_method_names:
+            def method():
+                raise NotImplementedError
+
+            # Python 2.x compatibility - cast __name__ to str
+            method.__name__ = str(name)
+            getattr(test_action.mapping, name)(method)
+
+        # ensure the mapping returns the correct method name
+        for name in APIView.http_method_names:
+            assert test_action.mapping[name] == name
+
+    def test_method_mapping(self):
+        @action(detail=False)
+        def test_action(request):
+            raise NotImplementedError
+
+        @test_action.mapping.post
+        def test_action_post(request):
+            raise NotImplementedError
+
+        # The secondary handler methods should not have the action attributes
+        for name in ['mapping', 'detail', 'name', 'url_path', 'url_name', 'kwargs']:
+            assert hasattr(test_action, name) and not hasattr(test_action_post, name)
+
+    def test_method_mapping_already_mapped(self):
+        @action(detail=True)
+        def test_action(request):
+            raise NotImplementedError
+
+        msg = "Method 'get' has already been mapped to '.test_action'."
+        with self.assertRaisesMessage(AssertionError, msg):
+            @test_action.mapping.get
+            def test_action_get(request):
+                raise NotImplementedError
+
+    def test_method_mapping_overwrite(self):
+        @action(detail=True)
+        def test_action():
+            raise NotImplementedError
+
+        msg = ("Method mapping does not behave like the property decorator. You "
+               "cannot use the same method name for each mapping declaration.")
+        with self.assertRaisesMessage(AssertionError, msg):
+            @test_action.mapping.post
+            def test_action():
+                raise NotImplementedError
 
     def test_detail_route_deprecation(self):
         with pytest.warns(PendingDeprecationWarning) as record:
             @detail_route()
             def view(request):
-                pass
+                raise NotImplementedError
 
         assert len(record) == 1
         assert str(record[0].message) == (
@@ -207,7 +266,7 @@ class ActionDecoratorTestCase(TestCase):
         with pytest.warns(PendingDeprecationWarning) as record:
             @list_route()
             def view(request):
-                pass
+                raise NotImplementedError
 
         assert len(record) == 1
         assert str(record[0].message) == (
@@ -221,7 +280,7 @@ class ActionDecoratorTestCase(TestCase):
         with pytest.warns(PendingDeprecationWarning):
             @list_route(url_path='foo_bar')
             def view(request):
-                pass
+                raise NotImplementedError
 
         assert view.url_path == 'foo_bar'
         assert view.url_name == 'foo-bar'

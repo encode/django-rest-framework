@@ -7,7 +7,7 @@ from django.conf.urls import include, url
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.test import TestCase, override_settings
-from django.urls import resolve
+from django.urls import resolve, reverse
 
 from rest_framework import permissions, serializers, viewsets
 from rest_framework.compat import get_regex_pattern
@@ -103,44 +103,59 @@ class BasicViewSet(viewsets.ViewSet):
     def action1(self, request, *args, **kwargs):
         return Response({'method': 'action1'})
 
-    @action(methods=['post'], detail=True)
+    @action(methods=['post', 'delete'], detail=True)
     def action2(self, request, *args, **kwargs):
         return Response({'method': 'action2'})
 
-    @action(methods=['post', 'delete'], detail=True)
-    def action3(self, request, *args, **kwargs):
-        return Response({'method': 'action2'})
+    @action(methods=['post'], detail=True)
+    def action3(self, request, pk, *args, **kwargs):
+        return Response({'post': pk})
 
-    @action(detail=True)
-    def link1(self, request, *args, **kwargs):
-        return Response({'method': 'link1'})
-
-    @action(detail=True)
-    def link2(self, request, *args, **kwargs):
-        return Response({'method': 'link2'})
+    @action3.mapping.delete
+    def action3_delete(self, request, pk, *args, **kwargs):
+        return Response({'delete': pk})
 
 
-class TestSimpleRouter(TestCase):
+class TestSimpleRouter(URLPatternsTestCase, TestCase):
+    router = SimpleRouter()
+    router.register('basics', BasicViewSet, base_name='basic')
+
+    urlpatterns = [
+        url(r'^api/', include(router.urls)),
+    ]
+
     def setUp(self):
         self.router = SimpleRouter()
 
-    def test_link_and_action_decorator(self):
-        routes = self.router.get_routes(BasicViewSet)
-        decorator_routes = routes[2:]
-        # Make sure all these endpoints exist and none have been clobbered
-        for i, endpoint in enumerate(['action1', 'action2', 'action3', 'link1', 'link2']):
-            route = decorator_routes[i]
-            # check url listing
-            assert route.url == '^{{prefix}}/{{lookup}}/{0}{{trailing_slash}}$'.format(endpoint)
-            # check method to function mapping
-            if endpoint == 'action3':
-                methods_map = ['post', 'delete']
-            elif endpoint.startswith('action'):
-                methods_map = ['post']
-            else:
-                methods_map = ['get']
-            for method in methods_map:
-                assert route.mapping[method] == endpoint
+    def test_action_routes(self):
+        # Get action routes (first two are list/detail)
+        routes = self.router.get_routes(BasicViewSet)[2:]
+
+        assert routes[0].url == '^{prefix}/{lookup}/action1{trailing_slash}$'
+        assert routes[0].mapping == {
+            'post': 'action1',
+        }
+
+        assert routes[1].url == '^{prefix}/{lookup}/action2{trailing_slash}$'
+        assert routes[1].mapping == {
+            'post': 'action2',
+            'delete': 'action2',
+        }
+
+        assert routes[2].url == '^{prefix}/{lookup}/action3{trailing_slash}$'
+        assert routes[2].mapping == {
+            'post': 'action3',
+            'delete': 'action3_delete',
+        }
+
+    def test_multiple_action_handlers(self):
+        # Standard action
+        response = self.client.post(reverse('basic-action3', args=[1]))
+        assert response.data == {'post': '1'}
+
+        # Additional handler registered with MethodMapper
+        response = self.client.delete(reverse('basic-action3', args=[1]))
+        assert response.data == {'delete': '1'}
 
 
 class TestRootView(URLPatternsTestCase, TestCase):

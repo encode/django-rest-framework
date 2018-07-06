@@ -18,9 +18,11 @@ automatically.
 """
 from __future__ import unicode_literals
 
+from collections import OrderedDict
 from functools import update_wrapper
 from inspect import getmembers
 
+from django.urls import NoReverseMatch
 from django.utils.decorators import classonlymethod
 from django.views.decorators.csrf import csrf_exempt
 
@@ -29,7 +31,7 @@ from rest_framework.reverse import reverse
 
 
 def _is_extra_action(attr):
-    return hasattr(attr, 'bind_to_methods')
+    return hasattr(attr, 'mapping')
 
 
 class ViewSetMixin(object):
@@ -52,7 +54,13 @@ class ViewSetMixin(object):
         instantiated view, we need to totally reimplement `.as_view`,
         and slightly modify the view function that is created and returned.
         """
+        # The name and description initkwargs may be explicitly overridden for
+        # certain route confiugurations. eg, names of extra actions.
+        cls.name = None
+        cls.description = None
+
         # The suffix initkwarg is reserved for displaying the viewset type.
+        # This initkwarg should have no effect if the name is provided.
         # eg. 'List' or 'Instance'.
         cls.suffix = None
 
@@ -78,6 +86,11 @@ class ViewSetMixin(object):
             if not hasattr(cls, key):
                 raise TypeError("%s() received an invalid keyword %r" % (
                     cls.__name__, key))
+
+        # name and suffix are mutually exclusive
+        if 'name' in initkwargs and 'suffix' in initkwargs:
+            raise TypeError("%s() received both `name` and `suffix`, which are "
+                            "mutually exclusive arguments." % (cls.__name__))
 
         def view(request, *args, **kwargs):
             self = cls(**initkwargs)
@@ -114,7 +127,6 @@ class ViewSetMixin(object):
         # resolved URL.
         view.cls = cls
         view.initkwargs = initkwargs
-        view.suffix = initkwargs.get('suffix', None)
         view.actions = actions
         return csrf_exempt(view)
 
@@ -148,6 +160,34 @@ class ViewSetMixin(object):
         Get the methods that are marked as an extra ViewSet `@action`.
         """
         return [method for _, method in getmembers(cls, _is_extra_action)]
+
+    def get_extra_action_url_map(self):
+        """
+        Build a map of {names: urls} for the extra actions.
+
+        This method will noop if `detail` was not provided as a view initkwarg.
+        """
+        action_urls = OrderedDict()
+
+        # exit early if `detail` has not been provided
+        if self.detail is None:
+            return action_urls
+
+        # filter for the relevant extra actions
+        actions = [
+            action for action in self.get_extra_actions()
+            if action.detail == self.detail
+        ]
+
+        for action in actions:
+            try:
+                url_name = '%s-%s' % (self.basename, action.url_name)
+                url = reverse(url_name, self.args, self.kwargs, request=self.request)
+                action_urls[action.name] = url
+            except NoReverseMatch:
+                pass  # URL requires additional arguments, ignore
+
+        return action_urls
 
 
 class ViewSet(ViewSetMixin, views.APIView):

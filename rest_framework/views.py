@@ -21,31 +21,43 @@ from rest_framework.settings import api_settings
 from rest_framework.utils import formatting
 
 
-def get_view_name(view_cls, suffix=None):
+def get_view_name(view):
     """
     Given a view class, return a textual name to represent the view.
     This name is used in the browsable API, and in OPTIONS responses.
 
     This function is the default for the `VIEW_NAME_FUNCTION` setting.
     """
-    name = view_cls.__name__
+    # Name may be set by some Views, such as a ViewSet.
+    name = getattr(view, 'name', None)
+    if name is not None:
+        return name
+
+    name = view.__class__.__name__
     name = formatting.remove_trailing_string(name, 'View')
     name = formatting.remove_trailing_string(name, 'ViewSet')
     name = formatting.camelcase_to_spaces(name)
+
+    # Suffix may be set by some Views, such as a ViewSet.
+    suffix = getattr(view, 'suffix', None)
     if suffix:
         name += ' ' + suffix
 
     return name
 
 
-def get_view_description(view_cls, html=False):
+def get_view_description(view, html=False):
     """
     Given a view class, return a textual description to represent the view.
     This name is used in the browsable API, and in OPTIONS responses.
 
     This function is the default for the `VIEW_DESCRIPTION_FUNCTION` setting.
     """
-    description = view_cls.__doc__ or ''
+    # Description may be set by some Views, such as a ViewSet.
+    description = getattr(view, 'description', None)
+    if description is None:
+        description = view.__class__.__doc__ or ''
+
     description = formatting.dedent(smart_text(description))
     if html:
         return formatting.markup_description(description)
@@ -224,7 +236,7 @@ class APIView(View):
         browsable API.
         """
         func = self.settings.VIEW_NAME_FUNCTION
-        return func(self.__class__, getattr(self, 'suffix', None))
+        return func(self)
 
     def get_view_description(self, html=False):
         """
@@ -232,7 +244,7 @@ class APIView(View):
         and in the browsable API.
         """
         func = self.settings.VIEW_DESCRIPTION_FUNCTION
-        return func(self.__class__, html)
+        return func(self, html)
 
     # API policy instantiation methods
 
