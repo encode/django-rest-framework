@@ -34,7 +34,8 @@ from pytz.exceptions import InvalidTimeError
 from rest_framework import ISO_8601
 from rest_framework.compat import (
     MaxLengthValidator, MaxValueValidator, MinLengthValidator,
-    MinValueValidator, unicode_repr, unicode_to_repr
+    MinValueValidator, ProhibitNullCharactersValidator, unicode_repr,
+    unicode_to_repr
 )
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.settings import api_settings
@@ -755,13 +756,11 @@ class CharField(Field):
         'blank': _('This field may not be blank.'),
         'max_length': _('Ensure this field has no more than {max_length} characters.'),
         'min_length': _('Ensure this field has at least {min_length} characters.'),
-        'nulls': _('This field may not include NULL bytes.'),
     }
     initial = ''
 
     def __init__(self, **kwargs):
         self.allow_blank = kwargs.pop('allow_blank', False)
-        self.allow_null_bytes = kwargs.pop('allow_null_bytes', True)
         self.trim_whitespace = kwargs.pop('trim_whitespace', True)
         self.max_length = kwargs.pop('max_length', None)
         self.min_length = kwargs.pop('min_length', None)
@@ -779,6 +778,10 @@ class CharField(Field):
             self.validators.append(
                 MinLengthValidator(self.min_length, message=message))
 
+        # ProhibitNullCharactersValidator is None on Django < 2.0
+        if ProhibitNullCharactersValidator is not None:
+            self.validators.append(ProhibitNullCharactersValidator())
+
     def run_validation(self, data=empty):
         # Test for the empty string here so that it does not get validated,
         # and so that subclasses do not need to handle it explicitly
@@ -787,8 +790,6 @@ class CharField(Field):
             if not self.allow_blank:
                 self.fail('blank')
             return ''
-        if not self.allow_null_bytes and '\0' in six.text_type(data):
-            self.fail('nulls')
         return super(CharField, self).run_validation(data)
 
     def to_internal_value(self, data):

@@ -153,7 +153,6 @@ Corresponds to `django.db.models.fields.CharField` or `django.db.models.fields.T
 - `max_length` - Validates that the input contains no more than this number of characters.
 - `min_length` - Validates that the input contains no fewer than this number of characters.
 - `allow_blank` - If set to `True` then the empty string should be considered a valid value. If set to `False` then the empty string is considered invalid and will raise a validation error. Defaults to `False`.
-- `allow_null_bytes` - If set to `False`, strings containing NULL bytes will be rejected. You may want to set this to `False` if the string is saved to a database. Defaults to `True`.
 - `trim_whitespace` - If set to `True` then leading and trailing whitespace is trimmed. Defaults to `True`.
 
 The `allow_null` option is also available for string fields, although its usage is discouraged in favor of `allow_blank`. It is valid to set both `allow_blank=True` and `allow_null=True`, but doing so means that there will be two differing types of empty value permissible for string representations, which can lead to data inconsistencies and subtle application bugs.
