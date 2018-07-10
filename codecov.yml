@@ -4,4 +4,5 @@ coverage:
     patch: false
     changes: false
 
-comment: off
+comment:
+  layout: "reach"
