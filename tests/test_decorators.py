@@ -187,6 +187,16 @@ class ActionDecoratorTestCase(TestCase):
             'description': 'Description',
         }
 
+    def test_detail_suffix(self):
+        @action(detail=True, suffix='Suffix')
+        def test_action(request):
+            raise NotImplementedError
+
+        assert test_action.kwargs == {
+            'description': None,
+            'suffix': 'Suffix',
+        }
+
     def test_detail_required(self):
         with pytest.raises(AssertionError) as excinfo:
             @action()
