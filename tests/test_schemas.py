@@ -754,7 +754,7 @@ class TestAutoSchema(TestCase):
                 pass
 
         router = SimpleRouter()
-        router.register(r'detail', CustomViewSet, base_name='detail')
+        router.register(r'detail', CustomViewSet, basename='detail')
 
         generator = SchemaGenerator()
         view = generator.create_view(router.urls[0].callback, 'GET')
@@ -772,7 +772,7 @@ class TestAutoSchema(TestCase):
                 pass
 
         router = SimpleRouter()
-        router.register(r'detail', CustomViewSet, base_name='detail')
+        router.register(r'detail', CustomViewSet, basename='detail')
 
         generator = SchemaGenerator()
         view = generator.create_view(router.urls[0].callback, 'GET')
