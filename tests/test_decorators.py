@@ -179,7 +179,6 @@ class ActionDecoratorTestCase(TestCase):
 
         assert test_action.mapping == {'get': 'test_action'}
         assert test_action.detail is True
-        assert test_action.name == 'Test action'
         assert test_action.url_path == 'test_action'
         assert test_action.url_name == 'test-action'
         assert test_action.kwargs == {
@@ -223,7 +222,7 @@ class ActionDecoratorTestCase(TestCase):
             raise NotImplementedError
 
         # The secondary handler methods should not have the action attributes
-        for name in ['mapping', 'detail', 'name', 'url_path', 'url_name', 'kwargs']:
+        for name in ['mapping', 'detail', 'url_path', 'url_name', 'kwargs']:
             assert hasattr(test_action, name) and not hasattr(test_action_post, name)
 
     def test_method_mapping_already_mapped(self):
