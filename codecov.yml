@@ -1,7 +1,7 @@
 coverage:
   status:
-    project: false
-    patch: false
-    changes: false
+    project: true
+    patch: true
+    changes: true
 
 comment: off
