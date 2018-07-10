@@ -154,9 +154,10 @@ def action(methods=None, detail=None, name=None, url_path=None, url_name=None, *
         func.url_name = url_name if url_name else func.__name__.replace('_', '-')
         func.kwargs = kwargs
         func.kwargs.update({
-            'name': func.name,
             'description': func.__doc__ or None
         })
+        if 'suffix' not in kwargs:
+            func.kwargs['name'] = func.name
 
         return func
     return decorator
