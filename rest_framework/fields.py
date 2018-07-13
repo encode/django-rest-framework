@@ -16,6 +16,7 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.validators import (
     EmailValidator, RegexValidator, URLValidator, ip_address_validators
 )
+from django.db import models
 from django.forms import FilePathField as DjangoFilePathField
 from django.forms import ImageField as DjangoImageField
 from django.utils import six, timezone
@@ -1665,7 +1666,8 @@ class ListField(Field):
         """
         List of object instances -> List of dicts of primitive datatypes.
         """
-        return [self.child.to_representation(item) if item is not None else None for item in data]
+        items = data.all() if isinstance(data, models.Manager) else data
+        return [self.child.to_representation(item) if item is not None else None for item in items]
 
     def run_child_validation(self, data):
         result = []
