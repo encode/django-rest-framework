@@ -23,6 +23,29 @@ from .utils import is_list_view
 header_regex = re.compile('^[a-zA-Z][0-9A-Za-z_]*:')
 
 
+def _get_field_type(field):
+    """
+    Gets the field coreschema type based on field's original type.
+    """
+    default_return = coreschema.String
+    if field is None:
+        return default_return
+
+    return {
+        models.CharField: coreschema.String,
+        models.TextField: coreschema.String,
+        models.IntegerField: coreschema.Integer,
+        models.AutoField: coreschema.Integer,
+        models.BigAutoField: coreschema.Integer,
+        models.BigIntegerField: coreschema.Integer,
+        models.PositiveIntegerField: coreschema.Integer,
+        models.PositiveSmallIntegerField: coreschema.Integer,
+        models.SmallIntegerField: coreschema.Integer,
+        models.BooleanField: coreschema.Boolean
+    }.get(field.__class__, default_return)
+
+
+
 def field_to_schema(field):
     title = force_text(field.label) if field.label else ''
     description = force_text(field.help_text) if field.help_text else ''
@@ -50,8 +73,11 @@ def field_to_schema(field):
             description=description
         )
     elif isinstance(field, serializers.ManyRelatedField):
+        schema_cls = coreschema.String
+        if field.child_relation and field.child_relation.queryset and field.child_relation.queryset.model:
+            schema_cls = _get_field_type(field.child_relation.queryset.model._meta.pk)
         return coreschema.Array(
-            items=coreschema.String(),
+            items=schema_cls,
             title=title,
             description=description
         )
@@ -60,8 +86,7 @@ def field_to_schema(field):
         model = getattr(field.queryset, 'model', None)
         if model is not None:
             model_field = model._meta.pk
-            if isinstance(model_field, models.AutoField):
-                schema_cls = coreschema.Integer
+            schema_cls = _get_field_type(model_field)
         return schema_cls(title=title, description=description)
     elif isinstance(field, serializers.RelatedField):
         return coreschema.String(title=title, description=description)
@@ -95,8 +120,6 @@ def field_to_schema(field):
             description=description,
             format='date-time'
         )
-    elif isinstance(field, serializers.JSONField):
-        return coreschema.Object(title=title, description=description)
 
     if field.style.get('base_template') == 'textarea.html':
         return coreschema.String(
@@ -104,7 +127,6 @@ def field_to_schema(field):
             description=description,
             format='textarea'
         )
-
     return coreschema.String(title=title, description=description)
 
 
