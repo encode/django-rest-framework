@@ -209,7 +209,7 @@ directly.
 
 Note that the requests client requires you to pass fully qualified URLs.
 
-## `RequestsClient` and working with the database
+## RequestsClient and working with the database
 
 The `RequestsClient` class is useful if you want to write tests that solely interact with the service interface. This is a little stricter than using the standard Django test client, as it means that all interactions should be via the API.
 
