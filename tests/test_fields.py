@@ -2080,11 +2080,15 @@ class TestJSONField(FieldValues):
             'a': 1,
             'b': ['some', 'list', True, 1.23],
             '3': None
-        }),
+        }), (
+            '{"a":1}',
+            {'a': 1}
+        )
     ]
     invalid_inputs = [
         ({'a': set()}, ['Value must be valid JSON.']),
         ({'a': float('inf')}, ['Value must be valid JSON.']),
+        ('invalid json', ['Value must be valid JSON.']),
     ]
     outputs = [
         ({
@@ -2098,19 +2102,6 @@ class TestJSONField(FieldValues):
         }),
     ]
     field = serializers.JSONField()
-
-    def test_html_input_as_json_string(self):
-        """
-        HTML inputs should be treated as a serialized JSON string.
-        """
-        class TestSerializer(serializers.Serializer):
-            config = serializers.JSONField()
-
-        data = QueryDict(mutable=True)
-        data.update({'config': '{"a":1}'})
-        serializer = TestSerializer(data=data)
-        assert serializer.is_valid()
-        assert serializer.validated_data == {'config': {"a": 1}}
 
 
 class TestBinaryJSONField(FieldValues):

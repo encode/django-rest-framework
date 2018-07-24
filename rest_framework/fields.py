@@ -1756,6 +1756,12 @@ class HStoreField(DictField):
 
 
 class JSONField(Field):
+    class JSONString(six.text_type):
+        def __new__(self, value):
+            ret = six.text_type.__new__(self, value)
+            ret.is_json_string = True
+            return ret
+
     default_error_messages = {
         'invalid': _('Value must be valid JSON.')
     }
@@ -1765,20 +1771,21 @@ class JSONField(Field):
         super(JSONField, self).__init__(*args, **kwargs)
 
     def get_value(self, dictionary):
-        if html.is_html_input(dictionary) and self.field_name in dictionary:
-            # When HTML form input is used, mark up the input
-            # as being a JSON string, rather than a JSON primitive.
-            class JSONString(six.text_type):
-                def __new__(self, value):
-                    ret = six.text_type.__new__(self, value)
-                    ret.is_json_string = True
-                    return ret
-            return JSONString(dictionary[self.field_name])
-        return dictionary.get(self.field_name, empty)
+        value = dictionary.get(self.field_name, empty)
+        if isinstance(value, six.binary_type):
+            value = value.decode('utf-8')
+        if isinstance(value, six.text_type):
+            return self.JSONString(value)
+        return value
 
     def to_internal_value(self, data):
         try:
-            if self.binary or getattr(data, 'is_json_string', False):
+            serialized_json_types = (
+                six.text_type,
+                six.binary_type,
+                self.JSONString
+            )
+            if self.binary or isinstance(data, serialized_json_types):
                 if isinstance(data, six.binary_type):
                     data = data.decode('utf-8')
                 return json.loads(data)
