@@ -366,7 +366,7 @@ The following third party packages provide additional filter implementations.
 
 ## Django REST framework filters package
 
-The [django-rest-framework-filters package][django-rest-framework-filters] works together with the `DjangoFilterBackend` class, and allows you to easily create filters across relationships, or create multiple filter lookup types for a given field.
+The [django-rest-framework-filters package][django-rest-framework-filters] works together with the `DjangoFilterBackend` class (from the `django-filter` library), and allows you to easily create filters across relationships, or create multiple filter lookup types for a given field.
 
 ## Django REST framework full word search filter
 
