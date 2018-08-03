@@ -942,11 +942,11 @@ class ModelSerializer(Serializer):
         """
         if not len(fields):
             fields = '__all__'
-        meta = getattr(cls, 'Meta', type('Meta', (), {}))
-        return type(cls.__name__, (cls,), {
-            'Meta': type('Meta', (meta,), {
-                'fields': fields,
-                'exclude': None
+        meta = getattr(cls, 'Meta', type(str('Meta'), (object,), {}))
+        return type(cls.__name__, (cls, object), {
+            six.text_type('Meta'): type(str('Meta'), (meta, object), {
+                six.text_type('fields'): fields,
+                six.text_type('exclude'): None
             })
         })
 
@@ -973,7 +973,7 @@ class ModelSerializer(Serializer):
         class UserViewSet(viewsets.ModelViewSet):
             serializer_class = UserSerializer.meta_exclude('products')
         """
-        meta = getattr(cls, 'Meta', type('Meta', (), {}))
+        meta = getattr(cls, 'Meta', type(str('Meta'), (object,), {}))
         meta_fields = getattr(meta, 'fields', None)
         exclude_props = []
         if isinstance(meta_fields, list) or isinstance(meta_fields, tuple):
@@ -983,13 +983,14 @@ class ModelSerializer(Serializer):
             meta_fields = None
             exclude_props = [key for key, prop in cls._declared_fields.items() if isinstance(prop, Field)]
             exclude = list(filter(lambda f: f not in exclude_props, exclude))
-        return type(cls.__name__, (cls,), {
-            'Meta': type('Meta', (meta,), {
-                'fields': meta_fields,
-                'exclude': exclude
-            }),
-            **{field: None for field in exclude_props}
-        })
+        cls_dict = {
+            'Meta': type(str('Meta'), (meta, object), {
+                six.text_type('fields'): meta_fields,
+                six.text_type('exclude'): exclude
+            })
+        }
+        cls_dict.update({field: None for field in exclude_props})
+        return type(cls.__name__, (cls, object), cls_dict)
 
     @classmethod
     def meta_preset(cls, name):
@@ -1023,12 +1024,12 @@ class ModelSerializer(Serializer):
         class UserViewSet(viewsets.ModelViewSet):
             serializer_class = UserSerializer.meta_preset('light')
         """
-        meta = getattr(cls, 'Meta', type('Meta', (), {}))
+        meta = getattr(cls, 'Meta', type(str('Meta'), (), {}))
         presets = getattr(meta, 'presets', {})
         preset = presets.get(name, None)
         assert preset is not None, ('Preset of `%s` with `%s` name doesn\'t exist.' % (cls.__name__, name))
         return type(cls.__name__, (cls,), {
-            'Meta': type('Meta', (meta,), preset)
+            str('Meta'): type(str('Meta'), (meta, object), preset)
         })
 
     # Default `create` and `update` behavior...
