@@ -13,6 +13,29 @@ from django.utils.six.moves.http_client import responses
 from rest_framework.serializers import Serializer
 
 
+def cleanup(response):
+    """ Cleanup circular reference between view/request/response object
+
+        This reduce load on GC and help to keep low memory usage even
+        if some response are larger.
+    """
+    view = response.renderer_context.get('view')
+    request = response.renderer_context.get('request')
+
+    if view:
+        view.response = None
+        view.request = None
+
+    if request:
+        request.parser_context.clear()
+
+    response.renderer_context.clear()
+
+    # Re-add request in renderer_context. It does not seem to cause
+    # circular reference and is needed for tests.
+    response.renderer_context['request'] = request
+
+
 class Response(SimpleTemplateResponse):
     """
     An HttpResponse that allows its data to be rendered into
@@ -47,6 +70,8 @@ class Response(SimpleTemplateResponse):
         if headers:
             for name, value in six.iteritems(headers):
                 self[name] = value
+
+        self.add_post_render_callback(cleanup)
 
     @property
     def rendered_content(self):
