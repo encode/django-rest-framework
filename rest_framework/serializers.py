@@ -1026,6 +1026,8 @@ class ModelSerializer(Serializer):
             field_names, declared_fields, extra_kwargs
         )
 
+        extra_validators = self.get_extra_validators()
+
         # Determine the fields that should be included on the serializer.
         fields = OrderedDict()
 
@@ -1048,6 +1050,13 @@ class ModelSerializer(Serializer):
             # Include any kwargs defined in `Meta.extra_kwargs`
             field_kwargs = self.include_extra_kwargs(
                 field_kwargs, extra_field_kwargs
+            )
+
+            extra_field_validators = extra_validators.get(field_name, [])
+
+            # Include extra validators defined in `Meta.validators`
+            field_kwargs = self.include_extra_validators(
+                field_kwargs, extra_field_validators
             )
 
             # Create the serializer field.
@@ -1430,6 +1439,25 @@ class ModelSerializer(Serializer):
             extra_kwargs[key] = value
 
         return extra_kwargs, hidden_fields
+
+    def include_extra_validators(self, kwargs, extra_validators):
+        """
+        Include any 'extra_validators' that have been included for this field,
+        """
+        print(kwargs.get('validators', []))
+        print(extra_validators)
+        validators = kwargs.get('validators', []) + extra_validators
+        if validators:
+            kwargs['validators'] = validators
+        return kwargs
+
+    def get_extra_validators(self):
+        """
+        Return a dictionary mapping field names to a list of
+        additional validators.
+        """
+        extra_validators = copy.deepcopy(getattr(self.Meta, 'extra_validators', {}))
+        return extra_validators
 
     def _get_model_fields(self, field_names, declared_fields, extra_kwargs):
         """
