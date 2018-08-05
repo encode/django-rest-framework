@@ -14,7 +14,8 @@ from collections import OrderedDict
 import pytest
 from django.core.exceptions import ImproperlyConfigured
 from django.core.validators import (
-    MaxValueValidator, MinLengthValidator, MinValueValidator, EmailValidator, URLValidator
+    EmailValidator, MaxValueValidator, MinLengthValidator, MinValueValidator,
+    URLValidator
 )
 from django.db import models
 from django.test import TestCase
@@ -290,7 +291,7 @@ class TestRegularFieldMappings(TestCase):
         """
         Ensure `extra_validators` are included to generated fields.
         """
-        class TestModel(models.Model):
+        class ExtraValidatorsTestModel(models.Model):
             int = models.IntegerField()
             email = models.CharField(unique=True)
             url = models.CharField(validators=[URLValidator()])
@@ -298,7 +299,7 @@ class TestRegularFieldMappings(TestCase):
 
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
-                model = TestModel
+                model = ExtraValidatorsTestModel
                 fields = ('int', 'email', 'url', 'avatar')
                 extra_validators = {
                     'email': [EmailValidator()],
@@ -308,7 +309,7 @@ class TestRegularFieldMappings(TestCase):
         expected = dedent("""
             TestSerializer():
                 int = IntegerField()
-                email = CharField(validators=[<django.core.validators.MaxLengthValidator object>, <UniqueValidator(queryset=TestModel.objects.all())>, <django.core.validators.EmailValidator object>])
+                email = CharField(validators=[<django.core.validators.MaxLengthValidator object>, <UniqueValidator(queryset=ExtraValidatorsTestModel.objects.all())>, <django.core.validators.EmailValidator object>])
                 url = CharField(validators=[<django.core.validators.URLValidator object>, <django.core.validators.MaxLengthValidator object>])
                 avatar = CharField(validators=[<django.core.validators.MaxLengthValidator object>, <django.core.validators.URLValidator object>])
         """)
