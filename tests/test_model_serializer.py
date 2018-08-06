@@ -102,6 +102,13 @@ class Issue3674ChildModel(models.Model):
     value = models.CharField(primary_key=True, max_length=64)
 
 
+class Issue6110TestModel(models.Model):
+    """Model without .objects manager."""
+
+    name = models.CharField(max_length=64)
+    all_objects = models.Manager()
+
+
 class UniqueChoiceModel(models.Model):
     CHOICES = (
         ('choice1', 'choice 1'),
@@ -126,7 +133,7 @@ class TestModelSerializer(TestCase):
         })
         serializer.is_valid()
 
-        msginitial = 'Got a `TypeError` when calling `OneFieldModel.objects.create()`.'
+        msginitial = 'Got a `TypeError` when calling `OneFieldModel._default_manager.create()`.'
         with self.assertRaisesMessage(TypeError, msginitial):
             serializer.save()
 
@@ -1224,3 +1231,15 @@ class TestFieldSource(TestCase):
         """)
         self.maxDiff = None
         self.assertEqual(unicode_repr(TestSerializer()), expected)
+
+
+class Issue6110Test(TestCase):
+    def test_model_serializer_custom_manager(self):
+
+        class TestModelSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Issue6110TestModel
+                fields = ('name',)
+
+        instance = TestModelSerializer().create({'name': 'test_name'})
+        self.assertEqual(instance.name, 'test_name')
