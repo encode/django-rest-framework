@@ -133,7 +133,7 @@ class TestModelSerializer(TestCase):
         })
         serializer.is_valid()
 
-        msginitial = 'Got a `TypeError` when calling `OneFieldModel()`.'
+        msginitial = 'Got a `TypeError` when calling `OneFieldModel._default_manager.create()`.'
         with self.assertRaisesMessage(TypeError, msginitial):
             serializer.save()
 

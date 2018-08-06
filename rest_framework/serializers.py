@@ -937,15 +937,14 @@ class ModelSerializer(Serializer):
                 many_to_many[field_name] = validated_data.pop(field_name)
 
         try:
-            instance = ModelClass(**validated_data)
-            instance.save(force_insert=True)
+            instance = ModelClass._default_manager.create(**validated_data)
         except TypeError:
             tb = traceback.format_exc()
             msg = (
-                'Got a `TypeError` when calling `%s()`. '
+                'Got a `TypeError` when calling `%s._default_manager.create()`. '
                 'This may be because you have a writable field on the '
                 'serializer class that is not a valid argument to '
-                '`%s()`. You may need to make the field '
+                '`%s._default_manager.create()`. You may need to make the field '
                 'read-only, or override the %s.create() method to handle '
                 'this correctly.\nOriginal exception was:\n %s' %
                 (
