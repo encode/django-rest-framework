@@ -14,7 +14,8 @@ from collections import OrderedDict
 import pytest
 from django.core.exceptions import ImproperlyConfigured
 from django.core.validators import (
-    MaxValueValidator, MinLengthValidator, MinValueValidator
+    EmailValidator, MaxValueValidator, MinLengthValidator, MinValueValidator,
+    URLValidator
 )
 from django.db import models
 from django.test import TestCase
@@ -283,6 +284,34 @@ class TestRegularFieldMappings(TestCase):
             TestSerializer():
                 auto_field = IntegerField(read_only=False, required=False)
                 char_field = CharField(max_length=100)
+        """)
+        self.assertEqual(repr(TestSerializer()), expected)
+
+    def test_extra_field_validators(self):
+        """
+        Ensure `extra_validators` are included to generated fields.
+        """
+        class ExtraValidatorsTestModel(models.Model):
+            int = models.IntegerField()
+            email = models.CharField(unique=True)
+            url = models.CharField(validators=[URLValidator()])
+            avatar = models.CharField()
+
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = ExtraValidatorsTestModel
+                fields = ('int', 'email', 'url', 'avatar')
+                extra_validators = {
+                    'email': [EmailValidator()],
+                    'avatar': [URLValidator()],
+                }
+
+        expected = dedent("""
+            TestSerializer():
+                int = IntegerField()
+                email = CharField(validators=[<django.core.validators.MaxLengthValidator object>, <UniqueValidator(queryset=ExtraValidatorsTestModel.objects.all())>, <django.core.validators.EmailValidator object>])
+                url = CharField(validators=[<django.core.validators.URLValidator object>, <django.core.validators.MaxLengthValidator object>])
+                avatar = CharField(validators=[<django.core.validators.MaxLengthValidator object>, <django.core.validators.URLValidator object>])
         """)
         self.assertEqual(repr(TestSerializer()), expected)
 
