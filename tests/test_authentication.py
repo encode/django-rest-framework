@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 import base64
 
 import pytest
+from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib.auth.models import User
 from django.db import models
@@ -201,6 +202,26 @@ class SessionAuthTests(TestCase):
         self.csrf_client.login(username=self.username, password=self.password)
         response = self.csrf_client.post('/session/', {'example': 'example'})
         assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    def test_post_form_session_auth_passing_csrf(self):
+        """
+        Ensure POSTing form over session authentication with CSRF token succeeds.
+        Regression test for #6088
+        """
+        from django.middleware.csrf import _get_new_csrf_token
+
+        self.csrf_client.login(username=self.username, password=self.password)
+
+        # Set the csrf_token cookie so that CsrfViewMiddleware._get_token() works
+        token = _get_new_csrf_token()
+        self.csrf_client.cookies[settings.CSRF_COOKIE_NAME] = token
+
+        # Post the token matching the cookie value
+        response = self.csrf_client.post('/session/', {
+            'example': 'example',
+            'csrfmiddlewaretoken': token,
+        })
+        assert response.status_code == status.HTTP_200_OK
 
     def test_post_form_session_auth_passing(self):
         """
