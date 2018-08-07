@@ -1135,6 +1135,7 @@ class DecimalField(Field):
             return value
 
         context = decimal.getcontext().copy()
+        # For Python 2.7 compatibility when using cdecimal
         rounding = context.rounding if self.rounding is None else self.rounding
         if self.max_digits is not None:
             context.prec = self.max_digits
