@@ -342,6 +342,28 @@ class TestRegularFieldMappings(TestCase):
 
         ExampleSerializer()
 
+    def test_null_boolean_field_choices(self):
+        CHECKLIST_OPTIONS = [
+            (None, 'none'),
+            (True, 'checked'),
+            (False, 'N/A'),
+        ]
+
+        class Trivial(models.Model):
+            name = models.CharField(max_length=255)
+            theoretically_nullable_field = models.NullBooleanField(choices=CHECKLIST_OPTIONS)
+
+        class TrivialSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Trivial
+                fields = '__all__'
+
+        trivial_serialized = TrivialSerializer(data=dict(name='test', theoretically_nullable_field=None))
+
+        self.assertTrue(trivial_serialized.is_valid())
+
+        self.assertEqual(trivial_serialized.errors, {})
+
 
 class TestDurationFieldMapping(TestCase):
     def test_duration_field(self):
