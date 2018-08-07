@@ -7,6 +7,7 @@ from decimal import ROUND_DOWN, ROUND_UP, Decimal
 
 import pytest
 import pytz
+from _pytest.monkeypatch import MonkeyPatch
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.http import QueryDict
 from django.test import TestCase, override_settings
@@ -16,6 +17,11 @@ from django.utils.timezone import activate, deactivate, override, utc
 import rest_framework
 from rest_framework import exceptions, serializers
 from rest_framework.fields import DjangoImageField, is_simple_callable
+
+try:
+    import cdecimal
+except ImportError:
+    cdecimal = False
 
 try:
     import typings
@@ -1127,6 +1133,16 @@ class TestQuantizedValueForDecimal(TestCase):
         value = field.to_internal_value('12.0').as_tuple()
         expected_digit_tuple = (0, (1, 2, 0, 0), -2)
         assert value == expected_digit_tuple
+
+    @unittest.skipUnless(cdecimal, 'requires python 2.7')
+    def test_quantize_on_monkey_patched_cdecimal(self):
+        # Monkey-patch cdecimal to replace decimal in for DecimalField
+        monkeypatch = MonkeyPatch()
+
+        with monkeypatch.context() as m:
+            m.setattr('rest_framework.fields.decimal', cdecimal)
+            f = rest_framework.fields.DecimalField(max_digits=4, decimal_places=2)
+            f.quantize(cdecimal.Decimal('1.234'))
 
 
 class TestNoDecimalPlaces(FieldValues):
