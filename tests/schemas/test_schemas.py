@@ -24,7 +24,7 @@ from rest_framework.utils import formatting
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
-from .models import BasicModel, ForeignKeySource
+from ..models import BasicModel, ForeignKeySource
 
 factory = APIRequestFactory()
 
@@ -130,7 +130,7 @@ urlpatterns = [
 
 
 @unittest.skipUnless(coreapi, 'coreapi is not installed')
-@override_settings(ROOT_URLCONF='tests.test_schemas')
+@override_settings(ROOT_URLCONF='tests.schemas.test_schemas')
 class TestRouterGeneratedSchema(TestCase):
     def test_anonymous_request(self):
         client = APIClient()
@@ -673,7 +673,7 @@ class TestAutoSchema(TestCase):
         assert isinstance(view.schema, CustomViewInspector)
 
     def test_set_custom_inspector_class_via_settings(self):
-        with override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'tests.test_schemas.CustomViewInspector'}):
+        with override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'tests.schemas.test_schemas.CustomViewInspector'}):
             view = APIView()
             assert isinstance(view.schema, CustomViewInspector)
 
