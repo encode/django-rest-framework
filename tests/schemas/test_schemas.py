@@ -24,6 +24,7 @@ from rest_framework.utils import formatting
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
+from . import views
 from ..models import BasicModel, ForeignKeySource
 
 factory = APIRequestFactory()
@@ -330,30 +331,13 @@ class MethodLimitedViewSet(ExampleViewSet):
     http_method_names = ['get', 'head', 'options']
 
 
-class ExampleListView(APIView):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
-    def get(self, *args, **kwargs):
-        pass
-
-    def post(self, request, *args, **kwargs):
-        pass
-
-
-class ExampleDetailView(APIView):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
-    def get(self, *args, **kwargs):
-        pass
-
-
 @unittest.skipUnless(coreapi, 'coreapi is not installed')
 class TestSchemaGenerator(TestCase):
     def setUp(self):
         self.patterns = [
-            url(r'^example/?$', ExampleListView.as_view()),
-            url(r'^example/(?P<pk>\d+)/?$', ExampleDetailView.as_view()),
-            url(r'^example/(?P<pk>\d+)/sub/?$', ExampleDetailView.as_view()),
+            url(r'^example/?$', views.ExampleListView.as_view()),
+            url(r'^example/(?P<pk>\d+)/?$', views.ExampleDetailView.as_view()),
+            url(r'^example/(?P<pk>\d+)/sub/?$', views.ExampleDetailView.as_view()),
         ]
 
     def test_schema_for_regular_views(self):
@@ -404,9 +388,9 @@ class TestSchemaGenerator(TestCase):
 class TestSchemaGeneratorDjango2(TestCase):
     def setUp(self):
         self.patterns = [
-            path('example/', ExampleListView.as_view()),
-            path('example/<int:pk>/', ExampleDetailView.as_view()),
-            path('example/<int:pk>/sub/', ExampleDetailView.as_view()),
+            path('example/', views.ExampleListView.as_view()),
+            path('example/<int:pk>/', views.ExampleDetailView.as_view()),
+            path('example/<int:pk>/sub/', views.ExampleDetailView.as_view()),
         ]
 
     def test_schema_for_regular_views(self):
@@ -456,9 +440,9 @@ class TestSchemaGeneratorDjango2(TestCase):
 class TestSchemaGeneratorNotAtRoot(TestCase):
     def setUp(self):
         self.patterns = [
-            url(r'^api/v1/example/?$', ExampleListView.as_view()),
-            url(r'^api/v1/example/(?P<pk>\d+)/?$', ExampleDetailView.as_view()),
-            url(r'^api/v1/example/(?P<pk>\d+)/sub/?$', ExampleDetailView.as_view()),
+            url(r'^api/v1/example/?$', views.ExampleListView.as_view()),
+            url(r'^api/v1/example/(?P<pk>\d+)/?$', views.ExampleDetailView.as_view()),
+            url(r'^api/v1/example/(?P<pk>\d+)/sub/?$', views.ExampleDetailView.as_view()),
         ]
 
     def test_schema_for_regular_views(self):
@@ -569,7 +553,7 @@ class TestSchemaGeneratorWithRestrictedViewSets(TestCase):
         router.register('example1', Http404ExampleViewSet, basename='example1')
         router.register('example2', PermissionDeniedExampleViewSet, basename='example2')
         self.patterns = [
-            url('^example/?$', ExampleListView.as_view()),
+            url('^example/?$', views.ExampleListView.as_view()),
             url(r'^', include(router.urls))
         ]
 

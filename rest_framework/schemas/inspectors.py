@@ -501,3 +501,10 @@ class DefaultSchema(ViewInspector):
         inspector = inspector_class()
         inspector.view = instance
         return inspector
+
+
+class OpenAPIAutoSchema(ViewInspector):
+
+    def get_operation(self, path, method):
+        # TODO: fill in details here.
+        return {}

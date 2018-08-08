@@ -308,14 +308,7 @@ class SchemaGenerator(object):
         """
         links = LinkNode()
 
-        # Generate (path, method, view) given (path, method, callback).
-        paths = []
-        view_endpoints = []
-        for path, method, callback in self.endpoints:
-            view = self.create_view(callback, method, request)
-            path = self.coerce_path(path, method, view)
-            paths.append(path)
-            view_endpoints.append((path, method, view))
+        paths, view_endpoints = self._get_paths_and_endpoints(request)
 
         # Only generate the path prefix for paths that will be included
         if not paths:
@@ -331,6 +324,20 @@ class SchemaGenerator(object):
             insert_into(links, keys, link)
 
         return links
+
+    def _get_paths_and_endpoints(self, request):
+        """
+        Generate (path, method, view) given (path, method, callback) for paths.
+        """
+        paths = []
+        view_endpoints = []
+        for path, method, callback in self.endpoints:
+            view = self.create_view(callback, method, request)
+            path = self.coerce_path(path, method, view)
+            paths.append(path)
+            view_endpoints.append((path, method, view))
+
+        return paths, view_endpoints
 
     # Methods used when we generate a view instance from the raw callback...
 
@@ -461,3 +468,26 @@ class SchemaGenerator(object):
 
         # Default action, eg "/users/", "/users/{pk}/"
         return named_path_components + [action]
+
+
+class OpenAPISchemaGenerator(SchemaGenerator):
+
+    def get_paths(self, request=None):
+        result = OrderedDict()
+
+        paths, view_endpoints = self._get_paths_and_endpoints(request)
+
+        # Only generate the path prefix for paths that will be included
+        if not paths:
+            return None
+        prefix = self.determine_path_prefix(paths)
+
+        for path, method, view in view_endpoints:
+            if not self.has_view_permissions(path, method, view):
+                continue
+            operation = view.schema.get_operation(path, method)
+            subpath = path[len(prefix):]
+            result.setdefault(subpath, {})
+            result[subpath][method.lower()] = operation
+
+        return result
