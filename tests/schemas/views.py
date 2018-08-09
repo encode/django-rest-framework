@@ -6,9 +6,8 @@ from rest_framework.decorators import action
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
+
 # Simple APIViews:
-
-
 class ExampleListView(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
@@ -27,7 +26,6 @@ class ExampleDetailView(APIView):
 
 
 # Classes for ExampleViewSet
-
 class ExamplePagination(pagination.PageNumberPagination):
     page_size = 100
     page_size_query_param = 'page_size'
@@ -110,7 +108,6 @@ class ExampleViewSet(ModelViewSet):
 
 
 # ExampleViewSet subclasses
-
 class DenyAllUsingHttp404(permissions.BasePermission):
 
     def has_permission(self, request, view):

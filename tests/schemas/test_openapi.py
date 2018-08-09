@@ -20,7 +20,7 @@ def create_view(view_cls, method, request):
     return view
 
 
-class TestInspector(TestCase):
+class TestOperationIntrospection(TestCase):
 
     def test_path_without_parameters(self):
         path = '/example/'
@@ -35,9 +35,30 @@ class TestInspector(TestCase):
         inspector.view = view
 
         operation = inspector.get_operation(path, method)
-        assert operation == {}
+        assert operation == {
+            'parameters': []
+        }
 
-    # TODO: parameters, operationID, responses, etc ???
+    def test_path_with_id_parameter(self):
+        path = '/example/{id}/'
+        method = 'GET'
+
+        view = create_view(
+            views.ExampleDetailView,
+            method,
+            create_request(path)
+        )
+        inspector = OpenAPIAutoSchema()
+        inspector.view = view
+        operation = inspector.get_operation(path, method)
+        assert operation == {
+            'parameters': [{
+                'description': '',
+                'in': 'path',
+                'name': 'id',
+                'required': True,
+            }]
+        }
 
 
 @override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.inspectors.OpenAPIAutoSchema'})

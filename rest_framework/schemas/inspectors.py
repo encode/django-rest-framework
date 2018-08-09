@@ -503,5 +503,37 @@ class DefaultSchema(ViewInspector):
 class OpenAPIAutoSchema(ViewInspector):
 
     def get_operation(self, path, method):
-        # TODO: fill in details here.
-        return {}
+        return {
+            'parameters': self.get_path_parameters(path, method),
+        }
+
+    def get_path_parameters(self, path, method):
+        """
+        Return a list of parameters from templated path variables.
+        """
+        model = getattr(getattr(self.view, 'queryset', None), 'model', None)
+        parameters = []
+
+        for variable in uritemplate.variables(path):
+            description = ''
+            if model is not None:
+                # Attempt to infer a field description if possible.
+                try:
+                    model_field = model._meta.get_field(variable)
+                except Exception:
+                    model_field = None
+
+                if model_field is not None and model_field.help_text:
+                    description = force_text(model_field.help_text)
+                elif model_field is not None and model_field.primary_key:
+                    description = get_pk_description(model, model_field)
+
+            parameter = {
+                "name": variable,
+                "in": "path",
+                "required": True,
+                "description": description,
+            }
+            parameters.append(parameter)
+
+        return parameters
