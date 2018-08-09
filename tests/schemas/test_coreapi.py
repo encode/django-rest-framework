@@ -46,7 +46,7 @@ urlpatterns = [
 
 
 @unittest.skipUnless(coreapi, 'coreapi is not installed')
-@override_settings(ROOT_URLCONF='tests.schemas.test_schemas')
+@override_settings(ROOT_URLCONF='tests.schemas.test_coreapi')
 class TestRouterGeneratedSchema(TestCase):
     def test_anonymous_request(self):
         client = APIClient()
