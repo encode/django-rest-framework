@@ -43,9 +43,6 @@ class TestInspector(TestCase):
 @override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.inspectors.OpenAPIAutoSchema'})
 class TestGenerator(TestCase):
 
-    def test_override_settings(self):
-        assert isinstance(views.ExampleListView.schema, OpenAPIAutoSchema)
-
     def test_paths_construction(self):
         """Construction of the `paths` key."""
         patterns = [
