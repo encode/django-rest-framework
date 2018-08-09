@@ -465,29 +465,25 @@ class TestSchemaGeneratorWithRestrictedViewSets(TestCase):
         assert schema == expected
 
 
-class ForeignKeySourceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ForeignKeySource
-        fields = ('id', 'name', 'target')
-
-
-class ForeignKeySourceView(generics.CreateAPIView):
-    queryset = ForeignKeySource.objects.all()
-    serializer_class = ForeignKeySourceSerializer
-
-
 @unittest.skipUnless(coreapi, 'coreapi is not installed')
 class TestSchemaGeneratorWithForeignKey(TestCase):
-    def setUp(self):
-        self.patterns = [
-            url(r'^example/?$', ForeignKeySourceView.as_view()),
-        ]
-
     def test_schema_for_regular_views(self):
         """
         Ensure that AutoField foreign keys are output as Integer.
         """
-        generator = SchemaGenerator(title='Example API', patterns=self.patterns)
+        class ForeignKeySourceSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = ForeignKeySource
+                fields = ('id', 'name', 'target')
+
+        class ForeignKeySourceView(generics.CreateAPIView):
+            queryset = ForeignKeySource.objects.all()
+            serializer_class = ForeignKeySourceSerializer
+
+        patterns = [
+            url(r'^example/?$', ForeignKeySourceView.as_view()),
+        ]
+        generator = SchemaGenerator(title='Example API', patterns=patterns)
         schema = generator.get_schema()
 
         expected = coreapi.Document(
