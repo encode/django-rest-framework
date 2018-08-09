@@ -47,14 +47,12 @@ class TestGenerator(TestCase):
         assert isinstance(views.ExampleListView.schema, OpenAPIAutoSchema)
 
     def test_paths_construction(self):
+        """Construction of the `paths` key."""
         patterns = [
             url(r'^example/?$', views.ExampleListView.as_view()),
         ]
         generator = OpenAPISchemaGenerator(patterns=patterns)
-
-        # This happens in get_schema()
-        inspector = generator.endpoint_inspector_cls(generator.patterns, generator.urlconf)
-        generator.endpoints = inspector.get_api_endpoints()
+        generator._initialise_endpoints()
 
         paths = generator.get_paths()
 
@@ -63,3 +61,16 @@ class TestGenerator(TestCase):
         assert len(example_operations) == 2
         assert 'get' in example_operations
         assert 'post' in example_operations
+
+    def test_schema_construction(self):
+        """Construction of the top level dictionary."""
+        patterns = [
+            url(r'^example/?$', views.ExampleListView.as_view()),
+        ]
+        generator = OpenAPISchemaGenerator(patterns=patterns)
+
+        request = create_request('/')
+        schema = generator.get_schema(request=request)
+
+        assert 'basePath' in schema
+        assert 'paths' in schema

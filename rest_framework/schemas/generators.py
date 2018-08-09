@@ -283,9 +283,7 @@ class SchemaGenerator(object):
         """
         Generate a `coreapi.Document` representing the API schema.
         """
-        if self.endpoints is None:
-            inspector = self.endpoint_inspector_cls(self.patterns, self.urlconf)
-            self.endpoints = inspector.get_api_endpoints()
+        self._initialise_endpoints()
 
         links = self.get_links(None if public else request)
         if not links:
@@ -300,6 +298,11 @@ class SchemaGenerator(object):
             title=self.title, description=self.description,
             url=url, content=links
         )
+
+    def _initialise_endpoints(self):
+        if self.endpoints is None:
+            inspector = self.endpoint_inspector_cls(self.patterns, self.urlconf)
+            self.endpoints = inspector.get_api_endpoints()
 
     def get_links(self, request=None):
         """
@@ -491,3 +494,20 @@ class OpenAPISchemaGenerator(SchemaGenerator):
             result[subpath][method.lower()] = operation
 
         return result
+
+    def get_schema(self, request=None, public=False):
+        """
+        Generate a `coreapi.Document` representing the API schema.
+        """
+        self._initialise_endpoints()
+
+        paths = self.get_paths(None if public else request)
+        if not paths:
+            return None
+
+        schema = {
+            'basePath': self.url,
+            'paths': paths,
+        }
+
+        return schema
