@@ -874,54 +874,19 @@ class SchemaGenerationExclusionTests(TestCase):
         )
 
 
-@api_view(["GET"])
-def simple_fbv(request):
-    pass
-
-
-class BasicModelSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = BasicModel
-        fields = "__all__"
-
-
-class NamingCollisionView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = BasicModel.objects.all()
-    serializer_class = BasicModelSerializer
-
-
-class BasicNamingCollisionView(generics.RetrieveAPIView):
-    queryset = BasicModel.objects.all()
-
-
-class NamingCollisionViewSet(GenericViewSet):
-    """
-    Example via: https://stackoverflow.com/questions/43778668/django-rest-framwork-occured-typeerror-link-object-does-not-support-item-ass/
-    """
-    permision_class = ()
-
-    @action(detail=False)
-    def detail(self, request):
-        return {}
-
-    @action(detail=False, url_path='detail/export')
-    def detail_export(self, request):
-        return {}
-
-
-naming_collisions_router = SimpleRouter()
-naming_collisions_router.register(r'collision', NamingCollisionViewSet, basename="collision")
-
-
 @pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
 class TestURLNamingCollisions(TestCase):
     """
     Ref: https://github.com/encode/django-rest-framework/issues/4704
     """
+    @api_view(["GET"])
+    def simple_fbv(request):
+        pass
+
     def test_manually_routing_nested_routes(self):
         patterns = [
-            url(r'^test', simple_fbv),
-            url(r'^test/list/', simple_fbv),
+            url(r'^test', self.simple_fbv),
+            url(r'^test/list/', self.simple_fbv),
         ]
 
         generator = SchemaGenerator(title='Naming Colisions', patterns=patterns)
@@ -956,6 +921,15 @@ class TestURLNamingCollisions(TestCase):
             assert loc[key].url == url
 
     def test_manually_routing_generic_view(self):
+        class BasicModelSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = BasicModel
+                fields = "__all__"
+
+        class NamingCollisionView(generics.RetrieveUpdateDestroyAPIView):
+            queryset = BasicModel.objects.all()
+            serializer_class = BasicModelSerializer
+
         patterns = [
             url(r'^test', NamingCollisionView.as_view()),
             url(r'^test/retrieve/', NamingCollisionView.as_view()),
@@ -979,6 +953,23 @@ class TestURLNamingCollisions(TestCase):
         self._verify_cbv_links(schema['test'], '/test', suffixes=(None, '0', None, '0'))
 
     def test_from_router(self):
+        class NamingCollisionViewSet(GenericViewSet):
+            """
+            Example via: https://stackoverflow.com/questions/43778668/django-rest-framwork-occured-typeerror-link-object-does-not-support-item-ass/
+            """
+            permision_class = ()
+
+            @action(detail=False)
+            def detail(self, request):
+                return {}
+
+            @action(detail=False, url_path='detail/export')
+            def detail_export(self, request):
+                return {}
+
+        naming_collisions_router = SimpleRouter()
+        naming_collisions_router.register(r'collision', NamingCollisionViewSet, basename="collision")
+
         patterns = [
             url(r'from-router', include(naming_collisions_router.urls)),
         ]
@@ -1011,6 +1002,9 @@ class TestURLNamingCollisions(TestCase):
         assert schema == expected
 
     def test_url_under_same_key_not_replaced(self):
+        class BasicNamingCollisionView(generics.RetrieveAPIView):
+            queryset = BasicModel.objects.all()
+
         patterns = [
             url(r'example/(?P<pk>\d+)/$', BasicNamingCollisionView.as_view()),
             url(r'example/(?P<slug>\w+)/$', BasicNamingCollisionView.as_view()),
@@ -1025,8 +1019,8 @@ class TestURLNamingCollisions(TestCase):
     def test_url_under_same_key_not_replaced_another(self):
 
         patterns = [
-            url(r'^test/list/', simple_fbv),
-            url(r'^test/(?P<pk>\d+)/list/', simple_fbv),
+            url(r'^test/list/', self.simple_fbv),
+            url(r'^test/(?P<pk>\d+)/list/', self.simple_fbv),
         ]
 
         generator = SchemaGenerator(title='Naming Colisions', patterns=patterns)
