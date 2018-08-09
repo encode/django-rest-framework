@@ -2,13 +2,9 @@ import unittest
 
 import pytest
 from django.conf.urls import include, url
-from django.core.exceptions import PermissionDenied
-from django.http import Http404
 from django.test import TestCase, override_settings
 
-from rest_framework import (
-    filters, generics, pagination, permissions, serializers
-)
+from rest_framework import filters, generics, serializers
 from rest_framework.compat import coreapi, coreschema, get_regex_pattern, path
 from rest_framework.decorators import action, api_view, schema
 from rest_framework.request import Request
@@ -35,87 +31,6 @@ class MockUser(object):
         return True
 
 
-class ExamplePagination(pagination.PageNumberPagination):
-    page_size = 100
-    page_size_query_param = 'page_size'
-
-
-class EmptySerializer(serializers.Serializer):
-    pass
-
-
-class ExampleSerializer(serializers.Serializer):
-    a = serializers.CharField(required=True, help_text='A field description')
-    b = serializers.CharField(required=False)
-    read_only = serializers.CharField(read_only=True)
-    hidden = serializers.HiddenField(default='hello')
-
-
-class AnotherSerializerWithDictField(serializers.Serializer):
-    a = serializers.DictField()
-
-
-class AnotherSerializerWithListFields(serializers.Serializer):
-    a = serializers.ListField(child=serializers.IntegerField())
-    b = serializers.ListSerializer(child=serializers.CharField())
-
-
-class AnotherSerializer(serializers.Serializer):
-    c = serializers.CharField(required=True)
-    d = serializers.CharField(required=False)
-
-
-class ExampleViewSet(ModelViewSet):
-    pagination_class = ExamplePagination
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    filter_backends = [filters.OrderingFilter]
-    serializer_class = ExampleSerializer
-
-    @action(methods=['post'], detail=True, serializer_class=AnotherSerializer)
-    def custom_action(self, request, pk):
-        """
-        A description of custom action.
-        """
-        raise NotImplementedError
-
-    @action(methods=['post'], detail=True, serializer_class=AnotherSerializerWithDictField)
-    def custom_action_with_dict_field(self, request, pk):
-        """
-        A custom action using a dict field in the serializer.
-        """
-        raise NotImplementedError
-
-    @action(methods=['post'], detail=True, serializer_class=AnotherSerializerWithListFields)
-    def custom_action_with_list_fields(self, request, pk):
-        """
-        A custom action using both list field and list serializer in the serializer.
-        """
-        raise NotImplementedError
-
-    @action(detail=False)
-    def custom_list_action(self, request):
-        raise NotImplementedError
-
-    @action(methods=['post', 'get'], detail=False, serializer_class=EmptySerializer)
-    def custom_list_action_multiple_methods(self, request):
-        """Custom description."""
-        raise NotImplementedError
-
-    @custom_list_action_multiple_methods.mapping.delete
-    def custom_list_action_multiple_methods_delete(self, request):
-        """Deletion description."""
-        raise NotImplementedError
-
-    @action(detail=False, schema=None)
-    def excluded_action(self, request):
-        pass
-
-    def get_serializer(self, *args, **kwargs):
-        assert self.request
-        assert self.action
-        return super(ExampleViewSet, self).get_serializer(*args, **kwargs)
-
-
 if coreapi:
     schema_view = get_schema_view(title='Example API')
 else:
@@ -123,7 +38,7 @@ else:
         pass
 
 router = DefaultRouter()
-router.register('example', ExampleViewSet, basename='example')
+router.register('example', views.ExampleViewSet, basename='example')
 urlpatterns = [
     url(r'^$', schema_view),
     url(r'^', include(router.urls))
@@ -300,37 +215,6 @@ class TestRouterGeneratedSchema(TestCase):
         assert response.data == expected
 
 
-class DenyAllUsingHttp404(permissions.BasePermission):
-
-    def has_permission(self, request, view):
-        raise Http404()
-
-    def has_object_permission(self, request, view, obj):
-        raise Http404()
-
-
-class DenyAllUsingPermissionDenied(permissions.BasePermission):
-
-    def has_permission(self, request, view):
-        raise PermissionDenied()
-
-    def has_object_permission(self, request, view, obj):
-        raise PermissionDenied()
-
-
-class Http404ExampleViewSet(ExampleViewSet):
-    permission_classes = [DenyAllUsingHttp404]
-
-
-class PermissionDeniedExampleViewSet(ExampleViewSet):
-    permission_classes = [DenyAllUsingPermissionDenied]
-
-
-class MethodLimitedViewSet(ExampleViewSet):
-    permission_classes = []
-    http_method_names = ['get', 'head', 'options']
-
-
 @unittest.skipUnless(coreapi, 'coreapi is not installed')
 class TestSchemaGenerator(TestCase):
     def setUp(self):
@@ -493,7 +377,7 @@ class TestSchemaGeneratorNotAtRoot(TestCase):
 class TestSchemaGeneratorWithMethodLimitedViewSets(TestCase):
     def setUp(self):
         router = DefaultRouter()
-        router.register('example1', MethodLimitedViewSet, basename='example1')
+        router.register('example1', views.MethodLimitedViewSet, basename='example1')
         self.patterns = [
             url(r'^', include(router.urls))
         ]
@@ -550,8 +434,8 @@ class TestSchemaGeneratorWithMethodLimitedViewSets(TestCase):
 class TestSchemaGeneratorWithRestrictedViewSets(TestCase):
     def setUp(self):
         router = DefaultRouter()
-        router.register('example1', Http404ExampleViewSet, basename='example1')
-        router.register('example2', PermissionDeniedExampleViewSet, basename='example2')
+        router.register('example1', views.Http404ExampleViewSet, basename='example1')
+        router.register('example2', views.PermissionDeniedExampleViewSet, basename='example2')
         self.patterns = [
             url('^example/?$', views.ExampleListView.as_view()),
             url(r'^', include(router.urls))
