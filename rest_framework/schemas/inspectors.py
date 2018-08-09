@@ -174,20 +174,6 @@ class ViewInspector(object):
     def view(self):
         self._view = None
 
-    def get_link(self, path, method, base_url):
-        """
-        Generate `coreapi.Link` for self.view, path and method.
-
-        This is the main _public_ access point.
-
-        Parameters:
-
-        * path: Route path for view from URLConf.
-        * method: The HTTP request method.
-        * base_url: The project "mount point" as given to SchemaGenerator
-        """
-        raise NotImplementedError(".get_link() must be overridden.")
-
 
 class AutoSchema(ViewInspector):
     """
@@ -208,6 +194,17 @@ class AutoSchema(ViewInspector):
         self._manual_fields = manual_fields
 
     def get_link(self, path, method, base_url):
+        """
+        Generate `coreapi.Link` for self.view, path and method.
+
+        This is the main _public_ access point.
+
+        Parameters:
+
+        * path: Route path for view from URLConf.
+        * method: The HTTP request method.
+        * base_url: The project "mount point" as given to SchemaGenerator
+        """
         fields = self.get_path_fields(path, method)
         fields += self.get_serializer_fields(path, method)
         fields += self.get_pagination_fields(path, method)
