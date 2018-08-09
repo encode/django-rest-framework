@@ -173,7 +173,7 @@ class APIView(View):
         If request is not permitted, determine what kind of exception to raise.
         """
         if request.authenticators and not request.successful_authenticator:
-            raise exceptions.NotAuthenticated()
+            raise exceptions.NotAuthenticated(detail=message)
         raise exceptions.PermissionDenied(detail=message)
 
     def throttled(self, request, wait):
