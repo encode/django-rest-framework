@@ -56,7 +56,7 @@ We'll also create an initial user named `admin` with a password of `password123`
 
     python manage.py createsuperuser --email admin@example.com --username admin
 
-Once you've set up a database and initial user created and ready to go, open up the app's directory and we'll get coding...
+Once you've set up a database and the initial user is created and ready to go, open up the app's directory and we'll get coding...
 
 ## Serializers
 
