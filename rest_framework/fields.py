@@ -1783,7 +1783,7 @@ class JSONField(Field):
                     data = data.decode('utf-8')
                 return json.loads(data)
             else:
-                json.dumps(data)
+                data = json.dumps(data)
         except (TypeError, ValueError):
             self.fail('invalid')
         return data
