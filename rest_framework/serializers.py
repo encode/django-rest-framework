@@ -235,6 +235,8 @@ class BaseSerializer(Field):
             try:
                 self._validated_data = self.run_validation(self.initial_data)
             except ValidationError as exc:
+                if isinstance(exc.detail, dict):
+                    raise
                 self._validated_data = {}
                 self._errors = exc.detail
             else:
@@ -489,6 +491,8 @@ class Serializer(BaseSerializer):
                 if validate_method is not None:
                     validated_value = validate_method(validated_value)
             except ValidationError as exc:
+                if isinstance(exc.detail, dict):
+                    raise
                 errors[field.field_name] = exc.detail
             except DjangoValidationError as exc:
                 errors[field.field_name] = get_error_detail(exc)
@@ -661,6 +665,8 @@ class ListSerializer(BaseSerializer):
             try:
                 validated = self.child.run_validation(item)
             except ValidationError as exc:
+                if isinstance(exc.detail, dict):
+                    raise
                 errors.append(exc.detail)
             else:
                 ret.append(validated)
@@ -744,6 +750,8 @@ class ListSerializer(BaseSerializer):
             try:
                 self._validated_data = self.run_validation(self.initial_data)
             except ValidationError as exc:
+                if isinstance(exc.detail, dict):
+                    raise
                 self._validated_data = []
                 self._errors = exc.detail
             else:
