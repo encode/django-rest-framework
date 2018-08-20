@@ -50,7 +50,7 @@ Getting involved in triaging incoming issues is a good way to start contributing
 
 To start developing on Django REST framework, clone the repo:
 
-    git clone git@github.com:encode/django-rest-framework.git
+    git clone https://github.com/encode/django-rest-framework
 
 Changes should broadly follow the [PEP 8][pep-8] style conventions, and we recommend you set up your editor to automatically indicate non-conforming styles.
 
