@@ -92,7 +92,7 @@ The following view demonstrates an example of using a serializer in a template f
 
 The `render_form` tag takes an optional `template_pack` argument, that specifies which template directory should be used for rendering the form and form fields.
 
-REST framework includes three built-in template packs, all based on Bootstrap 3. The built-in styles are `horizontal`, `vertical`, and `inline`. The default style is `horizontal`. To use any of these template packs you'll want to also include the Bootstrap 3 CSS.
+REST framework includes three built-in template packs, all based on Bootstrap 3. The built-in styles are `horizontal`, `vertical`, and `inline`. The default style is `vertical`. To use any of these template packs you'll want to also include the Bootstrap 3 CSS.
 
 The following HTML will link to a CDN hosted version of the Bootstrap 3 CSS:
 
@@ -144,13 +144,15 @@ Presents labels and controls alongside each other, using a 2/10 column split.
 
 *This is the form style used in the browsable API and admin renderers.*
 
+Note: make sure you add "form-horizontal" class to `form` tag as per Bootstrap 3 guidelines.
+
     {% load rest_framework %}
 
     ...
 
     <form class="form-horizontal" action="{% url 'login' %}" method="post" novalidate>
         {% csrf_token %}
-        {% render_form serializer %}
+        {% render_form serializer template_pack='rest_framework/horizontal' %}
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
                 <button type="submit" class="btn btn-default">Sign in</button>

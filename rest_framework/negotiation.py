@@ -85,7 +85,9 @@ class DefaultContentNegotiation(BaseContentNegotiation):
         renderers = [renderer for renderer in renderers
                      if renderer.format == format]
         if not renderers:
-            raise Http404
+            raise Http404('Renderer for (%s) not found. Did you enable it with'
+                          ' DEFAULT_RENDERER_CLASSES or within the APIView'
+                          ' / ViewSet?' % format)
         return renderers
 
     def get_accept_list(self, request):

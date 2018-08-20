@@ -81,7 +81,7 @@ def exception_handler(exc, context):
     to be raised.
     """
     if isinstance(exc, Http404):
-        exc = exceptions.NotFound()
+        exc = exceptions.NotFound(*exc.args)
     elif isinstance(exc, PermissionDenied):
         exc = exceptions.PermissionDenied()
 
