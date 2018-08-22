@@ -445,8 +445,6 @@ HTTP Signature (currently a [IETF draft][http-signature-ietf-draft]) provides a 
 [django-oauth-toolkit]: https://github.com/evonove/django-oauth-toolkit
 [evonove]: https://github.com/evonove/
 [oauthlib]: https://github.com/idan/oauthlib
-[blimp]: https://github.com/GetBlimp
-[djangorestframework-jwt]: https://github.com/GetBlimp/django-rest-framework-jwt
 [djangorestframework-simplejwt]: https://github.com/davesque/django-rest-framework-simplejwt
 [etoccalino]: https://github.com/etoccalino/
 [djangorestframework-httpsignature]: https://github.com/etoccalino/django-rest-framework-httpsignature
