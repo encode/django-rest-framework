@@ -44,7 +44,7 @@ matrix:
       - env: DJANGO=2.1
 
 install:
-    - pip install tox tox-travis
+    - pip install tox tox-venv tox-travis
 
 script:
     - tox
