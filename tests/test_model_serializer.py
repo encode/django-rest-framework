@@ -9,6 +9,7 @@ from __future__ import unicode_literals
 
 import datetime
 import decimal
+import sys
 from collections import OrderedDict
 
 import pytest
@@ -381,6 +382,10 @@ class TestDurationFieldMapping(TestCase):
             TestSerializer():
                 id = IntegerField(label='ID', read_only=True)
                 duration_field = DurationField(max_value=datetime.timedelta(3), min_value=datetime.timedelta(1))
+        """) if sys.version_info < (3, 7) else dedent("""
+            TestSerializer():
+                id = IntegerField(label='ID', read_only=True)
+                duration_field = DurationField(max_value=datetime.timedelta(days=3), min_value=datetime.timedelta(days=1))
         """)
         self.assertEqual(unicode_repr(TestSerializer()), expected)
 
