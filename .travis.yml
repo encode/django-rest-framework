@@ -29,6 +29,7 @@ matrix:
         env: TOXENV=dist
         script:
           - python setup.py bdist_wheel
+          - rm -r djangorestframework.egg-info  # see #6139
           - tox --installpkg ./dist/djangorestframework-*.whl
           - tox  # test sdist
 
@@ -44,7 +45,7 @@ matrix:
       - env: DJANGO=2.1
 
 install:
-    - pip install tox tox-travis
+    - pip install tox tox-venv tox-travis
 
 script:
     - tox
