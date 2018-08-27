@@ -10,6 +10,10 @@ from django.shortcuts import get_object_or_404 as _get_object_or_404
 
 from rest_framework import mixins, views
 from rest_framework.settings import api_settings
+from rest_framework.signals import (
+    post_create, post_destroy, post_read, post_update, pre_create, pre_destroy,
+    pre_read, pre_update
+)
 
 
 def get_object_or_404(queryset, *filter_args, **filter_kwargs):
@@ -189,7 +193,10 @@ class CreateAPIView(mixins.CreateModelMixin,
     Concrete view for creating a model instance.
     """
     def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
+        pre_create.send(self, request=request)
+        resp = self.create(request, *args, **kwargs)
+        post_create.send(self, request=request, response=resp)
+        return resp
 
 
 class ListAPIView(mixins.ListModelMixin,
@@ -198,7 +205,10 @@ class ListAPIView(mixins.ListModelMixin,
     Concrete view for listing a queryset.
     """
     def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
+        pre_read.send(self, request=request)
+        resp = self.list(request, *args, **kwargs)
+        post_read.send(self, request=request, response=resp)
+        return resp
 
 
 class RetrieveAPIView(mixins.RetrieveModelMixin,
@@ -207,7 +217,10 @@ class RetrieveAPIView(mixins.RetrieveModelMixin,
     Concrete view for retrieving a model instance.
     """
     def get(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
+        pre_read.send(self, request=request)
+        resp = self.retrieve(request, *args, **kwargs)
+        post_read.send(self, request=request, response=resp)
+        return resp
 
 
 class DestroyAPIView(mixins.DestroyModelMixin,
@@ -216,7 +229,10 @@ class DestroyAPIView(mixins.DestroyModelMixin,
     Concrete view for deleting a model instance.
     """
     def delete(self, request, *args, **kwargs):
-        return self.destroy(request, *args, **kwargs)
+        pre_destroy.send(self, request=request)
+        resp = self.destroy(request, *args, **kwargs)
+        post_destroy.send(self, request=request, response=resp)
+        return resp
 
 
 class UpdateAPIView(mixins.UpdateModelMixin,
@@ -225,10 +241,16 @@ class UpdateAPIView(mixins.UpdateModelMixin,
     Concrete view for updating a model instance.
     """
     def put(self, request, *args, **kwargs):
-        return self.update(request, *args, **kwargs)
+        pre_update.send(self, request=request)
+        resp = self.update(request, *args, **kwargs)
+        post_update.send(self, request=request, response=resp)
+        return resp
 
     def patch(self, request, *args, **kwargs):
-        return self.partial_update(request, *args, **kwargs)
+        pre_update.send(self, request=request)
+        resp = self.partial_update(request, *args, **kwargs)
+        post_update.send(self, request=request, response=resp)
+        return resp
 
 
 class ListCreateAPIView(mixins.ListModelMixin,
@@ -238,10 +260,16 @@ class ListCreateAPIView(mixins.ListModelMixin,
     Concrete view for listing a queryset or creating a model instance.
     """
     def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
+        pre_read.send(self, request=request)
+        resp = self.list(request, *args, **kwargs)
+        post_read.send(self, request=request, response=resp)
+        return resp
 
     def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
+        pre_create.send(self, request=request)
+        resp = self.create(request, *args, **kwargs)
+        post_create.send(self, request=request, response=resp)
+        return resp
 
 
 class RetrieveUpdateAPIView(mixins.RetrieveModelMixin,
@@ -251,13 +279,22 @@ class RetrieveUpdateAPIView(mixins.RetrieveModelMixin,
     Concrete view for retrieving, updating a model instance.
     """
     def get(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
+        pre_read.send(self, request=request)
+        resp = self.retrieve(request, *args, **kwargs)
+        post_read.send(self, request=request, response=resp)
+        return resp
 
     def put(self, request, *args, **kwargs):
-        return self.update(request, *args, **kwargs)
+        pre_update.send(self, request=request)
+        resp = self.update(request, *args, **kwargs)
+        post_update.send(self, request=request, response=resp)
+        return resp
 
     def patch(self, request, *args, **kwargs):
-        return self.partial_update(request, *args, **kwargs)
+        pre_update.send(self, request=request)
+        resp = self.partial_update(request, *args, **kwargs)
+        post_update.send(self, request=request, response=resp)
+        return resp
 
 
 class RetrieveDestroyAPIView(mixins.RetrieveModelMixin,
@@ -267,10 +304,16 @@ class RetrieveDestroyAPIView(mixins.RetrieveModelMixin,
     Concrete view for retrieving or deleting a model instance.
     """
     def get(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
+        pre_read.send(self, request=request)
+        resp = self.retrieve(request, *args, **kwargs)
+        post_read.send(self, request=request, response=resp)
+        return resp
 
     def delete(self, request, *args, **kwargs):
-        return self.destroy(request, *args, **kwargs)
+        pre_destroy.send(self, request=request)
+        resp = self.destroy(request, *args, **kwargs)
+        post_destroy.send(self, request=request, response=resp)
+        return resp
 
 
 class RetrieveUpdateDestroyAPIView(mixins.RetrieveModelMixin,
@@ -281,13 +324,25 @@ class RetrieveUpdateDestroyAPIView(mixins.RetrieveModelMixin,
     Concrete view for retrieving, updating or deleting a model instance.
     """
     def get(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
+        pre_read.send(self, request=request)
+        resp = self.retrieve(request, *args, **kwargs)
+        post_read.send(self, request=request, response=resp)
+        return resp
 
     def put(self, request, *args, **kwargs):
-        return self.update(request, *args, **kwargs)
+        pre_update.send(self, request=request)
+        resp = self.update(request, *args, **kwargs)
+        post_update.send(self, request=request, response=resp)
+        return resp
 
     def patch(self, request, *args, **kwargs):
-        return self.partial_update(request, *args, **kwargs)
+        pre_update.send(self, request=request)
+        resp = self.partial_update(request, *args, **kwargs)
+        post_update.send(self, request=request, response=resp)
+        return resp
 
     def delete(self, request, *args, **kwargs):
-        return self.destroy(request, *args, **kwargs)
+        pre_destroy.send(self, request=request)
+        resp = self.destroy(request, *args, **kwargs)
+        post_destroy.send(self, request=request, response=resp)
+        return resp
