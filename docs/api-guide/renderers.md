@@ -490,9 +490,9 @@ To avoid having a file streamed without a filename (which the browser will often
 
     class MyExampleViewSet(XLSXFileMixin, ReadOnlyModelViewSet):
         queryset = MyExampleModel.objects.all()
-	serializer_class = MyExampleSerializer
-    	renderer_classes = (XLSXRenderer,)
-    	filename = 'my_export.xlsx'
+        serializer_class = MyExampleSerializer
+        renderer_classes = (XLSXRenderer,)
+        filename = 'my_export.xlsx'
 
 ## CSV
 
