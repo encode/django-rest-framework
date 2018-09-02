@@ -11,6 +11,13 @@ from django.utils import six
 from django.views.generic import View
 
 try:
+    # Python 3 (required for 3.8+)
+    from collections.abc import Mapping   # noqa
+except ImportError:
+    # Python 2.7
+    from collections import Mapping   # noqa
+
+try:
     from django.urls import (  # noqa
         URLPattern,
         URLResolver,
