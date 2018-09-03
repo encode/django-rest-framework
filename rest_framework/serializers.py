@@ -23,13 +23,17 @@ from django.db import models
 from django.db.models import DurationField as ModelDurationField
 from django.db.models.fields import Field as DjangoModelField
 from django.db.models.fields import FieldDoesNotExist
+from django.forms.fields import \
+    MultipleChoiceField as DjangoFormMultipleChoiceField
 from django.utils import six, timezone
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework.compat import postgres_fields, unicode_to_repr
 from rest_framework.exceptions import ErrorDetail, ValidationError
-from rest_framework.fields import get_error_detail, set_value
+from rest_framework.fields import (
+    MultipleChoiceField, get_error_detail, set_value
+)
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, model_meta, representation
 from rest_framework.utils.field_mapping import (
@@ -1208,7 +1212,13 @@ class ModelSerializer(Serializer):
         if 'choices' in field_kwargs:
             # Fields with choices get coerced into `ChoiceField`
             # instead of using their regular typed field.
-            field_class = self.serializer_choice_field
+            is_multi_choice = False
+            try:
+                model_field_class = model_field.formfield()
+                is_multi_choice = isinstance(model_field_class, (DjangoFormMultipleChoiceField, ))
+            except TypeError:
+                pass
+            field_class = self.serializer_choice_field if not is_multi_choice else MultipleChoiceField
             # Some model fields may introduce kwargs that would not be valid
             # for the choice field. We need to strip these out.
             # Eg. models.DecimalField(max_digits=3, decimal_places=1, choices=DECIMAL_CHOICES)
@@ -1252,7 +1262,8 @@ class ModelSerializer(Serializer):
         field_kwargs = get_relation_kwargs(field_name, relation_info)
 
         to_field = field_kwargs.pop('to_field', None)
-        if to_field and not relation_info.reverse and not relation_info.related_model._meta.get_field(to_field).primary_key:
+        if (to_field and not relation_info.reverse and
+                not relation_info.related_model._meta.get_field(to_field).primary_key):
             field_kwargs['slug_field'] = to_field
             field_class = self.serializer_related_to_field
 
