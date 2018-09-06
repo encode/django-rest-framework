@@ -544,12 +544,11 @@ class CursorPagination(BasePagination):
             has_following_position = False
             following_position = None
 
-        # If we have a reverse queryset, then the query ordering was in reverse
-        # so we need to reverse the items again before returning them to the user.
         if reverse:
+            # If we have a reverse queryset, then the query ordering was in reverse
+            # so we need to reverse the items again before returning them to the user.
             self.page = list(reversed(self.page))
 
-        if reverse:
             # Determine next and previous positions for reverse cursors.
             self.has_next = (current_position is not None) or (offset > 0)
             self.has_previous = has_following_position
