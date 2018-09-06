@@ -457,6 +457,43 @@ Modify your REST framework settings.
 
 [MessagePack][messagepack] is a fast, efficient binary serialization format.  [Juan Riaza][juanriaza] maintains the [djangorestframework-msgpack][djangorestframework-msgpack] package which provides MessagePack renderer and parser support for REST framework.
 
+## XLSX (Binary Spreadsheet Endpoints)
+
+XLSX is the world's most popular binary spreadsheet format. [Tim Allen][flipperpa] of [The Wharton School][wharton] maintains [drf-renderer-xlsx][drf-renderer-xlsx], which renders an endpoint as an XLSX spreadsheet using OpenPyXL, and allows the client to download it. Spreadsheets can be styled on a per-view basis.
+
+#### Installation & configuration
+
+Install using pip.
+
+    $ pip install drf-renderer-xlsx
+
+Modify your REST framework settings.
+
+    REST_FRAMEWORK = {
+        ...
+
+        'DEFAULT_RENDERER_CLASSES': (
+            'rest_framework.renderers.JSONRenderer',
+            'rest_framework.renderers.BrowsableAPIRenderer',
+            'drf_renderer_xlsx.renderers.XLSXRenderer',
+        ),
+    }
+
+To avoid having a file streamed without a filename (which the browser will often default to the filename "download", with no extension), we need to use a mixin to override the `Content-Disposition` header. If no filename is provided, it will default to `export.xlsx`. For example:
+
+    from rest_framework.viewsets import ReadOnlyModelViewSet
+    from drf_renderer_xlsx.mixins import XLSXFileMixin
+    from drf_renderer_xlsx.renderers import XLSXRenderer
+
+    from .models import MyExampleModel
+    from .serializers import MyExampleSerializer
+
+    class MyExampleViewSet(XLSXFileMixin, ReadOnlyModelViewSet):
+        queryset = MyExampleModel.objects.all()
+        serializer_class = MyExampleSerializer
+        renderer_classes = (XLSXRenderer,)
+        filename = 'my_export.xlsx'
+
 ## CSV
 
 Comma-separated values are a plain-text tabular data format, that can be easily imported into spreadsheet applications. [Mjumbe Poe][mjumbewu] maintains the [djangorestframework-csv][djangorestframework-csv] package which provides CSV renderer support for REST framework.
@@ -497,6 +534,9 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 [messagepack]: https://msgpack.org/
 [juanriaza]: https://github.com/juanriaza
 [mjumbewu]: https://github.com/mjumbewu
+[flipperpa]: https://githuc.com/flipperpa
+[wharton]: https://github.com/wharton
+[drf-renderer-xlsx]: https://github.com/wharton/drf-renderer-xlsx
 [vbabiy]: https://github.com/vbabiy
 [rest-framework-yaml]: https://jpadilla.github.io/django-rest-framework-yaml/
 [rest-framework-xml]: https://jpadilla.github.io/django-rest-framework-xml/
