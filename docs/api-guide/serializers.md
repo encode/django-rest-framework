@@ -1030,7 +1030,7 @@ Similar to Django forms, you can extend and reuse serializers through inheritanc
     class MyBaseSerializer(Serializer):
         my_field = serializers.CharField()
 
-        def validate_my_field(self):
+        def validate_my_field(self, value):
             ...
 
     class MySerializer(MyBaseSerializer):
