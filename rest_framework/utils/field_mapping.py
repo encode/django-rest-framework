@@ -173,6 +173,7 @@ def get_field_kwargs(field_name, model_field):
                 validator for validator in validator_kwarg
                 if validator is not validators.validate_slug
             ]
+            kwargs['allow_unicode'] = model_field.allow_unicode
 
         # IPAddressField do not need to include the 'validate_ipv46_address' argument,
         if isinstance(model_field, models.GenericIPAddressField):
