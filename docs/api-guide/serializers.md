@@ -57,10 +57,10 @@ At this point we've translated the model instance into Python native datatypes. 
 
 Deserialization is similar. First we parse a stream into Python native datatypes...
 
-    from django.utils.six import BytesIO
+    import io
     from rest_framework.parsers import JSONParser
 
-    stream = BytesIO(json)
+    stream = io.BytesIO(json)
     data = JSONParser().parse(stream)
 
 ...then we restore those native datatypes into a dictionary of validated data.
