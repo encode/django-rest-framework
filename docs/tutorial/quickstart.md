@@ -109,7 +109,7 @@ We can easily break these down into individual views if we need to, but using vi
 
 ## URLs
 
-Okay, now let's wire up the API URLs.  On to `tutorial/urls.py`...
+Okay, now let's wire up the API URLs.  On to `tutorial/tutorial/urls.py`...
 
     from django.conf.urls import url, include
     from rest_framework import routers
