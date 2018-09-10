@@ -365,6 +365,28 @@ class TestUniquenessTogetherValidation(TestCase):
         validator.filter_queryset(attrs=data, queryset=queryset)
         assert queryset.called_with == {'race_name': 'bar', 'position': 1}
 
+    def test_validator_instances_with_context_are_not_used_twice(self):
+        """
+        Every instance of a serializer should use unique instances of validators
+        when calling `set_context`.
+        """
+        def data():
+            return {'race_name': 'example', 'position': 3}
+
+        def check_validators(serializer):
+            for validator in serializer.validators:
+                assert not hasattr(validator, 'instance')
+
+        serializer = UniquenessTogetherSerializer(self.instance, data=data())
+        check_validators(serializer)
+        serializer.run_validators({})
+        check_validators(serializer)
+
+        another_serializer = UniquenessTogetherSerializer(data=data())
+        check_validators(another_serializer)
+        another_serializer.run_validators(data())
+        check_validators(another_serializer)
+
 
 # Tests for `UniqueForDateValidator`
 # ----------------------------------
