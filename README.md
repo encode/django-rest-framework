@@ -22,11 +22,11 @@ The initial aim is to provide a single full-time position on REST framework.
 [![][rover-img]][rover-url]
 [![][sentry-img]][sentry-url]
 [![][stream-img]][stream-url]
-[![][machinalis-img]][machinalis-url]
 [![][rollbar-img]][rollbar-url]
 [![][cadre-img]][cadre-url]
+[![][load-impact-img]][load-impact-url]
 
-Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Rover][rover-url], [Sentry][sentry-url], [Stream][stream-url], [Machinalis][machinalis-url], [Rollbar][rollbar-url], and [Cadre][cadre-url].
+Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Rover][rover-url], [Sentry][sentry-url], [Stream][stream-url], [Rollbar][rollbar-url], [Cadre][cadre-url], and [Load Impact][load-impact-url].
 
 ---
 
@@ -191,16 +191,16 @@ Send a description of the issue via email to [rest-framework-security@googlegrou
 [rover-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/rover-readme.png
 [sentry-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/sentry-readme.png
 [stream-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/stream-readme.png
-[machinalis-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/machinalis-readme.png
 [rollbar-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/rollbar-readme.png
 [cadre-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/cadre-readme.png
+[load-impact-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/load-imapct-readme.png
 
 [rover-url]: http://jobs.rover.com/
 [sentry-url]: https://getsentry.com/welcome/
 [stream-url]: https://getstream.io/try-the-api/?utm_source=drf&utm_medium=banner&utm_campaign=drf
-[machinalis-url]: https://hello.machinalis.co.uk/
 [rollbar-url]: https://rollbar.com/
 [cadre-url]: https://cadre.com/
+[load-imapct-url]: https://loadimpact.com/?utm_campaign=Sponsorship%20links&utm_source=drf&utm_medium=drf
 
 [oauth1-section]: http://www.django-rest-framework.org/api-guide/authentication/#django-rest-framework-oauth
 [oauth2-section]: http://www.django-rest-framework.org/api-guide/authentication/#django-oauth-toolkit
