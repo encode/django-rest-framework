@@ -180,6 +180,10 @@
                   </li>
                   
                   <li >
+                    <a href="../caching/">Caching</a>
+                  </li>
+                  
+                  <li >
                     <a href="../throttling/">Throttling</a>
                   </li>
                   
@@ -270,76 +274,83 @@
                     <a href="../../topics/rest-hypermedia-hateoas/">REST, Hypermedia & HATEOAS</a>
                   </li>
                   
+                </ul>
+              </li>
+                
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Community <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
                   <li >
-                    <a href="../../topics/third-party-packages/">Third Party Packages</a>
+                    <a href="../../community/tutorials-and-resources/">Tutorials and Resources</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/tutorials-and-resources/">Tutorials and Resources</a>
+                    <a href="../../community/third-party-packages/">Third Party Packages</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/contributing/">Contributing to REST framework</a>
+                    <a href="../../community/contributing/">Contributing to REST framework</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/project-management/">Project management</a>
+                    <a href="../../community/project-management/">Project management</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/jobs/">Jobs</a>
+                    <a href="../../community/release-notes/">Release Notes</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.0-announcement/">3.0 Announcement</a>
+                    <a href="../../community/3.8-announcement/">3.8 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.1-announcement/">3.1 Announcement</a>
+                    <a href="../../community/3.7-announcement/">3.7 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.2-announcement/">3.2 Announcement</a>
+                    <a href="../../community/3.6-announcement/">3.6 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.3-announcement/">3.3 Announcement</a>
+                    <a href="../../community/3.5-announcement/">3.5 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.4-announcement/">3.4 Announcement</a>
+                    <a href="../../community/3.4-announcement/">3.4 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.5-announcement/">3.5 Announcement</a>
+                    <a href="../../community/3.3-announcement/">3.3 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.6-announcement/">3.6 Announcement</a>
+                    <a href="../../community/3.2-announcement/">3.2 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.7-announcement/">3.7 Announcement</a>
+                    <a href="../../community/3.1-announcement/">3.1 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.8-announcement/">3.8 Announcement</a>
+                    <a href="../../community/3.0-announcement/">3.0 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
+                    <a href="../../community/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/mozilla-grant/">Mozilla Grant</a>
+                    <a href="../../community/mozilla-grant/">Mozilla Grant</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/funding/">Funding</a>
+                    <a href="../../community/funding/">Funding</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/release-notes/">Release Notes</a>
+                    <a href="../../community/jobs/">Jobs</a>
                   </li>
                   
                 </ul>
@@ -699,22 +710,31 @@ internally in the codebase.</p>
 <h4 id="view_name_function"><a class="toclink" href="#view_name_function">VIEW_NAME_FUNCTION</a></h4>
 <p>A string representing the function that should be used when generating view names.</p>
 <p>This should be a function with the following signature:</p>
-<pre><code>view_name(cls, suffix=None)
+<pre><code>view_name(self)
 </code></pre>
 <ul>
-<li><code>cls</code>: The view class.  Typically the name function would inspect the name of the class when generating a descriptive name, by accessing <code>cls.__name__</code>.</li>
-<li><code>suffix</code>: The optional suffix used when differentiating individual views in a viewset.</li>
+<li><code>self</code>: The view instance.  Typically the name function would inspect the name of the class when generating a descriptive name, by accessing <code>self.__class__.__name__</code>.</li>
+</ul>
+<p>If the view instance inherits <code>ViewSet</code>, it may have been initialized with several optional arguments:</p>
+<ul>
+<li><code>name</code>: A name expliticly provided to a view in the viewset. Typically, this value should be used as-is when provided.</li>
+<li><code>suffix</code>: Text used when differentiating individual views in a viewset. This argument is mutually exclusive to <code>name</code>.</li>
+<li><code>detail</code>: Boolean that differentiates an individual view in a viewset as either being a 'list' or 'detail' view.</li>
 </ul>
 <p>Default: <code>'rest_framework.views.get_view_name'</code></p>
 <h4 id="view_description_function"><a class="toclink" href="#view_description_function">VIEW_DESCRIPTION_FUNCTION</a></h4>
 <p>A string representing the function that should be used when generating view descriptions.</p>
 <p>This setting can be changed to support markup styles other than the default markdown.  For example, you can use it to support <code>rst</code> markup in your view docstrings being output in the browsable API.</p>
 <p>This should be a function with the following signature:</p>
-<pre><code>view_description(cls, html=False)
+<pre><code>view_description(self, html=False)
 </code></pre>
 <ul>
-<li><code>cls</code>: The view class.  Typically the description function would inspect the docstring of the class when generating a description, by accessing <code>cls.__doc__</code></li>
+<li><code>self</code>: The view instance.  Typically the description function would inspect the docstring of the class when generating a description, by accessing <code>self.__class__.__doc__</code></li>
 <li><code>html</code>: A boolean indicating if HTML output is required.  <code>True</code> when used in the browsable API, and <code>False</code> when used in generating <code>OPTIONS</code> responses.</li>
+</ul>
+<p>If the view instance inherits <code>ViewSet</code>, it may have been initialized with several optional arguments:</p>
+<ul>
+<li><code>description</code>: A description explicitly provided to the view in the viewset. Typically, this is set by extra viewset <code>action</code>s, and should be used as-is.</li>
 </ul>
 <p>Default: <code>'rest_framework.views.get_view_description'</code></p>
 <h2 id="html-select-field-cutoffs"><a class="toclink" href="#html-select-field-cutoffs">HTML Select Field cutoffs</a></h2>

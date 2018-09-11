@@ -180,6 +180,10 @@
                   </li>
                   
                   <li >
+                    <a href="../caching/">Caching</a>
+                  </li>
+                  
+                  <li >
                     <a href="../throttling/">Throttling</a>
                   </li>
                   
@@ -270,76 +274,83 @@
                     <a href="../../topics/rest-hypermedia-hateoas/">REST, Hypermedia & HATEOAS</a>
                   </li>
                   
+                </ul>
+              </li>
+                
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Community <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
                   <li >
-                    <a href="../../topics/third-party-packages/">Third Party Packages</a>
+                    <a href="../../community/tutorials-and-resources/">Tutorials and Resources</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/tutorials-and-resources/">Tutorials and Resources</a>
+                    <a href="../../community/third-party-packages/">Third Party Packages</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/contributing/">Contributing to REST framework</a>
+                    <a href="../../community/contributing/">Contributing to REST framework</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/project-management/">Project management</a>
+                    <a href="../../community/project-management/">Project management</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/jobs/">Jobs</a>
+                    <a href="../../community/release-notes/">Release Notes</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.0-announcement/">3.0 Announcement</a>
+                    <a href="../../community/3.8-announcement/">3.8 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.1-announcement/">3.1 Announcement</a>
+                    <a href="../../community/3.7-announcement/">3.7 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.2-announcement/">3.2 Announcement</a>
+                    <a href="../../community/3.6-announcement/">3.6 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.3-announcement/">3.3 Announcement</a>
+                    <a href="../../community/3.5-announcement/">3.5 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.4-announcement/">3.4 Announcement</a>
+                    <a href="../../community/3.4-announcement/">3.4 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.5-announcement/">3.5 Announcement</a>
+                    <a href="../../community/3.3-announcement/">3.3 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.6-announcement/">3.6 Announcement</a>
+                    <a href="../../community/3.2-announcement/">3.2 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.7-announcement/">3.7 Announcement</a>
+                    <a href="../../community/3.1-announcement/">3.1 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.8-announcement/">3.8 Announcement</a>
+                    <a href="../../community/3.0-announcement/">3.0 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
+                    <a href="../../community/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/mozilla-grant/">Mozilla Grant</a>
+                    <a href="../../community/mozilla-grant/">Mozilla Grant</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/funding/">Funding</a>
+                    <a href="../../community/funding/">Funding</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/release-notes/">Release Notes</a>
+                    <a href="../../community/jobs/">Jobs</a>
                   </li>
                   
                 </ul>
@@ -715,6 +726,13 @@ automatic generation elsewhere.</p>
         ...
         schema = None  # Will not appear in schema
 </code></pre>
+<p>This also applies to extra actions for <code>ViewSet</code>s:</p>
+<pre><code>    class CustomViewSet(viewsets.ModelViewSet):
+
+        @action(detail=True, schema=None)
+        def extra_action(self, request, pk=None):
+            ...
+</code></pre>
 <hr />
 <p><strong>Note</strong>: For full details on <code>SchemaGenerator</code> plus the <code>AutoSchema</code> and
 <code>ManualSchema</code> descriptors see the <a href="#api-reference">API Reference below</a>.</p>
@@ -999,13 +1017,13 @@ view docstring as described in the "Schemas as Documentation" section above.</p>
 with the given view. Eg. <code>'application/json'</code>. May return a blank string for views
 that do not expect a request body.</p>
 <h3 id="get_path_fieldsself-path-method"><a class="toclink" href="#get_path_fieldsself-path-method">get_path_fields(self, path, method):</a></h3>
-<p>Return a list of <code>coreapi.Link()</code> instances. One for each path parameter in the URL.</p>
+<p>Return a list of <code>coreapi.Field()</code> instances. One for each path parameter in the URL.</p>
 <h3 id="get_serializer_fieldsself-path-method"><a class="toclink" href="#get_serializer_fieldsself-path-method">get_serializer_fields(self, path, method)</a></h3>
-<p>Return a list of <code>coreapi.Link()</code> instances. One for each field in the serializer class used by the view.</p>
+<p>Return a list of <code>coreapi.Field()</code> instances. One for each field in the serializer class used by the view.</p>
 <h3 id="get_pagination_fieldsself-path-method"><a class="toclink" href="#get_pagination_fieldsself-path-method">get_pagination_fields(self, path, method)</a></h3>
-<p>Return a list of <code>coreapi.Link()</code> instances, as returned by the <code>get_schema_fields()</code> method on any pagination class used by the view.</p>
+<p>Return a list of <code>coreapi.Field()</code> instances, as returned by the <code>get_schema_fields()</code> method on any pagination class used by the view.</p>
 <h3 id="get_filter_fieldsself-path-method"><a class="toclink" href="#get_filter_fieldsself-path-method">get_filter_fields(self, path, method)</a></h3>
-<p>Return a list of <code>coreapi.Link()</code> instances, as returned by the <code>get_schema_fields()</code> method of any filter classes used by the view.</p>
+<p>Return a list of <code>coreapi.Field()</code> instances, as returned by the <code>get_schema_fields()</code> method of any filter classes used by the view.</p>
 <h3 id="get_manual_fieldsself-path-method"><a class="toclink" href="#get_manual_fieldsself-path-method">get_manual_fields(self, path, method)</a></h3>
 <p>Return a list of <code>coreapi.Field()</code> instances to be added to or replace generated fields. Defaults to (optional) <code>manual_fields</code> passed to <code>AutoSchema</code> constructor.</p>
 <p>May be overridden to customise manual fields by <code>path</code> or <code>method</code>. For example, a per-method adjustment may look like this:</p>

@@ -180,6 +180,10 @@
                   </li>
                   
                   <li >
+                    <a href="../caching/">Caching</a>
+                  </li>
+                  
+                  <li >
                     <a href="../throttling/">Throttling</a>
                   </li>
                   
@@ -270,76 +274,83 @@
                     <a href="../../topics/rest-hypermedia-hateoas/">REST, Hypermedia & HATEOAS</a>
                   </li>
                   
+                </ul>
+              </li>
+                
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Community <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
                   <li >
-                    <a href="../../topics/third-party-packages/">Third Party Packages</a>
+                    <a href="../../community/tutorials-and-resources/">Tutorials and Resources</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/tutorials-and-resources/">Tutorials and Resources</a>
+                    <a href="../../community/third-party-packages/">Third Party Packages</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/contributing/">Contributing to REST framework</a>
+                    <a href="../../community/contributing/">Contributing to REST framework</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/project-management/">Project management</a>
+                    <a href="../../community/project-management/">Project management</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/jobs/">Jobs</a>
+                    <a href="../../community/release-notes/">Release Notes</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.0-announcement/">3.0 Announcement</a>
+                    <a href="../../community/3.8-announcement/">3.8 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.1-announcement/">3.1 Announcement</a>
+                    <a href="../../community/3.7-announcement/">3.7 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.2-announcement/">3.2 Announcement</a>
+                    <a href="../../community/3.6-announcement/">3.6 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.3-announcement/">3.3 Announcement</a>
+                    <a href="../../community/3.5-announcement/">3.5 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.4-announcement/">3.4 Announcement</a>
+                    <a href="../../community/3.4-announcement/">3.4 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.5-announcement/">3.5 Announcement</a>
+                    <a href="../../community/3.3-announcement/">3.3 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.6-announcement/">3.6 Announcement</a>
+                    <a href="../../community/3.2-announcement/">3.2 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.7-announcement/">3.7 Announcement</a>
+                    <a href="../../community/3.1-announcement/">3.1 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.8-announcement/">3.8 Announcement</a>
+                    <a href="../../community/3.0-announcement/">3.0 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
+                    <a href="../../community/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/mozilla-grant/">Mozilla Grant</a>
+                    <a href="../../community/mozilla-grant/">Mozilla Grant</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/funding/">Funding</a>
+                    <a href="../../community/funding/">Funding</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/release-notes/">Release Notes</a>
+                    <a href="../../community/jobs/">Jobs</a>
                   </li>
                   
                 </ul>
@@ -851,7 +862,11 @@ color_channel = serializers.ChoiceField(
 Corresponds to <code>django.db.models.fields.DurationField</code></p>
 <p>The <code>validated_data</code> for these fields will contain a <code>datetime.timedelta</code> instance.
 The representation is a string following this format <code>'[DD] [HH:[MM:]]ss[.uuuuuu]'</code>.</p>
-<p><strong>Signature:</strong> <code>DurationField()</code></p>
+<p><strong>Signature:</strong> <code>DurationField(max_value=None, min_value=None)</code></p>
+<ul>
+<li><code>max_value</code> Validate that the duration provided is no greater than this value.</li>
+<li><code>min_value</code> Validate that the duration provided is no less than this value.</li>
+</ul>
 <hr />
 <h1 id="choice-selection-fields"><a class="toclink" href="#choice-selection-fields">Choice selection fields</a></h1>
 <h2 id="choicefield"><a class="toclink" href="#choicefield">ChoiceField</a></h2>
@@ -1012,8 +1027,8 @@ class ColorField(serializers.Field):
     """
     Color objects are serialized into 'rgb(#, #, #)' notation.
     """
-    def to_representation(self, obj):
-        return "rgb(%d, %d, %d)" % (obj.red, obj.green, obj.blue)
+    def to_representation(self, value):
+        return "rgb(%d, %d, %d)" % (value.red, value.green, value.blue)
 
     def to_internal_value(self, data):
         data = data.strip('rgb(').rstrip(')')
@@ -1023,16 +1038,16 @@ class ColorField(serializers.Field):
 <p>By default field values are treated as mapping to an attribute on the object.  If you need to customize how the field value is accessed and set you need to override <code>.get_attribute()</code> and/or <code>.get_value()</code>.</p>
 <p>As an example, let's create a field that can be used to represent the class name of the object being serialized:</p>
 <pre><code>class ClassNameField(serializers.Field):
-    def get_attribute(self, obj):
+    def get_attribute(self, instance):
         # We pass the object instance onto `to_representation`,
         # not just the field attribute.
-        return obj
+        return instance
 
-    def to_representation(self, obj):
+    def to_representation(self, value):
         """
-        Serialize the object's class name.
+        Serialize the value's class name.
         """
-        return obj.__class__.__name__
+        return value.__class__.__name__
 </code></pre>
 <h3 id="raising-validation-errors"><a class="toclink" href="#raising-validation-errors">Raising validation errors</a></h3>
 <p>Our <code>ColorField</code> class above currently does not perform any data validation.
@@ -1087,10 +1102,10 @@ def to_internal_value(self, data):
 the coordinate pair:</p>
 <pre><code>class CoordinateField(serializers.Field):
 
-    def to_representation(self, obj):
+    def to_representation(self, value):
         ret = {
-            "x": obj.x_coordinate,
-            "y": obj.y_coordinate
+            "x": value.x_coordinate,
+            "y": value.y_coordinate
         }
         return ret
 
