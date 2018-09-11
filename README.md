@@ -52,7 +52,7 @@ There is a live example API for testing purposes, [available here][sandbox].
 
 # Requirements
 
-* Python (2.7, 3.4, 3.5, 3.6)
+* Python (2.7, 3.4, 3.5, 3.6, 3.7)
 * Django (1.11, 2.0, 2.1)
 
 # Installation
@@ -142,14 +142,14 @@ You can now open the API in your browser at `http://127.0.0.1:8000/`, and view y
 You can also interact with the API using command line tools such as [`curl`](https://curl.haxx.se/). For example, to list the users endpoint:
 
     $ curl -H 'Accept: application/json; indent=4' -u admin:password http://127.0.0.1:8000/users/
-	[
-	    {
-	        "url": "http://127.0.0.1:8000/users/1/",
-	        "username": "admin",
-	        "email": "admin@example.com",
-	        "is_staff": true,
-	    }
-	]
+    [
+        {
+            "url": "http://127.0.0.1:8000/users/1/",
+            "username": "admin",
+            "email": "admin@example.com",
+            "is_staff": true,
+        }
+    ]
 
 Or to create a new user:
 

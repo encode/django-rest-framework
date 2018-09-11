@@ -21,6 +21,11 @@ matrix:
       - { python: "3.6", env: DJANGO=1.11 }
       - { python: "3.6", env: DJANGO=2.0 }
       - { python: "3.6", env: DJANGO=2.1 }
+
+      - { python: "3.7", env: DJANGO=2.0, dist: xenial, sudo: true }
+      - { python: "3.7", env: DJANGO=2.1, dist: xenial, sudo: true }
+      - { python: "3.7", env: DJANGO=master, dist: xenial, sudo: true }
+
       - { python: "3.6", env: TOXENV=base }
       - { python: "2.7", env: TOXENV=lint }
       - { python: "2.7", env: TOXENV=docs }
@@ -42,7 +47,6 @@ matrix:
 
     allow_failures:
       - env: DJANGO=master
-      - env: DJANGO=2.1
 
 install:
     - pip install tox tox-venv tox-travis
