@@ -522,3 +522,10 @@ class CustomPermissionsTests(TestCase):
             detail = response.data.get('detail')
             self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
             self.assertEqual(detail, self.custom_message)
+
+    def test_permission_denied_for_object_with_custom_detail_by_anonymous_user(self):
+            anonymous_request = factory.get('/1', format='json')
+            response = denied_object_view_with_detail(anonymous_request, pk=1)
+            detail = response.data.get('detail')
+            self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+            self.assertEqual(detail, self.custom_message)
