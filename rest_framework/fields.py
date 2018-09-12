@@ -1907,9 +1907,9 @@ class ModelField(Field):
         if max_length is not None:
             message = lazy(
                 self.error_messages['max_length'].format,
-                six.text_type)(max_length=self.max_length)
+                six.text_type)(max_length=max_length)
             self.validators.append(
-                MaxLengthValidator(self.max_length, message=message))
+                MaxLengthValidator(max_length, message=message))
 
     def to_internal_value(self, data):
         rel = self.model_field.remote_field
