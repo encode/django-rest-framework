@@ -88,7 +88,7 @@ def get_field_kwargs(field_name, model_field):
     if decimal_places is not None:
         kwargs['decimal_places'] = decimal_places
 
-    if isinstance(model_field, models.TextField) or (postgres_fields and isinstance(model_field, postgres_fields.JSONField)):
+    if isinstance(model_field, models.TextField) and not model_field.choices or (postgres_fields and isinstance(model_field, postgres_fields.JSONField)):
         kwargs['style'] = {'base_template': 'textarea.html'}
 
     if isinstance(model_field, models.AutoField) or not model_field.editable:
