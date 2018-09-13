@@ -243,6 +243,14 @@ You may disable schema generation for a view by setting `schema` to `None`:
             ...
             schema = None  # Will not appear in schema
 
+This also applies to extra actions for `ViewSet`s:
+
+        class CustomViewSet(viewsets.ModelViewSet):
+
+            @action(detail=True, schema=None)
+            def extra_action(self, request, pk=None):
+                ...
+
 ---
 
 **Note**: For full details on `SchemaGenerator` plus the `AutoSchema` and
@@ -601,19 +609,19 @@ that do not expect a request body.
 
 ### get_path_fields(self, path, method):
 
-Return a list of `coreapi.Link()` instances. One for each path parameter in the URL.
+Return a list of `coreapi.Field()` instances. One for each path parameter in the URL.
 
 ### get_serializer_fields(self, path, method)
 
-Return a list of `coreapi.Link()` instances. One for each field in the serializer class used by the view.
+Return a list of `coreapi.Field()` instances. One for each field in the serializer class used by the view.
 
 ### get_pagination_fields(self, path, method)
 
-Return a list of `coreapi.Link()` instances, as returned by the `get_schema_fields()` method on any pagination class used by the view.
+Return a list of `coreapi.Field()` instances, as returned by the `get_schema_fields()` method on any pagination class used by the view.
 
 ### get_filter_fields(self, path, method)
 
-Return a list of `coreapi.Link()` instances, as returned by the `get_schema_fields()` method of any filter classes used by the view.
+Return a list of `coreapi.Field()` instances, as returned by the `get_schema_fields()` method of any filter classes used by the view.
 
 ### get_manual_fields(self, path, method)
 

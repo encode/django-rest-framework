@@ -6,19 +6,16 @@ import uuid
 from decimal import ROUND_DOWN, ROUND_UP, Decimal
 
 import pytest
+import pytz
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.http import QueryDict
 from django.test import TestCase, override_settings
 from django.utils import six
 from django.utils.timezone import activate, deactivate, override, utc
 
 import rest_framework
-from rest_framework import compat, serializers
+from rest_framework import exceptions, serializers
 from rest_framework.fields import DjangoImageField, is_simple_callable
-
-try:
-    import pytz
-except ImportError:
-    pytz = None
 
 try:
     import typings
@@ -1308,7 +1305,6 @@ class TestNaiveDateTimeField(FieldValues):
     field = serializers.DateTimeField(default_timezone=None)
 
 
-@pytest.mark.skipif(pytz is None, reason='pytz not installed')
 class TestTZWithDateTimeField(FieldValues):
     """
     Valid and invalid values for `DateTimeField` when not using UTC as the timezone.
@@ -1331,7 +1327,6 @@ class TestTZWithDateTimeField(FieldValues):
         cls.field = serializers.DateTimeField(default_timezone=kolkata)
 
 
-@pytest.mark.skipif(pytz is None, reason='pytz not installed')
 @override_settings(TIME_ZONE='UTC', USE_TZ=True)
 class TestDefaultTZDateTimeField(TestCase):
     """
@@ -1391,7 +1386,7 @@ class TestNaiveDayLightSavingTimeTimeZoneDateTimeField(FieldValues):
     class MockTimezone:
         @staticmethod
         def localize(value, is_dst):
-            raise compat.InvalidTimeError()
+            raise pytz.InvalidTimeError()
 
         def __str__(self):
             return 'America/New_York'
@@ -2183,3 +2178,91 @@ class TestSerializerMethodField:
             "'ExampleSerializer', because it is the same as the default "
             "method name. Remove the `method_name` argument."
         )
+
+
+class TestValidationErrorCode:
+    @pytest.mark.parametrize('use_list', (False, True))
+    def test_validationerror_code_with_msg(self, use_list):
+
+        class ExampleSerializer(serializers.Serializer):
+            password = serializers.CharField()
+
+            def validate_password(self, obj):
+                err = DjangoValidationError('exc_msg', code='exc_code')
+                if use_list:
+                    err = DjangoValidationError([err])
+                raise err
+
+        serializer = ExampleSerializer(data={'password': 123})
+        serializer.is_valid()
+        assert serializer.errors == {'password': ['exc_msg']}
+        assert serializer.errors['password'][0].code == 'exc_code'
+
+    @pytest.mark.parametrize('code', (None, 'exc_code',))
+    @pytest.mark.parametrize('use_list', (False, True))
+    def test_validationerror_code_with_dict(self, use_list, code):
+
+        class ExampleSerializer(serializers.Serializer):
+
+            def validate(self, obj):
+                if code is None:
+                    err = DjangoValidationError({
+                        'email': 'email error',
+                    })
+                else:
+                    err = DjangoValidationError({
+                        'email': DjangoValidationError(
+                            'email error',
+                            code=code),
+                    })
+                if use_list:
+                    err = DjangoValidationError([err])
+                raise err
+
+        serializer = ExampleSerializer(data={})
+        serializer.is_valid()
+        expected_code = code if code else 'invalid'
+        if use_list:
+            assert serializer.errors == {
+                'non_field_errors': [
+                    exceptions.ErrorDetail(
+                        string='email error',
+                        code=expected_code
+                    )
+                ]
+            }
+        else:
+            assert serializer.errors == {
+                'email': ['email error'],
+            }
+            assert serializer.errors['email'][0].code == expected_code
+
+    @pytest.mark.parametrize('code', (None, 'exc_code',))
+    def test_validationerror_code_with_dict_list_same_code(self, code):
+
+        class ExampleSerializer(serializers.Serializer):
+
+            def validate(self, obj):
+                if code is None:
+                    raise DjangoValidationError({'email': ['email error 1',
+                                                           'email error 2']})
+                raise DjangoValidationError({'email': [
+                    DjangoValidationError('email error 1', code=code),
+                    DjangoValidationError('email error 2', code=code),
+                ]})
+
+        serializer = ExampleSerializer(data={})
+        serializer.is_valid()
+        expected_code = code if code else 'invalid'
+        assert serializer.errors == {
+            'email': [
+                exceptions.ErrorDetail(
+                    string='email error 1',
+                    code=expected_code
+                ),
+                exceptions.ErrorDetail(
+                    string='email error 2',
+                    code=expected_code
+                ),
+            ]
+        }

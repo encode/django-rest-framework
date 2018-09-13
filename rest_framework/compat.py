@@ -5,11 +5,17 @@ versions of Django/Python, and compatibility wrappers around optional packages.
 
 from __future__ import unicode_literals
 
-import django
 from django.conf import settings
 from django.core import validators
 from django.utils import six
 from django.views.generic import View
+
+try:
+    # Python 3 (required for 3.8+)
+    from collections.abc import Mapping   # noqa
+except ImportError:
+    # Python 2.7
+    from collections import Mapping   # noqa
 
 try:
     from django.urls import (  # noqa
@@ -139,14 +145,11 @@ except ImportError:
     requests = None
 
 
-# Django-guardian is optional. Import only if guardian is in INSTALLED_APPS
-# Fixes (#1712). We keep the try/except for the test suite.
-guardian = None
-try:
-    if 'guardian' in settings.INSTALLED_APPS:
-        import guardian  # noqa
-except ImportError:
-    pass
+def is_guardian_installed():
+    """
+    django-guardian is optional and only imported if in INSTALLED_APPS.
+    """
+    return 'guardian' in settings.INSTALLED_APPS
 
 
 # PATCH method is not implemented by Django
@@ -245,12 +248,6 @@ else:
     def md_filter_add_syntax_highlight(md):
         return False
 
-# pytz is required from Django 1.11. Remove when dropping Django 1.10 support.
-try:
-    import pytz  # noqa
-    from pytz.exceptions import InvalidTimeError
-except ImportError:
-    InvalidTimeError = Exception
 
 # Django 1.x url routing syntax. Remove when dropping Django 1.11 support.
 try:
@@ -301,11 +298,3 @@ class MinLengthValidator(CustomValidatorMessage, validators.MinLengthValidator):
 
 class MaxLengthValidator(CustomValidatorMessage, validators.MaxLengthValidator):
     pass
-
-
-def authenticate(request=None, **credentials):
-    from django.contrib.auth import authenticate
-    if django.VERSION < (1, 11):
-        return authenticate(**credentials)
-    else:
-        return authenticate(request=request, **credentials)

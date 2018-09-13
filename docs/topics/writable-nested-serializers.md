@@ -12,17 +12,17 @@ Nested data structures are easy enough to work with if they're read-only - simpl
 
 *Example of a **read-only** nested serializer.  Nothing complex to worry about here.*
 
-	class ToDoItemSerializer(serializers.ModelSerializer):
-	    class Meta:
-	        model = ToDoItem
-	        fields = ('text', 'is_completed')
+    class ToDoItemSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = ToDoItem
+            fields = ('text', 'is_completed')
 
-	class ToDoListSerializer(serializers.ModelSerializer):
-	    items = ToDoItemSerializer(many=True, read_only=True)
+    class ToDoListSerializer(serializers.ModelSerializer):
+        items = ToDoItemSerializer(many=True, read_only=True)
 
-	    class Meta:
-	        model = ToDoList
-	        fields = ('title', 'items')
+        class Meta:
+            model = ToDoList
+            fields = ('title', 'items')
 
 Some example output from our serializer.
 

@@ -154,9 +154,9 @@ At this point we've translated the model instance into Python native datatypes. 
 
 Deserialization is similar.  First we parse a stream into Python native datatypes...
 
-    from django.utils.six import BytesIO
+    import io
 
-    stream = BytesIO(content)
+    stream = io.BytesIO(content)
     data = JSONParser().parse(stream)
 
 ...then we restore those native datatypes into a fully populated object instance.
@@ -299,18 +299,18 @@ Now we can start up a sample server that serves our snippets.
 
 Quit out of the shell...
 
-	quit()
+    quit()
 
 ...and start up Django's development server.
 
-	python manage.py runserver
+    python manage.py runserver
 
-	Validating models...
+    Validating models...
 
-	0 errors found
-	Django version 1.11, using settings 'tutorial.settings'
-	Development server is running at http://127.0.0.1:8000/
-	Quit the server with CONTROL-C.
+    0 errors found
+    Django version 1.11, using settings 'tutorial.settings'
+    Development server is running at http://127.0.0.1:8000/
+    Quit the server with CONTROL-C.
 
 In another terminal window, we can test the server.
 

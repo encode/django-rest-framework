@@ -13,7 +13,7 @@ from rest_framework import (
     HTTP_HEADER_ENCODING, authentication, generics, permissions, serializers,
     status, views
 )
-from rest_framework.compat import guardian
+from rest_framework.compat import is_guardian_installed
 from rest_framework.filters import DjangoObjectPermissionsFilter
 from rest_framework.routers import DefaultRouter
 from rest_framework.test import APIRequestFactory
@@ -308,7 +308,7 @@ class GetQuerysetObjectPermissionInstanceView(generics.RetrieveUpdateDestroyAPIV
 get_queryset_object_permissions_view = GetQuerysetObjectPermissionInstanceView.as_view()
 
 
-@unittest.skipUnless(guardian, 'django-guardian not installed')
+@unittest.skipUnless(is_guardian_installed(), 'django-guardian not installed')
 class ObjectPermissionsIntegrationTests(TestCase):
     """
     Integration tests for the object level permissions API.

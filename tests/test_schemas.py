@@ -75,29 +75,39 @@ class ExampleViewSet(ModelViewSet):
         """
         A description of custom action.
         """
-        return super(ExampleSerializer, self).retrieve(self, request)
+        raise NotImplementedError
 
     @action(methods=['post'], detail=True, serializer_class=AnotherSerializerWithDictField)
     def custom_action_with_dict_field(self, request, pk):
         """
         A custom action using a dict field in the serializer.
         """
-        return super(ExampleSerializer, self).retrieve(self, request)
+        raise NotImplementedError
 
     @action(methods=['post'], detail=True, serializer_class=AnotherSerializerWithListFields)
     def custom_action_with_list_fields(self, request, pk):
         """
         A custom action using both list field and list serializer in the serializer.
         """
-        return super(ExampleSerializer, self).retrieve(self, request)
+        raise NotImplementedError
 
     @action(detail=False)
     def custom_list_action(self, request):
-        return super(ExampleViewSet, self).list(self, request)
+        raise NotImplementedError
 
     @action(methods=['post', 'get'], detail=False, serializer_class=EmptySerializer)
     def custom_list_action_multiple_methods(self, request):
-        return super(ExampleViewSet, self).list(self, request)
+        """Custom description."""
+        raise NotImplementedError
+
+    @custom_list_action_multiple_methods.mapping.delete
+    def custom_list_action_multiple_methods_delete(self, request):
+        """Deletion description."""
+        raise NotImplementedError
+
+    @action(detail=False, schema=None)
+    def excluded_action(self, request):
+        pass
 
     def get_serializer(self, *args, **kwargs):
         assert self.request
@@ -123,7 +133,7 @@ else:
         pass
 
 router = DefaultRouter()
-router.register('example', ExampleViewSet, base_name='example')
+router.register('example', ExampleViewSet, basename='example')
 urlpatterns = [
     url(r'^$', schema_view),
     url(r'^', include(router.urls))
@@ -158,7 +168,8 @@ class TestRouterGeneratedSchema(TestCase):
                     'custom_list_action_multiple_methods': {
                         'read': coreapi.Link(
                             url='/example/custom_list_action_multiple_methods/',
-                            action='get'
+                            action='get',
+                            description='Custom description.',
                         )
                     },
                     'documented_custom_action': {
@@ -256,12 +267,19 @@ class TestRouterGeneratedSchema(TestCase):
                     'custom_list_action_multiple_methods': {
                         'read': coreapi.Link(
                             url='/example/custom_list_action_multiple_methods/',
-                            action='get'
+                            action='get',
+                            description='Custom description.',
                         ),
                         'create': coreapi.Link(
                             url='/example/custom_list_action_multiple_methods/',
-                            action='post'
-                        )
+                            action='post',
+                            description='Custom description.',
+                        ),
+                        'delete': coreapi.Link(
+                            url='/example/custom_list_action_multiple_methods/',
+                            action='delete',
+                            description='Deletion description.',
+                        ),
                     },
                     'documented_custom_action': {
                         'read': coreapi.Link(
@@ -526,7 +544,7 @@ class TestSchemaGeneratorNotAtRoot(TestCase):
 class TestSchemaGeneratorWithMethodLimitedViewSets(TestCase):
     def setUp(self):
         router = DefaultRouter()
-        router.register('example1', MethodLimitedViewSet, base_name='example1')
+        router.register('example1', MethodLimitedViewSet, basename='example1')
         self.patterns = [
             url(r'^', include(router.urls))
         ]
@@ -561,7 +579,8 @@ class TestSchemaGeneratorWithMethodLimitedViewSets(TestCase):
                     'custom_list_action_multiple_methods': {
                         'read': coreapi.Link(
                             url='/example1/custom_list_action_multiple_methods/',
-                            action='get'
+                            action='get',
+                            description='Custom description.',
                         )
                     },
                     'documented_custom_action': {
@@ -589,8 +608,8 @@ class TestSchemaGeneratorWithMethodLimitedViewSets(TestCase):
 class TestSchemaGeneratorWithRestrictedViewSets(TestCase):
     def setUp(self):
         router = DefaultRouter()
-        router.register('example1', Http404ExampleViewSet, base_name='example1')
-        router.register('example2', PermissionDeniedExampleViewSet, base_name='example2')
+        router.register('example1', Http404ExampleViewSet, basename='example1')
+        router.register('example2', PermissionDeniedExampleViewSet, basename='example2')
         self.patterns = [
             url('^example/?$', ExampleListView.as_view()),
             url(r'^', include(router.urls))
@@ -761,6 +780,45 @@ class TestAutoSchema(TestCase):
 
         assert len(fields) == 2
         assert "my_extra_field" in [f.name for f in fields]
+
+    @pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
+    def test_viewset_action_with_schema(self):
+        class CustomViewSet(GenericViewSet):
+            @action(detail=True, schema=AutoSchema(manual_fields=[
+                coreapi.Field(
+                    "my_extra_field",
+                    required=True,
+                    location="path",
+                    schema=coreschema.String()
+                ),
+            ]))
+            def extra_action(self, pk, **kwargs):
+                pass
+
+        router = SimpleRouter()
+        router.register(r'detail', CustomViewSet, basename='detail')
+
+        generator = SchemaGenerator()
+        view = generator.create_view(router.urls[0].callback, 'GET')
+        link = view.schema.get_link('/a/url/{id}/', 'GET', '')
+        fields = link.fields
+
+        assert len(fields) == 2
+        assert "my_extra_field" in [f.name for f in fields]
+
+    @pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
+    def test_viewset_action_with_null_schema(self):
+        class CustomViewSet(GenericViewSet):
+            @action(detail=True, schema=None)
+            def extra_action(self, pk, **kwargs):
+                pass
+
+        router = SimpleRouter()
+        router.register(r'detail', CustomViewSet, basename='detail')
+
+        generator = SchemaGenerator()
+        view = generator.create_view(router.urls[0].callback, 'GET')
+        assert view.schema is None
 
     @pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
     def test_view_with_manual_schema(self):
@@ -1026,7 +1084,7 @@ class NamingCollisionViewSet(GenericViewSet):
 
 
 naming_collisions_router = SimpleRouter()
-naming_collisions_router.register(r'collision', NamingCollisionViewSet, base_name="collision")
+naming_collisions_router.register(r'collision', NamingCollisionViewSet, basename="collision")
 
 
 @pytest.mark.skipif(not coreapi, reason='coreapi is not installed')

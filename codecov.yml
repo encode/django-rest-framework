@@ -1,7 +1,8 @@
 coverage:
   status:
     project: false
-    patch: false
-    changes: false
+    patch: true
+    changes: true
 
-comment: off
+comment:
+  layout: "diff"

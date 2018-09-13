@@ -1,6 +1,6 @@
 # HTML & Forms
 
-REST framework is suitable for returning both API style responses, and regular HTML pages. Additionally, serializers can used as HTML forms and rendered in templates.
+REST framework is suitable for returning both API style responses, and regular HTML pages. Additionally, serializers can be used as HTML forms and rendered in templates.
 
 ## Rendering HTML
 

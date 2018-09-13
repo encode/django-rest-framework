@@ -6,13 +6,12 @@ from __future__ import unicode_literals
 import base64
 import binascii
 
-from django.contrib.auth import get_user_model
+from django.contrib.auth import authenticate, get_user_model
 from django.middleware.csrf import CsrfViewMiddleware
 from django.utils.six import text_type
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import HTTP_HEADER_ENCODING, exceptions
-from rest_framework.compat import authenticate
 
 
 def get_authorization_header(request):
@@ -136,7 +135,10 @@ class SessionAuthentication(BaseAuthentication):
         """
         Enforce CSRF validation for session based authentication.
         """
-        reason = CSRFCheck().process_view(request, None, (), {})
+        check = CSRFCheck()
+        # populates request.META['CSRF_COOKIE'], which is used in process_view()
+        check.process_request(request)
+        reason = check.process_view(request, None, (), {})
         if reason:
             # CSRF failed, bail with explicit error message
             raise exceptions.PermissionDenied('CSRF Failed: %s' % reason)

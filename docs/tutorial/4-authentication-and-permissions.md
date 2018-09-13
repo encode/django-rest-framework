@@ -83,7 +83,7 @@ We'll also add a couple of views to `views.py`.  We'd like to just use read-only
 
 Make sure to also import the `UserSerializer` class
 
-	from snippets.serializers import UserSerializer
+    from snippets.serializers import UserSerializer
 
 Finally we need to add those views into the API, by referencing them from the URL conf. Add the following to the patterns in `snippets/urls.py`.
 

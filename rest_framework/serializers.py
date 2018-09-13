@@ -15,7 +15,7 @@ from __future__ import unicode_literals
 import copy
 import inspect
 import traceback
-from collections import Mapping, OrderedDict
+from collections import OrderedDict
 
 from django.core.exceptions import ImproperlyConfigured
 from django.core.exceptions import ValidationError as DjangoValidationError
@@ -27,7 +27,7 @@ from django.utils import six, timezone
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
-from rest_framework.compat import postgres_fields, unicode_to_repr
+from rest_framework.compat import Mapping, postgres_fields, unicode_to_repr
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.fields import get_error_detail, set_value
 from rest_framework.settings import api_settings
@@ -937,19 +937,21 @@ class ModelSerializer(Serializer):
                 many_to_many[field_name] = validated_data.pop(field_name)
 
         try:
-            instance = ModelClass.objects.create(**validated_data)
+            instance = ModelClass._default_manager.create(**validated_data)
         except TypeError:
             tb = traceback.format_exc()
             msg = (
-                'Got a `TypeError` when calling `%s.objects.create()`. '
+                'Got a `TypeError` when calling `%s.%s.create()`. '
                 'This may be because you have a writable field on the '
                 'serializer class that is not a valid argument to '
-                '`%s.objects.create()`. You may need to make the field '
+                '`%s.%s.create()`. You may need to make the field '
                 'read-only, or override the %s.create() method to handle '
                 'this correctly.\nOriginal exception was:\n %s' %
                 (
                     ModelClass.__name__,
+                    ModelClass._default_manager.name,
                     ModelClass.__name__,
+                    ModelClass._default_manager.name,
                     self.__class__.__name__,
                     tb
                 )

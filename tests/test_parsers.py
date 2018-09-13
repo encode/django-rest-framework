@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import io
 import math
 
 import pytest
@@ -10,7 +11,7 @@ from django.core.files.uploadhandler import (
 )
 from django.http.request import RawPostDataException
 from django.test import TestCase
-from django.utils.six import BytesIO, StringIO
+from django.utils.six import StringIO
 
 from rest_framework.exceptions import ParseError
 from rest_framework.parsers import (
@@ -43,7 +44,7 @@ class TestFileUploadParser(TestCase):
     def setUp(self):
         class MockRequest(object):
             pass
-        self.stream = BytesIO(
+        self.stream = io.BytesIO(
             "Test text file".encode('utf-8')
         )
         request = MockRequest()
@@ -62,7 +63,7 @@ class TestFileUploadParser(TestCase):
         self.stream.seek(0)
         data_and_files = parser.parse(self.stream, None, self.parser_context)
         file_obj = data_and_files.files['file']
-        assert file_obj._size == 14
+        assert file_obj.size == 14
 
     def test_parse_missing_filename(self):
         """
@@ -131,7 +132,7 @@ class TestFileUploadParser(TestCase):
 
 class TestJSONParser(TestCase):
     def bytes(self, value):
-        return BytesIO(value.encode('utf-8'))
+        return io.BytesIO(value.encode('utf-8'))
 
     def test_float_strictness(self):
         parser = JSONParser()

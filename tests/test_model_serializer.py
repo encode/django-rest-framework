@@ -9,6 +9,7 @@ from __future__ import unicode_literals
 
 import datetime
 import decimal
+import sys
 from collections import OrderedDict
 
 import pytest
@@ -381,6 +382,10 @@ class TestDurationFieldMapping(TestCase):
             TestSerializer():
                 id = IntegerField(label='ID', read_only=True)
                 duration_field = DurationField(max_value=datetime.timedelta(3), min_value=datetime.timedelta(1))
+        """) if sys.version_info < (3, 7) else dedent("""
+            TestSerializer():
+                id = IntegerField(label='ID', read_only=True)
+                duration_field = DurationField(max_value=datetime.timedelta(days=3), min_value=datetime.timedelta(days=1))
         """)
         self.assertEqual(unicode_repr(TestSerializer()), expected)
 
@@ -1224,3 +1229,28 @@ class TestFieldSource(TestCase):
         """)
         self.maxDiff = None
         self.assertEqual(unicode_repr(TestSerializer()), expected)
+
+
+class Issue6110TestModel(models.Model):
+    """Model without .objects manager."""
+
+    name = models.CharField(max_length=64)
+    all_objects = models.Manager()
+
+
+class Issue6110ModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Issue6110TestModel
+        fields = ('name',)
+
+
+class Issue6110Test(TestCase):
+
+    def test_model_serializer_custom_manager(self):
+        instance = Issue6110ModelSerializer().create({'name': 'test_name'})
+        self.assertEqual(instance.name, 'test_name')
+
+    def test_model_serializer_custom_manager_error_message(self):
+        msginitial = ('Got a `TypeError` when calling `Issue6110TestModel.all_objects.create()`.')
+        with self.assertRaisesMessage(TypeError, msginitial):
+            Issue6110ModelSerializer().create({'wrong_param': 'wrong_param'})

@@ -9,7 +9,6 @@ python:
 sudo: false
 
 env:
-    - DJANGO=1.10
     - DJANGO=1.11
     - DJANGO=2.0
     - DJANGO=2.1
@@ -22,6 +21,11 @@ matrix:
       - { python: "3.6", env: DJANGO=1.11 }
       - { python: "3.6", env: DJANGO=2.0 }
       - { python: "3.6", env: DJANGO=2.1 }
+
+      - { python: "3.7", env: DJANGO=2.0, dist: xenial, sudo: true }
+      - { python: "3.7", env: DJANGO=2.1, dist: xenial, sudo: true }
+      - { python: "3.7", env: DJANGO=master, dist: xenial, sudo: true }
+
       - { python: "3.6", env: TOXENV=base }
       - { python: "2.7", env: TOXENV=lint }
       - { python: "2.7", env: TOXENV=docs }
@@ -30,6 +34,7 @@ matrix:
         env: TOXENV=dist
         script:
           - python setup.py bdist_wheel
+          - rm -r djangorestframework.egg-info  # see #6139
           - tox --installpkg ./dist/djangorestframework-*.whl
           - tox  # test sdist
 
@@ -42,10 +47,9 @@ matrix:
 
     allow_failures:
       - env: DJANGO=master
-      - env: DJANGO=2.1
 
 install:
-    - pip install tox tox-travis
+    - pip install tox tox-venv tox-travis
 
 script:
     - tox
