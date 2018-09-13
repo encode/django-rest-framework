@@ -125,6 +125,13 @@ class ExampleViewSet(ModelViewSet):
         """
         pass
 
+    @documented_custom_action.mapping.put
+    def put_documented_custom_action(self, request, *args, **kwargs):
+        """
+        A description of the put method on the custom action from mapping.
+        """
+        pass
+
 
 if coreapi:
     schema_view = get_schema_view(title='Example API')
@@ -296,7 +303,17 @@ class TestRouterGeneratedSchema(TestCase):
                                 coreapi.Field('a', required=True, location='form', schema=coreschema.String(title='A', description='A field description')),
                                 coreapi.Field('b', required=False, location='form', schema=coreschema.String(title='B'))
                             ]
-                        )
+                        ),
+                        'update': coreapi.Link(
+                            url='/example/documented_custom_action/',
+                            action='put',
+                            description='A description of the put method on the custom action from mapping.',
+                            encoding='application/json',
+                            fields=[
+                                coreapi.Field('a', required=True, location='form', schema=coreschema.String(title='A', description='A field description')),
+                                coreapi.Field('b', required=False, location='form', schema=coreschema.String(title='B'))
+                            ]
+                        ),
                     },
                     'update': coreapi.Link(
                         url='/example/{id}/',
