@@ -12,6 +12,7 @@ import decimal
 import sys
 from collections import OrderedDict
 
+import django
 import pytest
 from django.core.exceptions import ImproperlyConfigured
 from django.core.validators import (
@@ -219,6 +220,25 @@ class TestRegularFieldMappings(TestCase):
                 "(u'red', u'Red'), (u'blue', u'Blue'), (u'green', u'Green')"
             )
         self.assertEqual(unicode_repr(TestSerializer()), expected)
+
+    # merge this into test_regular_fields / RegularFieldsModel when
+    # Django 2.1 is the minimum supported version
+    @pytest.mark.skipif(django.VERSION < (2, 1), reason='Django version < 2.1')
+    def test_nullable_boolean_field(self):
+        class NullableBooleanModel(models.Model):
+            field = models.BooleanField(null=True, default=False)
+
+        class NullableBooleanSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = NullableBooleanModel
+                fields = ['field']
+
+        expected = dedent("""
+            NullableBooleanSerializer():
+                field = BooleanField(allow_null=True, required=False)
+        """)
+
+        self.assertEqual(unicode_repr(NullableBooleanSerializer()), expected)
 
     def test_method_field(self):
         """

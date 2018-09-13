@@ -674,10 +674,7 @@ class BooleanField(Field):
         '0', 0, 0.0,
         False
     }
-
-    def __init__(self, **kwargs):
-        assert 'allow_null' not in kwargs, '`allow_null` is not a valid option. Use `NullBooleanField` instead.'
-        super(BooleanField, self).__init__(**kwargs)
+    NULL_VALUES = {'null', 'Null', 'NULL', '', None}
 
     def to_internal_value(self, data):
         try:
@@ -685,6 +682,8 @@ class BooleanField(Field):
                 return True
             elif data in self.FALSE_VALUES:
                 return False
+            elif data in self.NULL_VALUES and self.allow_null:
+                return None
         except TypeError:  # Input is an unhashable type
             pass
         self.fail('invalid', input=data)
@@ -694,6 +693,8 @@ class BooleanField(Field):
             return True
         elif value in self.FALSE_VALUES:
             return False
+        if value in self.NULL_VALUES and self.allow_null:
+            return None
         return bool(value)
 
 
@@ -718,7 +719,7 @@ class NullBooleanField(Field):
         '0', 0, 0.0,
         False
     }
-    NULL_VALUES = {'n', 'N', 'null', 'Null', 'NULL', '', None}
+    NULL_VALUES = {'null', 'Null', 'NULL', '', None}
 
     def __init__(self, **kwargs):
         assert 'allow_null' not in kwargs, '`allow_null` is not a valid option.'

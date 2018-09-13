@@ -657,7 +657,7 @@ class TestBooleanField(FieldValues):
 
 class TestNullBooleanField(TestBooleanField):
     """
-    Valid and invalid values for `BooleanField`.
+    Valid and invalid values for `NullBooleanField`.
     """
     valid_inputs = {
         'true': True,
@@ -680,6 +680,16 @@ class TestNullBooleanField(TestBooleanField):
         'other': True
     }
     field = serializers.NullBooleanField()
+
+
+class TestNullableBooleanField(TestNullBooleanField):
+    """
+    Valid and invalid values for `BooleanField` when `allow_null=True`.
+    """
+
+    @property
+    def field(self):
+        return serializers.BooleanField(allow_null=True)
 
 
 # String types...
