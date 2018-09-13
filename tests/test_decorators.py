@@ -212,6 +212,47 @@ class ActionDecoratorTestCase(TestCase):
         for name in APIView.http_method_names:
             assert test_action.mapping[name] == name
 
+    def test_view_name_kwargs(self):
+        """
+        'name' and 'suffix' are mutually exclusive kwargs used for generating
+        a view's display name.
+        """
+        # by default, generate name from method
+        @action(detail=True)
+        def test_action(request):
+            raise NotImplementedError
+
+        assert test_action.kwargs == {
+            'description': None,
+            'name': 'Test action',
+        }
+
+        # name kwarg supersedes name generation
+        @action(detail=True, name='test name')
+        def test_action(request):
+            raise NotImplementedError
+
+        assert test_action.kwargs == {
+            'description': None,
+            'name': 'test name',
+        }
+
+        # suffix kwarg supersedes name generation
+        @action(detail=True, suffix='Suffix')
+        def test_action(request):
+            raise NotImplementedError
+
+        assert test_action.kwargs == {
+            'description': None,
+            'suffix': 'Suffix',
+        }
+
+        # name + suffix is a conflict.
+        with pytest.raises(TypeError) as excinfo:
+            action(detail=True, name='test name', suffix='Suffix')
+
+        assert str(excinfo.value) == "`name` and `suffix` are mutually exclusive arguments."
+
     def test_method_mapping(self):
         @action(detail=False)
         def test_action(request):
