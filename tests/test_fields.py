@@ -5,6 +5,7 @@ import unittest
 import uuid
 from decimal import ROUND_DOWN, ROUND_UP, Decimal
 
+import django
 import pytest
 import pytz
 from django.core.exceptions import ValidationError as DjangoValidationError
@@ -657,7 +658,7 @@ class TestBooleanField(FieldValues):
 
 class TestNullBooleanField(TestBooleanField):
     """
-    Valid and invalid values for `BooleanField`.
+    Valid and invalid values for `NullBooleanField`.
     """
     valid_inputs = {
         'true': True,
@@ -680,6 +681,17 @@ class TestNullBooleanField(TestBooleanField):
         'other': True
     }
     field = serializers.NullBooleanField()
+
+
+@pytest.mark.skipif(django.VERSION < (2, 1), reason='Django version < 2.1')
+class TestNullableBooleanField(TestNullBooleanField):
+    """
+    Valid and invalid values for `BooleanField` when `allow_null=True`.
+    """
+
+    @property
+    def field(self):
+        return serializers.BooleanField(allow_null=True)
 
 
 # String types...
