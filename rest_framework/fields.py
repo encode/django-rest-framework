@@ -10,7 +10,6 @@ import re
 import uuid
 from collections import OrderedDict
 
-import django
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import ValidationError as DjangoValidationError
@@ -676,11 +675,6 @@ class BooleanField(Field):
         False
     }
     NULL_VALUES = {'n', 'N', 'null', 'Null', 'NULL', '', None}
-
-    def __init__(self, **kwargs):
-        if django.VERSION < (2, 1):
-            assert 'allow_null' not in kwargs, '`allow_null` is not a valid option. Use `NullBooleanField` instead.'
-        super(BooleanField, self).__init__(**kwargs)
 
     def to_internal_value(self, data):
         try:
