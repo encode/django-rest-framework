@@ -674,7 +674,7 @@ class BooleanField(Field):
         '0', 0, 0.0,
         False
     }
-    NULL_VALUES = {'n', 'N', 'null', 'Null', 'NULL', '', None}
+    NULL_VALUES = {'null', 'Null', 'NULL', '', None}
 
     def to_internal_value(self, data):
         try:
@@ -719,7 +719,7 @@ class NullBooleanField(Field):
         '0', 0, 0.0,
         False
     }
-    NULL_VALUES = {'n', 'N', 'null', 'Null', 'NULL', '', None}
+    NULL_VALUES = {'null', 'Null', 'NULL', '', None}
 
     def __init__(self, **kwargs):
         assert 'allow_null' not in kwargs, '`allow_null` is not a valid option.'
