@@ -127,7 +127,7 @@ You may inspect these attributes to adjust behaviour based on the current action
 
 ## Marking extra actions for routing
 
-If you have ad-hoc methods that should be routable, you can mark them as such with the `@action` decorator. Like regular actions, extra actions may be intended for either a list of objects, or a single instance. To indicate this, set the `detail` argument to `True` or `False`. The router will configure its URL patterns accordingly. e.g., the `DefaultRouter` will configure detail actions to contain `pk` in their URL patterns.
+If you have ad-hoc methods that should be routable, you can mark them as such with the `@action` decorator. Like regular actions, extra actions may be intended for either a single object, or an entire collection. To indicate this, set the `detail` argument to `True` or `False`. The router will configure its URL patterns accordingly. e.g., the `DefaultRouter` will configure detail actions to contain `pk` in their URL patterns.
 
 A more complete example of extra actions:
 
@@ -174,7 +174,7 @@ The decorator can additionally take extra arguments that will be set for the rou
         def set_password(self, request, pk=None):
            ...
 
-These decorator will route `GET` requests by default, but may also accept other HTTP methods by setting the `methods` argument.  For example:
+The `action` decorator will route `GET` requests by default, but may also accept other HTTP methods by setting the `methods` argument.  For example:
 
         @action(detail=True, methods=['post', 'delete'])
         def unset_password(self, request, pk=None):
@@ -186,7 +186,7 @@ To view all extra actions, call the `.get_extra_actions()` method.
 
 ### Routing additional HTTP methods for extra actions
 
-Extra actions can be mapped to different `ViewSet` methods. For example, the above password set/unset methods could be consolidated into a single route. Note that additional mappings do not accept arguments.
+Extra actions can map additional HTTP methods to separate `ViewSet` methods. For example, the above password set/unset methods could be consolidated into a single route. Note that additional mappings do not accept arguments.
 
 ```python
     @action(detail=True, methods=['put'], name='Change Password')
