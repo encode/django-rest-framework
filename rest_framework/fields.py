@@ -10,6 +10,7 @@ import re
 import uuid
 from collections import OrderedDict
 
+import django
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import ValidationError as DjangoValidationError
@@ -674,9 +675,11 @@ class BooleanField(Field):
         '0', 0, 0.0,
         False
     }
+    NULL_VALUES = {'n', 'N', 'null', 'Null', 'NULL', '', None}
 
     def __init__(self, **kwargs):
-        assert 'allow_null' not in kwargs, '`allow_null` is not a valid option. Use `NullBooleanField` instead.'
+        if django.VERSION < (2, 1):
+            assert 'allow_null' not in kwargs, '`allow_null` is not a valid option. Use `NullBooleanField` instead.'
         super(BooleanField, self).__init__(**kwargs)
 
     def to_internal_value(self, data):
@@ -685,6 +688,8 @@ class BooleanField(Field):
                 return True
             elif data in self.FALSE_VALUES:
                 return False
+            elif data in self.NULL_VALUES and self.allow_null:
+                return None
         except TypeError:  # Input is an unhashable type
             pass
         self.fail('invalid', input=data)
@@ -694,6 +699,8 @@ class BooleanField(Field):
             return True
         elif value in self.FALSE_VALUES:
             return False
+        if value in self.NULL_VALUES and self.allow_null:
+            return None
         return bool(value)
 
 
