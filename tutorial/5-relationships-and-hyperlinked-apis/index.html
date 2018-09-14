@@ -180,10 +180,6 @@
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/caching/">Caching</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../api-guide/throttling/">Throttling</a>
                   </li>
                   
@@ -274,83 +270,76 @@
                     <a href="../../topics/rest-hypermedia-hateoas/">REST, Hypermedia & HATEOAS</a>
                   </li>
                   
-                </ul>
-              </li>
-                
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Community <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
                   <li >
-                    <a href="../../community/tutorials-and-resources/">Tutorials and Resources</a>
+                    <a href="../../topics/third-party-packages/">Third Party Packages</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/third-party-packages/">Third Party Packages</a>
+                    <a href="../../topics/tutorials-and-resources/">Tutorials and Resources</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/contributing/">Contributing to REST framework</a>
+                    <a href="../../topics/contributing/">Contributing to REST framework</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/project-management/">Project management</a>
+                    <a href="../../topics/project-management/">Project management</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/release-notes/">Release Notes</a>
+                    <a href="../../topics/jobs/">Jobs</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/3.8-announcement/">3.8 Announcement</a>
+                    <a href="../../topics/3.0-announcement/">3.0 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/3.7-announcement/">3.7 Announcement</a>
+                    <a href="../../topics/3.1-announcement/">3.1 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/3.6-announcement/">3.6 Announcement</a>
+                    <a href="../../topics/3.2-announcement/">3.2 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/3.5-announcement/">3.5 Announcement</a>
+                    <a href="../../topics/3.3-announcement/">3.3 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/3.4-announcement/">3.4 Announcement</a>
+                    <a href="../../topics/3.4-announcement/">3.4 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/3.3-announcement/">3.3 Announcement</a>
+                    <a href="../../topics/3.5-announcement/">3.5 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/3.2-announcement/">3.2 Announcement</a>
+                    <a href="../../topics/3.6-announcement/">3.6 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/3.1-announcement/">3.1 Announcement</a>
+                    <a href="../../topics/3.7-announcement/">3.7 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/3.0-announcement/">3.0 Announcement</a>
+                    <a href="../../topics/3.8-announcement/">3.8 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/kickstarter-announcement/">Kickstarter Announcement</a>
+                    <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/mozilla-grant/">Mozilla Grant</a>
+                    <a href="../../topics/mozilla-grant/">Mozilla Grant</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/funding/">Funding</a>
+                    <a href="../../topics/funding/">Funding</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/jobs/">Jobs</a>
+                    <a href="../../topics/release-notes/">Release Notes</a>
                   </li>
                   
                 </ul>
@@ -475,10 +464,10 @@ class SnippetHighlight(generics.GenericAPIView):
 </code></pre>
 <p>As usual we need to add the new views that we've created in to our URLconf.
 We'll add a url pattern for our new API root in <code>snippets/urls.py</code>:</p>
-<pre><code>path('', views.api_root),
+<pre><code>url(r'^$', views.api_root),
 </code></pre>
 <p>And then add a url pattern for the snippet highlights:</p>
-<pre><code>path('snippets/&lt;int:pk&gt;/highlight/', views.SnippetHighlight.as_view()),
+<pre><code>url(r'^snippets/(?P&lt;pk&gt;[0-9]+)/highlight/$', views.SnippetHighlight.as_view()),
 </code></pre>
 <h2 id="hyperlinking-our-api"><a class="toclink" href="#hyperlinking-our-api">Hyperlinking our API</a></h2>
 <p>Dealing with relationships between entities is one of the more challenging aspects of Web API design.  There are a number of different ways that we might choose to represent a relationship:</p>
@@ -534,20 +523,20 @@ from snippets import views
 
 # API endpoints
 urlpatterns = format_suffix_patterns([
-    path('', views.api_root),
-    path('snippets/',
+    url(r'^$', views.api_root),
+    url(r'^snippets/$',
         views.SnippetList.as_view(),
         name='snippet-list'),
-    path('snippets/&lt;int:pk&gt;/',
+    url(r'^snippets/(?P&lt;pk&gt;[0-9]+)/$',
         views.SnippetDetail.as_view(),
         name='snippet-detail'),
-    path('snippets/&lt;int:pk&gt;/highlight/',
+    url(r'^snippets/(?P&lt;pk&gt;[0-9]+)/highlight/$',
         views.SnippetHighlight.as_view(),
         name='snippet-highlight'),
-    path('users/',
+    url(r'^users/$',
         views.UserList.as_view(),
         name='user-list'),
-    path('users/&lt;int:pk&gt;/',
+    url(r'^users/(?P&lt;pk&gt;[0-9]+)/$',
         views.UserDetail.as_view(),
         name='user-detail')
 ])

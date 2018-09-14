@@ -180,10 +180,6 @@
                   </li>
                   
                   <li >
-                    <a href="../caching/">Caching</a>
-                  </li>
-                  
-                  <li >
                     <a href="../throttling/">Throttling</a>
                   </li>
                   
@@ -274,83 +270,76 @@
                     <a href="../../topics/rest-hypermedia-hateoas/">REST, Hypermedia & HATEOAS</a>
                   </li>
                   
-                </ul>
-              </li>
-                
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Community <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
                   <li >
-                    <a href="../../community/tutorials-and-resources/">Tutorials and Resources</a>
+                    <a href="../../topics/third-party-packages/">Third Party Packages</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/third-party-packages/">Third Party Packages</a>
+                    <a href="../../topics/tutorials-and-resources/">Tutorials and Resources</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/contributing/">Contributing to REST framework</a>
+                    <a href="../../topics/contributing/">Contributing to REST framework</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/project-management/">Project management</a>
+                    <a href="../../topics/project-management/">Project management</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/release-notes/">Release Notes</a>
+                    <a href="../../topics/jobs/">Jobs</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/3.8-announcement/">3.8 Announcement</a>
+                    <a href="../../topics/3.0-announcement/">3.0 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/3.7-announcement/">3.7 Announcement</a>
+                    <a href="../../topics/3.1-announcement/">3.1 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/3.6-announcement/">3.6 Announcement</a>
+                    <a href="../../topics/3.2-announcement/">3.2 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/3.5-announcement/">3.5 Announcement</a>
+                    <a href="../../topics/3.3-announcement/">3.3 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/3.4-announcement/">3.4 Announcement</a>
+                    <a href="../../topics/3.4-announcement/">3.4 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/3.3-announcement/">3.3 Announcement</a>
+                    <a href="../../topics/3.5-announcement/">3.5 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/3.2-announcement/">3.2 Announcement</a>
+                    <a href="../../topics/3.6-announcement/">3.6 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/3.1-announcement/">3.1 Announcement</a>
+                    <a href="../../topics/3.7-announcement/">3.7 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/3.0-announcement/">3.0 Announcement</a>
+                    <a href="../../topics/3.8-announcement/">3.8 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/kickstarter-announcement/">Kickstarter Announcement</a>
+                    <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/mozilla-grant/">Mozilla Grant</a>
+                    <a href="../../topics/mozilla-grant/">Mozilla Grant</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/funding/">Funding</a>
+                    <a href="../../topics/funding/">Funding</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/jobs/">Jobs</a>
+                    <a href="../../topics/release-notes/">Release Notes</a>
                   </li>
                   
                 </ul>
@@ -515,10 +504,6 @@
                   
                     <li>
                       <a href="#messagepack">MessagePack</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#xlsx-binary-spreadsheet-endpoints">XLSX (Binary Spreadsheet Endpoints)</a>
                     </li>
                   
                     <li>
@@ -881,37 +866,6 @@ In this case you can underspecify the media types it should respond to, by using
 </code></pre>
 <h2 id="messagepack"><a class="toclink" href="#messagepack">MessagePack</a></h2>
 <p><a href="https://msgpack.org/">MessagePack</a> is a fast, efficient binary serialization format.  <a href="https://github.com/juanriaza">Juan Riaza</a> maintains the <a href="https://github.com/juanriaza/django-rest-framework-msgpack">djangorestframework-msgpack</a> package which provides MessagePack renderer and parser support for REST framework.</p>
-<h2 id="xlsx-binary-spreadsheet-endpoints"><a class="toclink" href="#xlsx-binary-spreadsheet-endpoints">XLSX (Binary Spreadsheet Endpoints)</a></h2>
-<p>XLSX is the world's most popular binary spreadsheet format. <a href="https://githuc.com/flipperpa">Tim Allen</a> of <a href="https://github.com/wharton">The Wharton School</a> maintains <a href="https://github.com/wharton/drf-renderer-xlsx">drf-renderer-xlsx</a>, which renders an endpoint as an XLSX spreadsheet using OpenPyXL, and allows the client to download it. Spreadsheets can be styled on a per-view basis.</p>
-<h4 id="installation-configuration_3"><a class="toclink" href="#installation-configuration_3">Installation &amp; configuration</a></h4>
-<p>Install using pip.</p>
-<pre><code>$ pip install drf-renderer-xlsx
-</code></pre>
-<p>Modify your REST framework settings.</p>
-<pre><code>REST_FRAMEWORK = {
-    ...
-
-    'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.BrowsableAPIRenderer',
-        'drf_renderer_xlsx.renderers.XLSXRenderer',
-    ),
-}
-</code></pre>
-<p>To avoid having a file streamed without a filename (which the browser will often default to the filename "download", with no extension), we need to use a mixin to override the <code>Content-Disposition</code> header. If no filename is provided, it will default to <code>export.xlsx</code>. For example:</p>
-<pre><code>from rest_framework.viewsets import ReadOnlyModelViewSet
-from drf_renderer_xlsx.mixins import XLSXFileMixin
-from drf_renderer_xlsx.renderers import XLSXRenderer
-
-from .models import MyExampleModel
-from .serializers import MyExampleSerializer
-
-class MyExampleViewSet(XLSXFileMixin, ReadOnlyModelViewSet):
-    queryset = MyExampleModel.objects.all()
-    serializer_class = MyExampleSerializer
-    renderer_classes = (XLSXRenderer,)
-    filename = 'my_export.xlsx'
-</code></pre>
 <h2 id="csv"><a class="toclink" href="#csv">CSV</a></h2>
 <p>Comma-separated values are a plain-text tabular data format, that can be easily imported into spreadsheet applications. <a href="https://github.com/mjumbewu">Mjumbe Poe</a> maintains the <a href="https://github.com/mjumbewu/django-rest-framework-csv">djangorestframework-csv</a> package which provides CSV renderer support for REST framework.</p>
 <h2 id="ultrajson"><a class="toclink" href="#ultrajson">UltraJSON</a></h2>

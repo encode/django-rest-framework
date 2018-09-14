@@ -180,10 +180,6 @@
                   </li>
                   
                   <li >
-                    <a href="../../api-guide/caching/">Caching</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../api-guide/throttling/">Throttling</a>
                   </li>
                   
@@ -274,83 +270,76 @@
                     <a href="../rest-hypermedia-hateoas/">REST, Hypermedia & HATEOAS</a>
                   </li>
                   
-                </ul>
-              </li>
-                
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Community <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
                   <li >
-                    <a href="../../community/tutorials-and-resources/">Tutorials and Resources</a>
+                    <a href="../third-party-packages/">Third Party Packages</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/third-party-packages/">Third Party Packages</a>
+                    <a href="../tutorials-and-resources/">Tutorials and Resources</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/contributing/">Contributing to REST framework</a>
+                    <a href="../contributing/">Contributing to REST framework</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/project-management/">Project management</a>
+                    <a href="../project-management/">Project management</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/release-notes/">Release Notes</a>
+                    <a href="../jobs/">Jobs</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/3.8-announcement/">3.8 Announcement</a>
+                    <a href="../3.0-announcement/">3.0 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/3.7-announcement/">3.7 Announcement</a>
+                    <a href="../3.1-announcement/">3.1 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/3.6-announcement/">3.6 Announcement</a>
+                    <a href="../3.2-announcement/">3.2 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/3.5-announcement/">3.5 Announcement</a>
+                    <a href="../3.3-announcement/">3.3 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/3.4-announcement/">3.4 Announcement</a>
+                    <a href="../3.4-announcement/">3.4 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/3.3-announcement/">3.3 Announcement</a>
+                    <a href="../3.5-announcement/">3.5 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/3.2-announcement/">3.2 Announcement</a>
+                    <a href="../3.6-announcement/">3.6 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/3.1-announcement/">3.1 Announcement</a>
+                    <a href="../3.7-announcement/">3.7 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/3.0-announcement/">3.0 Announcement</a>
+                    <a href="../3.8-announcement/">3.8 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/kickstarter-announcement/">Kickstarter Announcement</a>
+                    <a href="../kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/mozilla-grant/">Mozilla Grant</a>
+                    <a href="../mozilla-grant/">Mozilla Grant</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/funding/">Funding</a>
+                    <a href="../funding/">Funding</a>
                   </li>
                   
                   <li >
-                    <a href="../../community/jobs/">Jobs</a>
+                    <a href="../release-notes/">Release Notes</a>
                   </li>
                   
                 </ul>
@@ -429,7 +418,7 @@
               
 
               <h1 id="html-forms"><a class="toclink" href="#html-forms">HTML &amp; Forms</a></h1>
-<p>REST framework is suitable for returning both API style responses, and regular HTML pages. Additionally, serializers can be used as HTML forms and rendered in templates.</p>
+<p>REST framework is suitable for returning both API style responses, and regular HTML pages. Additionally, serializers can used as HTML forms and rendered in templates.</p>
 <h2 id="rendering-html"><a class="toclink" href="#rendering-html">Rendering HTML</a></h2>
 <p>In order to return HTML responses you'll need to either <code>TemplateHTMLRenderer</code>, or <code>StaticHTMLRenderer</code>.</p>
 <p>The <code>TemplateHTMLRenderer</code> class expects the response to contain a dictionary of context data, and renders an HTML page based on a template that must be specified either in the view or on the response.</p>
@@ -616,22 +605,22 @@ class ProfileDetail(APIView):
 </tr>
 <tr>
 <td>select.html</td>
-<td><code>ChoiceField</code> or relational field types</td>
+<td><code>ChoiceField</code>or relational field types</td>
 <td>hide_label</td>
 </tr>
 <tr>
 <td>radio.html</td>
-<td><code>ChoiceField</code> or relational field types</td>
+<td><code>ChoiceField</code>or relational field types</td>
 <td>inline, hide_label</td>
 </tr>
 <tr>
 <td>select_multiple.html</td>
-<td><code>MultipleChoiceField</code> or relational fields with <code>many=True</code></td>
+<td><code>MultipleChoiceField</code>or relational fields with <code>many=True</code></td>
 <td>hide_label</td>
 </tr>
 <tr>
 <td>checkbox_multiple.html</td>
-<td><code>MultipleChoiceField</code> or relational fields with <code>many=True</code></td>
+<td><code>MultipleChoiceField</code>or relational fields with <code>many=True</code></td>
 <td>inline, hide_label</td>
 </tr>
 <tr>
@@ -646,7 +635,7 @@ class ProfileDetail(APIView):
 </tr>
 <tr>
 <td>list_fieldset.html</td>
-<td><code>ListField</code> or nested serializer with <code>many=True</code></td>
+<td><code>ListField</code>or nested serializer with <code>many=True</code></td>
 <td>hide_label</td>
 </tr>
 </tbody>
