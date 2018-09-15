@@ -1531,6 +1531,8 @@ class FileField(Field):
         self.allow_empty_file = kwargs.pop('allow_empty_file', False)
         if 'use_url' in kwargs:
             self.use_url = kwargs.pop('use_url')
+        if 'use_prefix' in kwargs:
+            self.use_prefix = kwargs.pop('use_prefix')
         super(FileField, self).__init__(*args, **kwargs)
 
     def to_internal_value(self, data):
@@ -1555,6 +1557,7 @@ class FileField(Field):
             return None
 
         use_url = getattr(self, 'use_url', api_settings.UPLOADED_FILES_USE_URL)
+        prefix = getattr(self, 'use_prefix', api_settings.UPLOADED_FILES_USE_PREFIX)
 
         if use_url:
             if not getattr(value, 'url', None):
@@ -1563,6 +1566,8 @@ class FileField(Field):
             url = value.url
             request = self.context.get('request', None)
             if request is not None:
+                if prefix:
+                    url = prefix + url
                 return request.build_absolute_uri(url)
             return url
         return value.name

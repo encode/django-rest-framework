@@ -417,6 +417,7 @@ Corresponds to `django.forms.fields.FileField`.
  - `max_length` - Designates the maximum length for the file name.
  - `allow_empty_file` - Designates if empty files are allowed.
 - `use_url` - If set to `True` then URL string values will be used for the output representation. If set to `False` then filename string values will be used for the output representation. Defaults to the value of the `UPLOADED_FILES_USE_URL` settings key, which is `True` unless set otherwise.
+- `use_prefix` - It will replace the original schema and host and be effective only when `use_url` is `True`. If set to a non-empty string and should include url schema and location, such as `http://192.168.1.1`. Defaults to the value of the `UPLOADED_FILES_USE_PREFIX` settings key, which is an empty string and means doing nothing.
 
 ## ImageField
 
@@ -429,6 +430,7 @@ Corresponds to `django.forms.fields.ImageField`.
  - `max_length` - Designates the maximum length for the file name.
  - `allow_empty_file` - Designates if empty files are allowed.
 - `use_url` - If set to `True` then URL string values will be used for the output representation. If set to `False` then filename string values will be used for the output representation. Defaults to the value of the `UPLOADED_FILES_USE_URL` settings key, which is `True` unless set otherwise.
+- `use_prefix` - It will replace the original schema and host and be effective only when `use_url` is `True`. If set to a non-empty string and should include url schema and location, such as `http://192.168.1.1`. Defaults to the value of the `UPLOADED_FILES_USE_PREFIX` settings key, which is an empty string and means doing nothing.
 
 Requires either the `Pillow` package or `PIL` package.  The `Pillow` package is recommended, as `PIL` is no longer actively maintained.
 

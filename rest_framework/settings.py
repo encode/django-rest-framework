@@ -117,6 +117,7 @@ DEFAULTS = {
     'STRICT_JSON': True,
     'COERCE_DECIMAL_TO_STRING': True,
     'UPLOADED_FILES_USE_URL': True,
+    'UPLOADED_FILES_USE_PREFIX': '',
 
     # Browseable API
     'HTML_SELECT_CUTOFF': 1000,
