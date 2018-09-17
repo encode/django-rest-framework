@@ -1,26 +1,25 @@
 language: python
 cache: pip
 
-python:
-    - "2.7"
-    - "3.4"
-    - "3.5"
-
 sudo: false
-
-env:
-    - DJANGO=1.11
-    - DJANGO=2.0
-    - DJANGO=2.1
-    - DJANGO=master
 
 matrix:
     fast_finish: true
     include:
-      - { python: "3.6", env: DJANGO=master }
+      - { python: "2.7", env: DJANGO=1.11 }
+
+      - { python: "3.4", env: DJANGO=1.11 }
+      - { python: "3.4", env: DJANGO=2.0 }
+
+      - { python: "3.5", env: DJANGO=1.11 }
+      - { python: "3.5", env: DJANGO=2.0 }
+      - { python: "3.5", env: DJANGO=2.1 }
+      - { python: "3.5", env: DJANGO=master }
+
       - { python: "3.6", env: DJANGO=1.11 }
       - { python: "3.6", env: DJANGO=2.0 }
       - { python: "3.6", env: DJANGO=2.1 }
+      - { python: "3.6", env: DJANGO=master }
 
       - { python: "3.7", env: DJANGO=2.0, dist: xenial, sudo: true }
       - { python: "3.7", env: DJANGO=2.1, dist: xenial, sudo: true }
@@ -37,13 +36,6 @@ matrix:
           - rm -r djangorestframework.egg-info  # see #6139
           - tox --installpkg ./dist/djangorestframework-*.whl
           - tox  # test sdist
-
-    exclude:
-      - { python: "2.7", env: DJANGO=master }
-      - { python: "2.7", env: DJANGO=2.0 }
-      - { python: "2.7", env: DJANGO=2.1 }
-      - { python: "3.4", env: DJANGO=master }
-      - { python: "3.4", env: DJANGO=2.1 }
 
     allow_failures:
       - env: DJANGO=master
