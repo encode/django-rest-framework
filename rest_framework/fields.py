@@ -1780,7 +1780,7 @@ class JSONField(Field):
     def to_internal_value(self, data):
         try:
             if self.binary or getattr(data, 'is_json_string', False):
-                if isinstance(data, six.binary_type):
+                if isinstance(data, bytes):
                     data = data.decode('utf-8')
                 return json.loads(data)
             else:
