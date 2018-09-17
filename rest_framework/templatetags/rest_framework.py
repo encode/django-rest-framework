@@ -314,7 +314,7 @@ def smart_urlquote_wrapper(matched_url):
         return None
 
 
-@register.filter
+@register.filter(needs_autoescape=True)
 def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=True):
     """
     Converts any URLs in text into clickable links.
