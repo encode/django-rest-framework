@@ -96,7 +96,7 @@ def unicode_to_repr(value):
 
 def unicode_http_header(value):
     # Coerce HTTP header value to unicode.
-    if isinstance(value, six.binary_type):
+    if isinstance(value, bytes):
         return value.decode('iso-8859-1')
     return value
 
