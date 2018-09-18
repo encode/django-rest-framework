@@ -4,7 +4,7 @@ REST framework is suitable for returning both API style responses, and regular H
 
 ## Rendering HTML
 
-In order to return HTML responses you'll need to either `TemplateHTMLRenderer`, or `StaticHTMLRenderer`.
+In order to return HTML responses you'll need to use either `TemplateHTMLRenderer`, or `StaticHTMLRenderer`.
 
 The `TemplateHTMLRenderer` class expects the response to contain a dictionary of context data, and renders an HTML page based on a template that must be specified either in the view or on the response.
 

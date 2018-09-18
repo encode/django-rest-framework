@@ -146,7 +146,7 @@ example above.
 
 Automatic schema generation is provided by the `SchemaGenerator` class.
 
-`SchemaGenerator` processes a list of routed URL pattterns and compiles the
+`SchemaGenerator` processes a list of routed URL patterns and compiles the
 appropriately structured Core API Document.
 
 Basic usage is just to provide the title for your schema and call
@@ -818,7 +818,7 @@ A short description of the meaning and intended usage of the input field.
 
 ## drf-yasg - Yet Another Swagger Generator
 
-[drf-yasg][drf-yasg] generates [OpenAPI][open-api] documents suitable for code generation - nested schemas, 
+[drf-yasg][drf-yasg] generates [OpenAPI][open-api] documents suitable for code generation - nested schemas,
 named models, response bodies, enum/pattern/min/max validators, form parameters, etc.
 
 

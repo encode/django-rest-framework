@@ -16,11 +16,11 @@ The built-in API documentation includes:
 
 ### Installation
 
-The `coreapi` library is required as a dependancy for the API docs. Make sure
+The `coreapi` library is required as a dependency for the API docs. Make sure
 to install the latest version. The `pygments` and `markdown` libraries
 are optional but recommended.
 
-To install the API documentation, you'll need to include it in your projects URLconf:
+To install the API documentation, you'll need to include it in your project's URLconf:
 
     from rest_framework.documentation import include_docs_urls
 
@@ -39,7 +39,7 @@ This will include two different views:
 **Note**: By default `include_docs_urls` configures the underlying `SchemaView` to generate _public_ schemas.
 This means that views will not be instantiated with a `request` instance. i.e. Inside the view `self.request` will be `None`.
 
-To be compatible with this behaviour methods (such as `get_serializer` or `get_serializer_class` etc.) which inspect `self.request` or, particularly, `self.request.user` may need to be adjusted to handle this case.
+To be compatible with this behaviour, methods (such as `get_serializer` or `get_serializer_class` etc.) which inspect `self.request` or, particularly, `self.request.user` may need to be adjusted to handle this case.
 
 You may ensure views are given a `request` instance by calling `include_docs_urls` with `public=False`:
 
