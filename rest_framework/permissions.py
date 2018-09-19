@@ -44,8 +44,10 @@ class IsAuthenticated(BasePermission):
     """
     Allows access only to authenticated users.
     """
-
+    # DRF should authorize all OPTIONS requests by default #5616
     def has_permission(self, request, view):
+        if request.method == 'OPTIONS':
+            return True
         return request.user and request.user.is_authenticated
 
 
