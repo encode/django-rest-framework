@@ -522,3 +522,36 @@ class CustomPermissionsTests(TestCase):
             detail = response.data.get('detail')
             self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
             self.assertEqual(detail, self.custom_message)
+
+
+class IsAuthenticatedOrOptionsOnlyAllowedView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = BasicModel.objects.all()
+    serializer_class = BasicSerializer
+    authentication_classes = [authentication.BasicAuthentication]
+    permissions_classes = (permissions.IsAuthenticatedOrOptionsOnly,)
+
+
+options_view = IsAuthenticatedOrOptionsOnlyAllowedView.as_view()
+
+
+class IsAuthenticatedOrOptionsOnlyAllowedTests(TestCase):
+    def setUp(self):
+        BasicModel(text='foo').save()
+        User.objects.create_user('username', 'username@example.com', 'password')
+
+    def test_options_allowed_if_not_authentificated(self):
+        self.request = factory.options('/1', format='json')
+        response = options_view(self.request, pk=1)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_options_get_not_allowed_if_not_authentificated(self):
+        credentials = basic_auth_header('username', 'wrongpassword')
+        self.request = factory.get('/1', format='json', HTTP_AUTHORIZATION=credentials)
+        response = options_view(self.request, pk=1)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_options_get_allowed_if_authentificated(self):
+        credentials = basic_auth_header('username', 'password')
+        self.request = factory.get('/1', format='json', HTTP_AUTHORIZATION=credentials)
+        response = options_view(self.request, pk=1)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)

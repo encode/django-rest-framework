@@ -51,6 +51,17 @@ class IsAuthenticated(BasePermission):
         return request.user and request.user.is_authenticated
 
 
+class IsAuthenticatedOrOptionsOnly(BasePermission):
+    """
+    Allows access only to authenticated users.
+    """
+
+    def has_permission(self, request, view):
+        if request.method == 'OPTIONS':
+            return True
+        return request.user and request.user.is_authenticated
+
+
 class IsAdminUser(BasePermission):
     """
     Allows access only to admin users.
