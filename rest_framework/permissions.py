@@ -53,7 +53,7 @@ class IsAuthenticated(BasePermission):
 
 class IsAuthenticatedOrOptionsOnly(BasePermission):
     """
-    Allows access only to authenticated users.
+    Allows access only to authenticated users or for OPTIONS method.
     """
 
     def has_permission(self, request, view):
