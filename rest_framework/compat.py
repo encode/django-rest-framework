@@ -161,11 +161,17 @@ if 'patch' not in View.http_method_names:
 try:
     import markdown
 
-    if hasattr(markdown, 'version'):
+    try:
+        # for Markdown < 3.0
         markdown_version = markdown.version
-    else:
-        # >= 3.0
-        markdown_version = markdown.__version__
+    except AttributeError:
+        # for Markdown >= 3.0
+        try:
+            markdown_version = markdown.__version__
+        except AttributeError:
+            import warnings
+            warnings.warn("Cannot decide Markdown's version", ImportWarning)
+            raise ImportError("Cannot decide Markdown's version")
 
     if markdown_version <= '2.2':
         HEADERID_EXT_PATH = 'headerid'
