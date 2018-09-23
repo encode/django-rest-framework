@@ -85,8 +85,8 @@ Want your Django REST Framework talk/tutorial/article to be added to our website
 
 
 [beginners-guide-to-the-django-rest-framework]: https://code.tutsplus.com/tutorials/beginners-guide-to-the-django-rest-framework--cms-19786
-[getting-started-with-django-rest-framework-and-angularjs]: http://blog.kevinastone.com/getting-started-with-django-rest-framework-and-angularjs.html
-[end-to-end-web-app-with-django-rest-framework-angularjs]: http://mourafiq.com/2013/07/01/end-to-end-web-app-with-django-angular-1.html
+[getting-started-with-django-rest-framework-and-angularjs]: https://blog.kevinastone.com/getting-started-with-django-rest-framework-and-angularjs.html
+[end-to-end-web-app-with-django-rest-framework-angularjs]: https://mourafiq.com/2013/07/01/end-to-end-web-app-with-django-angular-1.html
 [start-your-api-django-rest-framework-part-1]: https://godjango.com/41-start-your-api-django-rest-framework-part-1/
 [permissions-authentication-django-rest-framework-part-2]: https://godjango.com/43-permissions-authentication-django-rest-framework-part-2/
 [viewsets-and-routers-django-rest-framework-part-3]: https://godjango.com/45-viewsets-and-routers-django-rest-framework-part-3/

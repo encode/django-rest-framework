@@ -521,13 +521,13 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 [browser-accept-headers]: http://www.gethifi.com/blog/browser-rest-http-accept-headers
 [testing]: testing.md
 [HATEOAS]: http://timelessrepo.com/haters-gonna-hateoas
-[quote]: http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
+[quote]: https://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
 [application/vnd.github+json]: https://developer.github.com/v3/media/
 [application/vnd.collection+json]: http://www.amundsen.com/media-types/collection/
 [django-error-views]: https://docs.djangoproject.com/en/stable/topics/http/views/#customizing-error-views
 [rest-framework-jsonp]: https://jpadilla.github.io/django-rest-framework-jsonp/
 [cors]: https://www.w3.org/TR/cors/
-[cors-docs]: http://www.django-rest-framework.org/topics/ajax-csrf-cors/
+[cors-docs]: https://www.django-rest-framework.org/topics/ajax-csrf-cors/
 [jsonp-security]: https://stackoverflow.com/questions/613962/is-jsonp-safe-to-use
 [rest-framework-yaml]: https://jpadilla.github.io/django-rest-framework-yaml/
 [rest-framework-xml]: https://jpadilla.github.io/django-rest-framework-xml/

@@ -6,7 +6,7 @@
 
 **Awesome web-browsable Web APIs.**
 
-Full documentation for the project is available at [http://www.django-rest-framework.org][docs].
+Full documentation for the project is available at [https://www.django-rest-framework.org/][docs].
 
 ---
 
@@ -163,7 +163,7 @@ Or to create a new user:
 
 # Documentation & Support
 
-Full documentation for the project is available at [http://www.django-rest-framework.org][docs].
+Full documentation for the project is available at [https://www.django-rest-framework.org/][docs].
 
 For questions and support, use the [REST framework discussion group][group], or `#restframework` on freenode IRC.
 
@@ -202,17 +202,17 @@ Send a description of the issue via email to [rest-framework-security@googlegrou
 [cadre-url]: https://cadre.com/
 [load-impact-url]: https://loadimpact.com/?utm_campaign=Sponsorship%20links&utm_source=drf&utm_medium=drf
 
-[oauth1-section]: http://www.django-rest-framework.org/api-guide/authentication/#django-rest-framework-oauth
-[oauth2-section]: http://www.django-rest-framework.org/api-guide/authentication/#django-oauth-toolkit
-[serializer-section]: http://www.django-rest-framework.org/api-guide/serializers/#serializers
-[modelserializer-section]: http://www.django-rest-framework.org/api-guide/serializers/#modelserializer
-[functionview-section]: http://www.django-rest-framework.org/api-guide/views/#function-based-views
-[generic-views]: http://www.django-rest-framework.org/api-guide/generic-views/
-[viewsets]: http://www.django-rest-framework.org/api-guide/viewsets/
-[routers]: http://www.django-rest-framework.org/api-guide/routers/
-[serializers]: http://www.django-rest-framework.org/api-guide/serializers/
-[authentication]: http://www.django-rest-framework.org/api-guide/authentication/
-[image]: http://www.django-rest-framework.org/img/quickstart.png
+[oauth1-section]: https://www.django-rest-framework.org/api-guide/authentication/#django-rest-framework-oauth
+[oauth2-section]: https://www.django-rest-framework.org/api-guide/authentication/#django-oauth-toolkit
+[serializer-section]: https://www.django-rest-framework.org/api-guide/serializers/#serializers
+[modelserializer-section]: https://www.django-rest-framework.org/api-guide/serializers/#modelserializer
+[functionview-section]: https://www.django-rest-framework.org/api-guide/views/#function-based-views
+[generic-views]: https://www.django-rest-framework.org/api-guide/generic-views/
+[viewsets]: https://www.django-rest-framework.org/api-guide/viewsets/
+[routers]: https://www.django-rest-framework.org/api-guide/routers/
+[serializers]: https://www.django-rest-framework.org/api-guide/serializers/
+[authentication]: https://www.django-rest-framework.org/api-guide/authentication/
+[image]: https://www.django-rest-framework.org/img/quickstart.png
 
-[docs]: http://www.django-rest-framework.org/
+[docs]: https://www.django-rest-framework.org/
 [security-mail]: mailto:rest-framework-security@googlegroups.com

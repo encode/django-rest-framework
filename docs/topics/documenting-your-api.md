@@ -313,7 +313,7 @@ In this approach, rather than documenting the available API endpoints up front, 
 
 To implement a hypermedia API you'll need to decide on an appropriate media type for the API, and implement a custom renderer and parser for that media type.  The [REST, Hypermedia & HATEOAS][hypermedia-docs] section of the documentation includes pointers to background reading, as well as links to various hypermedia formats.
 
-[cite]: http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
+[cite]: https://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
 [drf-yasg]: https://github.com/axnsan12/drf-yasg/
 [image-drf-yasg]: ../img/drf-yasg.png
 [drf-openapi]: https://github.com/limdauto/drf_openapi/

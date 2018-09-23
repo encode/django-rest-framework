@@ -42,7 +42,7 @@ if sys.argv[-1] == 'publish':
 setup(
     name='djangorestframework',
     version=version,
-    url='http://www.django-rest-framework.org',
+    url='https://www.django-rest-framework.org/',
     license='BSD',
     description='Web APIs for Django, made easy.',
     long_description=read('README.md'),

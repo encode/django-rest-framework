@@ -275,7 +275,7 @@ A validator may be any callable that raises a `serializers.ValidationError` on f
 
 You can specify custom field-level validation by adding `.validate_<field_name>` methods
 to your `Serializer` subclass. This is documented in the
-[Serializer docs](http://www.django-rest-framework.org/api-guide/serializers/#field-level-validation)
+[Serializer docs](https://www.django-rest-framework.org/api-guide/serializers/#field-level-validation)
 
 ## Class-based
 

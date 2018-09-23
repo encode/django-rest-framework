@@ -89,7 +89,7 @@ Now check that it is available on the command line...
 
       Command line client for interacting with CoreAPI services.
 
-      Visit http://www.coreapi.org for more information.
+      Visit https://www.coreapi.org/ for more information.
 
     Options:
       --version  Display the package version number.
@@ -220,8 +220,8 @@ We've reached the end of our tutorial.  If you want to get more involved in the 
 
 **Now go build awesome things.**
 
-[coreapi]: http://www.coreapi.org
-[corejson]: http://www.coreapi.org/specification/encoding/#core-json-encoding
+[coreapi]: https://www.coreapi.org/
+[corejson]: https://www.coreapi.org/specification/encoding/#core-json-encoding
 [openapi]: https://openapis.org/
 [repo]: https://github.com/encode/rest-framework-tutorial
 [sandbox]: https://restframework.herokuapp.com/
