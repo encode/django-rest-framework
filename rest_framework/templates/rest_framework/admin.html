@@ -247,7 +247,7 @@
         <script>
           window.drf = {
             csrfHeaderName: "{{ csrf_header_name|default:'X-CSRFToken' }}",
-            csrfCookieName: "{{ csrf_cookie_name|default:'csrftoken' }}"
+            csrfToken: "{{ csrf_token }}"
           };
         </script>
         <script src="{% static "rest_framework/js/jquery-3.3.1.min.js" %}"></script>
