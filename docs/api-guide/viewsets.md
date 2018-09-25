@@ -158,7 +158,7 @@ A more complete example of extra actions:
 
         @action(detail=False)
         def recent_users(self, request):
-            recent_users = User.objects.all().order('-last_login')
+            recent_users = User.objects.all().order_by('-last_login')
 
             page = self.paginate_queryset(recent_users)
             if page is not None:
