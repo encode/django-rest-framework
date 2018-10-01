@@ -33,12 +33,12 @@ The default throttling policy may be set globally, using the `DEFAULT_THROTTLE_C
             'rest_framework.throttling.UserRateThrottle'
         ),
         'DEFAULT_THROTTLE_RATES': {
-            'anon': '100/day',
-            'user': '1000/day'
+            'anon': '100/d',
+            'user': '1000/d'
         }
     }
 
-The rate descriptions used in `DEFAULT_THROTTLE_RATES` may include `second`, `minute`, `hour` or `day` as the throttle period.
+The rate descriptions used in `DEFAULT_THROTTLE_RATES` may include `s`, `m`, `h` or `d` as the throttle period.
 
 You can also set the throttling policy on a per-view or per-viewset basis,
 using the `APIView` class-based views.
