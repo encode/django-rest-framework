@@ -179,7 +179,6 @@ class ActionDecoratorTestCase(TestCase):
 
         assert test_action.mapping == {'get': 'test_action'}
         assert test_action.detail is True
-        assert test_action.name == 'Test action'
         assert test_action.url_path == 'test_action'
         assert test_action.url_name == 'test-action'
         assert test_action.kwargs == {
@@ -213,6 +212,47 @@ class ActionDecoratorTestCase(TestCase):
         for name in APIView.http_method_names:
             assert test_action.mapping[name] == name
 
+    def test_view_name_kwargs(self):
+        """
+        'name' and 'suffix' are mutually exclusive kwargs used for generating
+        a view's display name.
+        """
+        # by default, generate name from method
+        @action(detail=True)
+        def test_action(request):
+            raise NotImplementedError
+
+        assert test_action.kwargs == {
+            'description': None,
+            'name': 'Test action',
+        }
+
+        # name kwarg supersedes name generation
+        @action(detail=True, name='test name')
+        def test_action(request):
+            raise NotImplementedError
+
+        assert test_action.kwargs == {
+            'description': None,
+            'name': 'test name',
+        }
+
+        # suffix kwarg supersedes name generation
+        @action(detail=True, suffix='Suffix')
+        def test_action(request):
+            raise NotImplementedError
+
+        assert test_action.kwargs == {
+            'description': None,
+            'suffix': 'Suffix',
+        }
+
+        # name + suffix is a conflict.
+        with pytest.raises(TypeError) as excinfo:
+            action(detail=True, name='test name', suffix='Suffix')
+
+        assert str(excinfo.value) == "`name` and `suffix` are mutually exclusive arguments."
+
     def test_method_mapping(self):
         @action(detail=False)
         def test_action(request):
@@ -223,7 +263,7 @@ class ActionDecoratorTestCase(TestCase):
             raise NotImplementedError
 
         # The secondary handler methods should not have the action attributes
-        for name in ['mapping', 'detail', 'name', 'url_path', 'url_name', 'kwargs']:
+        for name in ['mapping', 'detail', 'url_path', 'url_name', 'kwargs']:
             assert hasattr(test_action, name) and not hasattr(test_action_post, name)
 
     def test_method_mapping_already_mapped(self):
