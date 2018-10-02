@@ -520,7 +520,7 @@ url(r'^users/(?P&lt;pk&gt;[0-9]+)/$', views.UserDetail.as_view()),
 </code></pre>
 <h2 id="associating-snippets-with-users"><a class="toclink" href="#associating-snippets-with-users">Associating Snippets with Users</a></h2>
 <p>Right now, if we created a code snippet, there'd be no way of associating the user that created the snippet, with the snippet instance.  The user isn't sent as part of the serialized representation, but is instead a property of the incoming request.</p>
-<p>The way we deal with that is by overriding a <code>.perform_create()</code> method on our snippet views, that allows us to modify how the instance save is managed, and handle any information that is implicit in the incoming request or requested URL.</p>
+<p>The way we deal with that is by overriding a <code>perform_create()</code> method on our snippet views, that allows us to modify how the instance save is managed, and handle any information that is implicit in the incoming request or requested URL.</p>
 <p>On the <code>SnippetList</code> view class, add the following method:</p>
 <pre><code>def perform_create(self, serializer):
     serializer.save(owner=self.request.user)
