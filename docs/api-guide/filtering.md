@@ -285,6 +285,12 @@ The `ordering` attribute may be either a string or a list/tuple of strings.
 
 The `DjangoObjectPermissionsFilter` is intended to be used together with the [`django-guardian`][guardian] package, with custom `'view'` permissions added.  The filter will ensure that querysets only returns objects for which the user has the appropriate view permission.
 
+---
+
+**Note:** This filter has been deprecated as of version 3.9 and moved to the 3rd-party [`djangorestframework-guardian` package][django-rest-framework-guardian].
+
+---
+
 If you're using `DjangoObjectPermissionsFilter`, you'll probably also want to add an appropriate object permissions class, to ensure that users can only operate on instances if they have the appropriate object permissions.  The easiest way to do this is to subclass `DjangoObjectPermissions` and add `'view'` permissions to the `perms_map` attribute.
 
 A complete example using both `DjangoObjectPermissionsFilter` and `DjangoObjectPermissions` might look something like this.
@@ -388,6 +394,7 @@ The [djangorestframework-word-filter][django-rest-framework-word-search-filter] 
 [view-permissions-blogpost]: https://blog.nyaruka.com/adding-a-view-permission-to-django-models
 [search-django-admin]: https://docs.djangoproject.com/en/stable/ref/contrib/admin/#django.contrib.admin.ModelAdmin.search_fields
 [django-rest-framework-filters]: https://github.com/philipn/django-rest-framework-filters
+[django-rest-framework-guardian]: https://github.com/rpkilby/django-rest-framework-guardian
 [django-rest-framework-word-search-filter]: https://github.com/trollknurr/django-rest-framework-word-search-filter
 [django-url-filter]: https://github.com/miki725/django-url-filter
 [drf-url-filter]: https://github.com/manjitkumar/drf-url-filters

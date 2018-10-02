@@ -168,9 +168,7 @@ As with `DjangoModelPermissions` you can use custom model permissions by overrid
 
 ---
 
-**Note**: If you need object level `view` permissions for `GET`, `HEAD` and `OPTIONS` requests, you'll want to consider also adding the `DjangoObjectPermissionsFilter` class to ensure that list endpoints only return results including objects for which the user has appropriate view permissions.
-
----
+**Note**: If you need object level `view` permissions for `GET`, `HEAD` and `OPTIONS` requests and are using django-guardian for your object-level permissions backend, you'll want to consider using the `DjangoObjectPermissionsFilter` class provided by the [`djangorestframework-guardian` package][django-rest-framework-guardian]. It ensures that list endpoints only return results including objects for which the user has appropriate view permissions.
 
 ---
 
@@ -287,3 +285,4 @@ The [Django Rest Framework Role Filters][django-rest-framework-role-filters] pac
 [django-rest-framework-roles]: https://github.com/computer-lab/django-rest-framework-roles
 [django-rest-framework-api-key]: https://github.com/manosim/django-rest-framework-api-key
 [django-rest-framework-role-filters]: https://github.com/allisson/django-rest-framework-role-filters
+[django-rest-framework-guardian]: https://github.com/rpkilby/django-rest-framework-guardian

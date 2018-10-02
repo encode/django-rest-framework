@@ -46,6 +46,7 @@ You can determine your currently installed version using `pip show`:
 
 * Deprecate the `Router.register` `base_name` argument in favor of `basename`. [#5990][gh5990]
 * Deprecate the `Router.get_default_base_name` method in favor of `Router.get_default_basename`. [#5990][gh5990]
+* Deprecate the `DjangoObjectPermissionsFilter` class, moved to the `djangorestframework-guardian` package. [#6075][gh6075]
 
 
 ## 3.8.x series
@@ -1974,3 +1975,4 @@ For older release notes, [please see the version 2.x documentation][old-release-
 
 <!-- 3.9.0 -->
 [gh5990]: https://github.com/encode/django-rest-framework/issues/5990
+[gh6075]: https://github.com/encode/django-rest-framework/issues/6075
