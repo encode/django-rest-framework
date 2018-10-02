@@ -44,11 +44,18 @@ You can determine your currently installed version using `pip show`:
 
 **Date**: [1st October 2018][3.9.0-milestone]
 
-<!-- TODO: Add Additional Notes -->
 * Improvements to ViewSet extra actions [#5605][gh5605]
 * Fix action support for ViewSet suffixes [#6081][gh6081]
 * Deprecate the `Router.register` `base_name` argument in favor of `basename`. [#5990][gh5990]
 * Deprecate the `Router.get_default_base_name` method in favor of `Router.get_default_basename`. [#5990][gh5990]
+* Change `CharField` to disallow null bytes. [#6073][gh6073]
+  To revert to the old behavior, subclass `CharField` and remove `ProhibitNullCharactersValidator` from the validators.
+  ```python
+  class NullableCharField(serializers.CharField):
+      def __init__(self, *args, **kwargs):
+          super().__init__(*args, **kwargs)
+          self.validators = [v for v in self.validators if not isinstance(v, ProhibitNullCharactersValidator)]
+  ```
 
 * Allow nullable BooleanField in Django 2.1 [#6183][gh6183]
 * Add testing of Python 3.7 support [#6141][gh6141]
@@ -2035,3 +2042,4 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh6075]: https://github.com/encode/django-rest-framework/issues/6075
 [gh6138]: https://github.com/encode/django-rest-framework/issues/6138
 [gh6081]: https://github.com/encode/django-rest-framework/issues/6081
+[gh6073]: https://github.com/encode/django-rest-framework/issues/6073
