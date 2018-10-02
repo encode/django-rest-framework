@@ -46,6 +46,7 @@ You can determine your currently installed version using `pip show`:
 
 <!-- TODO: Add Additional Notes -->
 * Improvements to ViewSet extra actions [#5605][gh5605]
+* Fix action support for ViewSet suffixes [#6081][gh6081]
 * Deprecate the `Router.register` `base_name` argument in favor of `basename`. [#5990][gh5990]
 * Deprecate the `Router.get_default_base_name` method in favor of `Router.get_default_basename`. [#5990][gh5990]
 
@@ -75,6 +76,7 @@ You can determine your currently installed version using `pip show`:
 * Handle models without .objects manager in ModelSerializer. [#6111][gh6111]
 * Improve ModelSerializer.create() error message. [#6112][gh6112]
 * Fix CSRF cookie check failure when using session auth with django 1.11.6+ [#6113][gh6113]
+* Updated JWT docs. [#6138][gh6138]
 
 
 ## 3.8.x series
@@ -2031,3 +2033,5 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh5931]: https://github.com/encode/django-rest-framework/issues/5931
 [gh6183]: https://github.com/encode/django-rest-framework/issues/6183
 [gh6075]: https://github.com/encode/django-rest-framework/issues/6075
+[gh6138]: https://github.com/encode/django-rest-framework/issues/6138
+[gh6081]: https://github.com/encode/django-rest-framework/issues/6081
