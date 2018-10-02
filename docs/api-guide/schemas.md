@@ -829,12 +829,12 @@ in [OpenAPI][open-api] format.
 
 
 [cite]: https://blog.heroku.com/archives/2014/1/8/json_schema_for_heroku_platform_api
-[coreapi]: http://www.coreapi.org/
-[corejson]: http://www.coreapi.org/specification/encoding/#core-json-encoding
+[coreapi]: https://www.coreapi.org/
+[corejson]: https://www.coreapi.org/specification/encoding/#core-json-encoding
 [drf-yasg]: https://github.com/axnsan12/drf-yasg/
 [open-api]: https://openapis.org/
 [drf-openapi]: https://github.com/limdauto/drf_openapi
-[json-hyperschema]: http://json-schema.org/latest/json-schema-hypermedia.html
+[json-hyperschema]: https://json-schema.org/latest/json-schema-hypermedia.html
 [api-blueprint]: https://apiblueprint.org/
 [static-files]: https://docs.djangoproject.com/en/stable/howto/static-files/
 [named-arguments]: https://docs.djangoproject.com/en/stable/topics/http/urls/#named-groups

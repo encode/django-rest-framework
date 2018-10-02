@@ -78,7 +78,7 @@ Our gold sponsors include companies large and small. Many thanks for their signi
 <li><a href="https://mirusresearch.com/" rel="nofollow" style="background-image:url(../../img/sponsors/2-mirus_research.png);">Mirus Research</a></li>
 <li><a href="https://hipolabs.com/" rel="nofollow" style="background-image:url(../../img/sponsors/2-hipo.png);">Hipo</a></li>
 <li><a href="https://www.byte.nl/" rel="nofollow" style="background-image:url(../../img/sponsors/2-byte.png);">Byte</a></li>
-<li><a href="http://lightningkite.com/" rel="nofollow" style="background-image:url(../../img/sponsors/2-lightning_kite.png);">Lightning Kite</a></li>
+<li><a href="https://www.lightningkite.com/" rel="nofollow" style="background-image:url(../../img/sponsors/2-lightning_kite.png);">Lightning Kite</a></li>
 <li><a href="https://opbeat.com/" rel="nofollow" style="background-image:url(../../img/sponsors/2-opbeat.png);">Opbeat</a></li>
 <li><a href="https://koordinates.com" rel="nofollow" style="background-image:url(../../img/sponsors/2-koordinates.png);">Koordinates</a></li>
 <li><a href="http://pulsecode.ca" rel="nofollow" style="background-image:url(../../img/sponsors/2-pulsecode.png);">Pulsecode Inc.</a></li>
@@ -116,7 +116,7 @@ The serious financial contribution that our silver sponsors have made is very mu
 <li><a href="https://garfo.io/" rel="nofollow" style="background-image:url(../../img/sponsors/3-garfo.png);">Garfo</a></li>
 <li><a href="https://goshippo.com/" rel="nofollow" style="background-image:url(../../img/sponsors/3-shippo.png);">Shippo</a></li>
 <li><a href="http://www.gizmag.com/" rel="nofollow" style="background-image:url(../../img/sponsors/3-gizmag.png);">Gizmag</a></li>
-<li><a href="http://www.tivix.com/" rel="nofollow" style="background-image:url(../../img/sponsors/3-tivix.png);">Tivix</a></li>
+<li><a href="https://www.tivix.com/" rel="nofollow" style="background-image:url(../../img/sponsors/3-tivix.png);">Tivix</a></li>
 <li><a href="https://www.safaribooksonline.com/" rel="nofollow" style="background-image:url(../../img/sponsors/3-safari.png);">Safari</a></li>
 <li><a href="http://brightloop.com/" rel="nofollow" style="background-image:url(../../img/sponsors/3-brightloop.png);">Bright Loop</a></li>
 <li><a href="http://www.aba-systems.com.au/" rel="nofollow" style="background-image:url(../../img/sponsors/3-aba.png);">ABA Systems</a></li>
@@ -131,7 +131,7 @@ The serious financial contribution that our silver sponsors have made is very mu
 <li><a href="https://fluxility.com/" rel="nofollow" style="background-image:url(../../img/sponsors/3-fluxility.png);">Fluxility</a></li>
 <li><a href="https://teonite.com/" rel="nofollow" style="background-image:url(../../img/sponsors/3-teonite.png);">Teonite</a></li>
 <li><a href="https://trackmaven.com/" rel="nofollow" style="background-image:url(../../img/sponsors/3-trackmaven.png);">TrackMaven</a></li>
-<li><a href="http://www.phurba.net/" rel="nofollow" style="background-image:url(../../img/sponsors/3-phurba.png);">Phurba</a></li>
+<li><a href="https://www.phurba.net/" rel="nofollow" style="background-image:url(../../img/sponsors/3-phurba.png);">Phurba</a></li>
 <li><a href="https://www.nephila.it/it/" rel="nofollow" style="background-image:url(../../img/sponsors/3-nephila.png);">Nephila</a></li>
 <li><a href="http://www.aditium.com/" rel="nofollow" style="background-image:url(../../img/sponsors/3-aditium.png);">Aditium</a></li>
 <li><a href="https://www.eyesopen.com/" rel="nofollow" style="background-image:url(../../img/sponsors/3-openeye.png);">OpenEye Scientific Software</a></li>
