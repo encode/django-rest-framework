@@ -207,14 +207,6 @@ class EndpointEnumerator(object):
         if not is_api_view(callback):
             return False  # Ignore anything except REST framework views.
 
-        if hasattr(callback.cls, 'exclude_from_schema'):
-            fmt = ("The `{}.exclude_from_schema` attribute is deprecated. "
-                   "Set `schema = None` instead.")
-            msg = fmt.format(callback.cls.__name__)
-            warnings.warn(msg, DeprecationWarning)
-            if getattr(callback.cls, 'exclude_from_schema', False):
-                return False
-
         if callback.cls.schema is None:
             return False
 

@@ -17,7 +17,7 @@ from django.utils import six
 from rest_framework.views import APIView
 
 
-def api_view(http_method_names=None, exclude_from_schema=False):
+def api_view(http_method_names=None):
     """
     Decorator that converts a function-based view into an APIView subclass.
     Takes a list of allowed methods for the view as an argument.
@@ -77,15 +77,8 @@ def api_view(http_method_names=None, exclude_from_schema=False):
         WrappedAPIView.schema = getattr(func, 'schema',
                                         APIView.schema)
 
-        if exclude_from_schema:
-            warnings.warn(
-                "The `exclude_from_schema` argument to `api_view` is deprecated. "
-                "Use the `schema` decorator instead, passing `None`.",
-                DeprecationWarning
-            )
-            WrappedAPIView.exclude_from_schema = exclude_from_schema
-
         return WrappedAPIView.as_view()
+
     return decorator
 
 
