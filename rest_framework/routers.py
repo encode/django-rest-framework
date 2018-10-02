@@ -77,7 +77,7 @@ def flatten(list_of_lists):
 
 class RenameRouterMethods(RenameMethodsBase):
     renamed_methods = (
-        ('get_default_base_name', 'get_default_basename', DeprecationWarning),
+        ('get_default_base_name', 'get_default_basename', PendingDeprecationWarning),
     )
 
 
@@ -87,8 +87,8 @@ class BaseRouter(six.with_metaclass(RenameRouterMethods)):
 
     def register(self, prefix, viewset, basename=None, base_name=None):
         if base_name is not None:
-            msg = "The `base_name` argument has been deprecated in favor of `basename`."
-            warnings.warn(msg, DeprecationWarning, 2)
+            msg = "The `base_name` argument is pending deprecation in favor of `basename`."
+            warnings.warn(msg, PendingDeprecationWarning, 2)
 
         assert not (basename and base_name), (
             "Do not provide both the `basename` and `base_name` arguments.")

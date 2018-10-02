@@ -495,18 +495,18 @@ class TestBaseNameRename(TestCase):
             warnings.simplefilter('always')
             router.register('mock', MockViewSet, 'mock', base_name='mock')
 
-        msg = "The `base_name` argument has been deprecated in favor of `basename`."
+        msg = "The `base_name` argument is pending deprecation in favor of `basename`."
         assert len(w) == 1
         assert str(w[0].message) == msg
 
     def test_base_name_argument_deprecation(self):
         router = SimpleRouter()
 
-        with warnings.catch_warnings(record=True) as w:
+        with pytest.warns(PendingDeprecationWarning) as w:
             warnings.simplefilter('always')
             router.register('mock', MockViewSet, base_name='mock')
 
-        msg = "The `base_name` argument has been deprecated in favor of `basename`."
+        msg = "The `base_name` argument is pending deprecation in favor of `basename`."
         assert len(w) == 1
         assert str(w[0].message) == msg
         assert router.registry == [
@@ -529,7 +529,7 @@ class TestBaseNameRename(TestCase):
         msg = "`CustomRouter.get_default_base_name` method should be renamed `get_default_basename`."
 
         # Class definition should raise a warning
-        with warnings.catch_warnings(record=True) as w:
+        with pytest.warns(PendingDeprecationWarning) as w:
             warnings.simplefilter('always')
 
             class CustomRouter(SimpleRouter):
