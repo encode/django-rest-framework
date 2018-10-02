@@ -1,0 +1,27 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+"psycopg2-binary" = "==2.7.5"
+django-guardian = "==1.4.9"
+django-filter = "==1.1.0"
+coreapi = "==2.3.1"
+coreschema = "==0.0.4"
+pytest = "==3.6.2"
+pytest-django = "==3.3.2"
+pytest-cov = "==2.5.1"
+mkdocs = "==0.16.3"
+"flake8" = "==3.5.0"
+"flake8-tidy-imports" = "==1.1.0"
+pycodestyle = "==2.3.1"
+isort = "==4.3.3"
+twine = "==1.11.0"
+transifex-client = "==0.11"
+Markdown = "==2.6.11"
+
+[dev-packages]
+
+[requires]
+python_version = "3.6"
