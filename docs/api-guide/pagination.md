@@ -46,7 +46,7 @@ If you want to modify particular aspects of the pagination style, you'll want to
         page_size_query_param = 'page_size'
         max_page_size = 1000
 
-You can then apply your new style to a view using the `.pagination_class` attribute:
+You can then apply your new style to a view using the `pagination_class` attribute:
 
     class BillingRecordsView(generics.ListAPIView):
         queryset = Billing.objects.all()
