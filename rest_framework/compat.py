@@ -29,6 +29,11 @@ except ImportError:
         RegexURLResolver as URLResolver,
     )
 
+try:
+    from django.core.validators import ProhibitNullCharactersValidator  # noqa
+except ImportError:
+    ProhibitNullCharactersValidator = None
+
 
 def get_original_route(urlpattern):
     """
