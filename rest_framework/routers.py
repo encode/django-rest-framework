@@ -40,10 +40,10 @@ DynamicRoute = namedtuple('DynamicRoute', ['url', 'name', 'detail', 'initkwargs'
 class DynamicDetailRoute(object):
     def __new__(cls, url, name, initkwargs):
         warnings.warn(
-            "`DynamicDetailRoute` is pending deprecation and will be removed in 3.10 "
+            "`DynamicDetailRoute` is deprecated and will be removed in 3.10 "
             "in favor of `DynamicRoute`, which accepts a `detail` boolean. Use "
             "`DynamicRoute(url, name, True, initkwargs)` instead.",
-            PendingDeprecationWarning, stacklevel=2
+            DeprecationWarning, stacklevel=2
         )
         return DynamicRoute(url, name, True, initkwargs)
 
@@ -51,10 +51,10 @@ class DynamicDetailRoute(object):
 class DynamicListRoute(object):
     def __new__(cls, url, name, initkwargs):
         warnings.warn(
-            "`DynamicListRoute` is pending deprecation and will be removed in 3.10 in "
+            "`DynamicListRoute` is deprecated and will be removed in 3.10 in "
             "favor of `DynamicRoute`, which accepts a `detail` boolean. Use "
             "`DynamicRoute(url, name, False, initkwargs)` instead.",
-            PendingDeprecationWarning, stacklevel=2
+            DeprecationWarning, stacklevel=2
         )
         return DynamicRoute(url, name, False, initkwargs)
 

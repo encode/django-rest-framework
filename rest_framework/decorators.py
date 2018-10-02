@@ -223,9 +223,9 @@ def detail_route(methods=None, **kwargs):
     Used to mark a method on a ViewSet that should be routed for detail requests.
     """
     warnings.warn(
-        "`detail_route` is pending deprecation and will be removed in 3.10 in favor of "
+        "`detail_route` is deprecated and will be removed in 3.10 in favor of "
         "`action`, which accepts a `detail` bool. Use `@action(detail=True)` instead.",
-        PendingDeprecationWarning, stacklevel=2
+        DeprecationWarning, stacklevel=2
     )
 
     def decorator(func):
@@ -241,9 +241,9 @@ def list_route(methods=None, **kwargs):
     Used to mark a method on a ViewSet that should be routed for list requests.
     """
     warnings.warn(
-        "`list_route` is pending deprecation and will be removed in 3.10 in favor of "
+        "`list_route` is deprecated and will be removed in 3.10 in favor of "
         "`action`, which accepts a `detail` bool. Use `@action(detail=False)` instead.",
-        PendingDeprecationWarning, stacklevel=2
+        DeprecationWarning, stacklevel=2
     )
 
     def decorator(func):
