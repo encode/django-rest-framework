@@ -160,7 +160,7 @@ The `curl` command line tool may be useful for testing token authenticated APIs.
 
 ---
 
-**Note:** If you use `TokenAuthentication` in production you must ensure that your API is only available over `https`.
+**Note:** If you use `TokenAuthentication` in production you must ensure that your API is only available over `https`. Additionally, beware that `TokenAuthentication` tokens do not rotate or expire. A number of [Third party packages](#third-party-packages) provide more advanced token support.
 
 ---
 
