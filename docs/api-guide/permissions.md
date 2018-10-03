@@ -102,6 +102,27 @@ Or, if you're using the `@api_view` decorator with function based views.
 
 __Note:__ when you set new permission classes through class attribute or decorators you're telling the view to ignore the default list set over the __settings.py__ file.
 
+Provided they inherit from `rest_framework.permissions.BasePermission`, permissions can be composed using standard Python bitwise operators. For example, `IsAuthenticatedOrReadOnly` could be written:
+
+    from rest_framework.permissions import BasePermission, IsAuthenticated
+    from rest_framework.response import Response
+    from rest_framework.views import APIView
+
+    class ReadOnly(BasePermission):
+        def has_permission(self, request, view):
+            return request.method in SAFE_METHODS
+
+    class ExampleView(APIView):
+        permission_classes = (IsAuthenticated|ReadOnly)
+
+        def get(self, request, format=None):
+            content = {
+                'status': 'request was permitted'
+            }
+            return Response(content)
+
+__Note:__ it only supports & -and- and | -or-.
+
 ---
 
 # API Reference

@@ -540,3 +540,45 @@ class CustomPermissionsTests(TestCase):
             detail = response.data.get('detail')
             self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
             self.assertEqual(detail, self.custom_message)
+
+
+class FakeUser:
+    def __init__(self, auth=False):
+        self.is_authenticated = auth
+
+
+class PermissionsCompositionTests(TestCase):
+    def test_and_false(self):
+        request = factory.get('/1', format='json')
+        request.user = FakeUser(auth=False)
+        composed_perm = permissions.IsAuthenticated & permissions.AllowAny
+        assert composed_perm().has_permission(request, None) is False
+
+    def test_and_true(self):
+        request = factory.get('/1', format='json')
+        request.user = FakeUser(auth=True)
+        composed_perm = permissions.IsAuthenticated & permissions.AllowAny
+        assert composed_perm().has_permission(request, None) is True
+
+    def test_or_false(self):
+        request = factory.get('/1', format='json')
+        request.user = FakeUser(auth=False)
+        composed_perm = permissions.IsAuthenticated | permissions.AllowAny
+        assert composed_perm().has_permission(request, None) is True
+
+    def test_or_true(self):
+        request = factory.get('/1', format='json')
+        request.user = FakeUser(auth=True)
+        composed_perm = permissions.IsAuthenticated | permissions.AllowAny
+        assert composed_perm().has_permission(request, None) is True
+
+    def test_several_levels(self):
+        request = factory.get('/1', format='json')
+        request.user = FakeUser(auth=True)
+        composed_perm = (
+            permissions.IsAuthenticated &
+            permissions.IsAuthenticated &
+            permissions.IsAuthenticated &
+            permissions.IsAuthenticated
+        )
+        assert composed_perm().has_permission(request, None) is True
