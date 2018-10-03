@@ -1,7 +1,10 @@
 from django.core.management.base import BaseCommand
 
 from rest_framework.compat import coreapi
-from rest_framework.renderers import CoreJSONRenderer, OpenAPIRenderer, JSONOpenAPIRenderer
+from rest_framework.renderers import (
+    CoreJSONRenderer, JSONOpenAPIRenderer, OpenAPIRenderer
+)
+from rest_framework.schemas.generators import SchemaGenerator
 from rest_framework.settings import api_settings
 
 
@@ -17,12 +20,11 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         assert coreapi is not None, 'coreapi must be installed.'
 
-        generator_class = api_settings.DEFAULT_SCHEMA_GENERATOR_CLASS(
+        generator = SchemaGenerator(
             url=options['url'],
             title=options['title'],
             description=options['description']
         )
-        generator = generator_class()
 
         schema = generator.get_schema(request=None, public=True)
 
@@ -36,4 +38,4 @@ class Command(BaseCommand):
             'corejson': CoreJSONRenderer(),
             'openapi': OpenAPIRenderer(),
             'openapi-json': JSONOpenAPIRenderer()
-        }
+        }[format]

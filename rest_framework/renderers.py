@@ -1034,7 +1034,7 @@ class OpenAPIRenderer(_BaseOpenAPIRenderer):
 
     def render(self, data, media_type=None, renderer_context=None):
         structure = self.get_structure(data)
-        return yaml.dumps(structure, default_flow_style=False)
+        return yaml.dump(structure, default_flow_style=False)
 
 
 class JSONOpenAPIRenderer(_BaseOpenAPIRenderer):
