@@ -34,7 +34,8 @@ from pytz.exceptions import InvalidTimeError
 from rest_framework import ISO_8601
 from rest_framework.compat import (
     MaxLengthValidator, MaxValueValidator, MinLengthValidator,
-    MinValueValidator, unicode_repr, unicode_to_repr
+    MinValueValidator, ProhibitNullCharactersValidator, unicode_repr,
+    unicode_to_repr
 )
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.settings import api_settings
@@ -674,10 +675,7 @@ class BooleanField(Field):
         '0', 0, 0.0,
         False
     }
-
-    def __init__(self, **kwargs):
-        assert 'allow_null' not in kwargs, '`allow_null` is not a valid option. Use `NullBooleanField` instead.'
-        super(BooleanField, self).__init__(**kwargs)
+    NULL_VALUES = {'null', 'Null', 'NULL', '', None}
 
     def to_internal_value(self, data):
         try:
@@ -685,6 +683,8 @@ class BooleanField(Field):
                 return True
             elif data in self.FALSE_VALUES:
                 return False
+            elif data in self.NULL_VALUES and self.allow_null:
+                return None
         except TypeError:  # Input is an unhashable type
             pass
         self.fail('invalid', input=data)
@@ -694,6 +694,8 @@ class BooleanField(Field):
             return True
         elif value in self.FALSE_VALUES:
             return False
+        if value in self.NULL_VALUES and self.allow_null:
+            return None
         return bool(value)
 
 
@@ -718,7 +720,7 @@ class NullBooleanField(Field):
         '0', 0, 0.0,
         False
     }
-    NULL_VALUES = {'n', 'N', 'null', 'Null', 'NULL', '', None}
+    NULL_VALUES = {'null', 'Null', 'NULL', '', None}
 
     def __init__(self, **kwargs):
         assert 'allow_null' not in kwargs, '`allow_null` is not a valid option.'
@@ -754,7 +756,7 @@ class CharField(Field):
         'invalid': _('Not a valid string.'),
         'blank': _('This field may not be blank.'),
         'max_length': _('Ensure this field has no more than {max_length} characters.'),
-        'min_length': _('Ensure this field has at least {min_length} characters.')
+        'min_length': _('Ensure this field has at least {min_length} characters.'),
     }
     initial = ''
 
@@ -776,6 +778,10 @@ class CharField(Field):
                 six.text_type)(min_length=self.min_length)
             self.validators.append(
                 MinLengthValidator(self.min_length, message=message))
+
+        # ProhibitNullCharactersValidator is None on Django < 2.0
+        if ProhibitNullCharactersValidator is not None:
+            self.validators.append(ProhibitNullCharactersValidator())
 
     def run_validation(self, data=empty):
         # Test for the empty string here so that it does not get validated,
@@ -1779,7 +1785,7 @@ class JSONField(Field):
     def to_internal_value(self, data):
         try:
             if self.binary or getattr(data, 'is_json_string', False):
-                if isinstance(data, six.binary_type):
+                if isinstance(data, bytes):
                     data = data.decode('utf-8')
                 return json.loads(data)
             else:

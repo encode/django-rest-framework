@@ -131,7 +131,7 @@ def schema(view_inspector):
     return decorator
 
 
-def action(methods=None, detail=None, name=None, url_path=None, url_name=None, **kwargs):
+def action(methods=None, detail=None, url_path=None, url_name=None, **kwargs):
     """
     Mark a ViewSet method as a routable action.
 
@@ -145,18 +145,22 @@ def action(methods=None, detail=None, name=None, url_path=None, url_name=None, *
         "@action() missing required argument: 'detail'"
     )
 
+    # name and suffix are mutually exclusive
+    if 'name' in kwargs and 'suffix' in kwargs:
+        raise TypeError("`name` and `suffix` are mutually exclusive arguments.")
+
     def decorator(func):
         func.mapping = MethodMapper(func, methods)
 
         func.detail = detail
-        func.name = name if name else pretty_name(func.__name__)
         func.url_path = url_path if url_path else func.__name__
         func.url_name = url_name if url_name else func.__name__.replace('_', '-')
         func.kwargs = kwargs
-        func.kwargs.update({
-            'name': func.name,
-            'description': func.__doc__ or None
-        })
+
+        # Set descriptive arguments for viewsets
+        if 'name' not in kwargs and 'suffix' not in kwargs:
+            func.kwargs['name'] = pretty_name(func.__name__)
+        func.kwargs['description'] = func.__doc__ or None
 
         return func
     return decorator

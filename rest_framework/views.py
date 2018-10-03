@@ -23,7 +23,7 @@ from rest_framework.utils import formatting
 
 def get_view_name(view):
     """
-    Given a view class, return a textual name to represent the view.
+    Given a view instance, return a textual name to represent the view.
     This name is used in the browsable API, and in OPTIONS responses.
 
     This function is the default for the `VIEW_NAME_FUNCTION` setting.
@@ -48,7 +48,7 @@ def get_view_name(view):
 
 def get_view_description(view, html=False):
     """
-    Given a view class, return a textual description to represent the view.
+    Given a view instance, return a textual description to represent the view.
     This name is used in the browsable API, and in OPTIONS responses.
 
     This function is the default for the `VIEW_DESCRIPTION_FUNCTION` setting.

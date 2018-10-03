@@ -52,6 +52,14 @@ class ResourceViewSet(ModelViewSet):
     def detail_action(self, request, *args, **kwargs):
         raise NotImplementedError
 
+    @action(detail=True, name='Custom Name')
+    def named_action(self, request, *args, **kwargs):
+        raise NotImplementedError
+
+    @action(detail=True, suffix='Custom Suffix')
+    def suffixed_action(self, request, *args, **kwargs):
+        raise NotImplementedError
+
 
 router = SimpleRouter()
 router.register(r'resources', ResourceViewSet)
@@ -143,6 +151,24 @@ class BreadcrumbTests(TestCase):
             ('Resource List', '/resources/'),
             ('Resource Instance', '/resources/1/'),
             ('Detail action', '/resources/1/detail_action/'),
+        ]
+
+    def test_modelviewset_action_name_kwarg(self):
+        url = '/resources/1/named_action/'
+        assert get_breadcrumbs(url) == [
+            ('Root', '/'),
+            ('Resource List', '/resources/'),
+            ('Resource Instance', '/resources/1/'),
+            ('Custom Name', '/resources/1/named_action/'),
+        ]
+
+    def test_modelviewset_action_suffix_kwarg(self):
+        url = '/resources/1/suffixed_action/'
+        assert get_breadcrumbs(url) == [
+            ('Root', '/'),
+            ('Resource List', '/resources/'),
+            ('Resource Instance', '/resources/1/'),
+            ('Resource Custom Suffix', '/resources/1/suffixed_action/'),
         ]
 
 

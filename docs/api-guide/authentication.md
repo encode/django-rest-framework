@@ -397,7 +397,7 @@ HTTP digest authentication is a widely implemented scheme that was intended to r
 
 ## JSON Web Token Authentication
 
-JSON Web Token is a fairly new standard which can be used for token-based authentication. Unlike the built-in TokenAuthentication scheme, JWT Authentication doesn't need to use a database to validate a token. [Blimp][blimp] maintains the [djangorestframework-jwt][djangorestframework-jwt] package which provides a JWT Authentication class as well as a mechanism for clients to obtain a JWT given the username and password. An alternative package for JWT authentication is [djangorestframework-simplejwt][djangorestframework-simplejwt] which provides different features as well as a pluggable token blacklist app.
+JSON Web Token is a fairly new standard which can be used for token-based authentication. Unlike the built-in TokenAuthentication scheme, JWT Authentication doesn't need to use a database to validate a token. A package for JWT authentication is [djangorestframework-simplejwt][djangorestframework-simplejwt] which provides some features as well as a pluggable token blacklist app.
 
 ## Hawk HTTP Authentication
 
@@ -445,8 +445,6 @@ HTTP Signature (currently a [IETF draft][http-signature-ietf-draft]) provides a 
 [django-oauth-toolkit]: https://github.com/evonove/django-oauth-toolkit
 [evonove]: https://github.com/evonove/
 [oauthlib]: https://github.com/idan/oauthlib
-[blimp]: https://github.com/GetBlimp
-[djangorestframework-jwt]: https://github.com/GetBlimp/django-rest-framework-jwt
 [djangorestframework-simplejwt]: https://github.com/davesque/django-rest-framework-simplejwt
 [etoccalino]: https://github.com/etoccalino/
 [djangorestframework-httpsignature]: https://github.com/etoccalino/django-rest-framework-httpsignature

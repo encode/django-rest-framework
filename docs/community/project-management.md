@@ -39,7 +39,7 @@ The following template should be used for the description of the issue, and serv
 
     This issue is for determining the maintenance team for the *** period.
 
-    Please see the [Project management](http://www.django-rest-framework.org/topics/project-management/) section of our documentation for more details.
+    Please see the [Project management](https://www.django-rest-framework.org/topics/project-management/) section of our documentation for more details.
 
     ---
 
@@ -59,7 +59,7 @@ The following template should be used for the description of the issue, and serv
 
     If you wish to be considered for this or a future date, please comment against this or subsequent issues.
 
-    To modify this process for future maintenance cycles make a pull request to the [project management](http://www.django-rest-framework.org/topics/project-management/) documentation.
+    To modify this process for future maintenance cycles make a pull request to the [project management](https://www.django-rest-framework.org/topics/project-management/) documentation.
 
 #### Responsibilities of team members
 
@@ -99,7 +99,7 @@ The following template should be used for the description of the issue, and serv
 
     During development cycle:
 
-    - [ ] Upload the new content to be translated to [transifex](http://www.django-rest-framework.org/topics/project-management/#translations).
+    - [ ] Upload the new content to be translated to [transifex](https://www.django-rest-framework.org/topics/project-management/#translations).
 
 
     Checklist:
@@ -110,7 +110,7 @@ The following template should be used for the description of the issue, and serv
         - [ ] `setup.py` Python & Django version trove classifiers
         - [ ] `README` Python & Django versions
         - [ ] `docs` Python & Django versions
-    - [ ] Update the translations from [transifex](http://www.django-rest-framework.org/topics/project-management/#translations).
+    - [ ] Update the translations from [transifex](https://www.django-rest-framework.org/topics/project-management/#translations).
     - [ ] Ensure the pull request increments the version to `*.*.*` in [`restframework/__init__.py`](https://github.com/encode/django-rest-framework/blob/master/rest_framework/__init__.py).
     - [ ] Confirm with @tomchristie that release is finalized and ready to go.
     - [ ] Ensure that release date is included in pull request.
@@ -122,7 +122,7 @@ The following template should be used for the description of the issue, and serv
     - [ ] Make a release announcement on twitter.
     - [ ] Close the milestone on GitHub.
 
-    To modify this process for future releases make a pull request to the [project management](http://www.django-rest-framework.org/topics/project-management/) documentation.
+    To modify this process for future releases make a pull request to the [project management](https://www.django-rest-framework.org/topics/project-management/) documentation.
 
 When pushing the release to PyPI ensure that your environment has been installed from our development `requirement.txt`, so that documentation and PyPI installs are consistently being built against a pinned set of packages.
 

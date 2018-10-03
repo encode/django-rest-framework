@@ -1,8 +1,11 @@
 coverage:
-  status:
-    project: false
-    patch: true
-    changes: true
+  precision: 2
+  round: down
+  range: "80...100"
 
-comment:
-  layout: "diff"
+  status:
+    project: yes
+    patch: no
+    changes: no
+
+comment: off

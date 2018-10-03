@@ -27,7 +27,7 @@ Nested data structures are easy enough to work with if they're read-only - simpl
 Some example output from our serializer.
 
     {
-        'title': 'Leaving party preperations',
+        'title': 'Leaving party preparations',
         'items': [
             {'text': 'Compile playlist', 'is_completed': True},
             {'text': 'Send invites', 'is_completed': False},

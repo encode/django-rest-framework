@@ -11,6 +11,13 @@ from django.utils import six
 from django.views.generic import View
 
 try:
+    # Python 3 (required for 3.8+)
+    from collections.abc import Mapping   # noqa
+except ImportError:
+    # Python 2.7
+    from collections import Mapping   # noqa
+
+try:
     from django.urls import (  # noqa
         URLPattern,
         URLResolver,
@@ -21,6 +28,11 @@ except ImportError:
         RegexURLPattern as URLPattern,
         RegexURLResolver as URLResolver,
     )
+
+try:
+    from django.core.validators import ProhibitNullCharactersValidator  # noqa
+except ImportError:
+    ProhibitNullCharactersValidator = None
 
 
 def get_original_route(urlpattern):
@@ -89,7 +101,7 @@ def unicode_to_repr(value):
 
 def unicode_http_header(value):
     # Coerce HTTP header value to unicode.
-    if isinstance(value, six.binary_type):
+    if isinstance(value, bytes):
         return value.decode('iso-8859-1')
     return value
 

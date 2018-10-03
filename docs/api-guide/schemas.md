@@ -146,7 +146,7 @@ example above.
 
 Automatic schema generation is provided by the `SchemaGenerator` class.
 
-`SchemaGenerator` processes a list of routed URL pattterns and compiles the
+`SchemaGenerator` processes a list of routed URL patterns and compiles the
 appropriately structured Core API Document.
 
 Basic usage is just to provide the title for your schema and call
@@ -818,7 +818,7 @@ A short description of the meaning and intended usage of the input field.
 
 ## drf-yasg - Yet Another Swagger Generator
 
-[drf-yasg][drf-yasg] generates [OpenAPI][open-api] documents suitable for code generation - nested schemas, 
+[drf-yasg][drf-yasg] generates [OpenAPI][open-api] documents suitable for code generation - nested schemas,
 named models, response bodies, enum/pattern/min/max validators, form parameters, etc.
 
 
@@ -829,12 +829,12 @@ in [OpenAPI][open-api] format.
 
 
 [cite]: https://blog.heroku.com/archives/2014/1/8/json_schema_for_heroku_platform_api
-[coreapi]: http://www.coreapi.org/
-[corejson]: http://www.coreapi.org/specification/encoding/#core-json-encoding
+[coreapi]: https://www.coreapi.org/
+[corejson]: https://www.coreapi.org/specification/encoding/#core-json-encoding
 [drf-yasg]: https://github.com/axnsan12/drf-yasg/
 [open-api]: https://openapis.org/
 [drf-openapi]: https://github.com/limdauto/drf_openapi
-[json-hyperschema]: http://json-schema.org/latest/json-schema-hypermedia.html
+[json-hyperschema]: https://json-schema.org/latest/json-schema-hypermedia.html
 [api-blueprint]: https://apiblueprint.org/
 [static-files]: https://docs.djangoproject.com/en/stable/howto/static-files/
 [named-arguments]: https://docs.djangoproject.com/en/stable/topics/http/urls/#named-groups
