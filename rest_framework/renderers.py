@@ -935,19 +935,19 @@ class CoreJSONRenderer(BaseRenderer):
 
 
 class _BaseOpenAPIRenderer:
-    CLASS_TO_TYPENAME = {
-        coreschema.Object: 'object',
-        coreschema.Array: 'array',
-        coreschema.Number: 'number',
-        coreschema.Integer: 'integer',
-        coreschema.String: 'string',
-        coreschema.Boolean: 'boolean',
-    }
-
     def get_schema(self, instance):
+        CLASS_TO_TYPENAME = {
+            coreschema.Object: 'object',
+            coreschema.Array: 'array',
+            coreschema.Number: 'number',
+            coreschema.Integer: 'integer',
+            coreschema.String: 'string',
+            coreschema.Boolean: 'boolean',
+        }
+
         schema = {}
-        if instance.__class__ in self.CLASS_TO_TYPENAME:
-            schema['type'] = self.CLASS_TO_TYPENAME[instance.__class__]
+        if instance.__class__ in CLASS_TO_TYPENAME:
+            schema['type'] = CLASS_TO_TYPENAME[instance.__class__]
         schema['title'] = instance.title,
         schema['description'] = instance.description
         if hasattr(instance, 'enum'):
