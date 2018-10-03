@@ -18,8 +18,8 @@ class Command(BaseCommand):
         assert coreapi is not None, 'coreapi must be installed.'
 
         generator_class = api_settings.DEFAULT_SCHEMA_GENERATOR_CLASS(
-            url=options['url']
-            title=options['title']
+            url=options['url'],
+            title=options['title'],
             description=options['description']
         )
         generator = generator_class()
