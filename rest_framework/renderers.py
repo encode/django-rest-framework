@@ -25,7 +25,7 @@ from django.utils.html import mark_safe
 from rest_framework import VERSION, exceptions, serializers, status
 from rest_framework.compat import (
     INDENT_SEPARATORS, LONG_SEPARATORS, SHORT_SEPARATORS, coreapi, coreschema,
-    pygments_css, urlparse
+    pygments_css, urlparse, yaml
 )
 from rest_framework.exceptions import ParseError
 from rest_framework.request import is_form_media_type, override_method
@@ -934,7 +934,7 @@ class CoreJSONRenderer(BaseRenderer):
         return codec.dump(data, indent=indent)
 
 
-class OpenAPIRenderer:
+class _BaseOpenAPIRenderer:
     CLASS_TO_TYPENAME = {
         coreschema.Object: 'object',
         coreschema.Array: 'array',
@@ -943,9 +943,6 @@ class OpenAPIRenderer:
         coreschema.String: 'string',
         coreschema.Boolean: 'boolean',
     }
-
-    def __init__(self):
-        assert coreapi, 'Using OpenAPIRenderer, but `coreapi` is not installed.'
 
     def get_schema(self, instance):
         schema = {}
@@ -1011,8 +1008,8 @@ class OpenAPIRenderer:
 
         return paths
 
-    def render(self, data, media_type=None, renderer_context=None):
-        return json.dumps({
+    def get_structure(self, data):
+        return {
             'openapi': '3.0.0',
             'info': {
                 'version': '',
@@ -1023,4 +1020,31 @@ class OpenAPIRenderer:
                 'url': data.url
             }],
             'paths': self.get_paths(data)
-        }, indent=4)
+        }
+
+
+class OpenAPIRenderer(_BaseOpenAPIRenderer):
+    media_type = 'application/vnd.oai.openapi'
+    charset = None
+    format = 'openapi'
+
+    def __init__(self):
+        assert coreapi, 'Using OpenAPIRenderer, but `coreapi` is not installed.'
+        assert yaml, 'Using OpenAPIRenderer, but `pyyaml` is not installed.'
+
+    def render(self, data, media_type=None, renderer_context=None):
+        structure = self.get_structure(data)
+        return yaml.dumps(structure, default_flow_style=False)
+
+
+class JSONOpenAPIRenderer(_BaseOpenAPIRenderer):
+    media_type = 'application/vnd.oai.openapi+json'
+    charset = None
+    format = 'openapi-json'
+
+    def __init__(self):
+        assert coreapi, 'Using JSONOpenAPIRenderer, but `coreapi` is not installed.'
+
+    def render(self, data, media_type=None, renderer_context=None):
+        structure = self.get_structure(data)
+        return json.dumps(structure, indent=4)

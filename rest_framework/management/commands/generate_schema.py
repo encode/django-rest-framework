@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 
 from rest_framework.compat import coreapi
-from rest_framework.renderers import CoreJSONRenderer, OpenAPIRenderer
+from rest_framework.renderers import CoreJSONRenderer, OpenAPIRenderer, JSONOpenAPIRenderer
 from rest_framework.settings import api_settings
 
 
@@ -15,8 +15,6 @@ class Command(BaseCommand):
         # - title
         # - url
         # - description
-        # - urlconf
-        # - patterns
         #
         # Don't particularly want to pass these on the command-line.
         # conf file?
@@ -42,5 +40,6 @@ class Command(BaseCommand):
     def get_renderer(self, format):
         return {
             'corejson': CoreJSONRenderer(),
-            'openapi': OpenAPIRenderer()
+            'openapi': OpenAPIRenderer(),
+            'openapi-json': JSONOpenAPIRenderer()
         }

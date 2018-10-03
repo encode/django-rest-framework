@@ -143,6 +143,13 @@ except ImportError:
     coreschema = None
 
 
+# pyyaml is optional
+try:
+    import yaml
+except ImportError:
+    yaml = None
+
+
 # django-crispy-forms is optional
 try:
     import crispy_forms
