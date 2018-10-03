@@ -5,7 +5,6 @@ from rest_framework.renderers import (
     CoreJSONRenderer, JSONOpenAPIRenderer, OpenAPIRenderer
 )
 from rest_framework.schemas.generators import SchemaGenerator
-from rest_framework.settings import api_settings
 
 
 class Command(BaseCommand):
