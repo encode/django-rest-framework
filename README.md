@@ -76,7 +76,7 @@ Startup up a new project like so...
 
     pip install django
     pip install djangorestframework
-    django-admin.py startproject example .
+    django-admin startproject example .
     ./manage.py migrate
     ./manage.py createsuperuser
 
