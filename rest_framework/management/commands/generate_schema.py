@@ -1,3 +1,5 @@
+import urllib.parse as urlparse
+
 from django.core.management.base import BaseCommand
 
 from rest_framework.compat import coreapi, coreschema
@@ -5,8 +7,6 @@ from rest_framework.renderers import CoreJSONRenderer, JSONRenderer
 from rest_framework.schemas.generators import OpenAPISchemaGenerator
 from rest_framework.settings import api_settings
 from rest_framework.utils import json
-
-import urllib.parse as urlparse
 
 
 class OpenAPICodec:
