@@ -127,9 +127,6 @@ class Command(BaseCommand):
 
         schema = generator.get_schema(request=None, public=True)
         codec = OpenAPICodec()
-
-        #renderer = self._get_renderer(generator)
-        #rendered_schema = renderer.render(schema, renderer_context={}).decode('utf8')
         output = codec.encode(schema)
 
         self.stdout.write(output)
