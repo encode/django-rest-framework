@@ -174,20 +174,6 @@ class ViewInspector(object):
     def view(self):
         self._view = None
 
-    def get_link(self, path, method, base_url):
-        """
-        Generate `coreapi.Link` for self.view, path and method.
-
-        This is the main _public_ access point.
-
-        Parameters:
-
-        * path: Route path for view from URLConf.
-        * method: The HTTP request method.
-        * base_url: The project "mount point" as given to SchemaGenerator
-        """
-        raise NotImplementedError(".get_link() must be overridden.")
-
 
 class AutoSchema(ViewInspector):
     """
@@ -208,6 +194,17 @@ class AutoSchema(ViewInspector):
         self._manual_fields = manual_fields
 
     def get_link(self, path, method, base_url):
+        """
+        Generate `coreapi.Link` for self.view, path and method.
+
+        This is the main _public_ access point.
+
+        Parameters:
+
+        * path: Route path for view from URLConf.
+        * method: The HTTP request method.
+        * base_url: The project "mount point" as given to SchemaGenerator
+        """
         fields = self.get_path_fields(path, method)
         fields += self.get_serializer_fields(path, method)
         fields += self.get_pagination_fields(path, method)
@@ -501,3 +498,44 @@ class DefaultSchema(ViewInspector):
         inspector = inspector_class()
         inspector.view = instance
         return inspector
+
+
+class OpenAPIAutoSchema(ViewInspector):
+
+    def get_operation(self, path, method):
+        return {
+            'parameters': self.get_path_parameters(path, method),
+        }
+
+    def get_path_parameters(self, path, method):
+        """
+        Return a list of parameters from templated path variables.
+        """
+        assert uritemplate, '`uritemplate` must be installed for OpenAPI schema support.'
+
+        model = getattr(getattr(self.view, 'queryset', None), 'model', None)
+        parameters = []
+
+        for variable in uritemplate.variables(path):
+            description = ''
+            if model is not None:
+                # Attempt to infer a field description if possible.
+                try:
+                    model_field = model._meta.get_field(variable)
+                except Exception:
+                    model_field = None
+
+                if model_field is not None and model_field.help_text:
+                    description = force_text(model_field.help_text)
+                elif model_field is not None and model_field.primary_key:
+                    description = get_pk_description(model, model_field)
+
+            parameter = {
+                "name": variable,
+                "in": "path",
+                "required": True,
+                "description": description,
+            }
+            parameters.append(parameter)
+
+        return parameters

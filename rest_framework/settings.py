@@ -57,6 +57,7 @@ DEFAULTS = {
 
     # Schema
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema',
+    'DEFAULT_SCHEMA_GENERATOR_CLASS': 'rest_framework.schemas.generators.SchemaGenerator',
 
     # Throttling
     'DEFAULT_THROTTLE_RATES': {
@@ -144,6 +145,7 @@ IMPORT_STRINGS = (
     'DEFAULT_PAGINATION_CLASS',
     'DEFAULT_FILTER_BACKENDS',
     'DEFAULT_SCHEMA_CLASS',
+    'DEFAULT_SCHEMA_GENERATOR_CLASS',
     'EXCEPTION_HANDLER',
     'TEST_REQUEST_RENDERER_CLASSES',
     'UNAUTHENTICATED_USER',

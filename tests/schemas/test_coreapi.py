@@ -2,15 +2,11 @@ import unittest
 
 import pytest
 from django.conf.urls import include, url
-from django.core.exceptions import PermissionDenied
-from django.http import Http404
 from django.test import TestCase, override_settings
 
-from rest_framework import (
-    filters, generics, pagination, permissions, serializers
-)
-from rest_framework.compat import coreapi, coreschema, get_regex_pattern, path
-from rest_framework.decorators import action, api_view, schema
+from rest_framework import filters, generics, serializers
+from rest_framework.compat import coreapi, coreschema, path
+from rest_framework.decorators import action, api_view
 from rest_framework.request import Request
 from rest_framework.routers import DefaultRouter, SimpleRouter
 from rest_framework.schemas import (
@@ -24,7 +20,8 @@ from rest_framework.utils import formatting
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
-from .models import BasicModel, ForeignKeySource
+from . import views
+from ..models import BasicModel, ForeignKeySource
 
 factory = APIRequestFactory()
 
@@ -34,87 +31,6 @@ class MockUser(object):
         return True
 
 
-class ExamplePagination(pagination.PageNumberPagination):
-    page_size = 100
-    page_size_query_param = 'page_size'
-
-
-class EmptySerializer(serializers.Serializer):
-    pass
-
-
-class ExampleSerializer(serializers.Serializer):
-    a = serializers.CharField(required=True, help_text='A field description')
-    b = serializers.CharField(required=False)
-    read_only = serializers.CharField(read_only=True)
-    hidden = serializers.HiddenField(default='hello')
-
-
-class AnotherSerializerWithDictField(serializers.Serializer):
-    a = serializers.DictField()
-
-
-class AnotherSerializerWithListFields(serializers.Serializer):
-    a = serializers.ListField(child=serializers.IntegerField())
-    b = serializers.ListSerializer(child=serializers.CharField())
-
-
-class AnotherSerializer(serializers.Serializer):
-    c = serializers.CharField(required=True)
-    d = serializers.CharField(required=False)
-
-
-class ExampleViewSet(ModelViewSet):
-    pagination_class = ExamplePagination
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    filter_backends = [filters.OrderingFilter]
-    serializer_class = ExampleSerializer
-
-    @action(methods=['post'], detail=True, serializer_class=AnotherSerializer)
-    def custom_action(self, request, pk):
-        """
-        A description of custom action.
-        """
-        raise NotImplementedError
-
-    @action(methods=['post'], detail=True, serializer_class=AnotherSerializerWithDictField)
-    def custom_action_with_dict_field(self, request, pk):
-        """
-        A custom action using a dict field in the serializer.
-        """
-        raise NotImplementedError
-
-    @action(methods=['post'], detail=True, serializer_class=AnotherSerializerWithListFields)
-    def custom_action_with_list_fields(self, request, pk):
-        """
-        A custom action using both list field and list serializer in the serializer.
-        """
-        raise NotImplementedError
-
-    @action(detail=False)
-    def custom_list_action(self, request):
-        raise NotImplementedError
-
-    @action(methods=['post', 'get'], detail=False, serializer_class=EmptySerializer)
-    def custom_list_action_multiple_methods(self, request):
-        """Custom description."""
-        raise NotImplementedError
-
-    @custom_list_action_multiple_methods.mapping.delete
-    def custom_list_action_multiple_methods_delete(self, request):
-        """Deletion description."""
-        raise NotImplementedError
-
-    @action(detail=False, schema=None)
-    def excluded_action(self, request):
-        pass
-
-    def get_serializer(self, *args, **kwargs):
-        assert self.request
-        assert self.action
-        return super(ExampleViewSet, self).get_serializer(*args, **kwargs)
-
-
 if coreapi:
     schema_view = get_schema_view(title='Example API')
 else:
@@ -122,7 +38,7 @@ else:
         pass
 
 router = DefaultRouter()
-router.register('example', ExampleViewSet, basename='example')
+router.register('example', views.ExampleViewSet, basename='example')
 urlpatterns = [
     url(r'^$', schema_view),
     url(r'^', include(router.urls))
@@ -130,7 +46,7 @@ urlpatterns = [
 
 
 @unittest.skipUnless(coreapi, 'coreapi is not installed')
-@override_settings(ROOT_URLCONF='tests.test_schemas')
+@override_settings(ROOT_URLCONF='tests.schemas.test_coreapi')
 class TestRouterGeneratedSchema(TestCase):
     def test_anonymous_request(self):
         client = APIClient()
@@ -299,61 +215,13 @@ class TestRouterGeneratedSchema(TestCase):
         assert response.data == expected
 
 
-class DenyAllUsingHttp404(permissions.BasePermission):
-
-    def has_permission(self, request, view):
-        raise Http404()
-
-    def has_object_permission(self, request, view, obj):
-        raise Http404()
-
-
-class DenyAllUsingPermissionDenied(permissions.BasePermission):
-
-    def has_permission(self, request, view):
-        raise PermissionDenied()
-
-    def has_object_permission(self, request, view, obj):
-        raise PermissionDenied()
-
-
-class Http404ExampleViewSet(ExampleViewSet):
-    permission_classes = [DenyAllUsingHttp404]
-
-
-class PermissionDeniedExampleViewSet(ExampleViewSet):
-    permission_classes = [DenyAllUsingPermissionDenied]
-
-
-class MethodLimitedViewSet(ExampleViewSet):
-    permission_classes = []
-    http_method_names = ['get', 'head', 'options']
-
-
-class ExampleListView(APIView):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
-    def get(self, *args, **kwargs):
-        pass
-
-    def post(self, request, *args, **kwargs):
-        pass
-
-
-class ExampleDetailView(APIView):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
-    def get(self, *args, **kwargs):
-        pass
-
-
 @unittest.skipUnless(coreapi, 'coreapi is not installed')
 class TestSchemaGenerator(TestCase):
     def setUp(self):
         self.patterns = [
-            url(r'^example/?$', ExampleListView.as_view()),
-            url(r'^example/(?P<pk>\d+)/?$', ExampleDetailView.as_view()),
-            url(r'^example/(?P<pk>\d+)/sub/?$', ExampleDetailView.as_view()),
+            url(r'^example/?$', views.ExampleListView.as_view()),
+            url(r'^example/(?P<pk>\d+)/?$', views.ExampleDetailView.as_view()),
+            url(r'^example/(?P<pk>\d+)/sub/?$', views.ExampleDetailView.as_view()),
         ]
 
     def test_schema_for_regular_views(self):
@@ -404,9 +272,9 @@ class TestSchemaGenerator(TestCase):
 class TestSchemaGeneratorDjango2(TestCase):
     def setUp(self):
         self.patterns = [
-            path('example/', ExampleListView.as_view()),
-            path('example/<int:pk>/', ExampleDetailView.as_view()),
-            path('example/<int:pk>/sub/', ExampleDetailView.as_view()),
+            path('example/', views.ExampleListView.as_view()),
+            path('example/<int:pk>/', views.ExampleDetailView.as_view()),
+            path('example/<int:pk>/sub/', views.ExampleDetailView.as_view()),
         ]
 
     def test_schema_for_regular_views(self):
@@ -456,9 +324,9 @@ class TestSchemaGeneratorDjango2(TestCase):
 class TestSchemaGeneratorNotAtRoot(TestCase):
     def setUp(self):
         self.patterns = [
-            url(r'^api/v1/example/?$', ExampleListView.as_view()),
-            url(r'^api/v1/example/(?P<pk>\d+)/?$', ExampleDetailView.as_view()),
-            url(r'^api/v1/example/(?P<pk>\d+)/sub/?$', ExampleDetailView.as_view()),
+            url(r'^api/v1/example/?$', views.ExampleListView.as_view()),
+            url(r'^api/v1/example/(?P<pk>\d+)/?$', views.ExampleDetailView.as_view()),
+            url(r'^api/v1/example/(?P<pk>\d+)/sub/?$', views.ExampleDetailView.as_view()),
         ]
 
     def test_schema_for_regular_views(self):
@@ -509,7 +377,7 @@ class TestSchemaGeneratorNotAtRoot(TestCase):
 class TestSchemaGeneratorWithMethodLimitedViewSets(TestCase):
     def setUp(self):
         router = DefaultRouter()
-        router.register('example1', MethodLimitedViewSet, basename='example1')
+        router.register('example1', views.MethodLimitedViewSet, basename='example1')
         self.patterns = [
             url(r'^', include(router.urls))
         ]
@@ -566,10 +434,10 @@ class TestSchemaGeneratorWithMethodLimitedViewSets(TestCase):
 class TestSchemaGeneratorWithRestrictedViewSets(TestCase):
     def setUp(self):
         router = DefaultRouter()
-        router.register('example1', Http404ExampleViewSet, basename='example1')
-        router.register('example2', PermissionDeniedExampleViewSet, basename='example2')
+        router.register('example1', views.Http404ExampleViewSet, basename='example1')
+        router.register('example2', views.PermissionDeniedExampleViewSet, basename='example2')
         self.patterns = [
-            url('^example/?$', ExampleListView.as_view()),
+            url('^example/?$', views.ExampleListView.as_view()),
             url(r'^', include(router.urls))
         ]
 
@@ -597,29 +465,25 @@ class TestSchemaGeneratorWithRestrictedViewSets(TestCase):
         assert schema == expected
 
 
-class ForeignKeySourceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ForeignKeySource
-        fields = ('id', 'name', 'target')
-
-
-class ForeignKeySourceView(generics.CreateAPIView):
-    queryset = ForeignKeySource.objects.all()
-    serializer_class = ForeignKeySourceSerializer
-
-
 @unittest.skipUnless(coreapi, 'coreapi is not installed')
 class TestSchemaGeneratorWithForeignKey(TestCase):
-    def setUp(self):
-        self.patterns = [
-            url(r'^example/?$', ForeignKeySourceView.as_view()),
-        ]
-
     def test_schema_for_regular_views(self):
         """
         Ensure that AutoField foreign keys are output as Integer.
         """
-        generator = SchemaGenerator(title='Example API', patterns=self.patterns)
+        class ForeignKeySourceSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = ForeignKeySource
+                fields = ('id', 'name', 'target')
+
+        class ForeignKeySourceView(generics.CreateAPIView):
+            queryset = ForeignKeySource.objects.all()
+            serializer_class = ForeignKeySourceSerializer
+
+        patterns = [
+            url(r'^example/?$', ForeignKeySourceView.as_view()),
+        ]
+        generator = SchemaGenerator(title='Example API', patterns=patterns)
         schema = generator.get_schema()
 
         expected = coreapi.Document(
@@ -653,34 +517,7 @@ class Test4605Regression(TestCase):
         assert prefix == '/'
 
 
-class CustomViewInspector(AutoSchema):
-    """A dummy AutoSchema subclass"""
-    pass
-
-
 class TestAutoSchema(TestCase):
-
-    def test_apiview_schema_descriptor(self):
-        view = APIView()
-        assert hasattr(view, 'schema')
-        assert isinstance(view.schema, AutoSchema)
-
-    def test_set_custom_inspector_class_on_view(self):
-        class CustomView(APIView):
-            schema = CustomViewInspector()
-
-        view = CustomView()
-        assert isinstance(view.schema, CustomViewInspector)
-
-    def test_set_custom_inspector_class_via_settings(self):
-        with override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'tests.test_schemas.CustomViewInspector'}):
-            view = APIView()
-            assert isinstance(view.schema, CustomViewInspector)
-
-    def test_get_link_requires_instance(self):
-        descriptor = APIView.schema  # Accessed from class
-        with pytest.raises(AssertionError):
-            descriptor.get_link(None, None, None)  # ???: Do the dummy arguments require a tighter assert?
 
     @pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
     def test_update_fields(self):
@@ -902,158 +739,19 @@ def test_docstring_is_not_stripped_by_get_description():
     assert descr == formatting.dedent(ExampleDocstringAPIView.__doc__[1:][:-1])
 
 
-# Views for SchemaGenerationExclusionTests
-class ExcludedAPIView(APIView):
-    schema = None
-
-    def get(self, request, *args, **kwargs):
-        pass
-
-
-@api_view(['GET'])
-@schema(None)
-def excluded_fbv(request):
-    pass
-
-
-@api_view(['GET'])
-def included_fbv(request):
-    pass
-
-
-@unittest.skipUnless(coreapi, 'coreapi is not installed')
-class SchemaGenerationExclusionTests(TestCase):
-    def setUp(self):
-        self.patterns = [
-            url('^excluded-cbv/$', ExcludedAPIView.as_view()),
-            url('^excluded-fbv/$', excluded_fbv),
-            url('^included-fbv/$', included_fbv),
-        ]
-
-    def test_schema_generator_excludes_correctly(self):
-        """Schema should not include excluded views"""
-        generator = SchemaGenerator(title='Exclusions', patterns=self.patterns)
-        schema = generator.get_schema()
-        expected = coreapi.Document(
-            url='',
-            title='Exclusions',
-            content={
-                'included-fbv': {
-                    'list': coreapi.Link(url='/included-fbv/', action='get')
-                }
-            }
-        )
-
-        assert len(schema.data) == 1
-        assert 'included-fbv' in schema.data
-        assert schema == expected
-
-    def test_endpoint_enumerator_excludes_correctly(self):
-        """It is responsibility of EndpointEnumerator to exclude views"""
-        inspector = EndpointEnumerator(self.patterns)
-        endpoints = inspector.get_api_endpoints()
-
-        assert len(endpoints) == 1
-        path, method, callback = endpoints[0]
-        assert path == '/included-fbv/'
-
-    def test_should_include_endpoint_excludes_correctly(self):
-        """This is the specific method that should handle the exclusion"""
-        inspector = EndpointEnumerator(self.patterns)
-
-        # Not pretty. Mimics internals of EndpointEnumerator to put should_include_endpoint under test
-        pairs = [(inspector.get_path_from_regex(get_regex_pattern(pattern)), pattern.callback)
-                 for pattern in self.patterns]
-
-        should_include = [
-            inspector.should_include_endpoint(*pair) for pair in pairs
-        ]
-
-        expected = [False, False, True]
-
-        assert should_include == expected
-
-    def test_deprecations(self):
-        with pytest.warns(DeprecationWarning) as record:
-            @api_view(["GET"], exclude_from_schema=True)
-            def view(request):
-                pass
-
-        assert len(record) == 1
-        assert str(record[0].message) == (
-            "The `exclude_from_schema` argument to `api_view` is deprecated. "
-            "Use the `schema` decorator instead, passing `None`."
-        )
-
-        class OldFashionedExcludedView(APIView):
-            exclude_from_schema = True
-
-            def get(self, request, *args, **kwargs):
-                pass
-
-        patterns = [
-            url('^excluded-old-fashioned/$', OldFashionedExcludedView.as_view()),
-        ]
-
-        inspector = EndpointEnumerator(patterns)
-        with pytest.warns(DeprecationWarning) as record:
-            inspector.get_api_endpoints()
-
-        assert len(record) == 1
-        assert str(record[0].message) == (
-            "The `OldFashionedExcludedView.exclude_from_schema` attribute is "
-            "deprecated. Set `schema = None` instead."
-        )
-
-
-@api_view(["GET"])
-def simple_fbv(request):
-    pass
-
-
-class BasicModelSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = BasicModel
-        fields = "__all__"
-
-
-class NamingCollisionView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = BasicModel.objects.all()
-    serializer_class = BasicModelSerializer
-
-
-class BasicNamingCollisionView(generics.RetrieveAPIView):
-    queryset = BasicModel.objects.all()
-
-
-class NamingCollisionViewSet(GenericViewSet):
-    """
-    Example via: https://stackoverflow.com/questions/43778668/django-rest-framwork-occured-typeerror-link-object-does-not-support-item-ass/
-    """
-    permision_class = ()
-
-    @action(detail=False)
-    def detail(self, request):
-        return {}
-
-    @action(detail=False, url_path='detail/export')
-    def detail_export(self, request):
-        return {}
-
-
-naming_collisions_router = SimpleRouter()
-naming_collisions_router.register(r'collision', NamingCollisionViewSet, basename="collision")
-
-
 @pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
 class TestURLNamingCollisions(TestCase):
     """
     Ref: https://github.com/encode/django-rest-framework/issues/4704
     """
+    @api_view(["GET"])
+    def simple_fbv(request):
+        pass
+
     def test_manually_routing_nested_routes(self):
         patterns = [
-            url(r'^test', simple_fbv),
-            url(r'^test/list/', simple_fbv),
+            url(r'^test', self.simple_fbv),
+            url(r'^test/list/', self.simple_fbv),
         ]
 
         generator = SchemaGenerator(title='Naming Colisions', patterns=patterns)
@@ -1088,6 +786,15 @@ class TestURLNamingCollisions(TestCase):
             assert loc[key].url == url
 
     def test_manually_routing_generic_view(self):
+        class BasicModelSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = BasicModel
+                fields = "__all__"
+
+        class NamingCollisionView(generics.RetrieveUpdateDestroyAPIView):
+            queryset = BasicModel.objects.all()
+            serializer_class = BasicModelSerializer
+
         patterns = [
             url(r'^test', NamingCollisionView.as_view()),
             url(r'^test/retrieve/', NamingCollisionView.as_view()),
@@ -1111,6 +818,23 @@ class TestURLNamingCollisions(TestCase):
         self._verify_cbv_links(schema['test'], '/test', suffixes=(None, '0', None, '0'))
 
     def test_from_router(self):
+        class NamingCollisionViewSet(GenericViewSet):
+            """
+            Example via: https://stackoverflow.com/questions/43778668/django-rest-framwork-occured-typeerror-link-object-does-not-support-item-ass/
+            """
+            permision_class = ()
+
+            @action(detail=False)
+            def detail(self, request):
+                return {}
+
+            @action(detail=False, url_path='detail/export')
+            def detail_export(self, request):
+                return {}
+
+        naming_collisions_router = SimpleRouter()
+        naming_collisions_router.register(r'collision', NamingCollisionViewSet, basename="collision")
+
         patterns = [
             url(r'from-router', include(naming_collisions_router.urls)),
         ]
@@ -1143,6 +867,9 @@ class TestURLNamingCollisions(TestCase):
         assert schema == expected
 
     def test_url_under_same_key_not_replaced(self):
+        class BasicNamingCollisionView(generics.RetrieveAPIView):
+            queryset = BasicModel.objects.all()
+
         patterns = [
             url(r'example/(?P<pk>\d+)/$', BasicNamingCollisionView.as_view()),
             url(r'example/(?P<slug>\w+)/$', BasicNamingCollisionView.as_view()),
@@ -1157,8 +884,8 @@ class TestURLNamingCollisions(TestCase):
     def test_url_under_same_key_not_replaced_another(self):
 
         patterns = [
-            url(r'^test/list/', simple_fbv),
-            url(r'^test/(?P<pk>\d+)/list/', simple_fbv),
+            url(r'^test/list/', self.simple_fbv),
+            url(r'^test/(?P<pk>\d+)/list/', self.simple_fbv),
         ]
 
         generator = SchemaGenerator(title='Naming Colisions', patterns=patterns)
