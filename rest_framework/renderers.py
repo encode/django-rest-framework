@@ -24,8 +24,8 @@ from django.utils.html import mark_safe
 
 from rest_framework import VERSION, exceptions, serializers, status
 from rest_framework.compat import (
-    INDENT_SEPARATORS, LONG_SEPARATORS, SHORT_SEPARATORS, coreapi,
-    pygments_css
+    INDENT_SEPARATORS, LONG_SEPARATORS, SHORT_SEPARATORS, coreapi, coreschema,
+    pygments_css, urlparse, yaml
 )
 from rest_framework.exceptions import ParseError
 from rest_framework.request import is_form_media_type, override_method
@@ -932,3 +932,119 @@ class CoreJSONRenderer(BaseRenderer):
         indent = bool(renderer_context.get('indent', 0))
         codec = coreapi.codecs.CoreJSONCodec()
         return codec.dump(data, indent=indent)
+
+
+class _BaseOpenAPIRenderer:
+    def get_schema(self, instance):
+        CLASS_TO_TYPENAME = {
+            coreschema.Object: 'object',
+            coreschema.Array: 'array',
+            coreschema.Number: 'number',
+            coreschema.Integer: 'integer',
+            coreschema.String: 'string',
+            coreschema.Boolean: 'boolean',
+        }
+
+        schema = {}
+        if instance.__class__ in CLASS_TO_TYPENAME:
+            schema['type'] = CLASS_TO_TYPENAME[instance.__class__]
+        schema['title'] = instance.title,
+        schema['description'] = instance.description
+        if hasattr(instance, 'enum'):
+            schema['enum'] = instance.enum
+        return schema
+
+    def get_parameters(self, link):
+        parameters = []
+        for field in link.fields:
+            if field.location not in ['path', 'query']:
+                continue
+            parameter = {
+                'name': field.name,
+                'in': field.location,
+            }
+            if field.required:
+                parameter['required'] = True
+            if field.description:
+                parameter['description'] = field.description
+            if field.schema:
+                parameter['schema'] = self.get_schema(field.schema)
+            parameters.append(parameter)
+        return parameters
+
+    def get_operation(self, link, name, tag):
+        operation_id = "%s_%s" % (tag, name) if tag else name
+        parameters = self.get_parameters(link)
+
+        operation = {
+            'operationId': operation_id,
+        }
+        if link.title:
+            operation['summary'] = link.title
+        if link.description:
+            operation['description'] = link.description
+        if parameters:
+            operation['parameters'] = parameters
+        if tag:
+            operation['tags'] = [tag]
+        return operation
+
+    def get_paths(self, document):
+        paths = {}
+
+        tag = None
+        for name, link in document.links.items():
+            path = urlparse.urlparse(link.url).path
+            method = link.action.lower()
+            paths.setdefault(path, {})
+            paths[path][method] = self.get_operation(link, name, tag=tag)
+
+        for tag, section in document.data.items():
+            for name, link in section.links.items():
+                path = urlparse.urlparse(link.url).path
+                method = link.action.lower()
+                paths.setdefault(path, {})
+                paths[path][method] = self.get_operation(link, name, tag=tag)
+
+        return paths
+
+    def get_structure(self, data):
+        return {
+            'openapi': '3.0.0',
+            'info': {
+                'version': '',
+                'title': data.title,
+                'description': data.description
+            },
+            'servers': [{
+                'url': data.url
+            }],
+            'paths': self.get_paths(data)
+        }
+
+
+class OpenAPIRenderer(_BaseOpenAPIRenderer):
+    media_type = 'application/vnd.oai.openapi'
+    charset = None
+    format = 'openapi'
+
+    def __init__(self):
+        assert coreapi, 'Using OpenAPIRenderer, but `coreapi` is not installed.'
+        assert yaml, 'Using OpenAPIRenderer, but `pyyaml` is not installed.'
+
+    def render(self, data, media_type=None, renderer_context=None):
+        structure = self.get_structure(data)
+        return yaml.dump(structure, default_flow_style=False).encode('utf-8')
+
+
+class JSONOpenAPIRenderer(_BaseOpenAPIRenderer):
+    media_type = 'application/vnd.oai.openapi+json'
+    charset = None
+    format = 'openapi-json'
+
+    def __init__(self):
+        assert coreapi, 'Using JSONOpenAPIRenderer, but `coreapi` is not installed.'
+
+    def render(self, data, media_type=None, renderer_context=None):
+        structure = self.get_structure(data)
+        return json.dumps(structure, indent=4).encode('utf-8')
