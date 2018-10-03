@@ -152,7 +152,7 @@ When any user visible strings are changed, they should be uploaded to Transifex 
 
     # 1. Update the source django.po file, which is the US English version.
     cd rest_framework
-    django-admin.py makemessages -l en_US
+    django-admin makemessages -l en_US
     # 2. Push the source django.po file to Transifex.
     cd ..
     tx push -s
@@ -173,7 +173,7 @@ When a translator has finished translating their work needs to be downloaded fro
     tx pull -a --minimum-perc 10
     cd rest_framework
     # 4. Compile the binary .mo files for all supported languages.
-    django-admin.py compilemessages
+    django-admin compilemessages
 
 ---
 
