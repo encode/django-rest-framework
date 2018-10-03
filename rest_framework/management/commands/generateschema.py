@@ -29,9 +29,8 @@ class Command(BaseCommand):
         schema = generator.get_schema(request=None, public=True)
 
         renderer = self.get_renderer(options['format'])
-        output = renderer.render(schema)
-
-        self.stdout.write(output)
+        output = renderer.render(schema, renderer_context={})
+        self.stdout.write(output.decode('utf-8'))
 
     def get_renderer(self, format):
         return {

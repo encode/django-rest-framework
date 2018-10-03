@@ -1034,7 +1034,7 @@ class OpenAPIRenderer(_BaseOpenAPIRenderer):
 
     def render(self, data, media_type=None, renderer_context=None):
         structure = self.get_structure(data)
-        return yaml.dump(structure, default_flow_style=False)
+        return yaml.dump(structure, default_flow_style=False).encode('utf-8')
 
 
 class JSONOpenAPIRenderer(_BaseOpenAPIRenderer):
@@ -1047,4 +1047,4 @@ class JSONOpenAPIRenderer(_BaseOpenAPIRenderer):
 
     def render(self, data, media_type=None, renderer_context=None):
         structure = self.get_structure(data)
-        return json.dumps(structure, indent=4)
+        return json.dumps(structure, indent=4).encode('utf-8')
