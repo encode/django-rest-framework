@@ -10,12 +10,50 @@ API schemas are a useful tool that allow for a range of use cases, including
 generating reference documentation, or driving dynamic client libraries that
 can interact with your API.
 
-## Install Core API
+## Install Core API & PyYAML
 
 You'll need to install the `coreapi` package in order to add schema support
-for REST framework.
+for REST framework. You probably also want to install `pyyaml`, so that you
+can render the schema into the commonly used YAML-based OpenAPI format.
 
-    pip install coreapi
+    pip install coreapi pyyaml
+
+## Quickstart
+
+There are two different ways you can serve a schema description for you API.
+
+### Generating a schema with the `generateschema` management command
+
+To generate a static API schema, use the `generateschema` management command.
+
+```shell
+$ python manage.py generateschema > schema.yml
+```
+
+Once you've generated a schema in this way you can annotate it with any
+additional information that cannot be automatically inferred by the schema
+generator.
+
+You might want to check your API schema into version control and update it
+with each new release, or serve the API schema from your site's static media.
+
+### Adding a view with `get_schema_view`
+
+To add a dynamically generated schema view to your API, use `get_schema_view`.
+
+```python
+from rest_framework.schemas import get_schema_view
+
+schema_view = get_schema_view(title="Example API")
+
+urlpatterns = [
+    url('^schema$', schema_view),
+    ...
+]
+```
+
+See below [for more details](#the-get_schema_view-shortcut) on customizing a
+dynamically generated schema view.
 
 ## Internal schema representation
 
@@ -343,7 +381,6 @@ Defaults to `settings.DEFAULT_AUTHENTICATION_CLASSES`
 
 May be used to specify the list of permission classes that will apply to the schema endpoint.
 Defaults to `settings.DEFAULT_PERMISSION_CLASSES`
-
 
 ## Using an explicit schema view
 
