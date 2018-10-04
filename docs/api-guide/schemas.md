@@ -71,37 +71,18 @@ endpoint:
 In order to be presented in an HTTP response, the internal representation
 has to be rendered into the actual bytes that are used in the response.
 
+REST framework includes a few different renderers that you can use for
+encoding the API schema.
+
+* `renderers.OpenAPIRenderer` - Renders into YAML-based [OpenAPI][openapi], the most widely used API schema format.
+* `renderers.JSONOpenAPIRenderer` - Renders into JSON-based [OpenAPI][openapi].
+* `renderers.CoreJSONRenderer` - Renders into [Core JSON][corejson], a format designed for
+use with the `coreapi` client library.
+
+
 [Core JSON][corejson] is designed as a canonical format for use with Core API.
 REST framework includes a renderer class for handling this media type, which
 is available as `renderers.CoreJSONRenderer`.
-
-### Alternate schema formats
-
-Other schema formats such as [Open API][open-api] ("Swagger"),
-[JSON HyperSchema][json-hyperschema], or [API Blueprint][api-blueprint] can also
-be supported by implementing a custom renderer class that handles converting a
-`Document` instance into a bytestring representation.
-
-If there is a Core API codec package that supports encoding into the format you
-want to use then implementing the renderer class can be done by using the codec.
-
-#### Example
-
-For example, the `openapi_codec` package provides support for encoding or decoding
-to the Open API ("Swagger") format:
-
-    from rest_framework import renderers
-    from openapi_codec import OpenAPICodec
-
-    class SwaggerRenderer(renderers.BaseRenderer):
-        media_type = 'application/openapi+json'
-        format = 'swagger'
-
-        def render(self, data, media_type=None, renderer_context=None):
-            codec = OpenAPICodec()
-            return codec.dump(data)
-
-
 
 
 ## Schemas vs Hypermedia
@@ -325,13 +306,12 @@ ROOT_URLCONF setting.
 May be used to pass the set of renderer classes that can be used to render the API root endpoint.
 
     from rest_framework.schemas import get_schema_view
-    from rest_framework.renderers import CoreJSONRenderer
-    from my_custom_package import APIBlueprintRenderer
+    from rest_framework.renderers import JSONOpenAPIRenderer
 
     schema_view = get_schema_view(
         title='Server Monitoring API',
         url='https://www.example.org/api/',
-        renderer_classes=[CoreJSONRenderer, APIBlueprintRenderer]
+        renderer_classes=[JSONOpenAPIRenderer]
     )
 
 #### `patterns`
@@ -386,7 +366,7 @@ return the schema.
     generator = schemas.SchemaGenerator(title='Bookings API')
 
     @api_view()
-    @renderer_classes([renderers.CoreJSONRenderer])
+    @renderer_classes([renderers.OpenAPIRenderer])
     def schema_view(request):
         schema = generator.get_schema(request)
         return response.Response(schema)
@@ -408,7 +388,7 @@ In order to present a schema with endpoints filtered by user permissions,
 you need to pass the `request` argument to the `get_schema()` method, like so:
 
     @api_view()
-    @renderer_classes([renderers.CoreJSONRenderer])
+    @renderer_classes([renderers.OpenAPIRenderer])
     def schema_view(request):
         generator = schemas.SchemaGenerator(title='Bookings API')
         return response.Response(generator.get_schema(request=request))
@@ -432,20 +412,9 @@ representation.
     )
 
     @api_view()
-    @renderer_classes([renderers.CoreJSONRenderer])
+    @renderer_classes([renderers.OpenAPIRenderer])
     def schema_view(request):
         return response.Response(schema)
-
-## Static schema file
-
-A final option is to write your API schema as a static file, using one
-of the available formats, such as Core JSON or Open API.
-
-You could then either:
-
-* Write a schema definition as a static file, and [serve the static file directly][static-files].
-* Write a schema definition that is loaded using `Core API`, and then
-  rendered to one of many available formats, depending on the client request.
 
 ---
 
@@ -535,7 +504,7 @@ Arguments:
 Returns a `coreapi.Document` instance that represents the API schema.
 
     @api_view
-    @renderer_classes([renderers.CoreJSONRenderer])
+    @renderer_classes([renderers.OpenAPIRenderer])
     def schema_view(request):
         generator = schemas.SchemaGenerator(title='Bookings API')
         return Response(generator.get_schema())
