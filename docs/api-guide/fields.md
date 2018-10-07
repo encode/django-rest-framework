@@ -562,6 +562,19 @@ The serializer method referred to by the `method_name` argument should accept a 
 
 ---
 
+By default, `SerializerMethodField`s are assumed to return a string.  If your method returns something else, and you want your OpenAPI schema to be consistent, you should create a custom class that inherits from both `SerializerMethodField` and the other field.  For example:
+
+    from rest_framework import serializers
+
+    class IntegerMethodField(serializers.SerializerMethodField, serializers.IntegerField):
+        pass
+
+    class UserSerializer(serializers.ModelSerializer):
+        days_since_joined = IntegerMethodField()
+        ....
+
+---
+
 # Custom fields
 
 If you want to create a custom field, you'll need to subclass `Field` and then override either one or both of the `.to_representation()` and `.to_internal_value()` methods.  These two methods are used to convert between the initial datatype, and a primitive, serializable datatype. Primitive datatypes will typically be any of a number, string, boolean, `date`/`time`/`datetime` or `None`. They may also be any list or dictionary like object that only contains other primitive objects. Other types might be supported, depending on the renderer that you are using.
