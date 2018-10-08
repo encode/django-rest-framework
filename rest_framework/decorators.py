@@ -81,7 +81,7 @@ def api_view(http_method_names=None, exclude_from_schema=False):
             warnings.warn(
                 "The `exclude_from_schema` argument to `api_view` is deprecated. "
                 "Use the `schema` decorator instead, passing `None`.",
-                DeprecationWarning
+                DeprecationWarning, stacklevel=2
             )
             WrappedAPIView.exclude_from_schema = exclude_from_schema
 
