@@ -90,6 +90,28 @@ When using viewsets, you should use the relevant action names as delimiters.
         Create a new user instance.
         """
 
+Custom actions on viewsets can also be documented in a similar way using the method names
+as delimiters or by attaching the documentation to action mapping methods.
+    
+    class UserViewSet(viewsets.ModelViewset):
+        ...
+        
+        @action(detail=False, methods=['get', 'post'])
+        def some_action(self, request, *args, **kwargs):
+            """
+            get:
+            A description of the get method on the custom action.
+    
+            post:
+            A description of the post method on the custom action.
+            """
+
+        @some_action.mapping.put
+        def put_some_action():
+            """
+            A description of the put method on the custom action.
+            """
+
 
 ### `documentation` API Reference
 

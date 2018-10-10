@@ -114,6 +114,24 @@ class ExampleViewSet(ModelViewSet):
         assert self.action
         return super(ExampleViewSet, self).get_serializer(*args, **kwargs)
 
+    @action(methods=['get', 'post'], detail=False)
+    def documented_custom_action(self, request):
+        """
+        get:
+        A description of the get method on the custom action.
+
+        post:
+        A description of the post method on the custom action.
+        """
+        pass
+
+    @documented_custom_action.mapping.put
+    def put_documented_custom_action(self, request, *args, **kwargs):
+        """
+        A description of the put method on the custom action from mapping.
+        """
+        pass
+
 
 if coreapi:
     schema_view = get_schema_view(title='Example API')
@@ -159,6 +177,13 @@ class TestRouterGeneratedSchema(TestCase):
                             url='/example/custom_list_action_multiple_methods/',
                             action='get',
                             description='Custom description.',
+                        )
+                    },
+                    'documented_custom_action': {
+                        'read': coreapi.Link(
+                            url='/example/documented_custom_action/',
+                            action='get',
+                            description='A description of the get method on the custom action.',
                         )
                     },
                     'read': coreapi.Link(
@@ -261,6 +286,33 @@ class TestRouterGeneratedSchema(TestCase):
                             url='/example/custom_list_action_multiple_methods/',
                             action='delete',
                             description='Deletion description.',
+                        ),
+                    },
+                    'documented_custom_action': {
+                        'read': coreapi.Link(
+                            url='/example/documented_custom_action/',
+                            action='get',
+                            description='A description of the get method on the custom action.',
+                        ),
+                        'create': coreapi.Link(
+                            url='/example/documented_custom_action/',
+                            action='post',
+                            description='A description of the post method on the custom action.',
+                            encoding='application/json',
+                            fields=[
+                                coreapi.Field('a', required=True, location='form', schema=coreschema.String(title='A', description='A field description')),
+                                coreapi.Field('b', required=False, location='form', schema=coreschema.String(title='B'))
+                            ]
+                        ),
+                        'update': coreapi.Link(
+                            url='/example/documented_custom_action/',
+                            action='put',
+                            description='A description of the put method on the custom action from mapping.',
+                            encoding='application/json',
+                            fields=[
+                                coreapi.Field('a', required=True, location='form', schema=coreschema.String(title='A', description='A field description')),
+                                coreapi.Field('b', required=False, location='form', schema=coreschema.String(title='B'))
+                            ]
                         ),
                     },
                     'update': coreapi.Link(
@@ -547,6 +599,13 @@ class TestSchemaGeneratorWithMethodLimitedViewSets(TestCase):
                             action='get',
                             description='Custom description.',
                         )
+                    },
+                    'documented_custom_action': {
+                        'read': coreapi.Link(
+                            url='/example1/documented_custom_action/',
+                            action='get',
+                            description='A description of the get method on the custom action.',
+                        ),
                     },
                     'read': coreapi.Link(
                         url='/example1/{id}/',
