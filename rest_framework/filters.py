@@ -85,6 +85,9 @@ class SearchFilter(BaseFilterBackend):
             opts = queryset.model._meta
             if search_field[0] in self.lookup_prefixes:
                 search_field = search_field[1:]
+            # Annotated fields do not need to be distinct
+            if isinstance(queryset, models.QuerySet) and search_field in queryset.query.annotations:
+                return False
             parts = search_field.split(LOOKUP_SEP)
             for part in parts:
                 field = opts.get_field(part)
