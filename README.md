@@ -25,8 +25,9 @@ The initial aim is to provide a single full-time position on REST framework.
 [![][rollbar-img]][rollbar-url]
 [![][cadre-img]][cadre-url]
 [![][load-impact-img]][load-impact-url]
+[![][kloudless-img]][kloudless-url]
 
-Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Rover][rover-url], [Sentry][sentry-url], [Stream][stream-url], [Rollbar][rollbar-url], [Cadre][cadre-url], and [Load Impact][load-impact-url].
+Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Rover][rover-url], [Sentry][sentry-url], [Stream][stream-url], [Rollbar][rollbar-url], [Cadre][cadre-url], [Load Impact][load-impact-url], and [Kloudless][kloudless-url].
 
 ---
 
@@ -194,6 +195,7 @@ Send a description of the issue via email to [rest-framework-security@googlegrou
 [rollbar-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/rollbar-readme.png
 [cadre-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/cadre-readme.png
 [load-impact-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/load-impact-readme.png
+[kloudless-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/kloudless-readme.png
 
 [rover-url]: http://jobs.rover.com/
 [sentry-url]: https://getsentry.com/welcome/
@@ -201,6 +203,7 @@ Send a description of the issue via email to [rest-framework-security@googlegrou
 [rollbar-url]: https://rollbar.com/
 [cadre-url]: https://cadre.com/
 [load-impact-url]: https://loadimpact.com/?utm_campaign=Sponsorship%20links&utm_source=drf&utm_medium=drf
+[kloudless-url]: https://hubs.ly/H0f30Lf0
 
 [oauth1-section]: https://www.django-rest-framework.org/api-guide/authentication/#django-rest-framework-oauth
 [oauth2-section]: https://www.django-rest-framework.org/api-guide/authentication/#django-oauth-toolkit

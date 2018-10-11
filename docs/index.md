@@ -72,10 +72,11 @@ continued development by **[signing up for a paid plan][funding]**.
     <li><a href="https://rollbar.com" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/rollbar2.png)">Rollbar</a></li>
     <li><a href="https://cadre.com" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/cadre.png)">Cadre</a></li>
     <li><a href="https://loadimpact.com/?utm_campaign=Sponsorship%20links&utm_source=drf&utm_medium=drf" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/load-impact.png)">Load Impact</a></li>
+    <li><a href="https://hubs.ly/H0f30Lf0" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/kloudless.png)">Kloudless</a></li>
 </ul>
 <div style="clear: both; padding-bottom: 20px;"></div>
 
-*Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Rover](http://jobs.rover.com/), [Sentry](https://getsentry.com/welcome/), [Stream](https://getstream.io/?utm_source=drf&utm_medium=banner&utm_campaign=drf), [Rollbar](https://rollbar.com), [Cadre](https://cadre.com), and [Load Impact](https://loadimpact.com/?utm_campaign=Sponsorship%20links&utm_source=drf&utm_medium=drf).*
+*Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Rover](http://jobs.rover.com/), [Sentry](https://getsentry.com/welcome/), [Stream](https://getstream.io/?utm_source=drf&utm_medium=banner&utm_campaign=drf), [Rollbar](https://rollbar.com), [Cadre](https://cadre.com), [Load Impact](https://loadimpact.com/?utm_campaign=Sponsorship%20links&utm_source=drf&utm_medium=drf), and [Kloudless](https://hubs.ly/H0f30Lf0).*
 
 ---
 
