@@ -6,7 +6,7 @@
   <meta charset="utf-8">
   <title>Validators - Django REST framework</title>
   <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
-  <link rel="canonical" href="http://www.django-rest-framework.org/api-guide/validators/" />
+  <link rel="canonical" href="https://www.django-rest-framework.org/api-guide/validators/" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Django, API, REST, Validators">
   <meta name="author" content="Tom Christie">
@@ -70,7 +70,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
-          <a class="brand" href="http://www.django-rest-framework.org">Django REST framework</a>
+          <a class="brand" href="https://www.django-rest-framework.org/">Django REST framework</a>
           <div class="nav-collapse collapse">
             
             <!-- Main navigation -->
@@ -180,6 +180,10 @@
                   </li>
                   
                   <li >
+                    <a href="../caching/">Caching</a>
+                  </li>
+                  
+                  <li >
                     <a href="../throttling/">Throttling</a>
                   </li>
                   
@@ -270,76 +274,83 @@
                     <a href="../../topics/rest-hypermedia-hateoas/">REST, Hypermedia & HATEOAS</a>
                   </li>
                   
+                </ul>
+              </li>
+                
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Community <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
                   <li >
-                    <a href="../../topics/third-party-packages/">Third Party Packages</a>
+                    <a href="../../community/tutorials-and-resources/">Tutorials and Resources</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/tutorials-and-resources/">Tutorials and Resources</a>
+                    <a href="../../community/third-party-packages/">Third Party Packages</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/contributing/">Contributing to REST framework</a>
+                    <a href="../../community/contributing/">Contributing to REST framework</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/project-management/">Project management</a>
+                    <a href="../../community/project-management/">Project management</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/jobs/">Jobs</a>
+                    <a href="../../community/release-notes/">Release Notes</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.0-announcement/">3.0 Announcement</a>
+                    <a href="../../community/3.8-announcement/">3.8 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.1-announcement/">3.1 Announcement</a>
+                    <a href="../../community/3.7-announcement/">3.7 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.2-announcement/">3.2 Announcement</a>
+                    <a href="../../community/3.6-announcement/">3.6 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.3-announcement/">3.3 Announcement</a>
+                    <a href="../../community/3.5-announcement/">3.5 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.4-announcement/">3.4 Announcement</a>
+                    <a href="../../community/3.4-announcement/">3.4 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.5-announcement/">3.5 Announcement</a>
+                    <a href="../../community/3.3-announcement/">3.3 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.6-announcement/">3.6 Announcement</a>
+                    <a href="../../community/3.2-announcement/">3.2 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.7-announcement/">3.7 Announcement</a>
+                    <a href="../../community/3.1-announcement/">3.1 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.8-announcement/">3.8 Announcement</a>
+                    <a href="../../community/3.0-announcement/">3.0 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
+                    <a href="../../community/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/mozilla-grant/">Mozilla Grant</a>
+                    <a href="../../community/mozilla-grant/">Mozilla Grant</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/funding/">Funding</a>
+                    <a href="../../community/funding/">Funding</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/release-notes/">Release Notes</a>
+                    <a href="../../community/jobs/">Jobs</a>
                   </li>
                   
                 </ul>
@@ -691,7 +702,7 @@ that the resulting behavior is more transparent.</p>
 <h4 id="field-level-validation"><a class="toclink" href="#field-level-validation">Field-level validation</a></h4>
 <p>You can specify custom field-level validation by adding <code>.validate_&lt;field_name&gt;</code> methods
 to your <code>Serializer</code> subclass. This is documented in the
-<a href="http://www.django-rest-framework.org/api-guide/serializers/#field-level-validation">Serializer docs</a></p>
+<a href="https://www.django-rest-framework.org/api-guide/serializers/#field-level-validation">Serializer docs</a></p>
 <h2 id="class-based"><a class="toclink" href="#class-based">Class-based</a></h2>
 <p>To write a class-based validator, use the <code>__call__</code> method. Class-based validators are useful as they allow you to parameterize and reuse behavior.</p>
 <pre><code>class MultipleOf(object):

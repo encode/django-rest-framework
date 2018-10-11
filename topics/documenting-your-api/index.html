@@ -6,7 +6,7 @@
   <meta charset="utf-8">
   <title>Documenting your API - Django REST framework</title>
   <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
-  <link rel="canonical" href="http://www.django-rest-framework.org/topics/documenting-your-api/" />
+  <link rel="canonical" href="https://www.django-rest-framework.org/topics/documenting-your-api/" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Django, API, REST, Documenting your API">
   <meta name="author" content="Tom Christie">
@@ -70,7 +70,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
-          <a class="brand" href="http://www.django-rest-framework.org">Django REST framework</a>
+          <a class="brand" href="https://www.django-rest-framework.org/">Django REST framework</a>
           <div class="nav-collapse collapse">
             
             <!-- Main navigation -->
@@ -180,6 +180,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../api-guide/caching/">Caching</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../api-guide/throttling/">Throttling</a>
                   </li>
                   
@@ -270,76 +274,83 @@
                     <a href="../rest-hypermedia-hateoas/">REST, Hypermedia & HATEOAS</a>
                   </li>
                   
+                </ul>
+              </li>
+                
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Community <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
                   <li >
-                    <a href="../third-party-packages/">Third Party Packages</a>
+                    <a href="../../community/tutorials-and-resources/">Tutorials and Resources</a>
                   </li>
                   
                   <li >
-                    <a href="../tutorials-and-resources/">Tutorials and Resources</a>
+                    <a href="../../community/third-party-packages/">Third Party Packages</a>
                   </li>
                   
                   <li >
-                    <a href="../contributing/">Contributing to REST framework</a>
+                    <a href="../../community/contributing/">Contributing to REST framework</a>
                   </li>
                   
                   <li >
-                    <a href="../project-management/">Project management</a>
+                    <a href="../../community/project-management/">Project management</a>
                   </li>
                   
                   <li >
-                    <a href="../jobs/">Jobs</a>
+                    <a href="../../community/release-notes/">Release Notes</a>
                   </li>
                   
                   <li >
-                    <a href="../3.0-announcement/">3.0 Announcement</a>
+                    <a href="../../community/3.8-announcement/">3.8 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../3.1-announcement/">3.1 Announcement</a>
+                    <a href="../../community/3.7-announcement/">3.7 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../3.2-announcement/">3.2 Announcement</a>
+                    <a href="../../community/3.6-announcement/">3.6 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../3.3-announcement/">3.3 Announcement</a>
+                    <a href="../../community/3.5-announcement/">3.5 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../3.4-announcement/">3.4 Announcement</a>
+                    <a href="../../community/3.4-announcement/">3.4 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../3.5-announcement/">3.5 Announcement</a>
+                    <a href="../../community/3.3-announcement/">3.3 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../3.6-announcement/">3.6 Announcement</a>
+                    <a href="../../community/3.2-announcement/">3.2 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../3.7-announcement/">3.7 Announcement</a>
+                    <a href="../../community/3.1-announcement/">3.1 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../3.8-announcement/">3.8 Announcement</a>
+                    <a href="../../community/3.0-announcement/">3.0 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../kickstarter-announcement/">Kickstarter Announcement</a>
+                    <a href="../../community/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../mozilla-grant/">Mozilla Grant</a>
+                    <a href="../../community/mozilla-grant/">Mozilla Grant</a>
                   </li>
                   
                   <li >
-                    <a href="../funding/">Funding</a>
+                    <a href="../../community/funding/">Funding</a>
                   </li>
                   
                   <li >
-                    <a href="../release-notes/">Release Notes</a>
+                    <a href="../../community/jobs/">Jobs</a>
                   </li>
                   
                 </ul>
@@ -424,7 +435,7 @@
               <h1 id="documenting-your-api"><a class="toclink" href="#documenting-your-api">Documenting your API</a></h1>
 <blockquote>
 <p>A REST API should spend almost all of its descriptive effort in defining the media type(s) used for representing resources and driving application state.</p>
-<p>&mdash; Roy Fielding, <a href="http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven">REST APIs must be hypertext driven</a></p>
+<p>&mdash; Roy Fielding, <a href="https://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven">REST APIs must be hypertext driven</a></p>
 </blockquote>
 <p>REST framework provides built-in support for API documentation. There are also a number of great third-party documentation tools available.</p>
 <h2 id="built-in-api-documentation"><a class="toclink" href="#built-in-api-documentation">Built-in API documentation</a></h2>
@@ -435,10 +446,10 @@
 <li>Support for API interaction.</li>
 </ul>
 <h3 id="installation"><a class="toclink" href="#installation">Installation</a></h3>
-<p>The <code>coreapi</code> library is required as a dependancy for the API docs. Make sure
+<p>The <code>coreapi</code> library is required as a dependency for the API docs. Make sure
 to install the latest version. The <code>pygments</code> and <code>markdown</code> libraries
 are optional but recommended.</p>
-<p>To install the API documentation, you'll need to include it in your projects URLconf:</p>
+<p>To install the API documentation, you'll need to include it in your project's URLconf:</p>
 <pre><code>from rest_framework.documentation import include_docs_urls
 
 urlpatterns = [
@@ -454,7 +465,7 @@ urlpatterns = [
 <hr />
 <p><strong>Note</strong>: By default <code>include_docs_urls</code> configures the underlying <code>SchemaView</code> to generate <em>public</em> schemas.
 This means that views will not be instantiated with a <code>request</code> instance. i.e. Inside the view <code>self.request</code> will be <code>None</code>.</p>
-<p>To be compatible with this behaviour methods (such as <code>get_serializer</code> or <code>get_serializer_class</code> etc.) which inspect <code>self.request</code> or, particularly, <code>self.request.user</code> may need to be adjusted to handle this case.</p>
+<p>To be compatible with this behaviour, methods (such as <code>get_serializer</code> or <code>get_serializer_class</code> etc.) which inspect <code>self.request</code> or, particularly, <code>self.request.user</code> may need to be adjusted to handle this case.</p>
 <p>You may ensure views are given a <code>request</code> instance by calling <code>include_docs_urls</code> with <code>public=False</code>:</p>
 <pre><code>from rest_framework.documentation import include_docs_urls
 
@@ -495,6 +506,27 @@ For example:</p>
     create:
     Create a new user instance.
     """
+</code></pre>
+<p>Custom actions on viewsets can also be documented in a similar way using the method names
+as delimiters or by attaching the documentation to action mapping methods.</p>
+<pre><code>class UserViewSet(viewsets.ModelViewset):
+    ...
+
+    @action(detail=False, methods=['get', 'post'])
+    def some_action(self, request, *args, **kwargs):
+        """
+        get:
+        A description of the get method on the custom action.
+
+        post:
+        A description of the post method on the custom action.
+        """
+
+    @some_action.mapping.put
+    def put_some_action():
+        """
+        A description of the put method on the custom action.
+        """
 </code></pre>
 <h3 id="documentation-api-reference"><a class="toclink" href="#documentation-api-reference"><code>documentation</code> API Reference</a></h3>
 <p>The <code>rest_framework.documentation</code> module provides three helper functions to help configure the interactive API documentation, <code>include_docs_urls</code> (usage shown above), <code>get_docs_view</code> and <code>get_schemajs_view</code>.</p>
@@ -632,7 +664,7 @@ out-of-the-box by Django Rest Framework. Its goals are:</p>
     [ref]: http://example.com/activating-accounts
     """
 </code></pre>
-<p>Note that when using viewsets the basic docstring is used for all generated views.  To provide descriptions for each view, such as for the the list and retrieve views, use docstring sections as described in <a href="../../api-guide/schemas/#example">Schemas as documentation: Examples</a>.</p>
+<p>Note that when using viewsets the basic docstring is used for all generated views.  To provide descriptions for each view, such as for the the list and retrieve views, use docstring sections as described in <a href="../../api-guide/schemas/#examples">Schemas as documentation: Examples</a>.</p>
 <h4 id="the-options-method"><a class="toclink" href="#the-options-method">The <code>OPTIONS</code> method</a></h4>
 <p>REST framework APIs also support programmatically accessible descriptions, using the <code>OPTIONS</code> HTTP method.  A view will respond to an <code>OPTIONS</code> request with metadata including the name, description, and the various media types it accepts and responds with.</p>
 <p>When using the generic views, any <code>OPTIONS</code> requests will additionally respond with metadata regarding any <code>POST</code> or <code>PUT</code> actions available, describing which fields are on the serializer.</p>

@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <title>3.6 Announcement - Django REST framework</title>
+  <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
+  <link rel="canonical" href="https://www.django-rest-framework.org/community/3.6-announcement/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Django, API, REST, 3.6 Announcement">
+  <meta name="author" content="Tom Christie">
+
+  <!-- Le styles -->
+  <link href="../../css/prettify.css" rel="stylesheet">
+  <link href="../../css/bootstrap.css" rel="stylesheet">
+  <link href="../../css/bootstrap-responsive.css" rel="stylesheet">
+  <link href="../../css/default.css" rel="stylesheet">
+
+  <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-18852272-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script');
+      ga.type = 'text/javascript';
+      ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+  <style>
+  #sidebarInclude img {
+      margin-bottom: 10px;
+  }
+  #sidebarInclude a.promo {
+      color: black;
+  }
+    @media (max-width: 767px) {
+      div.promo {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body onload="prettyPrint()" class="-page">
+
+  <div class="wrapper">
+        <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="repo-link btn btn-primary btn-small" href="https://github.com/encode/django-rest-framework/tree/master">GitHub</a>
+          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../3.5-announcement/">
+            Next <i class="icon-arrow-right icon-white"></i>
+          </a>
+          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../3.7-announcement/">
+            <i class="icon-arrow-left icon-white"></i> Previous
+          </a>
+          <a id="search_modal_show" class="repo-link btn btn-inverse btn-small" href="#mkdocs_search_modal" data-toggle="modal" data-target="#mkdocs_search_modal"><i class="icon-search icon-white"></i> Search</a>
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="https://www.django-rest-framework.org/">Django REST framework</a>
+          <div class="nav-collapse collapse">
+            
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+               
+              <li >
+                <a href="../..">Home</a>
+              </li>
+                
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorial <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../../tutorial/quickstart/">Quickstart</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/1-serialization/">1 - Serialization</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/2-requests-and-responses/">2 - Requests and responses</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/3-class-based-views/">3 - Class based views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/4-authentication-and-permissions/">4 - Authentication and permissions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/5-relationships-and-hyperlinked-apis/">5 - Relationships and hyperlinked APIs</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/6-viewsets-and-routers/">6 - Viewsets and routers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/7-schemas-and-client-libraries/">7 - Schemas and client libraries</a>
+                  </li>
+                  
+                </ul>
+              </li>
+                
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">API Guide <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../../api-guide/requests/">Requests</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/responses/">Responses</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/views/">Views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/generic-views/">Generic views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/viewsets/">Viewsets</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/routers/">Routers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/parsers/">Parsers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/renderers/">Renderers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/serializers/">Serializers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/fields/">Serializer fields</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/relations/">Serializer relations</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/validators/">Validators</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/authentication/">Authentication</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/permissions/">Permissions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/caching/">Caching</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/throttling/">Throttling</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/filtering/">Filtering</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/pagination/">Pagination</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/versioning/">Versioning</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/content-negotiation/">Content negotiation</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/metadata/">Metadata</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/schemas/">Schemas</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/format-suffixes/">Format suffixes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/reverse/">Returning URLs</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/exceptions/">Exceptions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/status-codes/">Status codes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/testing/">Testing</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/settings/">Settings</a>
+                  </li>
+                  
+                </ul>
+              </li>
+                
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Topics <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../../topics/documenting-your-api/">Documenting your API</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/api-clients/">API Clients</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/internationalization/">Internationalization</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/ajax-csrf-cors/">AJAX, CSRF & CORS</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/html-and-forms/">HTML & Forms</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/browser-enhancements/">Browser Enhancements</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/browsable-api/">The Browsable API</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/rest-hypermedia-hateoas/">REST, Hypermedia & HATEOAS</a>
+                  </li>
+                  
+                </ul>
+              </li>
+                
+              <li class="dropdown active">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Community <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../tutorials-and-resources/">Tutorials and Resources</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../third-party-packages/">Third Party Packages</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../contributing/">Contributing to REST framework</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../project-management/">Project management</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../release-notes/">Release Notes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../3.8-announcement/">3.8 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../3.7-announcement/">3.7 Announcement</a>
+                  </li>
+                  
+                  <li class="active" >
+                    <a href="./">3.6 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../3.5-announcement/">3.5 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../3.4-announcement/">3.4 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../3.3-announcement/">3.3 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../3.2-announcement/">3.2 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../3.1-announcement/">3.1 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../3.0-announcement/">3.0 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../kickstarter-announcement/">Kickstarter Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../mozilla-grant/">Mozilla Grant</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../funding/">Funding</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../jobs/">Jobs</a>
+                  </li>
+                  
+                </ul>
+              </li>
+               
+
+            </ul>
+            
+          </div>
+          <!--/.nav-collapse -->
+
+        </div>
+      </div>
+    </div>
+
+    <div class="body-content">
+      <div class="container-fluid">
+        <!-- Search Modal -->
+        <div id="mkdocs_search_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3 id="myModalLabel">Documentation search</h3>
+          </div>
+
+          <div class="modal-body">
+            <form role="form" autocomplete="off">
+              <div class="form-group">
+                <input type="text" name="q" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+              </div>
+            </form>
+            <div id="mkdocs-search-results"></div>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="span3">
+            <div id="table-of-contents">
+              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
+                
+
+                
+                  <li class="main">
+                    <a href="#django-rest-framework-36">Django REST framework 3.6</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#funding">Funding</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#interactive-api-documentation">Interactive API documentation</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#javascript-client-library">JavaScript client library</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#authentication-classes-for-the-python-client-library">Authentication classes for the Python client library</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#deprecations">Deprecations</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#whats-next">What's next</a>
+                    </li>
+                  
+                
+
+                  <div class="promo">
+                    <hr/>
+                    <div id="sidebarInclude">
+                  </div>
+              </ul>
+
+            </div>
+          </div>
+
+          <div id="main-content" class="span9">
+            
+              
+
+              <style>
+.promo li a {
+    float: left;
+    width: 130px;
+    height: 20px;
+    text-align: center;
+    margin: 10px 30px;
+    padding: 150px 0 0 0;
+    background-position: 0 50%;
+    background-size: 130px auto;
+    background-repeat: no-repeat;
+    font-size: 120%;
+    color: black;
+}
+.promo li {
+    list-style: none;
+}
+</style>
+
+<h1 id="django-rest-framework-36"><a class="toclink" href="#django-rest-framework-36">Django REST framework 3.6</a></h1>
+<p>The 3.6 release adds two major new features to REST framework.</p>
+<ol>
+<li>Built-in interactive API documentation support.</li>
+<li>A new JavaScript client&nbsp;library.</li>
+</ol>
+<p><img alt="API Documentation" src="../../img/api-docs.gif" /></p>
+<p><em>Above: The interactive API documentation.</em></p>
+<hr />
+<h2 id="funding"><a class="toclink" href="#funding">Funding</a></h2>
+<p>The 3.6 release would not have been possible without our <a href="../mozilla-grant/">backing from Mozilla</a> to the project, and our <a href="../funding/">collaborative funding&nbsp;model</a>.</p>
+<p>If you use REST framework commercially and would like to see this work continue,
+we strongly encourage you to invest in its continued development by
+<strong><a href="../funding/">signing up for a paid&nbsp;plan</a></strong>.</p>
+<ul class="premium-promo promo">
+    <li><a href="http://jobs.rover.com/" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/rover_130x130.png)">Rover.com</a></li>
+    <li><a href="https://getsentry.com/welcome/" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/sentry130.png)">Sentry</a></li>
+    <li><a href="https://getstream.io/try-the-api/?utm_source=drf&utm_medium=banner&utm_campaign=drf" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/stream-130.png)">Stream</a></li>
+    <li><a href="https://hello.machinalis.co.uk/" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/Machinalis130.png)">Machinalis</a></li>
+    <li><a href="https://rollbar.com" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/rollbar.png)">Rollbar</a></li>
+    <li><a href="https://micropyramid.com/django-rest-framework-development-services/" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/mp-text-logo.png)">MicroPyramid</a></li>
+</ul>
+
+<div style="clear: both; padding-bottom: 20px;"></div>
+
+<p><em>Many thanks to all our <a href="https://fund.django-rest-framework.org/topics/funding/#our-sponsors">sponsors</a>, and in particular to our premium backers, <a href="http://jobs.rover.com/">Rover</a>, <a href="https://getsentry.com/welcome/">Sentry</a>, <a href="https://getstream.io/?utm_source=drf&amp;utm_medium=banner&amp;utm_campaign=drf">Stream</a>, <a href="https://hello.machinalis.co.uk/">Machinalis</a>, <a href="https://rollbar.com">Rollbar</a>, and <a href="https://micropyramid.com/django-rest-framework-development-services/">MicroPyramid</a>.</em></p>
+<hr />
+<h2 id="interactive-api-documentation"><a class="toclink" href="#interactive-api-documentation">Interactive API documentation</a></h2>
+<p>REST framework's new API documentation supports a number of features:</p>
+<ul>
+<li>Live API interaction.</li>
+<li>Support for various authentication schemes.</li>
+<li>Code snippets for the Python, JavaScript, and Command Line clients.</li>
+</ul>
+<p>The <code>coreapi</code> library is required as a dependancy for the API docs. Make sure
+to install the latest version (2.3.0 or above). The <code>pygments</code> and <code>markdown</code>
+libraries are optional but recommended.</p>
+<p>To install the API documentation, you'll need to include it in your projects URLconf:</p>
+<pre><code>from rest_framework.documentation import include_docs_urls
+
+API_TITLE = 'API title'
+API_DESCRIPTION = '...'
+
+urlpatterns = [
+    ...
+    url(r'^docs/', include_docs_urls(title=API_TITLE, description=API_DESCRIPTION))
+]
+</code></pre>
+<p>Once installed you should see something a little like this:</p>
+<p><img alt="API Documentation" src="../../img/api-docs.png" /></p>
+<p>We'll likely be making further refinements to the API documentation over the
+coming weeks. Keep in mind that this is a new feature, and please do give
+us feedback if you run into any issues or limitations.</p>
+<p>For more information on documenting your API endpoints see the <a href="../../topics/documenting-your-api/">"Documenting your API"</a> section.</p>
+<hr />
+<h2 id="javascript-client-library"><a class="toclink" href="#javascript-client-library">JavaScript client library</a></h2>
+<p>The JavaScript client library allows you to load an API schema, and then interact
+with that API at an application layer interface, rather than constructing fetch
+requests explicitly.</p>
+<p>Here's a brief example that demonstrates:</p>
+<ul>
+<li>Loading the client library and schema.</li>
+<li>Instantiating an authenticated client.</li>
+<li>Making an API request using the client.</li>
+</ul>
+<p><strong>index.html</strong></p>
+<pre><code>&lt;html&gt;
+    &lt;head&gt;
+        &lt;script src="/static/rest_framework/js/coreapi-0.1.0.js"&gt;&lt;/script&gt;
+        &lt;script src="/docs/schema.js"&gt;&lt;/script&gt;
+        &lt;script&gt;
+            const coreapi = window.coreapi
+            const schema = window.schema
+
+            // Instantiate a client...
+            let auth = coreapi.auth.TokenAuthentication({scheme: 'JWT', token: 'xxx'})
+            let client = coreapi.Client({auth: auth})
+
+            // Make an API request...
+            client.action(schema, ['projects', 'list']).then(function(result) {
+                alert(result)
+            })
+        &lt;/script&gt;
+    &lt;/head&gt;
+&lt;/html&gt;
+</code></pre>
+<p>The JavaScript client library supports various authentication schemes, and can be
+used by your project itself, or as an external client interacting with your API.</p>
+<p>The client is not limited to usage with REST framework APIs, although it does
+currently only support loading CoreJSON API schemas. Support for Swagger and
+other API schemas is planned.</p>
+<p>For more details see the <a href="../../topics/api-clients/#javascript-client-library">JavaScript client library documentation</a>.</p>
+<h2 id="authentication-classes-for-the-python-client-library"><a class="toclink" href="#authentication-classes-for-the-python-client-library">Authentication classes for the Python client library</a></h2>
+<p>Previous authentication support in the Python client library was limited to
+allowing users to provide explicit header values.</p>
+<p>We now have better support for handling the details of authentication, with
+the introduction of the <code>BasicAuthentication</code>, <code>TokenAuthentication</code>, and
+<code>SessionAuthentication</code> schemes.</p>
+<p>You can include the authentication scheme when instantiating a new client.</p>
+<pre><code>auth = coreapi.auth.TokenAuthentication(scheme='JWT', token='xxx-xxx-xxx')
+client = coreapi.Client(auth=auth)
+</code></pre>
+<p>For more information see the <a href="../../topics/api-clients/#python-client-library">Python client library documentation</a>.</p>
+<hr />
+<h2 id="deprecations"><a class="toclink" href="#deprecations">Deprecations</a></h2>
+<h3 id="updating-coreapi"><a class="toclink" href="#updating-coreapi">Updating coreapi</a></h3>
+<p>If you're using REST framework's schema generation, or want to use the API docs,
+then you'll need to update to the latest version of coreapi. (2.3.0)</p>
+<h3 id="generating-schemas-from-router"><a class="toclink" href="#generating-schemas-from-router">Generating schemas from Router</a></h3>
+<p>The 3.5 "pending deprecation" of router arguments for generating a schema view, such as <code>schema_title</code>, <code>schema_url</code> and <code>schema_renderers</code>, have now been escalated to a
+"deprecated" warning.</p>
+<p>Instead of using <code>DefaultRouter(schema_title='Example API')</code>, you should use the <code>get_schema_view()</code> function, and include the view explicitly in your URL conf.</p>
+<h3 id="djangofilterbackend"><a class="toclink" href="#djangofilterbackend">DjangoFilterBackend</a></h3>
+<p>The 3.5 "pending deprecation" warning of the built-in <code>DjangoFilterBackend</code> has now
+been escalated to a "deprecated" warning.</p>
+<p>You should change your imports and REST framework filter settings as follows:</p>
+<ul>
+<li><code>rest_framework.filters.DjangoFilterBackend</code> becomes <code>django_filters.rest_framework.DjangoFilterBackend</code>.</li>
+<li><code>rest_framework.filters.FilterSet</code> becomes <code>django_filters.rest_framework.FilterSet</code>.</li>
+</ul>
+<hr />
+<h2 id="whats-next"><a class="toclink" href="#whats-next">What's next</a></h2>
+<p>There are likely to be a number of refinements to the API documentation and
+JavaScript client library over the coming weeks, which could include some of the following:</p>
+<ul>
+<li>Support for private API docs, requiring login.</li>
+<li>File upload and download support in the JavaScript client &amp; API docs.</li>
+<li>Comprehensive documentation for the JavaScript client library.</li>
+<li>Automatically including authentication details in the API doc code snippets.</li>
+<li>Adding authentication support in the command line client.</li>
+<li>Support for loading Swagger and other schemas in the JavaScript client.</li>
+<li>Improved support for documenting parameter schemas and response schemas.</li>
+<li>Refining the API documentation interaction modal.</li>
+</ul>
+<p>Once work on those refinements is complete, we'll be starting feature work
+on realtime support, for the 3.7 release.</p>
+            
+
+          </div> <!--/span-->
+        </div> <!--/row-->
+      </div> <!--/.fluid-container-->
+    </div> <!--/.body content-->
+    <div id="push"></div>
+  </div> <!--/.wrapper -->
+
+  <footer class="span12">
+    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.
+    </p>
+  </footer>
+
+  <!-- Le javascript
+  ================================================== -->
+  <!-- Placed at the end of the document so the pages load faster -->
+  <script src="../../js/jquery-1.8.1-min.js"></script>
+  <script src="../../js/prettify-1.0.js"></script>
+  <script src="../../js/bootstrap-2.1.1-min.js"></script>
+  <script src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
+  <script>var base_url = '../..';</script>
+  <script src="../../mkdocs/js/require.js"></script>
+  <script src="../../js/theme.js"></script>
+
+  <script>
+    var shiftWindow = function() {
+      scrollBy(0, -50)
+    };
+
+    if (location.hash) shiftWindow();
+    window.addEventListener("hashchange", shiftWindow);
+
+    $('.dropdown-menu').on('click touchstart', function(event) {
+      event.stopPropagation();
+    });
+
+    // Dynamically force sidenav/dropdown to no higher than browser window
+    $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
+
+    $(function() {
+      $(window).resize(function() {
+        $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
+      });
+    });
+  </script>
+</body>
+
+</html>

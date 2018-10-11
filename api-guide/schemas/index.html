@@ -6,7 +6,7 @@
   <meta charset="utf-8">
   <title>Schemas - Django REST framework</title>
   <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
-  <link rel="canonical" href="http://www.django-rest-framework.org/api-guide/schemas/" />
+  <link rel="canonical" href="https://www.django-rest-framework.org/api-guide/schemas/" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Django, API, REST, Schemas">
   <meta name="author" content="Tom Christie">
@@ -70,7 +70,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
-          <a class="brand" href="http://www.django-rest-framework.org">Django REST framework</a>
+          <a class="brand" href="https://www.django-rest-framework.org/">Django REST framework</a>
           <div class="nav-collapse collapse">
             
             <!-- Main navigation -->
@@ -180,6 +180,10 @@
                   </li>
                   
                   <li >
+                    <a href="../caching/">Caching</a>
+                  </li>
+                  
+                  <li >
                     <a href="../throttling/">Throttling</a>
                   </li>
                   
@@ -270,76 +274,83 @@
                     <a href="../../topics/rest-hypermedia-hateoas/">REST, Hypermedia & HATEOAS</a>
                   </li>
                   
+                </ul>
+              </li>
+                
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Community <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
                   <li >
-                    <a href="../../topics/third-party-packages/">Third Party Packages</a>
+                    <a href="../../community/tutorials-and-resources/">Tutorials and Resources</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/tutorials-and-resources/">Tutorials and Resources</a>
+                    <a href="../../community/third-party-packages/">Third Party Packages</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/contributing/">Contributing to REST framework</a>
+                    <a href="../../community/contributing/">Contributing to REST framework</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/project-management/">Project management</a>
+                    <a href="../../community/project-management/">Project management</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/jobs/">Jobs</a>
+                    <a href="../../community/release-notes/">Release Notes</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.0-announcement/">3.0 Announcement</a>
+                    <a href="../../community/3.8-announcement/">3.8 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.1-announcement/">3.1 Announcement</a>
+                    <a href="../../community/3.7-announcement/">3.7 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.2-announcement/">3.2 Announcement</a>
+                    <a href="../../community/3.6-announcement/">3.6 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.3-announcement/">3.3 Announcement</a>
+                    <a href="../../community/3.5-announcement/">3.5 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.4-announcement/">3.4 Announcement</a>
+                    <a href="../../community/3.4-announcement/">3.4 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.5-announcement/">3.5 Announcement</a>
+                    <a href="../../community/3.3-announcement/">3.3 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.6-announcement/">3.6 Announcement</a>
+                    <a href="../../community/3.2-announcement/">3.2 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.7-announcement/">3.7 Announcement</a>
+                    <a href="../../community/3.1-announcement/">3.1 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.8-announcement/">3.8 Announcement</a>
+                    <a href="../../community/3.0-announcement/">3.0 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
+                    <a href="../../community/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/mozilla-grant/">Mozilla Grant</a>
+                    <a href="../../community/mozilla-grant/">Mozilla Grant</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/funding/">Funding</a>
+                    <a href="../../community/funding/">Funding</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/release-notes/">Release Notes</a>
+                    <a href="../../community/jobs/">Jobs</a>
                   </li>
                   
                 </ul>
@@ -391,7 +402,11 @@
 
                   
                     <li>
-                      <a href="#install-core-api">Install Core API</a>
+                      <a href="#install-core-api-pyyaml">Install Core API &amp; PyYAML</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#quickstart">Quickstart</a>
                     </li>
                   
                     <li>
@@ -440,10 +455,6 @@
                   
                     <li>
                       <a href="#explicit-schema-definition">Explicit schema definition</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#static-schema-file">Static schema file</a>
                     </li>
                   
                 
@@ -521,13 +532,40 @@
 <p>API schemas are a useful tool that allow for a range of use cases, including
 generating reference documentation, or driving dynamic client libraries that
 can interact with your API.</p>
-<h2 id="install-core-api"><a class="toclink" href="#install-core-api">Install Core API</a></h2>
+<h2 id="install-core-api-pyyaml"><a class="toclink" href="#install-core-api-pyyaml">Install Core API &amp; PyYAML</a></h2>
 <p>You'll need to install the <code>coreapi</code> package in order to add schema support
-for REST framework.</p>
-<pre><code>pip install coreapi
+for REST framework. You probably also want to install <code>pyyaml</code>, so that you
+can render the schema into the commonly used YAML-based OpenAPI format.</p>
+<pre><code>pip install coreapi pyyaml
 </code></pre>
+<h2 id="quickstart"><a class="toclink" href="#quickstart">Quickstart</a></h2>
+<p>There are two different ways you can serve a schema description for you API.</p>
+<h3 id="generating-a-schema-with-the-generateschema-management-command"><a class="toclink" href="#generating-a-schema-with-the-generateschema-management-command">Generating a schema with the <code>generateschema</code> management command</a></h3>
+<p>To generate a static API schema, use the <code>generateschema</code> management command.</p>
+<pre><code class="shell">$ python manage.py generateschema &gt; schema.yml
+</code></pre>
+
+<p>Once you've generated a schema in this way you can annotate it with any
+additional information that cannot be automatically inferred by the schema
+generator.</p>
+<p>You might want to check your API schema into version control and update it
+with each new release, or serve the API schema from your site's static media.</p>
+<h3 id="adding-a-view-with-get_schema_view"><a class="toclink" href="#adding-a-view-with-get_schema_view">Adding a view with <code>get_schema_view</code></a></h3>
+<p>To add a dynamically generated schema view to your API, use <code>get_schema_view</code>.</p>
+<pre><code class="python">from rest_framework.schemas import get_schema_view
+
+schema_view = get_schema_view(title=&quot;Example API&quot;)
+
+urlpatterns = [
+    url('^schema$', schema_view),
+    ...
+]
+</code></pre>
+
+<p>See below <a href="#the-get_schema_view-shortcut">for more details</a> on customizing a
+dynamically generated schema view.</p>
 <h2 id="internal-schema-representation"><a class="toclink" href="#internal-schema-representation">Internal schema representation</a></h2>
-<p>REST framework uses <a href="http://www.coreapi.org/">Core API</a> in order to model schema information in
+<p>REST framework uses <a href="https://www.coreapi.org/">Core API</a> in order to model schema information in
 a format-independent representation. This information can then be rendered
 into various different schema formats, or used to generate API documentation.</p>
 <p>When using Core API, a schema is represented as a <code>Document</code> which is the
@@ -574,30 +612,17 @@ endpoint:</p>
 <h2 id="schema-output-formats"><a class="toclink" href="#schema-output-formats">Schema output formats</a></h2>
 <p>In order to be presented in an HTTP response, the internal representation
 has to be rendered into the actual bytes that are used in the response.</p>
-<p><a href="http://www.coreapi.org/specification/encoding/#core-json-encoding">Core JSON</a> is designed as a canonical format for use with Core API.
+<p>REST framework includes a few different renderers that you can use for
+encoding the API schema.</p>
+<ul>
+<li><code>renderers.OpenAPIRenderer</code> - Renders into YAML-based [OpenAPI][openapi], the most widely used API schema format.</li>
+<li><code>renderers.JSONOpenAPIRenderer</code> - Renders into JSON-based [OpenAPI][openapi].</li>
+<li><code>renderers.CoreJSONRenderer</code> - Renders into <a href="https://www.coreapi.org/specification/encoding/#core-json-encoding">Core JSON</a>, a format designed for
+use with the <code>coreapi</code> client library.</li>
+</ul>
+<p><a href="https://www.coreapi.org/specification/encoding/#core-json-encoding">Core JSON</a> is designed as a canonical format for use with Core API.
 REST framework includes a renderer class for handling this media type, which
 is available as <code>renderers.CoreJSONRenderer</code>.</p>
-<h3 id="alternate-schema-formats"><a class="toclink" href="#alternate-schema-formats">Alternate schema formats</a></h3>
-<p>Other schema formats such as <a href="https://openapis.org/">Open API</a> ("Swagger"),
-<a href="http://json-schema.org/latest/json-schema-hypermedia.html">JSON HyperSchema</a>, or <a href="https://apiblueprint.org/">API Blueprint</a> can also
-be supported by implementing a custom renderer class that handles converting a
-<code>Document</code> instance into a bytestring representation.</p>
-<p>If there is a Core API codec package that supports encoding into the format you
-want to use then implementing the renderer class can be done by using the codec.</p>
-<h4 id="example"><a class="toclink" href="#example">Example</a></h4>
-<p>For example, the <code>openapi_codec</code> package provides support for encoding or decoding
-to the Open API ("Swagger") format:</p>
-<pre><code>from rest_framework import renderers
-from openapi_codec import OpenAPICodec
-
-class SwaggerRenderer(renderers.BaseRenderer):
-    media_type = 'application/openapi+json'
-    format = 'swagger'
-
-    def render(self, data, media_type=None, renderer_context=None):
-        codec = OpenAPICodec()
-        return codec.dump(data)
-</code></pre>
 <h2 id="schemas-vs-hypermedia"><a class="toclink" href="#schemas-vs-hypermedia">Schemas vs Hypermedia</a></h2>
 <p>It's worth pointing out here that Core API can also be used to model hypermedia
 responses, which present an alternative interaction style to API schemas.</p>
@@ -626,7 +651,7 @@ example above.</p>
 </code></pre>
 <h2 id="automatic-schema-generation"><a class="toclink" href="#automatic-schema-generation">Automatic Schema Generation</a></h2>
 <p>Automatic schema generation is provided by the <code>SchemaGenerator</code> class.</p>
-<p><code>SchemaGenerator</code> processes a list of routed URL pattterns and compiles the
+<p><code>SchemaGenerator</code> processes a list of routed URL patterns and compiles the
 appropriately structured Core API Document.</p>
 <p>Basic usage is just to provide the title for your schema and call
 <code>get_schema()</code>:</p>
@@ -715,6 +740,13 @@ automatic generation elsewhere.</p>
         ...
         schema = None  # Will not appear in schema
 </code></pre>
+<p>This also applies to extra actions for <code>ViewSet</code>s:</p>
+<pre><code>    class CustomViewSet(viewsets.ModelViewSet):
+
+        @action(detail=True, schema=None)
+        def extra_action(self, request, pk=None):
+            ...
+</code></pre>
 <hr />
 <p><strong>Note</strong>: For full details on <code>SchemaGenerator</code> plus the <code>AutoSchema</code> and
 <code>ManualSchema</code> descriptors see the <a href="#api-reference">API Reference below</a>.</p>
@@ -772,13 +804,12 @@ ROOT_URLCONF setting.</p>
 <h4 id="renderer_classes"><a class="toclink" href="#renderer_classes"><code>renderer_classes</code></a></h4>
 <p>May be used to pass the set of renderer classes that can be used to render the API root endpoint.</p>
 <pre><code>from rest_framework.schemas import get_schema_view
-from rest_framework.renderers import CoreJSONRenderer
-from my_custom_package import APIBlueprintRenderer
+from rest_framework.renderers import JSONOpenAPIRenderer
 
 schema_view = get_schema_view(
     title='Server Monitoring API',
     url='https://www.example.org/api/',
-    renderer_classes=[CoreJSONRenderer, APIBlueprintRenderer]
+    renderer_classes=[JSONOpenAPIRenderer]
 )
 </code></pre>
 <h4 id="patterns"><a class="toclink" href="#patterns"><code>patterns</code></a></h4>
@@ -819,7 +850,7 @@ from rest_framework import renderers, response, schemas
 generator = schemas.SchemaGenerator(title='Bookings API')
 
 @api_view()
-@renderer_classes([renderers.CoreJSONRenderer])
+@renderer_classes([renderers.OpenAPIRenderer])
 def schema_view(request):
     schema = generator.get_schema(request)
     return response.Response(schema)
@@ -838,7 +869,7 @@ made visible to different users depending on their role.</p>
 <p>In order to present a schema with endpoints filtered by user permissions,
 you need to pass the <code>request</code> argument to the <code>get_schema()</code> method, like so:</p>
 <pre><code>@api_view()
-@renderer_classes([renderers.CoreJSONRenderer])
+@renderer_classes([renderers.OpenAPIRenderer])
 def schema_view(request):
     generator = schemas.SchemaGenerator(title='Bookings API')
     return response.Response(generator.get_schema(request=request))
@@ -860,19 +891,10 @@ schema = coreapi.Document(
 )
 
 @api_view()
-@renderer_classes([renderers.CoreJSONRenderer])
+@renderer_classes([renderers.OpenAPIRenderer])
 def schema_view(request):
     return response.Response(schema)
 </code></pre>
-<h2 id="static-schema-file"><a class="toclink" href="#static-schema-file">Static schema file</a></h2>
-<p>A final option is to write your API schema as a static file, using one
-of the available formats, such as Core JSON or Open API.</p>
-<p>You could then either:</p>
-<ul>
-<li>Write a schema definition as a static file, and <a href="https://docs.djangoproject.com/en/stable/howto/static-files/">serve the static file directly</a>.</li>
-<li>Write a schema definition that is loaded using <code>Core API</code>, and then
-  rendered to one of many available formats, depending on the client request.</li>
-</ul>
 <hr />
 <h1 id="schemas-as-documentation"><a class="toclink" href="#schemas-as-documentation">Schemas as documentation</a></h1>
 <p>One common usage of API schemas is to use them to build documentation pages.</p>
@@ -945,7 +967,7 @@ and collates the resulting CoreAPI Document.</p>
 <h3 id="get_schemaself-request"><a class="toclink" href="#get_schemaself-request">get_schema(self, request)</a></h3>
 <p>Returns a <code>coreapi.Document</code> instance that represents the API schema.</p>
 <pre><code>@api_view
-@renderer_classes([renderers.CoreJSONRenderer])
+@renderer_classes([renderers.OpenAPIRenderer])
 def schema_view(request):
     generator = schemas.SchemaGenerator(title='Bookings API')
     return Response(generator.get_schema())
@@ -999,13 +1021,13 @@ view docstring as described in the "Schemas as Documentation" section above.</p>
 with the given view. Eg. <code>'application/json'</code>. May return a blank string for views
 that do not expect a request body.</p>
 <h3 id="get_path_fieldsself-path-method"><a class="toclink" href="#get_path_fieldsself-path-method">get_path_fields(self, path, method):</a></h3>
-<p>Return a list of <code>coreapi.Link()</code> instances. One for each path parameter in the URL.</p>
+<p>Return a list of <code>coreapi.Field()</code> instances. One for each path parameter in the URL.</p>
 <h3 id="get_serializer_fieldsself-path-method"><a class="toclink" href="#get_serializer_fieldsself-path-method">get_serializer_fields(self, path, method)</a></h3>
-<p>Return a list of <code>coreapi.Link()</code> instances. One for each field in the serializer class used by the view.</p>
+<p>Return a list of <code>coreapi.Field()</code> instances. One for each field in the serializer class used by the view.</p>
 <h3 id="get_pagination_fieldsself-path-method"><a class="toclink" href="#get_pagination_fieldsself-path-method">get_pagination_fields(self, path, method)</a></h3>
-<p>Return a list of <code>coreapi.Link()</code> instances, as returned by the <code>get_schema_fields()</code> method on any pagination class used by the view.</p>
+<p>Return a list of <code>coreapi.Field()</code> instances, as returned by the <code>get_schema_fields()</code> method on any pagination class used by the view.</p>
 <h3 id="get_filter_fieldsself-path-method"><a class="toclink" href="#get_filter_fieldsself-path-method">get_filter_fields(self, path, method)</a></h3>
-<p>Return a list of <code>coreapi.Link()</code> instances, as returned by the <code>get_schema_fields()</code> method of any filter classes used by the view.</p>
+<p>Return a list of <code>coreapi.Field()</code> instances, as returned by the <code>get_schema_fields()</code> method of any filter classes used by the view.</p>
 <h3 id="get_manual_fieldsself-path-method"><a class="toclink" href="#get_manual_fieldsself-path-method">get_manual_fields(self, path, method)</a></h3>
 <p>Return a list of <code>coreapi.Field()</code> instances to be added to or replace generated fields. Defaults to (optional) <code>manual_fields</code> passed to <code>AutoSchema</code> constructor.</p>
 <p>May be overridden to customise manual fields by <code>path</code> or <code>method</code>. For example, a per-method adjustment may look like this:</p>
@@ -1130,7 +1152,7 @@ Valid only if a <code>location="body"</code> field is included on the <code>Link
 <hr />
 <h1 id="third-party-packages"><a class="toclink" href="#third-party-packages">Third party packages</a></h1>
 <h2 id="drf-yasg-yet-another-swagger-generator"><a class="toclink" href="#drf-yasg-yet-another-swagger-generator">drf-yasg - Yet Another Swagger Generator</a></h2>
-<p><a href="https://github.com/axnsan12/drf-yasg/">drf-yasg</a> generates <a href="https://openapis.org/">OpenAPI</a> documents suitable for code generation - nested schemas, 
+<p><a href="https://github.com/axnsan12/drf-yasg/">drf-yasg</a> generates <a href="https://openapis.org/">OpenAPI</a> documents suitable for code generation - nested schemas,
 named models, response bodies, enum/pattern/min/max validators, form parameters, etc.</p>
 <h2 id="drf-openapi"><a class="toclink" href="#drf-openapi">DRF OpenAPI</a></h2>
 <p><a href="https://github.com/limdauto/drf_openapi">DRF OpenAPI</a> renders the schema generated by Django Rest Framework

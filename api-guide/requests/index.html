@@ -6,7 +6,7 @@
   <meta charset="utf-8">
   <title>Requests - Django REST framework</title>
   <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
-  <link rel="canonical" href="http://www.django-rest-framework.org/api-guide/requests/" />
+  <link rel="canonical" href="https://www.django-rest-framework.org/api-guide/requests/" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Django, API, REST, Requests">
   <meta name="author" content="Tom Christie">
@@ -70,7 +70,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
-          <a class="brand" href="http://www.django-rest-framework.org">Django REST framework</a>
+          <a class="brand" href="https://www.django-rest-framework.org/">Django REST framework</a>
           <div class="nav-collapse collapse">
             
             <!-- Main navigation -->
@@ -180,6 +180,10 @@
                   </li>
                   
                   <li >
+                    <a href="../caching/">Caching</a>
+                  </li>
+                  
+                  <li >
                     <a href="../throttling/">Throttling</a>
                   </li>
                   
@@ -270,76 +274,83 @@
                     <a href="../../topics/rest-hypermedia-hateoas/">REST, Hypermedia & HATEOAS</a>
                   </li>
                   
+                </ul>
+              </li>
+                
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Community <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
                   <li >
-                    <a href="../../topics/third-party-packages/">Third Party Packages</a>
+                    <a href="../../community/tutorials-and-resources/">Tutorials and Resources</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/tutorials-and-resources/">Tutorials and Resources</a>
+                    <a href="../../community/third-party-packages/">Third Party Packages</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/contributing/">Contributing to REST framework</a>
+                    <a href="../../community/contributing/">Contributing to REST framework</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/project-management/">Project management</a>
+                    <a href="../../community/project-management/">Project management</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/jobs/">Jobs</a>
+                    <a href="../../community/release-notes/">Release Notes</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.0-announcement/">3.0 Announcement</a>
+                    <a href="../../community/3.8-announcement/">3.8 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.1-announcement/">3.1 Announcement</a>
+                    <a href="../../community/3.7-announcement/">3.7 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.2-announcement/">3.2 Announcement</a>
+                    <a href="../../community/3.6-announcement/">3.6 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.3-announcement/">3.3 Announcement</a>
+                    <a href="../../community/3.5-announcement/">3.5 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.4-announcement/">3.4 Announcement</a>
+                    <a href="../../community/3.4-announcement/">3.4 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.5-announcement/">3.5 Announcement</a>
+                    <a href="../../community/3.3-announcement/">3.3 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.6-announcement/">3.6 Announcement</a>
+                    <a href="../../community/3.2-announcement/">3.2 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.7-announcement/">3.7 Announcement</a>
+                    <a href="../../community/3.1-announcement/">3.1 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.8-announcement/">3.8 Announcement</a>
+                    <a href="../../community/3.0-announcement/">3.0 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
+                    <a href="../../community/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/mozilla-grant/">Mozilla Grant</a>
+                    <a href="../../community/mozilla-grant/">Mozilla Grant</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/funding/">Funding</a>
+                    <a href="../../community/funding/">Funding</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/release-notes/">Release Notes</a>
+                    <a href="../../community/jobs/">Jobs</a>
                   </li>
                   
                 </ul>
@@ -538,7 +549,7 @@
 <p>The <code>APIView</code> class or <code>@api_view</code> decorator will ensure that this property is automatically set to a list of <code>Authentication</code> instances, based on the <code>authentication_classes</code> set on the view or based on the <code>DEFAULT_AUTHENTICATORS</code> setting.</p>
 <p>You won't typically need to access this property.</p>
 <hr />
-<p><strong>Note:</strong> You may see a <code>WrappedAttributeError</code> raised when calling the <code>.user</code> or <code>.auth</code> properties. These errors originate from an authenticator as a standard <code>AttributeError</code>, however it's necessary that they be re-raised as a different exception type in order to prevent them from being suppressed by the outer property access. Python will not recognize that the <code>AttributeError</code> orginates from the authenticator and will instaed assume that the request object does not have a <code>.user</code> or <code>.auth</code> property. The authenticator will need to be fixed.</p>
+<p><strong>Note:</strong> You may see a <code>WrappedAttributeError</code> raised when calling the <code>.user</code> or <code>.auth</code> properties. These errors originate from an authenticator as a standard <code>AttributeError</code>, however it's necessary that they be re-raised as a different exception type in order to prevent them from being suppressed by the outer property access. Python will not recognize that the <code>AttributeError</code> orginates from the authenticator and will instead assume that the request object does not have a <code>.user</code> or <code>.auth</code> property. The authenticator will need to be fixed.</p>
 <hr />
 <h1 id="browser-enhancements"><a class="toclink" href="#browser-enhancements">Browser enhancements</a></h1>
 <p>REST framework supports a few browser enhancements such as browser-based <code>PUT</code>, <code>PATCH</code> and <code>DELETE</code> forms.</p>

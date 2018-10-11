@@ -6,7 +6,7 @@
   <meta charset="utf-8">
   <title>Permissions - Django REST framework</title>
   <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
-  <link rel="canonical" href="http://www.django-rest-framework.org/api-guide/permissions/" />
+  <link rel="canonical" href="https://www.django-rest-framework.org/api-guide/permissions/" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Django, API, REST, Permissions">
   <meta name="author" content="Tom Christie">
@@ -58,7 +58,7 @@
       <div class="navbar-inner">
         <div class="container-fluid">
           <a class="repo-link btn btn-primary btn-small" href="https://github.com/encode/django-rest-framework/tree/master">GitHub</a>
-          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../throttling/">
+          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../caching/">
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
           <a class="repo-link btn btn-inverse btn-small " rel="next" href="../authentication/">
@@ -70,7 +70,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
-          <a class="brand" href="http://www.django-rest-framework.org">Django REST framework</a>
+          <a class="brand" href="https://www.django-rest-framework.org/">Django REST framework</a>
           <div class="nav-collapse collapse">
             
             <!-- Main navigation -->
@@ -180,6 +180,10 @@
                   </li>
                   
                   <li >
+                    <a href="../caching/">Caching</a>
+                  </li>
+                  
+                  <li >
                     <a href="../throttling/">Throttling</a>
                   </li>
                   
@@ -270,76 +274,83 @@
                     <a href="../../topics/rest-hypermedia-hateoas/">REST, Hypermedia & HATEOAS</a>
                   </li>
                   
+                </ul>
+              </li>
+                
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Community <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
                   <li >
-                    <a href="../../topics/third-party-packages/">Third Party Packages</a>
+                    <a href="../../community/tutorials-and-resources/">Tutorials and Resources</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/tutorials-and-resources/">Tutorials and Resources</a>
+                    <a href="../../community/third-party-packages/">Third Party Packages</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/contributing/">Contributing to REST framework</a>
+                    <a href="../../community/contributing/">Contributing to REST framework</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/project-management/">Project management</a>
+                    <a href="../../community/project-management/">Project management</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/jobs/">Jobs</a>
+                    <a href="../../community/release-notes/">Release Notes</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.0-announcement/">3.0 Announcement</a>
+                    <a href="../../community/3.8-announcement/">3.8 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.1-announcement/">3.1 Announcement</a>
+                    <a href="../../community/3.7-announcement/">3.7 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.2-announcement/">3.2 Announcement</a>
+                    <a href="../../community/3.6-announcement/">3.6 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.3-announcement/">3.3 Announcement</a>
+                    <a href="../../community/3.5-announcement/">3.5 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.4-announcement/">3.4 Announcement</a>
+                    <a href="../../community/3.4-announcement/">3.4 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.5-announcement/">3.5 Announcement</a>
+                    <a href="../../community/3.3-announcement/">3.3 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.6-announcement/">3.6 Announcement</a>
+                    <a href="../../community/3.2-announcement/">3.2 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.7-announcement/">3.7 Announcement</a>
+                    <a href="../../community/3.1-announcement/">3.1 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.8-announcement/">3.8 Announcement</a>
+                    <a href="../../community/3.0-announcement/">3.0 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
+                    <a href="../../community/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/mozilla-grant/">Mozilla Grant</a>
+                    <a href="../../community/mozilla-grant/">Mozilla Grant</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/funding/">Funding</a>
+                    <a href="../../community/funding/">Funding</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/release-notes/">Release Notes</a>
+                    <a href="../../community/jobs/">Jobs</a>
                   </li>
                   
                 </ul>
@@ -575,6 +586,25 @@ def example_view(request, format=None):
     return Response(content)
 </code></pre>
 <p><strong>Note:</strong> when you set new permission classes through class attribute or decorators you're telling the view to ignore the default list set over the <strong>settings.py</strong> file.</p>
+<p>Provided they inherit from <code>rest_framework.permissions.BasePermission</code>, permissions can be composed using standard Python bitwise operators. For example, <code>IsAuthenticatedOrReadOnly</code> could be written:</p>
+<pre><code>from rest_framework.permissions import BasePermission, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+class ReadOnly(BasePermission):
+    def has_permission(self, request, view):
+        return request.method in SAFE_METHODS
+
+class ExampleView(APIView):
+    permission_classes = (IsAuthenticated|ReadOnly)
+
+    def get(self, request, format=None):
+        content = {
+            'status': 'request was permitted'
+        }
+        return Response(content)
+</code></pre>
+<p><strong>Note:</strong> it only supports &amp; -and- and | -or-.</p>
 <hr />
 <h1 id="api-reference"><a class="toclink" href="#api-reference">API Reference</a></h1>
 <h2 id="allowany"><a class="toclink" href="#allowany">AllowAny</a></h2>
@@ -615,8 +645,7 @@ def example_view(request, format=None):
 <p>Note that <code>DjangoObjectPermissions</code> <strong>does not</strong> require the <code>django-guardian</code> package, and should support other object-level backends equally well.</p>
 <p>As with <code>DjangoModelPermissions</code> you can use custom model permissions by overriding <code>DjangoObjectPermissions</code> and setting the <code>.perms_map</code> property.  Refer to the source code for details.</p>
 <hr />
-<p><strong>Note</strong>: If you need object level <code>view</code> permissions for <code>GET</code>, <code>HEAD</code> and <code>OPTIONS</code> requests, you'll want to consider also adding the <code>DjangoObjectPermissionsFilter</code> class to ensure that list endpoints only return results including objects for which the user has appropriate view permissions.</p>
-<hr />
+<p><strong>Note</strong>: If you need object level <code>view</code> permissions for <code>GET</code>, <code>HEAD</code> and <code>OPTIONS</code> requests and are using django-guardian for your object-level permissions backend, you'll want to consider using the <code>DjangoObjectPermissionsFilter</code> class provided by the <a href="https://github.com/rpkilby/django-rest-framework-guardian"><code>djangorestframework-guardian</code> package</a>. It ensures that list endpoints only return results including objects for which the user has appropriate view permissions.</p>
 <hr />
 <h1 id="custom-permissions"><a class="toclink" href="#custom-permissions">Custom permissions</a></h1>
 <p>To implement a custom permission, override <code>BasePermission</code> and implement either, or both, of the following methods:</p>

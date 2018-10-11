@@ -6,7 +6,7 @@
   <meta charset="utf-8">
   <title>Quickstart - Django REST framework</title>
   <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
-  <link rel="canonical" href="http://www.django-rest-framework.org/tutorial/quickstart/" />
+  <link rel="canonical" href="https://www.django-rest-framework.org/tutorial/quickstart/" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Django, API, REST, Quickstart">
   <meta name="author" content="Tom Christie">
@@ -70,7 +70,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
-          <a class="brand" href="http://www.django-rest-framework.org">Django REST framework</a>
+          <a class="brand" href="https://www.django-rest-framework.org/">Django REST framework</a>
           <div class="nav-collapse collapse">
             
             <!-- Main navigation -->
@@ -180,6 +180,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../api-guide/caching/">Caching</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../api-guide/throttling/">Throttling</a>
                   </li>
                   
@@ -270,76 +274,83 @@
                     <a href="../../topics/rest-hypermedia-hateoas/">REST, Hypermedia & HATEOAS</a>
                   </li>
                   
+                </ul>
+              </li>
+                
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Community <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
                   <li >
-                    <a href="../../topics/third-party-packages/">Third Party Packages</a>
+                    <a href="../../community/tutorials-and-resources/">Tutorials and Resources</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/tutorials-and-resources/">Tutorials and Resources</a>
+                    <a href="../../community/third-party-packages/">Third Party Packages</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/contributing/">Contributing to REST framework</a>
+                    <a href="../../community/contributing/">Contributing to REST framework</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/project-management/">Project management</a>
+                    <a href="../../community/project-management/">Project management</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/jobs/">Jobs</a>
+                    <a href="../../community/release-notes/">Release Notes</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.0-announcement/">3.0 Announcement</a>
+                    <a href="../../community/3.8-announcement/">3.8 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.1-announcement/">3.1 Announcement</a>
+                    <a href="../../community/3.7-announcement/">3.7 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.2-announcement/">3.2 Announcement</a>
+                    <a href="../../community/3.6-announcement/">3.6 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.3-announcement/">3.3 Announcement</a>
+                    <a href="../../community/3.5-announcement/">3.5 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.4-announcement/">3.4 Announcement</a>
+                    <a href="../../community/3.4-announcement/">3.4 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.5-announcement/">3.5 Announcement</a>
+                    <a href="../../community/3.3-announcement/">3.3 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.6-announcement/">3.6 Announcement</a>
+                    <a href="../../community/3.2-announcement/">3.2 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.7-announcement/">3.7 Announcement</a>
+                    <a href="../../community/3.1-announcement/">3.1 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/3.8-announcement/">3.8 Announcement</a>
+                    <a href="../../community/3.0-announcement/">3.0 Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/kickstarter-announcement/">Kickstarter Announcement</a>
+                    <a href="../../community/kickstarter-announcement/">Kickstarter Announcement</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/mozilla-grant/">Mozilla Grant</a>
+                    <a href="../../community/mozilla-grant/">Mozilla Grant</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/funding/">Funding</a>
+                    <a href="../../community/funding/">Funding</a>
                   </li>
                   
                   <li >
-                    <a href="../../topics/release-notes/">Release Notes</a>
+                    <a href="../../community/jobs/">Jobs</a>
                   </li>
                   
                 </ul>
@@ -407,6 +418,10 @@
                     </li>
                   
                     <li>
+                      <a href="#pagination">Pagination</a>
+                    </li>
+                  
+                    <li>
                       <a href="#settings">Settings</a>
                     </li>
                   
@@ -446,9 +461,9 @@ pip install django
 pip install djangorestframework
 
 # Set up a new project with a single application
-django-admin.py startproject tutorial .  # Note the trailing '.' character
+django-admin startproject tutorial .  # Note the trailing '.' character
 cd tutorial
-django-admin.py startapp quickstart
+django-admin startapp quickstart
 cd ..
 </code></pre>
 <p>The project layout should look like:</p>
@@ -479,7 +494,7 @@ $ find .
 <p>We'll also create an initial user named <code>admin</code> with a password of <code>password123</code>. We'll authenticate as that user later in our example.</p>
 <pre><code>python manage.py createsuperuser --email admin@example.com --username admin
 </code></pre>
-<p>Once you've set up a database and initial user created and ready to go, open up the app's directory and we'll get coding...</p>
+<p>Once you've set up a database and the initial user is created and ready to go, open up the app's directory and we'll get coding...</p>
 <h2 id="serializers"><a class="toclink" href="#serializers">Serializers</a></h2>
 <p>First up we're going to define some serializers. Let's create a new module named <code>tutorial/quickstart/serializers.py</code> that we'll use for our data representations.</p>
 <pre><code>from django.contrib.auth.models import User, Group
@@ -542,6 +557,13 @@ urlpatterns = [
 <p>Because we're using viewsets instead of views, we can automatically generate the URL conf for our API, by simply registering the viewsets with a router class.</p>
 <p>Again, if we need more control over the API URLs we can simply drop down to using regular class-based views, and writing the URL conf explicitly.</p>
 <p>Finally, we're including default login and logout views for use with the browsable API.  That's optional, but useful if your API requires authentication and you want to use the browsable API.</p>
+<h2 id="pagination"><a class="toclink" href="#pagination">Pagination</a></h2>
+<p>Pagination allows you to control how many objects per page are returned. To enable it add following lines to the <code>tutorial/settings.py</code></p>
+<pre><code>REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10
+}
+</code></pre>
 <h2 id="settings"><a class="toclink" href="#settings">Settings</a></h2>
 <p>Add <code>'rest_framework'</code> to <code>INSTALLED_APPS</code>. The settings module will be in <code>tutorial/settings.py</code></p>
 <pre><code>INSTALLED_APPS = (
