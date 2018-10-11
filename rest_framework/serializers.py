@@ -371,6 +371,12 @@ class Serializer(BaseSerializer):
         ]
 
     @cached_property
+    def _read_only_fields(self):
+        return [
+            field for field in self.fields.values() if field.read_only
+        ]
+
+    @cached_property
     def _readable_fields(self):
         return [
             field for field in self.fields.values()
@@ -457,14 +463,6 @@ class Serializer(BaseSerializer):
 
         return defaults
 
-    def run_validators(self, value):
-        """
-        Add read_only fields with defaults to value before running validators.
-        """
-        to_validate = self._read_only_defaults()
-        to_validate.update(value)
-        super(Serializer, self).run_validators(to_validate)
-
     def to_internal_value(self, data):
         """
         Dict of native values <- Dict of primitive datatypes.
@@ -479,9 +477,11 @@ class Serializer(BaseSerializer):
 
         ret = OrderedDict()
         errors = OrderedDict()
-        fields = self._writable_fields
+        writable_fields = self._writable_fields
+        read_only_fields = self._read_only_fields
+        read_only_defaults = self._read_only_defaults()
 
-        for field in fields:
+        for field in writable_fields:
             validate_method = getattr(self, 'validate_' + field.field_name, None)
             primitive_value = field.get_value(data)
             try:
@@ -496,6 +496,11 @@ class Serializer(BaseSerializer):
                 pass
             else:
                 set_value(ret, field.source_attrs, validated_value)
+
+        for field in read_only_fields:
+            primitive_value = field.get_value(read_only_defaults)
+            if primitive_value is not empty:
+                set_value(ret, field.source_attrs, primitive_value)
 
         if errors:
             raise ValidationError(errors)

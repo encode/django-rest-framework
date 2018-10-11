@@ -613,3 +613,32 @@ class TestDeclaredFieldInheritance:
         assert len(Parent().get_fields()) == 2
         assert len(Child().get_fields()) == 2
         assert len(Grandchild().get_fields()) == 2
+
+
+class Test5922Regression:
+    class Point(object):
+        def __init__(self, srid, x, y):
+            self.srid = srid
+            self.coords = (x, y)
+
+    def setup(self):
+
+        # Declares a serializer that converts data into an object
+        class NestedPointSerializer(serializers.Serializer):
+            longitude = serializers.FloatField(source='x')
+            latitude = serializers.FloatField(source='y')
+
+            def to_internal_value(self, data):
+                kwargs = super(NestedPointSerializer, self).to_internal_value(data)
+                return Test5922Regression.Point(srid=4326, **kwargs)
+
+        self.Serializer = NestedPointSerializer
+
+    def test_5922_regression(self):
+        serializer = self.Serializer(data={'longitude': 6.958307, 'latitude': 50.941357})
+        assert serializer.is_valid()
+        assert isinstance(serializer.validated_data, Test5922Regression.Point)
+        assert serializer.validated_data.srid == 4326
+        assert serializer.validated_data.coords[0] == 6.958307
+        assert serializer.validated_data.coords[1] == 50.941357
+        assert serializer.errors == {}
