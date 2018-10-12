@@ -33,7 +33,7 @@ Okay, we're ready to get coding.
 To get started, let's create a new project to work with.
 
     cd ~
-    django-admin.py startproject tutorial
+    django-admin startproject tutorial
     cd tutorial
 
 Once that's done we can create an app that we'll use to create a simple Web API.

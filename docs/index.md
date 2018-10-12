@@ -72,10 +72,11 @@ continued development by **[signing up for a paid plan][funding]**.
     <li><a href="https://rollbar.com" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/rollbar2.png)">Rollbar</a></li>
     <li><a href="https://cadre.com" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/cadre.png)">Cadre</a></li>
     <li><a href="https://loadimpact.com/?utm_campaign=Sponsorship%20links&utm_source=drf&utm_medium=drf" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/load-impact.png)">Load Impact</a></li>
+    <li><a href="https://hubs.ly/H0f30Lf0" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/kloudless.png)">Kloudless</a></li>
 </ul>
 <div style="clear: both; padding-bottom: 20px;"></div>
 
-*Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Rover](http://jobs.rover.com/), [Sentry](https://getsentry.com/welcome/), [Stream](https://getstream.io/?utm_source=drf&utm_medium=banner&utm_campaign=drf), [Rollbar](https://rollbar.com), [Cadre](https://cadre.com), and [Load Impact](https://loadimpact.com/?utm_campaign=Sponsorship%20links&utm_source=drf&utm_medium=drf).*
+*Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Rover](http://jobs.rover.com/), [Sentry](https://getsentry.com/welcome/), [Stream](https://getstream.io/?utm_source=drf&utm_medium=banner&utm_campaign=drf), [Rollbar](https://rollbar.com), [Cadre](https://cadre.com), [Load Impact](https://loadimpact.com/?utm_campaign=Sponsorship%20links&utm_source=drf&utm_medium=drf), and [Kloudless](https://hubs.ly/H0f30Lf0).*
 
 ---
 
@@ -200,17 +201,22 @@ Send a description of the issue via email to [rest-framework-security@googlegrou
 
 ## License
 
-Copyright (c) 2011-2017, Tom Christie
+Copyright © 2011-present, [Encode OSS Ltd](https://www.encode.io/).
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
 
-Redistributions of source code must retain the above copyright notice, this
-list of conditions and the following disclaimer.
-Redistributions in binary form must reproduce the above copyright notice, this
-list of conditions and the following disclaimer in the documentation and/or
-other materials provided with the distribution.
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of the copyright holder nor the names of its
+  contributors may be used to endorse or promote products derived from
+  this software without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED

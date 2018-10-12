@@ -63,9 +63,28 @@ class ActionViewSet(GenericViewSet):
         raise NotImplementedError
 
 
+class ActionNamesViewSet(GenericViewSet):
+
+    def retrieve(self, request, *args, **kwargs):
+        return Response()
+
+    @action(detail=True)
+    def unnamed_action(self, request, *args, **kwargs):
+        raise NotImplementedError
+
+    @action(detail=True, name='Custom Name')
+    def named_action(self, request, *args, **kwargs):
+        raise NotImplementedError
+
+    @action(detail=True, suffix='Custom Suffix')
+    def suffixed_action(self, request, *args, **kwargs):
+        raise NotImplementedError
+
+
 router = SimpleRouter()
 router.register(r'actions', ActionViewSet)
 router.register(r'actions-alt', ActionViewSet, basename='actions-alt')
+router.register(r'names', ActionNamesViewSet, basename='names')
 
 
 urlpatterns = [
@@ -171,6 +190,19 @@ class GetExtraActionUrlMapTests(TestCase):
 
     def test_uninitialized_view(self):
         self.assertEqual(ActionViewSet().get_extra_action_url_map(), OrderedDict())
+
+    def test_action_names(self):
+        # Action 'name' and 'suffix' kwargs should be respected
+        response = self.client.get('/api/names/1/')
+        view = response.renderer_context['view']
+
+        expected = OrderedDict([
+            ('Custom Name', 'http://testserver/api/names/1/named_action/'),
+            ('Action Names Custom Suffix', 'http://testserver/api/names/1/suffixed_action/'),
+            ('Unnamed action', 'http://testserver/api/names/1/unnamed_action/'),
+        ])
+
+        self.assertEqual(view.get_extra_action_url_map(), expected)
 
 
 @override_settings(ROOT_URLCONF='tests.test_viewsets')

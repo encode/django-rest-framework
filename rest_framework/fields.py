@@ -34,7 +34,8 @@ from pytz.exceptions import InvalidTimeError
 from rest_framework import ISO_8601
 from rest_framework.compat import (
     MaxLengthValidator, MaxValueValidator, MinLengthValidator,
-    MinValueValidator, unicode_repr, unicode_to_repr
+    MinValueValidator, ProhibitNullCharactersValidator, unicode_repr,
+    unicode_to_repr
 )
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.settings import api_settings
@@ -755,7 +756,7 @@ class CharField(Field):
         'invalid': _('Not a valid string.'),
         'blank': _('This field may not be blank.'),
         'max_length': _('Ensure this field has no more than {max_length} characters.'),
-        'min_length': _('Ensure this field has at least {min_length} characters.')
+        'min_length': _('Ensure this field has at least {min_length} characters.'),
     }
     initial = ''
 
@@ -777,6 +778,10 @@ class CharField(Field):
                 six.text_type)(min_length=self.min_length)
             self.validators.append(
                 MinLengthValidator(self.min_length, message=message))
+
+        # ProhibitNullCharactersValidator is None on Django < 2.0
+        if ProhibitNullCharactersValidator is not None:
+            self.validators.append(ProhibitNullCharactersValidator())
 
     def run_validation(self, data=empty):
         # Test for the empty string here so that it does not get validated,

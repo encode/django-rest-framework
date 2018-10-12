@@ -11,11 +11,18 @@ from django.utils import six
 from django.views.generic import View
 
 try:
-    # Python 3 (required for 3.8+)
+    # Python 3
     from collections.abc import Mapping   # noqa
 except ImportError:
     # Python 2.7
     from collections import Mapping   # noqa
+
+try:
+    # Python 3
+    import urllib.parse as urlparse   # noqa
+except ImportError:
+    # Python 2.7
+    from urlparse import urlparse   # noqa
 
 try:
     from django.urls import (  # noqa
@@ -28,6 +35,11 @@ except ImportError:
         RegexURLPattern as URLPattern,
         RegexURLResolver as URLResolver,
     )
+
+try:
+    from django.core.validators import ProhibitNullCharactersValidator  # noqa
+except ImportError:
+    ProhibitNullCharactersValidator = None
 
 
 def get_original_route(urlpattern):
@@ -129,6 +141,13 @@ try:
     import coreschema
 except ImportError:
     coreschema = None
+
+
+# pyyaml is optional
+try:
+    import yaml
+except ImportError:
+    yaml = None
 
 
 # django-crispy-forms is optional

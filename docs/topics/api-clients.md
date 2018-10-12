@@ -521,7 +521,7 @@ You'll either want to include the API schema in your codebase directly, by copyi
     })
 
 [heroku-api]: https://devcenter.heroku.com/categories/platform-api
-[heroku-example]: http://www.coreapi.org/tools-and-resources/example-services/#heroku-json-hyper-schema
-[core-api]: http://www.coreapi.org/
+[heroku-example]: https://www.coreapi.org/tools-and-resources/example-services/#heroku-json-hyper-schema
+[core-api]: https://www.coreapi.org/
 [schema-generation]: ../api-guide/schemas.md
 [transport-adaptors]: http://docs.python-requests.org/en/master/user/advanced/#transport-adapters

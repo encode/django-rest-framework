@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 import base64
 import unittest
+import warnings
 
 import django
 from django.contrib.auth.models import Group, Permission, User
@@ -417,17 +418,34 @@ class ObjectPermissionsIntegrationTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     # Read list
+    def test_django_object_permissions_filter_deprecated(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            DjangoObjectPermissionsFilter()
+
+        message = ("`DjangoObjectPermissionsFilter` has been deprecated and moved "
+                   "to the 3rd-party django-rest-framework-guardian package.")
+        self.assertEqual(len(w), 1)
+        self.assertIs(w[-1].category, DeprecationWarning)
+        self.assertEqual(str(w[-1].message), message)
+
     def test_can_read_list_permissions(self):
         request = factory.get('/', HTTP_AUTHORIZATION=self.credentials['readonly'])
         object_permissions_list_view.cls.filter_backends = (DjangoObjectPermissionsFilter,)
-        response = object_permissions_list_view(request)
+        # TODO: remove in version 3.10
+        with warnings.catch_warnings(record=True):
+            warnings.simplefilter("always")
+            response = object_permissions_list_view(request)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data[0].get('id'), 1)
 
     def test_cannot_read_list_permissions(self):
         request = factory.get('/', HTTP_AUTHORIZATION=self.credentials['writeonly'])
         object_permissions_list_view.cls.filter_backends = (DjangoObjectPermissionsFilter,)
-        response = object_permissions_list_view(request)
+        # TODO: remove in version 3.10
+        with warnings.catch_warnings(record=True):
+            warnings.simplefilter("always")
+            response = object_permissions_list_view(request)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertListEqual(response.data, [])
 
@@ -555,3 +573,44 @@ class IsAuthenticatedOrOptionsOnlyAllowedTests(TestCase):
         self.request = factory.get('/1', format='json', HTTP_AUTHORIZATION=credentials)
         response = options_view(self.request, pk=1)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+class FakeUser:
+    def __init__(self, auth=False):
+        self.is_authenticated = auth
+
+
+class PermissionsCompositionTests(TestCase):
+    def test_and_false(self):
+        request = factory.get('/1', format='json')
+        request.user = FakeUser(auth=False)
+        composed_perm = permissions.IsAuthenticated & permissions.AllowAny
+        assert composed_perm().has_permission(request, None) is False
+
+    def test_and_true(self):
+        request = factory.get('/1', format='json')
+        request.user = FakeUser(auth=True)
+        composed_perm = permissions.IsAuthenticated & permissions.AllowAny
+        assert composed_perm().has_permission(request, None) is True
+
+    def test_or_false(self):
+        request = factory.get('/1', format='json')
+        request.user = FakeUser(auth=False)
+        composed_perm = permissions.IsAuthenticated | permissions.AllowAny
+        assert composed_perm().has_permission(request, None) is True
+
+    def test_or_true(self):
+        request = factory.get('/1', format='json')
+        request.user = FakeUser(auth=True)
+        composed_perm = permissions.IsAuthenticated | permissions.AllowAny
+        assert composed_perm().has_permission(request, None) is True
+
+    def test_several_levels(self):
+        request = factory.get('/1', format='json')
+        request.user = FakeUser(auth=True)
+        composed_perm = (
+            permissions.IsAuthenticated &
+            permissions.IsAuthenticated &
+            permissions.IsAuthenticated &
+            permissions.IsAuthenticated
+        )
+        assert composed_perm().has_permission(request, None) is True

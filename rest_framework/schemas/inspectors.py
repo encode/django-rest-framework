@@ -247,9 +247,11 @@ class AutoSchema(ViewInspector):
         method_docstring = getattr(view, method_name, None).__doc__
         if method_docstring:
             # An explicit docstring on the method or action.
-            return formatting.dedent(smart_text(method_docstring))
+            return self._get_description_section(view, method.lower(), formatting.dedent(smart_text(method_docstring)))
+        else:
+            return self._get_description_section(view, getattr(view, 'action', method.lower()), view.get_view_description())
 
-        description = view.get_view_description()
+    def _get_description_section(self, view, header, description):
         lines = [line for line in description.splitlines()]
         current_section = ''
         sections = {'': ''}
@@ -263,7 +265,6 @@ class AutoSchema(ViewInspector):
 
         # TODO: SCHEMA_COERCE_METHOD_NAMES appears here and in `SchemaGenerator.get_keys`
         coerce_method_names = api_settings.SCHEMA_COERCE_METHOD_NAMES
-        header = getattr(view, 'action', method.lower())
         if header in sections:
             return sections[header].strip()
         if header in coerce_method_names:

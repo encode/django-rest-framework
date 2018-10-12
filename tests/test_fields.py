@@ -15,6 +15,7 @@ from django.utils.timezone import activate, deactivate, override, utc
 
 import rest_framework
 from rest_framework import exceptions, serializers
+from rest_framework.compat import ProhibitNullCharactersValidator
 from rest_framework.fields import DjangoImageField, is_simple_callable
 
 try:
@@ -727,6 +728,17 @@ class TestCharField(FieldValues):
         with pytest.raises(serializers.ValidationError) as exc_info:
             field.run_validation('   ')
         assert exc_info.value.detail == ['This field may not be blank.']
+
+    @pytest.mark.skipif(ProhibitNullCharactersValidator is None, reason="Skipped on Django < 2.0")
+    def test_null_bytes(self):
+        field = serializers.CharField()
+
+        for value in ('\0', 'foo\0', '\0foo', 'foo\0foo'):
+            with pytest.raises(serializers.ValidationError) as exc_info:
+                field.run_validation(value)
+            assert exc_info.value.detail == [
+                'Null characters are not allowed.'
+            ]
 
 
 class TestEmailField(FieldValues):

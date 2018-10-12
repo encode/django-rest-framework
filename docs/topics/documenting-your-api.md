@@ -90,6 +90,28 @@ When using viewsets, you should use the relevant action names as delimiters.
         Create a new user instance.
         """
 
+Custom actions on viewsets can also be documented in a similar way using the method names
+as delimiters or by attaching the documentation to action mapping methods.
+    
+    class UserViewSet(viewsets.ModelViewset):
+        ...
+        
+        @action(detail=False, methods=['get', 'post'])
+        def some_action(self, request, *args, **kwargs):
+            """
+            get:
+            A description of the get method on the custom action.
+    
+            post:
+            A description of the post method on the custom action.
+            """
+
+        @some_action.mapping.put
+        def put_some_action():
+            """
+            A description of the put method on the custom action.
+            """
+
 
 ### `documentation` API Reference
 
@@ -313,7 +335,7 @@ In this approach, rather than documenting the available API endpoints up front, 
 
 To implement a hypermedia API you'll need to decide on an appropriate media type for the API, and implement a custom renderer and parser for that media type.  The [REST, Hypermedia & HATEOAS][hypermedia-docs] section of the documentation includes pointers to background reading, as well as links to various hypermedia formats.
 
-[cite]: http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
+[cite]: https://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
 [drf-yasg]: https://github.com/axnsan12/drf-yasg/
 [image-drf-yasg]: ../img/drf-yasg.png
 [drf-openapi]: https://github.com/limdauto/drf_openapi/

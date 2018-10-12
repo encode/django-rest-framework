@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 import unittest
 
+from django.template import Context, Template
 from django.test import TestCase
 
 from rest_framework.compat import coreapi, coreschema
@@ -303,6 +304,16 @@ class URLizerTests(TestCase):
         data['"foo_set": [\n    "http://api/foos/1/"\n], '] = \
             '&quot;foo_set&quot;: [\n    &quot;<a href="http://api/foos/1/">http://api/foos/1/</a>&quot;\n], '
         self._urlize_dict_check(data)
+
+    def test_template_render_with_noautoescape(self):
+        """
+        Test if the autoescape value is getting passed to urlize_quoted_links filter.
+        """
+        template = Template("{% load rest_framework %}"
+                            "{% autoescape off %}{{ content|urlize_quoted_links }}"
+                            "{% endautoescape %}")
+        rendered = template.render(Context({'content': '"http://example.com"'}))
+        assert rendered == '"<a href="http://example.com" rel="nofollow">http://example.com</a>"'
 
 
 @unittest.skipUnless(coreapi, 'coreapi is not installed')
