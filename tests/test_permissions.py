@@ -573,7 +573,8 @@ class IsAuthenticatedOrOptionsOnlyAllowedTests(TestCase):
         self.request = factory.get('/1', format='json', HTTP_AUTHORIZATION=credentials)
         response = options_view(self.request, pk=1)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        
+
+
 class FakeUser:
     def __init__(self, auth=False):
         self.is_authenticated = auth
