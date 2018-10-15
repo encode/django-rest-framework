@@ -371,12 +371,6 @@ class Serializer(BaseSerializer):
         ]
 
     @cached_property
-    def _read_only_fields(self):
-        return [
-            field for field in self.fields.values() if field.read_only
-        ]
-
-    @cached_property
     def _readable_fields(self):
         return [
             field for field in self.fields.values()
@@ -437,10 +431,11 @@ class Serializer(BaseSerializer):
         if is_empty_value:
             return data
 
-        value = self.to_internal_value(data)
+        value = self._to_primitive_value(data)
         try:
             self.run_validators(value)
             value = self.validate(value)
+            value = self.to_internal_value(value)
             assert value is not None, '.validate() should return the validated data'
         except (ValidationError, DjangoValidationError) as exc:
             raise ValidationError(detail=as_serializer_error(exc))
@@ -463,7 +458,15 @@ class Serializer(BaseSerializer):
 
         return defaults
 
-    def to_internal_value(self, data):
+    def run_validators(self, value):
+        """
+        Add read_only fields with defaults to value before running validators.
+        """
+        to_validate = self._read_only_defaults()
+        to_validate.update(value)
+        super(Serializer, self).run_validators(to_validate)
+
+    def _to_primitive_value(self, data):
         """
         Dict of native values <- Dict of primitive datatypes.
         """
@@ -477,11 +480,9 @@ class Serializer(BaseSerializer):
 
         ret = OrderedDict()
         errors = OrderedDict()
-        writable_fields = self._writable_fields
-        read_only_fields = self._read_only_fields
-        read_only_defaults = self._read_only_defaults()
+        fields = self._writable_fields
 
-        for field in writable_fields:
+        for field in fields:
             validate_method = getattr(self, 'validate_' + field.field_name, None)
             primitive_value = field.get_value(data)
             try:
@@ -497,15 +498,16 @@ class Serializer(BaseSerializer):
             else:
                 set_value(ret, field.source_attrs, validated_value)
 
-        for field in read_only_fields:
-            primitive_value = field.get_value(read_only_defaults)
-            if primitive_value is not empty:
-                set_value(ret, field.source_attrs, primitive_value)
-
         if errors:
             raise ValidationError(errors)
 
         return ret
+
+    def to_internal_value(self, data):
+        """
+        Converts a dict of primitive datatypes into the internal format
+        """
+        return data
 
     def to_representation(self, instance):
         """
