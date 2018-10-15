@@ -91,6 +91,10 @@ class TestSimpleBoundField:
         assert rendered_packed == expected_packed
 
 
+class CustomJSONField(serializers.JSONField):
+    pass
+
+
 class TestNestedBoundField:
     def test_nested_empty_bound_field(self):
         class Nested(serializers.Serializer):
@@ -117,14 +121,31 @@ class TestNestedBoundField:
         class Nested(serializers.Serializer):
             bool_field = serializers.BooleanField()
             null_field = serializers.IntegerField(allow_null=True)
+            json_field = serializers.JSONField()
+            custom_json_field = CustomJSONField()
 
         class ExampleSerializer(serializers.Serializer):
             nested = Nested()
 
-        serializer = ExampleSerializer(data={'nested': {'bool_field': False, 'null_field': None}})
+        serializer = ExampleSerializer(
+            data={'nested': {
+                'bool_field': False, 'null_field': None,
+                'json_field': {'bool_item': True, 'number': 1, 'text_item': 'text'},
+                'custom_json_field': {'bool_item': True, 'number': 1, 'text_item': 'text'},
+            }})
         assert serializer.is_valid()
         assert serializer['nested']['bool_field'].as_form_field().value == ''
         assert serializer['nested']['null_field'].as_form_field().value == ''
+        assert serializer['nested']['json_field'].as_form_field().value == '''{
+    "bool_item": true,
+    "number": 1,
+    "text_item": "text"
+}'''
+        assert serializer['nested']['custom_json_field'].as_form_field().value == '''{
+    "bool_item": true,
+    "number": 1,
+    "text_item": "text"
+}'''
 
     def test_rendering_nested_fields_with_none_value(self):
         from rest_framework.renderers import HTMLFormRenderer

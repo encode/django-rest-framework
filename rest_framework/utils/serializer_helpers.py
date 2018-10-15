@@ -118,6 +118,8 @@ class NestedBoundField(BoundField):
         error = self.errors.get(key) if isinstance(self.errors, dict) else None
         if hasattr(field, 'fields'):
             return NestedBoundField(field, value, error, prefix=self.name + '.')
+        elif getattr(field, '_is_jsonfield', False):
+            return JSONBoundField(field, value, error, prefix=self.name + '.')
         return BoundField(field, value, error, prefix=self.name + '.')
 
     def as_form_field(self):
