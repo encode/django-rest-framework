@@ -90,7 +90,12 @@ class JSONBoundField(BoundField):
         # value will be a JSONString, rather than a JSON primitive.
         if not getattr(value, 'is_json_string', False):
             try:
-                value = json.dumps(self.value, sort_keys=True, indent=4)
+                value = json.dumps(
+                    self.value,
+                    sort_keys=True,
+                    indent=4,
+                    separators=(',', ': '),
+                )
             except (TypeError, ValueError):
                 pass
         return self.__class__(self._field, value, self.errors, self._prefix)
