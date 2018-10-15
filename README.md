@@ -59,7 +59,7 @@ There is a live example API for testing purposes, [available here][sandbox].
 
 # Installation
 
-Install using `pip`...
+Install using 'pip' : 
 
     pip install djangorestframework
 
@@ -70,7 +70,7 @@ Add `'rest_framework'` to your `INSTALLED_APPS` setting.
         'rest_framework',
     )
 
-# Example
+# Example : 
 
 Let's take a look at a quick example of using REST framework to build a simple model-backed API for accessing users and groups.
 
