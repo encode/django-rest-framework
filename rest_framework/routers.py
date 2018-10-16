@@ -40,10 +40,10 @@ DynamicRoute = namedtuple('DynamicRoute', ['url', 'name', 'detail', 'initkwargs'
 class DynamicDetailRoute(object):
     def __new__(cls, url, name, initkwargs):
         warnings.warn(
-            "`DynamicDetailRoute` is pending deprecation and will be removed in 3.10 "
+            "`DynamicDetailRoute` is deprecated and will be removed in 3.10 "
             "in favor of `DynamicRoute`, which accepts a `detail` boolean. Use "
             "`DynamicRoute(url, name, True, initkwargs)` instead.",
-            PendingDeprecationWarning, stacklevel=2
+            DeprecationWarning, stacklevel=2
         )
         return DynamicRoute(url, name, True, initkwargs)
 
@@ -51,10 +51,10 @@ class DynamicDetailRoute(object):
 class DynamicListRoute(object):
     def __new__(cls, url, name, initkwargs):
         warnings.warn(
-            "`DynamicListRoute` is pending deprecation and will be removed in 3.10 in "
+            "`DynamicListRoute` is deprecated and will be removed in 3.10 in "
             "favor of `DynamicRoute`, which accepts a `detail` boolean. Use "
             "`DynamicRoute(url, name, False, initkwargs)` instead.",
-            PendingDeprecationWarning, stacklevel=2
+            DeprecationWarning, stacklevel=2
         )
         return DynamicRoute(url, name, False, initkwargs)
 
@@ -77,7 +77,7 @@ def flatten(list_of_lists):
 
 class RenameRouterMethods(RenameMethodsBase):
     renamed_methods = (
-        ('get_default_base_name', 'get_default_basename', DeprecationWarning),
+        ('get_default_base_name', 'get_default_basename', PendingDeprecationWarning),
     )
 
 
@@ -87,8 +87,8 @@ class BaseRouter(six.with_metaclass(RenameRouterMethods)):
 
     def register(self, prefix, viewset, basename=None, base_name=None):
         if base_name is not None:
-            msg = "The `base_name` argument has been deprecated in favor of `basename`."
-            warnings.warn(msg, DeprecationWarning, 2)
+            msg = "The `base_name` argument is pending deprecation in favor of `basename`."
+            warnings.warn(msg, PendingDeprecationWarning, 2)
 
         assert not (basename and base_name), (
             "Do not provide both the `basename` and `base_name` arguments.")
