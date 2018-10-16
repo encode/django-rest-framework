@@ -4,7 +4,6 @@ generators.py   # Top-down schema generation
 See schemas.__init__.py for package overview.
 """
 import re
-import warnings
 from collections import Counter, OrderedDict
 from importlib import import_module
 
@@ -206,14 +205,6 @@ class EndpointEnumerator(object):
         """
         if not is_api_view(callback):
             return False  # Ignore anything except REST framework views.
-
-        if hasattr(callback.cls, 'exclude_from_schema'):
-            fmt = ("The `{}.exclude_from_schema` attribute is deprecated. "
-                   "Set `schema = None` instead.")
-            msg = fmt.format(callback.cls.__name__)
-            warnings.warn(msg, DeprecationWarning)
-            if getattr(callback.cls, 'exclude_from_schema', False):
-                return False
 
         if callback.cls.schema is None:
             return False
