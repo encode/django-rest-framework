@@ -10,7 +10,7 @@ from django.test.utils import override_settings
 from django.utils.six.moves import reload_module
 
 from rest_framework import filters, generics, serializers
-from rest_framework.compat import coreschema
+from rest_framework.compat import coreschema, postgres_fields
 from rest_framework.test import APIRequestFactory
 
 factory = APIRequestFactory()
@@ -688,3 +688,42 @@ class SensitiveOrderingFilterTests(TestCase):
                 {'id': 2, username_field: 'userB'},  # PassC
                 {'id': 3, username_field: 'userC'},  # PassA
             ]
+
+
+if postgres_fields:
+    class JSONOrderingFilterModel(models.Model):
+        data = postgres_fields.JSONField()
+
+
+    class JSONOrderingFilterSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = JSONOrderingFilterModel
+            fields = '__all__'
+
+
+@pytest.mark.skipif('not postgres_fields')
+class JSONOrderingFilterTests(TestCase):
+    def test_order_by_json_field(self):
+
+        class OrderingListView(generics.ListAPIView):
+            queryset = JSONOrderingFilterModel.objects.all()
+            serializer_class = JSONOrderingFilterSerializer
+            filter_backends = (filters.OrderingFilter,)
+
+        # Set up data
+        for idx in [2, 0, 1]:
+            data = {
+                'foo': {
+                    'bar': idx,
+                }
+            }
+            JSONOrderingFilterModel(data=data).save()
+
+        view = OrderingListView.as_view()
+        request = factory.get('/', {'ordering': 'data__foo__bar'})
+        response = view(request)
+
+        self.assertListEqual(
+            [0, 1, 2],
+            [i['data']['foo']['bar'] for i in response.data]
+        )
