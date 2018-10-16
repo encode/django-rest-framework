@@ -2,6 +2,8 @@
 *.db
 *~
 .*
+.tox/
+.venv/
 
 /site/
 /htmlcov/
