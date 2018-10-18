@@ -1032,38 +1032,6 @@ class SchemaGenerationExclusionTests(TestCase):
 
         assert should_include == expected
 
-    def test_deprecations(self):
-        with pytest.warns(DeprecationWarning) as record:
-            @api_view(["GET"], exclude_from_schema=True)
-            def view(request):
-                pass
-
-        assert len(record) == 1
-        assert str(record[0].message) == (
-            "The `exclude_from_schema` argument to `api_view` is deprecated. "
-            "Use the `schema` decorator instead, passing `None`."
-        )
-
-        class OldFashionedExcludedView(APIView):
-            exclude_from_schema = True
-
-            def get(self, request, *args, **kwargs):
-                pass
-
-        patterns = [
-            url('^excluded-old-fashioned/$', OldFashionedExcludedView.as_view()),
-        ]
-
-        inspector = EndpointEnumerator(patterns)
-        with pytest.warns(DeprecationWarning) as record:
-            inspector.get_api_endpoints()
-
-        assert len(record) == 1
-        assert str(record[0].message) == (
-            "The `OldFashionedExcludedView.exclude_from_schema` attribute is "
-            "deprecated. Set `schema = None` instead."
-        )
-
 
 @api_view(["GET"])
 def simple_fbv(request):

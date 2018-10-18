@@ -290,34 +290,34 @@ class ActionDecoratorTestCase(TestCase):
                 raise NotImplementedError
 
     def test_detail_route_deprecation(self):
-        with pytest.warns(PendingDeprecationWarning) as record:
+        with pytest.warns(DeprecationWarning) as record:
             @detail_route()
             def view(request):
                 raise NotImplementedError
 
         assert len(record) == 1
         assert str(record[0].message) == (
-            "`detail_route` is pending deprecation and will be removed in "
+            "`detail_route` is deprecated and will be removed in "
             "3.10 in favor of `action`, which accepts a `detail` bool. Use "
             "`@action(detail=True)` instead."
         )
 
     def test_list_route_deprecation(self):
-        with pytest.warns(PendingDeprecationWarning) as record:
+        with pytest.warns(DeprecationWarning) as record:
             @list_route()
             def view(request):
                 raise NotImplementedError
 
         assert len(record) == 1
         assert str(record[0].message) == (
-            "`list_route` is pending deprecation and will be removed in "
+            "`list_route` is deprecated and will be removed in "
             "3.10 in favor of `action`, which accepts a `detail` bool. Use "
             "`@action(detail=False)` instead."
         )
 
     def test_route_url_name_from_path(self):
         # pre-3.8 behavior was to base the `url_name` off of the `url_path`
-        with pytest.warns(PendingDeprecationWarning):
+        with pytest.warns(DeprecationWarning):
             @list_route(url_path='foo_bar')
             def view(request):
                 raise NotImplementedError

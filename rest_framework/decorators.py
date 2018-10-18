@@ -17,7 +17,7 @@ from django.utils import six
 from rest_framework.views import APIView
 
 
-def api_view(http_method_names=None, exclude_from_schema=False):
+def api_view(http_method_names=None):
     """
     Decorator that converts a function-based view into an APIView subclass.
     Takes a list of allowed methods for the view as an argument.
@@ -77,15 +77,8 @@ def api_view(http_method_names=None, exclude_from_schema=False):
         WrappedAPIView.schema = getattr(func, 'schema',
                                         APIView.schema)
 
-        if exclude_from_schema:
-            warnings.warn(
-                "The `exclude_from_schema` argument to `api_view` is deprecated. "
-                "Use the `schema` decorator instead, passing `None`.",
-                DeprecationWarning
-            )
-            WrappedAPIView.exclude_from_schema = exclude_from_schema
-
         return WrappedAPIView.as_view()
+
     return decorator
 
 
@@ -230,9 +223,9 @@ def detail_route(methods=None, **kwargs):
     Used to mark a method on a ViewSet that should be routed for detail requests.
     """
     warnings.warn(
-        "`detail_route` is pending deprecation and will be removed in 3.10 in favor of "
+        "`detail_route` is deprecated and will be removed in 3.10 in favor of "
         "`action`, which accepts a `detail` bool. Use `@action(detail=True)` instead.",
-        PendingDeprecationWarning, stacklevel=2
+        DeprecationWarning, stacklevel=2
     )
 
     def decorator(func):
@@ -248,9 +241,9 @@ def list_route(methods=None, **kwargs):
     Used to mark a method on a ViewSet that should be routed for list requests.
     """
     warnings.warn(
-        "`list_route` is pending deprecation and will be removed in 3.10 in favor of "
+        "`list_route` is deprecated and will be removed in 3.10 in favor of "
         "`action`, which accepts a `detail` bool. Use `@action(detail=False)` instead.",
-        PendingDeprecationWarning, stacklevel=2
+        DeprecationWarning, stacklevel=2
     )
 
     def decorator(func):
