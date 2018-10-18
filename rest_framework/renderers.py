@@ -760,9 +760,10 @@ class AdminRenderer(BrowsableAPIRenderer):
             self.error_form = self.get_rendered_html_form(data, view, request.method, request)
             self.error_title = {'POST': 'Create', 'PUT': 'Edit'}.get(request.method, 'Errors')
 
-            with override_method(view, request, 'GET') as request:
-                response = view.get(request, *view.args, **view.kwargs)
-            data = response.data
+            if hasattr(view, 'get'):
+                with override_method(view, request, 'GET') as request:
+                    response = view.get(request, *view.args, **view.kwargs)
+                data = response.data
 
         template = loader.get_template(self.template)
         context = self.get_context(data, accepted_media_type, renderer_context)
