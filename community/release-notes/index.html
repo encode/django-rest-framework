@@ -58,7 +58,7 @@
       <div class="navbar-inner">
         <div class="container-fluid">
           <a class="repo-link btn btn-primary btn-small" href="https://github.com/encode/django-rest-framework/tree/master">GitHub</a>
-          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../3.8-announcement/">
+          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../3.9-announcement/">
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
           <a class="repo-link btn btn-inverse btn-small " rel="next" href="../project-management/">
@@ -302,6 +302,10 @@
                   </li>
                   
                   <li >
+                    <a href="../3.9-announcement/">3.9 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../3.8-announcement/">3.8 Announcement</a>
                   </li>
                   
@@ -502,11 +506,51 @@
 <hr />
 <h2 id="39x-series"><a class="toclink" href="#39x-series">3.9.x series</a></h2>
 <h3 id="390"><a class="toclink" href="#390">3.9.0</a></h3>
-<p><strong>Date</strong>: Unreleased</p>
+<p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/milestone/66?closed=1">18st October 2018</a></p>
 <ul>
+<li>Improvements to ViewSet extra actions <a href="https://github.com/encode/django-rest-framework/issues/5605">#5605</a></li>
+<li>Fix <code>action</code> support for ViewSet suffixes <a href="https://github.com/encode/django-rest-framework/issues/6081">#6081</a></li>
+<li>Allow <code>action</code> docs sections <a href="https://github.com/encode/django-rest-framework/issues/6060">#6060</a></li>
 <li>Deprecate the <code>Router.register</code> <code>base_name</code> argument in favor of <code>basename</code>. <a href="https://github.com/encode/django-rest-framework/issues/5990">#5990</a></li>
 <li>Deprecate the <code>Router.get_default_base_name</code> method in favor of <code>Router.get_default_basename</code>. <a href="https://github.com/encode/django-rest-framework/issues/5990">#5990</a></li>
+<li>Change <code>CharField</code> to disallow null bytes. <a href="https://github.com/encode/django-rest-framework/issues/6073">#6073</a>
+  To revert to the old behavior, subclass <code>CharField</code> and remove <code>ProhibitNullCharactersValidator</code> from the validators.
+  <code>python
+  class NullableCharField(serializers.CharField):
+      def __init__(self, *args, **kwargs):
+          super().__init__(*args, **kwargs)
+          self.validators = [v for v in self.validators if not isinstance(v, ProhibitNullCharactersValidator)]</code></li>
+<li>Add <code>OpenAPIRenderer</code> and <code>generate_schema</code> management command. <a href="https://github.com/encode/django-rest-framework/issues/6229">#6229</a></li>
+<li>Add OpenAPIRenderer by default, and add schema docs. <a href="https://github.com/encode/django-rest-framework/issues/6233">#6233</a></li>
+<li>Allow permissions to be composed <a href="https://github.com/encode/django-rest-framework/issues/5753">#5753</a></li>
+<li>Allow nullable BooleanField in Django 2.1 <a href="https://github.com/encode/django-rest-framework/issues/6183">#6183</a></li>
+<li>Add testing of Python 3.7 support <a href="https://github.com/encode/django-rest-framework/issues/6141">#6141</a></li>
+<li>Test using Django 2.1 final release. <a href="https://github.com/encode/django-rest-framework/issues/6109">#6109</a></li>
+<li>Added djangorestframework-datatables to third-party packages <a href="https://github.com/encode/django-rest-framework/issues/5931">#5931</a></li>
+<li>Change ISO 8601 date format to exclude year/month <a href="https://github.com/encode/django-rest-framework/issues/5936">#5936</a></li>
+<li>Update all pypi.python.org URLs to pypi.org <a href="https://github.com/encode/django-rest-framework/issues/5942">#5942</a></li>
+<li>Ensure that html forms (multipart form data) respect optional fields <a href="https://github.com/encode/django-rest-framework/issues/5927">#5927</a></li>
+<li>Allow hashing of ErrorDetail. <a href="https://github.com/encode/django-rest-framework/issues/5932">#5932</a></li>
+<li>Correct schema parsing for JSONField <a href="https://github.com/encode/django-rest-framework/issues/5878">#5878</a></li>
+<li>Render descriptions (from help_text) using safe <a href="https://github.com/encode/django-rest-framework/issues/5869">#5869</a></li>
+<li>Removed input value from deault_error_message <a href="https://github.com/encode/django-rest-framework/issues/5881">#5881</a></li>
+<li>Added min_value/max_value support in DurationField <a href="https://github.com/encode/django-rest-framework/issues/5643">#5643</a></li>
+<li>Fixed instance being overwritten in pk-only optimization try/except block <a href="https://github.com/encode/django-rest-framework/issues/5747">#5747</a></li>
+<li>Fixed AttributeError from items filter when value is None <a href="https://github.com/encode/django-rest-framework/issues/5981">#5981</a></li>
+<li>Fixed Javascript <code>e.indexOf</code> is not a function error <a href="https://github.com/encode/django-rest-framework/issues/5982">#5982</a></li>
+<li>Fix schemas for extra actions <a href="https://github.com/encode/django-rest-framework/issues/5992">#5992</a></li>
+<li>Improved get_error_detail to use error_dict/error_list <a href="https://github.com/encode/django-rest-framework/issues/5785">#5785</a></li>
+<li>Imprvied URLs in Admin renderer <a href="https://github.com/encode/django-rest-framework/issues/5988">#5988</a></li>
+<li>Add "Community" section to docs, minor cleanup <a href="https://github.com/encode/django-rest-framework/issues/5993">#5993</a></li>
+<li>Moved guardian imports out of compat <a href="https://github.com/encode/django-rest-framework/issues/6054">#6054</a></li>
 <li>Deprecate the <code>DjangoObjectPermissionsFilter</code> class, moved to the <code>djangorestframework-guardian</code> package. <a href="https://github.com/encode/django-rest-framework/issues/6075">#6075</a></li>
+<li>Drop Django 1.10 support <a href="https://github.com/encode/django-rest-framework/issues/5657">#5657</a></li>
+<li>Only catch TypeError/ValueError for object lookups <a href="https://github.com/encode/django-rest-framework/issues/6028">#6028</a></li>
+<li>Handle models without .objects manager in ModelSerializer. <a href="https://github.com/encode/django-rest-framework/issues/6111">#6111</a></li>
+<li>Improve ModelSerializer.create() error message. <a href="https://github.com/encode/django-rest-framework/issues/6112">#6112</a></li>
+<li>Fix CSRF cookie check failure when using session auth with django 1.11.6+ <a href="https://github.com/encode/django-rest-framework/issues/6113">#6113</a></li>
+<li>Updated JWT docs. <a href="https://github.com/encode/django-rest-framework/issues/6138">#6138</a></li>
+<li>Fix autoescape not getting passed to urlize_quoted_links filter <a href="https://github.com/encode/django-rest-framework/issues/6191">#6191</a></li>
 </ul>
 <h2 id="38x-series"><a class="toclink" href="#38x-series">3.8.x series</a></h2>
 <h3 id="382"><a class="toclink" href="#382">3.8.2</a></h3>
