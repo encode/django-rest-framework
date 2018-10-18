@@ -13,8 +13,8 @@ class AuthTokenSerializer(serializers.Serializer):
     )
 
     def validate(self, attrs):
-        username = attrs.get('username')
-        password = attrs.get('password')
+        username = attrs['username']
+        password = attrs['password']
 
         user = authenticate(request=self.context.get('request'),
                             username=username, password=password)
