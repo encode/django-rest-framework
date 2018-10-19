@@ -10,7 +10,6 @@ from rest_framework.authtoken.management.commands.drf_create_token import \
     Command as AuthTokenCommand
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.serializers import AuthTokenSerializer
-from rest_framework.exceptions import ValidationError
 
 
 class AuthTokenTests(TestCase):
@@ -27,10 +26,6 @@ class AuthTokenTests(TestCase):
 
     def test_token_string_representation(self):
         assert str(self.token) == 'test token'
-
-    def test_validate_raise_error_if_no_credentials_provided(self):
-        with pytest.raises(ValidationError):
-            AuthTokenSerializer().validate({})
 
     def test_whitespace_in_password(self):
         data = {'username': self.user.username, 'password': 'test pass '}
