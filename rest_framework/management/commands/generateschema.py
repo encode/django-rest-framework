@@ -1,3 +1,6 @@
+import argparse
+import sys
+
 from django.core.management.base import BaseCommand
 
 from rest_framework.compat import coreapi
@@ -15,6 +18,9 @@ class Command(BaseCommand):
         parser.add_argument('--url', dest="url", default=None, type=str)
         parser.add_argument('--description', dest="description", default=None, type=str)
         parser.add_argument('--format', dest="format", choices=['openapi', 'openapi-json', 'corejson'], default='openapi', type=str)
+        parser.add_argument(
+            'output',
+            nargs='?', type=argparse.FileType('w'), default=sys.stdout)
 
     def handle(self, *args, **options):
         assert coreapi is not None, 'coreapi must be installed.'
@@ -29,7 +35,7 @@ class Command(BaseCommand):
 
         renderer = self.get_renderer(options['format'])
         output = renderer.render(schema, renderer_context={})
-        self.stdout.write(output.decode('utf-8'))
+        options['output'].write(output.decode('utf-8'))
 
     def get_renderer(self, format):
         return {
