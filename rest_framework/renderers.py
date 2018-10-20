@@ -989,10 +989,9 @@ class _BaseOpenAPIRenderer:
             operation['tags'] = [tag]
         return operation
 
-    def get_paths(self, document):
+    def get_paths(self, document, tag=None):
         paths = {}
 
-        tag = None
         for name, link in document.links.items():
             path = urlparse.urlparse(link.url).path
             method = link.action.lower()
@@ -1000,11 +999,7 @@ class _BaseOpenAPIRenderer:
             paths[path][method] = self.get_operation(link, name, tag=tag)
 
         for tag, section in document.data.items():
-            for name, link in section.links.items():
-                path = urlparse.urlparse(link.url).path
-                method = link.action.lower()
-                paths.setdefault(path, {})
-                paths[path][method] = self.get_operation(link, name, tag=tag)
+            paths.update(self.get_paths(section, tag))
 
         return paths
 
