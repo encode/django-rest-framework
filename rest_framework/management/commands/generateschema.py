@@ -14,13 +14,29 @@ class Command(BaseCommand):
     help = "Generates configured API schema for project."
 
     def add_arguments(self, parser):
-        parser.add_argument('--title')
-        parser.add_argument('--url')
-        parser.add_argument('--description')
-        parser.add_argument('--format', choices=['openapi', 'openapi-json', 'corejson'], default='openapi')
+        parser.add_argument(
+            '--title',
+            help='A short description of the application. CommonMark syntax '
+            'MAY be used for rich text representation.')
+        parser.add_argument(
+            '--url',
+            help='A URL to the target host. This URL supports Server '
+            'Variables and MAY be relative, to indicate that the host '
+            'location is relative to the location where the OpenAPI document '
+            'is being served. Variable substitutions will be made when a '
+            'variable is named in {brackets}.')
+        parser.add_argument(
+            '--description',
+            help='An optional string describing the host designated by the '
+            'URL. CommonMark syntax MAY be used for rich text representation.')
+        parser.add_argument(
+            '--format',
+            choices=['openapi', 'openapi-json', 'corejson'], default='openapi',
+            help='Output format.')
         parser.add_argument(
             'output',
-            nargs='?', type=argparse.FileType('w'), default=sys.stdout)
+            nargs='?', type=argparse.FileType('w'), default=sys.stdout,
+            help='Path to output file. If not specified, output to stdout')
 
     def handle(self, *args, **options):
         assert coreapi is not None, 'coreapi must be installed.'
