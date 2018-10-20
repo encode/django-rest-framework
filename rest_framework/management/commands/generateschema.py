@@ -14,10 +14,10 @@ class Command(BaseCommand):
     help = "Generates configured API schema for project."
 
     def add_arguments(self, parser):
-        parser.add_argument('--title', dest="title", default=None, type=str)
-        parser.add_argument('--url', dest="url", default=None, type=str)
-        parser.add_argument('--description', dest="description", default=None, type=str)
-        parser.add_argument('--format', dest="format", choices=['openapi', 'openapi-json', 'corejson'], default='openapi', type=str)
+        parser.add_argument('--title')
+        parser.add_argument('--url')
+        parser.add_argument('--description')
+        parser.add_argument('--format', choices=['openapi', 'openapi-json', 'corejson'], default='openapi')
         parser.add_argument(
             'output',
             nargs='?', type=argparse.FileType('w'), default=sys.stdout)
