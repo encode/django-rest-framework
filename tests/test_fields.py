@@ -8,6 +8,7 @@ from decimal import ROUND_DOWN, ROUND_UP, Decimal
 import pytest
 import pytz
 from django.core.exceptions import ValidationError as DjangoValidationError
+from django.db import models
 from django.http import QueryDict
 from django.test import TestCase, override_settings
 from django.utils import six
@@ -2288,3 +2289,42 @@ class TestValidationErrorCode:
                 ),
             ]
         }
+class ListFieldModel(models.Model):
+    list_field = models.ListField(child=models.CharField)
+
+
+
+class TestAppendListField(TestCase):
+    class TestSerializer(serializers.ModelSerializer):
+        list_field = serializers.AppendListField(child=serializers.CharField)
+
+        class Meta:
+            model = ListFieldModel
+            fields = ('list_field')
+
+
+    def setUp(self):
+        self.instance = ListFieldModel(list_field=["abc"])
+
+        class TestSerializer(serializers.ModelSerializer):
+            list_field = serializers.AppendListField(child=serializers.CharField)
+
+            class Meta:
+                model = ListFieldModel
+                fields = ('list_field')
+        self.serializer = TestSerializer
+
+    def test_adding_data_without_instance(self):
+        serializer = self.serializer(data={"list_field":["bb"]})
+        new_instance = serializer.save()
+        self.asserEqual(new_instance.list_field,["bb"])
+
+    def test_adding_data_without_instance(self):
+        serializer = self.serializer(instance=self.instance,data={})
+        new_instance = serializer.save()
+        self.asserEqual(new_instance.list_field,["abc"])
+
+    def test_adding_data_and_instance(self):
+        serializer = self.serializer(instance=self.instance,data={"list_field":["bb"]})
+        new_instance = serializer.save()
+        self.asserEqual(new_instance.list_field,["abc","bb"])

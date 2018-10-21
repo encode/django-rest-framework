@@ -1949,3 +1949,15 @@ class TransformitiveFieldMixin():
         :return:
         """
         raise NotImplementedError("apply_tranformation is not implement for this field %s" % self.field_name)
+
+
+class AppendListField(ListField, TransformitiveFieldMixin):
+    """
+    it's field works with modelserializer that appends the old list value and the new list value
+    """
+
+    def apply_transformation(self, instance, data):
+        old_value = self.get_attribute(instance) or []
+        new_value = self.get_value(data) or []
+        if new_value != empty:
+            data[self.field_name] = old_value + new_value
