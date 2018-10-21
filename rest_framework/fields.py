@@ -1933,3 +1933,19 @@ class ModelField(Field):
         if is_protected_type(value):
             return value
         return self.model_field.value_to_string(obj)
+
+
+class TransformitiveFieldMixin():
+    """
+    it's an interface to allow any field to change the it's data
+    from the already database object if using the modelserializer
+    """
+
+    def apply_transformation(self, instance, data):
+        """
+        the transformation to be done by the inherited field to do it's work
+        :param instance:
+        :param data:
+        :return:
+        """
+        raise NotImplementedError("apply_tranformation is not implement for this field %s" % self.field_name)

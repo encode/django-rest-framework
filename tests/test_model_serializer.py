@@ -1274,3 +1274,50 @@ class Issue6110Test(TestCase):
         msginitial = ('Got a `TypeError` when calling `Issue6110TestModel.all_objects.create()`.')
         with self.assertRaisesMessage(TypeError, msginitial):
             Issue6110ModelSerializer().create({'wrong_param': 'wrong_param'})
+
+
+class TestTransformitiveField(TestCase):
+
+    def setUp(self):
+        self.instance = OneFieldModel(char_field="abc")
+
+    def __create_serializer(self,implementor):
+
+        class serializer(serializers.ModelSerializer):
+            char_field = implementor()
+            class Meta:
+                model = OneFieldModel
+                fields = ('char_field')
+        return serializer
+
+    def test_adding_transformitive_field_mixin_without_implementing_the_method(self):
+
+        class EmptyImplementor(serializers.TransformitiveFieldMixin,serializers.CharField):
+            pass
+
+        with self.assertRaises(NotImplementedError):
+            TestSerializer = self.__create_serializer(EmptyImplementor)
+            serializer = TestSerializer(instance=self.instance, data={})
+            serializer.save()
+
+    def test_adding_transformitive_field_mixin_with_implementing_the_method(self):
+
+        class NonEmptyImplementor(serializers.TransformitiveFieldMixin,serializers.CharField):
+            def apply_transformation(self, instance, data):
+                data["char_field"] = data["char_field"][0:1]+instance.char_field[0:1]
+
+        TestSerializer = self.__create_serializer(NonEmptyImplementor)
+        serializer = TestSerializer(instance=self.instance, data={"char_field":"bb"})
+        new_instance = serializer.save()
+        self.asserEqual(new_instance.char_field,"ba")
+
+    def test_if_no_instance_is_passed_no_errors_would_happen(self):
+
+        class NonEmptyImplementor(serializers.TransformitiveFieldMixin,serializers.CharField):
+            def apply_transformation(self, instance, data):
+                data["char_field"] = data["char_field"][0:1]+instance.char_field[0:1]
+
+        TestSerializer = self.__create_serializer(NonEmptyImplementor)
+        data={"char_field":"bb"}
+        serializer = TestSerializer()
+        serializer.to_internal_value(data)

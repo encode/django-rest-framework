@@ -29,7 +29,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from rest_framework.compat import Mapping, postgres_fields, unicode_to_repr
 from rest_framework.exceptions import ErrorDetail, ValidationError
-from rest_framework.fields import get_error_detail, set_value
+from rest_framework.fields import get_error_detail, set_value, TransformitiveFieldMixin
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, model_meta, representation
 from rest_framework.utils.field_mapping import (
@@ -900,6 +900,20 @@ class ModelSerializer(Serializer):
     # views, to correctly handle the 'Location' response header for
     # "HTTP 201 Created" responses.
     url_field_name = None
+
+    def to_internal_value(self, data):
+        """
+        adding functionality of changing data sent by the serializer
+        by the data inside the instance
+        :param data:
+        :return:
+        """
+        fields = self._writable_fields
+        for field in fields:
+            if self.instance and isinstance(field, TransformitiveFieldMixin):
+                field.apply_transformation(self.instance, data)
+
+        return super(ModelSerializer, self).to_internal_value(data)
 
     # Default `create` and `update` behavior...
     def create(self, validated_data):
