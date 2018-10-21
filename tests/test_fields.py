@@ -16,7 +16,8 @@ from django.utils.timezone import activate, deactivate, override, utc
 
 import rest_framework
 from rest_framework import exceptions, serializers
-from rest_framework.compat import ProhibitNullCharactersValidator
+from rest_framework.compat import ProhibitNullCharactersValidator, postgres_fields
+
 from rest_framework.fields import DjangoImageField, is_simple_callable
 
 try:
@@ -2290,13 +2291,13 @@ class TestValidationErrorCode:
             ]
         }
 class ListFieldModel(models.Model):
-    list_field = models.ListField(child=models.CharField)
+    list_field = postgres_fields.ArrayField(models.CharField(max_length=255))
 
 
-
+@pytest.mark.skipif('not postgres_fields')
 class TestAppendListField(TestCase):
     class TestSerializer(serializers.ModelSerializer):
-        list_field = serializers.AppendListField(child=serializers.CharField)
+        list_field = serializers.AppendListField(child=serializers.CharField(max_length=100))
 
         class Meta:
             model = ListFieldModel
