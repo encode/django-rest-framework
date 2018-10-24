@@ -901,6 +901,16 @@ class ModelSerializer(Serializer):
     # "HTTP 201 Created" responses.
     url_field_name = None
 
+    @staticmethod
+    def for_model(model):
+        serializer_name = model.__name__ + 'Serializer'
+        meta = type('Meta', (), {'model': model, 'fields': '__all__'})
+        return type(
+            serializer_name,
+            (ModelSerializer,),
+            {'Meta': meta}
+        )
+
     # Default `create` and `update` behavior...
     def create(self, validated_data):
         """
