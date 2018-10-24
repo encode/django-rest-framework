@@ -31,3 +31,10 @@ class SchemaView(APIView):
         if schema is None:
             raise exceptions.PermissionDenied()
         return Response(schema)
+
+    def handle_exception(self, exc):
+        if isinstance(exc, (exceptions.NotAuthenticated,
+                            exceptions.AuthenticationFailed)):
+            self.request.accepted_renderer = renderers.JSONRenderer()
+
+        return super(SchemaView, self).handle_exception(exc)
