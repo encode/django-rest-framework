@@ -428,9 +428,6 @@ the user to login, and then instantiate a client using session authentication:
 The authentication scheme will handle including a CSRF header in any outgoing
 requests for unsafe HTTP methods.
 
-** Note: ** This mechanism does not work when used in conjunction with
-`CSRF_USE_SESSIONS = True` in your Django settings.
-
 #### Token authentication
 
 The `TokenAuthentication` class can be used to support REST framework's built-in
