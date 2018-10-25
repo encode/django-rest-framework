@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django.conf.urls import url
 from django.test import TestCase
 from django.test.utils import override_settings
