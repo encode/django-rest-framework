@@ -6,9 +6,8 @@ from django.db.models import Manager
 from django.db.models.query import QuerySet
 from django.urls import NoReverseMatch, Resolver404, get_script_prefix, resolve
 from django.utils import six
-from django.utils.encoding import (
-    python_2_unicode_compatible, smart_text, uri_to_iri
-)
+from django.utils.encoding import smart_text, uri_to_iri
+
 from django.utils.six.moves.urllib import parse as urlparse
 from django.utils.translation import ugettext_lazy as _
 
@@ -67,7 +66,6 @@ class Hyperlink(six.text_type):
     is_hyperlink = True
 
 
-@python_2_unicode_compatible
 class PKOnlyObject(object):
     """
     This is a mock object, used for when we only need the pk of the object

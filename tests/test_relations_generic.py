@@ -4,12 +4,10 @@ from django.contrib.contenttypes.fields import (
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.test import TestCase
-from django.utils.encoding import python_2_unicode_compatible
 
 from rest_framework import serializers
 
 
-@python_2_unicode_compatible
 class Tag(models.Model):
     """
     Tags have a descriptive slug, and are attached to an arbitrary object.
@@ -23,7 +21,6 @@ class Tag(models.Model):
         return self.tag
 
 
-@python_2_unicode_compatible
 class Bookmark(models.Model):
     """
     A URL bookmark that may have multiple tags attached.
@@ -35,7 +32,6 @@ class Bookmark(models.Model):
         return 'Bookmark: %s' % self.url
 
 
-@python_2_unicode_compatible
 class Note(models.Model):
     """
     A textual note that may have multiple tags attached.
