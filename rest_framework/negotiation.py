@@ -12,7 +12,7 @@ from rest_framework.utils.mediatypes import (
 )
 
 
-class BaseContentNegotiation(object):
+class BaseContentNegotiation:
     def select_parser(self, request, parsers):
         raise NotImplementedError('.select_parser() must be implemented')
 

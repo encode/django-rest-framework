@@ -18,7 +18,7 @@ from rest_framework.request import clone_request
 from rest_framework.utils.field_mapping import ClassLookupDict
 
 
-class BaseMetadata(object):
+class BaseMetadata:
     def determine_metadata(self, request, view):
         """
         Return a dictionary of metadata about the view.

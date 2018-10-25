@@ -32,7 +32,7 @@ class CSRFCheck(CsrfViewMiddleware):
         return reason
 
 
-class BaseAuthentication(object):
+class BaseAuthentication:
     """
     All authentication classes should extend BaseAuthentication.
     """

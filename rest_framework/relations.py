@@ -115,7 +115,7 @@ class RelatedField(Field):
         )
         kwargs.pop('many', None)
         kwargs.pop('allow_empty', None)
-        super(RelatedField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def __new__(cls, *args, **kwargs):
         # We override this method in order to automagically create
@@ -151,7 +151,7 @@ class RelatedField(Field):
         # We force empty strings to None values for relational fields.
         if data == '':
             data = None
-        return super(RelatedField, self).run_validation(data)
+        return super().run_validation(data)
 
     def get_queryset(self):
         queryset = self.queryset
@@ -183,7 +183,7 @@ class RelatedField(Field):
                 pass
 
         # Standard case, return the object instance.
-        return super(RelatedField, self).get_attribute(instance)
+        return super().get_attribute(instance)
 
     def get_choices(self, cutoff=None):
         queryset = self.get_queryset()
@@ -230,7 +230,7 @@ class StringRelatedField(RelatedField):
 
     def __init__(self, **kwargs):
         kwargs['read_only'] = True
-        super(StringRelatedField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def to_representation(self, value):
         return six.text_type(value)
@@ -245,7 +245,7 @@ class PrimaryKeyRelatedField(RelatedField):
 
     def __init__(self, **kwargs):
         self.pk_field = kwargs.pop('pk_field', None)
-        super(PrimaryKeyRelatedField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def use_pk_only_optimization(self):
         return True
@@ -291,7 +291,7 @@ class HyperlinkedRelatedField(RelatedField):
         # implicit `self` argument to be passed.
         self.reverse = reverse
 
-        super(HyperlinkedRelatedField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def use_pk_only_optimization(self):
         return self.lookup_field == 'pk'
@@ -426,7 +426,7 @@ class HyperlinkedIdentityField(HyperlinkedRelatedField):
         assert view_name is not None, 'The `view_name` argument is required.'
         kwargs['read_only'] = True
         kwargs['source'] = '*'
-        super(HyperlinkedIdentityField, self).__init__(view_name, **kwargs)
+        super().__init__(view_name, **kwargs)
 
     def use_pk_only_optimization(self):
         # We have the complete object instance already. We don't need
@@ -447,7 +447,7 @@ class SlugRelatedField(RelatedField):
     def __init__(self, slug_field=None, **kwargs):
         assert slug_field is not None, 'The `slug_field` argument is required.'
         self.slug_field = slug_field
-        super(SlugRelatedField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def to_internal_value(self, data):
         try:
@@ -496,7 +496,7 @@ class ManyRelatedField(Field):
             self.html_cutoff_text or _(api_settings.HTML_SELECT_CUTOFF_TEXT)
         )
         assert child_relation is not None, '`child_relation` is a required argument.'
-        super(ManyRelatedField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.child_relation.bind(field_name='', parent=self)
 
     def get_value(self, dictionary):

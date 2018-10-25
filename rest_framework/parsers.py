@@ -24,13 +24,13 @@ from rest_framework.settings import api_settings
 from rest_framework.utils import json
 
 
-class DataAndFiles(object):
+class DataAndFiles:
     def __init__(self, data, files):
         self.data = data
         self.files = files
 
 
-class BaseParser(object):
+class BaseParser:
     """
     All parsers should extend `BaseParser`, specifying a `media_type`
     attribute, and overriding the `.parse()` method.

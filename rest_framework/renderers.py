@@ -789,7 +789,7 @@ class AdminRenderer(BrowsableAPIRenderer):
         """
         Render the HTML for the browsable API representation.
         """
-        context = super(AdminRenderer, self).get_context(
+        context = super().get_context(
             data, accepted_media_type, renderer_context
         )
 

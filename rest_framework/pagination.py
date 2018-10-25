@@ -132,7 +132,7 @@ PageLink = namedtuple('PageLink', ['url', 'number', 'is_active', 'is_break'])
 PAGE_BREAK = PageLink(url=None, number=None, is_active=False, is_break=True)
 
 
-class BasePagination(object):
+class BasePagination:
     display_page_controls = False
 
     def paginate_queryset(self, queryset, request, view=None):  # pragma: no cover

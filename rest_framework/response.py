@@ -28,7 +28,7 @@ class Response(SimpleTemplateResponse):
         Setting 'renderer' and 'media_type' will typically be deferred,
         For example being set automatically by the `APIView`.
         """
-        super(Response, self).__init__(None, status=status)
+        super().__init__(None, status=status)
 
         if isinstance(data, Serializer):
             msg = (
@@ -93,7 +93,7 @@ class Response(SimpleTemplateResponse):
         """
         Remove attributes from the response that shouldn't be cached.
         """
-        state = super(Response, self).__getstate__()
+        state = super().__getstate__()
         for key in (
             'accepted_renderer', 'renderer_context', 'resolver_match',
             'client', 'request', 'json', 'wsgi_request'

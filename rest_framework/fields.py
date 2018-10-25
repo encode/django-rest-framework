@@ -723,7 +723,7 @@ class NullBooleanField(Field):
     def __init__(self, **kwargs):
         assert 'allow_null' not in kwargs, '`allow_null` is not a valid option.'
         kwargs['allow_null'] = True
-        super(NullBooleanField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def to_internal_value(self, data):
         try:
@@ -763,7 +763,7 @@ class CharField(Field):
         self.trim_whitespace = kwargs.pop('trim_whitespace', True)
         self.max_length = kwargs.pop('max_length', None)
         self.min_length = kwargs.pop('min_length', None)
-        super(CharField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         if self.max_length is not None:
             message = lazy(
                 self.error_messages['max_length'].format,
@@ -789,7 +789,7 @@ class CharField(Field):
             if not self.allow_blank:
                 self.fail('blank')
             return ''
-        return super(CharField, self).run_validation(data)
+        return super().run_validation(data)
 
     def to_internal_value(self, data):
         # We're lenient with allowing basic numerics to be coerced into strings,
@@ -810,7 +810,7 @@ class EmailField(CharField):
     }
 
     def __init__(self, **kwargs):
-        super(EmailField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         validator = EmailValidator(message=self.error_messages['invalid'])
         self.validators.append(validator)
 
@@ -821,7 +821,7 @@ class RegexField(CharField):
     }
 
     def __init__(self, regex, **kwargs):
-        super(RegexField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         validator = RegexValidator(regex, message=self.error_messages['invalid'])
         self.validators.append(validator)
 
@@ -833,7 +833,7 @@ class SlugField(CharField):
     }
 
     def __init__(self, allow_unicode=False, **kwargs):
-        super(SlugField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.allow_unicode = allow_unicode
         if self.allow_unicode:
             validator = RegexValidator(re.compile(r'^[-\w]+\Z', re.UNICODE), message=self.error_messages['invalid_unicode'])
@@ -848,7 +848,7 @@ class URLField(CharField):
     }
 
     def __init__(self, **kwargs):
-        super(URLField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         validator = URLValidator(message=self.error_messages['invalid'])
         self.validators.append(validator)
 
@@ -867,7 +867,7 @@ class UUIDField(Field):
                 'Invalid format for uuid representation. '
                 'Must be one of "{0}"'.format('", "'.join(self.valid_formats))
             )
-        super(UUIDField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def to_internal_value(self, data):
         if not isinstance(data, uuid.UUID):
@@ -899,7 +899,7 @@ class IPAddressField(CharField):
     def __init__(self, protocol='both', **kwargs):
         self.protocol = protocol.lower()
         self.unpack_ipv4 = (self.protocol == 'both')
-        super(IPAddressField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         validators, error_message = ip_address_validators(protocol, self.unpack_ipv4)
         self.validators.extend(validators)
 
@@ -914,7 +914,7 @@ class IPAddressField(CharField):
             except DjangoValidationError:
                 self.fail('invalid', value=data)
 
-        return super(IPAddressField, self).to_internal_value(data)
+        return super().to_internal_value(data)
 
 
 # Number types...
@@ -932,7 +932,7 @@ class IntegerField(Field):
     def __init__(self, **kwargs):
         self.max_value = kwargs.pop('max_value', None)
         self.min_value = kwargs.pop('min_value', None)
-        super(IntegerField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         if self.max_value is not None:
             message = lazy(
                 self.error_messages['max_value'].format,
@@ -972,7 +972,7 @@ class FloatField(Field):
     def __init__(self, **kwargs):
         self.max_value = kwargs.pop('max_value', None)
         self.min_value = kwargs.pop('min_value', None)
-        super(FloatField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         if self.max_value is not None:
             message = lazy(
                 self.error_messages['max_value'].format,
@@ -1030,7 +1030,7 @@ class DecimalField(Field):
         else:
             self.max_whole_digits = None
 
-        super(DecimalField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
         if self.max_value is not None:
             message = lazy(
@@ -1166,7 +1166,7 @@ class DateTimeField(Field):
             self.input_formats = input_formats
         if default_timezone is not None:
             self.timezone = default_timezone
-        super(DateTimeField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def enforce_timezone(self, value):
         """
@@ -1250,7 +1250,7 @@ class DateField(Field):
             self.format = format
         if input_formats is not None:
             self.input_formats = input_formats
-        super(DateField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def to_internal_value(self, value):
         input_formats = getattr(self, 'input_formats', api_settings.DATE_INPUT_FORMATS)
@@ -1316,7 +1316,7 @@ class TimeField(Field):
             self.format = format
         if input_formats is not None:
             self.input_formats = input_formats
-        super(TimeField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def to_internal_value(self, value):
         input_formats = getattr(self, 'input_formats', api_settings.TIME_INPUT_FORMATS)
@@ -1377,7 +1377,7 @@ class DurationField(Field):
     def __init__(self, **kwargs):
         self.max_value = kwargs.pop('max_value', None)
         self.min_value = kwargs.pop('min_value', None)
-        super(DurationField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         if self.max_value is not None:
             message = lazy(
                 self.error_messages['max_value'].format,
@@ -1419,7 +1419,7 @@ class ChoiceField(Field):
 
         self.allow_blank = kwargs.pop('allow_blank', False)
 
-        super(ChoiceField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def to_internal_value(self, data):
         if data == '' and self.allow_blank:
@@ -1472,7 +1472,7 @@ class MultipleChoiceField(ChoiceField):
 
     def __init__(self, *args, **kwargs):
         self.allow_empty = kwargs.pop('allow_empty', True)
-        super(MultipleChoiceField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_value(self, dictionary):
         if self.field_name not in dictionary:
@@ -1491,7 +1491,7 @@ class MultipleChoiceField(ChoiceField):
             self.fail('empty')
 
         return {
-            super(MultipleChoiceField, self).to_internal_value(item)
+            super().to_internal_value(item)
             for item in data
         }
 
@@ -1515,7 +1515,7 @@ class FilePathField(ChoiceField):
             allow_folders=allow_folders, required=required
         )
         kwargs['choices'] = field.choices
-        super(FilePathField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
 
 # File types...
@@ -1534,7 +1534,7 @@ class FileField(Field):
         self.allow_empty_file = kwargs.pop('allow_empty_file', False)
         if 'use_url' in kwargs:
             self.use_url = kwargs.pop('use_url')
-        super(FileField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def to_internal_value(self, data):
         try:
@@ -1580,13 +1580,13 @@ class ImageField(FileField):
 
     def __init__(self, *args, **kwargs):
         self._DjangoImageField = kwargs.pop('_DjangoImageField', DjangoImageField)
-        super(ImageField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def to_internal_value(self, data):
         # Image validation is a bit grungy, so we'll just outright
         # defer to Django's implementation so we don't need to
         # consider it, or treat PIL as a test dependency.
-        file_object = super(ImageField, self).to_internal_value(data)
+        file_object = super().to_internal_value(data)
         django_field = self._DjangoImageField()
         django_field.error_messages = self.error_messages
         return django_field.clean(file_object)
@@ -1596,7 +1596,7 @@ class ImageField(FileField):
 
 class _UnvalidatedField(Field):
     def __init__(self, *args, **kwargs):
-        super(_UnvalidatedField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.allow_blank = True
         self.allow_null = True
 
@@ -1629,7 +1629,7 @@ class ListField(Field):
             "Remove `source=` from the field declaration."
         )
 
-        super(ListField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.child.bind(field_name='', parent=self)
         if self.max_length is not None:
             message = self.error_messages['max_length'].format(max_length=self.max_length)
@@ -1702,7 +1702,7 @@ class DictField(Field):
             "Remove `source=` from the field declaration."
         )
 
-        super(DictField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.child.bind(field_name='', parent=self)
 
     def get_value(self, dictionary):
@@ -1752,7 +1752,7 @@ class HStoreField(DictField):
     child = CharField(allow_blank=True, allow_null=True)
 
     def __init__(self, *args, **kwargs):
-        super(HStoreField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         assert isinstance(self.child, CharField), (
             "The `child` argument must be an instance of `CharField`, "
             "as the hstore extension stores values as strings."
@@ -1766,7 +1766,7 @@ class JSONField(Field):
 
     def __init__(self, *args, **kwargs):
         self.binary = kwargs.pop('binary', False)
-        super(JSONField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_value(self, dictionary):
         if html.is_html_input(dictionary) and self.field_name in dictionary:
@@ -1819,7 +1819,7 @@ class ReadOnlyField(Field):
 
     def __init__(self, **kwargs):
         kwargs['read_only'] = True
-        super(ReadOnlyField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def to_representation(self, value):
         return value
@@ -1836,7 +1836,7 @@ class HiddenField(Field):
     def __init__(self, **kwargs):
         assert 'default' in kwargs, 'default is a required argument.'
         kwargs['write_only'] = True
-        super(HiddenField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def get_value(self, dictionary):
         # We always use the default value for `HiddenField`.
@@ -1866,7 +1866,7 @@ class SerializerMethodField(Field):
         self.method_name = method_name
         kwargs['source'] = '*'
         kwargs['read_only'] = True
-        super(SerializerMethodField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def bind(self, field_name, parent):
         # In order to enforce a consistent style, we error if a redundant
@@ -1884,7 +1884,7 @@ class SerializerMethodField(Field):
         if self.method_name is None:
             self.method_name = default_method_name
 
-        super(SerializerMethodField, self).bind(field_name, parent)
+        super().bind(field_name, parent)
 
     def to_representation(self, value):
         method = getattr(self.parent, self.method_name)
@@ -1907,7 +1907,7 @@ class ModelField(Field):
         # The `max_length` option is supported by Django's base `Field` class,
         # so we'd better support it here.
         max_length = kwargs.pop('max_length', None)
-        super(ModelField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         if max_length is not None:
             message = lazy(
                 self.error_messages['max_length'].format,

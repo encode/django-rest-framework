@@ -166,7 +166,7 @@ class SimpleRouter(BaseRouter):
 
     def __init__(self, trailing_slash=True):
         self.trailing_slash = '/' if trailing_slash else ''
-        super(SimpleRouter, self).__init__()
+        super().__init__()
 
     def get_default_basename(self, viewset):
         """
@@ -358,7 +358,7 @@ class DefaultRouter(SimpleRouter):
             self.root_renderers = kwargs.pop('root_renderers')
         else:
             self.root_renderers = list(api_settings.DEFAULT_RENDERER_CLASSES)
-        super(DefaultRouter, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_api_root_view(self, api_urls=None):
         """
@@ -376,7 +376,7 @@ class DefaultRouter(SimpleRouter):
         Generate the list of URL patterns, including a default root view
         for the API, and appending `.json` style format suffixes.
         """
-        urls = super(DefaultRouter, self).get_urls()
+        urls = super().get_urls()
 
         if self.include_root_view:
             view = self.get_api_root_view(api_urls=urls)

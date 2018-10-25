@@ -75,7 +75,7 @@ class ErrorDetail(six.text_type):
         return self
 
     def __eq__(self, other):
-        r = super(ErrorDetail, self).__eq__(other)
+        r = super().__eq__(other)
         try:
             return r and self.code == other.code
         except AttributeError:
@@ -195,7 +195,7 @@ class MethodNotAllowed(APIException):
     def __init__(self, method, detail=None, code=None):
         if detail is None:
             detail = force_text(self.default_detail).format(method=method)
-        super(MethodNotAllowed, self).__init__(detail, code)
+        super().__init__(detail, code)
 
 
 class NotAcceptable(APIException):
@@ -205,7 +205,7 @@ class NotAcceptable(APIException):
 
     def __init__(self, detail=None, code=None, available_renderers=None):
         self.available_renderers = available_renderers
-        super(NotAcceptable, self).__init__(detail, code)
+        super().__init__(detail, code)
 
 
 class UnsupportedMediaType(APIException):
@@ -216,7 +216,7 @@ class UnsupportedMediaType(APIException):
     def __init__(self, media_type, detail=None, code=None):
         if detail is None:
             detail = force_text(self.default_detail).format(media_type=media_type)
-        super(UnsupportedMediaType, self).__init__(detail, code)
+        super().__init__(detail, code)
 
 
 class Throttled(APIException):
@@ -237,7 +237,7 @@ class Throttled(APIException):
                                      self.extra_detail_plural.format(wait=wait),
                                      wait))))
         self.wait = wait
-        super(Throttled, self).__init__(detail, code)
+        super().__init__(detail, code)
 
 
 def server_error(request, *args, **kwargs):

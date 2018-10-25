@@ -22,7 +22,7 @@ from rest_framework.compat import (
 from rest_framework.settings import api_settings
 
 
-class BaseFilterBackend(object):
+class BaseFilterBackend:
     """
     A base class from which all filter backend classes should inherit.
     """

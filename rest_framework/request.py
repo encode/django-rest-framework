@@ -33,7 +33,7 @@ def is_form_media_type(media_type):
             base_media_type == 'multipart/form-data')
 
 
-class override_method(object):
+class override_method:
     """
     A context manager that temporarily overrides the method on a request,
     additionally setting the `view.request` attribute.
@@ -80,7 +80,7 @@ def wrap_attributeerrors():
         six.reraise(type(exc), exc, info[2])
 
 
-class Empty(object):
+class Empty:
     """
     Placeholder for unset attributes.
     Cannot use `None`, as that may be a valid value.
@@ -125,7 +125,7 @@ def clone_request(request, method):
     return ret
 
 
-class ForcedAuthentication(object):
+class ForcedAuthentication:
     """
     This authentication class is used if the test client or request factory
     forcibly authenticated the request.
@@ -139,7 +139,7 @@ class ForcedAuthentication(object):
         return (self.force_user, self.force_token)
 
 
-class Request(object):
+class Request:
     """
     Wrapper allowing to enhance a standard `HttpRequest` instance.
 
