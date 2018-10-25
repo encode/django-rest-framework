@@ -16,7 +16,6 @@ automatically.
     router.register(r'users', UserViewSet, 'user')
     urlpatterns = router.urls
 """
-from __future__ import unicode_literals
 
 from collections import OrderedDict
 from functools import update_wrapper

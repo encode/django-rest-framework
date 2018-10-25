@@ -4,7 +4,6 @@ Handled exceptions raised by REST framework.
 In addition Django's built in 403 and 404 exceptions are handled.
 (`django.http.Http404` and `django.core.exceptions.PermissionDenied`)
 """
-from __future__ import unicode_literals
 
 import math
 

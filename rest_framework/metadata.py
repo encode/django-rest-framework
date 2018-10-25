@@ -6,7 +6,6 @@ some fairly ad-hoc information about the view.
 Future implementations might use JSON schema or other definitions in order
 to return this information in a more standardized way.
 """
-from __future__ import unicode_literals
 
 from collections import OrderedDict
 

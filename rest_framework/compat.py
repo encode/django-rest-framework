@@ -3,8 +3,6 @@ The `compat` module provides support for backwards compatibility with older
 versions of Django/Python, and compatibility wrappers around optional packages.
 """
 
-from __future__ import unicode_literals
-
 from django.conf import settings
 from django.core import validators
 from django.utils import six

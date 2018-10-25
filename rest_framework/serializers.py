@@ -10,7 +10,6 @@ python primitives.
 2. The process of marshalling between python primitives and request and
 response content is handled by parsers and renderers.
 """
-from __future__ import unicode_literals
 
 import copy
 import inspect

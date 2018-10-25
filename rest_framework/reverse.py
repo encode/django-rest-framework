@@ -1,7 +1,6 @@
 """
 Provide urlresolver functions that return fully qualified URLs or view names
 """
-from __future__ import unicode_literals
 
 from django.urls import NoReverseMatch
 from django.urls import reverse as django_reverse

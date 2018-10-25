@@ -1,7 +1,6 @@
 """
 Provides various authentication policies.
 """
-from __future__ import unicode_literals
 
 import base64
 import binascii

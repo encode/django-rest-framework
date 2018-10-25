@@ -2,7 +2,6 @@
 Helper functions for creating user-friendly representations
 of serializer classes and serializer fields.
 """
-from __future__ import unicode_literals
 
 import re
 

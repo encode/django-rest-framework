@@ -6,7 +6,6 @@ There are also various decorators for setting the API policies on function
 based views, as well as the `@detail_route` and `@list_route` decorators, which are
 used to annotate methods on viewsets that should be included by routers.
 """
-from __future__ import unicode_literals
 
 import types
 import warnings

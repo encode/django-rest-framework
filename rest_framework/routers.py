@@ -13,7 +13,6 @@ For example, you might have a `urls.py` that looks something like this:
 
     urlpatterns = router.urls
 """
-from __future__ import unicode_literals
 
 import itertools
 import warnings

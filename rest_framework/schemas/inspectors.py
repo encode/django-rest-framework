@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 inspectors.py   # Per-endpoint view introspection
 
