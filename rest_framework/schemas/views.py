@@ -17,7 +17,7 @@ class SchemaView(APIView):
     public = False
 
     def __init__(self, *args, **kwargs):
-        super(SchemaView, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.renderer_classes is None:
             self.renderer_classes = [
                 renderers.OpenAPIRenderer,
