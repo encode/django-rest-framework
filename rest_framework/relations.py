@@ -7,7 +7,6 @@ from django.db.models.query import QuerySet
 from django.urls import NoReverseMatch, Resolver404, get_script_prefix, resolve
 from django.utils import six
 from django.utils.encoding import smart_text, uri_to_iri
-
 from django.utils.six.moves.urllib import parse as urlparse
 from django.utils.translation import ugettext_lazy as _
 
