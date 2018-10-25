@@ -1472,7 +1472,7 @@ class MultipleChoiceField(ChoiceField):
 
     def __init__(self, *args, **kwargs):
         self.allow_empty = kwargs.pop('allow_empty', True)
-        super().__init__(*args, **kwargs)
+        super(MultipleChoiceField, self).__init__(*args, **kwargs)
 
     def get_value(self, dictionary):
         if self.field_name not in dictionary:
