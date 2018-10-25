@@ -1,7 +1,6 @@
 """
 Provides a set of pluggable permission policies.
 """
-from __future__ import unicode_literals
 
 from django.http import Http404
 from django.utils import six

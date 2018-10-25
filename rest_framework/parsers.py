@@ -4,7 +4,6 @@ Parsers are used to parse the content of incoming HTTP requests.
 They give us a generic way of being able to handle various media types
 on the request, such as form content or json encoded data.
 """
-from __future__ import unicode_literals
 
 import codecs
 

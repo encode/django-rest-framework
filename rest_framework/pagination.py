@@ -3,7 +3,6 @@
 Pagination serializers determine the structure of the output that should
 be used for paginated responses.
 """
-from __future__ import unicode_literals
 
 from base64 import b64decode, b64encode
 from collections import OrderedDict, namedtuple

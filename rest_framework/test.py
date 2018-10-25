@@ -1,8 +1,6 @@
-# -- coding: utf-8 --
-
 # Note that we import as `DjangoRequestFactory` and `DjangoClient` in order
 # to make it harder for the user to import the wrong thing without realizing.
-from __future__ import unicode_literals
+
 
 import io
 from importlib import import_module

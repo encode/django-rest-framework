@@ -6,7 +6,6 @@ on the response, such as JSON encoded data or HTML output.
 
 REST framework also provides an HTML renderer that renders the browsable API.
 """
-from __future__ import unicode_literals
 
 import base64
 from collections import OrderedDict

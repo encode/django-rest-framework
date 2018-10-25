@@ -6,7 +6,6 @@ This gives us better separation of concerns, allows us to use single-step
 object creation, and makes it possible to switch between using the implicit
 `ModelSerializer` class and an equivalent explicit `Serializer` class.
 """
-from __future__ import unicode_literals
 
 from django.db import DataError
 from django.utils.translation import ugettext_lazy as _
