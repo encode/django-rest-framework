@@ -5,8 +5,6 @@ shortcuts for automatically creating serializers based on a given model class.
 These tests deal with ensuring that we correctly map the model fields onto
 an appropriate set of serializer fields for each case.
 """
-from __future__ import unicode_literals
-
 import datetime
 import decimal
 import sys

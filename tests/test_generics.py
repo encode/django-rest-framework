@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import pytest
 from django.db import models
 from django.http import Http404

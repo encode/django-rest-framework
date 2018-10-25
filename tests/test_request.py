@@ -1,8 +1,6 @@
 """
 Tests for content parsing, and form-overloaded content parsing.
 """
-from __future__ import unicode_literals
-
 import os.path
 import tempfile
 

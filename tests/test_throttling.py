@@ -1,7 +1,6 @@
 """
 Tests for the throttling implementations in the permissions module.
 """
-from __future__ import unicode_literals
 
 import pytest
 from django.contrib.auth.models import User
