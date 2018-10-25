@@ -63,4 +63,4 @@ class JSONEncoder(json.JSONEncoder):
                 pass
         elif hasattr(obj, '__iter__'):
             return tuple(item for item in obj)
-        return super(JSONEncoder, self).default(obj)
+        return super().default(obj)
