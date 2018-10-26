@@ -393,7 +393,7 @@ class Serializer(BaseSerializer):
         # Used by the lazily-evaluated `validators` property.
         meta = getattr(self, 'Meta', None)
         validators = getattr(meta, 'validators', None)
-        return validators[:] if validators else []
+        return list(validators) if validators else []
 
     def get_initial(self):
         if hasattr(self, 'initial_data'):
@@ -1480,7 +1480,7 @@ class ModelSerializer(Serializer):
         # If the validators have been declared explicitly then use that.
         validators = getattr(getattr(self, 'Meta', None), 'validators', None)
         if validators is not None:
-            return validators[:]
+            return list(validators)
 
         # Otherwise use the default set of validators.
         return (

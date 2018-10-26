@@ -10,7 +10,7 @@ from collections import Mapping
 import pytest
 from django.db import models
 
-from rest_framework import fields, relations, serializers
+from rest_framework import exceptions, fields, relations, serializers
 from rest_framework.compat import unicode_repr
 from rest_framework.fields import Field
 
@@ -182,6 +182,38 @@ class TestSerializer:
         assert serializer.validated_data.coords[0] == 6.958307
         assert serializer.validated_data.coords[1] == 50.941357
         assert serializer.errors == {}
+
+    def test_iterable_validators(self):
+        """
+        Ensure `validators` parameter is compatible with reasonable iterables.
+        """
+        data = {'char': 'abc', 'integer': 123}
+
+        for validators in ([], (), set()):
+            class ExampleSerializer(serializers.Serializer):
+                char = serializers.CharField(validators=validators)
+                integer = serializers.IntegerField()
+
+            serializer = ExampleSerializer(data=data)
+            assert serializer.is_valid()
+            assert serializer.validated_data == data
+            assert serializer.errors == {}
+
+        def raise_exception(value):
+            raise exceptions.ValidationError('Raised error')
+
+        for validators in ([raise_exception], (raise_exception,), set([raise_exception])):
+            class ExampleSerializer(serializers.Serializer):
+                char = serializers.CharField(validators=validators)
+                integer = serializers.IntegerField()
+
+            serializer = ExampleSerializer(data=data)
+            assert not serializer.is_valid()
+            assert serializer.data == data
+            assert serializer.validated_data == {}
+            assert serializer.errors == {'char': [
+                exceptions.ErrorDetail(string='Raised error', code='invalid')
+            ]}
 
 
 class TestValidateMethod:
