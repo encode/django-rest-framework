@@ -189,9 +189,9 @@ class TokenAuthentication(BaseAuthentication):
             msg = _('Invalid token header. Token string should not contain invalid characters.')
             raise exceptions.AuthenticationFailed(msg)
 
-        return self.authenticate_credentials(token)
+        return self.authenticate_credentials(token, request)
 
-    def authenticate_credentials(self, key):
+    def authenticate_credentials(self, key, request=None):
         model = self.get_model()
         try:
             token = model.objects.select_related('user').get(key=key)
