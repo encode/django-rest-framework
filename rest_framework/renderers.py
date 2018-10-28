@@ -619,7 +619,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         return None
 
     def get_filter_form(self, data, view, request):
-        if not hasattr(view, 'get_queryset') or not hasattr(view, 'filter_backends'):
+        if not hasattr(view, 'get_queryset') or getattr(view, 'filter_backends', None) is None:
             return
 
         # Infer if this is a list view or not.
