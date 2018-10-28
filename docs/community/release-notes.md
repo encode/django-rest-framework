@@ -42,7 +42,7 @@ You can determine your currently installed version using `pip show`:
 
 ### 3.9.0
 
-**Date**: [18st October 2018][3.9.0-milestone]
+**Date**: [18th October 2018][3.9.0-milestone]
 
 * Improvements to ViewSet extra actions [#5605][gh5605]
 * Fix `action` support for ViewSet suffixes [#6081][gh6081]
