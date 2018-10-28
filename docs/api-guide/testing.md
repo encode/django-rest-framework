@@ -82,7 +82,11 @@ For example, when forcibly authenticating using a token, you might do something 
 
     user = User.objects.get(username='olivia')
     request = factory.get('/accounts/django-superstars/')
-    force_authenticate(request, user=user, token=user.token)
+    force_authenticate(request, user=user, token=user.auth_token)
+
+---
+
+**Note**: `force_authenticate` directly sets `request.user` to the in-memory `user` instance. If you are re-using the same `user` instance across multiple tests that update the saved `user` state, you may need to call [`refresh_from_db()`][refresh_from_db_docs] between tests.
 
 ---
 
@@ -115,7 +119,7 @@ Extends [Django's existing `Client` class][client].
 
 ## Making requests
 
-The `APIClient` class supports the same request interface as Django's standard `Client` class.  This means the that standard `.get()`, `.post()`, `.put()`, `.patch()`, `.delete()`, `.head()` and `.options()` methods are all available.  For example:
+The `APIClient` class supports the same request interface as Django's standard `Client` class.  This means that the standard `.get()`, `.post()`, `.put()`, `.patch()`, `.delete()`, `.head()` and `.options()` methods are all available.  For example:
 
     from rest_framework.test import APIClient
 
@@ -162,7 +166,7 @@ The `credentials` method is appropriate for testing APIs that require authentica
 
 #### .force_authenticate(user=None, token=None)
 
-Sometimes you may want to bypass authentication, and simple force all requests by the test client to be automatically treated as authenticated.
+Sometimes you may want to bypass authentication entirely and force all requests by the test client to be automatically treated as authenticated.
 
 This can be a useful shortcut if you're testing the API but don't want to have to construct valid authentication credentials in order to make test requests.
 
@@ -184,7 +188,113 @@ As usual CSRF validation will only apply to any session authenticated views.  Th
 
 ---
 
-# Test cases
+# RequestsClient
+
+REST framework also includes a client for interacting with your application
+using the popular Python library, `requests`. This may be useful if:
+
+* You are expecting to interface with the API primarily from another Python service,
+and want to test the service at the same level as the client will see.
+* You want to write tests in such a way that they can also be run against a staging or
+live environment. (See "Live tests" below.)
+
+This exposes exactly the same interface as if you were using a requests session
+directly.
+
+    from rest_framework.test import RequestsClient
+    
+    client = RequestsClient()
+    response = client.get('http://testserver/users/')
+    assert response.status_code == 200
+
+Note that the requests client requires you to pass fully qualified URLs.
+
+## `RequestsClient` and working with the database
+
+The `RequestsClient` class is useful if you want to write tests that solely interact with the service interface. This is a little stricter than using the standard Django test client, as it means that all interactions should be via the API.
+
+If you're using `RequestsClient` you'll want to ensure that test setup, and results assertions are performed as regular API calls, rather than interacting with the database models directly. For example, rather than checking that `Customer.objects.count() == 3` you would list the customers endpoint, and ensure that it contains three records.
+
+## Headers & Authentication
+
+Custom headers and authentication credentials can be provided in the same way
+as [when using a standard `requests.Session` instance](http://docs.python-requests.org/en/master/user/advanced/#session-objects).
+
+    from requests.auth import HTTPBasicAuth
+
+    client.auth = HTTPBasicAuth('user', 'pass')
+    client.headers.update({'x-test': 'true'})
+
+## CSRF
+
+If you're using `SessionAuthentication` then you'll need to include a CSRF token
+for any `POST`, `PUT`, `PATCH` or `DELETE` requests.
+
+You can do so by following the same flow that a JavaScript based client would use.
+First make a `GET` request in order to obtain a CRSF token, then present that
+token in the following request.
+
+For example...
+
+    client = RequestsClient()
+
+    # Obtain a CSRF token.
+    response = client.get('http://testserver/homepage/')
+    assert response.status_code == 200
+    csrftoken = response.cookies['csrftoken']
+
+    # Interact with the API.
+    response = client.post('http://testserver/organisations/', json={
+        'name': 'MegaCorp',
+        'status': 'active'
+    }, headers={'X-CSRFToken': csrftoken})
+    assert response.status_code == 200
+
+## Live tests
+
+With careful usage both the `RequestsClient` and the `CoreAPIClient` provide
+the ability to write test cases that can run either in development, or be run
+directly against your staging server or production environment.
+
+Using this style to create basic tests of a few core piece of functionality is
+a powerful way to validate your live service. Doing so may require some careful
+attention to setup and teardown to ensure that the tests run in a way that they
+do not directly affect customer data.
+
+---
+
+# CoreAPIClient
+
+The CoreAPIClient allows you to interact with your API using the Python
+`coreapi` client library.
+
+    # Fetch the API schema
+    client = CoreAPIClient()
+    schema = client.get('http://testserver/schema/')
+
+    # Create a new organisation
+    params = {'name': 'MegaCorp', 'status': 'active'}
+    client.action(schema, ['organisations', 'create'], params)
+
+    # Ensure that the organisation exists in the listing
+    data = client.action(schema, ['organisations', 'list'])
+    assert(len(data) == 1)
+    assert(data == [{'name': 'MegaCorp', 'status': 'active'}])
+
+## Headers & Authentication
+
+Custom headers and authentication may be used with `CoreAPIClient` in a
+similar way as with `RequestsClient`.
+
+    from requests.auth import HTTPBasicAuth
+
+    client = CoreAPIClient()
+    client.session.auth = HTTPBasicAuth('user', 'pass')
+    client.session.headers.update({'x-test': 'true'})
+
+---
+
+# API Test cases
 
 REST framework includes the following test case classes, that mirror the existing Django test case classes, but use `APIClient` instead of Django's default `Client`.
 
@@ -197,7 +307,7 @@ REST framework includes the following test case classes, that mirror the existin
 
 You can use any of REST framework's test case classes as you would for the regular Django test case classes.  The `self.client` attribute will be an `APIClient` instance.
 
-    from django.core.urlresolvers import reverse
+    from django.urls import reverse
     from rest_framework import status
     from rest_framework.test import APITestCase
     from myproject.apps.core.models import Account
@@ -213,6 +323,32 @@ You can use any of REST framework's test case classes as you would for the regul
             self.assertEqual(response.status_code, status.HTTP_201_CREATED)
             self.assertEqual(Account.objects.count(), 1)
             self.assertEqual(Account.objects.get().name, 'DabApps')
+
+---
+
+# URLPatternsTestCase
+
+REST framework also provides a test case class for isolating `urlpatterns` on a per-class basis. Note that this inherits from Django's `SimpleTestCase`, and will most likely need to be mixed with another test case class.
+
+## Example
+
+    from django.urls import include, path, reverse
+    from rest_framework.test import APITestCase, URLPatternsTestCase
+
+
+    class AccountTests(APITestCase, URLPatternsTestCase):
+        urlpatterns = [
+            path('api/', include('api.urls')),
+        ]
+
+        def test_create_account(self):
+            """
+            Ensure we can create a new account object.
+            """
+            url = reverse('account-list')
+            response = self.client.get(url, format='json')
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(len(response.data), 1)
 
 ---
 
@@ -270,7 +406,8 @@ For example, to add support for using `format='html'` in test requests, you migh
         )
     }
 
-[cite]: http://jacobian.org/writing/django-apps-with-buildout/#s-create-a-test-wrapper
-[client]: https://docs.djangoproject.com/en/dev/topics/testing/tools/#the-test-client
-[requestfactory]: https://docs.djangoproject.com/en/dev/topics/testing/advanced/#django.test.client.RequestFactory
+[cite]: https://jacobian.org/writing/django-apps-with-buildout/#s-create-a-test-wrapper
+[client]: https://docs.djangoproject.com/en/stable/topics/testing/tools/#the-test-client
+[requestfactory]: https://docs.djangoproject.com/en/stable/topics/testing/advanced/#django.test.client.RequestFactory
 [configuration]: #configuration
+[refresh_from_db_docs]: https://docs.djangoproject.com/en/1.11/ref/models/instances/#django.db.models.Model.refresh_from_db

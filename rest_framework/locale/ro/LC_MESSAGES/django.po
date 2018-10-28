@@ -1,0 +1,440 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+# Elena-Adela Neacsu <adela.neacsu@rodeapps.com>, 2016
+msgid ""
+msgstr ""
+"Project-Id-Version: Django REST framework\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-07-12 16:13+0100\n"
+"PO-Revision-Date: 2017-08-03 14:58+0000\n"
+"Last-Translator: Thomas Christie <tom@tomchristie.com>\n"
+"Language-Team: Romanian (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/ro/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ro\n"
+"Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?2:1));\n"
+
+#: authentication.py:73
+msgid "Invalid basic header. No credentials provided."
+msgstr "Antet de bază invalid. Datele de autentificare nu au fost furnizate."
+
+#: authentication.py:76
+msgid "Invalid basic header. Credentials string should not contain spaces."
+msgstr "Antet de bază invalid. Şirul de caractere cu datele de autentificare nu trebuie să conțină spații."
+
+#: authentication.py:82
+msgid "Invalid basic header. Credentials not correctly base64 encoded."
+msgstr "Antet de bază invalid. Datele de autentificare nu au fost corect codificate în base64."
+
+#: authentication.py:99
+msgid "Invalid username/password."
+msgstr "Nume utilizator / Parolă invalid(ă)."
+
+#: authentication.py:102 authentication.py:198
+msgid "User inactive or deleted."
+msgstr "Utilizator inactiv sau șters."
+
+#: authentication.py:176
+msgid "Invalid token header. No credentials provided."
+msgstr "Antet token invalid. Datele de autentificare nu au fost furnizate."
+
+#: authentication.py:179
+msgid "Invalid token header. Token string should not contain spaces."
+msgstr "Antet token invalid. Şirul de caractere pentru token nu trebuie să conțină spații."
+
+#: authentication.py:185
+msgid ""
+"Invalid token header. Token string should not contain invalid characters."
+msgstr "Antet token invalid. Şirul de caractere pentru token nu trebuie să conțină caractere nevalide."
+
+#: authentication.py:195
+msgid "Invalid token."
+msgstr "Token nevalid."
+
+#: authtoken/apps.py:7
+msgid "Auth Token"
+msgstr "Token de autentificare"
+
+#: authtoken/models.py:15
+msgid "Key"
+msgstr "Cheie"
+
+#: authtoken/models.py:18
+msgid "User"
+msgstr "Utilizator"
+
+#: authtoken/models.py:20
+msgid "Created"
+msgstr "Creat"
+
+#: authtoken/models.py:29
+msgid "Token"
+msgstr "Token"
+
+#: authtoken/models.py:30
+msgid "Tokens"
+msgstr "Tokenuri"
+
+#: authtoken/serializers.py:8
+msgid "Username"
+msgstr "Nume de utilizator"
+
+#: authtoken/serializers.py:9
+msgid "Password"
+msgstr "Parola"
+
+#: authtoken/serializers.py:20
+msgid "User account is disabled."
+msgstr "Contul de utilizator este dezactivat."
+
+#: authtoken/serializers.py:23
+msgid "Unable to log in with provided credentials."
+msgstr "Nu se poate conecta cu datele de conectare furnizate."
+
+#: authtoken/serializers.py:26
+msgid "Must include \"username\" and \"password\"."
+msgstr "Trebuie să includă \"numele de utilizator\" și \"parola\"."
+
+#: exceptions.py:49
+msgid "A server error occurred."
+msgstr "A apărut o eroare pe server."
+
+#: exceptions.py:84
+msgid "Malformed request."
+msgstr "Cerere incorectă."
+
+#: exceptions.py:89
+msgid "Incorrect authentication credentials."
+msgstr "Date de autentificare incorecte."
+
+#: exceptions.py:94
+msgid "Authentication credentials were not provided."
+msgstr "Datele de autentificare nu au fost furnizate."
+
+#: exceptions.py:99
+msgid "You do not have permission to perform this action."
+msgstr "Nu aveți permisiunea de a efectua această acțiune."
+
+#: exceptions.py:104 views.py:81
+msgid "Not found."
+msgstr "Nu a fost găsit(ă)."
+
+#: exceptions.py:109
+msgid "Method \"{method}\" not allowed."
+msgstr "Metoda \"{method}\" nu este permisa."
+
+#: exceptions.py:120
+msgid "Could not satisfy the request Accept header."
+msgstr "Antetul Accept al cererii nu a putut fi îndeplinit."
+
+#: exceptions.py:132
+msgid "Unsupported media type \"{media_type}\" in request."
+msgstr "Cererea conține tipul media neacceptat \"{media_type}\""
+
+#: exceptions.py:145
+msgid "Request was throttled."
+msgstr "Cererea a fost gâtuită."
+
+#: fields.py:269 relations.py:206 relations.py:239 validators.py:98
+#: validators.py:181
+msgid "This field is required."
+msgstr "Acest câmp este obligatoriu."
+
+#: fields.py:270
+msgid "This field may not be null."
+msgstr "Acest câmp nu poate fi nul."
+
+#: fields.py:608 fields.py:639
+msgid "\"{input}\" is not a valid boolean."
+msgstr "\"{input}\" nu este un boolean valid."
+
+#: fields.py:674
+msgid "This field may not be blank."
+msgstr "Acest câmp nu poate fi gol."
+
+#: fields.py:675 fields.py:1675
+msgid "Ensure this field has no more than {max_length} characters."
+msgstr "Asigurați-vă că acest câmp nu are mai mult de {max_length} caractere."
+
+#: fields.py:676
+msgid "Ensure this field has at least {min_length} characters."
+msgstr "Asigurați-vă că acest câmp are cel puțin{min_length} caractere."
+
+#: fields.py:713
+msgid "Enter a valid email address."
+msgstr "Introduceți o adresă de email validă."
+
+#: fields.py:724
+msgid "This value does not match the required pattern."
+msgstr "Această valoare nu se potrivește cu şablonul cerut."
+
+#: fields.py:735
+msgid ""
+"Enter a valid \"slug\" consisting of letters, numbers, underscores or "
+"hyphens."
+msgstr "Introduceți un \"slug\" valid format din litere, numere, caractere de subliniere sau cratime."
+
+#: fields.py:747
+msgid "Enter a valid URL."
+msgstr "Introduceți un URL valid."
+
+#: fields.py:760
+msgid "\"{value}\" is not a valid UUID."
+msgstr "\"{value}\" nu este un UUID valid."
+
+#: fields.py:796
+msgid "Enter a valid IPv4 or IPv6 address."
+msgstr "Introduceți o adresă IPv4 sau IPv6 validă."
+
+#: fields.py:821
+msgid "A valid integer is required."
+msgstr "Este necesar un întreg valid."
+
+#: fields.py:822 fields.py:857 fields.py:891
+msgid "Ensure this value is less than or equal to {max_value}."
+msgstr "Asigurați-vă că această valoare este mai mică sau egală cu {max_value}."
+
+#: fields.py:823 fields.py:858 fields.py:892
+msgid "Ensure this value is greater than or equal to {min_value}."
+msgstr "Asigurați-vă că această valoare este mai mare sau egală cu {min_value}."
+
+#: fields.py:824 fields.py:859 fields.py:896
+msgid "String value too large."
+msgstr "Valoare șir de caractere prea mare."
+
+#: fields.py:856 fields.py:890
+msgid "A valid number is required."
+msgstr "Este necesar un număr valid."
+
+#: fields.py:893
+msgid "Ensure that there are no more than {max_digits} digits in total."
+msgstr "Asigurați-vă că nu există mai mult de {max_digits} cifre în total."
+
+#: fields.py:894
+msgid ""
+"Ensure that there are no more than {max_decimal_places} decimal places."
+msgstr "Asigurați-vă că nu există mai mult de {max_decimal_places} zecimale."
+
+#: fields.py:895
+msgid ""
+"Ensure that there are no more than {max_whole_digits} digits before the "
+"decimal point."
+msgstr "Asigurați-vă că nu există mai mult de {max_whole_digits} cifre înainte de punctul zecimal."
+
+#: fields.py:1025
+msgid "Datetime has wrong format. Use one of these formats instead: {format}."
+msgstr "Câmpul datetime are format greșit. Utilizați unul dintre aceste formate în loc: {format}."
+
+#: fields.py:1026
+msgid "Expected a datetime but got a date."
+msgstr "Se aștepta un câmp datetime, dar s-a primit o dată."
+
+#: fields.py:1103
+msgid "Date has wrong format. Use one of these formats instead: {format}."
+msgstr "Data are formatul greșit. Utilizați unul dintre aceste formate în loc: {format}."
+
+#: fields.py:1104
+msgid "Expected a date but got a datetime."
+msgstr "Se aștepta o dată, dar s-a primit un câmp datetime."
+
+#: fields.py:1170
+msgid "Time has wrong format. Use one of these formats instead: {format}."
+msgstr "Timpul are formatul greșit. Utilizați unul dintre aceste formate în loc: {format}."
+
+#: fields.py:1232
+msgid "Duration has wrong format. Use one of these formats instead: {format}."
+msgstr "Durata are formatul greșit. Utilizați unul dintre aceste formate în loc: {format}."
+
+#: fields.py:1251 fields.py:1300
+msgid "\"{input}\" is not a valid choice."
+msgstr "\"{input}\" nu este o opțiune validă."
+
+#: fields.py:1254 relations.py:71 relations.py:441
+msgid "More than {count} items..."
+msgstr "Mai mult de {count} articole ..."
+
+#: fields.py:1301 fields.py:1448 relations.py:437 serializers.py:524
+msgid "Expected a list of items but got type \"{input_type}\"."
+msgstr "Se aștepta o listă de elemente, dar s-a primit tip \"{input_type}\"."
+
+#: fields.py:1302
+msgid "This selection may not be empty."
+msgstr "Această selecție nu poate fi goală."
+
+#: fields.py:1339
+msgid "\"{input}\" is not a valid path choice."
+msgstr "\"{input}\" nu este o cale validă."
+
+#: fields.py:1358
+msgid "No file was submitted."
+msgstr "Nici un fișier nu a fost sumis."
+
+#: fields.py:1359
+msgid ""
+"The submitted data was not a file. Check the encoding type on the form."
+msgstr "Datele prezentate nu sunt un fișier. Verificați tipul de codificare de pe formular."
+
+#: fields.py:1360
+msgid "No filename could be determined."
+msgstr "Numele fișierului nu a putut fi determinat."
+
+#: fields.py:1361
+msgid "The submitted file is empty."
+msgstr "Fișierul sumis este gol."
+
+#: fields.py:1362
+msgid ""
+"Ensure this filename has at most {max_length} characters (it has {length})."
+msgstr "Asigurați-vă că acest nume de fișier are cel mult {max_length} caractere (momentan are {length})."
+
+#: fields.py:1410
+msgid ""
+"Upload a valid image. The file you uploaded was either not an image or a "
+"corrupted image."
+msgstr "Încărcați o imagine validă. Fișierul încărcat a fost fie nu o imagine sau o imagine coruptă."
+
+#: fields.py:1449 relations.py:438 serializers.py:525
+msgid "This list may not be empty."
+msgstr "Această listă nu poate fi goală."
+
+#: fields.py:1502
+msgid "Expected a dictionary of items but got type \"{input_type}\"."
+msgstr "Se aștepta un dicționar de obiecte, dar s-a primit tipul \"{input_type}\"."
+
+#: fields.py:1549
+msgid "Value must be valid JSON."
+msgstr "Valoarea trebuie să fie JSON valid."
+
+#: filters.py:36 templates/rest_framework/filters/django_filter.html:5
+msgid "Submit"
+msgstr "Sumiteţi"
+
+#: filters.py:336
+msgid "ascending"
+msgstr ""
+
+#: filters.py:337
+msgid "descending"
+msgstr ""
+
+#: pagination.py:193
+msgid "Invalid page."
+msgstr "Pagină nevalidă."
+
+#: pagination.py:427
+msgid "Invalid cursor"
+msgstr "Cursor nevalid"
+
+#: relations.py:207
+msgid "Invalid pk \"{pk_value}\" - object does not exist."
+msgstr "Pk \"{pk_value}\" nevalid - obiectul nu există."
+
+#: relations.py:208
+msgid "Incorrect type. Expected pk value, received {data_type}."
+msgstr "Tip incorect. Se aștepta un pk, dar s-a primit \"{data_type}\"."
+
+#: relations.py:240
+msgid "Invalid hyperlink - No URL match."
+msgstr "Hyperlink nevalid - Nici un URL nu se potrivește."
+
+#: relations.py:241
+msgid "Invalid hyperlink - Incorrect URL match."
+msgstr "Hyperlink nevalid - Potrivire URL incorectă."
+
+#: relations.py:242
+msgid "Invalid hyperlink - Object does not exist."
+msgstr "Hyperlink nevalid - Obiectul nu există."
+
+#: relations.py:243
+msgid "Incorrect type. Expected URL string, received {data_type}."
+msgstr "Tip incorect. Se aștepta un URL, dar s-a primit \"{data_type}\"."
+
+#: relations.py:401
+msgid "Object with {slug_name}={value} does not exist."
+msgstr "Obiectul cu {slug_name}={value}  nu există."
+
+#: relations.py:402
+msgid "Invalid value."
+msgstr "Valoare nevalidă."
+
+#: serializers.py:326
+msgid "Invalid data. Expected a dictionary, but got {datatype}."
+msgstr "Date nevalide. Se aștepta un dicționar de obiecte, dar s-a primit \"{datatype}\"."
+
+#: templates/rest_framework/admin.html:116
+#: templates/rest_framework/base.html:128
+msgid "Filters"
+msgstr "Filtre"
+
+#: templates/rest_framework/filters/django_filter.html:2
+#: templates/rest_framework/filters/django_filter_crispyforms.html:4
+msgid "Field filters"
+msgstr "Filtre câmpuri"
+
+#: templates/rest_framework/filters/ordering.html:3
+msgid "Ordering"
+msgstr "Ordonare"
+
+#: templates/rest_framework/filters/search.html:2
+msgid "Search"
+msgstr "Căutare"
+
+#: templates/rest_framework/horizontal/radio.html:2
+#: templates/rest_framework/inline/radio.html:2
+#: templates/rest_framework/vertical/radio.html:2
+msgid "None"
+msgstr "Nici unul/una"
+
+#: templates/rest_framework/horizontal/select_multiple.html:2
+#: templates/rest_framework/inline/select_multiple.html:2
+#: templates/rest_framework/vertical/select_multiple.html:2
+msgid "No items to select."
+msgstr "Nu există elemente pentru a fi selectate."
+
+#: validators.py:43
+msgid "This field must be unique."
+msgstr "Acest câmp trebuie să fie unic."
+
+#: validators.py:97
+msgid "The fields {field_names} must make a unique set."
+msgstr "Câmpurile {field_names} trebuie să formeze un set unic."
+
+#: validators.py:245
+msgid "This field must be unique for the \"{date_field}\" date."
+msgstr "Acest câmp trebuie să fie unic pentru data \"{date_field}\"."
+
+#: validators.py:260
+msgid "This field must be unique for the \"{date_field}\" month."
+msgstr "Acest câmp trebuie să fie unic pentru luna \"{date_field}\"."
+
+#: validators.py:273
+msgid "This field must be unique for the \"{date_field}\" year."
+msgstr "Acest câmp trebuie să fie unic pentru anul \"{date_field}\"."
+
+#: versioning.py:42
+msgid "Invalid version in \"Accept\" header."
+msgstr "Versiune nevalidă în antetul \"Accept\"."
+
+#: versioning.py:73
+msgid "Invalid version in URL path."
+msgstr "Versiune nevalidă în calea URL."
+
+#: versioning.py:115
+msgid "Invalid version in URL path. Does not match any version namespace."
+msgstr ""
+
+#: versioning.py:147
+msgid "Invalid version in hostname."
+msgstr "Versiune nevalidă în numele de gazdă."
+
+#: versioning.py:169
+msgid "Invalid version in query parameter."
+msgstr "Versiune nevalid în parametrul de interogare."
+
+#: views.py:88
+msgid "Permission denied."
+msgstr "Permisiune refuzată."

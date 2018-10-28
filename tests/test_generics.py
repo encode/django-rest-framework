@@ -1,8 +1,8 @@
 from __future__ import unicode_literals
 
-import django
 import pytest
 from django.db import models
+from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.test import TestCase
 from django.utils import six
@@ -11,7 +11,8 @@ from rest_framework import generics, renderers, serializers, status
 from rest_framework.response import Response
 from rest_framework.test import APIRequestFactory
 from tests.models import (
-    BasicModel, ForeignKeySource, ForeignKeyTarget, RESTFrameworkModel
+    BasicModel, ForeignKeySource, ForeignKeyTarget, RESTFrameworkModel,
+    UUIDForeignKeyTarget
 )
 
 factory = APIRequestFactory()
@@ -34,11 +35,13 @@ class Comment(RESTFrameworkModel):
 class BasicSerializer(serializers.ModelSerializer):
     class Meta:
         model = BasicModel
+        fields = '__all__'
 
 
 class ForeignKeySerializer(serializers.ModelSerializer):
     class Meta:
         model = ForeignKeySource
+        fields = '__all__'
 
 
 class SlugSerializer(serializers.ModelSerializer):
@@ -97,8 +100,17 @@ class TestRootView(TestCase):
         request = factory.get('/')
         with self.assertNumQueries(1):
             response = self.view(request).render()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, self.data)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == self.data
+
+    def test_head_root_view(self):
+        """
+        HEAD requests to ListCreateAPIView should return 200.
+        """
+        request = factory.head('/')
+        with self.assertNumQueries(1):
+            response = self.view(request).render()
+        assert response.status_code == status.HTTP_200_OK
 
     def test_post_root_view(self):
         """
@@ -108,10 +120,10 @@ class TestRootView(TestCase):
         request = factory.post('/', data, format='json')
         with self.assertNumQueries(1):
             response = self.view(request).render()
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data, {'id': 4, 'text': 'foobar'})
+        assert response.status_code == status.HTTP_201_CREATED
+        assert response.data == {'id': 4, 'text': 'foobar'}
         created = self.objects.get(id=4)
-        self.assertEqual(created.text, 'foobar')
+        assert created.text == 'foobar'
 
     def test_put_root_view(self):
         """
@@ -121,8 +133,8 @@ class TestRootView(TestCase):
         request = factory.put('/', data, format='json')
         with self.assertNumQueries(0):
             response = self.view(request).render()
-        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-        self.assertEqual(response.data, {"detail": 'Method "PUT" not allowed.'})
+        assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
+        assert response.data == {"detail": 'Method "PUT" not allowed.'}
 
     def test_delete_root_view(self):
         """
@@ -131,8 +143,8 @@ class TestRootView(TestCase):
         request = factory.delete('/')
         with self.assertNumQueries(0):
             response = self.view(request).render()
-        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-        self.assertEqual(response.data, {"detail": 'Method "DELETE" not allowed.'})
+        assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
+        assert response.data == {"detail": 'Method "DELETE" not allowed.'}
 
     def test_post_cannot_set_id(self):
         """
@@ -142,10 +154,10 @@ class TestRootView(TestCase):
         request = factory.post('/', data, format='json')
         with self.assertNumQueries(1):
             response = self.view(request).render()
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data, {'id': 4, 'text': 'foobar'})
+        assert response.status_code == status.HTTP_201_CREATED
+        assert response.data == {'id': 4, 'text': 'foobar'}
         created = self.objects.get(id=4)
-        self.assertEqual(created.text, 'foobar')
+        assert created.text == 'foobar'
 
     def test_post_error_root_view(self):
         """
@@ -155,10 +167,10 @@ class TestRootView(TestCase):
         request = factory.post('/', data, HTTP_ACCEPT='text/html')
         response = self.view(request).render()
         expected_error = '<span class="help-block">Ensure this field has no more than 100 characters.</span>'
-        self.assertIn(expected_error, response.rendered_content.decode('utf-8'))
+        assert expected_error in response.rendered_content.decode('utf-8')
 
 
-EXPECTED_QUERIES_FOR_PUT = 3 if django.VERSION < (1, 6) else 2
+EXPECTED_QUERIES_FOR_PUT = 2
 
 
 class TestInstanceView(TestCase):
@@ -184,8 +196,8 @@ class TestInstanceView(TestCase):
         request = factory.get('/1')
         with self.assertNumQueries(1):
             response = self.view(request, pk=1).render()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, self.data[0])
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == self.data[0]
 
     def test_post_instance_view(self):
         """
@@ -195,8 +207,8 @@ class TestInstanceView(TestCase):
         request = factory.post('/', data, format='json')
         with self.assertNumQueries(0):
             response = self.view(request).render()
-        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-        self.assertEqual(response.data, {"detail": 'Method "POST" not allowed.'})
+        assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
+        assert response.data == {"detail": 'Method "POST" not allowed.'}
 
     def test_put_instance_view(self):
         """
@@ -206,10 +218,10 @@ class TestInstanceView(TestCase):
         request = factory.put('/1', data, format='json')
         with self.assertNumQueries(EXPECTED_QUERIES_FOR_PUT):
             response = self.view(request, pk='1').render()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(dict(response.data), {'id': 1, 'text': 'foobar'})
+        assert response.status_code == status.HTTP_200_OK
+        assert dict(response.data) == {'id': 1, 'text': 'foobar'}
         updated = self.objects.get(id=1)
-        self.assertEqual(updated.text, 'foobar')
+        assert updated.text == 'foobar'
 
     def test_patch_instance_view(self):
         """
@@ -220,10 +232,10 @@ class TestInstanceView(TestCase):
 
         with self.assertNumQueries(EXPECTED_QUERIES_FOR_PUT):
             response = self.view(request, pk=1).render()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, {'id': 1, 'text': 'foobar'})
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == {'id': 1, 'text': 'foobar'}
         updated = self.objects.get(id=1)
-        self.assertEqual(updated.text, 'foobar')
+        assert updated.text == 'foobar'
 
     def test_delete_instance_view(self):
         """
@@ -232,10 +244,10 @@ class TestInstanceView(TestCase):
         request = factory.delete('/1')
         with self.assertNumQueries(2):
             response = self.view(request, pk=1).render()
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEqual(response.content, six.b(''))
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+        assert response.content == six.b('')
         ids = [obj.id for obj in self.objects.all()]
-        self.assertEqual(ids, [2, 3])
+        assert ids == [2, 3]
 
     def test_get_instance_view_incorrect_arg(self):
         """
@@ -245,7 +257,7 @@ class TestInstanceView(TestCase):
         request = factory.get('/a')
         with self.assertNumQueries(0):
             response = self.view(request, pk='a').render()
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_put_cannot_set_id(self):
         """
@@ -255,10 +267,10 @@ class TestInstanceView(TestCase):
         request = factory.put('/1', data, format='json')
         with self.assertNumQueries(EXPECTED_QUERIES_FOR_PUT):
             response = self.view(request, pk=1).render()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, {'id': 1, 'text': 'foobar'})
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == {'id': 1, 'text': 'foobar'}
         updated = self.objects.get(id=1)
-        self.assertEqual(updated.text, 'foobar')
+        assert updated.text == 'foobar'
 
     def test_put_to_deleted_instance(self):
         """
@@ -270,7 +282,7 @@ class TestInstanceView(TestCase):
         request = factory.put('/1', data, format='json')
         with self.assertNumQueries(1):
             response = self.view(request, pk=1).render()
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_put_to_filtered_out_instance(self):
         """
@@ -281,7 +293,7 @@ class TestInstanceView(TestCase):
         filtered_out_pk = BasicModel.objects.filter(text='filtered out')[0].pk
         request = factory.put('/{0}'.format(filtered_out_pk), data, format='json')
         response = self.view(request, pk=filtered_out_pk).render()
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_patch_cannot_create_an_object(self):
         """
@@ -291,8 +303,8 @@ class TestInstanceView(TestCase):
         request = factory.patch('/999', data, format='json')
         with self.assertNumQueries(1):
             response = self.view(request, pk=999).render()
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertFalse(self.objects.filter(id=999).exists())
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert not self.objects.filter(id=999).exists()
 
     def test_put_error_instance_view(self):
         """
@@ -302,7 +314,7 @@ class TestInstanceView(TestCase):
         request = factory.put('/', data, HTTP_ACCEPT='text/html')
         response = self.view(request, pk=1).render()
         expected_error = '<span class="help-block">Ensure this field has no more than 100 characters.</span>'
-        self.assertIn(expected_error, response.rendered_content.decode('utf-8'))
+        assert expected_error in response.rendered_content.decode('utf-8')
 
 
 class TestFKInstanceView(TestCase):
@@ -362,8 +374,8 @@ class TestOverriddenGetObject(TestCase):
         request = factory.get('/1')
         with self.assertNumQueries(1):
             response = self.view(request, pk=1).render()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, self.data[0])
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == self.data[0]
 
 
 # Regression test for #285
@@ -388,14 +400,14 @@ class TestCreateModelWithAutoNowAddField(TestCase):
         """
         Regression test for #285
 
-        https://github.com/tomchristie/django-rest-framework/issues/285
+        https://github.com/encode/django-rest-framework/issues/285
         """
         data = {'email': 'foobar@example.com', 'content': 'foobar'}
         request = factory.post('/', data, format='json')
         response = self.view(request).render()
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        assert response.status_code == status.HTTP_201_CREATED
         created = self.objects.get(id=1)
-        self.assertEqual(created.content, 'foobar')
+        assert created.content == 'foobar'
 
 
 # Test for particularly ugly regression with m2m in browsable API
@@ -415,6 +427,7 @@ class ClassASerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ClassA
+        fields = '__all__'
 
 
 class ExampleView(generics.ListCreateAPIView):
@@ -430,7 +443,7 @@ class TestM2MBrowsableAPI(TestCase):
         request = factory.get('/', HTTP_ACCEPT='text/html')
         view = ExampleView().as_view()
         response = view(request).render()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        assert response.status_code == status.HTTP_200_OK
 
 
 class InclusiveFilterBackend(object):
@@ -462,6 +475,7 @@ class DynamicSerializerView(generics.ListCreateAPIView):
             class DynamicSerializer(serializers.ModelSerializer):
                 class Meta:
                     model = TwoFieldModel
+                    fields = '__all__'
         return DynamicSerializer
 
 
@@ -486,9 +500,9 @@ class TestFilterBackendAppliedToViews(TestCase):
         root_view = RootView.as_view(filter_backends=(InclusiveFilterBackend,))
         request = factory.get('/')
         response = root_view(request).render()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data, [{'id': 1, 'text': 'foo'}])
+        assert response.status_code == status.HTTP_200_OK
+        assert len(response.data) == 1
+        assert response.data == [{'id': 1, 'text': 'foo'}]
 
     def test_get_root_view_filters_out_all_models_with_exclusive_filter_backend(self):
         """
@@ -497,8 +511,8 @@ class TestFilterBackendAppliedToViews(TestCase):
         root_view = RootView.as_view(filter_backends=(ExclusiveFilterBackend,))
         request = factory.get('/')
         response = root_view(request).render()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, [])
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == []
 
     def test_get_instance_view_filters_out_name_with_filter_backend(self):
         """
@@ -507,8 +521,8 @@ class TestFilterBackendAppliedToViews(TestCase):
         instance_view = InstanceView.as_view(filter_backends=(ExclusiveFilterBackend,))
         request = factory.get('/1')
         response = instance_view(request, pk=1).render()
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertEqual(response.data, {'detail': 'Not found.'})
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.data == {'detail': 'Not found.'}
 
     def test_get_instance_view_will_return_single_object_when_filter_does_not_exclude_it(self):
         """
@@ -517,8 +531,8 @@ class TestFilterBackendAppliedToViews(TestCase):
         instance_view = InstanceView.as_view(filter_backends=(InclusiveFilterBackend,))
         request = factory.get('/1')
         response = instance_view(request, pk=1).render()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, {'id': 1, 'text': 'foo'})
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == {'id': 1, 'text': 'foo'}
 
     def test_dynamic_serializer_form_in_browsable_api(self):
         """
@@ -527,8 +541,9 @@ class TestFilterBackendAppliedToViews(TestCase):
         view = DynamicSerializerView.as_view()
         request = factory.get('/')
         response = view(request).render()
-        self.assertContains(response, 'field_b')
-        self.assertNotContains(response, 'field_a')
+        content = response.content.decode('utf8')
+        assert 'field_b' in content
+        assert 'field_a' not in content
 
 
 class TestGuardedQueryset(TestCase):
@@ -543,3 +558,110 @@ class TestGuardedQueryset(TestCase):
         request = factory.get('/')
         with pytest.raises(RuntimeError):
             view(request).render()
+
+
+class ApiViewsTests(TestCase):
+
+    def test_create_api_view_post(self):
+        class MockCreateApiView(generics.CreateAPIView):
+            def create(self, request, *args, **kwargs):
+                self.called = True
+                self.call_args = (request, args, kwargs)
+        view = MockCreateApiView()
+        data = ('test request', ('test arg',), {'test_kwarg': 'test'})
+        view.post('test request', 'test arg', test_kwarg='test')
+        assert view.called is True
+        assert view.call_args == data
+
+    def test_destroy_api_view_delete(self):
+        class MockDestroyApiView(generics.DestroyAPIView):
+            def destroy(self, request, *args, **kwargs):
+                self.called = True
+                self.call_args = (request, args, kwargs)
+        view = MockDestroyApiView()
+        data = ('test request', ('test arg',), {'test_kwarg': 'test'})
+        view.delete('test request', 'test arg', test_kwarg='test')
+        assert view.called is True
+        assert view.call_args == data
+
+    def test_update_api_view_partial_update(self):
+        class MockUpdateApiView(generics.UpdateAPIView):
+            def partial_update(self, request, *args, **kwargs):
+                self.called = True
+                self.call_args = (request, args, kwargs)
+        view = MockUpdateApiView()
+        data = ('test request', ('test arg',), {'test_kwarg': 'test'})
+        view.patch('test request', 'test arg', test_kwarg='test')
+        assert view.called is True
+        assert view.call_args == data
+
+    def test_retrieve_update_api_view_get(self):
+        class MockRetrieveUpdateApiView(generics.RetrieveUpdateAPIView):
+            def retrieve(self, request, *args, **kwargs):
+                self.called = True
+                self.call_args = (request, args, kwargs)
+        view = MockRetrieveUpdateApiView()
+        data = ('test request', ('test arg',), {'test_kwarg': 'test'})
+        view.get('test request', 'test arg', test_kwarg='test')
+        assert view.called is True
+        assert view.call_args == data
+
+    def test_retrieve_update_api_view_put(self):
+        class MockRetrieveUpdateApiView(generics.RetrieveUpdateAPIView):
+            def update(self, request, *args, **kwargs):
+                self.called = True
+                self.call_args = (request, args, kwargs)
+        view = MockRetrieveUpdateApiView()
+        data = ('test request', ('test arg',), {'test_kwarg': 'test'})
+        view.put('test request', 'test arg', test_kwarg='test')
+        assert view.called is True
+        assert view.call_args == data
+
+    def test_retrieve_update_api_view_patch(self):
+        class MockRetrieveUpdateApiView(generics.RetrieveUpdateAPIView):
+            def partial_update(self, request, *args, **kwargs):
+                self.called = True
+                self.call_args = (request, args, kwargs)
+        view = MockRetrieveUpdateApiView()
+        data = ('test request', ('test arg',), {'test_kwarg': 'test'})
+        view.patch('test request', 'test arg', test_kwarg='test')
+        assert view.called is True
+        assert view.call_args == data
+
+    def test_retrieve_destroy_api_view_get(self):
+        class MockRetrieveDestroyUApiView(generics.RetrieveDestroyAPIView):
+            def retrieve(self, request, *args, **kwargs):
+                self.called = True
+                self.call_args = (request, args, kwargs)
+        view = MockRetrieveDestroyUApiView()
+        data = ('test request', ('test arg',), {'test_kwarg': 'test'})
+        view.get('test request', 'test arg', test_kwarg='test')
+        assert view.called is True
+        assert view.call_args == data
+
+    def test_retrieve_destroy_api_view_delete(self):
+        class MockRetrieveDestroyUApiView(generics.RetrieveDestroyAPIView):
+            def destroy(self, request, *args, **kwargs):
+                self.called = True
+                self.call_args = (request, args, kwargs)
+        view = MockRetrieveDestroyUApiView()
+        data = ('test request', ('test arg',), {'test_kwarg': 'test'})
+        view.delete('test request', 'test arg', test_kwarg='test')
+        assert view.called is True
+        assert view.call_args == data
+
+
+class GetObjectOr404Tests(TestCase):
+    def setUp(self):
+        super(GetObjectOr404Tests, self).setUp()
+        self.uuid_object = UUIDForeignKeyTarget.objects.create(name='bar')
+
+    def test_get_object_or_404_with_valid_uuid(self):
+        obj = generics.get_object_or_404(
+            UUIDForeignKeyTarget, pk=self.uuid_object.pk
+        )
+        assert obj == self.uuid_object
+
+    def test_get_object_or_404_with_invalid_string_for_uuid(self):
+        with pytest.raises(Http404):
+            generics.get_object_or_404(UUIDForeignKeyTarget, pk='not-a-uuid')

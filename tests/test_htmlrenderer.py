@@ -1,11 +1,12 @@
 from __future__ import unicode_literals
 
 import django.template.loader
+import pytest
 from django.conf.urls import url
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from django.http import Http404
-from django.template import Template, TemplateDoesNotExist
-from django.test import TestCase
+from django.template import TemplateDoesNotExist, engines
+from django.test import TestCase, override_settings
 from django.utils import six
 
 from rest_framework import status
@@ -43,10 +44,15 @@ urlpatterns = [
 ]
 
 
+@override_settings(ROOT_URLCONF='tests.test_htmlrenderer')
 class TemplateHTMLRendererTests(TestCase):
-    urls = 'tests.test_htmlrenderer'
-
     def setUp(self):
+        class MockResponse(object):
+            template_name = None
+        self.mock_response = MockResponse()
+        self._monkey_patch_get_template()
+
+    def _monkey_patch_get_template(self):
         """
         Monkeypatch get_template
         """
@@ -54,12 +60,12 @@ class TemplateHTMLRendererTests(TestCase):
 
         def get_template(template_name, dirs=None):
             if template_name == 'example.html':
-                return Template("example: {{ object }}")
+                return engines['django'].from_string("example: {{ object }}")
             raise TemplateDoesNotExist(template_name)
 
         def select_template(template_name_list, dirs=None, using=None):
             if template_name_list == ['example.html']:
-                return Template("example: {{ object }}")
+                return engines['django'].from_string("example: {{ object }}")
             raise TemplateDoesNotExist(template_name_list[0])
 
         django.template.loader.get_template = get_template
@@ -88,10 +94,43 @@ class TemplateHTMLRendererTests(TestCase):
         self.assertEqual(response.content, six.b("403 Forbidden"))
         self.assertEqual(response['Content-Type'], 'text/html; charset=utf-8')
 
+    # 2 tests below are based on order of if statements in corresponding method
+    # of TemplateHTMLRenderer
+    def test_get_template_names_returns_own_template_name(self):
+        renderer = TemplateHTMLRenderer()
+        renderer.template_name = 'test_template'
+        template_name = renderer.get_template_names(self.mock_response, view={})
+        assert template_name == ['test_template']
 
+    def test_get_template_names_returns_view_template_name(self):
+        renderer = TemplateHTMLRenderer()
+
+        class MockResponse(object):
+            template_name = None
+
+        class MockView(object):
+            def get_template_names(self):
+                return ['template from get_template_names method']
+
+        class MockView2(object):
+            template_name = 'template from template_name attribute'
+
+        template_name = renderer.get_template_names(self.mock_response,
+                                                    MockView())
+        assert template_name == ['template from get_template_names method']
+
+        template_name = renderer.get_template_names(self.mock_response,
+                                                    MockView2())
+        assert template_name == ['template from template_name attribute']
+
+    def test_get_template_names_raises_error_if_no_template_found(self):
+        renderer = TemplateHTMLRenderer()
+        with pytest.raises(ImproperlyConfigured):
+            renderer.get_template_names(self.mock_response, view=object())
+
+
+@override_settings(ROOT_URLCONF='tests.test_htmlrenderer')
 class TemplateHTMLRendererExceptionTests(TestCase):
-    urls = 'tests.test_htmlrenderer'
-
     def setUp(self):
         """
         Monkeypatch get_template
@@ -100,9 +139,9 @@ class TemplateHTMLRendererExceptionTests(TestCase):
 
         def get_template(template_name):
             if template_name == '404.html':
-                return Template("404: {{ detail }}")
+                return engines['django'].from_string("404: {{ detail }}")
             if template_name == '403.html':
-                return Template("403: {{ detail }}")
+                return engines['django'].from_string("403: {{ detail }}")
             raise TemplateDoesNotExist(template_name)
 
         django.template.loader.get_template = get_template

@@ -1,29 +1,5 @@
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import NoReverseMatch
-
-
-class UsingURLPatterns(object):
-    """
-    Isolates URL patterns used during testing on the test class itself.
-    For example:
-
-    class MyTestCase(UsingURLPatterns, TestCase):
-        urlpatterns = [
-            ...
-        ]
-
-        def test_something(self):
-            ...
-    """
-    urls = __name__
-
-    def setUp(self):
-        global urlpatterns
-        urlpatterns = self.urlpatterns
-
-    def tearDown(self):
-        global urlpatterns
-        urlpatterns = []
+from django.urls import NoReverseMatch
 
 
 class MockObject(object):
@@ -43,6 +19,9 @@ class MockObject(object):
 class MockQueryset(object):
     def __init__(self, iterable):
         self.items = iterable
+
+    def __getitem__(self, val):
+        return self.items[val]
 
     def get(self, **lookup):
         for item in self.items:

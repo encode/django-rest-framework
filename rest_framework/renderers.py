@@ -8,25 +8,29 @@ REST framework also provides an HTML renderer that renders the browsable API.
 """
 from __future__ import unicode_literals
 
-import json
+import base64
+from collections import OrderedDict
 
-import django
 from django import forms
+from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.paginator import Page
 from django.http.multipartparser import parse_header
-from django.template import Context, RequestContext, Template, loader
+from django.template import engines, loader
 from django.test.client import encode_multipart
+from django.urls import NoReverseMatch
 from django.utils import six
+from django.utils.html import mark_safe
 
 from rest_framework import VERSION, exceptions, serializers, status
 from rest_framework.compat import (
-    INDENT_SEPARATORS, LONG_SEPARATORS, SHORT_SEPARATORS
+    INDENT_SEPARATORS, LONG_SEPARATORS, SHORT_SEPARATORS, coreapi, coreschema,
+    pygments_css, urlparse, yaml
 )
 from rest_framework.exceptions import ParseError
 from rest_framework.request import is_form_media_type, override_method
 from rest_framework.settings import api_settings
-from rest_framework.utils import encoders
+from rest_framework.utils import encoders, json
 from rest_framework.utils.breadcrumbs import get_breadcrumbs
 from rest_framework.utils.field_mapping import ClassLookupDict
 
@@ -40,7 +44,6 @@ class BaseRenderer(object):
     All renderers should extend this class, setting the `media_type`
     and `format` attributes, and override the `.render()` method.
     """
-
     media_type = None
     format = None
     charset = 'utf-8'
@@ -54,16 +57,16 @@ class JSONRenderer(BaseRenderer):
     """
     Renderer which serializes to JSON.
     """
-
     media_type = 'application/json'
     format = 'json'
     encoder_class = encoders.JSONEncoder
     ensure_ascii = not api_settings.UNICODE_JSON
     compact = api_settings.COMPACT_JSON
+    strict = api_settings.STRICT_JSON
 
     # We don't set a charset because JSON is a binary encoding,
     # that can be encoded as utf-8, utf-16 or utf-32.
-    # See: http://www.ietf.org/rfc/rfc4627.txt
+    # See: https://www.ietf.org/rfc/rfc4627.txt
     # Also: http://lucumr.pocoo.org/2013/7/19/application-mimetypes-and-encodings/
     charset = None
 
@@ -100,7 +103,7 @@ class JSONRenderer(BaseRenderer):
         ret = json.dumps(
             data, cls=self.encoder_class,
             indent=indent, ensure_ascii=self.ensure_ascii,
-            separators=separators
+            allow_nan=not self.strict, separators=separators
         )
 
         # On python 2.x json.dumps() returns bytestrings if ensure_ascii=True,
@@ -136,7 +139,6 @@ class TemplateHTMLRenderer(BaseRenderer):
 
     For pre-rendered HTML, see StaticHTMLRenderer.
     """
-
     media_type = 'text/html'
     format = 'html'
     template_name = None
@@ -167,16 +169,21 @@ class TemplateHTMLRenderer(BaseRenderer):
             template_names = self.get_template_names(response, view)
             template = self.resolve_template(template_names)
 
-        context = self.resolve_context(data, request, response)
-        return template.render(context)
+        if hasattr(self, 'resolve_context'):
+            # Fallback for older versions.
+            context = self.resolve_context(data, request, response)
+        else:
+            context = self.get_template_context(data, renderer_context)
+        return template.render(context, request=request)
 
     def resolve_template(self, template_names):
         return loader.select_template(template_names)
 
-    def resolve_context(self, data, request, response):
+    def get_template_context(self, data, renderer_context):
+        response = renderer_context['response']
         if response.exception:
             data['status_code'] = response.status_code
-        return RequestContext(request, data)
+        return data
 
     def get_template_names(self, response, view):
         if response.template_name:
@@ -200,8 +207,9 @@ class TemplateHTMLRenderer(BaseRenderer):
             return self.resolve_template(template_names)
         except Exception:
             # Fall back to using eg '404 Not Found'
-            return Template('%d %s' % (response.status_code,
-                                       response.status_text.title()))
+            body = '%d %s' % (response.status_code, response.status_text.title())
+            template = engines['django'].from_string(body)
+            return template
 
 
 # Note, subclass TemplateHTMLRenderer simply for the exception behavior
@@ -224,13 +232,16 @@ class StaticHTMLRenderer(TemplateHTMLRenderer):
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         renderer_context = renderer_context or {}
-        response = renderer_context['response']
+        response = renderer_context.get('response')
 
         if response and response.exception:
             request = renderer_context['request']
             template = self.get_exception_template(response)
-            context = self.resolve_context(data, request, response)
-            return template.render(context)
+            if hasattr(self, 'resolve_context'):
+                context = self.resolve_context(data, request, response)
+            else:
+                context = self.get_template_context(data, renderer_context)
+            return template.render(context, request=request)
 
         return data
 
@@ -266,6 +277,10 @@ class HTMLFormRenderer(BaseRenderer):
             'input_type': 'url'
         },
         serializers.IntegerField: {
+            'base_template': 'input.html',
+            'input_type': 'number'
+        },
+        serializers.FloatField: {
             'base_template': 'input.html',
             'input_type': 'number'
         },
@@ -306,8 +321,17 @@ class HTMLFormRenderer(BaseRenderer):
         serializers.ListSerializer: {
             'base_template': 'list_fieldset.html'
         },
+        serializers.ListField: {
+            'base_template': 'list_field.html'
+        },
+        serializers.DictField: {
+            'base_template': 'dict_field.html'
+        },
         serializers.FilePathField: {
             'base_template': 'select.html',
+        },
+        serializers.JSONField: {
+            'base_template': 'textarea.html',
         },
     })
 
@@ -333,13 +357,14 @@ class HTMLFormRenderer(BaseRenderer):
             template_name = style['template_pack'].strip('/') + '/' + style['base_template']
 
         template = loader.get_template(template_name)
-        context = Context({'field': field, 'style': style})
+        context = {'field': field, 'style': style}
         return template.render(context)
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
         Render serializer data and return an HTML form, as a string.
         """
+        renderer_context = renderer_context or {}
         form = data.serializer
 
         style = renderer_context.get('style', {})
@@ -350,10 +375,10 @@ class HTMLFormRenderer(BaseRenderer):
         template_pack = style['template_pack'].strip('/')
         template_name = template_pack + '/' + self.base_template
         template = loader.get_template(template_name)
-        context = Context({
+        context = {
             'form': form,
             'style': style
-        })
+        }
         return template.render(context)
 
 
@@ -365,6 +390,7 @@ class BrowsableAPIRenderer(BaseRenderer):
     format = 'api'
     template = 'rest_framework/api.html'
     filter_template = 'rest_framework/filters/base.html'
+    code_style = 'emacs'
     charset = 'utf-8'
     form_renderer_class = HTMLFormRenderer
 
@@ -473,31 +499,37 @@ class BrowsableAPIRenderer(BaseRenderer):
                 return
 
             if existing_serializer is not None:
-                serializer = existing_serializer
-            else:
-                if has_serializer:
-                    if method in ('PUT', 'PATCH'):
-                        serializer = view.get_serializer(instance=instance, **kwargs)
-                    else:
-                        serializer = view.get_serializer(**kwargs)
+                try:
+                    return self.render_form_for_serializer(existing_serializer)
+                except TypeError:
+                    pass
+
+            if has_serializer:
+                if method in ('PUT', 'PATCH'):
+                    serializer = view.get_serializer(instance=instance, **kwargs)
                 else:
-                    # at this point we must have a serializer_class
-                    if method in ('PUT', 'PATCH'):
-                        serializer = self._get_serializer(view.serializer_class, view,
-                                                          request, instance=instance, **kwargs)
-                    else:
-                        serializer = self._get_serializer(view.serializer_class, view,
-                                                          request, **kwargs)
+                    serializer = view.get_serializer(**kwargs)
+            else:
+                # at this point we must have a serializer_class
+                if method in ('PUT', 'PATCH'):
+                    serializer = self._get_serializer(view.serializer_class, view,
+                                                      request, instance=instance, **kwargs)
+                else:
+                    serializer = self._get_serializer(view.serializer_class, view,
+                                                      request, **kwargs)
 
-            if hasattr(serializer, 'initial_data'):
-                serializer.is_valid()
+            return self.render_form_for_serializer(serializer)
 
-            form_renderer = self.form_renderer_class()
-            return form_renderer.render(
-                serializer.data,
-                self.accepted_media_type,
-                {'style': {'template_pack': 'rest_framework/horizontal'}}
-            )
+    def render_form_for_serializer(self, serializer):
+        if hasattr(serializer, 'initial_data'):
+            serializer.is_valid()
+
+        form_renderer = self.form_renderer_class()
+        return form_renderer.render(
+            serializer.data,
+            self.accepted_media_type,
+            {'style': {'template_pack': 'rest_framework/horizontal'}}
+        )
 
     def get_raw_data_form(self, data, view, method, request):
         """
@@ -522,7 +554,7 @@ class BrowsableAPIRenderer(BaseRenderer):
             # If possible, serialize the initial content for the generic form
             default_parser = view.parser_classes[0]
             renderer_class = getattr(default_parser, 'renderer_class', None)
-            if (hasattr(view, 'get_serializer') and renderer_class):
+            if hasattr(view, 'get_serializer') and renderer_class:
                 # View has a serializer defined and parser class has a
                 # corresponding renderer that can be used to render the data.
 
@@ -536,7 +568,15 @@ class BrowsableAPIRenderer(BaseRenderer):
                 accepted = self.accepted_media_type
                 context = self.renderer_context.copy()
                 context['indent'] = 4
-                content = renderer.render(serializer.data, accepted, context)
+
+                # strip HiddenField from output
+                data = serializer.data.copy()
+                for name, field in serializer.fields.items():
+                    if isinstance(field, serializers.HiddenField):
+                        data.pop(name, None)
+                content = renderer.render(data, accepted, context)
+                # Renders returns bytes, but CharField expects a str.
+                content = content.decode('utf-8')
             else:
                 content = None
 
@@ -556,7 +596,8 @@ class BrowsableAPIRenderer(BaseRenderer):
                 _content = forms.CharField(
                     label='Content',
                     widget=forms.Textarea(attrs={'data-override': 'content'}),
-                    initial=content
+                    initial=content,
+                    required=False
                 )
 
             return GenericContentForm()
@@ -572,6 +613,11 @@ class BrowsableAPIRenderer(BaseRenderer):
     def get_breadcrumbs(self, request):
         return get_breadcrumbs(request.path, request)
 
+    def get_extra_actions(self, view):
+        if hasattr(view, 'get_extra_action_url_map'):
+            return view.get_extra_action_url_map()
+        return None
+
     def get_filter_form(self, data, view, request):
         if not hasattr(view, 'get_queryset') or not hasattr(view, 'filter_backends'):
             return
@@ -580,7 +626,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         paginator = getattr(view, 'paginator', None)
         if isinstance(data, list):
             pass
-        elif (paginator is not None and data is not None):
+        elif paginator is not None and data is not None:
             try:
                 paginator.get_results(data)
             except (TypeError, KeyError):
@@ -600,7 +646,7 @@ class BrowsableAPIRenderer(BaseRenderer):
             return
 
         template = loader.get_template(self.filter_template)
-        context = Context({'elements': elements})
+        context = {'elements': elements}
         return template.render(context)
 
     def get_context(self, data, accepted_media_type, renderer_context):
@@ -618,7 +664,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         raw_data_patch_form = self.get_raw_data_form(data, view, 'PATCH', request)
         raw_data_put_or_patch_form = raw_data_put_form or raw_data_patch_form
 
-        response_headers = dict(response.items())
+        response_headers = OrderedDict(sorted(response.items()))
         renderer_content_type = ''
         if renderer:
             renderer_content_type = '%s' % renderer.media_type
@@ -631,11 +677,19 @@ class BrowsableAPIRenderer(BaseRenderer):
         else:
             paginator = None
 
+        csrf_cookie_name = settings.CSRF_COOKIE_NAME
+        csrf_header_name = settings.CSRF_HEADER_NAME
+        if csrf_header_name.startswith('HTTP_'):
+            csrf_header_name = csrf_header_name[5:]
+        csrf_header_name = csrf_header_name.replace('_', '-')
+
         context = {
             'content': self.get_content(renderer, data, accepted_media_type, renderer_context),
+            'code_style': pygments_css(self.code_style),
             'view': view,
             'request': request,
             'response': response,
+            'user': request.user,
             'description': self.get_description(view, response.status_code),
             'name': self.get_name(view),
             'version': VERSION,
@@ -650,6 +704,8 @@ class BrowsableAPIRenderer(BaseRenderer):
             'delete_form': self.get_rendered_html_form(data, view, 'DELETE', request),
             'options_form': self.get_rendered_html_form(data, view, 'OPTIONS', request),
 
+            'extra_actions': self.get_extra_actions(view),
+
             'filter_form': self.get_filter_form(data, view, request),
 
             'raw_data_put_form': raw_data_put_form,
@@ -659,7 +715,9 @@ class BrowsableAPIRenderer(BaseRenderer):
 
             'display_edit_forms': bool(response.status_code != 403),
 
-            'api_settings': api_settings
+            'api_settings': api_settings,
+            'csrf_cookie_name': csrf_cookie_name,
+            'csrf_header_name': csrf_header_name
         }
         return context
 
@@ -672,8 +730,7 @@ class BrowsableAPIRenderer(BaseRenderer):
 
         template = loader.get_template(self.template)
         context = self.get_context(data, accepted_media_type, renderer_context)
-        context = RequestContext(renderer_context['request'], context)
-        ret = template.render(context)
+        ret = template.render(context, request=renderer_context['request'])
 
         # Munge DELETE Response code to allow us to return content
         # (Do this *after* we've rendered the template so that we include
@@ -709,17 +766,16 @@ class AdminRenderer(BrowsableAPIRenderer):
 
         template = loader.get_template(self.template)
         context = self.get_context(data, accepted_media_type, renderer_context)
-        context = RequestContext(renderer_context['request'], context)
-        ret = template.render(context)
+        ret = template.render(context, request=renderer_context['request'])
 
         # Creation and deletion should use redirects in the admin style.
-        if (response.status_code == status.HTTP_201_CREATED) and ('Location' in response):
-            response.status_code = status.HTTP_302_FOUND
+        if response.status_code == status.HTTP_201_CREATED and 'Location' in response:
+            response.status_code = status.HTTP_303_SEE_OTHER
             response['Location'] = request.build_absolute_uri()
             ret = ''
 
         if response.status_code == status.HTTP_204_NO_CONTENT:
-            response.status_code = status.HTTP_302_FOUND
+            response.status_code = status.HTTP_303_SEE_OTHER
             try:
                 # Attempt to get the parent breadcrumb URL.
                 response['Location'] = self.get_breadcrumbs(request)[-2][1]
@@ -739,7 +795,7 @@ class AdminRenderer(BrowsableAPIRenderer):
         )
 
         paginator = getattr(context['view'], 'paginator', None)
-        if (paginator is not None and data is not None):
+        if paginator is not None and data is not None:
             try:
                 results = paginator.get_results(data)
             except (TypeError, KeyError):
@@ -757,8 +813,14 @@ class AdminRenderer(BrowsableAPIRenderer):
             header = results
             style = 'detail'
 
-        columns = [key for key in header.keys() if key != 'url']
-        details = [key for key in header.keys() if key != 'url']
+        columns = [key for key in header if key != 'url']
+        details = [key for key in header if key != 'url']
+
+        if isinstance(results, list) and 'view' in renderer_context:
+            for result in results:
+                url = self.get_result_url(result, context['view'])
+                if url is not None:
+                    result.setdefault('url', url)
 
         context['style'] = style
         context['columns'] = columns
@@ -768,12 +830,83 @@ class AdminRenderer(BrowsableAPIRenderer):
         context['error_title'] = getattr(self, 'error_title', None)
         return context
 
+    def get_result_url(self, result, view):
+        """
+        Attempt to reverse the result's detail view URL.
+
+        This only works with views that are generic-like (has `.lookup_field`)
+        and viewset-like (has `.basename` / `.reverse_action()`).
+        """
+        if not hasattr(view, 'reverse_action') or \
+           not hasattr(view, 'lookup_field'):
+            return
+
+        lookup_field = view.lookup_field
+        lookup_url_kwarg = getattr(view, 'lookup_url_kwarg', None) or lookup_field
+
+        try:
+            kwargs = {lookup_url_kwarg: result[lookup_field]}
+            return view.reverse_action('detail', kwargs=kwargs)
+        except (KeyError, NoReverseMatch):
+            return
+
+
+class DocumentationRenderer(BaseRenderer):
+    media_type = 'text/html'
+    format = 'html'
+    charset = 'utf-8'
+    template = 'rest_framework/docs/index.html'
+    error_template = 'rest_framework/docs/error.html'
+    code_style = 'emacs'
+    languages = ['shell', 'javascript', 'python']
+
+    def get_context(self, data, request):
+        return {
+            'document': data,
+            'langs': self.languages,
+            'lang_htmls': ["rest_framework/docs/langs/%s.html" % l for l in self.languages],
+            'lang_intro_htmls': ["rest_framework/docs/langs/%s-intro.html" % l for l in self.languages],
+            'code_style': pygments_css(self.code_style),
+            'request': request
+        }
+
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        if isinstance(data, coreapi.Document):
+            template = loader.get_template(self.template)
+            context = self.get_context(data, renderer_context['request'])
+            return template.render(context, request=renderer_context['request'])
+        else:
+            template = loader.get_template(self.error_template)
+            context = {
+                "data": data,
+                "request": renderer_context['request'],
+                "response": renderer_context['response'],
+                "debug": settings.DEBUG,
+            }
+            return template.render(context, request=renderer_context['request'])
+
+
+class SchemaJSRenderer(BaseRenderer):
+    media_type = 'application/javascript'
+    format = 'javascript'
+    charset = 'utf-8'
+    template = 'rest_framework/schema.js'
+
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        codec = coreapi.codecs.CoreJSONCodec()
+        schema = base64.b64encode(codec.encode(data)).decode('ascii')
+
+        template = loader.get_template(self.template)
+        context = {'schema': mark_safe(schema)}
+        request = renderer_context['request']
+        return template.render(context, request=request)
+
 
 class MultiPartRenderer(BaseRenderer):
     media_type = 'multipart/form-data; boundary=BoUnDaRyStRiNg'
     format = 'multipart'
     charset = 'utf-8'
-    BOUNDARY = 'BoUnDaRyStRiNg' if django.VERSION >= (1, 5) else b'BoUnDaRyStRiNg'
+    BOUNDARY = 'BoUnDaRyStRiNg'
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         if hasattr(data, 'items'):
@@ -781,7 +914,137 @@ class MultiPartRenderer(BaseRenderer):
                 assert not isinstance(value, dict), (
                     "Test data contained a dictionary value for key '%s', "
                     "but multipart uploads do not support nested data. "
-                    "You may want to consider using format='JSON' in this "
+                    "You may want to consider using format='json' in this "
                     "test case." % key
                 )
         return encode_multipart(self.BOUNDARY, data)
+
+
+class CoreJSONRenderer(BaseRenderer):
+    media_type = 'application/coreapi+json'
+    charset = None
+    format = 'corejson'
+
+    def __init__(self):
+        assert coreapi, 'Using CoreJSONRenderer, but `coreapi` is not installed.'
+
+    def render(self, data, media_type=None, renderer_context=None):
+        indent = bool(renderer_context.get('indent', 0))
+        codec = coreapi.codecs.CoreJSONCodec()
+        return codec.dump(data, indent=indent)
+
+
+class _BaseOpenAPIRenderer:
+    def get_schema(self, instance):
+        CLASS_TO_TYPENAME = {
+            coreschema.Object: 'object',
+            coreschema.Array: 'array',
+            coreschema.Number: 'number',
+            coreschema.Integer: 'integer',
+            coreschema.String: 'string',
+            coreschema.Boolean: 'boolean',
+        }
+
+        schema = {}
+        if instance.__class__ in CLASS_TO_TYPENAME:
+            schema['type'] = CLASS_TO_TYPENAME[instance.__class__]
+        schema['title'] = instance.title,
+        schema['description'] = instance.description
+        if hasattr(instance, 'enum'):
+            schema['enum'] = instance.enum
+        return schema
+
+    def get_parameters(self, link):
+        parameters = []
+        for field in link.fields:
+            if field.location not in ['path', 'query']:
+                continue
+            parameter = {
+                'name': field.name,
+                'in': field.location,
+            }
+            if field.required:
+                parameter['required'] = True
+            if field.description:
+                parameter['description'] = field.description
+            if field.schema:
+                parameter['schema'] = self.get_schema(field.schema)
+            parameters.append(parameter)
+        return parameters
+
+    def get_operation(self, link, name, tag):
+        operation_id = "%s_%s" % (tag, name) if tag else name
+        parameters = self.get_parameters(link)
+
+        operation = {
+            'operationId': operation_id,
+        }
+        if link.title:
+            operation['summary'] = link.title
+        if link.description:
+            operation['description'] = link.description
+        if parameters:
+            operation['parameters'] = parameters
+        if tag:
+            operation['tags'] = [tag]
+        return operation
+
+    def get_paths(self, document):
+        paths = {}
+
+        tag = None
+        for name, link in document.links.items():
+            path = urlparse.urlparse(link.url).path
+            method = link.action.lower()
+            paths.setdefault(path, {})
+            paths[path][method] = self.get_operation(link, name, tag=tag)
+
+        for tag, section in document.data.items():
+            for name, link in section.links.items():
+                path = urlparse.urlparse(link.url).path
+                method = link.action.lower()
+                paths.setdefault(path, {})
+                paths[path][method] = self.get_operation(link, name, tag=tag)
+
+        return paths
+
+    def get_structure(self, data):
+        return {
+            'openapi': '3.0.0',
+            'info': {
+                'version': '',
+                'title': data.title,
+                'description': data.description
+            },
+            'servers': [{
+                'url': data.url
+            }],
+            'paths': self.get_paths(data)
+        }
+
+
+class OpenAPIRenderer(_BaseOpenAPIRenderer):
+    media_type = 'application/vnd.oai.openapi'
+    charset = None
+    format = 'openapi'
+
+    def __init__(self):
+        assert coreapi, 'Using OpenAPIRenderer, but `coreapi` is not installed.'
+        assert yaml, 'Using OpenAPIRenderer, but `pyyaml` is not installed.'
+
+    def render(self, data, media_type=None, renderer_context=None):
+        structure = self.get_structure(data)
+        return yaml.dump(structure, default_flow_style=False).encode('utf-8')
+
+
+class JSONOpenAPIRenderer(_BaseOpenAPIRenderer):
+    media_type = 'application/vnd.oai.openapi+json'
+    charset = None
+    format = 'openapi-json'
+
+    def __init__(self):
+        assert coreapi, 'Using JSONOpenAPIRenderer, but `coreapi` is not installed.'
+
+    def render(self, data, media_type=None, renderer_context=None):
+        structure = self.get_structure(data)
+        return json.dumps(structure, indent=4).encode('utf-8')

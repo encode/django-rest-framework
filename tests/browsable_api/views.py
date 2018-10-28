@@ -6,9 +6,8 @@ from rest_framework.views import APIView
 
 
 class MockView(APIView):
-
     authentication_classes = (authentication.SessionAuthentication,)
-    renderer_classes = (renderers.BrowsableAPIRenderer,)
+    renderer_classes = (renderers.BrowsableAPIRenderer, renderers.JSONRenderer)
 
     def get(self, request):
         return Response({'a': 1, 'b': 2, 'c': 3})

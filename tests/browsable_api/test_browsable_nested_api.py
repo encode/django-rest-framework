@@ -14,13 +14,13 @@ class NestedSerializer(serializers.Serializer):
     two = serializers.IntegerField(max_value=10)
 
 
-class TestNestedSerializerSerializer(serializers.Serializer):
+class NestedSerializerTestSerializer(serializers.Serializer):
     nested = NestedSerializer()
 
 
 class NestedSerializersView(ListCreateAPIView):
     renderer_classes = (BrowsableAPIRenderer, )
-    serializer_class = TestNestedSerializerSerializer
+    serializer_class = NestedSerializerTestSerializer
     queryset = [{'nested': {'one': 1, 'two': 2}}]
 
 
@@ -35,8 +35,8 @@ class DropdownWithAuthTests(TestCase):
     @override_settings(ROOT_URLCONF='tests.browsable_api.test_browsable_nested_api')
     def test_login(self):
         response = self.client.get('/api/')
-        self.assertEqual(200, response.status_code)
+        assert 200 == response.status_code
         content = response.content.decode('utf-8')
-        self.assertIn('form action="/api/"', content)
-        self.assertIn('input name="nested.one"', content)
-        self.assertIn('input name="nested.two"', content)
+        assert 'form action="/api/"' in content
+        assert 'input name="nested.one"' in content
+        assert 'input name="nested.two"' in content

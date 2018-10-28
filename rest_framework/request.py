@@ -10,11 +10,14 @@ The wrapped request then offers a richer API, in particular :
 """
 from __future__ import unicode_literals
 
+import io
 import sys
+from contextlib import contextmanager
 
 from django.conf import settings
-from django.http import QueryDict
+from django.http import HttpRequest, QueryDict
 from django.http.multipartparser import parse_header
+from django.http.request import RawPostDataException
 from django.utils import six
 from django.utils.datastructures import MultiValueDict
 
@@ -41,6 +44,7 @@ class override_method(object):
         with override_method(view, request, 'POST') as request:
             ... # Do stuff with `view` and `request`
     """
+
     def __init__(self, view, request, method):
         self.view = view
         self.request = request
@@ -57,6 +61,24 @@ class override_method(object):
     def __exit__(self, *args, **kwarg):
         self.view.request = self.request
         self.view.action = self.action
+
+
+class WrappedAttributeError(Exception):
+    pass
+
+
+@contextmanager
+def wrap_attributeerrors():
+    """
+    Used to re-raise AttributeErrors caught during authentication, preventing
+    these errors from otherwise being handled by the attribute access protocol.
+    """
+    try:
+        yield
+    except AttributeError:
+        info = sys.exc_info()
+        exc = WrappedAttributeError(str(info[1]))
+        six.reraise(type(exc), exc, info[2])
 
 
 class Empty(object):
@@ -129,8 +151,15 @@ class Request(object):
         - authentication_classes(list/tuple). The authentications used to try
           authenticating the request's user.
     """
+
     def __init__(self, request, parsers=None, authenticators=None,
                  negotiator=None, parser_context=None):
+        assert isinstance(request, HttpRequest), (
+            'The `request` argument must be an instance of '
+            '`django.http.HttpRequest`, not `{}.{}`.'
+            .format(request.__class__.__module__, request.__class__.__name__)
+        )
+
         self._request = request
         self.parsers = parsers or ()
         self.authenticators = authenticators or ()
@@ -149,7 +178,7 @@ class Request(object):
 
         force_user = getattr(request, '_force_auth_user', None)
         force_token = getattr(request, '_force_auth_token', None)
-        if (force_user is not None or force_token is not None):
+        if force_user is not None or force_token is not None:
             forced_auth = ForcedAuthentication(force_user, force_token)
             self.authenticators = (forced_auth,)
 
@@ -190,7 +219,8 @@ class Request(object):
         by the authentication classes provided to the request.
         """
         if not hasattr(self, '_user'):
-            self._authenticate()
+            with wrap_attributeerrors():
+                self._authenticate()
         return self._user
 
     @user.setter
@@ -213,7 +243,8 @@ class Request(object):
         request, such as an authentication token.
         """
         if not hasattr(self, '_auth'):
-            self._authenticate()
+            with wrap_attributeerrors():
+                self._authenticate()
         return self._auth
 
     @auth.setter
@@ -232,7 +263,8 @@ class Request(object):
         to authenticate the request, or `None`.
         """
         if not hasattr(self, '_authenticator'):
-            self._authenticate()
+            with wrap_attributeerrors():
+                self._authenticate()
         return self._authenticator
 
     def _load_data_and_files(self):
@@ -246,6 +278,12 @@ class Request(object):
                 self._full_data.update(self._files)
             else:
                 self._full_data = self._data
+
+            # if a form media type, copy data & files refs to the underlying
+            # http request so that closable objects are handled appropriately.
+            if is_form_media_type(self.content_type):
+                self._request._post = self.POST
+                self._request._files = self.FILES
 
     def _load_stream(self):
         """
@@ -261,10 +299,20 @@ class Request(object):
 
         if content_length == 0:
             self._stream = None
-        elif hasattr(self._request, 'read'):
+        elif not self._request._read_started:
             self._stream = self._request
         else:
-            self._stream = six.BytesIO(self.raw_post_data)
+            self._stream = io.BytesIO(self.body)
+
+    def _supports_form_parsing(self):
+        """
+        Return True if this requests supports parsing form data.
+        """
+        form_media = (
+            'application/x-www-form-urlencoded',
+            'multipart/form-data'
+        )
+        return any([parser.media_type in form_media for parser in self.parsers])
 
     def _parse(self):
         """
@@ -272,11 +320,24 @@ class Request(object):
 
         May raise an `UnsupportedMediaType`, or `ParseError` exception.
         """
-        stream = self.stream
         media_type = self.content_type
+        try:
+            stream = self.stream
+        except RawPostDataException:
+            if not hasattr(self._request, '_post'):
+                raise
+            # If request.POST has been accessed in middleware, and a method='POST'
+            # request was made with 'multipart/form-data', then the request stream
+            # will already have been exhausted.
+            if self._supports_form_parsing():
+                return (self._request.POST, self._request.FILES)
+            stream = None
 
         if stream is None or media_type is None:
-            empty_data = QueryDict('', encoding=self._request._encoding)
+            if media_type and is_form_media_type(media_type):
+                empty_data = QueryDict('', encoding=self._request._encoding)
+            else:
+                empty_data = {}
             empty_files = MultiValueDict()
             return (empty_data, empty_files)
 
@@ -287,7 +348,7 @@ class Request(object):
 
         try:
             parsed = parser.parse(stream, media_type, self.parser_context)
-        except:
+        except Exception:
             # If we get an exception during parsing, fill in empty data and
             # re-raise.  Ensures we don't simply repeat the error when
             # attempting to render the browsable renderer response, or when
@@ -309,7 +370,6 @@ class Request(object):
         """
         Attempt to authenticate the request using each authentication instance
         in turn.
-        Returns a three-tuple of (authenticator, user, authtoken).
         """
         for authenticator in self.authenticators:
             try:
@@ -327,10 +387,9 @@ class Request(object):
 
     def _not_authenticated(self):
         """
-        Return a three-tuple of (authenticator, user, authtoken), representing
-        an unauthenticated request.
+        Set authenticator, user & authtoken representing an unauthenticated request.
 
-        By default this will be (None, AnonymousUser, None).
+        Defaults are None, AnonymousUser & None.
         """
         self._authenticator = None
 
@@ -344,19 +403,15 @@ class Request(object):
         else:
             self.auth = None
 
-    def __getattribute__(self, attr):
+    def __getattr__(self, attr):
         """
         If an attribute does not exist on this instance, then we also attempt
         to proxy it to the underlying HttpRequest object.
         """
         try:
-            return super(Request, self).__getattribute__(attr)
+            return getattr(self._request, attr)
         except AttributeError:
-            info = sys.exc_info()
-            try:
-                return getattr(self._request, attr)
-            except AttributeError:
-                six.reraise(info[0], info[1], info[2].tb_next)
+            return self.__getattribute__(attr)
 
     @property
     def DATA(self):
@@ -364,6 +419,15 @@ class Request(object):
             '`request.DATA` has been deprecated in favor of `request.data` '
             'since version 3.0, and has been fully removed as of version 3.2.'
         )
+
+    @property
+    def POST(self):
+        # Ensure that request.POST uses our request parsing.
+        if not _hasattr(self, '_data'):
+            self._load_data_and_files()
+        if is_form_media_type(self.content_type):
+            return self._data
+        return QueryDict('', encoding=self._request._encoding)
 
     @property
     def FILES(self):
@@ -380,3 +444,8 @@ class Request(object):
             '`request.QUERY_PARAMS` has been deprecated in favor of `request.query_params` '
             'since version 3.0, and has been fully removed as of version 3.2.'
         )
+
+    def force_plaintext_errors(self, value):
+        # Hack to allow our exception handler to force choice of
+        # plaintext or html error responses.
+        self._request.is_ajax = lambda: value

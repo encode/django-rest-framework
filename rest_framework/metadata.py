@@ -40,6 +40,7 @@ class SimpleMetadata(BaseMetadata):
         serializers.BooleanField: 'boolean',
         serializers.NullBooleanField: 'boolean',
         serializers.CharField: 'string',
+        serializers.UUIDField: 'string',
         serializers.URLField: 'url',
         serializers.EmailField: 'email',
         serializers.RegexField: 'regex',
@@ -110,6 +111,7 @@ class SimpleMetadata(BaseMetadata):
         return OrderedDict([
             (field_name, self.get_field_info(field))
             for field_name, field in serializer.fields.items()
+            if not isinstance(field, serializers.HiddenField)
         ])
 
     def get_field_info(self, field):
@@ -137,7 +139,9 @@ class SimpleMetadata(BaseMetadata):
         elif getattr(field, 'fields', None):
             field_info['children'] = self.get_serializer_info(field)
 
-        if not field_info.get('read_only') and hasattr(field, 'choices'):
+        if (not field_info.get('read_only') and
+            not isinstance(field, (serializers.RelatedField, serializers.ManyRelatedField)) and
+                hasattr(field, 'choices')):
             field_info['choices'] = [
                 {
                     'value': choice_value,

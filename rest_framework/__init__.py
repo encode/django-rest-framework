@@ -1,4 +1,4 @@
-"""
+r"""
 ______ _____ _____ _____    __
 | ___ \  ___/  ___|_   _|  / _|                                           | |
 | |_/ / |__ \ `--.  | |   | |_ _ __ __ _ _ __ ___   _____      _____  _ __| |__
@@ -8,10 +8,10 @@ ______ _____ _____ _____    __
 """
 
 __title__ = 'Django REST framework'
-__version__ = '3.2.4'
+__version__ = '3.9.0'
 __author__ = 'Tom Christie'
 __license__ = 'BSD 2-Clause'
-__copyright__ = 'Copyright 2011-2015 Tom Christie'
+__copyright__ = 'Copyright 2011-2018 Tom Christie'
 
 # Version synonym
 VERSION = __version__
@@ -21,3 +21,5 @@ HTTP_HEADER_ENCODING = 'iso-8859-1'
 
 # Default datetime input and output formats
 ISO_8601 = 'iso-8601'
+
+default_app_config = 'rest_framework.apps.RestFrameworkConfig'

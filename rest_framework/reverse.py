@@ -3,8 +3,8 @@ Provide urlresolver functions that return fully qualified URLs or view names
 """
 from __future__ import unicode_literals
 
-from django.core.urlresolvers import reverse as django_reverse
-from django.core.urlresolvers import NoReverseMatch
+from django.urls import NoReverseMatch
+from django.urls import reverse as django_reverse
 from django.utils import six
 from django.utils.functional import lazy
 
@@ -54,7 +54,7 @@ def reverse(viewname, args=None, kwargs=None, request=None, format=None, **extra
 
 def _reverse(viewname, args=None, kwargs=None, request=None, format=None, **extra):
     """
-    Same as `django.core.urlresolvers.reverse`, but optionally takes a request
+    Same as `django.urls.reverse`, but optionally takes a request
     and returns a fully qualified URL, using the request to get the base URL.
     """
     if format is not None:

@@ -37,7 +37,7 @@ The `reverse` function included by REST framework ties in with the versioning sc
 
 The above function will apply any URL transformations appropriate to the request version. For example:
 
-* If `NamespacedVersioning` was being used, and the API version was 'v1', then the URL lookup used would be `'v1:bookings-list'`, which might resolve to a URL like `http://example.org/v1/bookings/`.
+* If `NamespaceVersioning` was being used, and the API version was 'v1', then the URL lookup used would be `'v1:bookings-list'`, which might resolve to a URL like `http://example.org/v1/bookings/`.
 * If `QueryParameterVersioning` was being used, and the API version was `1.0`, then the returned URL might be something like `http://example.org/bookings/?version=1.0`
 
 #### Versioned APIs and hyperlinked serializers
@@ -71,8 +71,8 @@ You can also set the versioning scheme on an individual view. Typically you won'
 The following settings keys are also used to control versioning:
 
 * `DEFAULT_VERSION`. The value that should be used for `request.version` when no versioning information is present. Defaults to `None`.
-* `ALLOWED_VERSIONS`. If set, this value will restrict the set of versions that may be returned by the versioning scheme, and will raise an error if the provided version if not in this set. Note that the value used for the `DEFAULT_VERSION` setting is always considered to be part of the `ALLOWED_VERSIONS` set. Defaults to `None`.
-* `VERSION_PARAM`. The string that should used for any versioning parameters, such as in the media type or URL query parameters. Defaults to `'version'`.
+* `ALLOWED_VERSIONS`. If set, this value will restrict the set of versions that may be returned by the versioning scheme, and will raise an error if the provided version is not in this set. Note that the value used for the `DEFAULT_VERSION` setting is always considered to be part of the `ALLOWED_VERSIONS` set (unless it is `None`). Defaults to `None`.
+* `VERSION_PARAM`. The string that should be used for any versioning parameters, such as in the media type or URL query parameters. Defaults to `'version'`.
 
 You can also set your versioning class plus those three values on a per-view or a per-viewset basis by defining your own versioning scheme and using the `default_version`, `allowed_versions` and `version_param` class variables. For example, if you want to use `URLPathVersioning`:
 
@@ -130,12 +130,12 @@ Your URL conf must include a pattern that matches the version with a `'version'`
 
     urlpatterns = [
         url(
-            r'^(?P<version>[v1|v2]+)/bookings/$',
+            r'^(?P<version>(v1|v2))/bookings/$',
             bookings_list,
             name='bookings-list'
         ),
         url(
-            r'^(?P<version>[v1|v2]+)/bookings/(?P<pk>[0-9]+)/$',
+            r'^(?P<version>(v1|v2))/bookings/(?P<pk>[0-9]+)/$',
             bookings_detail,
             name='bookings-detail'
         )
@@ -143,7 +143,7 @@ Your URL conf must include a pattern that matches the version with a `'version'`
 
 ## NamespaceVersioning
 
-To the client, this scheme is the same as `URLParameterVersioning`. The only difference is how it is configured in your Django application, as it uses URL namespacing, instead of URL keyword arguments.
+To the client, this scheme is the same as `URLPathVersioning`. The only difference is how it is configured in your Django application, as it uses URL namespacing, instead of URL keyword arguments.
 
     GET /v1/something/ HTTP/1.1
     Host: example.com
@@ -165,7 +165,7 @@ In the following example we're giving a set of views two different possible URL 
         url(r'^v2/bookings/', include('bookings.urls', namespace='v2'))
     ]
 
-Both `URLParameterVersioning` and `NamespaceVersioning` are reasonable if you just need a simple versioning scheme. The `URLParameterVersioning` approach might be better suitable for small ad-hoc projects, and the `NamespaceVersioning` is probably easier to manage for larger projects.
+Both `URLPathVersioning` and `NamespaceVersioning` are reasonable if you just need a simple versioning scheme. The `URLPathVersioning` approach might be better suitable for small ad-hoc projects, and the `NamespaceVersioning` is probably easier to manage for larger projects.
 
 ## HostNameVersioning
 
@@ -183,7 +183,7 @@ By default this implementation expects the hostname to match this simple regular
 
 Note that the first group is enclosed in brackets, indicating that this is the matched portion of the hostname.
 
-The `HostNameVersioning` scheme can be awkward to use in debug mode as you will typically be accessing a raw IP address such as `127.0.0.1`. There are various online services which you to [access localhost with a custom subdomain][lvh] which you may find helpful in this case.
+The `HostNameVersioning` scheme can be awkward to use in debug mode as you will typically be accessing a raw IP address such as `127.0.0.1`. There are various online tutorials on how to [access localhost with a custom subdomain][lvh] which you may find helpful in this case.
 
 Hostname based versioning can be particularly useful if you have requirements to route incoming requests to different servers based on the version, as you can configure different DNS records for different API versions.
 
@@ -211,10 +211,10 @@ The following example uses a custom `X-API-Version` header to determine the requ
 
 If your versioning scheme is based on the request URL, you will also want to alter how versioned URLs are determined. In order to do so you should override the `.reverse()` method on the class. See the source code for examples.
 
-[cite]: http://www.slideshare.net/evolve_conference/201308-fielding-evolve/31
-[roy-fielding-on-versioning]: http://www.infoq.com/articles/roy-fielding-on-versioning
+[cite]: https://www.slideshare.net/evolve_conference/201308-fielding-evolve/31
+[roy-fielding-on-versioning]: https://www.infoq.com/articles/roy-fielding-on-versioning
 [klabnik-guidelines]: http://blog.steveklabnik.com/posts/2011-07-03-nobody-understands-rest-or-http#i_want_my_api_to_be_versioned
-[heroku-guidelines]: https://github.com/interagent/http-api-design#version-with-accepts-header
-[json-parameters]: http://tools.ietf.org/html/rfc4627#section-6
-[vendor-media-type]: http://en.wikipedia.org/wiki/Internet_media_type#Vendor_tree
+[heroku-guidelines]: https://github.com/interagent/http-api-design/blob/master/en/foundations/require-versioning-in-the-accepts-header.md
+[json-parameters]: https://tools.ietf.org/html/rfc4627#section-6
+[vendor-media-type]: https://en.wikipedia.org/wiki/Internet_media_type#Vendor_tree
 [lvh]: https://reinteractive.net/posts/199-developing-and-testing-rails-applications-with-subdomains

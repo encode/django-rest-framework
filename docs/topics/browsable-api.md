@@ -17,7 +17,7 @@ By default, the API will return the format specified by the headers, which in th
 
 ## Customizing
 
-The browsable API is built with [Twitter's Bootstrap][bootstrap] (v 2.1.1), making it easy to customize the look-and-feel.
+The browsable API is built with [Twitter's Bootstrap][bootstrap] (v 3.3.5), making it easy to customize the look-and-feel.
 
 To customize the default style, create a template called `rest_framework/api.html` that extends from `rest_framework/base.html`.  For example:
 
@@ -44,7 +44,7 @@ Full example:
     {% extends "rest_framework/base.html" %}
 
     {% block bootstrap_theme %}
-        <link rel="stylesheet" href="http://bootswatch.com/flatly/bootstrap.min.css" type="text/css">
+        <link rel="stylesheet" href="https://bootswatch.com/flatly/bootstrap.min.css" type="text/css">
     {% endblock %}
 
     {% block bootstrap_navbar_variant %}{% endblock %}
@@ -146,21 +146,17 @@ An alternative, but more complex option would be to replace the input with an au
 
 There are [a variety of packages for autocomplete widgets][autocomplete-packages], such as [django-autocomplete-light][django-autocomplete-light], that you may want to refer to. Note that you will not be able to simply include these components as standard widgets, but will need to write the HTML template explicitly. This is because REST framework 3.0 no longer supports the `widget` keyword argument since it now uses templated HTML generation.
 
-Better support for autocomplete inputs is planned in future versions.
-
 ---
 
-[cite]: http://en.wikiquote.org/wiki/Alfred_North_Whitehead
+[cite]: https://en.wikiquote.org/wiki/Alfred_North_Whitehead
 [drfreverse]: ../api-guide/reverse.md
 [ffjsonview]: https://addons.mozilla.org/en-US/firefox/addon/jsonview/
 [chromejsonview]: https://chrome.google.com/webstore/detail/chklaanhfefbnpoihckbnefhakgolnmc
-[bootstrap]: http://getbootstrap.com
+[bootstrap]: https://getbootstrap.com/
 [cerulean]: ../img/cerulean.png
 [slate]: ../img/slate.png
-[bcustomize]: http://getbootstrap.com/2.3.2/customize.html
-[bswatch]: http://bootswatch.com/
-[bcomponents]: http://getbootstrap.com/2.3.2/components.html
-[bcomponentsnav]: http://getbootstrap.com/2.3.2/components.html#navbar
+[bswatch]: https://bootswatch.com/
+[bcomponents]: https://getbootstrap.com/2.3.2/components.html
+[bcomponentsnav]: https://getbootstrap.com/2.3.2/components.html#navbar
 [autocomplete-packages]: https://www.djangopackages.com/grids/g/auto-complete/
 [django-autocomplete-light]: https://github.com/yourlabs/django-autocomplete-light
-[django-autocomplete-light-install]: http://django-autocomplete-light.readthedocs.org/en/latest/#install

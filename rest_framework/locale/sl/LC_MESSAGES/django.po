@@ -1,0 +1,440 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+# Gregor Cimerman, 2017
+msgid ""
+msgstr ""
+"Project-Id-Version: Django REST framework\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-07-12 16:13+0100\n"
+"PO-Revision-Date: 2017-08-03 14:58+0000\n"
+"Last-Translator: Gregor Cimerman\n"
+"Language-Team: Slovenian (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/sl/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: sl\n"
+"Plural-Forms: nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || n%100==4 ? 2 : 3);\n"
+
+#: authentication.py:73
+msgid "Invalid basic header. No credentials provided."
+msgstr "Napačno enostavno zagalvje. Ni podanih poverilnic."
+
+#: authentication.py:76
+msgid "Invalid basic header. Credentials string should not contain spaces."
+msgstr "Napačno enostavno zaglavje. Poverilniški niz ne sme vsebovati presledkov."
+
+#: authentication.py:82
+msgid "Invalid basic header. Credentials not correctly base64 encoded."
+msgstr "Napačno enostavno zaglavje. Poverilnice niso pravilno base64 kodirane."
+
+#: authentication.py:99
+msgid "Invalid username/password."
+msgstr "Napačno uporabniško ime ali geslo."
+
+#: authentication.py:102 authentication.py:198
+msgid "User inactive or deleted."
+msgstr "Uporabnik neaktiven ali izbrisan."
+
+#: authentication.py:176
+msgid "Invalid token header. No credentials provided."
+msgstr "Neveljaven žeton v zaglavju. Ni vsebovanih poverilnic."
+
+#: authentication.py:179
+msgid "Invalid token header. Token string should not contain spaces."
+msgstr "Neveljaven žeton v zaglavju. Žeton ne sme vsebovati presledkov."
+
+#: authentication.py:185
+msgid ""
+"Invalid token header. Token string should not contain invalid characters."
+msgstr "Neveljaven žeton v zaglavju. Žeton ne sme vsebovati napačnih znakov."
+
+#: authentication.py:195
+msgid "Invalid token."
+msgstr "Neveljaven žeton."
+
+#: authtoken/apps.py:7
+msgid "Auth Token"
+msgstr "Prijavni žeton"
+
+#: authtoken/models.py:15
+msgid "Key"
+msgstr "Ključ"
+
+#: authtoken/models.py:18
+msgid "User"
+msgstr "Uporabnik"
+
+#: authtoken/models.py:20
+msgid "Created"
+msgstr "Ustvarjen"
+
+#: authtoken/models.py:29
+msgid "Token"
+msgstr "Žeton"
+
+#: authtoken/models.py:30
+msgid "Tokens"
+msgstr "Žetoni"
+
+#: authtoken/serializers.py:8
+msgid "Username"
+msgstr "Uporabniško ime"
+
+#: authtoken/serializers.py:9
+msgid "Password"
+msgstr "Geslo"
+
+#: authtoken/serializers.py:20
+msgid "User account is disabled."
+msgstr "Uporabniški račun je onemogočen."
+
+#: authtoken/serializers.py:23
+msgid "Unable to log in with provided credentials."
+msgstr "Neuspešna prijava s podanimi poverilnicami."
+
+#: authtoken/serializers.py:26
+msgid "Must include \"username\" and \"password\"."
+msgstr "Mora vsebovati \"uporabniško ime\" in \"geslo\"."
+
+#: exceptions.py:49
+msgid "A server error occurred."
+msgstr "Napaka na strežniku."
+
+#: exceptions.py:84
+msgid "Malformed request."
+msgstr "Okvarjen zahtevek."
+
+#: exceptions.py:89
+msgid "Incorrect authentication credentials."
+msgstr "Napačni avtentikacijski podatki."
+
+#: exceptions.py:94
+msgid "Authentication credentials were not provided."
+msgstr "Avtentikacijski podatki niso bili podani."
+
+#: exceptions.py:99
+msgid "You do not have permission to perform this action."
+msgstr "Nimate dovoljenj za izvedbo te akcije."
+
+#: exceptions.py:104 views.py:81
+msgid "Not found."
+msgstr "Ni najdeno"
+
+#: exceptions.py:109
+msgid "Method \"{method}\" not allowed."
+msgstr "Metoda \"{method}\" ni dovoljena"
+
+#: exceptions.py:120
+msgid "Could not satisfy the request Accept header."
+msgstr "Ni bilo mogoče zagotoviti zaglavja Accept zahtevka."
+
+#: exceptions.py:132
+msgid "Unsupported media type \"{media_type}\" in request."
+msgstr "Nepodprt medijski tip \"{media_type}\" v zahtevku."
+
+#: exceptions.py:145
+msgid "Request was throttled."
+msgstr "Zahtevek je bil pridržan."
+
+#: fields.py:269 relations.py:206 relations.py:239 validators.py:98
+#: validators.py:181
+msgid "This field is required."
+msgstr "To polje je obvezno."
+
+#: fields.py:270
+msgid "This field may not be null."
+msgstr "To polje ne sme biti null."
+
+#: fields.py:608 fields.py:639
+msgid "\"{input}\" is not a valid boolean."
+msgstr "\"{input}\" ni veljaven boolean."
+
+#: fields.py:674
+msgid "This field may not be blank."
+msgstr "To polje ne sme biti prazno."
+
+#: fields.py:675 fields.py:1675
+msgid "Ensure this field has no more than {max_length} characters."
+msgstr "To polje ne sme biti daljše od {max_length} znakov."
+
+#: fields.py:676
+msgid "Ensure this field has at least {min_length} characters."
+msgstr "To polje mora vsebovati vsaj {min_length} znakov."
+
+#: fields.py:713
+msgid "Enter a valid email address."
+msgstr "Vnesite veljaven elektronski naslov."
+
+#: fields.py:724
+msgid "This value does not match the required pattern."
+msgstr "Ta vrednost ne ustreza zahtevanemu vzorcu."
+
+#: fields.py:735
+msgid ""
+"Enter a valid \"slug\" consisting of letters, numbers, underscores or "
+"hyphens."
+msgstr "Vnesite veljaven \"slug\", ki vsebuje črke, številke, podčrtaje ali vezaje."
+
+#: fields.py:747
+msgid "Enter a valid URL."
+msgstr "Vnesite veljaven URL."
+
+#: fields.py:760
+msgid "\"{value}\" is not a valid UUID."
+msgstr "\"{value}\" ni veljaven UUID"
+
+#: fields.py:796
+msgid "Enter a valid IPv4 or IPv6 address."
+msgstr "Vnesite veljaven IPv4 ali IPv6 naslov."
+
+#: fields.py:821
+msgid "A valid integer is required."
+msgstr "Zahtevano je veljavno celo število."
+
+#: fields.py:822 fields.py:857 fields.py:891
+msgid "Ensure this value is less than or equal to {max_value}."
+msgstr "Vrednost mora biti manjša ali enaka {max_value}."
+
+#: fields.py:823 fields.py:858 fields.py:892
+msgid "Ensure this value is greater than or equal to {min_value}."
+msgstr "Vrednost mora biti večija ali enaka {min_value}."
+
+#: fields.py:824 fields.py:859 fields.py:896
+msgid "String value too large."
+msgstr "Niz je prevelik."
+
+#: fields.py:856 fields.py:890
+msgid "A valid number is required."
+msgstr "Zahtevano je veljavno število."
+
+#: fields.py:893
+msgid "Ensure that there are no more than {max_digits} digits in total."
+msgstr "Vnesete lahko največ {max_digits} števk."
+
+#: fields.py:894
+msgid ""
+"Ensure that there are no more than {max_decimal_places} decimal places."
+msgstr "Vnesete lahko največ {max_decimal_places} decimalnih mest."
+
+#: fields.py:895
+msgid ""
+"Ensure that there are no more than {max_whole_digits} digits before the "
+"decimal point."
+msgstr "Vnesete lahko največ {max_whole_digits} števk pred decimalno piko."
+
+#: fields.py:1025
+msgid "Datetime has wrong format. Use one of these formats instead: {format}."
+msgstr "Datim in čas v napačnem formatu. Uporabite eno izmed naslednjih formatov: {format}."
+
+#: fields.py:1026
+msgid "Expected a datetime but got a date."
+msgstr "Pričakovan datum in čas, prejet le datum."
+
+#: fields.py:1103
+msgid "Date has wrong format. Use one of these formats instead: {format}."
+msgstr "Datum je v napačnem formatu. Uporabnite enega izmed naslednjih: {format}."
+
+#: fields.py:1104
+msgid "Expected a date but got a datetime."
+msgstr "Pričakovan datum vendar prejet datum in čas."
+
+#: fields.py:1170
+msgid "Time has wrong format. Use one of these formats instead: {format}."
+msgstr "Čas je v napačnem formatu. Uporabite enega izmed naslednjih: {format}."
+
+#: fields.py:1232
+msgid "Duration has wrong format. Use one of these formats instead: {format}."
+msgstr "Trajanje je v napačnem formatu. Uporabite enega izmed naslednjih: {format}."
+
+#: fields.py:1251 fields.py:1300
+msgid "\"{input}\" is not a valid choice."
+msgstr "\"{input}\" ni veljavna izbira."
+
+#: fields.py:1254 relations.py:71 relations.py:441
+msgid "More than {count} items..."
+msgstr "Več kot {count} elementov..."
+
+#: fields.py:1301 fields.py:1448 relations.py:437 serializers.py:524
+msgid "Expected a list of items but got type \"{input_type}\"."
+msgstr "Pričakovan seznam elementov vendar prejet tip \"{input_type}\"."
+
+#: fields.py:1302
+msgid "This selection may not be empty."
+msgstr "Ta izbria ne sme ostati prazna."
+
+#: fields.py:1339
+msgid "\"{input}\" is not a valid path choice."
+msgstr "\"{input}\" ni veljavna izbira poti."
+
+#: fields.py:1358
+msgid "No file was submitted."
+msgstr "Datoteka ni bila oddana."
+
+#: fields.py:1359
+msgid ""
+"The submitted data was not a file. Check the encoding type on the form."
+msgstr "Oddani podatki niso datoteka. Preverite vrsto kodiranja na formi."
+
+#: fields.py:1360
+msgid "No filename could be determined."
+msgstr "Imena datoteke ni bilo mogoče določiti."
+
+#: fields.py:1361
+msgid "The submitted file is empty."
+msgstr "Oddana datoteka je prazna."
+
+#: fields.py:1362
+msgid ""
+"Ensure this filename has at most {max_length} characters (it has {length})."
+msgstr "Ime datoteke lahko vsebuje največ {max_length} znakov (ta jih ima {length})."
+
+#: fields.py:1410
+msgid ""
+"Upload a valid image. The file you uploaded was either not an image or a "
+"corrupted image."
+msgstr "Naložite veljavno sliko. Naložena datoteka ni bila slika ali pa je okvarjena."
+
+#: fields.py:1449 relations.py:438 serializers.py:525
+msgid "This list may not be empty."
+msgstr "Seznam ne sme biti prazen."
+
+#: fields.py:1502
+msgid "Expected a dictionary of items but got type \"{input_type}\"."
+msgstr "Pričakovan je slovar elementov, prejet element je tipa \"{input_type}\"."
+
+#: fields.py:1549
+msgid "Value must be valid JSON."
+msgstr "Vrednost mora biti veljaven JSON."
+
+#: filters.py:36 templates/rest_framework/filters/django_filter.html:5
+msgid "Submit"
+msgstr "Potrdi"
+
+#: filters.py:336
+msgid "ascending"
+msgstr "naraščujoče"
+
+#: filters.py:337
+msgid "descending"
+msgstr "padajoče"
+
+#: pagination.py:193
+msgid "Invalid page."
+msgstr "Neveljavna stran."
+
+#: pagination.py:427
+msgid "Invalid cursor"
+msgstr "Neveljaven kazalec"
+
+#: relations.py:207
+msgid "Invalid pk \"{pk_value}\" - object does not exist."
+msgstr "Neveljaven pk \"{pk_value}\" - objekt ne obstaja."
+
+#: relations.py:208
+msgid "Incorrect type. Expected pk value, received {data_type}."
+msgstr "Neveljaven tip. Pričakovana vrednost pk, prejet {data_type}."
+
+#: relations.py:240
+msgid "Invalid hyperlink - No URL match."
+msgstr "Neveljavna povezava - Ni URL."
+
+#: relations.py:241
+msgid "Invalid hyperlink - Incorrect URL match."
+msgstr "Ni veljavna povezava - Napačen URL."
+
+#: relations.py:242
+msgid "Invalid hyperlink - Object does not exist."
+msgstr "Ni veljavna povezava - Objekt ne obstaja."
+
+#: relations.py:243
+msgid "Incorrect type. Expected URL string, received {data_type}."
+msgstr "Napačen tip. Pričakovan URL niz, prejet {data_type}."
+
+#: relations.py:401
+msgid "Object with {slug_name}={value} does not exist."
+msgstr "Objekt z {slug_name}={value} ne obstaja."
+
+#: relations.py:402
+msgid "Invalid value."
+msgstr "Neveljavna vrednost."
+
+#: serializers.py:326
+msgid "Invalid data. Expected a dictionary, but got {datatype}."
+msgstr "Napačni podatki. Pričakovan slovar, prejet {datatype}."
+
+#: templates/rest_framework/admin.html:116
+#: templates/rest_framework/base.html:128
+msgid "Filters"
+msgstr "Filtri"
+
+#: templates/rest_framework/filters/django_filter.html:2
+#: templates/rest_framework/filters/django_filter_crispyforms.html:4
+msgid "Field filters"
+msgstr "Filter polj"
+
+#: templates/rest_framework/filters/ordering.html:3
+msgid "Ordering"
+msgstr "Razvrščanje"
+
+#: templates/rest_framework/filters/search.html:2
+msgid "Search"
+msgstr "Iskanje"
+
+#: templates/rest_framework/horizontal/radio.html:2
+#: templates/rest_framework/inline/radio.html:2
+#: templates/rest_framework/vertical/radio.html:2
+msgid "None"
+msgstr "None"
+
+#: templates/rest_framework/horizontal/select_multiple.html:2
+#: templates/rest_framework/inline/select_multiple.html:2
+#: templates/rest_framework/vertical/select_multiple.html:2
+msgid "No items to select."
+msgstr "Ni elementov za izbiro."
+
+#: validators.py:43
+msgid "This field must be unique."
+msgstr "To polje mora biti unikatno."
+
+#: validators.py:97
+msgid "The fields {field_names} must make a unique set."
+msgstr "Polja {field_names} morajo skupaj sestavljati unikaten niz."
+
+#: validators.py:245
+msgid "This field must be unique for the \"{date_field}\" date."
+msgstr "Polje mora biti unikatno za \"{date_field}\" dan."
+
+#: validators.py:260
+msgid "This field must be unique for the \"{date_field}\" month."
+msgstr "Polje mora biti unikatno za \"{date_field} mesec.\""
+
+#: validators.py:273
+msgid "This field must be unique for the \"{date_field}\" year."
+msgstr "Polje mora biti unikatno za \"{date_field}\" leto."
+
+#: versioning.py:42
+msgid "Invalid version in \"Accept\" header."
+msgstr "Neveljavna verzija v \"Accept\" zaglavju."
+
+#: versioning.py:73
+msgid "Invalid version in URL path."
+msgstr "Neveljavna različca v poti URL."
+
+#: versioning.py:115
+msgid "Invalid version in URL path. Does not match any version namespace."
+msgstr "Neveljavna različica v poti URL. Se ne ujema z nobeno različico imenskega prostora."
+
+#: versioning.py:147
+msgid "Invalid version in hostname."
+msgstr "Neveljavna različica v imenu gostitelja."
+
+#: versioning.py:169
+msgid "Invalid version in query parameter."
+msgstr "Neveljavna verzija v poizvedbenem parametru."
+
+#: views.py:88
+msgid "Permission denied."
+msgstr "Dovoljenje zavrnjeno."

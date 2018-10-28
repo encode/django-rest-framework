@@ -12,9 +12,9 @@ def is_html_input(dictionary):
     return hasattr(dictionary, 'getlist')
 
 
-def parse_html_list(dictionary, prefix=''):
+def parse_html_list(dictionary, prefix='', default=None):
     """
-    Used to suport list values in HTML forms.
+    Used to support list values in HTML forms.
     Supports lists of primitives and/or dictionaries.
 
     * List of primitives.
@@ -44,6 +44,8 @@ def parse_html_list(dictionary, prefix=''):
         {'foo': 'abc', 'bar': 'def'},
         {'foo': 'hij', 'bar': 'klm'}
     ]
+
+    :returns a list of objects, or the value specified in ``default`` if the list is empty
     """
     ret = {}
     regex = re.compile(r'^%s\[([0-9]+)\](.*)$' % re.escape(prefix))
@@ -59,7 +61,9 @@ def parse_html_list(dictionary, prefix=''):
             ret[index][key] = value
         else:
             ret[index] = MultiValueDict({key: [value]})
-    return [ret[item] for item in sorted(ret.keys())]
+
+    # return the items of the ``ret`` dict, sorted by key, or ``default`` if the dict is empty
+    return [ret[item] for item in sorted(ret)] if ret else default
 
 
 def parse_html_dict(dictionary, prefix=''):
@@ -80,10 +84,12 @@ def parse_html_dict(dictionary, prefix=''):
     """
     ret = MultiValueDict()
     regex = re.compile(r'^%s\.(.+)$' % re.escape(prefix))
-    for field, value in dictionary.items():
+    for field in dictionary:
         match = regex.match(field)
         if not match:
             continue
         key = match.groups()[0]
-        ret[key] = value
+        value = dictionary.getlist(field)
+        ret.setlist(key, value)
+
     return ret

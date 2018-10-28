@@ -5,13 +5,7 @@ relationships and their associated metadata.
 
 Usage: `get_field_info(model)` returns a `FieldInfo` instance.
 """
-import inspect
 from collections import OrderedDict, namedtuple
-
-from django.apps import apps
-from django.core.exceptions import ImproperlyConfigured
-from django.db import models
-from django.utils import six
 
 FieldInfo = namedtuple('FieldResult', [
     'pk',  # Model field instance
@@ -27,32 +21,9 @@ RelationInfo = namedtuple('RelationInfo', [
     'related_model',
     'to_many',
     'to_field',
-    'has_through_model'
+    'has_through_model',
+    'reverse'
 ])
-
-
-def _resolve_model(obj):
-    """
-    Resolve supplied `obj` to a Django model class.
-
-    `obj` must be a Django model class itself, or a string
-    representation of one.  Useful in situations like GH #1225 where
-    Django may not have resolved a string-based reference to a model in
-    another model's foreign key definition.
-
-    String representations should have the format:
-        'appname.ModelName'
-    """
-    if isinstance(obj, six.string_types) and len(obj.split('.')) == 2:
-        app_name, model_name = obj.split('.')
-        resolved_model = apps.get_model(app_name, model_name)
-        if resolved_model is None:
-            msg = "Django did not return a model for {0}.{1}"
-            raise ImproperlyConfigured(msg.format(app_name, model_name))
-        return resolved_model
-    elif inspect.isclass(obj) and issubclass(obj, models.Model):
-        return obj
-    raise ValueError("{0} is not a Django model".format(obj))
 
 
 def get_field_info(model):
@@ -76,23 +47,26 @@ def get_field_info(model):
 
 def _get_pk(opts):
     pk = opts.pk
-    while pk.rel and pk.rel.parent_link:
+    rel = pk.remote_field
+
+    while rel and rel.parent_link:
         # If model is a child via multi-table inheritance, use parent's pk.
-        pk = pk.rel.to._meta.pk
+        pk = pk.remote_field.model._meta.pk
+        rel = pk.remote_field
 
     return pk
 
 
 def _get_fields(opts):
     fields = OrderedDict()
-    for field in [field for field in opts.fields if field.serialize and not field.rel]:
+    for field in [field for field in opts.fields if field.serialize and not field.remote_field]:
         fields[field.name] = field
 
     return fields
 
 
 def _get_to_field(field):
-    return field.to_fields[0] if field.to_fields else None
+    return getattr(field, 'to_fields', None) and field.to_fields[0]
 
 
 def _get_forward_relationships(opts):
@@ -100,26 +74,28 @@ def _get_forward_relationships(opts):
     Returns an `OrderedDict` of field names to `RelationInfo`.
     """
     forward_relations = OrderedDict()
-    for field in [field for field in opts.fields if field.serialize and field.rel]:
+    for field in [field for field in opts.fields if field.serialize and field.remote_field]:
         forward_relations[field.name] = RelationInfo(
             model_field=field,
-            related_model=_resolve_model(field.rel.to),
+            related_model=field.remote_field.model,
             to_many=False,
             to_field=_get_to_field(field),
-            has_through_model=False
+            has_through_model=False,
+            reverse=False
         )
 
     # Deal with forward many-to-many relationships.
     for field in [field for field in opts.many_to_many if field.serialize]:
         forward_relations[field.name] = RelationInfo(
             model_field=field,
-            related_model=_resolve_model(field.rel.to),
+            related_model=field.remote_field.model,
             to_many=True,
             # manytomany do not have to_fields
             to_field=None,
             has_through_model=(
-                not field.rel.through._meta.auto_created
-            )
+                not field.remote_field.through._meta.auto_created
+            ),
+            reverse=False
         )
 
     return forward_relations
@@ -129,36 +105,34 @@ def _get_reverse_relationships(opts):
     """
     Returns an `OrderedDict` of field names to `RelationInfo`.
     """
-    # Note that we have a hack here to handle internal API differences for
-    # this internal API across Django 1.7 -> Django 1.8.
-    # See: https://code.djangoproject.com/ticket/24208
-
     reverse_relations = OrderedDict()
-    for relation in opts.get_all_related_objects():
+    all_related_objects = [r for r in opts.related_objects if not r.field.many_to_many]
+    for relation in all_related_objects:
         accessor_name = relation.get_accessor_name()
-        related = getattr(relation, 'related_model', relation.model)
         reverse_relations[accessor_name] = RelationInfo(
             model_field=None,
-            related_model=related,
-            to_many=relation.field.rel.multiple,
+            related_model=relation.related_model,
+            to_many=relation.field.remote_field.multiple,
             to_field=_get_to_field(relation.field),
-            has_through_model=False
+            has_through_model=False,
+            reverse=True
         )
 
     # Deal with reverse many-to-many relationships.
-    for relation in opts.get_all_related_many_to_many_objects():
+    all_related_many_to_many_objects = [r for r in opts.related_objects if r.field.many_to_many]
+    for relation in all_related_many_to_many_objects:
         accessor_name = relation.get_accessor_name()
-        related = getattr(relation, 'related_model', relation.model)
         reverse_relations[accessor_name] = RelationInfo(
             model_field=None,
-            related_model=related,
+            related_model=relation.related_model,
             to_many=True,
             # manytomany do not have to_fields
             to_field=None,
             has_through_model=(
-                (getattr(relation.field.rel, 'through', None) is not None) and
-                not relation.field.rel.through._meta.auto_created
-            )
+                (getattr(relation.field.remote_field, 'through', None) is not None) and
+                not relation.field.remote_field.through._meta.auto_created
+            ),
+            reverse=True
         )
 
     return reverse_relations

@@ -1,15 +1,16 @@
 import pytest
 from django.conf.urls import include, url
+from django.test import override_settings
 
 from rest_framework import serializers, status, versioning
 from rest_framework.decorators import APIView
 from rest_framework.relations import PKOnlyObject
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from rest_framework.test import APIRequestFactory, APITestCase
+from rest_framework.test import (
+    APIRequestFactory, APITestCase, URLPatternsTestCase
+)
 from rest_framework.versioning import NamespaceVersioning
-
-from .utils import UsingURLPatterns
 
 
 class RequestVersionView(APIView):
@@ -22,14 +23,34 @@ class ReverseView(APIView):
         return Response({'url': reverse('another', request=request)})
 
 
-class RequestInvalidVersionView(APIView):
+class AllowedVersionsView(RequestVersionView):
     def determine_version(self, request, *args, **kwargs):
         scheme = self.versioning_class()
         scheme.allowed_versions = ('v1', 'v2')
         return (scheme.determine_version(request, *args, **kwargs), scheme)
 
-    def get(self, request, *args, **kwargs):
-        return Response({'version': request.version})
+
+class AllowedAndDefaultVersionsView(RequestVersionView):
+    def determine_version(self, request, *args, **kwargs):
+        scheme = self.versioning_class()
+        scheme.allowed_versions = ('v1', 'v2')
+        scheme.default_version = 'v2'
+        return (scheme.determine_version(request, *args, **kwargs), scheme)
+
+
+class AllowedWithNoneVersionsView(RequestVersionView):
+    def determine_version(self, request, *args, **kwargs):
+        scheme = self.versioning_class()
+        scheme.allowed_versions = ('v1', 'v2', None)
+        return (scheme.determine_version(request, *args, **kwargs), scheme)
+
+
+class AllowedWithNoneAndDefaultVersionsView(RequestVersionView):
+    def determine_version(self, request, *args, **kwargs):
+        scheme = self.versioning_class()
+        scheme.allowed_versions = ('v1', 'v2', None)
+        scheme.default_version = 'v2'
+        return (scheme.determine_version(request, *args, **kwargs), scheme)
 
 
 factory = APIRequestFactory()
@@ -63,6 +84,7 @@ class TestRequestVersion:
         response = view(request)
         assert response.data == {'version': None}
 
+    @override_settings(ALLOWED_HOSTS=['*'])
     def test_host_name_versioning(self):
         scheme = versioning.HostNameVersioning
         view = RequestVersionView.as_view(versioning_class=scheme)
@@ -120,14 +142,14 @@ class TestRequestVersion:
         assert response.data == {'version': None}
 
 
-class TestURLReversing(UsingURLPatterns, APITestCase):
+class TestURLReversing(URLPatternsTestCase, APITestCase):
     included = [
         url(r'^namespaced/$', dummy_view, name='another'),
         url(r'^example/(?P<pk>\d+)/$', dummy_pk_view, name='example-detail')
     ]
 
     urlpatterns = [
-        url(r'^v1/', include(included, namespace='v1')),
+        url(r'^v1/', include((included, 'v1'), namespace='v1')),
         url(r'^another/$', dummy_view, name='another'),
         url(r'^(?P<version>[v1|v2]+)/another/$', dummy_view, name='another'),
     ]
@@ -151,6 +173,7 @@ class TestURLReversing(UsingURLPatterns, APITestCase):
         response = view(request)
         assert response.data == {'url': 'http://testserver/another/'}
 
+    @override_settings(ALLOWED_HOSTS=['*'])
     def test_reverse_host_name_versioning(self):
         scheme = versioning.HostNameVersioning
         view = ReverseView.as_view(versioning_class=scheme)
@@ -195,15 +218,16 @@ class TestURLReversing(UsingURLPatterns, APITestCase):
 class TestInvalidVersion:
     def test_invalid_query_param_versioning(self):
         scheme = versioning.QueryParameterVersioning
-        view = RequestInvalidVersionView.as_view(versioning_class=scheme)
+        view = AllowedVersionsView.as_view(versioning_class=scheme)
 
         request = factory.get('/endpoint/?version=v3')
         response = view(request)
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
+    @override_settings(ALLOWED_HOSTS=['*'])
     def test_invalid_host_name_versioning(self):
         scheme = versioning.HostNameVersioning
-        view = RequestInvalidVersionView.as_view(versioning_class=scheme)
+        view = AllowedVersionsView.as_view(versioning_class=scheme)
 
         request = factory.get('/endpoint/', HTTP_HOST='v3.example.org')
         response = view(request)
@@ -211,7 +235,7 @@ class TestInvalidVersion:
 
     def test_invalid_accept_header_versioning(self):
         scheme = versioning.AcceptHeaderVersioning
-        view = RequestInvalidVersionView.as_view(versioning_class=scheme)
+        view = AllowedVersionsView.as_view(versioning_class=scheme)
 
         request = factory.get('/endpoint/', HTTP_ACCEPT='application/json; version=v3')
         response = view(request)
@@ -219,7 +243,7 @@ class TestInvalidVersion:
 
     def test_invalid_url_path_versioning(self):
         scheme = versioning.URLPathVersioning
-        view = RequestInvalidVersionView.as_view(versioning_class=scheme)
+        view = AllowedVersionsView.as_view(versioning_class=scheme)
 
         request = factory.get('/v3/endpoint/')
         response = view(request, version='v3')
@@ -230,7 +254,7 @@ class TestInvalidVersion:
             namespace = 'v3'
 
         scheme = versioning.NamespaceVersioning
-        view = RequestInvalidVersionView.as_view(versioning_class=scheme)
+        view = AllowedVersionsView.as_view(versioning_class=scheme)
 
         request = factory.get('/v3/endpoint/')
         request.resolver_match = FakeResolverMatch
@@ -238,14 +262,60 @@ class TestInvalidVersion:
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
-class TestHyperlinkedRelatedField(UsingURLPatterns, APITestCase):
+class TestAllowedAndDefaultVersion:
+    def test_missing_without_default(self):
+        scheme = versioning.AcceptHeaderVersioning
+        view = AllowedVersionsView.as_view(versioning_class=scheme)
+
+        request = factory.get('/endpoint/', HTTP_ACCEPT='application/json')
+        response = view(request)
+        assert response.status_code == status.HTTP_406_NOT_ACCEPTABLE
+
+    def test_missing_with_default(self):
+        scheme = versioning.AcceptHeaderVersioning
+        view = AllowedAndDefaultVersionsView.as_view(versioning_class=scheme)
+
+        request = factory.get('/endpoint/', HTTP_ACCEPT='application/json')
+        response = view(request)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == {'version': 'v2'}
+
+    def test_with_default(self):
+        scheme = versioning.AcceptHeaderVersioning
+        view = AllowedAndDefaultVersionsView.as_view(versioning_class=scheme)
+
+        request = factory.get('/endpoint/',
+                              HTTP_ACCEPT='application/json; version=v2')
+        response = view(request)
+        assert response.status_code == status.HTTP_200_OK
+
+    def test_missing_without_default_but_none_allowed(self):
+        scheme = versioning.AcceptHeaderVersioning
+        view = AllowedWithNoneVersionsView.as_view(versioning_class=scheme)
+
+        request = factory.get('/endpoint/', HTTP_ACCEPT='application/json')
+        response = view(request)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == {'version': None}
+
+    def test_missing_with_default_and_none_allowed(self):
+        scheme = versioning.AcceptHeaderVersioning
+        view = AllowedWithNoneAndDefaultVersionsView.as_view(versioning_class=scheme)
+
+        request = factory.get('/endpoint/', HTTP_ACCEPT='application/json')
+        response = view(request)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == {'version': 'v2'}
+
+
+class TestHyperlinkedRelatedField(URLPatternsTestCase, APITestCase):
     included = [
         url(r'^namespaced/(?P<pk>\d+)/$', dummy_pk_view, name='namespaced'),
     ]
 
     urlpatterns = [
-        url(r'^v1/', include(included, namespace='v1')),
-        url(r'^v2/', include(included, namespace='v2'))
+        url(r'^v1/', include((included, 'v1'), namespace='v1')),
+        url(r'^v2/', include((included, 'v2'), namespace='v2'))
     ]
 
     def setUp(self):
@@ -270,14 +340,18 @@ class TestHyperlinkedRelatedField(UsingURLPatterns, APITestCase):
             self.field.to_internal_value('/v2/namespaced/3/')
 
 
-class TestNamespaceVersioningHyperlinkedRelatedFieldScheme(UsingURLPatterns, APITestCase):
+class TestNamespaceVersioningHyperlinkedRelatedFieldScheme(URLPatternsTestCase, APITestCase):
+    nested = [
+        url(r'^namespaced/(?P<pk>\d+)/$', dummy_pk_view, name='nested'),
+    ]
     included = [
         url(r'^namespaced/(?P<pk>\d+)/$', dummy_pk_view, name='namespaced'),
+        url(r'^nested/', include((nested, 'nested-namespace'), namespace='nested-namespace'))
     ]
 
     urlpatterns = [
-        url(r'^v1/', include(included, namespace='v1')),
-        url(r'^v2/', include(included, namespace='v2')),
+        url(r'^v1/', include((included, 'restframeworkv1'), namespace='v1')),
+        url(r'^v2/', include((included, 'restframeworkv2'), namespace='v2')),
         url(r'^non-api/(?P<pk>\d+)/$', dummy_pk_view, name='non-api-view')
     ]
 
@@ -299,6 +373,10 @@ class TestNamespaceVersioningHyperlinkedRelatedFieldScheme(UsingURLPatterns, API
     def test_api_url_is_properly_reversed_with_v2(self):
         field = self._create_field('namespaced', 'v2')
         assert field.to_representation(PKOnlyObject(5)) == 'http://testserver/v2/namespaced/5/'
+
+    def test_api_url_is_properly_reversed_with_nested(self):
+        field = self._create_field('nested', 'v1:nested-namespace')
+        assert field.to_representation(PKOnlyObject(3)) == 'http://testserver/v1/nested/namespaced/3/'
 
     def test_non_api_url_is_properly_reversed_regardless_of_the_version(self):
         """

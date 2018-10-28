@@ -1,3 +1,5 @@
+from django.http import QueryDict
+
 from rest_framework import serializers
 
 
@@ -45,6 +47,15 @@ class TestSimpleBoundField:
         assert serializer['amount'].errors is None
         assert serializer['amount'].name == 'amount'
 
+    def test_delete_field(self):
+        class ExampleSerializer(serializers.Serializer):
+            text = serializers.CharField(max_length=100)
+            amount = serializers.IntegerField()
+
+        serializer = ExampleSerializer()
+        del serializer.fields['text']
+        assert 'text' not in serializer.fields
+
     def test_as_form_fields(self):
         class ExampleSerializer(serializers.Serializer):
             bool_field = serializers.BooleanField()
@@ -54,6 +65,30 @@ class TestSimpleBoundField:
         assert serializer.is_valid()
         assert serializer['bool_field'].as_form_field().value == ''
         assert serializer['null_field'].as_form_field().value == ''
+
+    def test_rendering_boolean_field(self):
+        from rest_framework.renderers import HTMLFormRenderer
+
+        class ExampleSerializer(serializers.Serializer):
+            bool_field = serializers.BooleanField(
+                style={'base_template': 'checkbox.html', 'template_pack': 'rest_framework/vertical'})
+
+        serializer = ExampleSerializer(data={'bool_field': True})
+        assert serializer.is_valid()
+        renderer = HTMLFormRenderer()
+        rendered = renderer.render_field(serializer['bool_field'], {})
+        expected_packed = (
+            '<divclass="form-group">'
+            '<divclass="checkbox">'
+            '<label>'
+            '<inputtype="checkbox"name="bool_field"value="true"checked>'
+            'Boolfield'
+            '</label>'
+            '</div>'
+            '</div>'
+        )
+        rendered_packed = ''.join(rendered.split())
+        assert rendered_packed == expected_packed
 
 
 class TestNestedBoundField:
@@ -90,3 +125,52 @@ class TestNestedBoundField:
         assert serializer.is_valid()
         assert serializer['nested']['bool_field'].as_form_field().value == ''
         assert serializer['nested']['null_field'].as_form_field().value == ''
+
+    def test_rendering_nested_fields_with_none_value(self):
+        from rest_framework.renderers import HTMLFormRenderer
+
+        class Nested1(serializers.Serializer):
+            text_field = serializers.CharField()
+
+        class Nested2(serializers.Serializer):
+            nested1 = Nested1(allow_null=True)
+            text_field = serializers.CharField()
+
+        class ExampleSerializer(serializers.Serializer):
+            nested2 = Nested2()
+
+        serializer = ExampleSerializer(data={'nested2': {'nested1': None, 'text_field': 'test'}})
+        assert serializer.is_valid()
+        renderer = HTMLFormRenderer()
+        for field in serializer:
+            rendered = renderer.render_field(field, {})
+            expected_packed = (
+                '<fieldset>'
+                '<legend>Nested2</legend>'
+                '<fieldset>'
+                '<legend>Nested1</legend>'
+                '<divclass="form-group">'
+                '<label>Textfield</label>'
+                '<inputname="nested2.nested1.text_field"class="form-control"type="text"value="">'
+                '</div>'
+                '</fieldset>'
+                '<divclass="form-group">'
+                '<label>Textfield</label>'
+                '<inputname="nested2.text_field"class="form-control"type="text"value="test">'
+                '</div>'
+                '</fieldset>'
+            )
+            rendered_packed = ''.join(rendered.split())
+            assert rendered_packed == expected_packed
+
+
+class TestJSONBoundField:
+    def test_as_form_fields(self):
+        class TestSerializer(serializers.Serializer):
+            json_field = serializers.JSONField()
+
+        data = QueryDict(mutable=True)
+        data.update({'json_field': '{"some": ["json"}'})
+        serializer = TestSerializer(data=data)
+        assert serializer.is_valid() is False
+        assert serializer['json_field'].as_form_field().value == '{"some": ["json"}'

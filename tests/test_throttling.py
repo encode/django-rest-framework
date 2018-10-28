@@ -3,15 +3,20 @@ Tests for the throttling implementations in the permissions module.
 """
 from __future__ import unicode_literals
 
+import pytest
 from django.contrib.auth.models import User
 from django.core.cache import cache
+from django.core.exceptions import ImproperlyConfigured
+from django.http import HttpRequest
 from django.test import TestCase
 
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
-from rest_framework.test import APIRequestFactory
+from rest_framework.test import APIRequestFactory, force_authenticate
 from rest_framework.throttling import (
-    BaseThrottle, ScopedRateThrottle, UserRateThrottle
+    AnonRateThrottle, BaseThrottle, ScopedRateThrottle, SimpleRateThrottle,
+    UserRateThrottle
 )
 from rest_framework.views import APIView
 
@@ -70,7 +75,7 @@ class ThrottlingTests(TestCase):
         request = self.factory.get('/')
         for dummy in range(4):
             response = MockView.as_view()(request)
-        self.assertEqual(429, response.status_code)
+        assert response.status_code == 429
 
     def set_throttle_timer(self, view, value):
         """
@@ -87,13 +92,13 @@ class ThrottlingTests(TestCase):
         request = self.factory.get('/')
         for dummy in range(4):
             response = MockView.as_view()(request)
-        self.assertEqual(429, response.status_code)
+        assert response.status_code == 429
 
         # Advance the timer by one second
         self.set_throttle_timer(MockView, 1)
 
         response = MockView.as_view()(request)
-        self.assertEqual(200, response.status_code)
+        assert response.status_code == 200
 
     def ensure_is_throttled(self, view, expect):
         request = self.factory.get('/')
@@ -102,7 +107,7 @@ class ThrottlingTests(TestCase):
             view.as_view()(request)
         request.user = User.objects.create(username='b')
         response = view.as_view()(request)
-        self.assertEqual(expect, response.status_code)
+        assert response.status_code == expect
 
     def test_request_throttling_is_per_user(self):
         """
@@ -121,9 +126,9 @@ class ThrottlingTests(TestCase):
             self.set_throttle_timer(view, timer)
             response = view.as_view()(request)
             if expect is not None:
-                self.assertEqual(response['Retry-After'], expect)
+                assert response['Retry-After'] == expect
             else:
-                self.assertFalse('Retry-After' in response)
+                assert not'Retry-After' in response
 
     def test_seconds_fields(self):
         """
@@ -189,6 +194,8 @@ class ScopedRateThrottleTests(TestCase):
     """
 
     def setUp(self):
+        self.throttle = ScopedRateThrottle()
+
         class XYScopedRateThrottle(ScopedRateThrottle):
             TIMER_SECONDS = 0
             THROTTLE_RATES = {'x': '3/min', 'y': '1/min'}
@@ -230,56 +237,55 @@ class ScopedRateThrottleTests(TestCase):
 
         # Should be able to hit x view 3 times per minute.
         response = self.x_view(request)
-        self.assertEqual(200, response.status_code)
+        assert response.status_code == 200
 
         self.increment_timer()
         response = self.x_view(request)
-        self.assertEqual(200, response.status_code)
+        assert response.status_code == 200
 
         self.increment_timer()
         response = self.x_view(request)
-        self.assertEqual(200, response.status_code)
-
+        assert response.status_code == 200
         self.increment_timer()
         response = self.x_view(request)
-        self.assertEqual(429, response.status_code)
+        assert response.status_code == 429
 
         # Should be able to hit y view 1 time per minute.
         self.increment_timer()
         response = self.y_view(request)
-        self.assertEqual(200, response.status_code)
+        assert response.status_code == 200
 
         self.increment_timer()
         response = self.y_view(request)
-        self.assertEqual(429, response.status_code)
+        assert response.status_code == 429
 
         # Ensure throttles properly reset by advancing the rest of the minute
         self.increment_timer(55)
 
         # Should still be able to hit x view 3 times per minute.
         response = self.x_view(request)
-        self.assertEqual(200, response.status_code)
+        assert response.status_code == 200
 
         self.increment_timer()
         response = self.x_view(request)
-        self.assertEqual(200, response.status_code)
+        assert response.status_code == 200
 
         self.increment_timer()
         response = self.x_view(request)
-        self.assertEqual(200, response.status_code)
+        assert response.status_code == 200
 
         self.increment_timer()
         response = self.x_view(request)
-        self.assertEqual(429, response.status_code)
+        assert response.status_code == 429
 
         # Should still be able to hit y view 1 time per minute.
         self.increment_timer()
         response = self.y_view(request)
-        self.assertEqual(200, response.status_code)
+        assert response.status_code == 200
 
         self.increment_timer()
         response = self.y_view(request)
-        self.assertEqual(429, response.status_code)
+        assert response.status_code == 429
 
     def test_unscoped_view_not_throttled(self):
         request = self.factory.get('/')
@@ -287,7 +293,19 @@ class ScopedRateThrottleTests(TestCase):
         for idx in range(10):
             self.increment_timer()
             response = self.unscoped_view(request)
-            self.assertEqual(200, response.status_code)
+            assert response.status_code == 200
+
+    def test_get_cache_key_returns_correct_key_if_user_is_authenticated(self):
+        class DummyView(object):
+            throttle_scope = 'user'
+
+        request = Request(HttpRequest())
+        user = User.objects.create(username='test')
+        force_authenticate(request, user)
+        request.user = user
+        self.throttle.allow_request(request, DummyView())
+        cache_key = self.throttle.get_cache_key(request, view=DummyView())
+        assert cache_key == 'throttle_user_%s' % user.pk
 
 
 class XffTestingBase(TestCase):
@@ -321,12 +339,12 @@ class XffTestingBase(TestCase):
 class IdWithXffBasicTests(XffTestingBase):
     def test_accepts_request_under_limit(self):
         self.config_proxy(0)
-        self.assertEqual(200, self.view(self.request).status_code)
+        assert self.view(self.request).status_code == 200
 
     def test_denies_request_over_limit(self):
         self.config_proxy(0)
         self.view(self.request)
-        self.assertEqual(429, self.view(self.request).status_code)
+        assert self.view(self.request).status_code == 429
 
 
 class XffSpoofingTests(XffTestingBase):
@@ -334,13 +352,13 @@ class XffSpoofingTests(XffTestingBase):
         self.config_proxy(1)
         self.view(self.request)
         self.request.META['HTTP_X_FORWARDED_FOR'] = '4.4.4.4, 5.5.5.5, 2.2.2.2'
-        self.assertEqual(429, self.view(self.request).status_code)
+        assert self.view(self.request).status_code == 429
 
     def test_xff_spoofing_doesnt_change_machine_id_with_two_app_proxies(self):
         self.config_proxy(2)
         self.view(self.request)
         self.request.META['HTTP_X_FORWARDED_FOR'] = '4.4.4.4, 1.1.1.1, 2.2.2.2'
-        self.assertEqual(429, self.view(self.request).status_code)
+        assert self.view(self.request).status_code == 429
 
 
 class XffUniqueMachinesTest(XffTestingBase):
@@ -348,10 +366,86 @@ class XffUniqueMachinesTest(XffTestingBase):
         self.config_proxy(1)
         self.view(self.request)
         self.request.META['HTTP_X_FORWARDED_FOR'] = '0.0.0.0, 1.1.1.1, 7.7.7.7'
-        self.assertEqual(200, self.view(self.request).status_code)
+        assert self.view(self.request).status_code == 200
 
     def test_unique_clients_are_counted_independently_with_two_proxies(self):
         self.config_proxy(2)
         self.view(self.request)
         self.request.META['HTTP_X_FORWARDED_FOR'] = '0.0.0.0, 7.7.7.7, 2.2.2.2'
-        self.assertEqual(200, self.view(self.request).status_code)
+        assert self.view(self.request).status_code == 200
+
+
+class BaseThrottleTests(TestCase):
+
+    def test_allow_request_raises_not_implemented_error(self):
+        with pytest.raises(NotImplementedError):
+            BaseThrottle().allow_request(request={}, view={})
+
+
+class SimpleRateThrottleTests(TestCase):
+
+    def setUp(self):
+        SimpleRateThrottle.scope = 'anon'
+
+    def test_get_rate_raises_error_if_scope_is_missing(self):
+        throttle = SimpleRateThrottle()
+        with pytest.raises(ImproperlyConfigured):
+            throttle.scope = None
+            throttle.get_rate()
+
+    def test_throttle_raises_error_if_rate_is_missing(self):
+        SimpleRateThrottle.scope = 'invalid scope'
+        with pytest.raises(ImproperlyConfigured):
+            SimpleRateThrottle()
+
+    def test_parse_rate_returns_tuple_with_none_if_rate_not_provided(self):
+        rate = SimpleRateThrottle().parse_rate(None)
+        assert rate == (None, None)
+
+    def test_allow_request_returns_true_if_rate_is_none(self):
+        assert SimpleRateThrottle().allow_request(request={}, view={}) is True
+
+    def test_get_cache_key_raises_not_implemented_error(self):
+        with pytest.raises(NotImplementedError):
+            SimpleRateThrottle().get_cache_key({}, {})
+
+    def test_allow_request_returns_true_if_key_is_none(self):
+        throttle = SimpleRateThrottle()
+        throttle.rate = 'some rate'
+        throttle.get_cache_key = lambda *args: None
+        assert throttle.allow_request(request={}, view={}) is True
+
+    def test_wait_returns_correct_waiting_time_without_history(self):
+        throttle = SimpleRateThrottle()
+        throttle.num_requests = 1
+        throttle.duration = 60
+        throttle.history = []
+        waiting_time = throttle.wait()
+        assert isinstance(waiting_time, float)
+        assert waiting_time == 30.0
+
+    def test_wait_returns_none_if_there_are_no_available_requests(self):
+        throttle = SimpleRateThrottle()
+        throttle.num_requests = 1
+        throttle.duration = 60
+        throttle.now = throttle.timer()
+        throttle.history = [throttle.timer() for _ in range(3)]
+        assert throttle.wait() is None
+
+
+class AnonRateThrottleTests(TestCase):
+
+    def setUp(self):
+        self.throttle = AnonRateThrottle()
+
+    def test_authenticated_user_not_affected(self):
+        request = Request(HttpRequest())
+        user = User.objects.create(username='test')
+        force_authenticate(request, user)
+        request.user = user
+        assert self.throttle.get_cache_key(request, view={}) is None
+
+    def test_get_cache_key_returns_correct_value(self):
+        request = Request(HttpRequest())
+        cache_key = self.throttle.get_cache_key(request, view={})
+        assert cache_key == 'throttle_anon_None'

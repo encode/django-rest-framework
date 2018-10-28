@@ -13,7 +13,7 @@ def datetime_formats(formats):
 
 
 def date_formats(formats):
-    format = ', '.join(formats).replace(ISO_8601, 'YYYY[-MM[-DD]]')
+    format = ', '.join(formats).replace(ISO_8601, 'YYYY-MM-DD')
     return humanize_strptime(format)
 
 

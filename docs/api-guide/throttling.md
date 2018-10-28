@@ -41,7 +41,7 @@ The default throttling policy may be set globally, using the `DEFAULT_THROTTLE_C
 The rate descriptions used in `DEFAULT_THROTTLE_RATES` may include `second`, `minute`, `hour` or `day` as the throttle period.
 
 You can also set the throttling policy on a per-view or per-viewset basis,
-using the `APIView` class based views.
+using the `APIView` class-based views.
 
 	from rest_framework.response import Response
     from rest_framework.throttling import UserRateThrottle
@@ -68,11 +68,11 @@ Or, if you're using the `@api_view` decorator with function based views.
 
 ## How clients are identified
 
-The `X-Forwarded-For` and `Remote-Addr` HTTP headers are used to uniquely identify client IP addresses for throttling.  If the `X-Forwarded-For` header is present then it will be used, otherwise the value of the `Remote-Addr` header will be used.
+The `X-Forwarded-For` HTTP header and `REMOTE_ADDR` WSGI variable are used to uniquely identify client IP addresses for throttling.  If the `X-Forwarded-For` header is present then it will be used, otherwise the value of the `REMOTE_ADDR` variable from the WSGI environment will be used.
 
-If you need to strictly identify unique client IP addresses, you'll need to first configure the number of application proxies that the API runs behind by setting the `NUM_PROXIES` setting.  This setting should be an integer of zero or more.  If set to non-zero then the client IP will be identified as being the last IP address in the `X-Forwarded-For` header, once any application proxy IP addresses have first been excluded.  If set to zero, then the `Remote-Addr` header will always be used as the identifying IP address.
+If you need to strictly identify unique client IP addresses, you'll need to first configure the number of application proxies that the API runs behind by setting the `NUM_PROXIES` setting.  This setting should be an integer of zero or more.  If set to non-zero then the client IP will be identified as being the last IP address in the `X-Forwarded-For` header, once any application proxy IP addresses have first been excluded.  If set to zero, then the `REMOTE_ADDR` value will always be used as the identifying IP address.
 
-It is important to understand that if you configure the `NUM_PROXIES` setting, then all clients behind a unique [NAT'd](http://en.wikipedia.org/wiki/Network_address_translation) gateway will be treated as a single client.
+It is important to understand that if you configure the `NUM_PROXIES` setting, then all clients behind a unique [NAT'd](https://en.wikipedia.org/wiki/Network_address_translation) gateway will be treated as a single client.
 
 Further context on how the `X-Forwarded-For` header works, and identifying a remote client IP can be [found here][identifing-clients].
 
@@ -184,12 +184,14 @@ If the `.wait()` method is implemented and the request is throttled, then a `Ret
 
 The following is an example of a rate throttle, that will randomly throttle 1 in every 10 requests.
 
+    import random
+
     class RandomRateThrottle(throttling.BaseThrottle):
         def allow_request(self, request, view):
-            return random.randint(1, 10) == 1
+            return random.randint(1, 10) != 1
 
-[cite]: https://dev.twitter.com/docs/error-codes-responses
+[cite]: https://developer.twitter.com/en/docs/basics/rate-limiting
 [permissions]: permissions.md
 [identifing-clients]: http://oxpedia.org/wiki/index.php?title=AppSuite:Grizzly#Multiple_Proxies_in_front_of_the_cluster
-[cache-setting]: https://docs.djangoproject.com/en/dev/ref/settings/#caches
-[cache-docs]: https://docs.djangoproject.com/en/dev/topics/cache/#setting-up-the-cache
+[cache-setting]: https://docs.djangoproject.com/en/stable/ref/settings/#caches
+[cache-docs]: https://docs.djangoproject.com/en/stable/topics/cache/#setting-up-the-cache

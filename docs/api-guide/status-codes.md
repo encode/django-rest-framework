@@ -6,7 +6,7 @@ source: status.py
 >
 > &mdash; [RFC 2324][rfc2324], Hyper Text Coffee Pot Control Protocol
 
-Using bare status codes in your responses isn't recommended.  REST framework includes a set of named constants that you can use to make more code more obvious and readable.
+Using bare status codes in your responses isn't recommended.  REST framework includes a set of named constants that you can use to make your code more obvious and readable.
 
     from rest_framework import status
     from rest_framework.response import Response
@@ -50,6 +50,7 @@ This class of status code indicates that the client's request was successfully r
     HTTP_204_NO_CONTENT
     HTTP_205_RESET_CONTENT
     HTTP_206_PARTIAL_CONTENT
+    HTTP_207_MULTI_STATUS
 
 ## Redirection - 3xx
 
@@ -86,9 +87,13 @@ The 4xx class of status code is intended for cases in which the client seems to 
     HTTP_415_UNSUPPORTED_MEDIA_TYPE
     HTTP_416_REQUESTED_RANGE_NOT_SATISFIABLE
     HTTP_417_EXPECTATION_FAILED
+    HTTP_422_UNPROCESSABLE_ENTITY
+    HTTP_423_LOCKED
+    HTTP_424_FAILED_DEPENDENCY
     HTTP_428_PRECONDITION_REQUIRED
     HTTP_429_TOO_MANY_REQUESTS
     HTTP_431_REQUEST_HEADER_FIELDS_TOO_LARGE
+    HTTP_451_UNAVAILABLE_FOR_LEGAL_REASONS
 
 ## Server Error - 5xx
 
@@ -100,6 +105,7 @@ Response status codes beginning with the digit "5" indicate cases in which the s
     HTTP_503_SERVICE_UNAVAILABLE
     HTTP_504_GATEWAY_TIMEOUT
     HTTP_505_HTTP_VERSION_NOT_SUPPORTED
+    HTTP_507_INSUFFICIENT_STORAGE
     HTTP_511_NETWORK_AUTHENTICATION_REQUIRED
 
 ## Helper functions
@@ -112,6 +118,6 @@ The following helper functions are available for identifying the category of the
     is_client_error()   # 4xx
     is_server_error()   # 5xx
 
-[rfc2324]: http://www.ietf.org/rfc/rfc2324.txt
-[rfc2616]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
-[rfc6585]: http://tools.ietf.org/html/rfc6585
+[rfc2324]: https://www.ietf.org/rfc/rfc2324.txt
+[rfc2616]: https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
+[rfc6585]: https://tools.ietf.org/html/rfc6585

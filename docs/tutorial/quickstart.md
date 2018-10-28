@@ -19,20 +19,44 @@ Create a new Django project named `tutorial`, then start a new app called `quick
     pip install djangorestframework
 
     # Set up a new project with a single application
-    django-admin.py startproject tutorial .  # Note the trailing '.' character
+    django-admin startproject tutorial .  # Note the trailing '.' character
     cd tutorial
-    django-admin.py startapp quickstart
+    django-admin startapp quickstart
     cd ..
+
+The project layout should look like:
+
+    $ pwd
+    <some path>/tutorial
+    $ find .
+    .
+    ./manage.py
+    ./tutorial
+    ./tutorial/__init__.py
+    ./tutorial/quickstart
+    ./tutorial/quickstart/__init__.py
+    ./tutorial/quickstart/admin.py
+    ./tutorial/quickstart/apps.py
+    ./tutorial/quickstart/migrations
+    ./tutorial/quickstart/migrations/__init__.py
+    ./tutorial/quickstart/models.py
+    ./tutorial/quickstart/tests.py
+    ./tutorial/quickstart/views.py
+    ./tutorial/settings.py
+    ./tutorial/urls.py
+    ./tutorial/wsgi.py
+
+It may look unusual that the application has been created within the project directory. Using the project's namespace avoids name clashes with external module (topic goes outside the scope of the quickstart).
 
 Now sync your database for the first time:
 
     python manage.py migrate
 
-We'll also create an initial user named `admin` with a password of `password`. We'll authenticate as that user later in our example.
+We'll also create an initial user named `admin` with a password of `password123`. We'll authenticate as that user later in our example.
 
-    python manage.py createsuperuser
+    python manage.py createsuperuser --email admin@example.com --username admin
 
-Once you've set up a database and initial user created and ready to go, open up the app's directory and we'll get coding...
+Once you've set up a database and the initial user is created and ready to go, open up the app's directory and we'll get coding...
 
 ## Serializers
 
@@ -104,23 +128,26 @@ Okay, now let's wire up the API URLs.  On to `tutorial/urls.py`...
 
 Because we're using viewsets instead of views, we can automatically generate the URL conf for our API, by simply registering the viewsets with a router class.
 
-Again, if we need more control over the API URLs we can simply drop down to using regular class based views, and writing the URL conf explicitly.
+Again, if we need more control over the API URLs we can simply drop down to using regular class-based views, and writing the URL conf explicitly.
 
 Finally, we're including default login and logout views for use with the browsable API.  That's optional, but useful if your API requires authentication and you want to use the browsable API.
 
+## Pagination
+Pagination allows you to control how many objects per page are returned. To enable it add following lines to the `tutorial/settings.py`
+    
+    REST_FRAMEWORK = {
+        'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+        'PAGE_SIZE': 10
+    }
+    
 ## Settings
 
-We'd also like to set a few global settings.  We'd like to turn on pagination, and we want our API to only be accessible to admin users.  The settings module will be in `tutorial/settings.py`
+Add `'rest_framework'` to `INSTALLED_APPS`. The settings module will be in `tutorial/settings.py`
 
     INSTALLED_APPS = (
         ...
         'rest_framework',
     )
-
-    REST_FRAMEWORK = {
-        'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser',),
-        'PAGE_SIZE': 10
-    }
 
 Okay, we're done.
 
@@ -130,11 +157,11 @@ Okay, we're done.
 
 We're now ready to test the API we've built.  Let's fire up the server from the command line.
 
-    python ./manage.py runserver
+    python manage.py runserver
 
 We can now access our API, both from the command-line, using tools like `curl`...
 
-    bash: curl -H 'Accept: application/json; indent=4' -u admin:password http://127.0.0.1:8000/users/
+    bash: curl -H 'Accept: application/json; indent=4' -u admin:password123 http://127.0.0.1:8000/users/
     {
         "count": 2,
         "next": null,
@@ -157,7 +184,7 @@ We can now access our API, both from the command-line, using tools like `curl`..
 
 Or using the [httpie][httpie], command line tool...
 
-    bash: http -a username:password http://127.0.0.1:8000/users/
+    bash: http -a admin:password123 http://127.0.0.1:8000/users/
 
     HTTP/1.1 200 OK
     ...
@@ -182,7 +209,7 @@ Or using the [httpie][httpie], command line tool...
     }
 
 
-Or directly through the browser...
+Or directly through the browser, by going to the URL `http://127.0.0.1:8000/users/`...
 
 ![Quick start image][image]
 
@@ -192,7 +219,6 @@ Great, that was easy!
 
 If you want to get a more in depth understanding of how REST framework fits together head on over to [the tutorial][tutorial], or start browsing the [API guide][guide].
 
-[readme-example-api]: ../#example
 [image]: ../img/quickstart.png
 [tutorial]: 1-serialization.md
 [guide]: ../#api-guide

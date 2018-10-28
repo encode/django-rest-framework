@@ -28,7 +28,7 @@ The default set of renderers may be set globally, using the `DEFAULT_RENDERER_CL
     }
 
 You can also set the renderers used for an individual view, or viewset,
-using the `APIView` class based views.
+using the `APIView` class-based views.
 
     from django.contrib.auth.models import User
     from rest_framework.renderers import JSONRenderer
@@ -123,6 +123,8 @@ You can use `TemplateHTMLRenderer` either to return regular HTML pages using RES
 
 If you're building websites that use `TemplateHTMLRenderer` along with other renderer classes, you should consider listing `TemplateHTMLRenderer` as the first class in the `renderer_classes` list, so that it will be prioritised first even for browsers that send poorly formed `ACCEPT:` headers.
 
+See the [_HTML & Forms_ Topic Page][html-and-forms] for further examples of `TemplateHTMLRenderer` usage.
+
 **.media_type**: `text/html`
 
 **.format**: `'.html'`
@@ -186,6 +188,15 @@ Renders data into HTML for an admin-like display:
 This renderer is suitable for CRUD-style web APIs that should also present a user-friendly interface for managing the data.
 
 Note that views that have nested or list serializers for their input won't work well with the `AdminRenderer`, as the HTML forms are unable to properly support them.
+
+**Note**: The `AdminRenderer` is only able to include links to detail pages when a properly configured `URL_FIELD_NAME` (`url` by default) attribute is present in the data. For `HyperlinkedModelSerializer` this will be the case, but for `ModelSerializer` or plain `Serializer` classes you'll need to make sure to include the field explicitly. For example here we use models `get_absolute_url` method:
+
+    class AccountSerializer(serializers.ModelSerializer):
+        url = serializers.CharField(source='get_absolute_url', read_only=True)
+
+        class Meta:
+            model = Account
+
 
 **.media_type**: `text/html`
 
@@ -446,6 +457,43 @@ Modify your REST framework settings.
 
 [MessagePack][messagepack] is a fast, efficient binary serialization format.  [Juan Riaza][juanriaza] maintains the [djangorestframework-msgpack][djangorestframework-msgpack] package which provides MessagePack renderer and parser support for REST framework.
 
+## XLSX (Binary Spreadsheet Endpoints)
+
+XLSX is the world's most popular binary spreadsheet format. [Tim Allen][flipperpa] of [The Wharton School][wharton] maintains [drf-renderer-xlsx][drf-renderer-xlsx], which renders an endpoint as an XLSX spreadsheet using OpenPyXL, and allows the client to download it. Spreadsheets can be styled on a per-view basis.
+
+#### Installation & configuration
+
+Install using pip.
+
+    $ pip install drf-renderer-xlsx
+
+Modify your REST framework settings.
+
+    REST_FRAMEWORK = {
+        ...
+
+        'DEFAULT_RENDERER_CLASSES': (
+            'rest_framework.renderers.JSONRenderer',
+            'rest_framework.renderers.BrowsableAPIRenderer',
+            'drf_renderer_xlsx.renderers.XLSXRenderer',
+        ),
+    }
+
+To avoid having a file streamed without a filename (which the browser will often default to the filename "download", with no extension), we need to use a mixin to override the `Content-Disposition` header. If no filename is provided, it will default to `export.xlsx`. For example:
+
+    from rest_framework.viewsets import ReadOnlyModelViewSet
+    from drf_renderer_xlsx.mixins import XLSXFileMixin
+    from drf_renderer_xlsx.renderers import XLSXRenderer
+
+    from .models import MyExampleModel
+    from .serializers import MyExampleSerializer
+
+    class MyExampleViewSet(XLSXFileMixin, ReadOnlyModelViewSet):
+        queryset = MyExampleModel.objects.all()
+        serializer_class = MyExampleSerializer
+        renderer_classes = (XLSXRenderer,)
+        filename = 'my_export.xlsx'
+
 ## CSV
 
 Comma-separated values are a plain-text tabular data format, that can be easily imported into spreadsheet applications. [Mjumbe Poe][mjumbewu] maintains the [djangorestframework-csv][djangorestframework-csv] package which provides CSV renderer support for REST framework.
@@ -462,29 +510,36 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 
 [Django REST Pandas] provides a serializer and renderers that support additional data processing and output via the [Pandas] DataFrame API.  Django REST Pandas includes renderers for Pandas-style CSV files, Excel workbooks (both `.xls` and `.xlsx`), and a number of [other formats]. It is maintained by [S. Andrew Sheppard][sheppard] as part of the [wq Project][wq].
 
+## LaTeX
 
-[cite]: https://docs.djangoproject.com/en/dev/ref/template-response/#the-rendering-process
+[Rest Framework Latex] provides a renderer that outputs PDFs using Laulatex. It is maintained by [Pebble (S/F Software)][mypebble].
+
+
+[cite]: https://docs.djangoproject.com/en/stable/stable/template-response/#the-rendering-process
 [conneg]: content-negotiation.md
 [html-and-forms]: ../topics/html-and-forms.md
 [browser-accept-headers]: http://www.gethifi.com/blog/browser-rest-http-accept-headers
 [testing]: testing.md
 [HATEOAS]: http://timelessrepo.com/haters-gonna-hateoas
-[quote]: http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
-[application/vnd.github+json]: http://developer.github.com/v3/media/
+[quote]: https://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
+[application/vnd.github+json]: https://developer.github.com/v3/media/
 [application/vnd.collection+json]: http://www.amundsen.com/media-types/collection/
-[django-error-views]: https://docs.djangoproject.com/en/dev/topics/http/views/#customizing-error-views
-[rest-framework-jsonp]: http://jpadilla.github.io/django-rest-framework-jsonp/
-[cors]: http://www.w3.org/TR/cors/
-[cors-docs]: http://www.django-rest-framework.org/topics/ajax-csrf-cors/
-[jsonp-security]: http://stackoverflow.com/questions/613962/is-jsonp-safe-to-use
-[rest-framework-yaml]: http://jpadilla.github.io/django-rest-framework-yaml/
-[rest-framework-xml]: http://jpadilla.github.io/django-rest-framework-xml/
-[messagepack]: http://msgpack.org/
+[django-error-views]: https://docs.djangoproject.com/en/stable/topics/http/views/#customizing-error-views
+[rest-framework-jsonp]: https://jpadilla.github.io/django-rest-framework-jsonp/
+[cors]: https://www.w3.org/TR/cors/
+[cors-docs]: https://www.django-rest-framework.org/topics/ajax-csrf-cors/
+[jsonp-security]: https://stackoverflow.com/questions/613962/is-jsonp-safe-to-use
+[rest-framework-yaml]: https://jpadilla.github.io/django-rest-framework-yaml/
+[rest-framework-xml]: https://jpadilla.github.io/django-rest-framework-xml/
+[messagepack]: https://msgpack.org/
 [juanriaza]: https://github.com/juanriaza
 [mjumbewu]: https://github.com/mjumbewu
+[flipperpa]: https://githuc.com/flipperpa
+[wharton]: https://github.com/wharton
+[drf-renderer-xlsx]: https://github.com/wharton/drf-renderer-xlsx
 [vbabiy]: https://github.com/vbabiy
-[rest-framework-yaml]: http://jpadilla.github.io/django-rest-framework-yaml/
-[rest-framework-xml]: http://jpadilla.github.io/django-rest-framework-xml/
+[rest-framework-yaml]: https://jpadilla.github.io/django-rest-framework-yaml/
+[rest-framework-xml]: https://jpadilla.github.io/django-rest-framework-xml/
 [yaml]: http://www.yaml.org/
 [djangorestframework-msgpack]: https://github.com/juanriaza/django-rest-framework-msgpack
 [djangorestframework-csv]: https://github.com/mjumbewu/django-rest-framework-csv
@@ -493,7 +548,9 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 [drf-ujson-renderer]: https://github.com/gizmag/drf-ujson-renderer
 [djangorestframework-camel-case]: https://github.com/vbabiy/djangorestframework-camel-case
 [Django REST Pandas]: https://github.com/wq/django-rest-pandas
-[Pandas]: http://pandas.pydata.org/
+[Pandas]: https://pandas.pydata.org/
 [other formats]: https://github.com/wq/django-rest-pandas#supported-formats
 [sheppard]: https://github.com/sheppard
 [wq]: https://github.com/wq
+[mypebble]: https://github.com/mypebble
+[Rest Framework Latex]: https://github.com/mypebble/rest-framework-latex

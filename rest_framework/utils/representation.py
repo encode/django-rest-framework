@@ -16,9 +16,14 @@ from rest_framework.compat import unicode_repr
 def manager_repr(value):
     model = value.model
     opts = model._meta
-    for _, name, manager in opts.concrete_managers + opts.abstract_managers:
-        if manager == value:
-            return '%s.%s.all()' % (model._meta.object_name, name)
+    names_and_managers = [
+        (manager.name, manager)
+        for manager
+        in opts.managers
+    ]
+    for manager_name, manager_instance in names_and_managers:
+        if manager_instance == value:
+            return '%s.%s.all()' % (model._meta.object_name, manager_name)
     return repr(value)
 
 
@@ -40,7 +45,7 @@ def smart_repr(value):
     # <django.core.validators.RegexValidator object at 0x1047af050>
     # Should be presented as
     # <django.core.validators.RegexValidator object>
-    value = re.sub(' at 0x[0-9a-f]{4,32}>', '>', value)
+    value = re.sub(' at 0x[0-9A-Fa-f]{4,32}>', '>', value)
 
     return value
 

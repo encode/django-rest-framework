@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('key', models.CharField(primary_key=True, serialize=False, max_length=40)),
                 ('created', models.DateTimeField(auto_now_add=True)),
-                ('user', models.OneToOneField(to=settings.AUTH_USER_MODEL, related_name='auth_token')),
+                ('user', models.OneToOneField(to=settings.AUTH_USER_MODEL, related_name='auth_token', on_delete=models.CASCADE)),
             ],
             options={
             },

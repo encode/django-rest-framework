@@ -4,22 +4,140 @@
 # to make it harder for the user to import the wrong thing without realizing.
 from __future__ import unicode_literals
 
-import django
+import io
+from importlib import import_module
+
 from django.conf import settings
-from django.test import testcases
+from django.core.exceptions import ImproperlyConfigured
+from django.core.handlers.wsgi import WSGIHandler
+from django.test import override_settings, testcases
 from django.test.client import Client as DjangoClient
-from django.test.client import RequestFactory as DjangoRequestFactory
 from django.test.client import ClientHandler
+from django.test.client import RequestFactory as DjangoRequestFactory
 from django.utils import six
 from django.utils.encoding import force_bytes
 from django.utils.http import urlencode
 
+from rest_framework.compat import coreapi, requests
 from rest_framework.settings import api_settings
 
 
 def force_authenticate(request, user=None, token=None):
     request._force_auth_user = user
     request._force_auth_token = token
+
+
+if requests is not None:
+    class HeaderDict(requests.packages.urllib3._collections.HTTPHeaderDict):
+        def get_all(self, key, default):
+            return self.getheaders(key)
+
+    class MockOriginalResponse(object):
+        def __init__(self, headers):
+            self.msg = HeaderDict(headers)
+            self.closed = False
+
+        def isclosed(self):
+            return self.closed
+
+        def close(self):
+            self.closed = True
+
+    class DjangoTestAdapter(requests.adapters.HTTPAdapter):
+        """
+        A transport adapter for `requests`, that makes requests via the
+        Django WSGI app, rather than making actual HTTP requests over the network.
+        """
+        def __init__(self):
+            self.app = WSGIHandler()
+            self.factory = DjangoRequestFactory()
+
+        def get_environ(self, request):
+            """
+            Given a `requests.PreparedRequest` instance, return a WSGI environ dict.
+            """
+            method = request.method
+            url = request.url
+            kwargs = {}
+
+            # Set request content, if any exists.
+            if request.body is not None:
+                if hasattr(request.body, 'read'):
+                    kwargs['data'] = request.body.read()
+                else:
+                    kwargs['data'] = request.body
+            if 'content-type' in request.headers:
+                kwargs['content_type'] = request.headers['content-type']
+
+            # Set request headers.
+            for key, value in request.headers.items():
+                key = key.upper()
+                if key in ('CONNECTION', 'CONTENT-LENGTH', 'CONTENT-TYPE'):
+                    continue
+                kwargs['HTTP_%s' % key.replace('-', '_')] = value
+
+            return self.factory.generic(method, url, **kwargs).environ
+
+        def send(self, request, *args, **kwargs):
+            """
+            Make an outgoing request to the Django WSGI application.
+            """
+            raw_kwargs = {}
+
+            def start_response(wsgi_status, wsgi_headers):
+                status, _, reason = wsgi_status.partition(' ')
+                raw_kwargs['status'] = int(status)
+                raw_kwargs['reason'] = reason
+                raw_kwargs['headers'] = wsgi_headers
+                raw_kwargs['version'] = 11
+                raw_kwargs['preload_content'] = False
+                raw_kwargs['original_response'] = MockOriginalResponse(wsgi_headers)
+
+            # Make the outgoing request via WSGI.
+            environ = self.get_environ(request)
+            wsgi_response = self.app(environ, start_response)
+
+            # Build the underlying urllib3.HTTPResponse
+            raw_kwargs['body'] = io.BytesIO(b''.join(wsgi_response))
+            raw = requests.packages.urllib3.HTTPResponse(**raw_kwargs)
+
+            # Build the requests.Response
+            return self.build_response(request, raw)
+
+        def close(self):
+            pass
+
+    class RequestsClient(requests.Session):
+        def __init__(self, *args, **kwargs):
+            super(RequestsClient, self).__init__(*args, **kwargs)
+            adapter = DjangoTestAdapter()
+            self.mount('http://', adapter)
+            self.mount('https://', adapter)
+
+        def request(self, method, url, *args, **kwargs):
+            if not url.startswith('http'):
+                raise ValueError('Missing "http:" or "https:". Use a fully qualified URL, eg "http://testserver%s"' % url)
+            return super(RequestsClient, self).request(method, url, *args, **kwargs)
+
+else:
+    def RequestsClient(*args, **kwargs):
+        raise ImproperlyConfigured('requests must be installed in order to use RequestsClient.')
+
+
+if coreapi is not None:
+    class CoreAPIClient(coreapi.Client):
+        def __init__(self, *args, **kwargs):
+            self._session = RequestsClient()
+            kwargs['transports'] = [coreapi.transports.HTTPTransport(session=self.session)]
+            return super(CoreAPIClient, self).__init__(*args, **kwargs)
+
+        @property
+        def session(self):
+            return self._session
+
+else:
+    def CoreAPIClient(*args, **kwargs):
+        raise ImproperlyConfigured('coreapi must be installed in order to use CoreAPIClient.')
 
 
 class APIRequestFactory(DjangoRequestFactory):
@@ -57,7 +175,7 @@ class APIRequestFactory(DjangoRequestFactory):
                 "Set TEST_REQUEST_RENDERER_CLASSES to enable "
                 "extra request formats.".format(
                     format,
-                    ', '.join(["'" + fmt + "'" for fmt in self.renderer_classes.keys()])
+                    ', '.join(["'" + fmt + "'" for fmt in self.renderer_classes])
                 )
             )
 
@@ -80,10 +198,13 @@ class APIRequestFactory(DjangoRequestFactory):
         r = {
             'QUERY_STRING': urlencode(data or {}, doseq=True),
         }
-        # Fix to support old behavior where you have the arguments in the url
-        # See #1461
         if not data and '?' in path:
-            r['QUERY_STRING'] = path.split('?')[1]
+            # Fix to support old behavior where you have the arguments in the
+            # url. See #1461.
+            query_string = force_bytes(path.split('?')[1])
+            if six.PY3:
+                query_string = query_string.decode('iso-8859-1')
+            r['QUERY_STRING'] = query_string
         r.update(extra)
         return self.generic('GET', path, **r)
 
@@ -106,6 +227,15 @@ class APIRequestFactory(DjangoRequestFactory):
     def options(self, path, data=None, format=None, content_type=None, **extra):
         data, content_type = self._encode_data(data, format, content_type)
         return self.generic('OPTIONS', path, data, content_type, **extra)
+
+    def generic(self, method, path, data='',
+                content_type='application/octet-stream', secure=False, **extra):
+        # Include the CONTENT_TYPE, regardless of whether or not data is empty.
+        if content_type is not None:
+            extra['CONTENT_TYPE'] = str(content_type)
+
+        return super(APIRequestFactory, self).generic(
+            method, path, data, content_type, secure, **extra)
 
     def request(self, **kwargs):
         request = super(APIRequestFactory, self).request(**kwargs)
@@ -223,9 +353,50 @@ class APITestCase(testcases.TestCase):
     client_class = APIClient
 
 
-if django.VERSION >= (1, 4):
-    class APISimpleTestCase(testcases.SimpleTestCase):
-        client_class = APIClient
+class APISimpleTestCase(testcases.SimpleTestCase):
+    client_class = APIClient
 
-    class APILiveServerTestCase(testcases.LiveServerTestCase):
-        client_class = APIClient
+
+class APILiveServerTestCase(testcases.LiveServerTestCase):
+    client_class = APIClient
+
+
+class URLPatternsTestCase(testcases.SimpleTestCase):
+    """
+    Isolate URL patterns on a per-TestCase basis. For example,
+
+    class ATestCase(URLPatternsTestCase):
+        urlpatterns = [...]
+
+        def test_something(self):
+            ...
+
+    class AnotherTestCase(URLPatternsTestCase):
+        urlpatterns = [...]
+
+        def test_something_else(self):
+            ...
+    """
+    @classmethod
+    def setUpClass(cls):
+        # Get the module of the TestCase subclass
+        cls._module = import_module(cls.__module__)
+        cls._override = override_settings(ROOT_URLCONF=cls.__module__)
+
+        if hasattr(cls._module, 'urlpatterns'):
+            cls._module_urlpatterns = cls._module.urlpatterns
+
+        cls._module.urlpatterns = cls.urlpatterns
+
+        cls._override.enable()
+        super(URLPatternsTestCase, cls).setUpClass()
+
+    @classmethod
+    def tearDownClass(cls):
+        super(URLPatternsTestCase, cls).tearDownClass()
+        cls._override.disable()
+
+        if hasattr(cls, '_module_urlpatterns'):
+            cls._module.urlpatterns = cls._module_urlpatterns
+        else:
+            del cls._module.urlpatterns

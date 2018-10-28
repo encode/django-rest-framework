@@ -41,6 +41,12 @@ class TestNestedSerializer:
         serializer = self.Serializer()
         assert serializer.data == expected_data
 
+    def test_nested_serialize_no_data(self):
+        data = None
+        serializer = self.Serializer(data=data)
+        assert not serializer.is_valid()
+        assert serializer.errors == {'non_field_errors': ['No data provided']}
+
 
 class TestNotRequiredNestedSerializer:
     def setup(self):
@@ -167,3 +173,71 @@ class TestNestedSerializerWithMany:
 
         expected_errors = {'not_allow_empty': {'non_field_errors': [serializers.ListSerializer.default_error_messages['empty']]}}
         assert serializer.errors == expected_errors
+
+
+class TestNestedSerializerWithList:
+    def setup(self):
+        class NestedSerializer(serializers.Serializer):
+            example = serializers.MultipleChoiceField(choices=[1, 2, 3])
+
+        class TestSerializer(serializers.Serializer):
+            nested = NestedSerializer()
+
+        self.Serializer = TestSerializer
+
+    def test_nested_serializer_with_list_json(self):
+        input_data = {
+            'nested': {
+                'example': [1, 2],
+            }
+        }
+        serializer = self.Serializer(data=input_data)
+
+        assert serializer.is_valid()
+        assert serializer.validated_data['nested']['example'] == {1, 2}
+
+    def test_nested_serializer_with_list_multipart(self):
+        input_data = QueryDict('nested.example=1&nested.example=2')
+        serializer = self.Serializer(data=input_data)
+
+        assert serializer.is_valid()
+        assert serializer.validated_data['nested']['example'] == {1, 2}
+
+
+class TestNotRequiredNestedSerializerWithMany:
+    def setup(self):
+        class NestedSerializer(serializers.Serializer):
+            one = serializers.IntegerField(max_value=10)
+
+        class TestSerializer(serializers.Serializer):
+            nested = NestedSerializer(required=False, many=True)
+
+        self.Serializer = TestSerializer
+
+    def test_json_validate(self):
+        input_data = {}
+        serializer = self.Serializer(data=input_data)
+
+        # request is empty, therefor 'nested' should not be in serializer.data
+        assert serializer.is_valid()
+        assert 'nested' not in serializer.validated_data
+
+        input_data = {'nested': [{'one': '1'}, {'one': 2}]}
+        serializer = self.Serializer(data=input_data)
+        assert serializer.is_valid()
+        assert 'nested' in serializer.validated_data
+
+    def test_multipart_validate(self):
+        # leave querydict empty
+        input_data = QueryDict('')
+        serializer = self.Serializer(data=input_data)
+
+        # the querydict is empty, therefor 'nested' should not be in serializer.data
+        assert serializer.is_valid()
+        assert 'nested' not in serializer.validated_data
+
+        input_data = QueryDict('nested[0]one=1&nested[1]one=2')
+
+        serializer = self.Serializer(data=input_data)
+        assert serializer.is_valid()
+        assert 'nested' in serializer.validated_data

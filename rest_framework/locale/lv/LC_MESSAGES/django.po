@@ -1,0 +1,440 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+# peterisb <pb@sungis.lv>, 2017
+msgid ""
+msgstr ""
+"Project-Id-Version: Django REST framework\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-07-12 16:13+0100\n"
+"PO-Revision-Date: 2017-08-05 12:13+0000\n"
+"Last-Translator: peterisb <pb@sungis.lv>\n"
+"Language-Team: Latvian (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/lv/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: lv\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n != 0 ? 1 : 2);\n"
+
+#: authentication.py:73
+msgid "Invalid basic header. No credentials provided."
+msgstr "Nederīgs pieprasījuma sākums. Akreditācijas parametri nav nodrošināti."
+
+#: authentication.py:76
+msgid "Invalid basic header. Credentials string should not contain spaces."
+msgstr "Nederīgs pieprasījuma sākums. Akreditācijas parametriem jābūt bez atstarpēm."
+
+#: authentication.py:82
+msgid "Invalid basic header. Credentials not correctly base64 encoded."
+msgstr "Nederīgs pieprasījuma sākums. Akreditācijas parametri nav korekti base64 kodēti."
+
+#: authentication.py:99
+msgid "Invalid username/password."
+msgstr "Nederīgs lietotājvārds/parole."
+
+#: authentication.py:102 authentication.py:198
+msgid "User inactive or deleted."
+msgstr "Lietotājs neaktīvs vai dzēsts."
+
+#: authentication.py:176
+msgid "Invalid token header. No credentials provided."
+msgstr "Nederīgs pilnvaras sākums. Akreditācijas parametri nav nodrošināti."
+
+#: authentication.py:179
+msgid "Invalid token header. Token string should not contain spaces."
+msgstr "Nederīgs pilnvaras sākums. Pilnvaras parametros nevar būt tukšumi."
+
+#: authentication.py:185
+msgid ""
+"Invalid token header. Token string should not contain invalid characters."
+msgstr "Nederīgs pilnvaras sākums. Pilnvaras parametros nevar būt nederīgas zīmes."
+
+#: authentication.py:195
+msgid "Invalid token."
+msgstr "Nederīga pilnavara."
+
+#: authtoken/apps.py:7
+msgid "Auth Token"
+msgstr "Autorizācijas pilnvara"
+
+#: authtoken/models.py:15
+msgid "Key"
+msgstr "Atslēga"
+
+#: authtoken/models.py:18
+msgid "User"
+msgstr "Lietotājs"
+
+#: authtoken/models.py:20
+msgid "Created"
+msgstr "Izveidots"
+
+#: authtoken/models.py:29
+msgid "Token"
+msgstr "Pilnvara"
+
+#: authtoken/models.py:30
+msgid "Tokens"
+msgstr "Pilnvaras"
+
+#: authtoken/serializers.py:8
+msgid "Username"
+msgstr "Lietotājvārds"
+
+#: authtoken/serializers.py:9
+msgid "Password"
+msgstr "Parole"
+
+#: authtoken/serializers.py:20
+msgid "User account is disabled."
+msgstr "Lietotāja konts ir atslēgts."
+
+#: authtoken/serializers.py:23
+msgid "Unable to log in with provided credentials."
+msgstr "Neiespējami pieteikties sistēmā ar nodrošinātajiem akreditācijas datiem."
+
+#: authtoken/serializers.py:26
+msgid "Must include \"username\" and \"password\"."
+msgstr "Jābūt iekļautam \"username\" un \"password\"."
+
+#: exceptions.py:49
+msgid "A server error occurred."
+msgstr "Notikusi servera kļūda."
+
+#: exceptions.py:84
+msgid "Malformed request."
+msgstr "Nenoformēts pieprasījums."
+
+#: exceptions.py:89
+msgid "Incorrect authentication credentials."
+msgstr "Nekorekti autentifikācijas parametri."
+
+#: exceptions.py:94
+msgid "Authentication credentials were not provided."
+msgstr "Netika nodrošināti autorizācijas parametri."
+
+#: exceptions.py:99
+msgid "You do not have permission to perform this action."
+msgstr "Tev nav tiesību veikt šo darbību."
+
+#: exceptions.py:104 views.py:81
+msgid "Not found."
+msgstr "Nav atrasts."
+
+#: exceptions.py:109
+msgid "Method \"{method}\" not allowed."
+msgstr "Metode \"{method}\" nav atļauta."
+
+#: exceptions.py:120
+msgid "Could not satisfy the request Accept header."
+msgstr "Nevarēja apmierināt pieprasījuma Accept header."
+
+#: exceptions.py:132
+msgid "Unsupported media type \"{media_type}\" in request."
+msgstr "Pieprasījumā neatbalstīts datu tips \"{media_type}\" ."
+
+#: exceptions.py:145
+msgid "Request was throttled."
+msgstr "Pieprasījums tika apturēts."
+
+#: fields.py:269 relations.py:206 relations.py:239 validators.py:98
+#: validators.py:181
+msgid "This field is required."
+msgstr "Šis lauks ir obligāts."
+
+#: fields.py:270
+msgid "This field may not be null."
+msgstr "Šis lauks nevar būt null."
+
+#: fields.py:608 fields.py:639
+msgid "\"{input}\" is not a valid boolean."
+msgstr "\"{input}\" ir nederīga loģiskā vērtība."
+
+#: fields.py:674
+msgid "This field may not be blank."
+msgstr "Šis lauks nevar būt tukšs."
+
+#: fields.py:675 fields.py:1675
+msgid "Ensure this field has no more than {max_length} characters."
+msgstr "Pārliecinies, ka laukā nav vairāk par {max_length} zīmēm."
+
+#: fields.py:676
+msgid "Ensure this field has at least {min_length} characters."
+msgstr "Pārliecinies, ka laukā ir vismaz {min_length} zīmes."
+
+#: fields.py:713
+msgid "Enter a valid email address."
+msgstr "Ievadi derīgu e-pasta adresi."
+
+#: fields.py:724
+msgid "This value does not match the required pattern."
+msgstr "Šī vērtība neatbilst prasītajam pierakstam."
+
+#: fields.py:735
+msgid ""
+"Enter a valid \"slug\" consisting of letters, numbers, underscores or "
+"hyphens."
+msgstr "Ievadi derīgu \"slug\" vērtību, kura sastāv no burtiem, skaitļiem, apakš-svītras vai defises."
+
+#: fields.py:747
+msgid "Enter a valid URL."
+msgstr "Ievadi derīgu URL."
+
+#: fields.py:760
+msgid "\"{value}\" is not a valid UUID."
+msgstr "\"{value}\" ir nedrīgs UUID."
+
+#: fields.py:796
+msgid "Enter a valid IPv4 or IPv6 address."
+msgstr "Ievadi derīgu IPv4 vai IPv6 adresi."
+
+#: fields.py:821
+msgid "A valid integer is required."
+msgstr "Prasīta ir derīga skaitliska vērtība."
+
+#: fields.py:822 fields.py:857 fields.py:891
+msgid "Ensure this value is less than or equal to {max_value}."
+msgstr "Pārliecinies, ka šī vērtība ir mazāka vai vienāda ar {max_value}."
+
+#: fields.py:823 fields.py:858 fields.py:892
+msgid "Ensure this value is greater than or equal to {min_value}."
+msgstr "Pārliecinies, ka šī vērtība ir lielāka vai vienāda ar {min_value}."
+
+#: fields.py:824 fields.py:859 fields.py:896
+msgid "String value too large."
+msgstr "Teksta vērtība pārāk liela."
+
+#: fields.py:856 fields.py:890
+msgid "A valid number is required."
+msgstr "Derīgs skaitlis ir prasīts."
+
+#: fields.py:893
+msgid "Ensure that there are no more than {max_digits} digits in total."
+msgstr "Pārliecinies, ka nav vairāk par {max_digits} zīmēm kopā."
+
+#: fields.py:894
+msgid ""
+"Ensure that there are no more than {max_decimal_places} decimal places."
+msgstr "Pārliecinies, ka nav vairāk par {max_decimal_places} decimālajām zīmēm."
+
+#: fields.py:895
+msgid ""
+"Ensure that there are no more than {max_whole_digits} digits before the "
+"decimal point."
+msgstr "Pārliecinies, ka nav vairāk par {max_whole_digits} zīmēm pirms komata."
+
+#: fields.py:1025
+msgid "Datetime has wrong format. Use one of these formats instead: {format}."
+msgstr "Datuma un laika formāts ir nepareizs. Lieto vienu no norādītajiem formātiem: \"{format}.\""
+
+#: fields.py:1026
+msgid "Expected a datetime but got a date."
+msgstr "Tika gaidīts datums un laiks, saņemts datums.."
+
+#: fields.py:1103
+msgid "Date has wrong format. Use one of these formats instead: {format}."
+msgstr "Datumam ir nepareizs formāts. Lieto vienu no norādītajiem formātiem: {format}."
+
+#: fields.py:1104
+msgid "Expected a date but got a datetime."
+msgstr "Tika gaidīts datums, saņemts datums un laiks."
+
+#: fields.py:1170
+msgid "Time has wrong format. Use one of these formats instead: {format}."
+msgstr "Laikam ir nepareizs formāts. Lieto vienu no norādītajiem formātiem: {format}."
+
+#: fields.py:1232
+msgid "Duration has wrong format. Use one of these formats instead: {format}."
+msgstr "Ilgumam ir nepreizs formāts. Lieto vienu no norādītajiem formātiem: {format}."
+
+#: fields.py:1251 fields.py:1300
+msgid "\"{input}\" is not a valid choice."
+msgstr "\"{input}\" ir nederīga izvēle."
+
+#: fields.py:1254 relations.py:71 relations.py:441
+msgid "More than {count} items..."
+msgstr "Vairāk par {count} ierakstiem..."
+
+#: fields.py:1301 fields.py:1448 relations.py:437 serializers.py:524
+msgid "Expected a list of items but got type \"{input_type}\"."
+msgstr "Tika gaidīts saraksts ar ierakstiem, bet tika saņemts \"{input_type}\" tips."
+
+#: fields.py:1302
+msgid "This selection may not be empty."
+msgstr "Šī daļa nevar būt tukša."
+
+#: fields.py:1339
+msgid "\"{input}\" is not a valid path choice."
+msgstr "\"{input}\" ir nederīga ceļa izvēle."
+
+#: fields.py:1358
+msgid "No file was submitted."
+msgstr "Neviens fails netika pievienots."
+
+#: fields.py:1359
+msgid ""
+"The submitted data was not a file. Check the encoding type on the form."
+msgstr "Pievienotie dati nebija fails. Pārbaudi kodējuma tipu formā."
+
+#: fields.py:1360
+msgid "No filename could be determined."
+msgstr "Faila nosaukums nevar tikt noteikts."
+
+#: fields.py:1361
+msgid "The submitted file is empty."
+msgstr "Pievienotais fails ir tukšs."
+
+#: fields.py:1362
+msgid ""
+"Ensure this filename has at most {max_length} characters (it has {length})."
+msgstr "Pārliecinies, ka faila nosaukumā ir vismaz {max_length} zīmes (tajā ir  {length})."
+
+#: fields.py:1410
+msgid ""
+"Upload a valid image. The file you uploaded was either not an image or a "
+"corrupted image."
+msgstr "Augšupielādē derīgu attēlu. Pievienotā datne nebija attēls vai bojāts attēls."
+
+#: fields.py:1449 relations.py:438 serializers.py:525
+msgid "This list may not be empty."
+msgstr "Šis saraksts nevar būt tukšs."
+
+#: fields.py:1502
+msgid "Expected a dictionary of items but got type \"{input_type}\"."
+msgstr "Tika gaidīta vārdnīca ar ierakstiem, bet tika saņemts \"{input_type}\" tips."
+
+#: fields.py:1549
+msgid "Value must be valid JSON."
+msgstr "Vērtībai ir jābūt derīgam JSON."
+
+#: filters.py:36 templates/rest_framework/filters/django_filter.html:5
+msgid "Submit"
+msgstr "Iesniegt"
+
+#: filters.py:336
+msgid "ascending"
+msgstr "augoši"
+
+#: filters.py:337
+msgid "descending"
+msgstr "dilstoši"
+
+#: pagination.py:193
+msgid "Invalid page."
+msgstr "Nederīga lapa."
+
+#: pagination.py:427
+msgid "Invalid cursor"
+msgstr "Nederīgs kursors"
+
+#: relations.py:207
+msgid "Invalid pk \"{pk_value}\" - object does not exist."
+msgstr "Nederīga pk \"{pk_value}\" - objekts neeksistē."
+
+#: relations.py:208
+msgid "Incorrect type. Expected pk value, received {data_type}."
+msgstr "Nepareizs tips. Tika gaidīta pk vērtība, saņemts {data_type}."
+
+#: relations.py:240
+msgid "Invalid hyperlink - No URL match."
+msgstr "Nederīga hipersaite - Nav URL sakritība."
+
+#: relations.py:241
+msgid "Invalid hyperlink - Incorrect URL match."
+msgstr "Nederīga hipersaite - Nederīga URL sakritība."
+
+#: relations.py:242
+msgid "Invalid hyperlink - Object does not exist."
+msgstr "Nederīga hipersaite - Objekts neeksistē."
+
+#: relations.py:243
+msgid "Incorrect type. Expected URL string, received {data_type}."
+msgstr "Nepareizs tips. Tika gaidīts URL teksts, saņemts {data_type}."
+
+#: relations.py:401
+msgid "Object with {slug_name}={value} does not exist."
+msgstr "Objekts ar {slug_name}={value} neeksistē."
+
+#: relations.py:402
+msgid "Invalid value."
+msgstr "Nedrīga vērtība."
+
+#: serializers.py:326
+msgid "Invalid data. Expected a dictionary, but got {datatype}."
+msgstr "Nederīgi dati. Tika gaidīta vārdnīca, saņemts {datatype}."
+
+#: templates/rest_framework/admin.html:116
+#: templates/rest_framework/base.html:128
+msgid "Filters"
+msgstr "Filtri"
+
+#: templates/rest_framework/filters/django_filter.html:2
+#: templates/rest_framework/filters/django_filter_crispyforms.html:4
+msgid "Field filters"
+msgstr "Lauka filtri"
+
+#: templates/rest_framework/filters/ordering.html:3
+msgid "Ordering"
+msgstr "Kārtošana"
+
+#: templates/rest_framework/filters/search.html:2
+msgid "Search"
+msgstr "Meklēt"
+
+#: templates/rest_framework/horizontal/radio.html:2
+#: templates/rest_framework/inline/radio.html:2
+#: templates/rest_framework/vertical/radio.html:2
+msgid "None"
+msgstr "Nekas"
+
+#: templates/rest_framework/horizontal/select_multiple.html:2
+#: templates/rest_framework/inline/select_multiple.html:2
+#: templates/rest_framework/vertical/select_multiple.html:2
+msgid "No items to select."
+msgstr "Nav ierakstu, ko izvēlēties."
+
+#: validators.py:43
+msgid "This field must be unique."
+msgstr "Šim laukam ir jābūt unikālam."
+
+#: validators.py:97
+msgid "The fields {field_names} must make a unique set."
+msgstr "Laukiem {field_names} jāveido unikālas kombinācijas."
+
+#: validators.py:245
+msgid "This field must be unique for the \"{date_field}\" date."
+msgstr "Šim laukam ir jābūt unikālam priekš \"{date_field}\" datuma."
+
+#: validators.py:260
+msgid "This field must be unique for the \"{date_field}\" month."
+msgstr "Šim laukam ir jābūt unikālam priekš \"{date_field}\" mēneša."
+
+#: validators.py:273
+msgid "This field must be unique for the \"{date_field}\" year."
+msgstr "Šim laukam ir jābūt unikālam priekš \"{date_field}\" gada."
+
+#: versioning.py:42
+msgid "Invalid version in \"Accept\" header."
+msgstr "Nederīga versija \"Accept\" galvenē."
+
+#: versioning.py:73
+msgid "Invalid version in URL path."
+msgstr "Nederīga versija URL ceļā."
+
+#: versioning.py:115
+msgid "Invalid version in URL path. Does not match any version namespace."
+msgstr "Nederīga versija URL ceļā. Nav atbilstības esošo versiju telpā."
+
+#: versioning.py:147
+msgid "Invalid version in hostname."
+msgstr "Nederīga versija servera nosaukumā."
+
+#: versioning.py:169
+msgid "Invalid version in query parameter."
+msgstr "Nederīga versija pieprasījuma parametros."
+
+#: views.py:88
+msgid "Permission denied."
+msgstr "Pieeja liegta."

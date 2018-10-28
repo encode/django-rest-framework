@@ -6,22 +6,23 @@ on the request, such as form content or json encoded data.
 """
 from __future__ import unicode_literals
 
-import json
+import codecs
 
 from django.conf import settings
 from django.core.files.uploadhandler import StopFutureHandlers
 from django.http import QueryDict
+from django.http.multipartparser import ChunkIter
 from django.http.multipartparser import \
     MultiPartParser as DjangoMultiPartParser
-from django.http.multipartparser import (
-    ChunkIter, MultiPartParserError, parse_header
-)
+from django.http.multipartparser import MultiPartParserError, parse_header
 from django.utils import six
 from django.utils.encoding import force_text
 from django.utils.six.moves.urllib import parse as urlparse
 
 from rest_framework import renderers
 from rest_framework.exceptions import ParseError
+from rest_framework.settings import api_settings
+from rest_framework.utils import json
 
 
 class DataAndFiles(object):
@@ -35,7 +36,6 @@ class BaseParser(object):
     All parsers should extend `BaseParser`, specifying a `media_type`
     attribute, and overriding the `.parse()` method.
     """
-
     media_type = None
 
     def parse(self, stream, media_type=None, parser_context=None):
@@ -51,9 +51,9 @@ class JSONParser(BaseParser):
     """
     Parses JSON-serialized data.
     """
-
     media_type = 'application/json'
     renderer_class = renderers.JSONRenderer
+    strict = api_settings.STRICT_JSON
 
     def parse(self, stream, media_type=None, parser_context=None):
         """
@@ -63,8 +63,9 @@ class JSONParser(BaseParser):
         encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
 
         try:
-            data = stream.read().decode(encoding)
-            return json.loads(data)
+            decoded_stream = codecs.getreader(encoding)(stream)
+            parse_constant = json.strict_constant if self.strict else None
+            return json.load(decoded_stream, parse_constant=parse_constant)
         except ValueError as exc:
             raise ParseError('JSON parse error - %s' % six.text_type(exc))
 
@@ -73,7 +74,6 @@ class FormParser(BaseParser):
     """
     Parser for form data.
     """
-
     media_type = 'application/x-www-form-urlencoded'
 
     def parse(self, stream, media_type=None, parser_context=None):
@@ -91,7 +91,6 @@ class MultiPartParser(BaseParser):
     """
     Parser for multipart form data, which may include file data.
     """
-
     media_type = 'multipart/form-data'
 
     def parse(self, stream, media_type=None, parser_context=None):
@@ -122,22 +121,28 @@ class FileUploadParser(BaseParser):
     Parser for file upload data.
     """
     media_type = '*/*'
+    errors = {
+        'unhandled': 'FileUpload parse error - none of upload handlers can handle the stream',
+        'no_filename': 'Missing filename. Request should include a Content-Disposition header with a filename parameter.',
+    }
 
     def parse(self, stream, media_type=None, parser_context=None):
         """
         Treats the incoming bytestream as a raw file upload and returns
-        a `DateAndFiles` object.
+        a `DataAndFiles` object.
 
         `.data` will be None (we expect request body to be a file content).
         `.files` will be a `QueryDict` containing one 'file' element.
         """
-
         parser_context = parser_context or {}
         request = parser_context['request']
         encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
         meta = request.META
         upload_handlers = request.upload_handlers
         filename = self.get_filename(stream, media_type, parser_context)
+
+        if not filename:
+            raise ParseError(self.errors['no_filename'])
 
         # Note that this code is extracted from Django's handling of
         # file uploads in MultiPartParser.
@@ -151,7 +156,7 @@ class FileUploadParser(BaseParser):
 
         # See if the handler will want to take care of the parsing.
         for handler in upload_handlers:
-            result = handler.handle_raw_input(None,
+            result = handler.handle_raw_input(stream,
                                               meta,
                                               content_length,
                                               None,
@@ -183,10 +188,10 @@ class FileUploadParser(BaseParser):
 
         for index, handler in enumerate(upload_handlers):
             file_obj = handler.file_complete(counters[index])
-            if file_obj:
+            if file_obj is not None:
                 return DataAndFiles({}, {'file': file_obj})
-        raise ParseError("FileUpload parse error - "
-                         "none of upload handlers can handle the stream")
+
+        raise ParseError(self.errors['unhandled'])
 
     def get_filename(self, stream, media_type, parser_context):
         """
@@ -211,7 +216,7 @@ class FileUploadParser(BaseParser):
     def get_encoded_filename(self, filename_parm):
         """
         Handle encoded filenames per RFC6266. See also:
-        http://tools.ietf.org/html/rfc2231#section-4
+        https://tools.ietf.org/html/rfc2231#section-4
         """
         encoded_filename = force_text(filename_parm['filename*'])
         try:

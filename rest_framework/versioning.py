@@ -30,7 +30,8 @@ class BaseVersioning(object):
     def is_allowed_version(self, version):
         if not self.allowed_versions:
             return True
-        return (version == self.default_version) or (version in self.allowed_versions)
+        return ((version is not None and version == self.default_version) or
+                (version in self.allowed_versions))
 
 
 class AcceptHeaderVersioning(BaseVersioning):
@@ -94,7 +95,7 @@ class NamespaceVersioning(BaseVersioning):
     The difference is in the backend - this implementation uses
     Django's URL namespaces to determine the version.
 
-    An example URL conf that is namespaced into two seperate versions
+    An example URL conf that is namespaced into two separate versions
 
     # users/urls.py
     urlpatterns = [
@@ -112,16 +113,19 @@ class NamespaceVersioning(BaseVersioning):
     Host: example.com
     Accept: application/json
     """
-    invalid_version_message = _('Invalid version in URL path.')
+    invalid_version_message = _('Invalid version in URL path. Does not match any version namespace.')
 
     def determine_version(self, request, *args, **kwargs):
         resolver_match = getattr(request, 'resolver_match', None)
-        if (resolver_match is None or not resolver_match.namespace):
+        if resolver_match is None or not resolver_match.namespace:
             return self.default_version
-        version = resolver_match.namespace
-        if not self.is_allowed_version(version):
-            raise exceptions.NotFound(self.invalid_version_message)
-        return version
+
+        # Allow for possibly nested namespaces.
+        possible_versions = resolver_match.namespace.split(':')
+        for version in possible_versions:
+            if self.is_allowed_version(version):
+                return version
+        raise exceptions.NotFound(self.invalid_version_message)
 
     def reverse(self, viewname, args=None, kwargs=None, request=None, format=None, **extra):
         if request.version is not None:
@@ -144,7 +148,7 @@ class HostNameVersioning(BaseVersioning):
     invalid_version_message = _('Invalid version in hostname.')
 
     def determine_version(self, request, *args, **kwargs):
-        hostname, seperator, port = request.get_host().partition(':')
+        hostname, separator, port = request.get_host().partition(':')
         match = self.hostname_regex.match(hostname)
         if not match:
             return self.default_version
@@ -166,7 +170,7 @@ class QueryParameterVersioning(BaseVersioning):
     invalid_version_message = _('Invalid version in query parameter.')
 
     def determine_version(self, request, *args, **kwargs):
-        version = request.query_params.get(self.version_param)
+        version = request.query_params.get(self.version_param, self.default_version)
         if not self.is_allowed_version(version):
             raise exceptions.NotFound(self.invalid_version_message)
         return version

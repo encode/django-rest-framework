@@ -1,10 +1,13 @@
 import uuid
 
 import pytest
-from django.core.exceptions import ImproperlyConfigured
+from _pytest.monkeypatch import MonkeyPatch
+from django.conf.urls import url
+from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
+from django.test import override_settings
 from django.utils.datastructures import MultiValueDict
 
-from rest_framework import serializers
+from rest_framework import relations, serializers
 from rest_framework.fields import empty
 from rest_framework.test import APISimpleTestCase
 
@@ -21,6 +24,61 @@ class TestStringRelatedField(APISimpleTestCase):
     def test_string_related_representation(self):
         representation = self.field.to_representation(self.instance)
         assert representation == '<MockObject name=foo, pk=1>'
+
+
+class MockApiSettings(object):
+    def __init__(self, cutoff, cutoff_text):
+        self.HTML_SELECT_CUTOFF = cutoff
+        self.HTML_SELECT_CUTOFF_TEXT = cutoff_text
+
+
+class TestRelatedFieldHTMLCutoff(APISimpleTestCase):
+    def setUp(self):
+        self.queryset = MockQueryset([
+            MockObject(pk=i, name=str(i)) for i in range(0, 1100)
+        ])
+        self.monkeypatch = MonkeyPatch()
+
+    def test_no_settings(self):
+        # The default is 1,000, so sans settings it should be 1,000 plus one.
+        for many in (False, True):
+            field = serializers.PrimaryKeyRelatedField(queryset=self.queryset,
+                                                       many=many)
+            options = list(field.iter_options())
+            assert len(options) == 1001
+            assert options[-1].display_text == "More than 1000 items..."
+
+    def test_settings_cutoff(self):
+        self.monkeypatch.setattr(relations, "api_settings",
+                                 MockApiSettings(2, "Cut Off"))
+        for many in (False, True):
+            field = serializers.PrimaryKeyRelatedField(queryset=self.queryset,
+                                                       many=many)
+            options = list(field.iter_options())
+            assert len(options) == 3  # 2 real items plus the 'Cut Off' item.
+            assert options[-1].display_text == "Cut Off"
+
+    def test_settings_cutoff_none(self):
+        # Setting it to None should mean no limit; the default limit is 1,000.
+        self.monkeypatch.setattr(relations, "api_settings",
+                                 MockApiSettings(None, "Cut Off"))
+        for many in (False, True):
+            field = serializers.PrimaryKeyRelatedField(queryset=self.queryset,
+                                                       many=many)
+            options = list(field.iter_options())
+            assert len(options) == 1100
+
+    def test_settings_kwargs_cutoff(self):
+        # The explicit argument should override the settings.
+        self.monkeypatch.setattr(relations, "api_settings",
+                                 MockApiSettings(2, "Cut Off"))
+        for many in (False, True):
+            field = serializers.PrimaryKeyRelatedField(queryset=self.queryset,
+                                                       many=many,
+                                                       html_cutoff=100)
+            options = list(field.iter_options())
+            assert len(options) == 101
+            assert options[-1].display_text == "Cut Off"
 
 
 class TestPrimaryKeyRelatedField(APISimpleTestCase):
@@ -85,6 +143,89 @@ class TestProxiedPrimaryKeyRelatedField(APISimpleTestCase):
     def test_pk_representation(self):
         representation = self.field.to_representation(self.instance)
         assert representation == self.instance.pk.int
+
+
+@override_settings(ROOT_URLCONF=[
+    url(r'^example/(?P<name>.+)/$', lambda: None, name='example'),
+])
+class TestHyperlinkedRelatedField(APISimpleTestCase):
+    def setUp(self):
+        self.queryset = MockQueryset([
+            MockObject(pk=1, name='foobar'),
+            MockObject(pk=2, name='bazABCqux'),
+        ])
+        self.field = serializers.HyperlinkedRelatedField(
+            view_name='example',
+            lookup_field='name',
+            lookup_url_kwarg='name',
+            queryset=self.queryset,
+        )
+        self.field.reverse = mock_reverse
+        self.field._context = {'request': True}
+
+    def test_representation_unsaved_object_with_non_nullable_pk(self):
+        representation = self.field.to_representation(MockObject(pk=''))
+        assert representation is None
+
+    def test_serialize_empty_relationship_attribute(self):
+        class TestSerializer(serializers.Serializer):
+            via_unreachable = serializers.HyperlinkedRelatedField(
+                source='does_not_exist.unreachable',
+                view_name='example',
+                read_only=True,
+            )
+
+        class TestSerializable:
+            @property
+            def does_not_exist(self):
+                raise ObjectDoesNotExist
+
+        serializer = TestSerializer(TestSerializable())
+        assert serializer.data == {'via_unreachable': None}
+
+    def test_hyperlinked_related_lookup_exists(self):
+        instance = self.field.to_internal_value('http://example.org/example/foobar/')
+        assert instance is self.queryset.items[0]
+
+    def test_hyperlinked_related_lookup_url_encoded_exists(self):
+        instance = self.field.to_internal_value('http://example.org/example/baz%41%42%43qux/')
+        assert instance is self.queryset.items[1]
+
+    def test_hyperlinked_related_lookup_does_not_exist(self):
+        with pytest.raises(serializers.ValidationError) as excinfo:
+            self.field.to_internal_value('http://example.org/example/doesnotexist/')
+        msg = excinfo.value.detail[0]
+        assert msg == 'Invalid hyperlink - Object does not exist.'
+
+    def test_hyperlinked_related_internal_type_error(self):
+        class Field(serializers.HyperlinkedRelatedField):
+            def get_object(self, incorrect, signature):
+                raise NotImplementedError()
+
+        field = Field(view_name='example', queryset=self.queryset)
+        with pytest.raises(TypeError):
+            field.to_internal_value('http://example.org/example/doesnotexist/')
+
+    def hyperlinked_related_queryset_error(self, exc_type):
+        class QuerySet:
+            def get(self, *args, **kwargs):
+                raise exc_type
+
+        field = serializers.HyperlinkedRelatedField(
+            view_name='example',
+            lookup_field='name',
+            queryset=QuerySet(),
+        )
+        with pytest.raises(serializers.ValidationError) as excinfo:
+            field.to_internal_value('http://example.org/example/doesnotexist/')
+        msg = excinfo.value.detail[0]
+        assert msg == 'Invalid hyperlink - Object does not exist.'
+
+    def test_hyperlinked_related_queryset_type_error(self):
+        self.hyperlinked_related_queryset_error(TypeError)
+
+    def test_hyperlinked_related_queryset_value_error(self):
+        self.hyperlinked_related_queryset_error(ValueError)
 
 
 class TestHyperlinkedIdentityField(APISimpleTestCase):
@@ -176,6 +317,16 @@ class TestSlugRelatedField(APISimpleTestCase):
         representation = self.field.to_representation(self.instance)
         assert representation == self.instance.name
 
+    def test_overriding_get_queryset(self):
+        qs = self.queryset
+
+        class NoQuerySetSlugRelatedField(serializers.SlugRelatedField):
+            def get_queryset(self):
+                return qs
+
+        field = NoQuerySetSlugRelatedField(slug_field='name')
+        field.to_internal_value(self.instance.name)
+
 
 class TestManyRelatedField(APISimpleTestCase):
     def setUp(self):
@@ -206,3 +357,14 @@ class TestManyRelatedField(APISimpleTestCase):
 
         mvd = MultiValueDict({'baz': ['bar1', 'bar2']})
         assert empty == self.field.get_value(mvd)
+
+
+class TestHyperlink:
+    def setup(self):
+        self.default_hyperlink = serializers.Hyperlink('http://example.com', 'test')
+
+    def test_can_be_pickled(self):
+        import pickle
+        upkled = pickle.loads(pickle.dumps(self.default_hyperlink))
+        assert upkled == self.default_hyperlink
+        assert upkled.name == self.default_hyperlink.name

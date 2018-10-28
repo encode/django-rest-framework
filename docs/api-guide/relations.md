@@ -39,7 +39,7 @@ In order to explain the various types of relational fields, we'll use a couple o
         artist = models.CharField(max_length=100)
 
     class Track(models.Model):
-        album = models.ForeignKey(Album, related_name='tracks')
+        album = models.ForeignKey(Album, related_name='tracks', on_delete=models.CASCADE)
         order = models.IntegerField()
         title = models.CharField(max_length=100)
         duration = models.IntegerField()
@@ -99,8 +99,8 @@ For example, the following serializer:
 Would serialize to a representation like this:
 
     {
-        'album_name': 'The Roots',
-        'artist': 'Undun',
+        'album_name': 'Undun',
+        'artist': 'The Roots',
         'tracks': [
             89,
             90,
@@ -286,7 +286,7 @@ Would serialize to a nested representation like this:
         ],
     }
 
-# Writable nested serializers
+## Writable nested serializers
 
 By default nested serializers are read-only. If you want to support write-operations to a nested serializer field you'll need to create `create()` and/or `update()` methods in order to explicitly specify how the child relationships should be saved.
 
@@ -324,11 +324,19 @@ By default nested serializers are read-only. If you want to support write-operat
     >>> serializer.save()
     <Album: Album object>
 
+---
+
 # Custom relational fields
+
+In rare cases where none of the existing relational styles fit the representation you need,
+you can implement a completely custom relational field, that describes exactly how the
+output representation should be generated from the model instance.
 
 To implement a custom relational field, you should override `RelatedField`, and implement the `.to_representation(self, value)` method. This method takes the target of the field as the `value` argument, and should return the representation that should be used to serialize the target. The `value` argument will typically be a model instance.
 
 If you want to implement a read-write relational field, you must also implement the `.to_internal_value(self, data)` method.
+
+To provide a dynamic queryset based on the `context`, you can also override `.get_queryset(self)` instead of specifying `.queryset` on the class or when initializing the field.
 
 ## Example
 
@@ -376,7 +384,7 @@ The `get_url` method is used to map the object instance to its URL representatio
 May raise a `NoReverseMatch` if the `view_name` and `lookup_field`
 attributes are not configured to correctly match the URL conf.
 
-**get_object(self, queryset, view_name, view_args, view_kwargs)**
+**get_object(self, view_name, view_args, view_kwargs)**
 
 If you want to support a writable hyperlinked field then you'll also want to override `get_object`, in order to map incoming URLs back to the object they represent. For read-only hyperlinked fields there is no need to override this method.
 
@@ -407,7 +415,7 @@ In this case we'd need to override `HyperlinkedRelatedField` to get the behavior
                 'organization_slug': obj.organization.slug,
                 'customer_pk': obj.pk
             }
-            return reverse(view_name, url_kwargs, request=request, format=format)
+            return reverse(view_name, kwargs=url_kwargs, request=request, format=format)
 
         def get_object(self, view_name, view_args, view_kwargs):
             lookup_kwargs = {
@@ -455,11 +463,13 @@ There are two keyword arguments you can use to control this behavior:
 - `html_cutoff` - If set this will be the maximum number of choices that will be displayed by a HTML select drop down. Set to `None` to disable any limiting. Defaults to `1000`.
 - `html_cutoff_text` - If set this will display a textual indicator if the maximum number of items have been cutoff in an HTML select drop down. Defaults to `"More than {count} items…"`
 
+You can also control these globally using the settings `HTML_SELECT_CUTOFF` and `HTML_SELECT_CUTOFF_TEXT`.
+
 In cases where the cutoff is being enforced you may want to instead use a plain input field in the HTML form. You can do so using the `style` keyword argument. For example:
 
     assigned_to = serializers.SlugRelatedField(
        queryset=User.objects.all(),
-       slug field='username',
+       slug_field='username',
        style={'base_template': 'input.html'}
     )
 
@@ -474,7 +484,7 @@ Note that reverse relationships are not automatically included by the `ModelSeri
 You'll normally want to ensure that you've set an appropriate `related_name` argument on the relationship, that you can use as the field name.  For example:
 
     class Track(models.Model):
-        album = models.ForeignKey(Album, related_name='tracks')
+        album = models.ForeignKey(Album, related_name='tracks', on_delete=models.CASCADE)
         ...
 
 If you have not set a related name for the reverse relationship, you'll need to use the automatically generated related name in the `fields` argument.  For example:
@@ -487,7 +497,7 @@ See the Django documentation on [reverse relationships][reverse-relationships] f
 
 ## Generic relationships
 
-If you want to serialize a generic foreign key, you need to define a custom field, to determine explicitly how you want serialize the targets of the relationship.
+If you want to serialize a generic foreign key, you need to define a custom field, to determine explicitly how you want to serialize the targets of the relationship.
 
 For example, given the following model for a tag, which has a generic relationship with other arbitrary models:
 
@@ -495,17 +505,17 @@ For example, given the following model for a tag, which has a generic relationsh
         """
         Tags arbitrary model instances using a generic relation.
 
-        See: https://docs.djangoproject.com/en/dev/ref/contrib/contenttypes/
+        See: https://docs.djangoproject.com/en/stable/ref/contrib/contenttypes/
         """
         tag_name = models.SlugField()
-        content_type = models.ForeignKey(ContentType)
+        content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
         object_id = models.PositiveIntegerField()
         tagged_object = GenericForeignKey('content_type', 'object_id')
 
         def __unicode__(self):
             return self.tag_name
 
-And the following two models, which may be have associated tags:
+And the following two models, which may have associated tags:
 
     class Bookmark(models.Model):
         """
@@ -578,9 +588,13 @@ The following third party packages are also available.
 
 The [drf-nested-routers package][drf-nested-routers] provides routers and relationship fields for working with nested resources.
 
-[cite]: http://lwn.net/Articles/193245/
-[reverse-relationships]: https://docs.djangoproject.com/en/dev/topics/db/queries/#following-relationships-backward
-[routers]: http://www.django-rest-framework.org/api-guide/routers#defaultrouter
-[generic-relations]: https://docs.djangoproject.com/en/dev/ref/contrib/contenttypes/#id1
-[2.2-announcement]: ../topics/2.2-announcement.md
+## Rest Framework Generic Relations
+
+The [rest-framework-generic-relations][drf-nested-relations] library provides read/write serialization for generic foreign keys.
+
+[cite]: https://lwn.net/Articles/193245/
+[reverse-relationships]: https://docs.djangoproject.com/en/stable/topics/db/queries/#following-relationships-backward
+[routers]: https://www.django-rest-framework.org/api-guide/routers#defaultrouter
+[generic-relations]: https://docs.djangoproject.com/en/stable/ref/contrib/contenttypes/#id1
 [drf-nested-routers]: https://github.com/alanjds/drf-nested-routers
+[drf-nested-relations]: https://github.com/Ian-Foote/rest-framework-generic-relations

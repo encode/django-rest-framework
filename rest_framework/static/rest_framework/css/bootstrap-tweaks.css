@@ -32,7 +32,6 @@ a single block in the template.
   position: fixed;
   left: 0;
   top: 0;
-  z-index: 3;
 }
 
 .navbar {
@@ -226,4 +225,9 @@ body a:hover {
   float: left;
   width: 20px;
   margin-top: 3px;
+}
+
+.modal-footer form {
+  margin-left: 5px;
+  margin-right: 5px;
 }

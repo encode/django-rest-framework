@@ -90,6 +90,10 @@ You won't typically need to access this property.
 
 ---
 
+**Note:** You may see a `WrappedAttributeError` raised when calling the `.user` or `.auth` properties. These errors originate from an authenticator as a standard `AttributeError`, however it's necessary that they be re-raised as a different exception type in order to prevent them from being suppressed by the outer property access. Python will not recognize that the `AttributeError` orginates from the authenticator and will instead assume that the request object does not have a `.user` or `.auth` property. The authenticator will need to be fixed.
+
+---
+
 # Browser enhancements
 
 REST framework supports a few browser enhancements such as browser-based `PUT`, `PATCH` and `DELETE` forms.
@@ -117,10 +121,6 @@ For more information see the [browser enhancements documentation].
 `request.stream` returns a stream representing the content of the request body.
 
 You won't typically need to directly access the request's content, as you'll normally rely on REST framework's default request parsing behavior.
-
-If you do need to access the raw content directly, you should use the `.stream` property in preference to using `request.content`, as it provides transparent support for browser-based non-form content.
-
-For more information see the [browser enhancements documentation].
 
 ---
 

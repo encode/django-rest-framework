@@ -3,6 +3,7 @@ Generic views that provide commonly needed behaviour.
 """
 from __future__ import unicode_literals
 
+from django.core.exceptions import ValidationError
 from django.db.models.query import QuerySet
 from django.http import Http404
 from django.shortcuts import get_object_or_404 as _get_object_or_404
@@ -18,7 +19,7 @@ def get_object_or_404(queryset, *filter_args, **filter_kwargs):
     """
     try:
         return _get_object_or_404(queryset, *filter_args, **filter_kwargs)
-    except (TypeError, ValueError):
+    except (TypeError, ValueError, ValidationError):
         raise Http404
 
 
@@ -184,7 +185,6 @@ class GenericAPIView(views.APIView):
 
 class CreateAPIView(mixins.CreateModelMixin,
                     GenericAPIView):
-
     """
     Concrete view for creating a model instance.
     """
@@ -212,7 +212,6 @@ class RetrieveAPIView(mixins.RetrieveModelMixin,
 
 class DestroyAPIView(mixins.DestroyModelMixin,
                      GenericAPIView):
-
     """
     Concrete view for deleting a model instance.
     """
@@ -222,7 +221,6 @@ class DestroyAPIView(mixins.DestroyModelMixin,
 
 class UpdateAPIView(mixins.UpdateModelMixin,
                     GenericAPIView):
-
     """
     Concrete view for updating a model instance.
     """

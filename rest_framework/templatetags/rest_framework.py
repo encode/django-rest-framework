@@ -1,15 +1,17 @@
 from __future__ import absolute_import, unicode_literals
 
 import re
+from collections import OrderedDict
 
 from django import template
-from django.core.urlresolvers import NoReverseMatch, reverse
-from django.template import Context, loader
+from django.template import loader
+from django.urls import NoReverseMatch, reverse
 from django.utils import six
 from django.utils.encoding import force_text, iri_to_uri
 from django.utils.html import escape, format_html, smart_urlquote
 from django.utils.safestring import SafeData, mark_safe
 
+from rest_framework.compat import apply_markdown, pygments_highlight
 from rest_framework.renderers import HTMLFormRenderer
 from rest_framework.utils.urls import replace_query_param
 
@@ -17,6 +19,57 @@ register = template.Library()
 
 # Regex for adding classes to html snippets
 class_re = re.compile(r'(?<=class=["\'])(.*)(?=["\'])')
+
+
+@register.tag(name='code')
+def highlight_code(parser, token):
+    code = token.split_contents()[-1]
+    nodelist = parser.parse(('endcode',))
+    parser.delete_first_token()
+    return CodeNode(code, nodelist)
+
+
+class CodeNode(template.Node):
+    style = 'emacs'
+
+    def __init__(self, lang, code):
+        self.lang = lang
+        self.nodelist = code
+
+    def render(self, context):
+        text = self.nodelist.render(context)
+        return pygments_highlight(text, self.lang, self.style)
+
+
+@register.filter()
+def with_location(fields, location):
+    return [
+        field for field in fields
+        if field.location == location
+    ]
+
+
+@register.simple_tag
+def form_for_link(link):
+    import coreschema
+    properties = OrderedDict([
+        (field.name, field.schema or coreschema.String())
+        for field in link.fields
+    ])
+    required = [
+        field.name
+        for field in link.fields
+        if field.required
+    ]
+    schema = coreschema.Object(properties=properties, required=required)
+    return mark_safe(coreschema.render_to_form(schema))
+
+
+@register.simple_tag
+def render_markdown(markdown_text):
+    if apply_markdown is None:
+        return markdown_text
+    return mark_safe(apply_markdown(markdown_text))
 
 
 @register.simple_tag
@@ -48,6 +101,22 @@ def optional_login(request):
         return ''
 
     snippet = "<li><a href='{href}?next={next}'>Log in</a></li>"
+    snippet = format_html(snippet, href=login_url, next=escape(request.path))
+
+    return mark_safe(snippet)
+
+
+@register.simple_tag
+def optional_docs_login(request):
+    """
+    Include a login snippet if REST framework's login view is in the URLconf.
+    """
+    try:
+        login_url = reverse('rest_framework:login')
+    except NoReverseMatch:
+        return 'log in'
+
+    snippet = "<a href='{href}?next={next}'>log in</a>"
     snippet = format_html(snippet, href=login_url, next=escape(request.path))
 
     return mark_safe(snippet)
@@ -89,9 +158,24 @@ def add_query_param(request, key, val):
 
 
 @register.filter
+def as_string(value):
+    if value is None:
+        return ''
+    return '%s' % value
+
+
+@register.filter
+def as_list_of_strings(value):
+    return [
+        '' if (item is None) else ('%s' % item)
+        for item in value
+    ]
+
+
+@register.filter
 def add_class(value, css_class):
     """
-    http://stackoverflow.com/questions/4124220/django-adding-css-classes-when-rendering-form-fields-in-a-template
+    https://stackoverflow.com/questions/4124220/django-adding-css-classes-when-rendering-form-fields-in-a-template
 
     Inserts classes into template variables that contain HTML tags,
     useful for modifying forms without needing to change the Form objects.
@@ -120,7 +204,8 @@ def add_class(value, css_class):
 @register.filter
 def format_value(value):
     if getattr(value, 'is_hyperlink', False):
-        return mark_safe('<a href=%s>%s</a>' % (value, escape(value.name)))
+        name = six.text_type(value.obj)
+        return mark_safe('<a href=%s>%s</a>' % (value, escape(name)))
     if value is None or isinstance(value, bool):
         return mark_safe('<code>%s</code>' % {True: 'true', False: 'false', None: 'null'}[value])
     elif isinstance(value, list):
@@ -128,11 +213,11 @@ def format_value(value):
             template = loader.get_template('rest_framework/admin/list_value.html')
         else:
             template = loader.get_template('rest_framework/admin/simple_list_value.html')
-        context = Context({'value': value})
+        context = {'value': value}
         return template.render(context)
     elif isinstance(value, dict):
         template = loader.get_template('rest_framework/admin/dict_value.html')
-        context = Context({'value': value})
+        context = {'value': value}
         return template.render(context)
     elif isinstance(value, six.string_types):
         if (
@@ -145,6 +230,58 @@ def format_value(value):
         elif '\n' in value:
             return mark_safe('<pre>%s</pre>' % escape(value))
     return six.text_type(value)
+
+
+@register.filter
+def items(value):
+    """
+    Simple filter to return the items of the dict. Useful when the dict may
+    have a key 'items' which is resolved first in Django tempalte dot-notation
+    lookup.  See issue #4931
+    Also see: https://stackoverflow.com/questions/15416662/django-template-loop-over-dictionary-items-with-items-as-key
+    """
+    if value is None:
+        # `{% for k, v in value.items %}` doesn't raise when value is None or
+        # not in the context, so neither should `{% for k, v in value|items %}`
+        return []
+    return value.items()
+
+
+@register.filter
+def data(value):
+    """
+    Simple filter to access `data` attribute of object,
+    specifically coreapi.Document.
+
+    As per `items` filter above, allows accessing `document.data` when
+    Document contains Link keyed-at "data".
+
+    See issue #5395
+    """
+    return value.data
+
+
+@register.filter
+def schema_links(section, sec_key=None):
+    """
+    Recursively find every link in a schema, even nested.
+    """
+    NESTED_FORMAT = '%s > %s'  # this format is used in docs/js/api.js:normalizeKeys
+    links = section.links
+    if section.data:
+        data = section.data.items()
+        for sub_section_key, sub_section in data:
+            new_links = schema_links(sub_section, sec_key=sub_section_key)
+            links.update(new_links)
+
+    if sec_key is not None:
+        new_links = OrderedDict()
+        for link_key, link in links.items():
+            new_key = NESTED_FORMAT % (sec_key, link_key)
+            new_links.update({new_key: link})
+        return new_links
+
+    return links
 
 
 @register.filter
@@ -177,7 +314,7 @@ def smart_urlquote_wrapper(matched_url):
         return None
 
 
-@register.filter
+@register.filter(needs_autoescape=True)
 def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=True):
     """
     Converts any URLs in text into clickable links.
@@ -188,7 +325,7 @@ def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=Tru
     leading punctuation (opening parens) and it'll still do the right thing.
 
     If trim_url_limit is not None, the URLs in link text longer than this limit
-    will truncated to trim_url_limit-3 characters and appended with an elipsis.
+    will truncated to trim_url_limit-3 characters and appended with an ellipsis.
 
     If nofollow is True, the URLs in link text will get a rel="nofollow"
     attribute.

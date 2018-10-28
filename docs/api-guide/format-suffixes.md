@@ -42,7 +42,7 @@ When using `format_suffix_patterns`, you must make sure to add the `'format'` ke
     def comment_list(request, format=None):
         # do stuff...
 
-Or with class based views:
+Or with class-based views:
 
     class CommentList(APIView):
         def get(self, request, format=None):
@@ -90,4 +90,4 @@ It is actually a misconception.  For example, take the following quote from Roy 
 The quote does not mention Accept headers, but it does make it clear that format suffixes should be considered an acceptable pattern.
 
 [cite]: http://tech.groups.yahoo.com/group/rest-discuss/message/5857
-[cite2]: http://tech.groups.yahoo.com/group/rest-discuss/message/14844
+[cite2]: https://groups.yahoo.com/neo/groups/rest-discuss/conversations/topics/14844

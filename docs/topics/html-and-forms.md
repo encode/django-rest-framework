@@ -1,10 +1,10 @@
 # HTML & Forms
 
-REST framework is suitable for returning both API style responses, and regular HTML pages. Additionally, serializers can used as HTML forms and rendered in templates.
+REST framework is suitable for returning both API style responses, and regular HTML pages. Additionally, serializers can be used as HTML forms and rendered in templates.
 
 ## Rendering HTML
 
-In order to return HTML responses you'll need to either `TemplateHTMLRenderer`, or `StaticHTMLRenderer`.
+In order to return HTML responses you'll need to use either `TemplateHTMLRenderer`, or `StaticHTMLRenderer`.
 
 The `TemplateHTMLRenderer` class expects the response to contain a dictionary of context data, and renders an HTML page based on a template that must be specified either in the view or on the response.
 
@@ -40,7 +40,7 @@ Here's an example of a view that returns a list of "Profile" instances, rendered
         {% endfor %}
     </ul>
     </body></html>
-    
+
 ## Rendering Forms
 
 Serializers may be rendered as forms by using the `render_form` template tag, and including the serializer instance as context to the template.
@@ -66,19 +66,21 @@ The following view demonstrates an example of using a serializer in a template f
 
         def post(self, request, pk):
             profile = get_object_or_404(Profile, pk=pk)
-            serializer = ProfileSerializer(profile)
+            serializer = ProfileSerializer(profile, data=request.data)
             if not serializer.is_valid():
-                return Response({'serializer': serializer, 'profile': profile})            return redirect('profile-list')
+                return Response({'serializer': serializer, 'profile': profile})
+            serializer.save()
+            return redirect('profile-list')
 
 **profile_detail.html**:
 
     {% load rest_framework %}
 
     <html><body>
-    
+
     <h1>Profile - {{ profile.name }}</h1>
 
-    <form action="{% url 'profile-detail' pk=profile.pk '%}" method="POST">
+    <form action="{% url 'profile-detail' pk=profile.pk %}" method="POST">
         {% csrf_token %}
         {% render_form serializer %}
         <input type="submit" value="Save">
@@ -106,13 +108,15 @@ Let's take a look at how to render each of the three available template packs. F
     class LoginSerializer(serializers.Serializer):
         email = serializers.EmailField(
             max_length=100,
-            style={'placeholder': 'Email'}
+            style={'placeholder': 'Email', 'autofocus': True}
         )
         password = serializers.CharField(
             max_length=100,
             style={'input_type': 'password', 'placeholder': 'Password'}
         )
-        remember_me = serializers.BooleanField()---
+        remember_me = serializers.BooleanField()
+
+---
 
 #### `rest_framework/vertical`
 
@@ -133,7 +137,8 @@ Presents form labels above their corresponding control inputs, using the standar
 ![Vertical form example](../img/vertical.png)
 
 ---
-#### `rest_framework/horizontal`
+
+#### `rest_framework/horizontal`
 
 Presents labels and controls alongside each other, using a 2/10 column split.
 
@@ -202,9 +207,9 @@ Field templates can also use additional style properties, depending on their typ
 
 The complete list of `base_template` options and their associated style options is listed below.
 
-base_template  | Valid field types  | Additional style options     
+base_template  | Valid field types  | Additional style options
 ----|----|----
-input.html     | Any string, numeric or date/time field | input_type, placeholder, hide_label
+input.html     | Any string, numeric or date/time field | input_type, placeholder, hide_label, autofocus
 textarea.html |  `CharField` | rows, placeholder, hide_label
 select.html | `ChoiceField` or relational field types | hide_label
 radio.html | `ChoiceField` or relational field types | inline, hide_label

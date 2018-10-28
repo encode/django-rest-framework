@@ -1,4 +1,8 @@
 # Optional packages which may be used with REST framework.
-markdown==2.5.2
-django-guardian==1.3.0
-django-filter==0.10.0
+psycopg2-binary==2.7.5
+markdown==2.6.11
+django-guardian==1.4.9
+django-filter==1.1.0
+coreapi==2.3.1
+coreschema==0.0.4
+pyyaml

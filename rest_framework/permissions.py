@@ -4,10 +4,76 @@ Provides a set of pluggable permission policies.
 from __future__ import unicode_literals
 
 from django.http import Http404
+from django.utils import six
+
+from rest_framework import exceptions
 
 SAFE_METHODS = ('GET', 'HEAD', 'OPTIONS')
 
 
+class OperandHolder:
+    def __init__(self, operator_class, op1_class, op2_class):
+        self.operator_class = operator_class
+        self.op1_class = op1_class
+        self.op2_class = op2_class
+
+    def __call__(self, *args, **kwargs):
+        op1 = self.op1_class(*args, **kwargs)
+        op2 = self.op2_class(*args, **kwargs)
+        return self.operator_class(op1, op2)
+
+
+class AND:
+    def __init__(self, op1, op2):
+        self.op1 = op1
+        self.op2 = op2
+
+    def has_permission(self, request, view):
+        return (
+            self.op1.has_permission(request, view) &
+            self.op2.has_permission(request, view)
+        )
+
+    def has_object_permission(self, request, view, obj):
+        return (
+            self.op1.has_object_permission(request, view, obj) &
+            self.op2.has_object_permission(request, view, obj)
+        )
+
+
+class OR:
+    def __init__(self, op1, op2):
+        self.op1 = op1
+        self.op2 = op2
+
+    def has_permission(self, request, view):
+        return (
+            self.op1.has_permission(request, view) |
+            self.op2.has_permission(request, view)
+        )
+
+    def has_object_permission(self, request, view, obj):
+        return (
+            self.op1.has_object_permission(request, view, obj) |
+            self.op2.has_object_permission(request, view, obj)
+        )
+
+
+class BasePermissionMetaclass(type):
+    def __and__(cls, other):
+        return OperandHolder(AND, cls, other)
+
+    def __or__(cls, other):
+        return OperandHolder(OR, cls, other)
+
+    def __rand__(cls, other):
+        return OperandHolder(AND, other, cls)
+
+    def __ror__(cls, other):
+        return OperandHolder(OR, other, cls)
+
+
+@six.add_metaclass(BasePermissionMetaclass)
 class BasePermission(object):
     """
     A base class from which all permission classes should inherit.
@@ -33,6 +99,7 @@ class AllowAny(BasePermission):
     permission_classes list, but it's useful because it makes the intention
     more explicit.
     """
+
     def has_permission(self, request, view):
         return True
 
@@ -43,7 +110,7 @@ class IsAuthenticated(BasePermission):
     """
 
     def has_permission(self, request, view):
-        return request.user and request.user.is_authenticated()
+        return request.user and request.user.is_authenticated
 
 
 class IsAdminUser(BasePermission):
@@ -64,7 +131,7 @@ class IsAuthenticatedOrReadOnly(BasePermission):
         return (
             request.method in SAFE_METHODS or
             request.user and
-            request.user.is_authenticated()
+            request.user.is_authenticated
         )
 
 
@@ -104,7 +171,26 @@ class DjangoModelPermissions(BasePermission):
             'app_label': model_cls._meta.app_label,
             'model_name': model_cls._meta.model_name
         }
+
+        if method not in self.perms_map:
+            raise exceptions.MethodNotAllowed(method)
+
         return [perm % kwargs for perm in self.perms_map[method]]
+
+    def _queryset(self, view):
+        assert hasattr(view, 'get_queryset') \
+            or getattr(view, 'queryset', None) is not None, (
+            'Cannot apply {} on a view that does not set '
+            '`.queryset` or have a `.get_queryset()` method.'
+        ).format(self.__class__.__name__)
+
+        if hasattr(view, 'get_queryset'):
+            queryset = view.get_queryset()
+            assert queryset is not None, (
+                '{}.get_queryset() returned None'.format(view.__class__.__name__)
+            )
+            return queryset
+        return view.queryset
 
     def has_permission(self, request, view):
         # Workaround to ensure DjangoModelPermissions are not applied
@@ -112,23 +198,14 @@ class DjangoModelPermissions(BasePermission):
         if getattr(view, '_ignore_model_permissions', False):
             return True
 
-        try:
-            queryset = view.get_queryset()
-        except AttributeError:
-            queryset = getattr(view, 'queryset', None)
+        if not request.user or (
+           not request.user.is_authenticated and self.authenticated_users_only):
+            return False
 
-        assert queryset is not None, (
-            'Cannot apply DjangoModelPermissions on a view that '
-            'does not have `.queryset` property or overrides the '
-            '`.get_queryset()` method.')
-
+        queryset = self._queryset(view)
         perms = self.get_required_permissions(request.method, queryset.model)
 
-        return (
-            request.user and
-            (request.user.is_authenticated() or not self.authenticated_users_only) and
-            request.user.has_perms(perms)
-        )
+        return request.user.has_perms(perms)
 
 
 class DjangoModelPermissionsOrAnonReadOnly(DjangoModelPermissions):
@@ -150,7 +227,6 @@ class DjangoObjectPermissions(DjangoModelPermissions):
     This permission can only be applied against view classes that
     provide a `.queryset` attribute.
     """
-
     perms_map = {
         'GET': [],
         'OPTIONS': [],
@@ -166,19 +242,15 @@ class DjangoObjectPermissions(DjangoModelPermissions):
             'app_label': model_cls._meta.app_label,
             'model_name': model_cls._meta.model_name
         }
+
+        if method not in self.perms_map:
+            raise exceptions.MethodNotAllowed(method)
+
         return [perm % kwargs for perm in self.perms_map[method]]
 
     def has_object_permission(self, request, view, obj):
-        try:
-            queryset = view.get_queryset()
-        except AttributeError:
-            queryset = getattr(view, 'queryset', None)
-
-        assert queryset is not None, (
-            'Cannot apply DjangoObjectPermissions on a view that '
-            'does not have `.queryset` property or overrides the '
-            '`.get_queryset()` method.')
-
+        # authentication checks have already executed via has_permission
+        queryset = self._queryset(view)
         model_cls = queryset.model
         user = request.user
 

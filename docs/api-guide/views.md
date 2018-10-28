@@ -1,9 +1,9 @@
 source: decorators.py
         views.py
 
-# Class Based Views
+# Class-based Views
 
-> Django's class based views are a welcome departure from the old-style views.
+> Django's class-based views are a welcome departure from the old-style views.
 >
 > &mdash; [Reinout van Rees][cite]
 
@@ -23,6 +23,7 @@ For example:
     from rest_framework.views import APIView
     from rest_framework.response import Response
     from rest_framework import authentication, permissions
+    from django.contrib.auth.models import User
 
     class ListUsers(APIView):
         """
@@ -40,6 +41,13 @@ For example:
             """
             usernames = [user.username for user in User.objects.all()]
             return Response(usernames)
+
+---
+
+**Note**: The full methods, attributes on, and relations between Django REST Framework's `APIView`, `GenericAPIView`, various `Mixins`, and `Viewsets` can be initially complex. In addition to the documentation here, the [Classy Django REST Framework][classy-drf] resource provides a browsable reference, with full methods and attributes, for each of Django REST Framework's class-based views.
+
+---
+
 
 ## API policy attributes
 
@@ -72,6 +80,8 @@ The following methods are used by REST framework to instantiate the various plug
 ### .get_permissions(self)
 
 ### .get_content_negotiator(self)
+
+### .get_exception_handler(self)
 
 ## API policy implementation methods
 
@@ -119,7 +129,7 @@ You won't typically need to override this method.
 
 # Function Based Views
 
-> Saying [that Class based views] is always the superior solution is a mistake.
+> Saying [that class-based views] is always the superior solution is a mistake.
 >
 > &mdash; [Nick Coghlan][cite2]
 
@@ -139,13 +149,14 @@ The core of this functionality is the `api_view` decorator, which takes a list o
 
 This view will use the default renderers, parsers, authentication classes etc specified in the [settings].
 
-By default only `GET` methods will be accepted. Other methods will respond with "405 Method Not Allowed". To alter this behavior, specify which methods the view allows, like so:
+By default only `GET` methods will be accepted. Other methods will respond with "405 Method Not Allowed". To alter this behaviour, specify which methods the view allows, like so:
 
     @api_view(['GET', 'POST'])
     def hello_world(request):
         if request.method == 'POST':
             return Response({"message": "Got some data!", "data": request.data})
         return Response({"message": "Hello, world!"})
+
 
 ## API policy decorators
 
@@ -174,7 +185,39 @@ The available decorators are:
 
 Each of these decorators takes a single argument which must be a list or tuple of classes.
 
-[cite]: http://reinout.vanrees.org/weblog/2011/08/24/class-based-views-usage.html
+
+## View schema decorator
+
+To override the default schema generation for function based views you may use
+the `@schema` decorator. This must come *after* (below) the `@api_view`
+decorator. For example:
+
+    from rest_framework.decorators import api_view, schema
+    from rest_framework.schemas import AutoSchema
+
+    class CustomAutoSchema(AutoSchema):
+        def get_link(self, path, method, base_url):
+            # override view introspection here...
+
+    @api_view(['GET'])
+    @schema(CustomAutoSchema())
+    def view(request):
+        return Response({"message": "Hello for today! See you tomorrow!"})
+
+This decorator takes a single `AutoSchema` instance, an `AutoSchema` subclass
+instance or `ManualSchema` instance as described in the [Schemas documentation][schemas].
+You may pass `None` in order to exclude the view from schema generation.
+
+    @api_view(['GET'])
+    @schema(None)
+    def view(request):
+        return Response({"message": "Will not appear in schema!"})
+
+
+[cite]: https://reinout.vanrees.org/weblog/2011/08/24/class-based-views-usage.html
 [cite2]: http://www.boredomandlaziness.org/2012/05/djangos-cbvs-are-not-mistake-but.html
 [settings]: settings.md
 [throttling]: throttling.md
+[schemas]: schemas.md
+[classy-drf]: http://www.cdrf.co
+

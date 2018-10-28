@@ -3,53 +3,71 @@ Provides an APIView class that is the base of all views in REST framework.
 """
 from __future__ import unicode_literals
 
+from django.conf import settings
 from django.core.exceptions import PermissionDenied
-from django.db import models
+from django.db import connection, models, transaction
 from django.http import Http404
 from django.http.response import HttpResponseBase
-from django.utils import six
+from django.utils.cache import cc_delim_re, patch_vary_headers
 from django.utils.encoding import smart_text
-from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
 from rest_framework import exceptions, status
-from rest_framework.compat import set_rollback
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.schemas import DefaultSchema
 from rest_framework.settings import api_settings
 from rest_framework.utils import formatting
 
 
-def get_view_name(view_cls, suffix=None):
+def get_view_name(view):
     """
-    Given a view class, return a textual name to represent the view.
+    Given a view instance, return a textual name to represent the view.
     This name is used in the browsable API, and in OPTIONS responses.
 
     This function is the default for the `VIEW_NAME_FUNCTION` setting.
     """
-    name = view_cls.__name__
+    # Name may be set by some Views, such as a ViewSet.
+    name = getattr(view, 'name', None)
+    if name is not None:
+        return name
+
+    name = view.__class__.__name__
     name = formatting.remove_trailing_string(name, 'View')
     name = formatting.remove_trailing_string(name, 'ViewSet')
     name = formatting.camelcase_to_spaces(name)
+
+    # Suffix may be set by some Views, such as a ViewSet.
+    suffix = getattr(view, 'suffix', None)
     if suffix:
         name += ' ' + suffix
 
     return name
 
 
-def get_view_description(view_cls, html=False):
+def get_view_description(view, html=False):
     """
-    Given a view class, return a textual description to represent the view.
+    Given a view instance, return a textual description to represent the view.
     This name is used in the browsable API, and in OPTIONS responses.
 
     This function is the default for the `VIEW_DESCRIPTION_FUNCTION` setting.
     """
-    description = view_cls.__doc__ or ''
+    # Description may be set by some Views, such as a ViewSet.
+    description = getattr(view, 'description', None)
+    if description is None:
+        description = view.__class__.__doc__ or ''
+
     description = formatting.dedent(smart_text(description))
     if html:
         return formatting.markup_description(description)
     return description
+
+
+def set_rollback():
+    atomic_requests = connection.settings_dict.get('ATOMIC_REQUESTS', False)
+    if atomic_requests and connection.in_atomic_block:
+        transaction.set_rollback(True)
 
 
 def exception_handler(exc, context):
@@ -62,6 +80,11 @@ def exception_handler(exc, context):
     Any unhandled exceptions may return `None`, which will cause a 500 error
     to be raised.
     """
+    if isinstance(exc, Http404):
+        exc = exceptions.NotFound()
+    elif isinstance(exc, PermissionDenied):
+        exc = exceptions.PermissionDenied()
+
     if isinstance(exc, exceptions.APIException):
         headers = {}
         if getattr(exc, 'auth_header', None):
@@ -77,21 +100,6 @@ def exception_handler(exc, context):
         set_rollback()
         return Response(data, status=exc.status_code, headers=headers)
 
-    elif isinstance(exc, Http404):
-        msg = _('Not found.')
-        data = {'detail': six.text_type(msg)}
-
-        set_rollback()
-        return Response(data, status=status.HTTP_404_NOT_FOUND)
-
-    elif isinstance(exc, PermissionDenied):
-        msg = _('Permission denied.')
-        data = {'detail': six.text_type(msg)}
-
-        set_rollback()
-        return Response(data, status=status.HTTP_403_FORBIDDEN)
-
-    # Note: Unhandled exceptions will raise a 500 error.
     return None
 
 
@@ -110,6 +118,8 @@ class APIView(View):
     # Allow dependency injection of other settings to make testing easier.
     settings = api_settings
 
+    schema = DefaultSchema()
+
     @classmethod
     def as_view(cls, **initkwargs):
         """
@@ -126,10 +136,10 @@ class APIView(View):
                     'Use `.all()` or call `.get_queryset()` instead.'
                 )
             cls.queryset._fetch_all = force_evaluation
-            cls.queryset._result_iter = force_evaluation  # Django <= 1.5
 
         view = super(APIView, cls).as_view(**initkwargs)
         view.cls = cls
+        view.initkwargs = initkwargs
 
         # Note: session based authentication is explicitly CSRF validated,
         # all other authentication is CSRF exempt.
@@ -162,7 +172,7 @@ class APIView(View):
         """
         If request is not permitted, determine what kind of exception to raise.
         """
-        if not request.successful_authenticator:
+        if request.authenticators and not request.successful_authenticator:
             raise exceptions.NotAuthenticated()
         raise exceptions.PermissionDenied(detail=message)
 
@@ -226,7 +236,7 @@ class APIView(View):
         browsable API.
         """
         func = self.settings.VIEW_NAME_FUNCTION
-        return func(self.__class__, getattr(self, 'suffix', None))
+        return func(self)
 
     def get_view_description(self, html=False):
         """
@@ -234,7 +244,7 @@ class APIView(View):
         and in the browsable API.
         """
         func = self.settings.VIEW_DESCRIPTION_FUNCTION
-        return func(self.__class__, html)
+        return func(self, html)
 
     # API policy instantiation methods
 
@@ -282,6 +292,12 @@ class APIView(View):
         if not getattr(self, '_negotiator', None):
             self._negotiator = self.content_negotiation_class()
         return self._negotiator
+
+    def get_exception_handler(self):
+        """
+        Returns the exception handler that this view uses.
+        """
+        return self.settings.EXCEPTION_HANDLER
 
     # API policy implementation methods
 
@@ -372,11 +388,6 @@ class APIView(View):
         """
         self.format_kwarg = self.get_format_suffix(**kwargs)
 
-        # Ensure that the incoming request is permitted
-        self.perform_authentication(request)
-        self.check_permissions(request)
-        self.check_throttles(request)
-
         # Perform content negotiation and store the accepted info on the request
         neg = self.perform_content_negotiation(request)
         request.accepted_renderer, request.accepted_media_type = neg
@@ -384,6 +395,11 @@ class APIView(View):
         # Determine the API version, if versioning is in use.
         version, scheme = self.determine_version(request, *args, **kwargs)
         request.version, request.versioning_scheme = version, scheme
+
+        # Ensure that the incoming request is permitted
+        self.perform_authentication(request)
+        self.check_permissions(request)
+        self.check_throttles(request)
 
     def finalize_response(self, request, response, *args, **kwargs):
         """
@@ -405,6 +421,11 @@ class APIView(View):
             response.accepted_media_type = request.accepted_media_type
             response.renderer_context = self.get_renderer_context()
 
+        # Add new vary headers to the response instead of overwriting.
+        vary_headers = self.headers.pop('Vary', None)
+        if vary_headers is not None:
+            patch_vary_headers(response, cc_delim_re.split(vary_headers))
+
         for key, value in self.headers.items():
             response[key] = value
 
@@ -425,16 +446,24 @@ class APIView(View):
             else:
                 exc.status_code = status.HTTP_403_FORBIDDEN
 
-        exception_handler = self.settings.EXCEPTION_HANDLER
+        exception_handler = self.get_exception_handler()
 
         context = self.get_exception_handler_context()
         response = exception_handler(exc, context)
 
         if response is None:
-            raise
+            self.raise_uncaught_exception(exc)
 
         response.exception = True
         return response
+
+    def raise_uncaught_exception(self, exc):
+        if settings.DEBUG:
+            request = self.request
+            renderer_format = getattr(request.accepted_renderer, 'format')
+            use_plaintext_traceback = renderer_format not in ('html', 'api', 'admin')
+            request.force_plaintext_errors(use_plaintext_traceback)
+        raise
 
     # Note: Views are made CSRF exempt from within `as_view` as to prevent
     # accidental removal of this exemption in cases where `dispatch` needs to

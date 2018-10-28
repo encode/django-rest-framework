@@ -2,6 +2,9 @@
 from __future__ import unicode_literals
 
 import pytest
+from django.core.paginator import Paginator as DjangoPaginator
+from django.db import models
+from django.test import TestCase
 
 from rest_framework import (
     exceptions, filters, generics, pagination, serializers, status
@@ -66,8 +69,8 @@ class TestPaginationIntegration:
 
     def test_setting_page_size_over_maximum(self):
         """
-        When page_size parameter exceeds maxiumum allowable,
-        then it should be capped to the maxiumum.
+        When page_size parameter exceeds maximum allowable,
+        then it should be capped to the maximum.
         """
         request = factory.get('/', {'page_size': 1000})
         response = self.view(request)
@@ -107,12 +110,23 @@ class TestPaginationIntegration:
             'count': 50
         }
 
+    def test_empty_query_params_are_preserved(self):
+        request = factory.get('/', {'page': 2, 'filter': ''})
+        response = self.view(request)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == {
+            'results': [12, 14, 16, 18, 20],
+            'previous': 'http://testserver/?filter=',
+            'next': 'http://testserver/?filter=&page=3',
+            'count': 50
+        }
+
     def test_404_not_found_for_zero_page(self):
         request = factory.get('/', {'page': '0'})
         response = self.view(request)
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.data == {
-            'detail': 'Invalid page "0": That page number is less than 1.'
+            'detail': 'Invalid page.'
         }
 
     def test_404_not_found_for_invalid_page(self):
@@ -120,7 +134,7 @@ class TestPaginationIntegration:
         response = self.view(request)
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.data == {
-            'detail': 'Invalid page "invalid": That page number is not an integer.'
+            'detail': 'Invalid page.'
         }
 
 
@@ -249,6 +263,64 @@ class TestPageNumberPagination:
             self.paginate_queryset(request)
 
 
+class TestPageNumberPaginationOverride:
+    """
+    Unit tests for `pagination.PageNumberPagination`.
+
+    the Django Paginator Class is overridden.
+    """
+
+    def setup(self):
+        class OverriddenDjangoPaginator(DjangoPaginator):
+            # override the count in our overridden Django Paginator
+            # we will only return one page, with one item
+            count = 1
+
+        class ExamplePagination(pagination.PageNumberPagination):
+            django_paginator_class = OverriddenDjangoPaginator
+            page_size = 5
+
+        self.pagination = ExamplePagination()
+        self.queryset = range(1, 101)
+
+    def paginate_queryset(self, request):
+        return list(self.pagination.paginate_queryset(self.queryset, request))
+
+    def get_paginated_content(self, queryset):
+        response = self.pagination.get_paginated_response(queryset)
+        return response.data
+
+    def get_html_context(self):
+        return self.pagination.get_html_context()
+
+    def test_no_page_number(self):
+        request = Request(factory.get('/'))
+        queryset = self.paginate_queryset(request)
+        content = self.get_paginated_content(queryset)
+        context = self.get_html_context()
+        assert queryset == [1]
+        assert content == {
+            'results': [1, ],
+            'previous': None,
+            'next': None,
+            'count': 1
+        }
+        assert context == {
+            'previous_url': None,
+            'next_url': None,
+            'page_links': [
+                PageLink('http://testserver/', 1, True, False),
+            ]
+        }
+        assert not self.pagination.display_page_controls
+        assert isinstance(self.pagination.to_html(), type(''))
+
+    def test_invalid_page(self):
+        request = Request(factory.get('/', {'page': 'invalid'}))
+        with pytest.raises(exceptions.NotFound):
+            self.paginate_queryset(request)
+
+
 class TestLimitOffset:
     """
     Unit tests for `pagination.LimitOffsetPagination`.
@@ -297,6 +369,13 @@ class TestLimitOffset:
         }
         assert self.pagination.display_page_controls
         assert isinstance(self.pagination.to_html(), type(''))
+
+    def test_pagination_not_applied_if_limit_or_default_limit_not_set(self):
+        class MockPagination(pagination.LimitOffsetPagination):
+            default_limit = None
+        request = Request(factory.get('/'))
+        queryset = MockPagination().paginate_queryset(self.queryset, request)
+        assert queryset is None
 
     def test_single_offset(self):
         """
@@ -427,6 +506,19 @@ class TestLimitOffset:
         assert queryset == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
         assert content.get('next') == next_url
 
+    def test_zero_limit(self):
+        """
+        An zero limit query param should be ignored in favor of the default.
+        """
+        request = Request(factory.get('/', {'limit': 0, 'offset': 0}))
+        queryset = self.paginate_queryset(request)
+        content = self.get_paginated_content(queryset)
+        next_limit = self.pagination.default_limit
+        next_offset = self.pagination.default_limit
+        next_url = 'http://testserver/?limit={0}&offset={1}'.format(next_limit, next_offset)
+        assert queryset == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        assert content.get('next') == next_url
+
     def test_max_limit(self):
         """
         The limit defaults to the max_limit when there is a max_limit and the
@@ -447,85 +539,7 @@ class TestLimitOffset:
         assert content.get('previous') == prev_url
 
 
-class TestCursorPagination:
-    """
-    Unit tests for `pagination.CursorPagination`.
-    """
-
-    def setup(self):
-        class MockObject(object):
-            def __init__(self, idx):
-                self.created = idx
-
-        class MockQuerySet(object):
-            def __init__(self, items):
-                self.items = items
-
-            def filter(self, created__gt=None, created__lt=None):
-                if created__gt is not None:
-                    return MockQuerySet([
-                        item for item in self.items
-                        if item.created > int(created__gt)
-                    ])
-
-                assert created__lt is not None
-                return MockQuerySet([
-                    item for item in self.items
-                    if item.created < int(created__lt)
-                ])
-
-            def order_by(self, *ordering):
-                if ordering[0].startswith('-'):
-                    return MockQuerySet(list(reversed(self.items)))
-                return self
-
-            def __getitem__(self, sliced):
-                return self.items[sliced]
-
-        class ExamplePagination(pagination.CursorPagination):
-            page_size = 5
-            ordering = 'created'
-
-        self.pagination = ExamplePagination()
-        self.queryset = MockQuerySet([
-            MockObject(idx) for idx in [
-                1, 1, 1, 1, 1,
-                1, 2, 3, 4, 4,
-                4, 4, 5, 6, 7,
-                7, 7, 7, 7, 7,
-                7, 7, 7, 8, 9,
-                9, 9, 9, 9, 9
-            ]
-        ])
-
-    def get_pages(self, url):
-        """
-        Given a URL return a tuple of:
-
-        (previous page, current page, next page, previous url, next url)
-        """
-        request = Request(factory.get(url))
-        queryset = self.pagination.paginate_queryset(self.queryset, request)
-        current = [item.created for item in queryset]
-
-        next_url = self.pagination.get_next_link()
-        previous_url = self.pagination.get_previous_link()
-
-        if next_url is not None:
-            request = Request(factory.get(next_url))
-            queryset = self.pagination.paginate_queryset(self.queryset, request)
-            next = [item.created for item in queryset]
-        else:
-            next = None
-
-        if previous_url is not None:
-            request = Request(factory.get(previous_url))
-            queryset = self.pagination.paginate_queryset(self.queryset, request)
-            previous = [item.created for item in queryset]
-        else:
-            previous = None
-
-        return (previous, current, next, previous_url, next_url)
+class CursorPaginationTestsMixin:
 
     def test_invalid_cursor(self):
         request = Request(factory.get('/', {'cursor': '123'}))
@@ -618,6 +632,307 @@ class TestCursorPagination:
         assert next == [1, 2, 3, 4, 4]
 
         assert isinstance(self.pagination.to_html(), type(''))
+
+    def test_cursor_pagination_with_page_size(self):
+        (previous, current, next, previous_url, next_url) = self.get_pages('/?page_size=20')
+
+        assert previous is None
+        assert current == [1, 1, 1, 1, 1, 1, 2, 3, 4, 4, 4, 4, 5, 6, 7, 7, 7, 7, 7, 7]
+        assert next == [7, 7, 7, 8, 9, 9, 9, 9, 9, 9]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+        assert previous == [1, 1, 1, 1, 1, 1, 2, 3, 4, 4, 4, 4, 5, 6, 7, 7, 7, 7, 7, 7]
+        assert current == [7, 7, 7, 8, 9, 9, 9, 9, 9, 9]
+        assert next is None
+
+    def test_cursor_pagination_with_page_size_over_limit(self):
+        (previous, current, next, previous_url, next_url) = self.get_pages('/?page_size=30')
+
+        assert previous is None
+        assert current == [1, 1, 1, 1, 1, 1, 2, 3, 4, 4, 4, 4, 5, 6, 7, 7, 7, 7, 7, 7]
+        assert next == [7, 7, 7, 8, 9, 9, 9, 9, 9, 9]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+        assert previous == [1, 1, 1, 1, 1, 1, 2, 3, 4, 4, 4, 4, 5, 6, 7, 7, 7, 7, 7, 7]
+        assert current == [7, 7, 7, 8, 9, 9, 9, 9, 9, 9]
+        assert next is None
+
+    def test_cursor_pagination_with_page_size_zero(self):
+        (previous, current, next, previous_url, next_url) = self.get_pages('/?page_size=0')
+
+        assert previous is None
+        assert current == [1, 1, 1, 1, 1]
+        assert next == [1, 2, 3, 4, 4]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+
+        assert previous == [1, 1, 1, 1, 1]
+        assert current == [1, 2, 3, 4, 4]
+        assert next == [4, 4, 5, 6, 7]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+
+        assert previous == [1, 2, 3, 4, 4]
+        assert current == [4, 4, 5, 6, 7]
+        assert next == [7, 7, 7, 7, 7]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+
+        assert previous == [4, 4, 4, 5, 6]  # Paging artifact
+        assert current == [7, 7, 7, 7, 7]
+        assert next == [7, 7, 7, 8, 9]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+
+        assert previous == [7, 7, 7, 7, 7]
+        assert current == [7, 7, 7, 8, 9]
+        assert next == [9, 9, 9, 9, 9]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+
+        assert previous == [7, 7, 7, 8, 9]
+        assert current == [9, 9, 9, 9, 9]
+        assert next is None
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
+
+        assert previous == [7, 7, 7, 7, 7]
+        assert current == [7, 7, 7, 8, 9]
+        assert next == [9, 9, 9, 9, 9]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
+
+        assert previous == [4, 4, 5, 6, 7]
+        assert current == [7, 7, 7, 7, 7]
+        assert next == [8, 9, 9, 9, 9]  # Paging artifact
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
+
+        assert previous == [1, 2, 3, 4, 4]
+        assert current == [4, 4, 5, 6, 7]
+        assert next == [7, 7, 7, 7, 7]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
+
+        assert previous == [1, 1, 1, 1, 1]
+        assert current == [1, 2, 3, 4, 4]
+        assert next == [4, 4, 5, 6, 7]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
+
+        assert previous is None
+        assert current == [1, 1, 1, 1, 1]
+        assert next == [1, 2, 3, 4, 4]
+
+    def test_cursor_pagination_with_page_size_negative(self):
+        (previous, current, next, previous_url, next_url) = self.get_pages('/?page_size=-5')
+
+        assert previous is None
+        assert current == [1, 1, 1, 1, 1]
+        assert next == [1, 2, 3, 4, 4]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+
+        assert previous == [1, 1, 1, 1, 1]
+        assert current == [1, 2, 3, 4, 4]
+        assert next == [4, 4, 5, 6, 7]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+
+        assert previous == [1, 2, 3, 4, 4]
+        assert current == [4, 4, 5, 6, 7]
+        assert next == [7, 7, 7, 7, 7]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+
+        assert previous == [4, 4, 4, 5, 6]  # Paging artifact
+        assert current == [7, 7, 7, 7, 7]
+        assert next == [7, 7, 7, 8, 9]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+
+        assert previous == [7, 7, 7, 7, 7]
+        assert current == [7, 7, 7, 8, 9]
+        assert next == [9, 9, 9, 9, 9]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+
+        assert previous == [7, 7, 7, 8, 9]
+        assert current == [9, 9, 9, 9, 9]
+        assert next is None
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
+
+        assert previous == [7, 7, 7, 7, 7]
+        assert current == [7, 7, 7, 8, 9]
+        assert next == [9, 9, 9, 9, 9]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
+
+        assert previous == [4, 4, 5, 6, 7]
+        assert current == [7, 7, 7, 7, 7]
+        assert next == [8, 9, 9, 9, 9]  # Paging artifact
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
+
+        assert previous == [1, 2, 3, 4, 4]
+        assert current == [4, 4, 5, 6, 7]
+        assert next == [7, 7, 7, 7, 7]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
+
+        assert previous == [1, 1, 1, 1, 1]
+        assert current == [1, 2, 3, 4, 4]
+        assert next == [4, 4, 5, 6, 7]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
+
+        assert previous is None
+        assert current == [1, 1, 1, 1, 1]
+        assert next == [1, 2, 3, 4, 4]
+
+
+class TestCursorPagination(CursorPaginationTestsMixin):
+    """
+    Unit tests for `pagination.CursorPagination`.
+    """
+
+    def setup(self):
+        class MockObject(object):
+            def __init__(self, idx):
+                self.created = idx
+
+        class MockQuerySet(object):
+            def __init__(self, items):
+                self.items = items
+
+            def filter(self, created__gt=None, created__lt=None):
+                if created__gt is not None:
+                    return MockQuerySet([
+                        item for item in self.items
+                        if item.created > int(created__gt)
+                    ])
+
+                assert created__lt is not None
+                return MockQuerySet([
+                    item for item in self.items
+                    if item.created < int(created__lt)
+                ])
+
+            def order_by(self, *ordering):
+                if ordering[0].startswith('-'):
+                    return MockQuerySet(list(reversed(self.items)))
+                return self
+
+            def __getitem__(self, sliced):
+                return self.items[sliced]
+
+        class ExamplePagination(pagination.CursorPagination):
+            page_size = 5
+            page_size_query_param = 'page_size'
+            max_page_size = 20
+            ordering = 'created'
+
+        self.pagination = ExamplePagination()
+        self.queryset = MockQuerySet([
+            MockObject(idx) for idx in [
+                1, 1, 1, 1, 1,
+                1, 2, 3, 4, 4,
+                4, 4, 5, 6, 7,
+                7, 7, 7, 7, 7,
+                7, 7, 7, 8, 9,
+                9, 9, 9, 9, 9
+            ]
+        ])
+
+    def get_pages(self, url):
+        """
+        Given a URL return a tuple of:
+
+        (previous page, current page, next page, previous url, next url)
+        """
+        request = Request(factory.get(url))
+        queryset = self.pagination.paginate_queryset(self.queryset, request)
+        current = [item.created for item in queryset]
+
+        next_url = self.pagination.get_next_link()
+        previous_url = self.pagination.get_previous_link()
+
+        if next_url is not None:
+            request = Request(factory.get(next_url))
+            queryset = self.pagination.paginate_queryset(self.queryset, request)
+            next = [item.created for item in queryset]
+        else:
+            next = None
+
+        if previous_url is not None:
+            request = Request(factory.get(previous_url))
+            queryset = self.pagination.paginate_queryset(self.queryset, request)
+            previous = [item.created for item in queryset]
+        else:
+            previous = None
+
+        return (previous, current, next, previous_url, next_url)
+
+
+class CursorPaginationModel(models.Model):
+    created = models.IntegerField()
+
+
+class TestCursorPaginationWithValueQueryset(CursorPaginationTestsMixin, TestCase):
+    """
+    Unit tests for `pagination.CursorPagination` for value querysets.
+    """
+
+    def setUp(self):
+        class ExamplePagination(pagination.CursorPagination):
+            page_size = 5
+            page_size_query_param = 'page_size'
+            max_page_size = 20
+            ordering = 'created'
+
+        self.pagination = ExamplePagination()
+        data = [
+            1, 1, 1, 1, 1,
+            1, 2, 3, 4, 4,
+            4, 4, 5, 6, 7,
+            7, 7, 7, 7, 7,
+            7, 7, 7, 8, 9,
+            9, 9, 9, 9, 9
+        ]
+        for idx in data:
+            CursorPaginationModel.objects.create(created=idx)
+
+        self.queryset = CursorPaginationModel.objects.values()
+
+    def get_pages(self, url):
+        """
+        Given a URL return a tuple of:
+
+        (previous page, current page, next page, previous url, next url)
+        """
+        request = Request(factory.get(url))
+        queryset = self.pagination.paginate_queryset(self.queryset, request)
+        current = [item['created'] for item in queryset]
+
+        next_url = self.pagination.get_next_link()
+        previous_url = self.pagination.get_previous_link()
+
+        if next_url is not None:
+            request = Request(factory.get(next_url))
+            queryset = self.pagination.paginate_queryset(self.queryset, request)
+            next = [item['created'] for item in queryset]
+        else:
+            next = None
+
+        if previous_url is not None:
+            request = Request(factory.get(previous_url))
+            queryset = self.pagination.paginate_queryset(self.queryset, request)
+            previous = [item['created'] for item in queryset]
+        else:
+            previous = None
+
+        return (previous, current, next, previous_url, next_url)
 
 
 def test_get_displayed_page_numbers():
