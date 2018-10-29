@@ -9,6 +9,7 @@ from django.contrib.auth.models import Group, Permission, User
 from django.db import models
 from django.test import TestCase
 from django.urls import ResolverMatch
+from django.utils.deprecation import CallableBool
 
 from rest_framework import (
     HTTP_HEADER_ENCODING, authentication, generics, permissions, serializers,
@@ -544,7 +545,7 @@ class CustomPermissionsTests(TestCase):
 
 class FakeUser:
     def __init__(self, auth=False):
-        self.is_authenticated = auth
+        self.is_authenticated = CallableBool(auth)
 
 
 class PermissionsCompositionTests(TestCase):
