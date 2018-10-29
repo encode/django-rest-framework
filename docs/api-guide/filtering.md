@@ -287,7 +287,7 @@ The `DjangoObjectPermissionsFilter` is intended to be used together with the [`d
 
 ---
 
-**Note:** This filter has been deprecated as of version 3.9 and moved to the 3rd-party [`djangorestframework-guardian` package][django-rest-framework-guardian].
+**Note:** This filter is pending deprecation as of version 3.9 and moved to the 3rd-party [`djangorestframework-guardian` package][django-rest-framework-guardian]. It will be removed entirely in 3.11.
 
 ---
 
