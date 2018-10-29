@@ -188,7 +188,7 @@ When in use, the browsable API will include a `SearchFilter` control:
 The `SearchFilter` class will only be applied if the view has a `search_fields` attribute set.  The `search_fields` attribute should be a list of names of text type fields on the model, such as `CharField` or `TextField`.
 
     from rest_framework import filters
-    
+
     class UserListView(generics.ListAPIView):
         queryset = User.objects.all()
         serializer_class = UserSerializer
@@ -298,9 +298,9 @@ A complete example using both `DjangoObjectPermissionsFilter` and `DjangoObjectP
 **permissions.py**:
 
     class CustomObjectPermissions(permissions.DjangoObjectPermissions):
-		"""
-		Similar to `DjangoObjectPermissions`, but adding 'view' permissions.
-		"""
+        """
+        Similar to `DjangoObjectPermissions`, but adding 'view' permissions.
+        """
         perms_map = {
             'GET': ['%(app_label)s.view_%(model_name)s'],
             'OPTIONS': ['%(app_label)s.view_%(model_name)s'],
@@ -314,11 +314,11 @@ A complete example using both `DjangoObjectPermissionsFilter` and `DjangoObjectP
 **views.py**:
 
     class EventViewSet(viewsets.ModelViewSet):
-    	"""
-    	Viewset that only lists events if user has 'view' permissions, and only
-    	allows operations on individual events if user has appropriate 'view', 'add',
-    	'change' or 'delete' permissions.
-		"""
+        """
+        Viewset that only lists events if user has 'view' permissions, and only
+        allows operations on individual events if user has appropriate 'view', 'add',
+        'change' or 'delete' permissions.
+        """
         queryset = Event.objects.all()
         serializer_class = EventSerializer
         filter_backends = (filters.DjangoObjectPermissionsFilter,)
