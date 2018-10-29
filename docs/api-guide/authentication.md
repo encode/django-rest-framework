@@ -137,7 +137,7 @@ You'll also need to create tokens for your users.
     from rest_framework.authtoken.models import Token
 
     token = Token.objects.create(user=...)
-    print token.key
+    print(token.key)
 
 For clients to authenticate, the token key should be included in the `Authorization` HTTP header.  The key should be prefixed by the string literal "Token", with whitespace separating the two strings.  For example:
 
