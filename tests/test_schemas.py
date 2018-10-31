@@ -192,6 +192,9 @@ class TestRouterGeneratedSchema(TestCase):
                             url='/example/documented_custom_action/',
                             action='get',
                             description='A description of the get method on the custom action.',
+                            fields=[
+                                coreapi.Field('format', required=False, location='query', schema=coreschema.Enum(title='Response format', description="Specify a custom format for the response", enum=[u'json', u'api'])),
+                            ]
                         )
                     },
                     'read': coreapi.Link(
@@ -320,6 +323,9 @@ class TestRouterGeneratedSchema(TestCase):
                             url='/example/documented_custom_action/',
                             action='get',
                             description='A description of the get method on the custom action.',
+                            fields=[
+                                coreapi.Field('format', required=False, location='query', schema=coreschema.Enum(title='Response format', description="Specify a custom format for the response", enum=[u'json', u'api'])),
+                            ]
                         ),
                         'create': coreapi.Link(
                             url='/example/documented_custom_action/',
@@ -328,7 +334,8 @@ class TestRouterGeneratedSchema(TestCase):
                             encoding='application/json',
                             fields=[
                                 coreapi.Field('a', required=True, location='form', schema=coreschema.String(title='A', description='A field description')),
-                                coreapi.Field('b', required=False, location='form', schema=coreschema.String(title='B'))
+                                coreapi.Field('b', required=False, location='form', schema=coreschema.String(title='B')),
+                                coreapi.Field('format', required=False, location='query', schema=coreschema.Enum(title='Response format', description="Specify a custom format for the response", enum=[u'json', u'api'])),
                             ]
                         ),
                         'update': coreapi.Link(
@@ -338,7 +345,8 @@ class TestRouterGeneratedSchema(TestCase):
                             encoding='application/json',
                             fields=[
                                 coreapi.Field('a', required=True, location='form', schema=coreschema.String(title='A', description='A field description')),
-                                coreapi.Field('b', required=False, location='form', schema=coreschema.String(title='B'))
+                                coreapi.Field('b', required=False, location='form', schema=coreschema.String(title='B')),
+                                coreapi.Field('format', required=False, location='query', schema=coreschema.Enum(title='Response format', description="Specify a custom format for the response", enum=[u'json', u'api'])),
                             ]
                         ),
                     },
@@ -660,6 +668,9 @@ class TestSchemaGeneratorWithMethodLimitedViewSets(TestCase):
                             url='/example1/documented_custom_action/',
                             action='get',
                             description='A description of the get method on the custom action.',
+                            fields=[
+                                coreapi.Field('format', required=False, location='query', schema=coreschema.Enum(title='Response format', description="Specify a custom format for the response", enum=[u'json', u'api'])),
+                            ]
                         ),
                     },
                     'read': coreapi.Link(
