@@ -212,6 +212,7 @@ class AutoSchema(ViewInspector):
         fields += self.get_serializer_fields(path, method)
         fields += self.get_pagination_fields(path, method)
         fields += self.get_filter_fields(path, method)
+        fields += self.get_renderer_fields(path, method)
 
         manual_fields = self.get_manual_fields(path, method)
         fields = self.update_fields(fields, manual_fields)
@@ -408,6 +409,26 @@ class AutoSchema(ViewInspector):
         for filter_backend in self.view.filter_backends:
             fields += filter_backend().get_schema_fields(self.view)
         return fields
+
+    def get_renderer_fields(self, path, method):
+        view = self.view
+        renderers = api_settings.DEFAULT_RENDERER_CLASSES
+
+        if getattr(view, "renderer_classes", None) and view.renderer_classes:
+            renderers = view.renderer_classes
+
+        formats = [r.format for r in renderers if r.format]
+
+        field = coreapi.Field(
+            name="format",
+            location="query",
+            required=False,
+            schema=coreschema.Enum(title="Response format",
+                                   description="Specify a custom format for the response",
+                                   enum=formats)
+        )
+
+        return [field]
 
     def get_manual_fields(self, path, method):
         return self._manual_fields
