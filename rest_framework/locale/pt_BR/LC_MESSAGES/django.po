@@ -397,11 +397,11 @@ msgstr "Nenhum(a/as)"
 #: templates/rest_framework/inline/select_multiple.html:2
 #: templates/rest_framework/vertical/select_multiple.html:2
 msgid "No items to select."
-msgstr "Nenhum item para escholher."
+msgstr "Nenhum item para escolher."
 
 #: validators.py:43
 msgid "This field must be unique."
-msgstr "Esse campo deve ser  único."
+msgstr "Esse campo deve ser único."
 
 #: validators.py:97
 msgid "The fields {field_names} must make a unique set."
