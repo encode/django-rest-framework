@@ -11,7 +11,21 @@ from rest_framework import exceptions
 SAFE_METHODS = ('GET', 'HEAD', 'OPTIONS')
 
 
-class OperandHolder:
+class OperationHolderMixin:
+    def __and__(self, other):
+        return OperandHolder(AND, self, other)
+
+    def __or__(self, other):
+        return OperandHolder(OR, self, other)
+
+    def __rand__(self, other):
+        return OperandHolder(AND, other, self)
+
+    def __ror__(self, other):
+        return OperandHolder(OR, other, self)
+
+
+class OperandHolder(OperationHolderMixin):
     def __init__(self, operator_class, op1_class, op2_class):
         self.operator_class = operator_class
         self.op1_class = op1_class
@@ -59,18 +73,8 @@ class OR:
         )
 
 
-class BasePermissionMetaclass(type):
-    def __and__(cls, other):
-        return OperandHolder(AND, cls, other)
-
-    def __or__(cls, other):
-        return OperandHolder(OR, cls, other)
-
-    def __rand__(cls, other):
-        return OperandHolder(AND, other, cls)
-
-    def __ror__(cls, other):
-        return OperandHolder(OR, other, cls)
+class BasePermissionMetaclass(OperationHolderMixin, type):
+    pass
 
 
 @six.add_metaclass(BasePermissionMetaclass)
