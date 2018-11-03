@@ -193,22 +193,6 @@ This also translates into a very useful interactive documentation viewer in the 
 
 ![Screenshot - drf-yasg][image-drf-yasg]
 
-
-#### DRF OpenAPI
-
-[DRF OpenAPI][drf-openapi] bridges the gap between OpenAPI specification and tool chain with the schema exposed
-out-of-the-box by Django Rest Framework. Its goals are:
-
-  * To be dropped into any existing DRF project without any code change necessary.
-  * Provide clear disctinction between request schema and response schema.
-  * Provide a versioning mechanism for each schema. Support defining schema by version range syntax, e.g. >1.0, <=2.0
-  * Support multiple response codes, not just 200
-  * All this information should be bound to view methods, not view classes.
-
-It also tries to stay current with the maturing schema generation mechanism provided by DRF.
-
-![Screenshot - DRF OpenAPI][image-drf-openapi]
-
 ---
 
 #### DRF Docs
@@ -338,8 +322,6 @@ To implement a hypermedia API you'll need to decide on an appropriate media type
 [cite]: https://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
 [drf-yasg]: https://github.com/axnsan12/drf-yasg/
 [image-drf-yasg]: ../img/drf-yasg.png
-[drf-openapi]: https://github.com/limdauto/drf_openapi/
-[image-drf-openapi]: ../img/drf-openapi.png
 [drfdocs-repo]: https://github.com/ekonstantinidis/django-rest-framework-docs
 [drfdocs-website]: https://www.drfdocs.com/
 [drfdocs-demo]: http://demo.drfdocs.com/
