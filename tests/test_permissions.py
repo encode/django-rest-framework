@@ -5,7 +5,7 @@ import unittest
 import warnings
 
 import django
-from django.contrib.auth.models import Group, Permission, User
+from django.contrib.auth.models import AnonymousUser, Group, Permission, User
 from django.db import models
 from django.test import TestCase
 from django.urls import ResolverMatch
@@ -542,39 +542,46 @@ class CustomPermissionsTests(TestCase):
             self.assertEqual(detail, self.custom_message)
 
 
-class FakeUser:
-    def __init__(self, auth=False):
-        self.is_authenticated = auth
-
-
 class PermissionsCompositionTests(TestCase):
+
+    def setUp(self):
+        self.username = 'john'
+        self.email = 'lennon@thebeatles.com'
+        self.password = 'password'
+        self.user = User.objects.create_user(
+            self.username,
+            self.email,
+            self.password
+        )
+        self.client.login(username=self.username, password=self.password)
+
     def test_and_false(self):
         request = factory.get('/1', format='json')
-        request.user = FakeUser(auth=False)
+        request.user = AnonymousUser()
         composed_perm = permissions.IsAuthenticated & permissions.AllowAny
         assert composed_perm().has_permission(request, None) is False
 
     def test_and_true(self):
         request = factory.get('/1', format='json')
-        request.user = FakeUser(auth=True)
+        request.user = self.user
         composed_perm = permissions.IsAuthenticated & permissions.AllowAny
         assert composed_perm().has_permission(request, None) is True
 
     def test_or_false(self):
         request = factory.get('/1', format='json')
-        request.user = FakeUser(auth=False)
+        request.user = AnonymousUser()
         composed_perm = permissions.IsAuthenticated | permissions.AllowAny
         assert composed_perm().has_permission(request, None) is True
 
     def test_or_true(self):
         request = factory.get('/1', format='json')
-        request.user = FakeUser(auth=True)
+        request.user = self.user
         composed_perm = permissions.IsAuthenticated | permissions.AllowAny
         assert composed_perm().has_permission(request, None) is True
 
     def test_several_levels(self):
         request = factory.get('/1', format='json')
-        request.user = FakeUser(auth=True)
+        request.user = self.user
         composed_perm = (
             permissions.IsAuthenticated &
             permissions.IsAuthenticated &
