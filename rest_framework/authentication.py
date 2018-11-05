@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 import base64
 import binascii
 
+from django import VERSION as django_version
 from django.contrib.auth import authenticate, get_user_model
 from django.middleware.csrf import CsrfViewMiddleware
 from django.utils.six import text_type
@@ -137,7 +138,13 @@ class SessionAuthentication(BaseAuthentication):
         """
         check = CSRFCheck()
         # populates request.META['CSRF_COOKIE'], which is used in process_view()
-        check.process_request(request)
+
+        if tuple(django_version[:3]) < (1, 11, 6):
+            csrf_token = check._get_token(request)
+            if csrf_token is not None:
+                request.META['CSRF_COOKIE'] = csrf_token
+        else:
+            check.process_request(request)
         reason = check.process_view(request, None, (), {})
         if reason:
             # CSRF failed, bail with explicit error message
