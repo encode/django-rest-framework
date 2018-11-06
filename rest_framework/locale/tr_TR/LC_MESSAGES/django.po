@@ -1,0 +1,440 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+# José Luis <alagunajs@gmail.com>, 2015-2016
+msgid ""
+msgstr ""
+"Project-Id-Version: Django REST framework\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-07-12 16:13+0100\n"
+"PO-Revision-Date: 2017-08-03 14:58+0000\n"
+"Last-Translator: Thomas Christie <tom@tomchristie.com>\n"
+"Language-Team: Turkish (Turkey) (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/tr_TR/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: tr_TR\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: authentication.py:73
+msgid "Invalid basic header. No credentials provided."
+msgstr "Geçersiz yetkilendirme başlığı. Gerekli uygunluk kriterleri sağlanmamış."
+
+#: authentication.py:76
+msgid "Invalid basic header. Credentials string should not contain spaces."
+msgstr "Geçersiz yetkilendirme başlığı. Uygunluk kriterine ait veri boşluk karakteri içermemeli."
+
+#: authentication.py:82
+msgid "Invalid basic header. Credentials not correctly base64 encoded."
+msgstr "Geçersiz yetkilendirme başlığı. Uygunluk kriterleri base64 formatına uygun olarak kodlanmamış."
+
+#: authentication.py:99
+msgid "Invalid username/password."
+msgstr "Geçersiz kullanıcı adı / şifre."
+
+#: authentication.py:102 authentication.py:198
+msgid "User inactive or deleted."
+msgstr "Kullanıcı aktif değil ya da silinmiş"
+
+#: authentication.py:176
+msgid "Invalid token header. No credentials provided."
+msgstr "Geçersiz token başlığı. Kimlik bilgileri eksik."
+
+#: authentication.py:179
+msgid "Invalid token header. Token string should not contain spaces."
+msgstr "Geçersiz token başlığı. Token'da boşluk olmamalı."
+
+#: authentication.py:185
+msgid ""
+"Invalid token header. Token string should not contain invalid characters."
+msgstr "Geçersiz token başlığı. Token geçersiz karakter içermemeli."
+
+#: authentication.py:195
+msgid "Invalid token."
+msgstr "Geçersiz simge."
+
+#: authtoken/apps.py:7
+msgid "Auth Token"
+msgstr "Kimlik doğrulama belirteci"
+
+#: authtoken/models.py:15
+msgid "Key"
+msgstr "Anahtar"
+
+#: authtoken/models.py:18
+msgid "User"
+msgstr "Kullanan"
+
+#: authtoken/models.py:20
+msgid "Created"
+msgstr "Oluşturulan"
+
+#: authtoken/models.py:29
+msgid "Token"
+msgstr "İşaret"
+
+#: authtoken/models.py:30
+msgid "Tokens"
+msgstr "İşaretler"
+
+#: authtoken/serializers.py:8
+msgid "Username"
+msgstr "Kullanıcı adı"
+
+#: authtoken/serializers.py:9
+msgid "Password"
+msgstr "Şifre"
+
+#: authtoken/serializers.py:20
+msgid "User account is disabled."
+msgstr "Kullanıcı hesabı devre dışı bırakılmış."
+
+#: authtoken/serializers.py:23
+msgid "Unable to log in with provided credentials."
+msgstr "Verilen bilgiler ile giriş sağlanamadı."
+
+#: authtoken/serializers.py:26
+msgid "Must include \"username\" and \"password\"."
+msgstr "\"Kullanıcı Adı\" ve \"Parola\" eklenmeli."
+
+#: exceptions.py:49
+msgid "A server error occurred."
+msgstr "Sunucu hatası oluştu."
+
+#: exceptions.py:84
+msgid "Malformed request."
+msgstr "Bozuk istek."
+
+#: exceptions.py:89
+msgid "Incorrect authentication credentials."
+msgstr "Giriş bilgileri hatalı."
+
+#: exceptions.py:94
+msgid "Authentication credentials were not provided."
+msgstr "Giriş bilgileri verilmedi."
+
+#: exceptions.py:99
+msgid "You do not have permission to perform this action."
+msgstr "Bu işlemi yapmak için izniniz bulunmuyor."
+
+#: exceptions.py:104 views.py:81
+msgid "Not found."
+msgstr "Bulunamadı."
+
+#: exceptions.py:109
+msgid "Method \"{method}\" not allowed."
+msgstr "\"{method}\" metoduna izin verilmiyor."
+
+#: exceptions.py:120
+msgid "Could not satisfy the request Accept header."
+msgstr "İsteğe ait Accept başlık bilgisi yanıt verilecek başlık bilgileri arasında değil."
+
+#: exceptions.py:132
+msgid "Unsupported media type \"{media_type}\" in request."
+msgstr "İstekte desteklenmeyen medya tipi: \"{media_type}\"."
+
+#: exceptions.py:145
+msgid "Request was throttled."
+msgstr "Üst üste çok fazla istek yapıldı."
+
+#: fields.py:269 relations.py:206 relations.py:239 validators.py:98
+#: validators.py:181
+msgid "This field is required."
+msgstr "Bu alan zorunlu."
+
+#: fields.py:270
+msgid "This field may not be null."
+msgstr "Bu alan boş bırakılmamalı."
+
+#: fields.py:608 fields.py:639
+msgid "\"{input}\" is not a valid boolean."
+msgstr "\"{input}\" geçerli bir boolean değil."
+
+#: fields.py:674
+msgid "This field may not be blank."
+msgstr "Bu alan boş bırakılmamalı."
+
+#: fields.py:675 fields.py:1675
+msgid "Ensure this field has no more than {max_length} characters."
+msgstr "Bu alanın {max_length} karakterden fazla karakter barındırmadığından emin olun."
+
+#: fields.py:676
+msgid "Ensure this field has at least {min_length} characters."
+msgstr "Bu alanın en az {min_length} karakter barındırdığından emin olun."
+
+#: fields.py:713
+msgid "Enter a valid email address."
+msgstr "Geçerli bir e-posta adresi girin."
+
+#: fields.py:724
+msgid "This value does not match the required pattern."
+msgstr "Bu değer gereken düzenli ifade deseni ile uyuşmuyor."
+
+#: fields.py:735
+msgid ""
+"Enter a valid \"slug\" consisting of letters, numbers, underscores or "
+"hyphens."
+msgstr "Harf, rakam, altçizgi veya tireden oluşan geçerli bir \"slug\" giriniz."
+
+#: fields.py:747
+msgid "Enter a valid URL."
+msgstr "Geçerli bir URL girin."
+
+#: fields.py:760
+msgid "\"{value}\" is not a valid UUID."
+msgstr "\"{value}\" geçerli bir UUID değil."
+
+#: fields.py:796
+msgid "Enter a valid IPv4 or IPv6 address."
+msgstr "Geçerli bir IPv4 ya da IPv6 adresi girin."
+
+#: fields.py:821
+msgid "A valid integer is required."
+msgstr "Geçerli bir tam sayı girin."
+
+#: fields.py:822 fields.py:857 fields.py:891
+msgid "Ensure this value is less than or equal to {max_value}."
+msgstr "Değerin {max_value} değerinden küçük ya da eşit olduğundan emin olun."
+
+#: fields.py:823 fields.py:858 fields.py:892
+msgid "Ensure this value is greater than or equal to {min_value}."
+msgstr "Değerin {min_value} değerinden büyük ya da eşit olduğundan emin olun."
+
+#: fields.py:824 fields.py:859 fields.py:896
+msgid "String value too large."
+msgstr "String değeri çok uzun."
+
+#: fields.py:856 fields.py:890
+msgid "A valid number is required."
+msgstr "Geçerli bir numara gerekiyor."
+
+#: fields.py:893
+msgid "Ensure that there are no more than {max_digits} digits in total."
+msgstr "Toplamda {max_digits} haneden fazla hane olmadığından emin olun."
+
+#: fields.py:894
+msgid ""
+"Ensure that there are no more than {max_decimal_places} decimal places."
+msgstr "Ondalık basamak değerinin {max_decimal_places} haneden fazla olmadığından emin olun."
+
+#: fields.py:895
+msgid ""
+"Ensure that there are no more than {max_whole_digits} digits before the "
+"decimal point."
+msgstr "Ondalık ayracından önce {max_whole_digits} basamaktan fazla olmadığından emin olun."
+
+#: fields.py:1025
+msgid "Datetime has wrong format. Use one of these formats instead: {format}."
+msgstr "Datetime alanı yanlış biçimde. {format} biçimlerinden birini kullanın."
+
+#: fields.py:1026
+msgid "Expected a datetime but got a date."
+msgstr "Datetime değeri bekleniyor, ama date değeri geldi."
+
+#: fields.py:1103
+msgid "Date has wrong format. Use one of these formats instead: {format}."
+msgstr "Tarih biçimi yanlış. {format} biçimlerinden birini kullanın."
+
+#: fields.py:1104
+msgid "Expected a date but got a datetime."
+msgstr "Date tipi beklenmekteydi, fakat datetime tipi geldi."
+
+#: fields.py:1170
+msgid "Time has wrong format. Use one of these formats instead: {format}."
+msgstr "Time biçimi yanlış. {format} biçimlerinden birini kullanın."
+
+#: fields.py:1232
+msgid "Duration has wrong format. Use one of these formats instead: {format}."
+msgstr "Duration biçimi yanlış. {format} biçimlerinden birini kullanın."
+
+#: fields.py:1251 fields.py:1300
+msgid "\"{input}\" is not a valid choice."
+msgstr "\"{input}\" geçerli bir seçim değil."
+
+#: fields.py:1254 relations.py:71 relations.py:441
+msgid "More than {count} items..."
+msgstr "{count} elemandan daha fazla..."
+
+#: fields.py:1301 fields.py:1448 relations.py:437 serializers.py:524
+msgid "Expected a list of items but got type \"{input_type}\"."
+msgstr "Elemanların listesi beklenirken \"{input_type}\" alındı."
+
+#: fields.py:1302
+msgid "This selection may not be empty."
+msgstr "Bu seçim boş bırakılmamalı."
+
+#: fields.py:1339
+msgid "\"{input}\" is not a valid path choice."
+msgstr "\"{input}\" geçerli bir yol seçimi değil."
+
+#: fields.py:1358
+msgid "No file was submitted."
+msgstr "Hiçbir dosya verilmedi."
+
+#: fields.py:1359
+msgid ""
+"The submitted data was not a file. Check the encoding type on the form."
+msgstr "Gönderilen veri dosya değil. Formdaki kodlama tipini kontrol edin."
+
+#: fields.py:1360
+msgid "No filename could be determined."
+msgstr "Hiçbir dosya adı belirlenemedi."
+
+#: fields.py:1361
+msgid "The submitted file is empty."
+msgstr "Gönderilen dosya boş."
+
+#: fields.py:1362
+msgid ""
+"Ensure this filename has at most {max_length} characters (it has {length})."
+msgstr "Bu dosya adının en fazla {max_length} karakter uzunluğunda olduğundan emin olun. (şu anda {length} karakter)."
+
+#: fields.py:1410
+msgid ""
+"Upload a valid image. The file you uploaded was either not an image or a "
+"corrupted image."
+msgstr "Geçerli bir resim yükleyin. Yüklediğiniz dosya resim değil ya da bozuk."
+
+#: fields.py:1449 relations.py:438 serializers.py:525
+msgid "This list may not be empty."
+msgstr "Bu liste boş olmamalı."
+
+#: fields.py:1502
+msgid "Expected a dictionary of items but got type \"{input_type}\"."
+msgstr "Sözlük tipi bir değişken beklenirken \"{input_type}\" tipi bir değişken alındı."
+
+#: fields.py:1549
+msgid "Value must be valid JSON."
+msgstr "Değer geçerli bir JSON olmalı."
+
+#: filters.py:36 templates/rest_framework/filters/django_filter.html:5
+msgid "Submit"
+msgstr "Gönder"
+
+#: filters.py:336
+msgid "ascending"
+msgstr ""
+
+#: filters.py:337
+msgid "descending"
+msgstr ""
+
+#: pagination.py:193
+msgid "Invalid page."
+msgstr "Geçersiz sayfa."
+
+#: pagination.py:427
+msgid "Invalid cursor"
+msgstr "Geçersiz imleç."
+
+#: relations.py:207
+msgid "Invalid pk \"{pk_value}\" - object does not exist."
+msgstr "Geçersiz pk \"{pk_value}\" - obje bulunamadı."
+
+#: relations.py:208
+msgid "Incorrect type. Expected pk value, received {data_type}."
+msgstr "Hatalı tip. Pk değeri beklenirken, alınan {data_type}."
+
+#: relations.py:240
+msgid "Invalid hyperlink - No URL match."
+msgstr "Geçersiz hyper link - URL maçı yok."
+
+#: relations.py:241
+msgid "Invalid hyperlink - Incorrect URL match."
+msgstr "Geçersiz hyper link - Yanlış URL maçı."
+
+#: relations.py:242
+msgid "Invalid hyperlink - Object does not exist."
+msgstr "Geçersiz hyper link - Nesne yok.."
+
+#: relations.py:243
+msgid "Incorrect type. Expected URL string, received {data_type}."
+msgstr "Hatalı tip. URL metni bekleniyor, {data_type} alındı."
+
+#: relations.py:401
+msgid "Object with {slug_name}={value} does not exist."
+msgstr "{slug_name}={value} değerini taşıyan obje bulunamadı."
+
+#: relations.py:402
+msgid "Invalid value."
+msgstr "Geçersiz değer."
+
+#: serializers.py:326
+msgid "Invalid data. Expected a dictionary, but got {datatype}."
+msgstr "Geçersiz veri. Bir sözlük bekleniyor, ama var {datatype}."
+
+#: templates/rest_framework/admin.html:116
+#: templates/rest_framework/base.html:128
+msgid "Filters"
+msgstr "Filtreler"
+
+#: templates/rest_framework/filters/django_filter.html:2
+#: templates/rest_framework/filters/django_filter_crispyforms.html:4
+msgid "Field filters"
+msgstr "Alan filtreleri"
+
+#: templates/rest_framework/filters/ordering.html:3
+msgid "Ordering"
+msgstr "Sıralama"
+
+#: templates/rest_framework/filters/search.html:2
+msgid "Search"
+msgstr "Arama"
+
+#: templates/rest_framework/horizontal/radio.html:2
+#: templates/rest_framework/inline/radio.html:2
+#: templates/rest_framework/vertical/radio.html:2
+msgid "None"
+msgstr "Hiç kimse"
+
+#: templates/rest_framework/horizontal/select_multiple.html:2
+#: templates/rest_framework/inline/select_multiple.html:2
+#: templates/rest_framework/vertical/select_multiple.html:2
+msgid "No items to select."
+msgstr "Seçenek yok."
+
+#: validators.py:43
+msgid "This field must be unique."
+msgstr "Bu alan benzersiz olmalıdır."
+
+#: validators.py:97
+msgid "The fields {field_names} must make a unique set."
+msgstr "{field_names}  alanları benzersiz bir set yapmak gerekir."
+
+#: validators.py:245
+msgid "This field must be unique for the \"{date_field}\" date."
+msgstr "Bu alan \"{date_field}\" tarihine göre eşsiz olmalı."
+
+#: validators.py:260
+msgid "This field must be unique for the \"{date_field}\" month."
+msgstr "Bu alan \"{date_field}\" ayına göre eşsiz olmalı."
+
+#: validators.py:273
+msgid "This field must be unique for the \"{date_field}\" year."
+msgstr "Bu alan \"{date_field}\" yılına göre eşsiz olmalı."
+
+#: versioning.py:42
+msgid "Invalid version in \"Accept\" header."
+msgstr "\"Kabul et\" başlığında geçersiz sürümü."
+
+#: versioning.py:73
+msgid "Invalid version in URL path."
+msgstr "URL yolu geçersiz sürümü."
+
+#: versioning.py:115
+msgid "Invalid version in URL path. Does not match any version namespace."
+msgstr ""
+
+#: versioning.py:147
+msgid "Invalid version in hostname."
+msgstr "Hostname geçersiz sürümü."
+
+#: versioning.py:169
+msgid "Invalid version in query parameter."
+msgstr "Sorgu parametresi geçersiz sürümü."
+
+#: views.py:88
+msgid "Permission denied."
+msgstr "İzin reddedildi."

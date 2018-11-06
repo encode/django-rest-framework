@@ -1,0 +1,442 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+# hunter007 <wentao79@gmail.com>, 2015
+# Lele Long <schemacs@gmail.com>, 2015,2017
+# Ming Chen <mockey.chen@gmail.com>, 2015-2016
+msgid ""
+msgstr ""
+"Project-Id-Version: Django REST framework\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-07-12 16:13+0100\n"
+"PO-Revision-Date: 2017-08-03 14:58+0000\n"
+"Last-Translator: Lele Long <schemacs@gmail.com>\n"
+"Language-Team: Chinese (China) (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/zh_CN/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: zh_CN\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: authentication.py:73
+msgid "Invalid basic header. No credentials provided."
+msgstr "无效的Basic认证头，没有提供认证信息。"
+
+#: authentication.py:76
+msgid "Invalid basic header. Credentials string should not contain spaces."
+msgstr "认证字符串不应该包含空格（基本认证HTTP头无效）。"
+
+#: authentication.py:82
+msgid "Invalid basic header. Credentials not correctly base64 encoded."
+msgstr "认证字符串base64编码错误（基本认证HTTP头无效）。"
+
+#: authentication.py:99
+msgid "Invalid username/password."
+msgstr "用户名或者密码错误。"
+
+#: authentication.py:102 authentication.py:198
+msgid "User inactive or deleted."
+msgstr "用户未激活或者已删除。"
+
+#: authentication.py:176
+msgid "Invalid token header. No credentials provided."
+msgstr "没有提供认证信息（认证令牌HTTP头无效）。"
+
+#: authentication.py:179
+msgid "Invalid token header. Token string should not contain spaces."
+msgstr "认证令牌字符串不应该包含空格（无效的认证令牌HTTP头）。"
+
+#: authentication.py:185
+msgid ""
+"Invalid token header. Token string should not contain invalid characters."
+msgstr "无效的Token。Token字符串不能包含非法的字符。"
+
+#: authentication.py:195
+msgid "Invalid token."
+msgstr "认证令牌无效。"
+
+#: authtoken/apps.py:7
+msgid "Auth Token"
+msgstr "认证令牌"
+
+#: authtoken/models.py:15
+msgid "Key"
+msgstr "键"
+
+#: authtoken/models.py:18
+msgid "User"
+msgstr "用户"
+
+#: authtoken/models.py:20
+msgid "Created"
+msgstr "已创建"
+
+#: authtoken/models.py:29
+msgid "Token"
+msgstr "令牌"
+
+#: authtoken/models.py:30
+msgid "Tokens"
+msgstr "令牌"
+
+#: authtoken/serializers.py:8
+msgid "Username"
+msgstr "用户名"
+
+#: authtoken/serializers.py:9
+msgid "Password"
+msgstr "密码"
+
+#: authtoken/serializers.py:20
+msgid "User account is disabled."
+msgstr "用户账户已禁用。"
+
+#: authtoken/serializers.py:23
+msgid "Unable to log in with provided credentials."
+msgstr "无法使用提供的认证信息登录。"
+
+#: authtoken/serializers.py:26
+msgid "Must include \"username\" and \"password\"."
+msgstr "必须包含 “用户名” 和 “密码”。"
+
+#: exceptions.py:49
+msgid "A server error occurred."
+msgstr "服务器出现了错误。"
+
+#: exceptions.py:84
+msgid "Malformed request."
+msgstr "错误的请求。"
+
+#: exceptions.py:89
+msgid "Incorrect authentication credentials."
+msgstr "不正确的身份认证信息。"
+
+#: exceptions.py:94
+msgid "Authentication credentials were not provided."
+msgstr "身份认证信息未提供。"
+
+#: exceptions.py:99
+msgid "You do not have permission to perform this action."
+msgstr "您没有执行该操作的权限。"
+
+#: exceptions.py:104 views.py:81
+msgid "Not found."
+msgstr "未找到。"
+
+#: exceptions.py:109
+msgid "Method \"{method}\" not allowed."
+msgstr "方法 “{method}” 不被允许。"
+
+#: exceptions.py:120
+msgid "Could not satisfy the request Accept header."
+msgstr "无法满足Accept HTTP头的请求。"
+
+#: exceptions.py:132
+msgid "Unsupported media type \"{media_type}\" in request."
+msgstr "不支持请求中的媒体类型 “{media_type}”。"
+
+#: exceptions.py:145
+msgid "Request was throttled."
+msgstr "请求超过了限速。"
+
+#: fields.py:269 relations.py:206 relations.py:239 validators.py:98
+#: validators.py:181
+msgid "This field is required."
+msgstr "该字段是必填项。"
+
+#: fields.py:270
+msgid "This field may not be null."
+msgstr "该字段不能为 null。"
+
+#: fields.py:608 fields.py:639
+msgid "\"{input}\" is not a valid boolean."
+msgstr "“{input}” 不是合法的布尔值。"
+
+#: fields.py:674
+msgid "This field may not be blank."
+msgstr "该字段不能为空。"
+
+#: fields.py:675 fields.py:1675
+msgid "Ensure this field has no more than {max_length} characters."
+msgstr "请确保这个字段不能超过 {max_length} 个字符。"
+
+#: fields.py:676
+msgid "Ensure this field has at least {min_length} characters."
+msgstr "请确保这个字段至少包含 {min_length} 个字符。"
+
+#: fields.py:713
+msgid "Enter a valid email address."
+msgstr "请输入合法的邮件地址。"
+
+#: fields.py:724
+msgid "This value does not match the required pattern."
+msgstr "输入值不匹配要求的模式。"
+
+#: fields.py:735
+msgid ""
+"Enter a valid \"slug\" consisting of letters, numbers, underscores or "
+"hyphens."
+msgstr "请输入合法的“短语“，只能包含字母，数字，下划线或者中划线。"
+
+#: fields.py:747
+msgid "Enter a valid URL."
+msgstr "请输入合法的URL。"
+
+#: fields.py:760
+msgid "\"{value}\" is not a valid UUID."
+msgstr "“{value}”不是合法的UUID。"
+
+#: fields.py:796
+msgid "Enter a valid IPv4 or IPv6 address."
+msgstr "请输入一个有效的IPv4或IPv6地址。"
+
+#: fields.py:821
+msgid "A valid integer is required."
+msgstr "请填写合法的整数值。"
+
+#: fields.py:822 fields.py:857 fields.py:891
+msgid "Ensure this value is less than or equal to {max_value}."
+msgstr "请确保该值小于或者等于 {max_value}。"
+
+#: fields.py:823 fields.py:858 fields.py:892
+msgid "Ensure this value is greater than or equal to {min_value}."
+msgstr "请确保该值大于或者等于 {min_value}。"
+
+#: fields.py:824 fields.py:859 fields.py:896
+msgid "String value too large."
+msgstr "字符串值太长。"
+
+#: fields.py:856 fields.py:890
+msgid "A valid number is required."
+msgstr "请填写合法的数字。"
+
+#: fields.py:893
+msgid "Ensure that there are no more than {max_digits} digits in total."
+msgstr "请确保总计不超过 {max_digits} 个数字。"
+
+#: fields.py:894
+msgid ""
+"Ensure that there are no more than {max_decimal_places} decimal places."
+msgstr "请确保总计不超过 {max_decimal_places} 个小数位。"
+
+#: fields.py:895
+msgid ""
+"Ensure that there are no more than {max_whole_digits} digits before the "
+"decimal point."
+msgstr "请确保小数点前不超过 {max_whole_digits} 个数字。"
+
+#: fields.py:1025
+msgid "Datetime has wrong format. Use one of these formats instead: {format}."
+msgstr "日期时间格式错误。请从这些格式中选择：{format}。"
+
+#: fields.py:1026
+msgid "Expected a datetime but got a date."
+msgstr "期望为日期时间，得到的是日期。"
+
+#: fields.py:1103
+msgid "Date has wrong format. Use one of these formats instead: {format}."
+msgstr "日期格式错误。请从这些格式中选择：{format}。"
+
+#: fields.py:1104
+msgid "Expected a date but got a datetime."
+msgstr "期望为日期，得到的是日期时间。"
+
+#: fields.py:1170
+msgid "Time has wrong format. Use one of these formats instead: {format}."
+msgstr "时间格式错误。请从这些格式中选择：{format}。"
+
+#: fields.py:1232
+msgid "Duration has wrong format. Use one of these formats instead: {format}."
+msgstr "持续时间的格式错误。使用这些格式中的一个：{format}。"
+
+#: fields.py:1251 fields.py:1300
+msgid "\"{input}\" is not a valid choice."
+msgstr "“{input}” 不是合法选项。"
+
+#: fields.py:1254 relations.py:71 relations.py:441
+msgid "More than {count} items..."
+msgstr "多于{count}条记录。"
+
+#: fields.py:1301 fields.py:1448 relations.py:437 serializers.py:524
+msgid "Expected a list of items but got type \"{input_type}\"."
+msgstr "期望为一个包含物件的列表，得到的类型是“{input_type}”。"
+
+#: fields.py:1302
+msgid "This selection may not be empty."
+msgstr "这项选择不能为空。"
+
+#: fields.py:1339
+msgid "\"{input}\" is not a valid path choice."
+msgstr "“{input}” 不是有效路径选项。"
+
+#: fields.py:1358
+msgid "No file was submitted."
+msgstr "没有提交任何文件。"
+
+#: fields.py:1359
+msgid ""
+"The submitted data was not a file. Check the encoding type on the form."
+msgstr "提交的数据不是一个文件。请检查表单的编码类型。"
+
+#: fields.py:1360
+msgid "No filename could be determined."
+msgstr "无法检测到文件名。"
+
+#: fields.py:1361
+msgid "The submitted file is empty."
+msgstr "提交的是空文件。"
+
+#: fields.py:1362
+msgid ""
+"Ensure this filename has at most {max_length} characters (it has {length})."
+msgstr "确保该文件名最多包含 {max_length} 个字符 ( 当前长度为{length} ) 。"
+
+#: fields.py:1410
+msgid ""
+"Upload a valid image. The file you uploaded was either not an image or a "
+"corrupted image."
+msgstr "请上传有效图片。您上传的该文件不是图片或者图片已经损坏。"
+
+#: fields.py:1449 relations.py:438 serializers.py:525
+msgid "This list may not be empty."
+msgstr "列表字段不能为空值。"
+
+#: fields.py:1502
+msgid "Expected a dictionary of items but got type \"{input_type}\"."
+msgstr "期望是包含类目的字典，得到类型为 “{input_type}”。"
+
+#: fields.py:1549
+msgid "Value must be valid JSON."
+msgstr "值必须是有效的 JSON 数据。"
+
+#: filters.py:36 templates/rest_framework/filters/django_filter.html:5
+msgid "Submit"
+msgstr "保存"
+
+#: filters.py:336
+msgid "ascending"
+msgstr "升序"
+
+#: filters.py:337
+msgid "descending"
+msgstr "降序"
+
+#: pagination.py:193
+msgid "Invalid page."
+msgstr "无效页。"
+
+#: pagination.py:427
+msgid "Invalid cursor"
+msgstr "无效游标"
+
+#: relations.py:207
+msgid "Invalid pk \"{pk_value}\" - object does not exist."
+msgstr "无效主键 “{pk_value}” － 对象不存在。"
+
+#: relations.py:208
+msgid "Incorrect type. Expected pk value, received {data_type}."
+msgstr "类型错误。期望为主键，得到的类型为 {data_type}。"
+
+#: relations.py:240
+msgid "Invalid hyperlink - No URL match."
+msgstr "无效超链接 －没有匹配的URL。"
+
+#: relations.py:241
+msgid "Invalid hyperlink - Incorrect URL match."
+msgstr "无效超链接 －错误的URL匹配。"
+
+#: relations.py:242
+msgid "Invalid hyperlink - Object does not exist."
+msgstr "无效超链接 －对象不存在。"
+
+#: relations.py:243
+msgid "Incorrect type. Expected URL string, received {data_type}."
+msgstr "类型错误。期望为URL字符串，实际的类型是 {data_type}。"
+
+#: relations.py:401
+msgid "Object with {slug_name}={value} does not exist."
+msgstr "属性 {slug_name} 为 {value} 的对象不存在。"
+
+#: relations.py:402
+msgid "Invalid value."
+msgstr "无效值。"
+
+#: serializers.py:326
+msgid "Invalid data. Expected a dictionary, but got {datatype}."
+msgstr "无效数据。期待为字典类型，得到的是 {datatype} 。"
+
+#: templates/rest_framework/admin.html:116
+#: templates/rest_framework/base.html:128
+msgid "Filters"
+msgstr "过滤器"
+
+#: templates/rest_framework/filters/django_filter.html:2
+#: templates/rest_framework/filters/django_filter_crispyforms.html:4
+msgid "Field filters"
+msgstr "过滤器字段"
+
+#: templates/rest_framework/filters/ordering.html:3
+msgid "Ordering"
+msgstr "排序"
+
+#: templates/rest_framework/filters/search.html:2
+msgid "Search"
+msgstr "查找"
+
+#: templates/rest_framework/horizontal/radio.html:2
+#: templates/rest_framework/inline/radio.html:2
+#: templates/rest_framework/vertical/radio.html:2
+msgid "None"
+msgstr "无"
+
+#: templates/rest_framework/horizontal/select_multiple.html:2
+#: templates/rest_framework/inline/select_multiple.html:2
+#: templates/rest_framework/vertical/select_multiple.html:2
+msgid "No items to select."
+msgstr "没有可选项。"
+
+#: validators.py:43
+msgid "This field must be unique."
+msgstr "该字段必须唯一。"
+
+#: validators.py:97
+msgid "The fields {field_names} must make a unique set."
+msgstr "字段 {field_names} 必须能构成唯一集合。"
+
+#: validators.py:245
+msgid "This field must be unique for the \"{date_field}\" date."
+msgstr "该字段必须在日期 “{date_field}” 唯一。"
+
+#: validators.py:260
+msgid "This field must be unique for the \"{date_field}\" month."
+msgstr "该字段必须在月份 “{date_field}” 唯一。"
+
+#: validators.py:273
+msgid "This field must be unique for the \"{date_field}\" year."
+msgstr "该字段必须在年 “{date_field}” 唯一。"
+
+#: versioning.py:42
+msgid "Invalid version in \"Accept\" header."
+msgstr "“Accept” HTTP头包含无效版本。"
+
+#: versioning.py:73
+msgid "Invalid version in URL path."
+msgstr "URL路径包含无效版本。"
+
+#: versioning.py:115
+msgid "Invalid version in URL path. Does not match any version namespace."
+msgstr "URL路径中存在无效版本。版本空间中无法匹配上。"
+
+#: versioning.py:147
+msgid "Invalid version in hostname."
+msgstr "主机名包含无效版本。"
+
+#: versioning.py:169
+msgid "Invalid version in query parameter."
+msgstr "请求参数里包含无效版本。"
+
+#: views.py:88
+msgid "Permission denied."
+msgstr "没有权限。"

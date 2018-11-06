@@ -1,0 +1,440 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+# Tõnis Kärdi <tonis.kardi@gmail.com>, 2015
+msgid ""
+msgstr ""
+"Project-Id-Version: Django REST framework\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-07-12 16:13+0100\n"
+"PO-Revision-Date: 2017-08-03 14:58+0000\n"
+"Last-Translator: Thomas Christie <tom@tomchristie.com>\n"
+"Language-Team: Estonian (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/et/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: et\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: authentication.py:73
+msgid "Invalid basic header. No credentials provided."
+msgstr "Sobimatu lihtpäis. Kasutajatunnus on esitamata."
+
+#: authentication.py:76
+msgid "Invalid basic header. Credentials string should not contain spaces."
+msgstr "Sobimatu lihtpäis. Kasutajatunnus ei tohi sisaldada tühikuid."
+
+#: authentication.py:82
+msgid "Invalid basic header. Credentials not correctly base64 encoded."
+msgstr "Sobimatu lihtpäis. Kasutajatunnus pole korrektselt base64-kodeeritud."
+
+#: authentication.py:99
+msgid "Invalid username/password."
+msgstr "Sobimatu kasutajatunnus/salasõna."
+
+#: authentication.py:102 authentication.py:198
+msgid "User inactive or deleted."
+msgstr "Kasutaja on inaktiivne või kustutatud."
+
+#: authentication.py:176
+msgid "Invalid token header. No credentials provided."
+msgstr "Sobimatu lubakaardi päis. Kasutajatunnus on esitamata."
+
+#: authentication.py:179
+msgid "Invalid token header. Token string should not contain spaces."
+msgstr "Sobimatu lubakaardi päis. Loa sõne ei tohi sisaldada tühikuid."
+
+#: authentication.py:185
+msgid ""
+"Invalid token header. Token string should not contain invalid characters."
+msgstr ""
+
+#: authentication.py:195
+msgid "Invalid token."
+msgstr "Sobimatu lubakaart."
+
+#: authtoken/apps.py:7
+msgid "Auth Token"
+msgstr ""
+
+#: authtoken/models.py:15
+msgid "Key"
+msgstr ""
+
+#: authtoken/models.py:18
+msgid "User"
+msgstr ""
+
+#: authtoken/models.py:20
+msgid "Created"
+msgstr ""
+
+#: authtoken/models.py:29
+msgid "Token"
+msgstr ""
+
+#: authtoken/models.py:30
+msgid "Tokens"
+msgstr ""
+
+#: authtoken/serializers.py:8
+msgid "Username"
+msgstr ""
+
+#: authtoken/serializers.py:9
+msgid "Password"
+msgstr ""
+
+#: authtoken/serializers.py:20
+msgid "User account is disabled."
+msgstr "Kasutajakonto on suletud."
+
+#: authtoken/serializers.py:23
+msgid "Unable to log in with provided credentials."
+msgstr "Sisselogimine antud tunnusega ebaõnnestus."
+
+#: authtoken/serializers.py:26
+msgid "Must include \"username\" and \"password\"."
+msgstr "Peab sisaldama \"kasutajatunnust\" ja \"slasõna\"."
+
+#: exceptions.py:49
+msgid "A server error occurred."
+msgstr "Viga serveril."
+
+#: exceptions.py:84
+msgid "Malformed request."
+msgstr "Väändunud päring."
+
+#: exceptions.py:89
+msgid "Incorrect authentication credentials."
+msgstr "Ebakorrektne autentimistunnus."
+
+#: exceptions.py:94
+msgid "Authentication credentials were not provided."
+msgstr "Autentimistunnus on esitamata."
+
+#: exceptions.py:99
+msgid "You do not have permission to perform this action."
+msgstr "Teil puuduvad piisavad õigused selle tegevuse teostamiseks."
+
+#: exceptions.py:104 views.py:81
+msgid "Not found."
+msgstr "Ei leidnud."
+
+#: exceptions.py:109
+msgid "Method \"{method}\" not allowed."
+msgstr "Meetod \"{method}\" pole lubatud."
+
+#: exceptions.py:120
+msgid "Could not satisfy the request Accept header."
+msgstr "Päringu Accept-päist ei suutnud täita."
+
+#: exceptions.py:132
+msgid "Unsupported media type \"{media_type}\" in request."
+msgstr "Meedia tüüpi {media_type} päringus ei toetata."
+
+#: exceptions.py:145
+msgid "Request was throttled."
+msgstr "Liiga palju päringuid."
+
+#: fields.py:269 relations.py:206 relations.py:239 validators.py:98
+#: validators.py:181
+msgid "This field is required."
+msgstr "Väli on kohustuslik."
+
+#: fields.py:270
+msgid "This field may not be null."
+msgstr "Väli ei tohi olla tühi."
+
+#: fields.py:608 fields.py:639
+msgid "\"{input}\" is not a valid boolean."
+msgstr "\"{input}\" pole kehtiv kahendarv."
+
+#: fields.py:674
+msgid "This field may not be blank."
+msgstr "See väli ei tohi olla tühi."
+
+#: fields.py:675 fields.py:1675
+msgid "Ensure this field has no more than {max_length} characters."
+msgstr "Veendu, et see väli poleks pikem kui {max_length} tähemärki."
+
+#: fields.py:676
+msgid "Ensure this field has at least {min_length} characters."
+msgstr "Veendu, et see väli oleks vähemalt {min_length} tähemärki pikk."
+
+#: fields.py:713
+msgid "Enter a valid email address."
+msgstr "Sisestage kehtiv e-posti aadress."
+
+#: fields.py:724
+msgid "This value does not match the required pattern."
+msgstr "Väärtus ei ühti etteantud mustriga."
+
+#: fields.py:735
+msgid ""
+"Enter a valid \"slug\" consisting of letters, numbers, underscores or "
+"hyphens."
+msgstr "Sisestage kehtiv \"slug\", mis koosneks tähtedest, numbritest, ala- või sidekriipsudest."
+
+#: fields.py:747
+msgid "Enter a valid URL."
+msgstr "Sisestage korrektne URL."
+
+#: fields.py:760
+msgid "\"{value}\" is not a valid UUID."
+msgstr "\"{value}\" pole kehtiv UUID."
+
+#: fields.py:796
+msgid "Enter a valid IPv4 or IPv6 address."
+msgstr ""
+
+#: fields.py:821
+msgid "A valid integer is required."
+msgstr "Sisendiks peab olema täisarv."
+
+#: fields.py:822 fields.py:857 fields.py:891
+msgid "Ensure this value is less than or equal to {max_value}."
+msgstr "Veenduge, et väärtus on väiksem kui või võrdne väärtusega {max_value}. "
+
+#: fields.py:823 fields.py:858 fields.py:892
+msgid "Ensure this value is greater than or equal to {min_value}."
+msgstr "Veenduge, et väärtus on suurem kui või võrdne väärtusega {min_value}."
+
+#: fields.py:824 fields.py:859 fields.py:896
+msgid "String value too large."
+msgstr "Sõne on liiga pikk."
+
+#: fields.py:856 fields.py:890
+msgid "A valid number is required."
+msgstr "Sisendiks peab olema arv."
+
+#: fields.py:893
+msgid "Ensure that there are no more than {max_digits} digits in total."
+msgstr "Veenduge, et kokku pole rohkem kui {max_digits} numbit."
+
+#: fields.py:894
+msgid ""
+"Ensure that there are no more than {max_decimal_places} decimal places."
+msgstr "Veenduge, et komakohti pole rohkem kui {max_decimal_places}. "
+
+#: fields.py:895
+msgid ""
+"Ensure that there are no more than {max_whole_digits} digits before the "
+"decimal point."
+msgstr "Veenduge, et täiskohti poleks rohkem kui {max_whole_digits}."
+
+#: fields.py:1025
+msgid "Datetime has wrong format. Use one of these formats instead: {format}."
+msgstr "Valesti formaaditud kuupäev-kellaaeg. Kasutage mõnda neist: {format}."
+
+#: fields.py:1026
+msgid "Expected a datetime but got a date."
+msgstr "Ootasin kuupäev-kellaaeg andmetüüpi, kuid sain hoopis kuupäeva."
+
+#: fields.py:1103
+msgid "Date has wrong format. Use one of these formats instead: {format}."
+msgstr "Valesti formaaditud kuupäev. Kasutage mõnda neist: {format}."
+
+#: fields.py:1104
+msgid "Expected a date but got a datetime."
+msgstr "Ootasin kuupäeva andmetüüpi, kuid sain hoopis kuupäev-kellaaja."
+
+#: fields.py:1170
+msgid "Time has wrong format. Use one of these formats instead: {format}."
+msgstr "Valesti formaaditud kellaaeg. Kasutage mõnda neist: {format}."
+
+#: fields.py:1232
+msgid "Duration has wrong format. Use one of these formats instead: {format}."
+msgstr ""
+
+#: fields.py:1251 fields.py:1300
+msgid "\"{input}\" is not a valid choice."
+msgstr "\"{input}\" on sobimatu valik."
+
+#: fields.py:1254 relations.py:71 relations.py:441
+msgid "More than {count} items..."
+msgstr ""
+
+#: fields.py:1301 fields.py:1448 relations.py:437 serializers.py:524
+msgid "Expected a list of items but got type \"{input_type}\"."
+msgstr "Ootasin kirjete järjendit, kuid sain \"{input_type}\" - tüübi."
+
+#: fields.py:1302
+msgid "This selection may not be empty."
+msgstr ""
+
+#: fields.py:1339
+msgid "\"{input}\" is not a valid path choice."
+msgstr ""
+
+#: fields.py:1358
+msgid "No file was submitted."
+msgstr "Ühtegi faili ei esitatud."
+
+#: fields.py:1359
+msgid ""
+"The submitted data was not a file. Check the encoding type on the form."
+msgstr "Esitatud andmetes ei olnud faili. Kontrollige vormi kodeeringut."
+
+#: fields.py:1360
+msgid "No filename could be determined."
+msgstr "Ei suutnud tuvastada failinime."
+
+#: fields.py:1361
+msgid "The submitted file is empty."
+msgstr "Esitatud fail oli tühi."
+
+#: fields.py:1362
+msgid ""
+"Ensure this filename has at most {max_length} characters (it has {length})."
+msgstr "Veenduge, et failinimi oleks maksimaalselt {max_length} tähemärki pikk (praegu on {length})."
+
+#: fields.py:1410
+msgid ""
+"Upload a valid image. The file you uploaded was either not an image or a "
+"corrupted image."
+msgstr "Laadige üles kehtiv pildifail. Üles laetud fail ei olnud pilt või oli see katki."
+
+#: fields.py:1449 relations.py:438 serializers.py:525
+msgid "This list may not be empty."
+msgstr ""
+
+#: fields.py:1502
+msgid "Expected a dictionary of items but got type \"{input_type}\"."
+msgstr "Ootasin kirjete sõnastikku, kuid sain \"{input_type}\"."
+
+#: fields.py:1549
+msgid "Value must be valid JSON."
+msgstr ""
+
+#: filters.py:36 templates/rest_framework/filters/django_filter.html:5
+msgid "Submit"
+msgstr ""
+
+#: filters.py:336
+msgid "ascending"
+msgstr ""
+
+#: filters.py:337
+msgid "descending"
+msgstr ""
+
+#: pagination.py:193
+msgid "Invalid page."
+msgstr ""
+
+#: pagination.py:427
+msgid "Invalid cursor"
+msgstr "Sobimatu kursor."
+
+#: relations.py:207
+msgid "Invalid pk \"{pk_value}\" - object does not exist."
+msgstr "Sobimatu primaarvõti \"{pk_value}\" - objekti pole olemas."
+
+#: relations.py:208
+msgid "Incorrect type. Expected pk value, received {data_type}."
+msgstr "Sobimatu andmetüüp. Ootasin primaarvõtit, sain {data_type}."
+
+#: relations.py:240
+msgid "Invalid hyperlink - No URL match."
+msgstr "Sobimatu hüperlink - ei leidnud URLi vastet."
+
+#: relations.py:241
+msgid "Invalid hyperlink - Incorrect URL match."
+msgstr "Sobimatu hüperlink - vale URLi vaste."
+
+#: relations.py:242
+msgid "Invalid hyperlink - Object does not exist."
+msgstr "Sobimatu hüperlink - objekti ei eksisteeri."
+
+#: relations.py:243
+msgid "Incorrect type. Expected URL string, received {data_type}."
+msgstr "Sobimatu andmetüüp. Ootasin URLi sõne, sain {data_type}."
+
+#: relations.py:401
+msgid "Object with {slug_name}={value} does not exist."
+msgstr "Objekti {slug_name}={value} ei eksisteeri."
+
+#: relations.py:402
+msgid "Invalid value."
+msgstr "Sobimatu väärtus."
+
+#: serializers.py:326
+msgid "Invalid data. Expected a dictionary, but got {datatype}."
+msgstr "Sobimatud andmed. Ootasin sõnastikku, kuid sain {datatype}."
+
+#: templates/rest_framework/admin.html:116
+#: templates/rest_framework/base.html:128
+msgid "Filters"
+msgstr ""
+
+#: templates/rest_framework/filters/django_filter.html:2
+#: templates/rest_framework/filters/django_filter_crispyforms.html:4
+msgid "Field filters"
+msgstr ""
+
+#: templates/rest_framework/filters/ordering.html:3
+msgid "Ordering"
+msgstr ""
+
+#: templates/rest_framework/filters/search.html:2
+msgid "Search"
+msgstr ""
+
+#: templates/rest_framework/horizontal/radio.html:2
+#: templates/rest_framework/inline/radio.html:2
+#: templates/rest_framework/vertical/radio.html:2
+msgid "None"
+msgstr ""
+
+#: templates/rest_framework/horizontal/select_multiple.html:2
+#: templates/rest_framework/inline/select_multiple.html:2
+#: templates/rest_framework/vertical/select_multiple.html:2
+msgid "No items to select."
+msgstr ""
+
+#: validators.py:43
+msgid "This field must be unique."
+msgstr "Selle välja väärtus peab olema unikaalne."
+
+#: validators.py:97
+msgid "The fields {field_names} must make a unique set."
+msgstr "Veerud {field_names} peavad moodustama unikaalse hulga."
+
+#: validators.py:245
+msgid "This field must be unique for the \"{date_field}\" date."
+msgstr "Selle välja väärtus peab olema unikaalne veerus \"{date_field}\" märgitud kuupäeval."
+
+#: validators.py:260
+msgid "This field must be unique for the \"{date_field}\" month."
+msgstr "Selle välja väärtus peab olema unikaalneveerus \"{date_field}\" märgitud kuul."
+
+#: validators.py:273
+msgid "This field must be unique for the \"{date_field}\" year."
+msgstr "Selle välja väärtus peab olema unikaalneveerus \"{date_field}\" märgitud aastal."
+
+#: versioning.py:42
+msgid "Invalid version in \"Accept\" header."
+msgstr "Sobimatu versioon \"Accept\" päises."
+
+#: versioning.py:73
+msgid "Invalid version in URL path."
+msgstr "Sobimatu versioon URLi rajas."
+
+#: versioning.py:115
+msgid "Invalid version in URL path. Does not match any version namespace."
+msgstr ""
+
+#: versioning.py:147
+msgid "Invalid version in hostname."
+msgstr "Sobimatu versioon hostinimes."
+
+#: versioning.py:169
+msgid "Invalid version in query parameter."
+msgstr "Sobimatu versioon päringu parameetris."
+
+#: views.py:88
+msgid "Permission denied."
+msgstr ""

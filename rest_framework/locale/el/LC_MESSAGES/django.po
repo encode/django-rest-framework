@@ -1,0 +1,440 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+# Serafeim Papastefanos <spapas@gmail.com>, 2016
+msgid ""
+msgstr ""
+"Project-Id-Version: Django REST framework\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-07-12 16:13+0100\n"
+"PO-Revision-Date: 2017-08-03 14:58+0000\n"
+"Last-Translator: Thomas Christie <tom@tomchristie.com>\n"
+"Language-Team: Greek (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/el/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: el\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: authentication.py:73
+msgid "Invalid basic header. No credentials provided."
+msgstr "Λανθασμένη επικεφαλίδα basic. Δεν υπάρχουν διαπιστευτήρια."
+
+#: authentication.py:76
+msgid "Invalid basic header. Credentials string should not contain spaces."
+msgstr "Λανθασμένη επικεφαλίδα basic. Τα διαπιστευτήρια δε μπορεί να περιέχουν κενά."
+
+#: authentication.py:82
+msgid "Invalid basic header. Credentials not correctly base64 encoded."
+msgstr "Λανθασμένη επικεφαλίδα basic. Τα διαπιστευτήρια δεν είναι κωδικοποιημένα κατά base64."
+
+#: authentication.py:99
+msgid "Invalid username/password."
+msgstr "Λανθασμένο όνομα χρήστη/κωδικός."
+
+#: authentication.py:102 authentication.py:198
+msgid "User inactive or deleted."
+msgstr "Ο χρήστης είναι ανενεργός ή διεγραμμένος."
+
+#: authentication.py:176
+msgid "Invalid token header. No credentials provided."
+msgstr "Λανθασμένη επικεφαλίδα token. Δεν υπάρχουν διαπιστευτήρια."
+
+#: authentication.py:179
+msgid "Invalid token header. Token string should not contain spaces."
+msgstr "Λανθασμένη επικεφαλίδα token. Το token δε πρέπει να περιέχει κενά."
+
+#: authentication.py:185
+msgid ""
+"Invalid token header. Token string should not contain invalid characters."
+msgstr "Λανθασμένη επικεφαλίδα token. Το token περιέχει μη επιτρεπτούς χαρακτήρες."
+
+#: authentication.py:195
+msgid "Invalid token."
+msgstr "Λανθασμένο token"
+
+#: authtoken/apps.py:7
+msgid "Auth Token"
+msgstr "Token πιστοποίησης"
+
+#: authtoken/models.py:15
+msgid "Key"
+msgstr "Κλειδί"
+
+#: authtoken/models.py:18
+msgid "User"
+msgstr "Χρήστης"
+
+#: authtoken/models.py:20
+msgid "Created"
+msgstr "Δημιουργήθηκε"
+
+#: authtoken/models.py:29
+msgid "Token"
+msgstr "Token"
+
+#: authtoken/models.py:30
+msgid "Tokens"
+msgstr "Tokens"
+
+#: authtoken/serializers.py:8
+msgid "Username"
+msgstr "Όνομα χρήστη"
+
+#: authtoken/serializers.py:9
+msgid "Password"
+msgstr "Κωδικός"
+
+#: authtoken/serializers.py:20
+msgid "User account is disabled."
+msgstr "Ο λογαριασμός χρήστη είναι απενεργοποιημένος."
+
+#: authtoken/serializers.py:23
+msgid "Unable to log in with provided credentials."
+msgstr "Δεν είναι δυνατή η σύνδεση με τα διαπιστευτήρια."
+
+#: authtoken/serializers.py:26
+msgid "Must include \"username\" and \"password\"."
+msgstr "Πρέπει να περιέχει \"όνομα χρήστη\" και \"κωδικό\"."
+
+#: exceptions.py:49
+msgid "A server error occurred."
+msgstr "Σφάλμα διακομιστή."
+
+#: exceptions.py:84
+msgid "Malformed request."
+msgstr "Λανθασμένο αίτημα."
+
+#: exceptions.py:89
+msgid "Incorrect authentication credentials."
+msgstr "Λάθος διαπιστευτήρια."
+
+#: exceptions.py:94
+msgid "Authentication credentials were not provided."
+msgstr "Δεν δόθηκαν διαπιστευτήρια."
+
+#: exceptions.py:99
+msgid "You do not have permission to perform this action."
+msgstr "Δεν έχετε δικαίωματα για αυτή την ενέργεια."
+
+#: exceptions.py:104 views.py:81
+msgid "Not found."
+msgstr "Δε βρέθηκε."
+
+#: exceptions.py:109
+msgid "Method \"{method}\" not allowed."
+msgstr "Η μέθοδος \"{method\"} δεν επιτρέπεται."
+
+#: exceptions.py:120
+msgid "Could not satisfy the request Accept header."
+msgstr "Δεν ήταν δυνατή η ικανοποίηση της επικεφαλίδας Accept της αίτησης."
+
+#: exceptions.py:132
+msgid "Unsupported media type \"{media_type}\" in request."
+msgstr "Δεν υποστηρίζεται το media type \"{media_type}\" της αίτησης."
+
+#: exceptions.py:145
+msgid "Request was throttled."
+msgstr "Το αίτημα έγινε throttle."
+
+#: fields.py:269 relations.py:206 relations.py:239 validators.py:98
+#: validators.py:181
+msgid "This field is required."
+msgstr "Το πεδίο είναι απαραίτητο."
+
+#: fields.py:270
+msgid "This field may not be null."
+msgstr "Το πεδίο δε μπορεί να είναι null."
+
+#: fields.py:608 fields.py:639
+msgid "\"{input}\" is not a valid boolean."
+msgstr "Το \"{input}\" δεν είναι έγκυρο boolean."
+
+#: fields.py:674
+msgid "This field may not be blank."
+msgstr "Το πεδίο δε μπορεί να είναι κενό."
+
+#: fields.py:675 fields.py:1675
+msgid "Ensure this field has no more than {max_length} characters."
+msgstr "Επιβεβαιώσατε ότι το πεδίο δεν έχει περισσότερους από {max_length} χαρακτήρες."
+
+#: fields.py:676
+msgid "Ensure this field has at least {min_length} characters."
+msgstr "Επιβεβαιώσατε ότι το πεδίο έχει τουλάχιστον {min_length} χαρακτήρες."
+
+#: fields.py:713
+msgid "Enter a valid email address."
+msgstr "Συμπληρώσατε μια έγκυρη διεύθυνση e-mail."
+
+#: fields.py:724
+msgid "This value does not match the required pattern."
+msgstr "Η τιμή δε ταιριάζει με το pattern."
+
+#: fields.py:735
+msgid ""
+"Enter a valid \"slug\" consisting of letters, numbers, underscores or "
+"hyphens."
+msgstr "Εισάγετε ένα έγκυρο \"slug\" που αποτελείται από γράμματα, αριθμούς παύλες και κάτω παύλες."
+
+#: fields.py:747
+msgid "Enter a valid URL."
+msgstr "Εισάγετε έγκυρο URL."
+
+#: fields.py:760
+msgid "\"{value}\" is not a valid UUID."
+msgstr "Το \"{value}\" δεν είναι έγκυρο UUID."
+
+#: fields.py:796
+msgid "Enter a valid IPv4 or IPv6 address."
+msgstr "Εισάγετε μια έγκυρη διεύθυνση IPv4 ή IPv6."
+
+#: fields.py:821
+msgid "A valid integer is required."
+msgstr "Ένας έγκυρος ακέραιος είναι απαραίτητος."
+
+#: fields.py:822 fields.py:857 fields.py:891
+msgid "Ensure this value is less than or equal to {max_value}."
+msgstr "Επιβεβαιώσατε ότι η τιμή είναι μικρότερη ή ίση του {max_value}."
+
+#: fields.py:823 fields.py:858 fields.py:892
+msgid "Ensure this value is greater than or equal to {min_value}."
+msgstr "Επιβεβαιώσατε ότι η τιμή είναι μεγαλύτερη ή ίση του {min_value}."
+
+#: fields.py:824 fields.py:859 fields.py:896
+msgid "String value too large."
+msgstr "Το κείμενο είναι πολύ μεγάλο."
+
+#: fields.py:856 fields.py:890
+msgid "A valid number is required."
+msgstr "Ένας έγκυρος αριθμός είναι απαραίτητος."
+
+#: fields.py:893
+msgid "Ensure that there are no more than {max_digits} digits in total."
+msgstr "Επιβεβαιώσατε ότι δεν υπάρχουν παραπάνω από {max_digits} ψηφία."
+
+#: fields.py:894
+msgid ""
+"Ensure that there are no more than {max_decimal_places} decimal places."
+msgstr "Επιβεβαιώσατε ότι δεν υπάρχουν παραπάνω από {max_decimal_places} δεκαδικά ψηφία."
+
+#: fields.py:895
+msgid ""
+"Ensure that there are no more than {max_whole_digits} digits before the "
+"decimal point."
+msgstr "Επιβεβαιώσατε ότι δεν υπάρχουν παραπάνω από {max_whole_digits} ακέραια ψηφία."
+
+#: fields.py:1025
+msgid "Datetime has wrong format. Use one of these formats instead: {format}."
+msgstr "Η ημερομηνία έχεi λάθος μορφή. Χρησιμοποιήστε μια από τις ακόλουθες μορφές: {format}"
+
+#: fields.py:1026
+msgid "Expected a datetime but got a date."
+msgstr "Αναμένεται ημερομηνία και ώρα αλλά δόθηκε μόνο ημερομηνία."
+
+#: fields.py:1103
+msgid "Date has wrong format. Use one of these formats instead: {format}."
+msgstr "Η ημερομηνία έχεi λάθος μορφή. Χρησιμοποιήστε μια από τις ακόλουθες μορφές: {format}"
+
+#: fields.py:1104
+msgid "Expected a date but got a datetime."
+msgstr "Αναμένεται ημερομηνία αλλά δόθηκε ημερομηνία και ώρα."
+
+#: fields.py:1170
+msgid "Time has wrong format. Use one of these formats instead: {format}."
+msgstr "Η ώρα έχει λάθος μορφή. Χρησιμοποιήστε μια από τις ακόλουθες μορφές: {format}"
+
+#: fields.py:1232
+msgid "Duration has wrong format. Use one of these formats instead: {format}."
+msgstr "Η διάρκεια έχει λάθος μορφή. Χρησιμοποιήστε μια από τις ακόλουθες μορφές: {format}"
+
+#: fields.py:1251 fields.py:1300
+msgid "\"{input}\" is not a valid choice."
+msgstr "Το \"{input}\" δεν είναι έγκυρη επιλογή."
+
+#: fields.py:1254 relations.py:71 relations.py:441
+msgid "More than {count} items..."
+msgstr "Περισσότερα από {count} αντικείμενα..."
+
+#: fields.py:1301 fields.py:1448 relations.py:437 serializers.py:524
+msgid "Expected a list of items but got type \"{input_type}\"."
+msgstr "Αναμένεται μια λίστα αντικειμένον αλλά δόθηκε ο τύπος \"{input_type}\""
+
+#: fields.py:1302
+msgid "This selection may not be empty."
+msgstr "Η επιλογή δε μπορεί να είναι κενή."
+
+#: fields.py:1339
+msgid "\"{input}\" is not a valid path choice."
+msgstr "Το \"{input}\" δεν είναι έγκυρη επιλογή διαδρομής."
+
+#: fields.py:1358
+msgid "No file was submitted."
+msgstr "Δεν υποβλήθηκε αρχείο."
+
+#: fields.py:1359
+msgid ""
+"The submitted data was not a file. Check the encoding type on the form."
+msgstr "Τα δεδομένα που υποβλήθηκαν δεν ήταν αρχείο. Ελέγξατε την κωδικοποίηση της φόρμας."
+
+#: fields.py:1360
+msgid "No filename could be determined."
+msgstr "Δε βρέθηκε όνομα αρχείου."
+
+#: fields.py:1361
+msgid "The submitted file is empty."
+msgstr "Το αρχείο που υποβλήθηκε είναι κενό."
+
+#: fields.py:1362
+msgid ""
+"Ensure this filename has at most {max_length} characters (it has {length})."
+msgstr "Επιβεβαιώσατε ότι το όνομα αρχείου έχει ως {max_length} χαρακτήρες (έχει {length})."
+
+#: fields.py:1410
+msgid ""
+"Upload a valid image. The file you uploaded was either not an image or a "
+"corrupted image."
+msgstr "Ανεβάστε μια έγκυρη εικόνα. Το αρχείο που ανεβάσατε είτε δεν είναι εικόνα είτε έχει καταστραφεί."
+
+#: fields.py:1449 relations.py:438 serializers.py:525
+msgid "This list may not be empty."
+msgstr "Η λίστα δε μπορεί να είναι κενή."
+
+#: fields.py:1502
+msgid "Expected a dictionary of items but got type \"{input_type}\"."
+msgstr "Αναμένεται ένα λεξικό αντικείμενων αλλά δόθηκε ο τύπος \"{input_type}\"."
+
+#: fields.py:1549
+msgid "Value must be valid JSON."
+msgstr "Η τιμή πρέπει να είναι μορφής JSON."
+
+#: filters.py:36 templates/rest_framework/filters/django_filter.html:5
+msgid "Submit"
+msgstr "Υποβολή"
+
+#: filters.py:336
+msgid "ascending"
+msgstr ""
+
+#: filters.py:337
+msgid "descending"
+msgstr ""
+
+#: pagination.py:193
+msgid "Invalid page."
+msgstr "Λάθος σελίδα."
+
+#: pagination.py:427
+msgid "Invalid cursor"
+msgstr "Λάθος cursor."
+
+#: relations.py:207
+msgid "Invalid pk \"{pk_value}\" - object does not exist."
+msgstr "Λάθος κλειδί \"{pk_value}\" - το αντικείμενο δεν υπάρχει."
+
+#: relations.py:208
+msgid "Incorrect type. Expected pk value, received {data_type}."
+msgstr "Λάθος τύπος. Αναμένεται τιμή κλειδιού, δόθηκε {data_type}."
+
+#: relations.py:240
+msgid "Invalid hyperlink - No URL match."
+msgstr "Λάθος σύνδεση - δε ταιριάζει κάποιο URL."
+
+#: relations.py:241
+msgid "Invalid hyperlink - Incorrect URL match."
+msgstr "Λάθος σύνδεση - δε ταιριάζει κάποιο URL."
+
+#: relations.py:242
+msgid "Invalid hyperlink - Object does not exist."
+msgstr "Λάθος σύνδεση - το αντικείμενο δεν υπάρχει."
+
+#: relations.py:243
+msgid "Incorrect type. Expected URL string, received {data_type}."
+msgstr "Λάθος τύπος. Αναμένεται URL, δόθηκε {data_type}."
+
+#: relations.py:401
+msgid "Object with {slug_name}={value} does not exist."
+msgstr "Το αντικείμενο {slug_name}={value} δεν υπάρχει."
+
+#: relations.py:402
+msgid "Invalid value."
+msgstr "Λάθος τιμή."
+
+#: serializers.py:326
+msgid "Invalid data. Expected a dictionary, but got {datatype}."
+msgstr "Λάθος δεδομένα. Αναμένεται λεξικό αλλά δόθηκε {datatype}."
+
+#: templates/rest_framework/admin.html:116
+#: templates/rest_framework/base.html:128
+msgid "Filters"
+msgstr "Φίλτρα"
+
+#: templates/rest_framework/filters/django_filter.html:2
+#: templates/rest_framework/filters/django_filter_crispyforms.html:4
+msgid "Field filters"
+msgstr "Φίλτρα πεδίων"
+
+#: templates/rest_framework/filters/ordering.html:3
+msgid "Ordering"
+msgstr "Ταξινόμηση"
+
+#: templates/rest_framework/filters/search.html:2
+msgid "Search"
+msgstr "Αναζήτηση"
+
+#: templates/rest_framework/horizontal/radio.html:2
+#: templates/rest_framework/inline/radio.html:2
+#: templates/rest_framework/vertical/radio.html:2
+msgid "None"
+msgstr "None"
+
+#: templates/rest_framework/horizontal/select_multiple.html:2
+#: templates/rest_framework/inline/select_multiple.html:2
+#: templates/rest_framework/vertical/select_multiple.html:2
+msgid "No items to select."
+msgstr "Δεν υπάρχουν αντικείμενα προς επιλογή."
+
+#: validators.py:43
+msgid "This field must be unique."
+msgstr "Το πεδίο πρέπει να είναι μοναδικό"
+
+#: validators.py:97
+msgid "The fields {field_names} must make a unique set."
+msgstr "Τα πεδία {field_names} πρέπει να αποτελούν ένα μοναδικό σύνολο."
+
+#: validators.py:245
+msgid "This field must be unique for the \"{date_field}\" date."
+msgstr "Το πεδίο πρέπει να είναι μοναδικό για την ημερομηνία \"{date_field}\"."
+
+#: validators.py:260
+msgid "This field must be unique for the \"{date_field}\" month."
+msgstr "Το πεδίο πρέπει να είναι μοναδικό για το μήνα \"{date_field}\"."
+
+#: validators.py:273
+msgid "This field must be unique for the \"{date_field}\" year."
+msgstr "Το πεδίο πρέπει να είναι μοναδικό για το έτος  \"{date_field}\"."
+
+#: versioning.py:42
+msgid "Invalid version in \"Accept\" header."
+msgstr "Λάθος έκδοση στην επικεφαλίδα \"Accept\"."
+
+#: versioning.py:73
+msgid "Invalid version in URL path."
+msgstr "Λάθος έκδοση στη διαδρομή URL."
+
+#: versioning.py:115
+msgid "Invalid version in URL path. Does not match any version namespace."
+msgstr ""
+
+#: versioning.py:147
+msgid "Invalid version in hostname."
+msgstr "Λάθος έκδοση στο hostname."
+
+#: versioning.py:169
+msgid "Invalid version in query parameter."
+msgstr "Λάθος έκδοση στην παράμετρο"
+
+#: views.py:88
+msgid "Permission denied."
+msgstr "Απόρριψη πρόσβασης"
