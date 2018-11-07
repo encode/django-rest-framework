@@ -236,12 +236,14 @@ class ModelPermissionsIntegrationTests(TestCase):
 
         # Faulty `get_queryset()` methods should trigger the above "view does not have a queryset" assertion.
         class View(RootView):
+            queryset = None
+
             def get_queryset(self):
                 return None
         view = View.as_view()
 
         request = factory.get('/', HTTP_AUTHORIZATION=self.permitted_credentials)
-        with self.assertRaisesMessage(AssertionError, 'View.get_queryset() returned None'):
+        with self.assertRaisesMessage(AssertionError, 'The value of View.queryset and View.get_queryset() is None.'):
             view(request)
 
 
@@ -589,3 +591,4 @@ class PermissionsCompositionTests(TestCase):
             permissions.IsAuthenticated
         )
         assert composed_perm().has_permission(request, None) is True
+

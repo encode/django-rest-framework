@@ -184,13 +184,15 @@ class DjangoModelPermissions(BasePermission):
             '`.queryset` or have a `.get_queryset()` method.'
         ).format(self.__class__.__name__)
 
-        if hasattr(view, 'get_queryset'):
+        queryset = getattr(view, 'queryset', None)
+
+        if queryset is None:
             queryset = view.get_queryset()
             assert queryset is not None, (
-                '{}.get_queryset() returned None'.format(view.__class__.__name__)
+                'The value of {0}.queryset and {0}.get_queryset() is None.'.format(view.__class__.__name__)
             )
-            return queryset
-        return view.queryset
+
+        return queryset
 
     def has_permission(self, request, view):
         # Workaround to ensure DjangoModelPermissions are not applied
