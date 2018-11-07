@@ -591,4 +591,3 @@ class PermissionsCompositionTests(TestCase):
             permissions.IsAuthenticated
         )
         assert composed_perm().has_permission(request, None) is True
-
