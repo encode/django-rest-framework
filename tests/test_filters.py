@@ -283,13 +283,15 @@ class SearchFilterToManyTests(TestCase):
         b1 = Blog.objects.create(name='Blog 1')
         b2 = Blog.objects.create(name='Blog 2')
 
-        # Multiple entries on Lennon published in 1979 - distinct should deduplicate
-        Entry.objects.create(blog=b1, headline='Something about Lennon', pub_date=datetime.date(1979, 1, 1))
-        Entry.objects.create(blog=b1, headline='Another thing about Lennon', pub_date=datetime.date(1979, 6, 1))
+        Entry.objects.bulk_create([
+            # Multiple entries on Lennon published in 1979 - distinct should deduplicate
+            Entry(blog=b1, headline='Something about Lennon', pub_date=datetime.date(1979, 1, 1)),
+            Entry(blog=b1, headline='Another thing about Lennon', pub_date=datetime.date(1979, 6, 1)),
 
-        # Entry on Lennon *and* a separate entry in 1979 - should not match
-        Entry.objects.create(blog=b2, headline='Something unrelated', pub_date=datetime.date(1979, 1, 1))
-        Entry.objects.create(blog=b2, headline='Retrospective on Lennon', pub_date=datetime.date(1990, 6, 1))
+            # Entry on Lennon *and* a separate entry in 1979 - should not match
+            Entry(blog=b2, headline='Something unrelated', pub_date=datetime.date(1979, 1, 1)),
+            Entry(blog=b2, headline='Retrospective on Lennon', pub_date=datetime.date(1990, 6, 1)),
+        ])
 
     def test_multiple_filter_conditions(self):
         class SearchListView(generics.ListAPIView):
