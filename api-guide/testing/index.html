@@ -626,7 +626,7 @@ response = view(request)
 <h1 id="apiclient"><a class="toclink" href="#apiclient">APIClient</a></h1>
 <p>Extends <a href="https://docs.djangoproject.com/en/stable/topics/testing/tools/#the-test-client">Django's existing <code>Client</code> class</a>.</p>
 <h2 id="making-requests"><a class="toclink" href="#making-requests">Making requests</a></h2>
-<p>The <code>APIClient</code> class supports the same request interface as Django's standard <code>Client</code> class.  This means the that standard <code>.get()</code>, <code>.post()</code>, <code>.put()</code>, <code>.patch()</code>, <code>.delete()</code>, <code>.head()</code> and <code>.options()</code> methods are all available.  For example:</p>
+<p>The <code>APIClient</code> class supports the same request interface as Django's standard <code>Client</code> class.  This means that the standard <code>.get()</code>, <code>.post()</code>, <code>.put()</code>, <code>.patch()</code>, <code>.delete()</code>, <code>.head()</code> and <code>.options()</code> methods are all available.  For example:</p>
 <pre><code>from rest_framework.test import APIClient
 
 client = APIClient()

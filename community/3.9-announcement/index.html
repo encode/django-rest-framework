@@ -577,12 +577,12 @@ They will be removed entirely in 3.10.</p>
 <h3 id="exclude_from_schema"><a class="toclink" href="#exclude_from_schema"><code>exclude_from_schema</code></a></h3>
 <p>Both <code>APIView.exclude_from_schema</code> and the <code>exclude_from_schema</code> argument to the <code>@api_view</code> have now been removed.</p>
 <p>For <code>APIView</code> you should instead set a <code>schema = None</code> attribute on the view class.</p>
-<p>For function based views the <code>@schema</code> decorator can be used to exclude the view from the schema, by using <code>@schema(None)</code>.</p>
+<p>For function-based views the <code>@schema</code> decorator can be used to exclude the view from the schema, by using <code>@schema(None)</code>.</p>
 <hr />
 <h2 id="minor-fixes-and-improvements"><a class="toclink" href="#minor-fixes-and-improvements">Minor fixes and improvements</a></h2>
 <p>There are a large number of minor fixes and improvements in this release. See the <a href="../release-notes/">release notes</a> page for a complete listing.</p>
 <h2 id="whats-next"><a class="toclink" href="#whats-next">What's next</a></h2>
-<p>We're planning to iteratively working towards OpenAPI becoming the standard schema
+<p>We're planning to iteratively work towards OpenAPI becoming the standard schema
 representation. This will mean that the <code>coreapi</code> dependency will gradually become
 removed, and we'll instead generate the schema directly, rather than building
 a CoreAPI <code>Document</code> object.</p>
@@ -598,7 +598,7 @@ validating API schemas, and providing a dynamic client library.</p>
 with the possibility that some of this work will eventually <a href="https://www.aeracode.org/2018/06/04/django-async-roadmap/">feed back into
 Django</a>.</p>
 <p>There will be further work on the <a href="https://www.uvicorn.org/">Uvicorn</a>
-webserver, as well as lots of functionality planned for the <a href="https://www.starlette.io/">Starlette</a>
+web server, as well as lots of functionality planned for the <a href="https://www.starlette.io/">Starlette</a>
 web framework, which is building a foundational set of tooling for working with
 ASGI.</p>
             
