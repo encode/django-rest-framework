@@ -78,7 +78,7 @@ continued development by **[signing up for a paid plan][funding]**.
 </ul>
 <div style="clear: both; padding-bottom: 20px;"></div>
 
-*Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Rover](http://jobs.rover.com/), [Sentry](https://getsentry.com/welcome/), [Stream](https://getstream.io/?utm_source=drf&utm_medium=banner&utm_campaign=drf), [Auklet](https://auklet.io/), [Rollbar](https://rollbar.com), [Cadre](https://cadre.com), [Load Impact](https://loadimpact.com/?utm_campaign=Sponsorship%20links&utm_source=drf&utm_medium=drf), [Kloudless](https://hubs.ly/H0f30Lf0), and [Lights On Software](https://fund-rest-framework.s3.amazonaws.com/lightson.png).*
+*Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Rover](http://jobs.rover.com/), [Sentry](https://getsentry.com/welcome/), [Stream](https://getstream.io/?utm_source=drf&utm_medium=banner&utm_campaign=drf), [Auklet](https://auklet.io/), [Rollbar](https://rollbar.com), [Cadre](https://cadre.com), [Load Impact](https://loadimpact.com/?utm_campaign=Sponsorship%20links&utm_source=drf&utm_medium=drf), [Kloudless](https://hubs.ly/H0f30Lf0), and [Lights On Software](https://lightsonsoftware.com).*
 
 ---
 
