@@ -802,7 +802,7 @@ class EventSerializer(serializers.Serializer):
 
     def validate(self, data):
         """
-        Check that the start is before the stop.
+        Check that start is before finish.
         """
         if data['start'] &gt; data['finish']:
             raise serializers.ValidationError("finish must occur after start")
