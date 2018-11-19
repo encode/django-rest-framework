@@ -82,6 +82,9 @@ class JSONRenderer(BaseRenderer):
         # E.g. If we're being called by the BrowsableAPIRenderer.
         return renderer_context.get('indent', None)
 
+    def get_encoder_class(self, accepted_media_type, renderer_context):
+        return self.encoder_class
+
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
         Render `data` into JSON, returning a bytestring.
@@ -98,7 +101,7 @@ class JSONRenderer(BaseRenderer):
             separators = INDENT_SEPARATORS
 
         ret = json.dumps(
-            data, cls=self.encoder_class,
+            data, cls=self.get_encoder_class(accepted_media_type, renderer_context),
             indent=indent, ensure_ascii=self.ensure_ascii,
             separators=separators
         )
