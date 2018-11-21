@@ -1997,6 +1997,17 @@ class TestDictField(FieldValues):
         output = field.run_validation(None)
         assert output is None
 
+    def test_html_input_as_dict(self):
+        """
+        HTML inputs should be converted to dict
+        """
+        class TestSerializer(serializers.Serializer):
+            properties = serializers.DictField()
+
+        serializer = TestSerializer(data=QueryDict('properties.key1=value1&properties.key2=value2'))
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'properties': {'key1': 'value1', 'key2': 'value2'}}
+
 
 class TestNestedDictField(FieldValues):
     """
