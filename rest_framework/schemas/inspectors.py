@@ -193,7 +193,7 @@ class AutoSchema(ViewInspector):
     """
     Default inspector for APIView
 
-    Responsible for per-view instrospection and schema generation.
+    Responsible for per-view introspection and schema generation.
     """
     def __init__(self, manual_fields=None):
         """
@@ -468,7 +468,7 @@ class ManualSchema(ViewInspector):
         Parameters:
 
         * `fields`: list of `coreapi.Field` instances.
-        * `descripton`: String description for view. Optional.
+        * `description`: String description for view. Optional.
         """
         super(ManualSchema, self).__init__()
         assert all(isinstance(f, coreapi.Field) for f in fields), "`fields` must be a list of coreapi.Field instances"
