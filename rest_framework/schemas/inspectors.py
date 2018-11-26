@@ -163,7 +163,10 @@ class ViewInspector(object):
     @property
     def view(self):
         """View property."""
-        assert self._view is not None, "Schema generation REQUIRES a view instance. (Hint: you accessed `schema` from the view class rather than an instance.)"
+        assert self._view is not None, (
+            "Schema generation REQUIRES a view instance. (Hint: you accessed "
+            "`schema` from the view class rather than an instance.)"
+        )
         return self._view
 
     @view.setter
@@ -193,7 +196,7 @@ class AutoSchema(ViewInspector):
     """
     Default inspector for APIView
 
-    Responsible for per-view instrospection and schema generation.
+    Responsible for per-view introspection and schema generation.
     """
     def __init__(self, manual_fields=None):
         """
@@ -468,7 +471,7 @@ class ManualSchema(ViewInspector):
         Parameters:
 
         * `fields`: list of `coreapi.Field` instances.
-        * `descripton`: String description for view. Optional.
+        * `description`: String description for view. Optional.
         """
         super(ManualSchema, self).__init__()
         assert all(isinstance(f, coreapi.Field) for f in fields), "`fields` must be a list of coreapi.Field instances"
@@ -498,7 +501,9 @@ class DefaultSchema(ViewInspector):
             return result
 
         inspector_class = api_settings.DEFAULT_SCHEMA_CLASS
-        assert issubclass(inspector_class, ViewInspector), "DEFAULT_SCHEMA_CLASS must be set to a ViewInspector (usually an AutoSchema) subclass"
+        assert issubclass(inspector_class, ViewInspector), (
+            "DEFAULT_SCHEMA_CLASS must be set to a ViewInspector (usually an AutoSchema) subclass"
+        )
         inspector = inspector_class()
         inspector.view = instance
         return inspector
