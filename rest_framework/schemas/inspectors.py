@@ -164,8 +164,8 @@ class ViewInspector(object):
     def view(self):
         """View property."""
         assert self._view is not None, (
-            "Schema generation REQUIRES a view instance. (Hint: you accessed `schema` from "
-            "the view class rather than an instance.) "
+            "Schema generation REQUIRES a view instance. (Hint: you accessed "
+            "`schema` from the view class rather than an instance.)"
         )
         return self._view
 
