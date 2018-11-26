@@ -374,13 +374,18 @@ class TestRegularFieldMappings(TestCase):
 
             name = models.CharField(max_length=255)
             theoretically_nullable_field = models.NullBooleanField(choices=CHECKLIST_OPTIONS)
+            another_nullable_field = models.BooleanField(null=True, choices=CHECKLIST_OPTIONS)
 
         class TrivialSerializer(serializers.ModelSerializer):
             class Meta:
                 model = Trivial
                 fields = '__all__'
 
-        trivial_serialized = TrivialSerializer(data=dict(name='test', theoretically_nullable_field=None))
+        trivial_serialized = TrivialSerializer(data=dict(
+            name='test',
+            theoretically_nullable_field=None,
+            another_nullable_field=None,
+        ))
         self.assertTrue(trivial_serialized.is_valid())
         self.assertEqual(trivial_serialized.errors, {})
 
