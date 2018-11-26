@@ -594,7 +594,7 @@ The [rest-framework-generic-relations][drf-nested-relations] library provides re
 
 [cite]: https://lwn.net/Articles/193245/
 [reverse-relationships]: https://docs.djangoproject.com/en/stable/topics/db/queries/#following-relationships-backward
-[routers]: http://www.django-rest-framework.org/api-guide/routers#defaultrouter
+[routers]: https://www.django-rest-framework.org/api-guide/routers#defaultrouter
 [generic-relations]: https://docs.djangoproject.com/en/stable/ref/contrib/contenttypes/#id1
 [drf-nested-routers]: https://github.com/alanjds/drf-nested-routers
 [drf-nested-relations]: https://github.com/Ian-Foote/rest-framework-generic-relations

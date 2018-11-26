@@ -232,7 +232,7 @@ class APISettings(object):
         return val
 
     def __check_user_settings(self, user_settings):
-        SETTINGS_DOC = "http://www.django-rest-framework.org/api-guide/settings/"
+        SETTINGS_DOC = "https://www.django-rest-framework.org/api-guide/settings/"
         for setting in REMOVED_SETTINGS:
             if setting in user_settings:
                 raise RuntimeError("The '%s' setting has been removed. Please refer to '%s' for available settings." % (setting, SETTINGS_DOC))

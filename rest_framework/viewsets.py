@@ -183,7 +183,8 @@ class ViewSetMixin(object):
             try:
                 url_name = '%s-%s' % (self.basename, action.url_name)
                 url = reverse(url_name, self.args, self.kwargs, request=self.request)
-                action_urls[action.name] = url
+                view = self.__class__(**action.kwargs)
+                action_urls[view.get_view_name()] = url
             except NoReverseMatch:
                 pass  # URL requires additional arguments, ignore
 

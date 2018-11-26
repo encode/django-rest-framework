@@ -33,7 +33,7 @@ Okay, we're ready to get coding.
 To get started, let's create a new project to work with.
 
     cd ~
-    django-admin.py startproject tutorial
+    django-admin startproject tutorial
     cd tutorial
 
 Once that's done we can create an app that we'll use to create a simple Web API.
@@ -154,9 +154,9 @@ At this point we've translated the model instance into Python native datatypes. 
 
 Deserialization is similar.  First we parse a stream into Python native datatypes...
 
-    from django.utils.six import BytesIO
+    import io
 
-    stream = BytesIO(content)
+    stream = io.BytesIO(content)
     data = JSONParser().parse(stream)
 
 ...then we restore those native datatypes into a fully populated object instance.

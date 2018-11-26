@@ -9,8 +9,10 @@ from __future__ import unicode_literals
 
 import datetime
 import decimal
+import sys
 from collections import OrderedDict
 
+import django
 import pytest
 from django.core.exceptions import ImproperlyConfigured
 from django.core.validators import (
@@ -219,6 +221,25 @@ class TestRegularFieldMappings(TestCase):
             )
         self.assertEqual(unicode_repr(TestSerializer()), expected)
 
+    # merge this into test_regular_fields / RegularFieldsModel when
+    # Django 2.1 is the minimum supported version
+    @pytest.mark.skipif(django.VERSION < (2, 1), reason='Django version < 2.1')
+    def test_nullable_boolean_field(self):
+        class NullableBooleanModel(models.Model):
+            field = models.BooleanField(null=True, default=False)
+
+        class NullableBooleanSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = NullableBooleanModel
+                fields = ['field']
+
+        expected = dedent("""
+            NullableBooleanSerializer():
+                field = BooleanField(allow_null=True, required=False)
+        """)
+
+        self.assertEqual(unicode_repr(NullableBooleanSerializer()), expected)
+
     def test_method_field(self):
         """
         Properties and methods on the model should be allowed as `Meta.fields`
@@ -343,13 +364,14 @@ class TestRegularFieldMappings(TestCase):
         ExampleSerializer()
 
     def test_null_boolean_field_choices(self):
-        CHECKLIST_OPTIONS = [
-            (None, 'none'),
-            (True, 'checked'),
-            (False, 'N/A'),
-        ]
 
         class Trivial(models.Model):
+            CHECKLIST_OPTIONS = (
+                (None, 'none'),
+                (True, 'checked'),
+                (False, 'N/A'),
+            )
+
             name = models.CharField(max_length=255)
             theoretically_nullable_field = models.NullBooleanField(choices=CHECKLIST_OPTIONS)
 
@@ -359,9 +381,7 @@ class TestRegularFieldMappings(TestCase):
                 fields = '__all__'
 
         trivial_serialized = TrivialSerializer(data=dict(name='test', theoretically_nullable_field=None))
-
         self.assertTrue(trivial_serialized.is_valid())
-
         self.assertEqual(trivial_serialized.errors, {})
 
 
@@ -403,6 +423,10 @@ class TestDurationFieldMapping(TestCase):
             TestSerializer():
                 id = IntegerField(label='ID', read_only=True)
                 duration_field = DurationField(max_value=datetime.timedelta(3), min_value=datetime.timedelta(1))
+        """) if sys.version_info < (3, 7) else dedent("""
+            TestSerializer():
+                id = IntegerField(label='ID', read_only=True)
+                duration_field = DurationField(max_value=datetime.timedelta(days=3), min_value=datetime.timedelta(days=1))
         """)
         self.assertEqual(unicode_repr(TestSerializer()), expected)
 

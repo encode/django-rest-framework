@@ -46,7 +46,7 @@ If you want to modify particular aspects of the pagination style, you'll want to
         page_size_query_param = 'page_size'
         max_page_size = 1000
 
-You can then apply your new style to a view using the `.pagination_class` attribute:
+You can then apply your new style to a view using the `pagination_class` attribute:
 
     class BillingRecordsView(generics.ListAPIView):
         queryset = Billing.objects.all()
@@ -319,5 +319,5 @@ The [`django-rest-framework-link-header-pagination` package][drf-link-header-pag
 [paginate-by-max-mixin]: https://chibisov.github.io/drf-extensions/docs/#paginatebymaxmixin
 [drf-proxy-pagination]: https://github.com/tuffnatty/drf-proxy-pagination
 [drf-link-header-pagination]: https://github.com/tbeadle/django-rest-framework-link-header-pagination
-[disqus-cursor-api]: http://cra.mr/2011/03/08/building-cursors-for-the-disqus-api
+[disqus-cursor-api]: https://cra.mr/2011/03/08/building-cursors-for-the-disqus-api
 [float_cursor_pagination_example]: https://gist.github.com/keturn/8bc88525a183fd41c73ffb729b8865be#file-fpcursorpagination-py

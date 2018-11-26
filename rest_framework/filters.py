@@ -5,6 +5,7 @@ returned by list views.
 from __future__ import unicode_literals
 
 import operator
+import warnings
 from functools import reduce
 
 from django.core.exceptions import ImproperlyConfigured
@@ -284,6 +285,11 @@ class DjangoObjectPermissionsFilter(BaseFilterBackend):
     has read object level permissions.
     """
     def __init__(self):
+        warnings.warn(
+            "`DjangoObjectPermissionsFilter` has been deprecated and moved to "
+            "the 3rd-party django-rest-framework-guardian package.",
+            DeprecationWarning, stacklevel=2
+        )
         assert is_guardian_installed(), 'Using DjangoObjectPermissionsFilter, but django-guardian is not installed'
 
     perm_format = '%(app_label)s.view_%(model_name)s'

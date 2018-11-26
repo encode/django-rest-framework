@@ -19,9 +19,9 @@ Create a new Django project named `tutorial`, then start a new app called `quick
     pip install djangorestframework
 
     # Set up a new project with a single application
-    django-admin.py startproject tutorial .  # Note the trailing '.' character
+    django-admin startproject tutorial .  # Note the trailing '.' character
     cd tutorial
-    django-admin.py startapp quickstart
+    django-admin startapp quickstart
     cd ..
 
 The project layout should look like:
@@ -56,7 +56,7 @@ We'll also create an initial user named `admin` with a password of `password123`
 
     python manage.py createsuperuser --email admin@example.com --username admin
 
-Once you've set up a database and initial user created and ready to go, open up the app's directory and we'll get coding...
+Once you've set up a database and the initial user is created and ready to go, open up the app's directory and we'll get coding...
 
 ## Serializers
 

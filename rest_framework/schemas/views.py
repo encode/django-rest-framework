@@ -19,13 +19,12 @@ class SchemaView(APIView):
     def __init__(self, *args, **kwargs):
         super(SchemaView, self).__init__(*args, **kwargs)
         if self.renderer_classes is None:
+            self.renderer_classes = [
+                renderers.OpenAPIRenderer,
+                renderers.CoreJSONRenderer
+            ]
             if renderers.BrowsableAPIRenderer in api_settings.DEFAULT_RENDERER_CLASSES:
-                self.renderer_classes = [
-                    renderers.CoreJSONRenderer,
-                    renderers.BrowsableAPIRenderer,
-                ]
-            else:
-                self.renderer_classes = [renderers.CoreJSONRenderer]
+                self.renderer_classes += [renderers.BrowsableAPIRenderer]
 
     def get(self, request, *args, **kwargs):
         schema = self.schema_generator.get_schema(request, self.public)

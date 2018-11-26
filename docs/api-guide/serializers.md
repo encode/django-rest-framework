@@ -57,10 +57,10 @@ At this point we've translated the model instance into Python native datatypes. 
 
 Deserialization is similar. First we parse a stream into Python native datatypes...
 
-    from django.utils.six import BytesIO
+    import io
     from rest_framework.parsers import JSONParser
 
-    stream = BytesIO(json)
+    stream = io.BytesIO(json)
     data = JSONParser().parse(stream)
 
 ...then we restore those native datatypes into a dictionary of validated data.
@@ -1030,7 +1030,7 @@ Similar to Django forms, you can extend and reuse serializers through inheritanc
     class MyBaseSerializer(Serializer):
         my_field = serializers.CharField()
 
-        def validate_my_field(self):
+        def validate_my_field(self, value):
             ...
 
     class MySerializer(MyBaseSerializer):

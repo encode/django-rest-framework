@@ -6,7 +6,7 @@
 
 **Awesome web-browsable Web APIs.**
 
-Full documentation for the project is available at [http://www.django-rest-framework.org][docs].
+Full documentation for the project is available at [https://www.django-rest-framework.org/][docs].
 
 ---
 
@@ -22,11 +22,13 @@ The initial aim is to provide a single full-time position on REST framework.
 [![][rover-img]][rover-url]
 [![][sentry-img]][sentry-url]
 [![][stream-img]][stream-url]
-[![][machinalis-img]][machinalis-url]
 [![][rollbar-img]][rollbar-url]
 [![][cadre-img]][cadre-url]
+[![][load-impact-img]][load-impact-url]
+[![][kloudless-img]][kloudless-url]
+[![][auklet-img]][auklet-url]
 
-Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Rover][rover-url], [Sentry][sentry-url], [Stream][stream-url], [Machinalis][machinalis-url], [Rollbar][rollbar-url], and [Cadre][cadre-url].
+Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Rover][rover-url], [Sentry][sentry-url], [Stream][stream-url], [Rollbar][rollbar-url], [Cadre][cadre-url], [Load Impact][load-impact-url], [Kloudless][kloudless-url], and [Auklet][auklet-url].
 
 ---
 
@@ -52,8 +54,8 @@ There is a live example API for testing purposes, [available here][sandbox].
 
 # Requirements
 
-* Python (2.7, 3.4, 3.5, 3.6)
-* Django (1.11, 2.0)
+* Python (2.7, 3.4, 3.5, 3.6, 3.7)
+* Django (1.11, 2.0, 2.1)
 
 # Installation
 
@@ -76,7 +78,7 @@ Startup up a new project like so...
 
     pip install django
     pip install djangorestframework
-    django-admin.py startproject example .
+    django-admin startproject example .
     ./manage.py migrate
     ./manage.py createsuperuser
 
@@ -142,14 +144,14 @@ You can now open the API in your browser at `http://127.0.0.1:8000/`, and view y
 You can also interact with the API using command line tools such as [`curl`](https://curl.haxx.se/). For example, to list the users endpoint:
 
     $ curl -H 'Accept: application/json; indent=4' -u admin:password http://127.0.0.1:8000/users/
-	[
-	    {
-	        "url": "http://127.0.0.1:8000/users/1/",
-	        "username": "admin",
-	        "email": "admin@example.com",
-	        "is_staff": true,
-	    }
-	]
+    [
+        {
+            "url": "http://127.0.0.1:8000/users/1/",
+            "username": "admin",
+            "email": "admin@example.com",
+            "is_staff": true,
+        }
+    ]
 
 Or to create a new user:
 
@@ -163,7 +165,7 @@ Or to create a new user:
 
 # Documentation & Support
 
-Full documentation for the project is available at [http://www.django-rest-framework.org][docs].
+Full documentation for the project is available at [https://www.django-rest-framework.org/][docs].
 
 For questions and support, use the [REST framework discussion group][group], or `#restframework` on freenode IRC.
 
@@ -191,28 +193,32 @@ Send a description of the issue via email to [rest-framework-security@googlegrou
 [rover-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/rover-readme.png
 [sentry-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/sentry-readme.png
 [stream-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/stream-readme.png
-[machinalis-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/machinalis-readme.png
 [rollbar-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/rollbar-readme.png
 [cadre-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/cadre-readme.png
+[load-impact-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/load-impact-readme.png
+[kloudless-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/kloudless-readme.png
+[auklet-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/auklet-readme.png
 
 [rover-url]: http://jobs.rover.com/
 [sentry-url]: https://getsentry.com/welcome/
 [stream-url]: https://getstream.io/try-the-api/?utm_source=drf&utm_medium=banner&utm_campaign=drf
-[machinalis-url]: https://hello.machinalis.co.uk/
 [rollbar-url]: https://rollbar.com/
 [cadre-url]: https://cadre.com/
+[load-impact-url]: https://loadimpact.com/?utm_campaign=Sponsorship%20links&utm_source=drf&utm_medium=drf
+[kloudless-url]: https://hubs.ly/H0f30Lf0
+[auklet-url]: https://auklet.io/
 
-[oauth1-section]: http://www.django-rest-framework.org/api-guide/authentication/#django-rest-framework-oauth
-[oauth2-section]: http://www.django-rest-framework.org/api-guide/authentication/#django-oauth-toolkit
-[serializer-section]: http://www.django-rest-framework.org/api-guide/serializers/#serializers
-[modelserializer-section]: http://www.django-rest-framework.org/api-guide/serializers/#modelserializer
-[functionview-section]: http://www.django-rest-framework.org/api-guide/views/#function-based-views
-[generic-views]: http://www.django-rest-framework.org/api-guide/generic-views/
-[viewsets]: http://www.django-rest-framework.org/api-guide/viewsets/
-[routers]: http://www.django-rest-framework.org/api-guide/routers/
-[serializers]: http://www.django-rest-framework.org/api-guide/serializers/
-[authentication]: http://www.django-rest-framework.org/api-guide/authentication/
-[image]: http://www.django-rest-framework.org/img/quickstart.png
+[oauth1-section]: https://www.django-rest-framework.org/api-guide/authentication/#django-rest-framework-oauth
+[oauth2-section]: https://www.django-rest-framework.org/api-guide/authentication/#django-oauth-toolkit
+[serializer-section]: https://www.django-rest-framework.org/api-guide/serializers/#serializers
+[modelserializer-section]: https://www.django-rest-framework.org/api-guide/serializers/#modelserializer
+[functionview-section]: https://www.django-rest-framework.org/api-guide/views/#function-based-views
+[generic-views]: https://www.django-rest-framework.org/api-guide/generic-views/
+[viewsets]: https://www.django-rest-framework.org/api-guide/viewsets/
+[routers]: https://www.django-rest-framework.org/api-guide/routers/
+[serializers]: https://www.django-rest-framework.org/api-guide/serializers/
+[authentication]: https://www.django-rest-framework.org/api-guide/authentication/
+[image]: https://www.django-rest-framework.org/img/quickstart.png
 
-[docs]: http://www.django-rest-framework.org/
+[docs]: https://www.django-rest-framework.org/
 [security-mail]: mailto:rest-framework-security@googlegroups.com

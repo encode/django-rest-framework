@@ -15,7 +15,7 @@ from __future__ import unicode_literals
 import copy
 import inspect
 import traceback
-from collections import Mapping, OrderedDict
+from collections import OrderedDict
 
 from django.core.exceptions import ImproperlyConfigured
 from django.core.exceptions import ValidationError as DjangoValidationError
@@ -27,7 +27,7 @@ from django.utils import six, timezone
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
-from rest_framework.compat import postgres_fields, unicode_to_repr
+from rest_framework.compat import Mapping, postgres_fields, unicode_to_repr
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.fields import get_error_detail, set_value
 from rest_framework.settings import api_settings

@@ -16,11 +16,11 @@ The built-in API documentation includes:
 
 ### Installation
 
-The `coreapi` library is required as a dependancy for the API docs. Make sure
+The `coreapi` library is required as a dependency for the API docs. Make sure
 to install the latest version. The `pygments` and `markdown` libraries
 are optional but recommended.
 
-To install the API documentation, you'll need to include it in your projects URLconf:
+To install the API documentation, you'll need to include it in your project's URLconf:
 
     from rest_framework.documentation import include_docs_urls
 
@@ -39,7 +39,7 @@ This will include two different views:
 **Note**: By default `include_docs_urls` configures the underlying `SchemaView` to generate _public_ schemas.
 This means that views will not be instantiated with a `request` instance. i.e. Inside the view `self.request` will be `None`.
 
-To be compatible with this behaviour methods (such as `get_serializer` or `get_serializer_class` etc.) which inspect `self.request` or, particularly, `self.request.user` may need to be adjusted to handle this case.
+To be compatible with this behaviour, methods (such as `get_serializer` or `get_serializer_class` etc.) which inspect `self.request` or, particularly, `self.request.user` may need to be adjusted to handle this case.
 
 You may ensure views are given a `request` instance by calling `include_docs_urls` with `public=False`:
 
@@ -89,6 +89,28 @@ When using viewsets, you should use the relevant action names as delimiters.
         create:
         Create a new user instance.
         """
+
+Custom actions on viewsets can also be documented in a similar way using the method names
+as delimiters or by attaching the documentation to action mapping methods.
+    
+    class UserViewSet(viewsets.ModelViewset):
+        ...
+        
+        @action(detail=False, methods=['get', 'post'])
+        def some_action(self, request, *args, **kwargs):
+            """
+            get:
+            A description of the get method on the custom action.
+    
+            post:
+            A description of the post method on the custom action.
+            """
+
+        @some_action.mapping.put
+        def put_some_action():
+            """
+            A description of the put method on the custom action.
+            """
 
 
 ### `documentation` API Reference
@@ -170,22 +192,6 @@ This also translates into a very useful interactive documentation viewer in the 
 
 
 ![Screenshot - drf-yasg][image-drf-yasg]
-
-
-#### DRF OpenAPI
-
-[DRF OpenAPI][drf-openapi] bridges the gap between OpenAPI specification and tool chain with the schema exposed
-out-of-the-box by Django Rest Framework. Its goals are:
-
-  * To be dropped into any existing DRF project without any code change necessary.
-  * Provide clear disctinction between request schema and response schema.
-  * Provide a versioning mechanism for each schema. Support defining schema by version range syntax, e.g. >1.0, <=2.0
-  * Support multiple response codes, not just 200
-  * All this information should be bound to view methods, not view classes.
-
-It also tries to stay current with the maturing schema generation mechanism provided by DRF.
-
-![Screenshot - DRF OpenAPI][image-drf-openapi]
 
 ---
 
@@ -313,11 +319,9 @@ In this approach, rather than documenting the available API endpoints up front, 
 
 To implement a hypermedia API you'll need to decide on an appropriate media type for the API, and implement a custom renderer and parser for that media type.  The [REST, Hypermedia & HATEOAS][hypermedia-docs] section of the documentation includes pointers to background reading, as well as links to various hypermedia formats.
 
-[cite]: http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
+[cite]: https://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
 [drf-yasg]: https://github.com/axnsan12/drf-yasg/
 [image-drf-yasg]: ../img/drf-yasg.png
-[drf-openapi]: https://github.com/limdauto/drf_openapi/
-[image-drf-openapi]: ../img/drf-openapi.png
 [drfdocs-repo]: https://github.com/ekonstantinidis/django-rest-framework-docs
 [drfdocs-website]: https://www.drfdocs.com/
 [drfdocs-demo]: http://demo.drfdocs.com/
