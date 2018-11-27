@@ -589,3 +589,14 @@ class PermissionsCompositionTests(TestCase):
             permissions.IsAuthenticated
         )
         assert composed_perm().has_permission(request, None) is True
+
+    def test_several_levels_and_precedence(self):
+        request = factory.get('/1', format='json')
+        request.user = self.user
+        composed_perm = (
+            permissions.IsAuthenticated &
+            permissions.IsAuthenticated |
+            permissions.IsAuthenticated &
+            permissions.IsAuthenticated
+        )
+        assert composed_perm().has_permission(request, None) is True
