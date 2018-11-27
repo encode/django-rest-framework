@@ -76,6 +76,7 @@
           {% block content %}
 
           <div class="region"  aria-label="{% trans "request form" %}">
+          {% block request_forms %}
           {% if 'GET' in allowed_methods %}
             <form id="get-form" class="pull-right">
               <fieldset>
@@ -148,9 +149,11 @@
               {% trans "Filters" %}
             </button>
           {% endif %}
+          {% endblock request_forms %}
           </div>
 
             <div class="content-main" role="main"  aria-label="{% trans "main content" %}">
+              {% block main_content %}
               <div class="page-header">
                 <h1>{{ name }}</h1>
               </div>
@@ -176,8 +179,10 @@
 
 </span>{{ content|urlize_quoted_links }}</pre>{% endautoescape %}
               </div>
+              {% endblock %}
             </div>
 
+            {% block edit_forms %}
             {% if display_edit_forms %}
               {% if post_form or raw_data_post_form %}
                 <div {% if post_form %}class="tabbable"{% endif %}>
@@ -273,6 +278,7 @@
                 </div>
               {% endif %}
             {% endif %}
+            {% endblock edit_forms %}
           {% endblock content %}
         </div><!-- /.content -->
       </div><!-- /.container -->
