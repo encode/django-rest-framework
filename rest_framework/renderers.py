@@ -948,7 +948,7 @@ class _BaseOpenAPIRenderer:
         schema = {}
         if instance.__class__ in CLASS_TO_TYPENAME:
             schema['type'] = CLASS_TO_TYPENAME[instance.__class__]
-        schema['title'] = instance.title,
+        schema['title'] = instance.title
         schema['description'] = instance.description
         if hasattr(instance, 'enum'):
             schema['enum'] = instance.enum
