@@ -201,7 +201,7 @@
                               {% csrf_token %}
                               {{ post_form }}
                               <div class="form-actions">
-                                <button class="btn btn-primary" title="Make a POST request on the {{ name }} resource">POST</button>
+                                <button class="btn btn-primary js-tooltip" title="Make a POST request on the {{ name }} resource">POST</button>
                               </div>
                             </fieldset>
                           </form>
@@ -215,7 +215,7 @@
                           <fieldset>
                             {% include "rest_framework/raw_data_form.html" %}
                             <div class="form-actions">
-                              <button class="btn btn-primary" title="Make a POST request on the {{ name }} resource">POST</button>
+                              <button class="btn btn-primary js-tooltip" title="Make a POST request on the {{ name }} resource">POST</button>
                             </div>
                           </fieldset>
                         </form>
