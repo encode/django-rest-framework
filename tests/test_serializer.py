@@ -317,6 +317,46 @@ class TestStarredSource:
         assert serializer.data == self.data
 
 
+class TestOverlappingSourcesWithDeepField:
+    def setup(self):
+        class DeepField(serializers.Field):
+            def to_internal_value(self, data):
+                return {'child1': data}
+
+        self.DeepField = DeepField
+
+    def test_deep_first(self):
+        class DeepFirstSerializer(serializers.Serializer):
+            child1 = self.DeepField(source='parent')
+            child2 = serializers.IntegerField(source='parent.child2')
+
+        serializer = DeepFirstSerializer(data={'child1': 1, 'child2': 2})
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'parent': {'child1': 1, 'child2': 2}}
+
+    def test_shallow_first(self):
+        class ShallowFirstSerializer(serializers.Serializer):
+            child2 = serializers.IntegerField(source='parent.child2')
+            child1 = self.DeepField(source='parent')
+
+        serializer = ShallowFirstSerializer(data={'child1': 1, 'child2': 2})
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'parent': {'child1': 1, 'child2': 2}}
+
+    def test_conflicting(self):
+        class ConflictingDeepField(serializers.Field):
+            def to_internal_value(self, data):
+                return {'child1': data[0], 'child2': data[1]}
+
+        class ConflictingSerializer(serializers.Serializer):
+            child1 = serializers.IntegerField(source='parent.child1')
+            child1_and_child2 = ConflictingDeepField(source='parent')
+
+        serializer = ConflictingSerializer(data={'child1': 1, 'child1_and_child2': [10, 20]})
+        with pytest.raises(serializers.ValidationError):
+            serializer.is_valid(raise_exception=True)
+
+
 class TestIncorrectlyConfigured:
     def test_incorrect_field_name(self):
         class ExampleSerializer(serializers.Serializer):
