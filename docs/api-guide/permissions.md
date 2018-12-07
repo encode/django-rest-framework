@@ -113,7 +113,7 @@ Provided they inherit from `rest_framework.permissions.BasePermission`, permissi
             return request.method in SAFE_METHODS
 
     class ExampleView(APIView):
-        permission_classes = (IsAuthenticated|ReadOnly)
+        permission_classes = (IsAuthenticated|ReadOnly,)
 
         def get(self, request, format=None):
             content = {
