@@ -12,7 +12,7 @@ from django.utils.six import text_type
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import HTTP_HEADER_ENCODING, exceptions
-
+from rest_framework.request import Request as DRFRequest
 
 def get_authorization_header(request):
     """
@@ -94,6 +94,8 @@ class BasicAuthentication(BaseAuthentication):
             get_user_model().USERNAME_FIELD: userid,
             'password': password
         }
+        if request and isinstance(request, DRFRequest):
+            request = request._request
         user = authenticate(request=request, **credentials)
 
         if user is None:
