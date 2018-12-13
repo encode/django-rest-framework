@@ -183,8 +183,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 
 * [djangorestframework-digestauth][djangorestframework-digestauth] - Provides Digest Access Authentication support.
 * [django-oauth-toolkit][django-oauth-toolkit] - Provides OAuth 2.0 support.
-* [djangorestframework-jwt][djangorestframework-jwt] - Provides JSON Web Token Authentication support.
-* [djangorestframework-simplejwt][djangorestframework-simplejwt] - An alternative package that provides JSON Web Token Authentication support.
+* [djangorestframework-simplejwt][djangorestframework-simplejwt] - Provides JSON Web Token Authentication support.
 * [hawkrest][hawkrest] - Provides Hawk HTTP Authorization.
 * [djangorestframework-httpsignature][djangorestframework-httpsignature] - Provides an easy to use HTTP Signature Authentication mechanism.
 * [djoser][djoser] - Provides a set of views to handle basic actions such as registration, login, logout, password reset and account activation.
