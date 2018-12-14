@@ -336,6 +336,12 @@ def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=Tru
         return limit is not None and (len(x) > limit and ('%s...' % x[:max(0, limit - 3)])) or x
 
     safe_input = isinstance(text, SafeData)
+
+    # Unfortunately, Django built-in cannot be used here, because escaping
+    # is to be performed on words, which have been forcibly coerced to text
+    def conditional_escape(text):
+        return escape(text) if autoescape and not safe_input else text
+
     words = word_split_re.split(force_text(text))
     for i, word in enumerate(words):
         if '.' in word or '@' in word or ':' in word:
@@ -376,21 +382,15 @@ def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=Tru
             # Make link.
             if url:
                 trimmed = trim_url(middle)
-                if autoescape and not safe_input:
-                    lead, trail = escape(lead), escape(trail)
-                    url, trimmed = escape(url), escape(trimmed)
+                lead, trail = conditional_escape(lead), conditional_escape(trail)
+                url, trimmed = conditional_escape(url), conditional_escape(trimmed)
                 middle = '<a href="%s"%s>%s</a>' % (url, nofollow_attr, trimmed)
-                words[i] = mark_safe('%s%s%s' % (lead, middle, trail))
+                words[i] = '%s%s%s' % (lead, middle, trail)
             else:
-                if safe_input:
-                    words[i] = mark_safe(word)
-                elif autoescape:
-                    words[i] = escape(word)
-        elif safe_input:
-            words[i] = mark_safe(word)
-        elif autoescape:
-            words[i] = escape(word)
-    return ''.join(words)
+                words[i] = conditional_escape(word)
+        else:
+            words[i] = conditional_escape(word)
+    return mark_safe(''.join(words))
 
 
 @register.filter
