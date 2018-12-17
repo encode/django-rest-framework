@@ -20,7 +20,7 @@ When answering questions make sure to help future contributors find their way ar
 
 Please keep the tone polite & professional.  For some users a discussion on the REST framework mailing list or ticket tracker may be their first engagement with the open source community.  First impressions count, so let's try to make everyone feel welcome.
 
-Be mindful in the language you choose.  As an example, in an environment that is heavily male-dominated, posts that start 'Hey guys,' can come across as unintentionally exclusive.  It's just as easy, and more inclusive to use gender neutral language in those situations.
+Be mindful in the language you choose.  As an example, in an environment that is heavily male-dominated, posts that start 'Hey guys,' can come across as unintentionally exclusive.  It's just as easy, and more inclusive to use gender neutral language in those situations. (e.g. 'Hey folks,')
 
 The [Django code of conduct][code-of-conduct] gives a fuller set of guidelines for participating in community forums.
 
