@@ -274,7 +274,7 @@ The [Composed Permissions][composed-permissions] package provides a simple way t
 
 ## REST Condition
 
-The [REST Condition][rest-condition] package is another extension for building complex permissions in a simple and convenient way.  The extension allows you to combine permissions with logical operators.
+The [REST Condition][rest-condition] package is another extension for building complex permissions in a simple and convenient way. The extension allows you to combine permissions with logical operators.
 
 ## DRY Rest Permissions
 
