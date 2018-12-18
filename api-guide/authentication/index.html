@@ -468,10 +468,6 @@
                     </li>
                   
                     <li>
-                      <a href="#digest-authentication">Digest Authentication</a>
-                    </li>
-                  
-                    <li>
                       <a href="#json-web-token-authentication">JSON Web Token Authentication</a>
                     </li>
                   
@@ -810,8 +806,6 @@ REST_FRAMEWORK = {
 <pre><code>pip install djangorestframework-oauth
 </code></pre>
 <p>For details on configuration and usage see the Django REST framework OAuth documentation for <a href="https://jpadilla.github.io/django-rest-framework-oauth/authentication/">authentication</a> and <a href="https://jpadilla.github.io/django-rest-framework-oauth/permissions/">permissions</a>.</p>
-<h2 id="digest-authentication"><a class="toclink" href="#digest-authentication">Digest Authentication</a></h2>
-<p>HTTP digest authentication is a widely implemented scheme that was intended to replace HTTP basic authentication, and which provides a simple encrypted authentication mechanism. <a href="https://github.com/juanriaza">Juan Riaza</a> maintains the <a href="https://github.com/juanriaza/django-rest-framework-digestauth">djangorestframework-digestauth</a> package which provides HTTP digest authentication support for REST framework.</p>
 <h2 id="json-web-token-authentication"><a class="toclink" href="#json-web-token-authentication">JSON Web Token Authentication</a></h2>
 <p>JSON Web Token is a fairly new standard which can be used for token-based authentication. Unlike the built-in TokenAuthentication scheme, JWT Authentication doesn't need to use a database to validate a token. A package for JWT authentication is <a href="https://github.com/davesque/django-rest-framework-simplejwt">djangorestframework-simplejwt</a> which provides some features as well as a pluggable token blacklist app.</p>
 <h2 id="hawk-http-authentication"><a class="toclink" href="#hawk-http-authentication">Hawk HTTP Authentication</a></h2>
