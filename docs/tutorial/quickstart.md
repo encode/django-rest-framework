@@ -46,7 +46,7 @@ The project layout should look like:
     ./tutorial/urls.py
     ./tutorial/wsgi.py
 
-It may look unusual that the application has been created within the project directory. Using the project's namespace avoids name clashes with external module (topic goes outside the scope of the quickstart).
+It may look unusual that the application has been created within the project directory. Using the project's namespace avoids name clashes with external modules (a topic that goes outside the scope of the quickstart).
 
 Now sync your database for the first time:
 
@@ -77,7 +77,7 @@ First up we're going to define some serializers. Let's create a new module named
             model = Group
             fields = ('url', 'name')
 
-Notice that we're using hyperlinked relations in this case, with `HyperlinkedModelSerializer`.  You can also use primary key and various other relationships, but hyperlinking is good RESTful design.
+Notice that we're using hyperlinked relations in this case with `HyperlinkedModelSerializer`.  You can also use primary key and various other relationships, but hyperlinking is good RESTful design.
 
 ## Views
 
@@ -133,7 +133,7 @@ Again, if we need more control over the API URLs we can simply drop down to usin
 Finally, we're including default login and logout views for use with the browsable API.  That's optional, but useful if your API requires authentication and you want to use the browsable API.
 
 ## Pagination
-Pagination allows you to control how many objects per page are returned. To enable it add following lines to the `tutorial/settings.py`
+Pagination allows you to control how many objects per page are returned. To enable it add the following lines to `tutorial/settings.py`
     
     REST_FRAMEWORK = {
         'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
