@@ -156,6 +156,33 @@ class TestSerializer:
         assert serializer.validated_data == {'char': 'abc', 'integer': 123}
         assert serializer.errors == {}
 
+    def test_custom_to_internal_value(self):
+        """
+        to_internal_value() is expected to return a dict, but subclasses may
+        return application specific type.
+        """
+        class Point(object):
+            def __init__(self, srid, x, y):
+                self.srid = srid
+                self.coords = (x, y)
+
+        # Declares a serializer that converts data into an object
+        class NestedPointSerializer(serializers.Serializer):
+            longitude = serializers.FloatField(source='x')
+            latitude = serializers.FloatField(source='y')
+
+            def to_internal_value(self, data):
+                kwargs = super(NestedPointSerializer, self).to_internal_value(data)
+                return Point(srid=4326, **kwargs)
+
+        serializer = NestedPointSerializer(data={'longitude': 6.958307, 'latitude': 50.941357})
+        assert serializer.is_valid()
+        assert isinstance(serializer.validated_data, Point)
+        assert serializer.validated_data.srid == 4326
+        assert serializer.validated_data.coords[0] == 6.958307
+        assert serializer.validated_data.coords[1] == 50.941357
+        assert serializer.errors == {}
+
 
 class TestValidateMethod:
     def test_non_field_error_validate_method(self):
