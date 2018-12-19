@@ -14,6 +14,7 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework import HTTP_HEADER_ENCODING, exceptions
 from rest_framework.request import Request as DRFRequest
 
+
 def get_authorization_header(request):
     """
     Return request's 'Authorization:' header, as a bytestring.
