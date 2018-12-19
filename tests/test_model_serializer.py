@@ -183,7 +183,7 @@ class TestRegularFieldMappings(TestCase):
                 null_boolean_field = NullBooleanField(required=False)
                 positive_integer_field = IntegerField()
                 positive_small_integer_field = IntegerField()
-                slug_field = SlugField(max_length=100)
+                slug_field = SlugField(allow_unicode=False, max_length=100)
                 small_integer_field = IntegerField()
                 text_field = CharField(max_length=100, style={'base_template': 'textarea.html'})
                 file_field = FileField(max_length=100)
