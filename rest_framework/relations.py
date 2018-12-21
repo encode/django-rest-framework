@@ -170,11 +170,11 @@ class RelatedField(Field):
             # Eg: 'MyRelationship(queryset=ExampleModel.objects.all())'
             queryset = queryset.all()
         if hasattr(self.parent, "Meta") and hasattr(self.parent.Meta, "model"):
-            queryset = queryset.filter(
-                **self.parent.Meta.model._meta.get_field(
-                    self.source
-                ).get_limit_choices_to()
-            )
+            filter_dict = self.parent.Meta.model._meta.get_field(
+                self.source
+            ).get_limit_choices_to()
+            if filter_dict:
+                queryset = queryset.filter(**filter_dict)
         return queryset
 
     def use_pk_only_optimization(self):
