@@ -2,11 +2,9 @@ source: relations.py
 
 # Serializer relations
 
-> Bad programmers worry about the code.
-> Good programmers worry about data structures and their relationships.
+> Data structures, not algorithms, are central to programming.
 >
-> &mdash; [Linus Torvalds][cite]
-
+> &mdash; [Rob Pike][cite]
 
 Relational fields are used to represent model relationships.  They can be applied to `ForeignKey`, `ManyToManyField` and `OneToOneField` relationships, as well as to reverse relationships, and custom relationships such as `GenericForeignKey`.
 
@@ -592,7 +590,7 @@ The [drf-nested-routers package][drf-nested-routers] provides routers and relati
 
 The [rest-framework-generic-relations][drf-nested-relations] library provides read/write serialization for generic foreign keys.
 
-[cite]: https://lwn.net/Articles/193245/
+[cite]: http://users.ece.utexas.edu/~adnan/pike.html
 [reverse-relationships]: https://docs.djangoproject.com/en/stable/topics/db/queries/#following-relationships-backward
 [routers]: https://www.django-rest-framework.org/api-guide/routers#defaultrouter
 [generic-relations]: https://docs.djangoproject.com/en/stable/ref/contrib/contenttypes/#id1
