@@ -582,6 +582,13 @@ class ValidatorsTests(TestCase):
         with pytest.raises(ValidationError):
             validator.enforce_required_fields(attrs)
 
+    def test_validator_passes_with_instance(self):
+        validator = BaseUniqueForValidator(queryset=object(), field='foo',
+                                           date_field='bar')
+        validator.instance = object()
+
+        assert validator.enforce_required_fields({}) is None
+
     def test_validator_raises_error_when_abstract_method_called(self):
         validator = BaseUniqueForValidator(queryset=object(), field='foo',
                                            date_field='bar')
