@@ -22,7 +22,7 @@ To do so, open the Django shell, using `python manage.py shell`, then import the
 
     >>> from myapp.serializers import AccountSerializer
     >>> serializer = AccountSerializer()
-    >>> print repr(serializer)  # Or `print(repr(serializer))` in Python 3.x.
+    >>> print(repr(serializer))
     AccountSerializer():
         id = IntegerField(label='ID', read_only=True)
         name = CharField(allow_blank=True, max_length=100, required=False)
