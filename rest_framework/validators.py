@@ -204,6 +204,9 @@ class BaseUniqueForValidator(object):
         The `UniqueFor<Range>Validator` classes always force an implied
         'required' state on the fields they are applied to.
         """
+        if hasattr(self, "instance") and self.instance is not None:
+            return
+
         missing_items = {
             field_name: self.missing_message
             for field_name in [self.field, self.date_field]
