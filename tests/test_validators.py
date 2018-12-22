@@ -381,11 +381,13 @@ class UniqueForDateSerializer(serializers.ModelSerializer):
 
 
 class TestUniquenessForDateValidation(TestCase):
+
     def setUp(self):
         self.instance = UniqueForDateModel.objects.create(
             slug='existing',
             published='2000-01-01'
         )
+        self.instance.refresh_from_db()  # published becomes datetime
 
     def test_repr(self):
         serializer = UniqueForDateSerializer()
@@ -422,6 +424,12 @@ class TestUniquenessForDateValidation(TestCase):
             'published': datetime.date(2000, 1, 2)
         }
 
+    def test_unique_for_date_for_partial(self):
+        serializer = UniqueForDateSerializer(
+            instance=self.instance, data={}, partial=True
+        )
+        assert serializer.is_valid(), serializer.errors
+
     def test_updated_instance_excluded_from_unique_for_date(self):
         """
         When performing an update, the existing instance does not count
@@ -456,6 +464,7 @@ class UniqueForMonthTests(TestCase):
         self.instance = UniqueForMonthModel.objects.create(
             slug='existing', published='2017-01-01'
         )
+        self.instance.refresh_from_db()  # published becomes datetime
 
     def test_not_unique_for_month(self):
         data = {'slug': 'existing', 'published': '2017-01-01'}
@@ -473,6 +482,12 @@ class UniqueForMonthTests(TestCase):
             'slug': 'existing',
             'published': datetime.date(2017, 2, 1)
         }
+
+    def test_unique_for_month_for_partial(self):
+        serializer = UniqueForMonthSerializer(
+            instance=self.instance, data={}, partial=True
+        )
+        assert serializer.is_valid(), serializer.errors
 
 # Tests for `UniqueForYearValidator`
 # ----------------------------------
@@ -495,6 +510,7 @@ class UniqueForYearTests(TestCase):
         self.instance = UniqueForYearModel.objects.create(
             slug='existing', published='2017-01-01'
         )
+        self.instance.refresh_from_db()  # published becomes datetime
 
     def test_not_unique_for_year(self):
         data = {'slug': 'existing', 'published': '2017-01-01'}
@@ -512,6 +528,12 @@ class UniqueForYearTests(TestCase):
             'slug': 'existing',
             'published': datetime.date(2018, 1, 1)
         }
+
+    def test_unique_for_year_for_partial(self):
+        serializer = UniqueForYearSerializer(
+            instance=self.instance, data={}, partial=True
+        )
+        assert serializer.is_valid(), serializer.errors
 
 
 class HiddenFieldUniqueForDateModel(models.Model):
