@@ -74,7 +74,17 @@ class URLPathVersioning(BaseVersioning):
     invalid_version_message = _('Invalid version in URL path.')
 
     def determine_version(self, request, *args, **kwargs):
+        """
+        Use Default Version If 'version' Did Not Sets by Client in URL (So, It's Equal to None).
+        e.g:
+        api/users/ > Use Default Version (As Often The Default Version Is The Latest One).
+        api/v1/users/ > Check 'v1' Is Allowed?
+        """
         version = kwargs.get(self.version_param, self.default_version)
+
+        if version is None:
+            version = self.default_version
+
         if not self.is_allowed_version(version):
             raise exceptions.NotFound(self.invalid_version_message)
         return version
