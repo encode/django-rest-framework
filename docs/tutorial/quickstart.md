@@ -111,7 +111,7 @@ We can easily break these down into individual views if we need to, but using vi
 
 Okay, now let's wire up the API URLs.  On to `tutorial/urls.py`...
 
-    from django.conf.urls import url, include
+    from django.conf.urls import include, path
     from rest_framework import routers
     from tutorial.quickstart import views
 
