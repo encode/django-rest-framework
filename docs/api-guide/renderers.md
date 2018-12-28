@@ -89,7 +89,7 @@ The default JSON encoding style can be altered using the `UNICODE_JSON` and `COM
 
 **.media_type**: `application/json`
 
-**.format**: `'.json'`
+**.format**: `'json'`
 
 **.charset**: `None`
 
@@ -127,7 +127,7 @@ See the [_HTML & Forms_ Topic Page][html-and-forms] for further examples of `Tem
 
 **.media_type**: `text/html`
 
-**.format**: `'.html'`
+**.format**: `'html'`
 
 **.charset**: `utf-8`
 
@@ -149,7 +149,7 @@ You can use `StaticHTMLRenderer` either to return regular HTML pages using REST 
 
 **.media_type**: `text/html`
 
-**.format**: `'.html'`
+**.format**: `'html'`
 
 **.charset**: `utf-8`
 
@@ -165,7 +165,7 @@ This renderer will determine which other renderer would have been given highest 
 
 **.media_type**: `text/html`
 
-**.format**: `'.api'`
+**.format**: `'api'`
 
 **.charset**: `utf-8`
 
@@ -200,7 +200,7 @@ Note that views that have nested or list serializers for their input won't work 
 
 **.media_type**: `text/html`
 
-**.format**: `'.admin'`
+**.format**: `'admin'`
 
 **.charset**: `utf-8`
 
@@ -224,7 +224,7 @@ For more information see the [HTML & Forms][html-and-forms] documentation.
 
 **.media_type**: `text/html`
 
-**.format**: `'.form'`
+**.format**: `'form'`
 
 **.charset**: `utf-8`
 
@@ -236,7 +236,7 @@ This renderer is used for rendering HTML multipart form data.  **It is not suita
 
 **.media_type**: `multipart/form-data; boundary=BoUnDaRyStRiNg`
 
-**.format**: `'.multipart'`
+**.format**: `'multipart'`
 
 **.charset**: `utf-8`
 
