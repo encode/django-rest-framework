@@ -104,7 +104,7 @@ __Note:__ when you set new permission classes through class attribute or decorat
 
 Provided they inherit from `rest_framework.permissions.BasePermission`, permissions can be composed using standard Python bitwise operators. For example, `IsAuthenticatedOrReadOnly` could be written:
 
-    from rest_framework.permissions import BasePermission, IsAuthenticated
+    from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS
     from rest_framework.response import Response
     from rest_framework.views import APIView
 
