@@ -47,8 +47,8 @@ Our platinum sponsors have each made a hugely substantial contribution to the fu
 </ul>
 
 <ul class="sponsor platinum">
-<li><a href="https://www.divio.ch/" rel="nofollow" style="background-image:url(../../img/sponsors/1-divio.png);">Divio</a></li>
-<li><a href="http://company.onlulu.com/en/" rel="nofollow" style="background-image:url(../../img/sponsors/1-lulu.png);">Lulu</a></li>
+<li><a href="https://www.divio.com/" rel="nofollow" style="background-image:url(../../img/sponsors/1-divio.png);">Divio</a></li>
+<li><a href="https://onlulu.com" rel="nofollow" style="background-image:url(../../img/sponsors/1-lulu.png);">Lulu</a></li>
 <li><a href="https://p.ota.to/" rel="nofollow" style="background-image:url(../../img/sponsors/1-potato.png);">Potato</a></li>
 <li><a href="http://www.wiredrive.com/" rel="nofollow" style="background-image:url(../../img/sponsors/1-wiredrive.png);">Wiredrive</a></li>
 <li><a href="http://www.cyaninc.com/" rel="nofollow" style="background-image:url(../../img/sponsors/1-cyan.png);">Cyan</a></li>
