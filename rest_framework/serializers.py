@@ -974,13 +974,15 @@ class ModelSerializer(Serializer):
         # Note that unlike `.create()` we don't need to treat many-to-many
         # relationships as being a special case. During updates we already
         # have an instance pk for the relationships to be associated with.
+        update_fields = []
         for attr, value in validated_data.items():
             if attr in info.relations and info.relations[attr].to_many:
                 field = getattr(instance, attr)
                 field.set(value)
             else:
                 setattr(instance, attr, value)
-        instance.save()
+                update_fields.append(attr)
+        instance.save(update_fields=update_fields)
 
         return instance
 
