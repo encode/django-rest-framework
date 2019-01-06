@@ -81,8 +81,8 @@ Our gold sponsors include companies large and small. Many thanks for their signi
 <li><a href="https://www.lightningkite.com/" rel="nofollow" style="background-image:url(../../img/sponsors/2-lightning_kite.png);">Lightning Kite</a></li>
 <li><a href="https://opbeat.com/" rel="nofollow" style="background-image:url(../../img/sponsors/2-opbeat.png);">Opbeat</a></li>
 <li><a href="https://koordinates.com" rel="nofollow" style="background-image:url(../../img/sponsors/2-koordinates.png);">Koordinates</a></li>
-<li><a href="http://pulsecode.ca" rel="nofollow" style="background-image:url(../../img/sponsors/2-pulsecode.png);">Pulsecode Inc.</a></li>
-<li><a href="http://singinghorsestudio.com" rel="nofollow" style="background-image:url(../../img/sponsors/2-singing-horse.png);">Singing Horse Studio Ltd.</a></li>
+<li><a rel="nofollow" style="background-image:url(../../img/sponsors/2-pulsecode.png);">Pulsecode Inc.</a></li>
+<li><a rel="nofollow" style="background-image:url(../../img/sponsors/2-singing-horse.png);">Singing Horse Studio Ltd.</a></li>
 <li><a href="https://www.heroku.com/" rel="nofollow" style="background-image:url(../../img/sponsors/2-heroku.png);">Heroku</a></li>
 <li><a href="https://www.rheinwerk-verlag.de/" rel="nofollow" style="background-image:url(../../img/sponsors/2-rheinwerk_verlag.png);">Rheinwerk Verlag</a></li>
 <li><a href="https://www.securitycompass.com/" rel="nofollow" style="background-image:url(../../img/sponsors/2-security_compass.png);">Security Compass</a></li>
@@ -90,9 +90,9 @@ Our gold sponsors include companies large and small. Many thanks for their signi
 <li><a href="http://www.hipflaskapp.com" rel="nofollow" style="background-image:url(../../img/sponsors/2-hipflask.png);">Hipflask</a></li>
 <li><a href="http://www.crate.io/" rel="nofollow" style="background-image:url(../../img/sponsors/2-crate.png);">Crate</a></li>
 <li><a href="http://crypticocorp.com/" rel="nofollow" style="background-image:url(../../img/sponsors/2-cryptico.png);">Cryptico Corp</a></li>
-<li><a href="http://www.nexthub.com/" rel="nofollow" style="background-image:url(../../img/sponsors/2-nexthub.png);">NextHub</a></li>
+<li><a rel="nofollow" style="background-image:url(../../img/sponsors/2-nexthub.png);">NextHub</a></li>
 <li><a href="https://www.compile.com/" rel="nofollow" style="background-image:url(../../img/sponsors/2-compile.png);">Compile</a></li>
-<li><a href="http://wusawork.org" rel="nofollow" style="background-image:url(../../img/sponsors/2-wusawork.png);">WusaWork</a></li>
+<li><a rel="nofollow" style="background-image:url(../../img/sponsors/2-wusawork.png);">WusaWork</a></li>
 <li><a href="http://envisionlinux.org/blog" rel="nofollow">Envision Linux</a></li>
 </ul>
 
