@@ -118,6 +118,26 @@ class TestUniquenessValidation(TestCase):
         serializer = UniquenessIntegerSerializer(data={'integer': 'abc'})
         assert serializer.is_valid()
 
+    def test_validate_uniqueness_in_bulk_creation(self):
+        data = [{'username': 'existing'}, {'username': 'non-existing'}]
+        serializer = UniquenessSerializer(data=data, many=True)
+        assert not serializer.is_valid()
+        assert serializer.errors == [
+            {'username': ['uniqueness model with this username already exists.']},
+            {},
+        ]
+
+    def test_validate_uniqueness_between_data_items_in_bulk_creation(self):
+        data = [{'username': 'non-existing'}, {'username': 'non-existing'}]
+        serializer = UniquenessSerializer(data=data, many=True)
+        assert serializer.is_valid()
+        assert serializer.save()
+        # assert not serializer.is_valid()
+        # assert serializer.errors == [
+        #     {'username': ['uniqueness model with this username already exists.']},
+        #     {'username': ['uniqueness model with this username already exists.']},
+        # ]
+
 
 # Tests for `UniqueTogetherValidator`
 # -----------------------------------
