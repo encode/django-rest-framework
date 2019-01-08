@@ -21,11 +21,12 @@ from django.test.client import encode_multipart
 from django.urls import NoReverseMatch
 from django.utils import six
 from django.utils.html import mark_safe
+from django.utils.six.moves.urllib import parse as urlparse
 
 from rest_framework import VERSION, exceptions, serializers, status
 from rest_framework.compat import (
     INDENT_SEPARATORS, LONG_SEPARATORS, SHORT_SEPARATORS, coreapi, coreschema,
-    pygments_css, urlparse, yaml
+    pygments_css, yaml
 )
 from rest_framework.exceptions import ParseError
 from rest_framework.request import is_form_media_type, override_method

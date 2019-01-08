@@ -18,13 +18,6 @@ except ImportError:
     from collections import Mapping   # noqa
 
 try:
-    # Python 3
-    import urllib.parse as urlparse   # noqa
-except ImportError:
-    # Python 2.7
-    from urlparse import urlparse   # noqa
-
-try:
     from django.urls import (  # noqa
         URLPattern,
         URLResolver,
