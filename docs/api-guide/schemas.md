@@ -112,8 +112,8 @@ has to be rendered into the actual bytes that are used in the response.
 REST framework includes a few different renderers that you can use for
 encoding the API schema.
 
-* `renderers.OpenAPIRenderer` - Renders into YAML-based [OpenAPI][openapi], the most widely used API schema format.
-* `renderers.JSONOpenAPIRenderer` - Renders into JSON-based [OpenAPI][openapi].
+* `renderers.OpenAPIRenderer` - Renders into YAML-based [OpenAPI][open-api], the most widely used API schema format.
+* `renderers.JSONOpenAPIRenderer` - Renders into JSON-based [OpenAPI][open-api].
 * `renderers.CoreJSONRenderer` - Renders into [Core JSON][corejson], a format designed for
 use with the `coreapi` client library.
 
