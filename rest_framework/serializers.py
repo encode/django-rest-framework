@@ -461,8 +461,11 @@ class Serializer(BaseSerializer):
         """
         Add read_only fields with defaults to value before running validators.
         """
-        to_validate = self._read_only_defaults()
-        to_validate.update(value)
+        if isinstance(value, dict):
+            to_validate = self._read_only_defaults()
+            to_validate.update(value)
+        else:
+            to_validate = value
         super(Serializer, self).run_validators(to_validate)
 
     def to_internal_value(self, data):
