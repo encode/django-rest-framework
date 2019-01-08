@@ -249,6 +249,10 @@ def get_relation_kwargs(field_name, relation_info):
     if to_field:
         kwargs['to_field'] = to_field
 
+    limit_choices_to = model_field and model_field.get_limit_choices_to()
+    if limit_choices_to:
+        kwargs['queryset'] = kwargs['queryset'].filter(**limit_choices_to)
+
     if has_through_model:
         kwargs['read_only'] = True
         kwargs.pop('queryset', None)
@@ -266,9 +270,6 @@ def get_relation_kwargs(field_name, relation_info):
             # If this field is read-only, then return early.
             # No further keyword arguments are valid.
             return kwargs
-        limit_choices_to = model_field.get_limit_choices_to()
-        if limit_choices_to:
-            kwargs['queryset'] = kwargs['queryset'].filter(**limit_choices_to)
 
         if model_field.has_default() or model_field.blank or model_field.null:
             kwargs['required'] = False
