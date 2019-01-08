@@ -215,16 +215,19 @@ class BaseUniqueForValidator(object):
         if missing_items:
             raise ValidationError(missing_items, code='required')
 
-    def _get_field_values(self, attrs):
-        """Returns tuple (value, date_value) from attrs or instance"""
-        value = attrs.get(self.field)
-        date_value = attrs.get(self.date_field)
-        if hasattr(self, "instance") and self.instance is not None:
-            if value is None:
-                value = getattr(self.instance, self.field)
-            if date_value is None:
-                date_value = getattr(self.instance, self.date_field)
-        return (value, date_value)
+    def get_value_and_date(self, attrs):
+        """Returns tuple (value, date) from attrs or instance"""
+        instance = getattr(self, "instance", None)
+        if instance is not None:
+            instance_value = getattr(instance, self.field)
+            instance_date = getattr(instance, self.date_field)
+            value = attrs.get(self.field, instance_value)
+            date = attrs.get(self.date_field, instance_date)
+        else:
+            value = attrs[self.field]
+            date = attrs[self.date_field]
+
+        return (value, date)
 
     def filter_queryset(self, attrs, queryset):
         raise NotImplementedError('`filter_queryset` must be implemented.')
@@ -262,7 +265,7 @@ class UniqueForDateValidator(BaseUniqueForValidator):
     message = _('This field must be unique for the "{date_field}" date.')
 
     def filter_queryset(self, attrs, queryset):
-        value, date = self._get_field_values(attrs)
+        value, date = self.get_value_and_date(attrs)
 
         filter_kwargs = {}
         filter_kwargs[self.field_name] = value
@@ -276,7 +279,7 @@ class UniqueForMonthValidator(BaseUniqueForValidator):
     message = _('This field must be unique for the "{date_field}" month.')
 
     def filter_queryset(self, attrs, queryset):
-        value, date = self._get_field_values(attrs)
+        value, date = self.get_value_and_date(attrs)
 
         filter_kwargs = {}
         filter_kwargs[self.field_name] = value
@@ -288,7 +291,7 @@ class UniqueForYearValidator(BaseUniqueForValidator):
     message = _('This field must be unique for the "{date_field}" year.')
 
     def filter_queryset(self, attrs, queryset):
-        value, date = self._get_field_values(attrs)
+        value, date = self.get_value_and_date(attrs)
 
         filter_kwargs = {}
         filter_kwargs[self.field_name] = value
