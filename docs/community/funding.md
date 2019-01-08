@@ -123,10 +123,10 @@ REST framework continues to be open-source and permissively licensed, but we fir
 
 ## What funding has enabled so far
 
-* The [3.4](https://www.django-rest-framework.org/topics/3.4-announcement/) and [3.5](https://www.django-rest-framework.org/topics/3.5-announcement/) releases, including schema generation for both Swagger and RAML, a Python client library, a Command Line client, and addressing of a large number of outstanding issues.
-* The [3.6](https://www.django-rest-framework.org/topics/3.6-announcement/) release, including  JavaScript client library, and API documentation, complete with auto-generated code samples.
-* The [3.7 release](https://www.django-rest-framework.org/topics/3.7-announcement/), made possible due to our collaborative funding model, focuses on improvements to schema generation and the interactive API documentation.
-* The recent [3.8 release](https://www.django-rest-framework.org/topics/3.8-announcement/).
+* The [3.4](https://www.django-rest-framework.org/community/3.4-announcement/) and [3.5](https://www.django-rest-framework.org/community/3.5-announcement/) releases, including schema generation for both Swagger and RAML, a Python client library, a Command Line client, and addressing of a large number of outstanding issues.
+* The [3.6](https://www.django-rest-framework.org/community/3.6-announcement/) release, including  JavaScript client library, and API documentation, complete with auto-generated code samples.
+* The [3.7 release](https://www.django-rest-framework.org/community/3.7-announcement/), made possible due to our collaborative funding model, focuses on improvements to schema generation and the interactive API documentation.
+* The recent [3.8 release](https://www.django-rest-framework.org/community/3.8-announcement/).
 * Tom Christie, the creator of Django REST framework, working on the project full-time.
 * Around 80-90 issues and pull requests closed per month since Tom Christie started working on the project full-time.
 * A community & operations manager position part-time for 4 months, helping mature the business and grow sponsorship.
@@ -341,7 +341,7 @@ For further enquires please contact <a href=mailto:funding@django-rest-framework
 
 ## Accountability
 
-In an effort to keep the project as transparent as possible, we are releasing [monthly progress reports](https://www.encode.io/reports/march-2018) and regularly include financial reports and cost breakdowns.
+In an effort to keep the project as transparent as possible, we are releasing [monthly progress reports](https://www.encode.io/reports/march-2018/) and regularly include financial reports and cost breakdowns.
 
 <!-- Begin MailChimp Signup Form -->
 <link href="//cdn-images.mailchimp.com/embedcode/classic-10_7.css" rel="stylesheet" type="text/css">
