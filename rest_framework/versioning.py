@@ -75,6 +75,9 @@ class URLPathVersioning(BaseVersioning):
 
     def determine_version(self, request, *args, **kwargs):
         version = kwargs.get(self.version_param, self.default_version)
+        if version is None:
+            version = self.default_version
+
         if not self.is_allowed_version(version):
             raise exceptions.NotFound(self.invalid_version_message)
         return version
