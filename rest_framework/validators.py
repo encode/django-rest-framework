@@ -165,7 +165,8 @@ class UniqueTogetherValidator(object):
             value for field, value in attrs.items() if field in self.fields
         ]
         if None not in checked_values and qs_exists(queryset):
-            field_names = ', '.join(self.fields)
+            from django.utils.translation import gettext
+            field_names = ', '.join([gettext(field) for field in self.fields])
             message = self.message.format(field_names=field_names)
             raise ValidationError(message, code='unique')
 
