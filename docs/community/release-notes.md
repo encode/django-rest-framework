@@ -40,6 +40,14 @@ You can determine your currently installed version using `pip show`:
 
 ## 3.9.x series
 
+### 3.9.1
+
+**Date**: [16th Janurary 2019][3.9.1-milestone]
+
+* Resolve XSS issue in browsable API. [#6330][gh6330]
+* Resolve issues with composable permissions. [#6299][gh6299]
+* Respect `limit_choices_to` on foreign keys. [#6371][gh6371]
+
 ### 3.9.0
 
 **Date**: [18th October 2018][3.9.0-milestone]
@@ -1135,6 +1143,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [3.8.1-milestone]: https://github.com/encode/django-rest-framework/milestone/67?closed=1
 [3.8.2-milestone]: https://github.com/encode/django-rest-framework/milestone/68?closed=1
 [3.9.0-milestone]: https://github.com/encode/django-rest-framework/milestone/66?closed=1
+[3.9.1-milestone]: https://github.com/encode/django-rest-framework/milestone/70?closed=1
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/encode/django-rest-framework/issues/2013
@@ -2052,3 +2061,8 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh6233]: https://github.com/encode/django-rest-framework/issues/6233
 [gh5753]: https://github.com/encode/django-rest-framework/issues/5753
 [gh6229]: https://github.com/encode/django-rest-framework/issues/6229
+
+<!-- 3.9.1 -->
+[gh6330]: https://github.com/encode/django-rest-framework/issues/6330
+[gh6299]: https://github.com/encode/django-rest-framework/issues/6299
+[gh6371]: https://github.com/encode/django-rest-framework/issues/6371
