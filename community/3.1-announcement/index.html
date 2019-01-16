@@ -476,7 +476,7 @@
 </ul>
 <h4 id="new-pagination-schemes"><a class="toclink" href="#new-pagination-schemes">New pagination schemes.</a></h4>
 <p>Until now, there has only been a single built-in pagination style in REST framework. We now have page, limit/offset and cursor based schemes included by default.</p>
-<p>The cursor based pagination scheme is particularly smart, and is a better approach for clients iterating through large or frequently changing result sets. The scheme supports paging against non-unique indexes, by using both cursor and limit/offset information. It also allows for both forward and reverse cursor pagination. Much credit goes to David Cramer for <a href="http://cramer.io/2011/03/08/building-cursors-for-the-disqus-api">this blog post</a> on the subject.</p>
+<p>The cursor based pagination scheme is particularly smart, and is a better approach for clients iterating through large or frequently changing result sets. The scheme supports paging against non-unique indexes, by using both cursor and limit/offset information. It also allows for both forward and reverse cursor pagination. Much credit goes to David Cramer for <a href="https://cra.mr/2011/03/08/building-cursors-for-the-disqus-api">this blog post</a> on the subject.</p>
 <h4 id="pagination-controls-in-the-browsable-api"><a class="toclink" href="#pagination-controls-in-the-browsable-api">Pagination controls in the browsable API.</a></h4>
 <p>Paginated results now include controls that render directly in the browsable API. If you're using the page or limit/offset style, then you'll see a page based control displayed in the browsable API:</p>
 <p><img alt="page number based pagination" src="../../img/pages-pagination.png" /></p>
@@ -535,7 +535,7 @@ Host: example.org
 </code></pre>
 <p>Note that the structure of the error responses is still the same. We still have a <code>detail</code> key in the response. If needed you can modify this behavior too, by using a <a href="../../api-guide/exceptions/#custom-exception-handling">custom exception handler</a>.</p>
 <p>We include built-in translations both for standard exception cases, and for serializer validation errors.</p>
-<p>The full list of supported languages can be found on our <a href="https://www.transifex.com/projects/p/django-rest-framework/">Transifex project page</a>.</p>
+<p>The full list of supported languages can be found on our <a href="https://www.transifex.com/django-rest-framework-1/django-rest-framework/">Transifex project page</a>.</p>
 <p>If you only wish to support a subset of the supported languages, use Django's standard <code>LANGUAGES</code> setting:</p>
 <pre><code>LANGUAGES = [
     ('de', _('German')),
@@ -559,13 +559,13 @@ Host: example.org
 <h2 id="moving-packages-out-of-core"><a class="toclink" href="#moving-packages-out-of-core">Moving packages out of core</a></h2>
 <p>We've now moved a number of packages out of the core of REST framework, and into separately installable packages. If you're currently using these you don't need to worry, you simply need to <code>pip install</code> the new packages, and change any import paths.</p>
 <p>We're making this change in order to help distribute the maintenance workload, and keep better focus of the core essentials of the framework.</p>
-<p>The change also means we can be more flexible with which external packages we recommend. For example, the excellently maintained <a href="https://github.com/evonove/django-oauth-toolkit">Django OAuth toolkit</a> has now been promoted as our recommended option for integrating OAuth support.</p>
+<p>The change also means we can be more flexible with which external packages we recommend. For example, the excellently maintained <a href="https://github.com/jazzband/django-oauth-toolkit">Django OAuth toolkit</a> has now been promoted as our recommended option for integrating OAuth support.</p>
 <p>The following packages are now moved out of core and should be separately installed:</p>
 <ul>
 <li>OAuth - <a href="https://jpadilla.github.io/django-rest-framework-oauth/">djangorestframework-oauth</a></li>
-<li>XML - <a href="https://jpadilla.github.io/django-rest-framework-xml">djangorestframework-xml</a></li>
-<li>YAML - <a href="https://jpadilla.github.io/django-rest-framework-yaml">djangorestframework-yaml</a></li>
-<li>JSONP - <a href="https://jpadilla.github.io/django-rest-framework-jsonp">djangorestframework-jsonp</a></li>
+<li>XML - <a href="https://jpadilla.github.io/django-rest-framework-xml/">djangorestframework-xml</a></li>
+<li>YAML - <a href="https://jpadilla.github.io/django-rest-framework-yaml/">djangorestframework-yaml</a></li>
+<li>JSONP - <a href="https://jpadilla.github.io/django-rest-framework-jsonp/">djangorestframework-jsonp</a></li>
 </ul>
 <p>It's worth reiterating that this change in policy shouldn't mean any work in your codebase other than adding a new requirement and modifying some import paths. For example to install XML rendering, you would now do:</p>
 <pre><code>pip install djangorestframework-xml

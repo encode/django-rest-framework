@@ -605,20 +605,20 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
 <p>When we interact with the API through the web browser, we can login, and the browser session will then provide the required authentication for the requests.</p>
 <p>If we're interacting with the API programmatically we need to explicitly provide the authentication credentials on each request.</p>
 <p>If we try to create a snippet without authenticating, we'll get an error:</p>
-<pre><code>http POST http://127.0.0.1:8000/snippets/ code="print 123"
+<pre><code>http POST http://127.0.0.1:8000/snippets/ code="print(123)"
 
 {
     "detail": "Authentication credentials were not provided."
 }
 </code></pre>
 <p>We can make a successful request by including the username and password of one of the users we created earlier.</p>
-<pre><code>http -a admin:password123 POST http://127.0.0.1:8000/snippets/ code="print 789"
+<pre><code>http -a admin:password123 POST http://127.0.0.1:8000/snippets/ code="print(789)"
 
 {
     "id": 1,
     "owner": "admin",
     "title": "foo",
-    "code": "print 789",
+    "code": "print(789)",
     "linenos": false,
     "language": "python",
     "style": "friendly"

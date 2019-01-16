@@ -591,7 +591,7 @@ def example_view(request, format=None):
 </code></pre>
 <p><strong>Note:</strong> when you set new permission classes through class attribute or decorators you're telling the view to ignore the default list set over the <strong>settings.py</strong> file.</p>
 <p>Provided they inherit from <code>rest_framework.permissions.BasePermission</code>, permissions can be composed using standard Python bitwise operators. For example, <code>IsAuthenticatedOrReadOnly</code> could be written:</p>
-<pre><code>from rest_framework.permissions import BasePermission, IsAuthenticated
+<pre><code>from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -714,7 +714,7 @@ class BlacklistPermission(permissions.BasePermission):
 <h2 id="composed-permissions"><a class="toclink" href="#composed-permissions">Composed Permissions</a></h2>
 <p>The <a href="https://github.com/niwibe/djangorestframework-composed-permissions">Composed Permissions</a> package provides a simple way to define complex and multi-depth (with logic operators) permission objects, using small and reusable components.</p>
 <h2 id="rest-condition"><a class="toclink" href="#rest-condition">REST Condition</a></h2>
-<p>The <a href="https://github.com/caxap/rest_condition">REST Condition</a> package is another extension for building complex permissions in a simple and convenient way.  The extension allows you to combine permissions with logical operators.</p>
+<p>The <a href="https://github.com/caxap/rest_condition">REST Condition</a> package is another extension for building complex permissions in a simple and convenient way. The extension allows you to combine permissions with logical operators.</p>
 <h2 id="dry-rest-permissions"><a class="toclink" href="#dry-rest-permissions">DRY Rest Permissions</a></h2>
 <p>The <a href="https://github.com/Helioscene/dry-rest-permissions">DRY Rest Permissions</a> package provides the ability to define different permissions for individual default and custom actions. This package is made for apps with permissions that are derived from relationships defined in the app's data model. It also supports permission checks being returned to a client app through the API's serializer. Additionally it supports adding permissions to the default and custom list actions to restrict the data they retrieve per user.</p>
 <h2 id="django-rest-framework-roles"><a class="toclink" href="#django-rest-framework-roles">Django Rest Framework Roles</a></h2>

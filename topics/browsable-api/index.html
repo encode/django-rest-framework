@@ -496,7 +496,9 @@
 <h3 id="login-template"><a class="toclink" href="#login-template">Login Template</a></h3>
 <p>To add branding and customize the look-and-feel of the login template, create a template called <code>login.html</code> and add it to your project, eg: <code>templates/rest_framework/login.html</code>.  The template should extend from <code>rest_framework/login_base.html</code>.</p>
 <p>You can add your site name or branding by including the branding block:</p>
-<pre><code>{% block branding %}
+<pre><code>{% extends "rest_framework/login_base.html" %}
+
+{% block branding %}
     &lt;h3 style="margin: 0 0 20px;"&gt;My Site Name&lt;/h3&gt;
 {% endblock %}
 </code></pre>

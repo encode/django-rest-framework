@@ -491,7 +491,7 @@ $ find .
 ./tutorial/urls.py
 ./tutorial/wsgi.py
 </code></pre>
-<p>It may look unusual that the application has been created within the project directory. Using the project's namespace avoids name clashes with external module (topic goes outside the scope of the quickstart).</p>
+<p>It may look unusual that the application has been created within the project directory. Using the project's namespace avoids name clashes with external modules (a topic that goes outside the scope of the quickstart).</p>
 <p>Now sync your database for the first time:</p>
 <pre><code>python manage.py migrate
 </code></pre>
@@ -516,7 +516,7 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
         model = Group
         fields = ('url', 'name')
 </code></pre>
-<p>Notice that we're using hyperlinked relations in this case, with <code>HyperlinkedModelSerializer</code>.  You can also use primary key and various other relationships, but hyperlinking is good RESTful design.</p>
+<p>Notice that we're using hyperlinked relations in this case with <code>HyperlinkedModelSerializer</code>.  You can also use primary key and various other relationships, but hyperlinking is good RESTful design.</p>
 <h2 id="views"><a class="toclink" href="#views">Views</a></h2>
 <p>Right, we'd better write some views then.  Open <code>tutorial/quickstart/views.py</code> and get typing.</p>
 <pre><code>from django.contrib.auth.models import User, Group
@@ -543,7 +543,7 @@ class GroupViewSet(viewsets.ModelViewSet):
 <p>We can easily break these down into individual views if we need to, but using viewsets keeps the view logic nicely organized as well as being very concise.</p>
 <h2 id="urls"><a class="toclink" href="#urls">URLs</a></h2>
 <p>Okay, now let's wire up the API URLs.  On to <code>tutorial/urls.py</code>...</p>
-<pre><code>from django.conf.urls import url, include
+<pre><code>from django.urls import include, path
 from rest_framework import routers
 from tutorial.quickstart import views
 
@@ -554,15 +554,15 @@ router.register(r'groups', views.GroupViewSet)
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
-    url(r'^', include(router.urls)),
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+    path('', include(router.urls)),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]
 </code></pre>
 <p>Because we're using viewsets instead of views, we can automatically generate the URL conf for our API, by simply registering the viewsets with a router class.</p>
 <p>Again, if we need more control over the API URLs we can simply drop down to using regular class-based views, and writing the URL conf explicitly.</p>
 <p>Finally, we're including default login and logout views for use with the browsable API.  That's optional, but useful if your API requires authentication and you want to use the browsable API.</p>
 <h2 id="pagination"><a class="toclink" href="#pagination">Pagination</a></h2>
-<p>Pagination allows you to control how many objects per page are returned. To enable it add following lines to the <code>tutorial/settings.py</code></p>
+<p>Pagination allows you to control how many objects per page are returned. To enable it add the following lines to <code>tutorial/settings.py</code></p>
 <pre><code>REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10

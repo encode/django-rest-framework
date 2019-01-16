@@ -633,7 +633,7 @@ def user_count_view(request, format=None):
 </code></pre>
 <p>The default JSON encoding style can be altered using the <code>UNICODE_JSON</code> and <code>COMPACT_JSON</code> settings keys.</p>
 <p><strong>.media_type</strong>: <code>application/json</code></p>
-<p><strong>.format</strong>: <code>'.json'</code></p>
+<p><strong>.format</strong>: <code>'json'</code></p>
 <p><strong>.charset</strong>: <code>None</code></p>
 <h2 id="templatehtmlrenderer"><a class="toclink" href="#templatehtmlrenderer">TemplateHTMLRenderer</a></h2>
 <p>Renders data to HTML, using Django's standard template rendering.
@@ -661,7 +661,7 @@ Unlike other renderers, the data passed to the <code>Response</code> does not ne
 <p>If you're building websites that use <code>TemplateHTMLRenderer</code> along with other renderer classes, you should consider listing <code>TemplateHTMLRenderer</code> as the first class in the <code>renderer_classes</code> list, so that it will be prioritised first even for browsers that send poorly formed <code>ACCEPT:</code> headers.</p>
 <p>See the <a href="../../topics/html-and-forms/"><em>HTML &amp; Forms</em> Topic Page</a> for further examples of <code>TemplateHTMLRenderer</code> usage.</p>
 <p><strong>.media_type</strong>: <code>text/html</code></p>
-<p><strong>.format</strong>: <code>'.html'</code></p>
+<p><strong>.format</strong>: <code>'html'</code></p>
 <p><strong>.charset</strong>: <code>utf-8</code></p>
 <p>See also: <code>StaticHTMLRenderer</code></p>
 <h2 id="statichtmlrenderer"><a class="toclink" href="#statichtmlrenderer">StaticHTMLRenderer</a></h2>
@@ -675,7 +675,7 @@ def simple_html_view(request):
 </code></pre>
 <p>You can use <code>StaticHTMLRenderer</code> either to return regular HTML pages using REST framework, or to return both HTML and API responses from a single endpoint.</p>
 <p><strong>.media_type</strong>: <code>text/html</code></p>
-<p><strong>.format</strong>: <code>'.html'</code></p>
+<p><strong>.format</strong>: <code>'html'</code></p>
 <p><strong>.charset</strong>: <code>utf-8</code></p>
 <p>See also: <code>TemplateHTMLRenderer</code></p>
 <h2 id="browsableapirenderer"><a class="toclink" href="#browsableapirenderer">BrowsableAPIRenderer</a></h2>
@@ -683,7 +683,7 @@ def simple_html_view(request):
 <p><img alt="The BrowsableAPIRenderer" src="../../img/quickstart.png" /></p>
 <p>This renderer will determine which other renderer would have been given highest priority, and use that to display an API style response within the HTML page.</p>
 <p><strong>.media_type</strong>: <code>text/html</code></p>
-<p><strong>.format</strong>: <code>'.api'</code></p>
+<p><strong>.format</strong>: <code>'api'</code></p>
 <p><strong>.charset</strong>: <code>utf-8</code></p>
 <p><strong>.template</strong>: <code>'rest_framework/api.html'</code></p>
 <h4 id="customizing-browsableapirenderer"><a class="toclink" href="#customizing-browsableapirenderer">Customizing BrowsableAPIRenderer</a></h4>
@@ -705,7 +705,7 @@ def simple_html_view(request):
         model = Account
 </code></pre>
 <p><strong>.media_type</strong>: <code>text/html</code></p>
-<p><strong>.format</strong>: <code>'.admin'</code></p>
+<p><strong>.format</strong>: <code>'admin'</code></p>
 <p><strong>.charset</strong>: <code>utf-8</code></p>
 <p><strong>.template</strong>: <code>'rest_framework/admin.html'</code></p>
 <h2 id="htmlformrenderer"><a class="toclink" href="#htmlformrenderer">HTMLFormRenderer</a></h2>
@@ -721,13 +721,13 @@ def simple_html_view(request):
 </code></pre>
 <p>For more information see the <a href="../../topics/html-and-forms/">HTML &amp; Forms</a> documentation.</p>
 <p><strong>.media_type</strong>: <code>text/html</code></p>
-<p><strong>.format</strong>: <code>'.form'</code></p>
+<p><strong>.format</strong>: <code>'form'</code></p>
 <p><strong>.charset</strong>: <code>utf-8</code></p>
 <p><strong>.template</strong>: <code>'rest_framework/horizontal/form.html'</code></p>
 <h2 id="multipartrenderer"><a class="toclink" href="#multipartrenderer">MultiPartRenderer</a></h2>
 <p>This renderer is used for rendering HTML multipart form data.  <strong>It is not suitable as a response renderer</strong>, but is instead used for creating test requests, using REST framework's <a href="../testing/">test client and test request factory</a>.</p>
 <p><strong>.media_type</strong>: <code>multipart/form-data; boundary=BoUnDaRyStRiNg</code></p>
-<p><strong>.format</strong>: <code>'.multipart'</code></p>
+<p><strong>.format</strong>: <code>'multipart'</code></p>
 <p><strong>.charset</strong>: <code>utf-8</code></p>
 <hr />
 <h1 id="custom-renderers"><a class="toclink" href="#custom-renderers">Custom renderers</a></h1>

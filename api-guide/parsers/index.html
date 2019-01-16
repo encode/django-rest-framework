@@ -571,7 +571,7 @@ def example_view(request, format=None):
 <p><strong>.media_type</strong>: <code>*/*</code></p>
 <h5 id="notes"><a class="toclink" href="#notes">Notes:</a></h5>
 <ul>
-<li>The <code>FileUploadParser</code> is for usage with native clients that can upload the file as a raw data request.  For web-based uploads, or for native clients with multipart upload support, you should use the <code>MultiPartParser</code> parser instead.</li>
+<li>The <code>FileUploadParser</code> is for usage with native clients that can upload the file as a raw data request.  For web-based uploads, or for native clients with multipart upload support, you should use the <code>MultiPartParser</code> instead.</li>
 <li>Since this parser's <code>media_type</code> matches any content type, <code>FileUploadParser</code> should generally be the only parser set on an API view.</li>
 <li><code>FileUploadParser</code> respects Django's standard <code>FILE_UPLOAD_HANDLERS</code> setting, and the <code>request.upload_handlers</code> attribute.  See the <a href="https://docs.djangoproject.com/en/stable/topics/http/file-uploads/#upload-handlers">Django documentation</a> for more details.</li>
 </ul>
