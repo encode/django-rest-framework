@@ -45,6 +45,7 @@ You can determine your currently installed version using `pip show`:
 **Date**: [16th Janurary 2019][3.9.1-milestone]
 
 * Resolve XSS issue in browsable API. [#6330][gh6330]
+* Upgrade Bootstrap to 3.4.0 to resolve XSS issue.
 * Resolve issues with composable permissions. [#6299][gh6299]
 * Respect `limit_choices_to` on foreign keys. [#6371][gh6371]
 
