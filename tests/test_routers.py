@@ -158,6 +158,12 @@ class TestSimpleRouter(URLPatternsTestCase, TestCase):
         response = self.client.delete(reverse('basic-action3', args=[1]))
         assert response.data == {'delete': '1'}
 
+    def test_register_after_accessing_urls(self):
+        self.router.register(r'notes', NoteViewSet)
+        assert len(self.router.urls) == 2  # list and detail
+        self.router.register(r'notes_bis', NoteViewSet)
+        assert len(self.router.urls) == 4
+
 
 class TestRootView(URLPatternsTestCase, TestCase):
     urlpatterns = [
