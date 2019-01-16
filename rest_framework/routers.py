@@ -86,6 +86,8 @@ class BaseRouter(six.with_metaclass(RenameRouterMethods)):
         self.registry = []
 
     def register(self, prefix, viewset, basename=None, base_name=None):
+        assert not hasattr(self, '_urls'), (
+            "You should register all your urls before accessing self.urls.")
         if base_name is not None:
             msg = "The `base_name` argument is pending deprecation in favor of `basename`."
             warnings.warn(msg, PendingDeprecationWarning, 2)
