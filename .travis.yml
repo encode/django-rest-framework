@@ -1,9 +1,6 @@
 language: python
 cache: pip
 dist: xenial
-
-sudo: false
-
 matrix:
     fast_finish: true
     include:
