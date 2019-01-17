@@ -100,6 +100,10 @@ class BaseRouter(six.with_metaclass(RenameRouterMethods)):
             basename = self.get_default_basename(viewset)
         self.registry.append((prefix, viewset, basename))
 
+        # invalidate the urls cache
+        if hasattr(self, '_urls'):
+            del self._urls
+
     def get_default_basename(self, viewset):
         """
         If `basename` is not specified, attempt to automatically determine
