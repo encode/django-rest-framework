@@ -168,7 +168,7 @@ A more complete example of extra actions:
             serializer = self.get_serializer(recent_users, many=True)
             return Response(serializer.data)
 
-The decorator can additionally take extra arguments that will be set for the routed view only.  For example:
+The decorator can additionally take extra arguments that will be set for the routed view only. Any class property of the `ViewSet` is therefore a valid argument for `@action()` (e.g. `serializer_class`, `queryset`, `permission_classes`). For example:
 
         @action(detail=True, methods=['post'], permission_classes=[IsAdminOrIsSelf])
         def set_password(self, request, pk=None):
