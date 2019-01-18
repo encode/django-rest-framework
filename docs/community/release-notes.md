@@ -42,7 +42,8 @@ You can determine your currently installed version using `pip show`:
 
 ### 3.9.2 - IN DEVELOPMENT
 
-...
+* Resolve DeprecationWarning with markdown. [#6317][gh6317]
+* Upgrade markdown to 3.0.1 to avoid deprecation issue.
 
 ### 3.9.1
 
