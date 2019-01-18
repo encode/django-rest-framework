@@ -129,11 +129,6 @@ You may inspect these attributes to adjust behaviour based on the current action
 
 If you have ad-hoc methods that should be routable, you can mark them as such with the `@action` decorator. Like regular actions, extra actions may be intended for either a single object, or an entire collection. To indicate this, set the `detail` argument to `True` or `False`. The router will configure its URL patterns accordingly. e.g., the `DefaultRouter` will configure detail actions to contain `pk` in their URL patterns.
 
-Your custom action may use a different [Serializer class](serializers.md). To make sure that the generated docs display a form which matches your serializer, you have two options:
-
-* Either: provide a `serializer_class=MySerializer` argument to the `@action()` decorator (see example below)
-* Or: override the `get_serializer_class()` method as described in [GenericAPIView](generic-views.md#genericapiview)
-
 A more complete example of extra actions:
 
     from django.contrib.auth.models import User
