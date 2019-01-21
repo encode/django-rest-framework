@@ -1725,9 +1725,6 @@ class DictField(Field):
         return self.run_child_validation(data)
 
     def to_representation(self, value):
-        """
-        List of object instances -> List of dicts of primitive datatypes.
-        """
         return {
             six.text_type(key): self.child.to_representation(val) if val is not None else None
             for key, val in value.items()
