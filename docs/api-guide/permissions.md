@@ -284,7 +284,7 @@ The [DRY Rest Permissions][dry-rest-permissions] package provides the ability to
 
 The [Django Rest Framework Roles][django-rest-framework-roles] package makes it easier to parameterize your API over multiple types of users.
 
-## Django Rest Framework API Key
+## Django REST Framework API Key
 
 The [Django REST Framework API Key][djangorestframework-api-key] package provides the ability to authorize clients based on customizable API key headers. This package is targeted at situations in which regular user-based authentication (e.g. `TokenAuthentication`) is not suitable, e.g. allowing non-human clients to safely use your API. API keys are generated and validated through cryptographic methods and can be created and revoked from the Django admin interface at anytime.
 
