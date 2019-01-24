@@ -76,6 +76,8 @@
           {% block content %}
 
           <div class="region"  aria-label="{% trans "request form" %}">
+          {% block request_forms %}
+          
           {% if 'GET' in allowed_methods %}
             <form id="get-form" class="pull-right">
               <fieldset>
@@ -148,6 +150,8 @@
               {% trans "Filters" %}
             </button>
           {% endif %}
+
+          {% endblock request_forms %}
           </div>
 
             <div class="content-main" role="main"  aria-label="{% trans "main content" %}">
