@@ -40,6 +40,10 @@ You can determine your currently installed version using `pip show`:
 
 ## 3.9.x series
 
+### 3.9.2 - IN DEVELOPMENT
+
+...
+
 ### 3.9.1
 
 **Date**: [16th Janurary 2019][3.9.1-milestone]
