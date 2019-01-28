@@ -1681,7 +1681,7 @@ class ListField(Field):
             try:
                 result.append(self.child.run_validation(item))
             except ValidationError as e:
-                errors[idx] = e.detail
+                errors[str(idx)] = e.detail
 
         if not errors:
             return result

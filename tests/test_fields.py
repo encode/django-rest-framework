@@ -1880,7 +1880,7 @@ class TestListField(FieldValues):
     ]
     invalid_inputs = [
         ('not a list', ['Expected a list of items but got type "str".']),
-        ([1, 2, 'error', 'error'], {2: ['A valid integer is required.'], 3: ['A valid integer is required.']}),
+        ([1, 2, 'error', 'error'], {'2': ['A valid integer is required.'], '3': ['A valid integer is required.']}),
         ({'one': 'two'}, ['Expected a list of items but got type "dict".'])
     ]
     outputs = [
@@ -1916,9 +1916,9 @@ class TestNestedListField(FieldValues):
         ([[]], [[]])
     ]
     invalid_inputs = [
-        (['not a list'], {0: ['Expected a list of items but got type "str".']}),
-        ([[1, 2, 'error'], ['error']], {0: {2: ['A valid integer is required.']}, 1: {0: ['A valid integer is required.']}}),
-        ([{'one': 'two'}], {0: ['Expected a list of items but got type "dict".']})
+        (['not a list'], {'0': ['Expected a list of items but got type "str".']}),
+        ([[1, 2, 'error'], ['error']], {'0': {'2': ['A valid integer is required.']}, '1': {'0': ['A valid integer is required.']}}),
+        ([{'one': 'two'}], {'0': ['Expected a list of items but got type "dict".']})
     ]
     outputs = [
         ([[1, 2], [3]], [[1, 2], [3]]),
