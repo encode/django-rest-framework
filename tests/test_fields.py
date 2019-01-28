@@ -17,6 +17,7 @@ from rest_framework import exceptions, serializers
 from rest_framework.fields import (
     BuiltinSignatureError, DjangoImageField, is_simple_callable
 )
+from tests.models import UUIDForeignKeyTarget
 
 utc = datetime.timezone.utc
 
@@ -2072,6 +2073,35 @@ class TestNestedListField(FieldValues):
         ([[1, 2], [3]], [[1, 2], [3]]),
     ]
     field = serializers.ListField(child=serializers.ListField(child=serializers.IntegerField()))
+
+
+class TestListFieldWithDjangoValidationErrors(FieldValues, TestCase):
+    """
+    Values for `ListField` with UUIDField as child
+    (since UUIDField can throw ValidationErrors from Django).
+    The idea is to test that Django's ValidationErrors raised
+    from Django internals are caught and serializers in a way
+    that is structurally consistent with DRF's ValidationErrors.
+    """
+
+    valid_inputs = []
+    invalid_inputs = [
+        (
+            ['not-a-valid-uuid', 'd7364368-d1b3-4455-aaa3-56439b460ca2', 'some-other-invalid-uuid'],
+            {
+                0: [exceptions.ErrorDetail(string='“not-a-valid-uuid” is not a valid UUID.', code='invalid')],
+                1: [
+                    exceptions.ErrorDetail(
+                        string='Invalid pk "d7364368-d1b3-4455-aaa3-56439b460ca2" - object does not exist.',
+                        code='does_not_exist',
+                    )
+                ],
+                2: [exceptions.ErrorDetail(string='“some-other-invalid-uuid” is not a valid UUID.', code='invalid')],
+            },
+        ),
+    ]
+    outputs = {}
+    field = serializers.ListField(child=serializers.PrimaryKeyRelatedField(queryset=UUIDForeignKeyTarget.objects.all()))
 
 
 class TestEmptyListField(FieldValues):
