@@ -31,3 +31,11 @@ class SchemaView(APIView):
         if schema is None:
             raise exceptions.PermissionDenied()
         return Response(schema)
+
+    def handle_exception(self, exc):
+        # Schema renderers do not render exceptions, so re-perform content
+        # negotiation with default renderers.
+        self.renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
+        neg = self.perform_content_negotiation(self.request, force=True)
+        self.request.accepted_renderer, self.request.accepted_media_type = neg
+        return super(SchemaView, self).handle_exception(exc)

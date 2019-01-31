@@ -1304,3 +1304,13 @@ class TestAutoSchemaAllowsFilters(object):
 
     def test_FOO(self):
         assert not self._test('FOO')
+
+
+@pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
+def test_schema_handles_exception():
+    schema_view = get_schema_view(permission_classes=[DenyAllUsingPermissionDenied])
+    request = factory.get('/')
+    response = schema_view(request)
+    response.render()
+    assert response.status_code == 403
+    assert "You do not have permission to perform this action." in str(response.content)
