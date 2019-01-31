@@ -9,6 +9,7 @@ from django.conf.urls import include, url
 from django.core.cache import cache
 from django.db import models
 from django.http.request import HttpRequest
+from django.template import loader
 from django.test import TestCase, override_settings
 from django.utils import six
 from django.utils.safestring import SafeText
@@ -826,6 +827,16 @@ class TestDocumentationRenderer(TestCase):
 
         html = renderer.render(document, accepted_media_type="text/html", renderer_context={"request": request})
         assert '<h1>Data Endpoint API</h1>' in html
+
+    def test_shell_code_example_rendering(self):
+        template = loader.get_template('rest_framework/docs/langs/shell.html')
+        context = {
+            'document': coreapi.Document(url='https://api.example.org/'),
+            'link_key': 'testcases > list',
+            'link': coreapi.Link(url='/data/', action='get', fields=[]),
+        }
+        html = template.render(context)
+        assert 'testcases list' in html
 
 
 @pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
