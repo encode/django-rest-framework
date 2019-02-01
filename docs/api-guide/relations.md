@@ -46,12 +46,12 @@ In order to explain the various types of relational fields, we'll use a couple o
             unique_together = ('album', 'order')
             ordering = ['order']
 
-        def __unicode__(self):
+        def __str__(self):
             return '%d: %s' % (self.order, self.title)
 
 ## StringRelatedField
 
-`StringRelatedField` may be used to represent the target of the relationship using its `__unicode__` method.
+`StringRelatedField` may be used to represent the target of the relationship using its `__str__` method.
 
 For example, the following serializer.
 
@@ -510,7 +510,7 @@ For example, given the following model for a tag, which has a generic relationsh
         object_id = models.PositiveIntegerField()
         tagged_object = GenericForeignKey('content_type', 'object_id')
 
-        def __unicode__(self):
+        def __str__(self):
             return self.tag_name
 
 And the following two models, which may have associated tags:
