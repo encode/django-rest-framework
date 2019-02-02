@@ -45,7 +45,6 @@ def _get_field_type(field):
     }.get(field.__class__, default_return)
 
 
-
 def field_to_schema(field):
     title = force_text(field.label) if field.label else ''
     description = force_text(field.help_text) if field.help_text else ''
@@ -120,6 +119,8 @@ def field_to_schema(field):
             description=description,
             format='date-time'
         )
+    elif isinstance(field, serializers.JSONField):
+        return coreschema.Object(title=title, description=description)
 
     if field.style.get('base_template') == 'textarea.html':
         return coreschema.String(
