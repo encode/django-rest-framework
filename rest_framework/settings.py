@@ -128,6 +128,9 @@ DEFAULTS = {
         'retrieve': 'read',
         'destroy': 'delete'
     },
+
+    # Documentation
+    'SECURE_DOCS': False
 }
 
 

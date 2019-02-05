@@ -1,4 +1,5 @@
 from django.conf.urls import include, url
+from django.contrib.auth.decorators import login_required
 
 from rest_framework.renderers import (
     CoreJSONRenderer, DocumentationRenderer, SchemaJSRenderer
@@ -77,8 +78,14 @@ def include_docs_urls(
         authentication_classes=authentication_classes,
         permission_classes=permission_classes,
     )
-    urls = [
-        url(r'^$', docs_view, name='docs-index'),
-        url(r'^schema.js$', schema_js_view, name='schema-js')
-    ]
+    if api_settings.SECURE_DOCS is False:
+        urls = [
+            url(r'^$', docs_view, name='docs-index'),
+            url(r'^schema.js$', schema_js_view, name='schema-js')
+        ]
+    else:
+        urls = [
+            url(r'^$', login_required(docs_view), name='docs-index'),
+            url(r'^schema.js$', login_required(schema_js_view), name='schema-js')
+        ]
     return include((urls, 'api-docs'), namespace='api-docs')
