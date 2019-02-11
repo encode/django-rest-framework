@@ -76,8 +76,10 @@ def apply_suffix_patterns(urlpatterns, suffix_pattern, suffix_required, suffix_r
                 new_pattern = path(route, view, kwargs, name)
             else:
                 new_pattern = url(regex, view, kwargs, name)
-
-            ret.append(new_pattern)
+                
+            # If suffix_required is None, we don't need suffix at all
+            if suffix_required is not None:
+                ret.append(new_pattern)
 
     return ret
 
@@ -93,6 +95,7 @@ def format_suffix_patterns(urlpatterns, suffix_required=False, allowed=None):
     suffix_required:
         If `True`, only suffixed URLs will be generated, and non-suffixed
         URLs will not be used.  Defaults to `False`.
+        If None, only non-suffixed URLs will be used.
 
     allowed:
         An optional tuple/list of allowed suffixes.  eg ['json', 'api']
