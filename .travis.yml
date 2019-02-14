@@ -39,7 +39,6 @@ matrix:
 
     allow_failures:
       - env: DJANGO=master
-      - env: DJANGO=2.2
 
 install:
     - pip install tox tox-venv tox-travis
