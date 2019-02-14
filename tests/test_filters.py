@@ -221,7 +221,7 @@ class SearchFilterM2MTests(TestCase):
         # ...
         for idx in range(3):
             label = 'w' * (idx + 1)
-            AttributeModel(label=label)
+            AttributeModel.objects.create(label=label)
 
         for idx in range(10):
             title = 'z' * (idx + 1)
