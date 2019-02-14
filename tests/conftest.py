@@ -57,6 +57,7 @@ def pytest_configure(config):
             'rest_framework',
             'rest_framework.authtoken',
             'tests.authentication',
+            'tests.generic_relations',
             'tests.importable',
             'tests',
         ),
