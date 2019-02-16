@@ -152,7 +152,7 @@ When deserializing data, you always need to call `is_valid()` before attempting 
     serializer.is_valid()
     # False
     serializer.errors
-    # {'email': [u'Enter a valid e-mail address.'], 'created': [u'This field is required.']}
+    # {'email': ['Enter a valid e-mail address.'], 'created': ['This field is required.']}
 
 Each key in the dictionary will be the field name, and the values will be lists of strings of any error messages corresponding to that field.  The `non_field_errors` key may also be present, and will list any general validation errors. The name of the `non_field_errors` key may be customized using the `NON_FIELD_ERRORS_KEY` REST framework setting.
 
@@ -253,7 +253,7 @@ When passing data to a serializer instance, the unmodified data will be made ava
 By default, serializers must be passed values for all required fields or they will raise validation errors. You can use the `partial` argument in order to allow partial updates.
 
     # Update `comment` with partial data
-    serializer = CommentSerializer(comment, data={'content': u'foo bar'}, partial=True)
+    serializer = CommentSerializer(comment, data={'content': 'foo bar'}, partial=True)
 
 ## Dealing with nested objects
 
@@ -293,7 +293,7 @@ When dealing with nested representations that support deserializing the data, an
     serializer.is_valid()
     # False
     serializer.errors
-    # {'user': {'email': [u'Enter a valid e-mail address.']}, 'created': [u'This field is required.']}
+    # {'user': {'email': ['Enter a valid e-mail address.']}, 'created': ['This field is required.']}
 
 Similarly, the `.validated_data` property will include nested data structures.
 
@@ -415,7 +415,7 @@ You can provide arbitrary additional context by passing a `context` argument whe
 
     serializer = AccountSerializer(account, context={'request': request})
     serializer.data
-    # {'id': 6, 'owner': u'denvercoder9', 'created': datetime.datetime(2013, 2, 12, 09, 44, 56, 678870), 'details': 'http://example.com/accounts/6/details'}
+    # {'id': 6, 'owner': 'denvercoder9', 'created': datetime.datetime(2013, 2, 12, 09, 44, 56, 678870), 'details': 'http://example.com/accounts/6/details'}
 
 The context dictionary can be used within any serializer field logic, such as a custom `.to_representation()` method, by accessing the `self.context` attribute.
 
@@ -1094,10 +1094,10 @@ This would then allow you to do the following:
     >>>         model = User
     >>>         fields = ('id', 'username', 'email')
     >>>
-    >>> print UserSerializer(user)
+    >>> print(UserSerializer(user))
     {'id': 2, 'username': 'jonwatts', 'email': 'jon@example.com'}
     >>>
-    >>> print UserSerializer(user, fields=('id', 'email'))
+    >>> print(UserSerializer(user, fields=('id', 'email')))
     {'id': 2, 'email': 'jon@example.com'}
 
 ## Customizing the default fields
