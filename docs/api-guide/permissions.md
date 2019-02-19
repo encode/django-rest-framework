@@ -48,6 +48,19 @@ For example:
         self.check_object_permissions(self.request, obj)
         return obj
 
+---
+
+**Note**: With the exception of `DjangoObjectPermissions`, the provided
+permission classes in `rest_framework.permssions` **do not** implement the
+methods necessary to check object permissions.
+
+If you wish to use the provided permission classes in order to check object
+permissions, **you must** subclass them and implement the
+`has_object_permission()` method described in the [_Custom
+permissions_](#custom-permissions) section (below).
+
+---
+
 #### Limitations of object level permissions
 
 For performance reasons the generic views will not automatically apply object level permissions to each instance in a queryset when returning a list of objects.
