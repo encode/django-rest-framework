@@ -156,6 +156,31 @@ class SearchFilterTests(TestCase):
 
         reload_module(filters)
 
+    def test_search_with_filter_subclass(self):
+        class CustomSearchFilter(filters.SearchFilter):
+            # Filter that dynamically changes search fields
+            def get_search_fields(self, view, request):
+                if request.query_params.get('title_only'):
+                    return ('$title',)
+                return super(CustomSearchFilter, self).get_search_fields(view, request)
+
+        class SearchListView(generics.ListAPIView):
+            queryset = SearchFilterModel.objects.all()
+            serializer_class = SearchFilterSerializer
+            filter_backends = (CustomSearchFilter,)
+            search_fields = ('$title', '$text')
+
+        view = SearchListView.as_view()
+        request = factory.get('/', {'search': '^\w{3}$'})
+        response = view(request)
+        assert len(response.data) == 10
+
+        request = factory.get('/', {'search': '^\w{3}$', 'title_only': 'true'})
+        response = view(request)
+        assert response.data == [
+            {'id': 3, 'title': 'zzz', 'text': 'cde'}
+        ]
+
 
 class AttributeModel(models.Model):
     label = models.CharField(max_length=32)
