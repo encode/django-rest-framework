@@ -350,7 +350,7 @@ class Field(object):
                 self.default_empty_html = default
 
         if validators is not None:
-            self.validators = validators[:]
+            self.validators = list(validators)
 
         # These are set up by `.bind()` when the field is added to a serializer.
         self.field_name = None
@@ -410,7 +410,7 @@ class Field(object):
         self._validators = validators
 
     def get_validators(self):
-        return self.default_validators[:]
+        return list(self.default_validators)
 
     def get_initial(self):
         """

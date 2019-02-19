@@ -740,6 +740,25 @@ class TestCharField(FieldValues):
                 'Null characters are not allowed.'
             ]
 
+    def test_iterable_validators(self):
+        """
+        Ensure `validators` parameter is compatible with reasonable iterables.
+        """
+        value = 'example'
+
+        for validators in ([], (), set()):
+            field = serializers.CharField(validators=validators)
+            field.run_validation(value)
+
+        def raise_exception(value):
+            raise exceptions.ValidationError('Raised error')
+
+        for validators in ([raise_exception], (raise_exception,), set([raise_exception])):
+            field = serializers.CharField(validators=validators)
+            with pytest.raises(serializers.ValidationError) as exc_info:
+                field.run_validation(value)
+            assert exc_info.value.detail == ['Raised error']
+
 
 class TestEmailField(FieldValues):
     """
