@@ -5,6 +5,7 @@ import unittest
 import warnings
 
 import django
+import pytest
 from django.contrib.auth.models import AnonymousUser, Group, Permission, User
 from django.db import models
 from django.test import TestCase
@@ -14,7 +15,7 @@ from rest_framework import (
     HTTP_HEADER_ENCODING, authentication, generics, permissions, serializers,
     status, views
 )
-from rest_framework.compat import is_guardian_installed
+from rest_framework.compat import PY36, is_guardian_installed, mock
 from rest_framework.filters import DjangoObjectPermissionsFilter
 from rest_framework.routers import DefaultRouter
 from rest_framework.test import APIRequestFactory
@@ -600,3 +601,87 @@ class PermissionsCompositionTests(TestCase):
             permissions.IsAuthenticated
         )
         assert composed_perm().has_permission(request, None) is True
+
+    @pytest.mark.skipif(not PY36, reason="assert_called_once() not available")
+    def test_or_lazyness(self):
+        request = factory.get('/1', format='json')
+        request.user = AnonymousUser()
+
+        with mock.patch.object(permissions.AllowAny, 'has_permission', return_value=True) as mock_allow:
+            with mock.patch.object(permissions.IsAuthenticated, 'has_permission', return_value=False) as mock_deny:
+                composed_perm = (permissions.AllowAny | permissions.IsAuthenticated)
+                hasperm = composed_perm().has_permission(request, None)
+                self.assertIs(hasperm, True)
+                mock_allow.assert_called_once()
+                mock_deny.assert_not_called()
+
+        with mock.patch.object(permissions.AllowAny, 'has_permission', return_value=True) as mock_allow:
+            with mock.patch.object(permissions.IsAuthenticated, 'has_permission', return_value=False) as mock_deny:
+                composed_perm = (permissions.IsAuthenticated | permissions.AllowAny)
+                hasperm = composed_perm().has_permission(request, None)
+                self.assertIs(hasperm, True)
+                mock_deny.assert_called_once()
+                mock_allow.assert_called_once()
+
+    @pytest.mark.skipif(not PY36, reason="assert_called_once() not available")
+    def test_object_or_lazyness(self):
+        request = factory.get('/1', format='json')
+        request.user = AnonymousUser()
+
+        with mock.patch.object(permissions.AllowAny, 'has_object_permission', return_value=True) as mock_allow:
+            with mock.patch.object(permissions.IsAuthenticated, 'has_object_permission', return_value=False) as mock_deny:
+                composed_perm = (permissions.AllowAny | permissions.IsAuthenticated)
+                hasperm = composed_perm().has_object_permission(request, None, None)
+                self.assertIs(hasperm, True)
+                mock_allow.assert_called_once()
+                mock_deny.assert_not_called()
+
+        with mock.patch.object(permissions.AllowAny, 'has_object_permission', return_value=True) as mock_allow:
+            with mock.patch.object(permissions.IsAuthenticated, 'has_object_permission', return_value=False) as mock_deny:
+                composed_perm = (permissions.IsAuthenticated | permissions.AllowAny)
+                hasperm = composed_perm().has_object_permission(request, None, None)
+                self.assertIs(hasperm, True)
+                mock_deny.assert_called_once()
+                mock_allow.assert_called_once()
+
+    @pytest.mark.skipif(not PY36, reason="assert_called_once() not available")
+    def test_and_lazyness(self):
+        request = factory.get('/1', format='json')
+        request.user = AnonymousUser()
+
+        with mock.patch.object(permissions.AllowAny, 'has_permission', return_value=True) as mock_allow:
+            with mock.patch.object(permissions.IsAuthenticated, 'has_permission', return_value=False) as mock_deny:
+                composed_perm = (permissions.AllowAny & permissions.IsAuthenticated)
+                hasperm = composed_perm().has_permission(request, None)
+                self.assertIs(hasperm, False)
+                mock_allow.assert_called_once()
+                mock_deny.assert_called_once()
+
+        with mock.patch.object(permissions.AllowAny, 'has_permission', return_value=True) as mock_allow:
+            with mock.patch.object(permissions.IsAuthenticated, 'has_permission', return_value=False) as mock_deny:
+                composed_perm = (permissions.IsAuthenticated & permissions.AllowAny)
+                hasperm = composed_perm().has_permission(request, None)
+                self.assertIs(hasperm, False)
+                mock_allow.assert_not_called()
+                mock_deny.assert_called_once()
+
+    @pytest.mark.skipif(not PY36, reason="assert_called_once() not available")
+    def test_object_and_lazyness(self):
+        request = factory.get('/1', format='json')
+        request.user = AnonymousUser()
+
+        with mock.patch.object(permissions.AllowAny, 'has_object_permission', return_value=True) as mock_allow:
+            with mock.patch.object(permissions.IsAuthenticated, 'has_object_permission', return_value=False) as mock_deny:
+                composed_perm = (permissions.AllowAny & permissions.IsAuthenticated)
+                hasperm = composed_perm().has_object_permission(request, None, None)
+                self.assertIs(hasperm, False)
+                mock_allow.assert_called_once()
+                mock_deny.assert_called_once()
+
+        with mock.patch.object(permissions.AllowAny, 'has_object_permission', return_value=True) as mock_allow:
+            with mock.patch.object(permissions.IsAuthenticated, 'has_object_permission', return_value=False) as mock_deny:
+                composed_perm = (permissions.IsAuthenticated & permissions.AllowAny)
+                hasperm = composed_perm().has_object_permission(request, None, None)
+                self.assertIs(hasperm, False)
+                mock_allow.assert_not_called()
+                mock_deny.assert_called_once()

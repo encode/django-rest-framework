@@ -44,13 +44,13 @@ class AND:
 
     def has_permission(self, request, view):
         return (
-            self.op1.has_permission(request, view) &
+            self.op1.has_permission(request, view) and
             self.op2.has_permission(request, view)
         )
 
     def has_object_permission(self, request, view, obj):
         return (
-            self.op1.has_object_permission(request, view, obj) &
+            self.op1.has_object_permission(request, view, obj) and
             self.op2.has_object_permission(request, view, obj)
         )
 
@@ -62,13 +62,13 @@ class OR:
 
     def has_permission(self, request, view):
         return (
-            self.op1.has_permission(request, view) |
+            self.op1.has_permission(request, view) or
             self.op2.has_permission(request, view)
         )
 
     def has_object_permission(self, request, view, obj):
         return (
-            self.op1.has_object_permission(request, view, obj) |
+            self.op1.has_object_permission(request, view, obj) or
             self.op2.has_object_permission(request, view, obj)
         )
 

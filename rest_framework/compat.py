@@ -5,6 +5,8 @@ versions of Django/Python, and compatibility wrappers around optional packages.
 
 from __future__ import unicode_literals
 
+import sys
+
 from django.conf import settings
 from django.core import validators
 from django.utils import six
@@ -33,6 +35,11 @@ try:
     from django.core.validators import ProhibitNullCharactersValidator  # noqa
 except ImportError:
     ProhibitNullCharactersValidator = None
+
+try:
+    from unittest import mock
+except ImportError:
+    mock = None
 
 
 def get_original_route(urlpattern):
@@ -314,3 +321,7 @@ class MinLengthValidator(CustomValidatorMessage, validators.MinLengthValidator):
 
 class MaxLengthValidator(CustomValidatorMessage, validators.MaxLengthValidator):
     pass
+
+
+# Version Constants.
+PY36 = sys.version_info >= (3, 6)
