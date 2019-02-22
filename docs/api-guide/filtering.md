@@ -127,7 +127,7 @@ Note that you can use both an overridden `.get_queryset()` and generic filtering
         """
         model = Product
         serializer_class = ProductSerializer
-        filter_class = ProductFilter
+        filterset_class = ProductFilter
 
         def get_queryset(self):
             user = self.request.user
@@ -305,9 +305,9 @@ A complete example using both `DjangoObjectPermissionsFilter` and `DjangoObjectP
 **permissions.py**:
 
     class CustomObjectPermissions(permissions.DjangoObjectPermissions):
-		"""
-		Similar to `DjangoObjectPermissions`, but adding 'view' permissions.
-		"""
+        """
+        Similar to `DjangoObjectPermissions`, but adding 'view' permissions.
+        """
         perms_map = {
             'GET': ['%(app_label)s.view_%(model_name)s'],
             'OPTIONS': ['%(app_label)s.view_%(model_name)s'],
@@ -321,11 +321,11 @@ A complete example using both `DjangoObjectPermissionsFilter` and `DjangoObjectP
 **views.py**:
 
     class EventViewSet(viewsets.ModelViewSet):
-    	"""
-    	Viewset that only lists events if user has 'view' permissions, and only
-    	allows operations on individual events if user has appropriate 'view', 'add',
-    	'change' or 'delete' permissions.
-		"""
+        """
+        Viewset that only lists events if user has 'view' permissions, and only
+        allows operations on individual events if user has appropriate 'view', 'add',
+        'change' or 'delete' permissions.
+        """
         queryset = Event.objects.all()
         serializer_class = EventSerializer
         filter_backends = (filters.DjangoObjectPermissionsFilter,)
