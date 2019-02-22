@@ -299,10 +299,11 @@ A date and time representation.
 
 Corresponds to `django.db.models.fields.DateTimeField`.
 
-**Signature:** `DateTimeField(format=api_settings.DATETIME_FORMAT, input_formats=None)`
+**Signature:** `DateTimeField(format=api_settings.DATETIME_FORMAT, input_formats=None, default_timezone=None)`
 
 * `format` - A string representing the output format. If not specified, this defaults to the same value as the `DATETIME_FORMAT` settings key, which will be `'iso-8601'` unless set. Setting to a format string indicates that `to_representation` return values should be coerced to string output. Format strings are described below. Setting this value to `None` indicates that Python `datetime` objects should be returned by `to_representation`. In this case the datetime encoding will be determined by the renderer.
 * `input_formats` - A list of strings representing the input formats which may be used to parse the date.  If not specified, the `DATETIME_INPUT_FORMATS` setting will be used, which defaults to `['iso-8601']`.
+* `default_timezone` - A `pytz.timezone` representing the timezone. If not specified, the `TIME_ZONE` setting will be used if `USE_TZ` is `True`.
 
 #### `DateTimeField` format strings.
 
