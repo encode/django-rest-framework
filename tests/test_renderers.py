@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 import re
-from collections import MutableMapping, OrderedDict
+from collections import OrderedDict
 
 import pytest
 from django.conf.urls import include, url
@@ -16,7 +16,7 @@ from django.utils.safestring import SafeText
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import permissions, serializers, status
-from rest_framework.compat import coreapi
+from rest_framework.compat import MutableMapping, coreapi
 from rest_framework.decorators import action
 from rest_framework.renderers import (
     AdminRenderer, BaseRenderer, BrowsableAPIRenderer, DocumentationRenderer,

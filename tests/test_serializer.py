@@ -5,13 +5,12 @@ import inspect
 import pickle
 import re
 import unittest
-from collections import Mapping
 
 import pytest
 from django.db import models
 
 from rest_framework import exceptions, fields, relations, serializers
-from rest_framework.compat import unicode_repr
+from rest_framework.compat import Mapping, unicode_repr
 from rest_framework.fields import Field
 
 from .models import (
