@@ -5,10 +5,11 @@ from django.utils import six
 
 from rest_framework import serializers
 from tests.models import (
-    ForeignKeySource, ForeignKeySourceWithLimitedChoices, ForeignKeyTarget,
-    ManyToManySource, ManyToManyTarget, NullableForeignKeySource,
-    NullableOneToOneSource, NullableUUIDForeignKeySource, OneToOnePKSource,
-    OneToOneTarget, UUIDForeignKeyTarget
+    ForeignKeySource, ForeignKeySourceWithLimitedChoices,
+    ForeignKeySourceWithQLimitedChoices, ForeignKeyTarget, ManyToManySource,
+    ManyToManyTarget, NullableForeignKeySource, NullableOneToOneSource,
+    NullableUUIDForeignKeySource, OneToOnePKSource, OneToOneTarget,
+    UUIDForeignKeyTarget
 )
 
 
@@ -376,6 +377,18 @@ class PKForeignKeyTests(TestCase):
         limited_target = ForeignKeyTarget(name="limited-target")
         limited_target.save()
         queryset = ForeignKeySourceWithLimitedChoicesSerializer().fields["target"].get_queryset()
+        assert len(queryset) == 1
+
+    def test_queryset_size_with_Q_limited_choices(self):
+        limited_target = ForeignKeyTarget(name="limited-target")
+        limited_target.save()
+
+        class QLimitedChoicesSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = ForeignKeySourceWithQLimitedChoices
+                fields = ("id", "target")
+
+        queryset = QLimitedChoicesSerializer().fields["target"].get_queryset()
         assert len(queryset) == 1
 
 

@@ -251,7 +251,9 @@ def get_relation_kwargs(field_name, relation_info):
 
     limit_choices_to = model_field and model_field.get_limit_choices_to()
     if limit_choices_to:
-        kwargs['queryset'] = kwargs['queryset'].filter(**limit_choices_to)
+        if not isinstance(limit_choices_to, models.Q):
+            limit_choices_to = models.Q(**limit_choices_to)
+        kwargs['queryset'] = kwargs['queryset'].filter(limit_choices_to)
 
     if has_through_model:
         kwargs['read_only'] = True
