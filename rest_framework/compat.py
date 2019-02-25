@@ -12,10 +12,10 @@ from django.views.generic import View
 
 try:
     # Python 3
-    from collections.abc import Mapping   # noqa
+    from collections.abc import Mapping, MutableMapping   # noqa
 except ImportError:
     # Python 2.7
-    from collections import Mapping   # noqa
+    from collections import Mapping, MutableMapping   # noqa
 
 try:
     from django.urls import (  # noqa

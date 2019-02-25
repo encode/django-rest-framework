@@ -1,6 +1,5 @@
 from __future__ import unicode_literals
 
-import collections
 import copy
 import datetime
 import decimal
@@ -33,7 +32,7 @@ from pytz.exceptions import InvalidTimeError
 
 from rest_framework import ISO_8601
 from rest_framework.compat import (
-    MaxLengthValidator, MaxValueValidator, MinLengthValidator,
+    Mapping, MaxLengthValidator, MaxValueValidator, MinLengthValidator,
     MinValueValidator, ProhibitNullCharactersValidator, unicode_repr,
     unicode_to_repr
 )
@@ -96,7 +95,7 @@ def get_attribute(instance, attrs):
     """
     for attr in attrs:
         try:
-            if isinstance(instance, collections.Mapping):
+            if isinstance(instance, Mapping):
                 instance = instance[attr]
             else:
                 instance = getattr(instance, attr)
@@ -1661,7 +1660,7 @@ class ListField(Field):
         """
         if html.is_html_input(data):
             data = html.parse_html_list(data, default=[])
-        if isinstance(data, type('')) or isinstance(data, collections.Mapping) or not hasattr(data, '__iter__'):
+        if isinstance(data, type('')) or isinstance(data, Mapping) or not hasattr(data, '__iter__'):
             self.fail('not_a_list', input_type=type(data).__name__)
         if not self.allow_empty and len(data) == 0:
             self.fail('empty')
