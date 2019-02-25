@@ -5,6 +5,7 @@ import datetime
 import pytest
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
+from django.db.models.functions import Concat, Upper
 from django.test import TestCase
 from django.test.utils import override_settings
 from django.utils.six.moves import reload_module
@@ -327,6 +328,38 @@ class SearchFilterToManyTests(TestCase):
         request = factory.get('/', {'search': 'Lennon,1979'})
         response = view(request)
         assert len(response.data) == 1
+
+
+class SearchFilterAnnotatedSerializer(serializers.ModelSerializer):
+    title_text = serializers.CharField()
+
+    class Meta:
+        model = SearchFilterModel
+        fields = ('title', 'text', 'title_text')
+
+
+class SearchFilterAnnotatedFieldTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        SearchFilterModel.objects.create(title='abc', text='def')
+        SearchFilterModel.objects.create(title='ghi', text='jkl')
+
+    def test_search_in_annotated_field(self):
+        class SearchListView(generics.ListAPIView):
+            queryset = SearchFilterModel.objects.annotate(
+                title_text=Upper(
+                    Concat(models.F('title'), models.F('text'))
+                )
+            ).all()
+            serializer_class = SearchFilterAnnotatedSerializer
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('title_text',)
+
+        view = SearchListView.as_view()
+        request = factory.get('/', {'search': 'ABCDEF'})
+        response = view(request)
+        assert len(response.data) == 1
+        assert response.data[0]['title_text'] == 'ABCDEF'
 
 
 class OrderingFilterModel(models.Model):
