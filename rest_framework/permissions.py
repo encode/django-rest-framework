@@ -24,6 +24,19 @@ class OperationHolderMixin:
     def __ror__(self, other):
         return OperandHolder(OR, other, self)
 
+    def __invert__(self):
+        return SingleOperandHolder(NOT, self)
+
+
+class SingleOperandHolder(OperationHolderMixin):
+    def __init__(self, operator_class, op1_class):
+        self.operator_class = operator_class
+        self.op1_class = op1_class
+
+    def __call__(self, *args, **kwargs):
+        op1 = self.op1_class(*args, **kwargs)
+        return self.operator_class(op1)
+
 
 class OperandHolder(OperationHolderMixin):
     def __init__(self, operator_class, op1_class, op2_class):
@@ -71,6 +84,17 @@ class OR:
             self.op1.has_object_permission(request, view, obj) or
             self.op2.has_object_permission(request, view, obj)
         )
+
+
+class NOT:
+    def __init__(self, op1):
+        self.op1 = op1
+
+    def has_permission(self, request, view):
+        return not self.op1.has_permission(request, view)
+
+    def has_object_permission(self, request, view, obj):
+        return not self.op1.has_object_permission(request, view, obj)
 
 
 class BasePermissionMetaclass(OperationHolderMixin, type):

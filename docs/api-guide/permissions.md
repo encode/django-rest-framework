@@ -134,7 +134,7 @@ Provided they inherit from `rest_framework.permissions.BasePermission`, permissi
             }
             return Response(content)
 
-__Note:__ it only supports & -and- and | -or-.
+__Note:__ it supports & (and), | (or) and ~ (not).
 
 ---
 

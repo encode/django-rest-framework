@@ -580,7 +580,19 @@ class PermissionsCompositionTests(TestCase):
         composed_perm = permissions.IsAuthenticated | permissions.AllowAny
         assert composed_perm().has_permission(request, None) is True
 
-    def test_several_levels(self):
+    def test_not_false(self):
+        request = factory.get('/1', format='json')
+        request.user = AnonymousUser()
+        composed_perm = ~permissions.IsAuthenticated
+        assert composed_perm().has_permission(request, None) is True
+
+    def test_not_true(self):
+        request = factory.get('/1', format='json')
+        request.user = self.user
+        composed_perm = ~permissions.AllowAny
+        assert composed_perm().has_permission(request, None) is False
+
+    def test_several_levels_without_negation(self):
         request = factory.get('/1', format='json')
         request.user = self.user
         composed_perm = (
@@ -588,6 +600,17 @@ class PermissionsCompositionTests(TestCase):
             permissions.IsAuthenticated &
             permissions.IsAuthenticated &
             permissions.IsAuthenticated
+        )
+        assert composed_perm().has_permission(request, None) is True
+
+    def test_several_levels_and_precedence_with_negation(self):
+        request = factory.get('/1', format='json')
+        request.user = self.user
+        composed_perm = (
+            permissions.IsAuthenticated &
+            ~ permissions.IsAdminUser &
+            permissions.IsAuthenticated &
+            ~(permissions.IsAdminUser & permissions.IsAdminUser)
         )
         assert composed_perm().has_permission(request, None) is True
 
