@@ -311,7 +311,7 @@ The [`drf-proxy-pagination` package][drf-proxy-pagination] includes a `ProxyPagi
 
 ## link-header-pagination
 
-The [`django-rest-framework-link-header-pagination` package][drf-link-header-pagination] includes a `LinkHeaderPagination` class which provides pagination via an HTTP `Link` header as desribed in [Github's developer documentation](github-link-pagination).
+The [`django-rest-framework-link-header-pagination` package][drf-link-header-pagination] includes a `LinkHeaderPagination` class which provides pagination via an HTTP `Link` header as described in [Github's developer documentation](github-link-pagination).
 
 [cite]: https://docs.djangoproject.com/en/stable/topics/pagination/
 [link-header]: ../img/link-header-pagination.png
