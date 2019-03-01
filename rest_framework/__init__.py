@@ -23,3 +23,11 @@ HTTP_HEADER_ENCODING = 'iso-8859-1'
 ISO_8601 = 'iso-8601'
 
 default_app_config = 'rest_framework.apps.RestFrameworkConfig'
+
+
+class RemovedInDRF310Warning(DeprecationWarning):
+    pass
+
+
+class RemovedInDRF311Warning(PendingDeprecationWarning):
+    pass

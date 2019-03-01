@@ -17,6 +17,7 @@ from django.utils import six
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 
+from rest_framework import RemovedInDRF310Warning
 from rest_framework.compat import (
     coreapi, coreschema, distinct, is_guardian_installed
 )
@@ -299,7 +300,7 @@ class DjangoObjectPermissionsFilter(BaseFilterBackend):
         warnings.warn(
             "`DjangoObjectPermissionsFilter` has been deprecated and moved to "
             "the 3rd-party django-rest-framework-guardian package.",
-            DeprecationWarning, stacklevel=2
+            RemovedInDRF310Warning, stacklevel=2
         )
         assert is_guardian_installed(), 'Using DjangoObjectPermissionsFilter, but django-guardian is not installed'
 

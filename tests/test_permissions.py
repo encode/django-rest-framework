@@ -12,8 +12,8 @@ from django.test import TestCase
 from django.urls import ResolverMatch
 
 from rest_framework import (
-    HTTP_HEADER_ENCODING, authentication, generics, permissions, serializers,
-    status, views
+    HTTP_HEADER_ENCODING, RemovedInDRF310Warning, authentication, generics,
+    permissions, serializers, status, views
 )
 from rest_framework.compat import PY36, is_guardian_installed, mock
 from rest_framework.filters import DjangoObjectPermissionsFilter
@@ -427,7 +427,7 @@ class ObjectPermissionsIntegrationTests(TestCase):
         message = ("`DjangoObjectPermissionsFilter` has been deprecated and moved "
                    "to the 3rd-party django-rest-framework-guardian package.")
         self.assertEqual(len(w), 1)
-        self.assertIs(w[-1].category, DeprecationWarning)
+        self.assertIs(w[-1].category, RemovedInDRF310Warning)
         self.assertEqual(str(w[-1].message), message)
 
     def test_can_read_list_permissions(self):
