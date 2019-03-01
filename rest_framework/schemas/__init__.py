@@ -29,13 +29,17 @@ from .inspectors import AutoSchema, DefaultSchema, ManualSchema  # noqa
 def get_schema_view(
         title=None, url=None, description=None, urlconf=None, renderer_classes=None,
         public=False, patterns=None, generator_class=SchemaGenerator,
-        authentication_classes=api_settings.DEFAULT_AUTHENTICATION_CLASSES,
-        permission_classes=api_settings.DEFAULT_PERMISSION_CLASSES):
+        authentication_classes=None, permission_classes=None):
     """
     Return a schema view.
     """
     # Avoid import cycle on APIView
     from .views import SchemaView
+    # Avoid api_settings attribute evaluation at import time
+    if authentication_classes is None:
+        authentication_classes = api_settings.DEFAULT_AUTHENTICATION_CLASSES
+    if permission_classes is None:
+        permission_classes = api_settings.DEFAULT_PERMISSION_CLASSES
     generator = generator_class(
         title=title, url=url, description=description,
         urlconf=urlconf, patterns=patterns,
