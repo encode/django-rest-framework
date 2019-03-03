@@ -571,18 +571,18 @@ from rest_framework.parsers import JSONParser
 snippet = Snippet(code='foo = "bar"\n')
 snippet.save()
 
-snippet = Snippet(code='print "hello, world"\n')
+snippet = Snippet(code='print("hello, world")\n')
 snippet.save()
 </code></pre>
 <p>We've now got a few snippet instances to play with.  Let's take a look at serializing one of those instances.</p>
 <pre><code>serializer = SnippetSerializer(snippet)
 serializer.data
-# {'id': 2, 'title': u'', 'code': u'print "hello, world"\n', 'linenos': False, 'language': u'python', 'style': u'friendly'}
+# {'id': 2, 'title': '', 'code': 'print("hello, world")\n', 'linenos': False, 'language': 'python', 'style': 'friendly'}
 </code></pre>
 <p>At this point we've translated the model instance into Python native datatypes.  To finalize the serialization process we render the data into <code>json</code>.</p>
 <pre><code>content = JSONRenderer().render(serializer.data)
 content
-# '{"id": 2, "title": "", "code": "print \\"hello, world\\"\\n", "linenos": false, "language": "python", "style": "friendly"}'
+# '{"id": 2, "title": "", "code": "print(\\"hello, world\\")\\n", "linenos": false, "language": "python", "style": "friendly"}'
 </code></pre>
 <p>Deserialization is similar.  First we parse a stream into Python native datatypes...</p>
 <pre><code>import io
@@ -595,7 +595,7 @@ data = JSONParser().parse(stream)
 serializer.is_valid()
 # True
 serializer.validated_data
-# OrderedDict([('title', ''), ('code', 'print "hello, world"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])
+# OrderedDict([('title', ''), ('code', 'print("hello, world")\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])
 serializer.save()
 # &lt;Snippet: Snippet object&gt;
 </code></pre>
@@ -603,7 +603,7 @@ serializer.save()
 <p>We can also serialize querysets instead of model instances.  To do so we simply add a <code>many=True</code> flag to the serializer arguments.</p>
 <pre><code>serializer = SnippetSerializer(Snippet.objects.all(), many=True)
 serializer.data
-# [OrderedDict([('id', 1), ('title', u''), ('code', u'foo = "bar"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('id', 2), ('title', u''), ('code', u'print "hello, world"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('id', 3), ('title', u''), ('code', u'print "hello, world"'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])]
+# [OrderedDict([('id', 1), ('title', ''), ('code', 'foo = "bar"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('id', 2), ('title', ''), ('code', 'print("hello, world")\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('id', 3), ('title', ''), ('code', 'print("hello, world")'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])]
 </code></pre>
 <h2 id="using-modelserializers"><a class="toclink" href="#using-modelserializers">Using ModelSerializers</a></h2>
 <p>Our <code>SnippetSerializer</code> class is replicating a lot of information that's also contained in the <code>Snippet</code> model.  It would be nice if we could keep our code a bit  more concise.</p>
@@ -744,7 +744,7 @@ HTTP/1.1 200 OK
   {
     "id": 2,
     "title": "",
-    "code": "print \"hello, world\"\n",
+    "code": "print(\"hello, world\")\n",
     "linenos": false,
     "language": "python",
     "style": "friendly"
@@ -759,7 +759,7 @@ HTTP/1.1 200 OK
 {
   "id": 2,
   "title": "",
-  "code": "print \"hello, world\"\n",
+  "code": "print(\"hello, world\")\n",
   "linenos": false,
   "language": "python",
   "style": "friendly"

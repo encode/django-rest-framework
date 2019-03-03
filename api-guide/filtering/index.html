@@ -616,7 +616,7 @@ class UserListView(generics.ListAPIView):
     """
     model = Product
     serializer_class = ProductSerializer
-    filter_class = ProductFilter
+    filterset_class = ProductFilter
 
     def get_queryset(self):
         user = self.request.user
@@ -642,12 +642,12 @@ class UserListView(generics.ListAPIView):
     ...
     filter_backends = (DjangoFilterBackend,)
 </code></pre>
-<p>If all you need is simple equality-based filtering, you can set a <code>filter_fields</code> attribute on the view, or viewset, listing the set of fields you wish to filter against.</p>
+<p>If all you need is simple equality-based filtering, you can set a <code>filterset_fields</code> attribute on the view, or viewset, listing the set of fields you wish to filter against.</p>
 <pre><code>class ProductList(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     filter_backends = (DjangoFilterBackend,)
-    filter_fields = ('category', 'in_stock')
+    filterset_fields = ('category', 'in_stock')
 </code></pre>
 <p>This will automatically create a <code>FilterSet</code> class for the given fields, and will allow you to make requests such as:</p>
 <pre><code>http://example.com/api/products?category=clothing&amp;in_stock=True
@@ -686,6 +686,12 @@ class UserListView(generics.ListAPIView):
 <pre><code>search_fields = ('=username', '=email')
 </code></pre>
 <p>By default, the search parameter is named <code>'search</code>', but this may be overridden with the <code>SEARCH_PARAM</code> setting.</p>
+<p>To dynamically change search fields based on request content, it's possible to subclass the <code>SearchFilter</code> and override the <code>get_search_fields()</code> function. For example, the following subclass will only search on <code>title</code> if the query parameter <code>title_only</code> is in the request:</p>
+<pre><code>class CustomSearchFilter(self, view, request):
+    if request.query_params.get('title_only'):
+        return ('title',)
+    return super(CustomSearchFilter, self).get_search_fields(view, request)
+</code></pre>
 <p>For more details, see the <a href="https://docs.djangoproject.com/en/stable/ref/contrib/admin/#django.contrib.admin.ModelAdmin.search_fields">Django documentation</a>.</p>
 <hr />
 <h2 id="orderingfilter"><a class="toclink" href="#orderingfilter">OrderingFilter</a></h2>

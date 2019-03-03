@@ -570,7 +570,7 @@ HTTP/1.1 200 OK
   {
     "id": 2,
     "title": "",
-    "code": "print \"hello, world\"\n",
+    "code": "print(\"hello, world\")\n",
     "linenos": false,
     "language": "python",
     "style": "friendly"
@@ -587,24 +587,24 @@ http http://127.0.0.1:8000/snippets.api   # Browsable API suffix
 </code></pre>
 <p>Similarly, we can control the format of the request that we send, using the <code>Content-Type</code> header.</p>
 <pre><code># POST using form data
-http --form POST http://127.0.0.1:8000/snippets/ code="print 123"
+http --form POST http://127.0.0.1:8000/snippets/ code="print(123)"
 
 {
   "id": 3,
   "title": "",
-  "code": "print 123",
+  "code": "print(123)",
   "linenos": false,
   "language": "python",
   "style": "friendly"
 }
 
 # POST using JSON
-http --json POST http://127.0.0.1:8000/snippets/ code="print 456"
+http --json POST http://127.0.0.1:8000/snippets/ code="print(456)"
 
 {
     "id": 4,
     "title": "",
-    "code": "print 456",
+    "code": "print(456)",
     "linenos": false,
     "language": "python",
     "style": "friendly"

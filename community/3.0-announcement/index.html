@@ -763,7 +763,7 @@ LocationRatingSerializer():
 </code></pre>
 <p>These fields will be mapped to <code>serializers.ReadOnlyField()</code> instances.</p>
 <pre><code>&gt;&gt;&gt; serializer = InvitationSerializer()
-&gt;&gt;&gt; print repr(serializer)
+&gt;&gt;&gt; print(repr(serializer))
 InvitationSerializer():
     to_email = EmailField(max_length=75)
     message = CharField(max_length=1000)

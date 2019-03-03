@@ -530,8 +530,10 @@ def example_view(request, format=None):
 <h2 id="setting-up-the-cache"><a class="toclink" href="#setting-up-the-cache">Setting up the cache</a></h2>
 <p>The throttle classes provided by REST framework use Django's cache backend.  You should make sure that you've set appropriate <a href="https://docs.djangoproject.com/en/stable/ref/settings/#caches">cache settings</a>.  The default value of <code>LocMemCache</code> backend should be okay for simple setups.  See Django's <a href="https://docs.djangoproject.com/en/stable/topics/cache/#setting-up-the-cache">cache documentation</a> for more details.</p>
 <p>If you need to use a cache other than <code>'default'</code>, you can do so by creating a custom throttle class and setting the <code>cache</code> attribute.  For example:</p>
-<pre><code>class CustomAnonRateThrottle(AnonRateThrottle):
-    cache = get_cache('alternate')
+<pre><code>from django.core.cache import caches
+
+class CustomAnonRateThrottle(AnonRateThrottle):
+    cache = caches['alternate']
 </code></pre>
 <p>You'll need to remember to also set your custom throttle class in the <code>'DEFAULT_THROTTLE_CLASSES'</code> settings key, or using the <code>throttle_classes</code> view attribute.</p>
 <hr />

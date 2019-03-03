@@ -707,7 +707,14 @@ color_channel = serializers.ChoiceField(
 <h2 id="booleanfield"><a class="toclink" href="#booleanfield">BooleanField</a></h2>
 <p>A boolean representation.</p>
 <p>When using HTML encoded form input be aware that omitting a value will always be treated as setting a field to <code>False</code>, even if it has a <code>default=True</code> option specified. This is because HTML checkbox inputs represent the unchecked state by omitting the value, so REST framework treats omission as if it is an empty checkbox input.</p>
-<p>Note that default <code>BooleanField</code> instances will be generated with a <code>required=False</code> option (since Django <code>models.BooleanField</code> is always <code>blank=True</code>). If you want to change this behaviour explicitly declare the <code>BooleanField</code> on the serializer class.</p>
+<p>Note that Django 2.1 removed the <code>blank</code> kwarg from <code>models.BooleanField</code>.
+Prior to Django 2.1 <code>models.BooleanField</code> fields were always <code>blank=True</code>. Thus
+since Django 2.1 default <code>serializers.BooleanField</code> instances will be generated
+without the <code>required</code> kwarg (i.e. equivalent to <code>required=True</code>) whereas with
+previous versions of Django, default <code>BooleanField</code> instances will be generated
+with a <code>required=False</code> option.  If you want to control this behaviour manually,
+explicitly declare the <code>BooleanField</code> on the serializer class, or use the
+<code>extra_kwargs</code> option to set the <code>required</code> flag.</p>
 <p>Corresponds to <code>django.db.models.fields.BooleanField</code>.</p>
 <p><strong>Signature:</strong> <code>BooleanField()</code></p>
 <h2 id="nullbooleanfield"><a class="toclink" href="#nullbooleanfield">NullBooleanField</a></h2>

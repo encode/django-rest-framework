@@ -570,11 +570,11 @@ class Track(models.Model):
         unique_together = ('album', 'order')
         ordering = ['order']
 
-    def __unicode__(self):
+    def __str__(self):
         return '%d: %s' % (self.order, self.title)
 </code></pre>
 <h2 id="stringrelatedfield"><a class="toclink" href="#stringrelatedfield">StringRelatedField</a></h2>
-<p><code>StringRelatedField</code> may be used to represent the target of the relationship using its <code>__unicode__</code> method.</p>
+<p><code>StringRelatedField</code> may be used to represent the target of the relationship using its <code>__str__</code> method.</p>
 <p>For example, the following serializer.</p>
 <pre><code>class AlbumSerializer(serializers.ModelSerializer):
     tracks = serializers.StringRelatedField(many=True)
@@ -945,7 +945,7 @@ class CustomerHyperlink(serializers.HyperlinkedRelatedField):
     object_id = models.PositiveIntegerField()
     tagged_object = GenericForeignKey('content_type', 'object_id')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.tag_name
 </code></pre>
 <p>And the following two models, which may have associated tags:</p>

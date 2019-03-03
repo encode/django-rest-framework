@@ -486,10 +486,10 @@
 <p>The timeline for deprecation of a feature present in version 1.0 would work as follows:</p>
 <ul>
 <li>
-<p>Version 1.1 would remain <strong>fully backwards compatible</strong> with 1.0, but would raise <code>PendingDeprecationWarning</code> warnings if you use the feature that are due to be deprecated.  These warnings are <strong>silent by default</strong>, but can be explicitly enabled when you're ready to start migrating any required changes.  For example if you start running your tests using <code>python -Wd manage.py test</code>, you'll be warned of any API changes you need to make.</p>
+<p>Version 1.1 would remain <strong>fully backwards compatible</strong> with 1.0, but would raise <code>RemovedInDRF13Warning</code> warnings, subclassing <code>PendingDeprecationWarning</code>, if you use the feature that are due to be deprecated.  These warnings are <strong>silent by default</strong>, but can be explicitly enabled when you're ready to start migrating any required changes.  For example if you start running your tests using <code>python -Wd manage.py test</code>, you'll be warned of any API changes you need to make.</p>
 </li>
 <li>
-<p>Version 1.2 would escalate these warnings to <code>DeprecationWarning</code>, which is loud by default.</p>
+<p>Version 1.2 would escalate these warnings to subclass <code>DeprecationWarning</code>, which is loud by default.</p>
 </li>
 <li>
 <p>Version 1.3 would remove the deprecated bits of API entirely.</p>
@@ -505,8 +505,27 @@
 </code></pre>
 <hr />
 <h2 id="39x-series"><a class="toclink" href="#39x-series">3.9.x series</a></h2>
+<h3 id="392"><a class="toclink" href="#392">3.9.2</a></h3>
+<p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/milestone/71?closed=1">3rd March 2019</a></p>
+<ul>
+<li>Routers: invalidate <code>_urls</code> cache on <code>register()</code> <a href="https://github.com/encode/django-rest-framework/issues/6407">#6407</a></li>
+<li>Deferred schema renderer creation to avoid requiring pyyaml. <a href="https://github.com/encode/django-rest-framework/issues/6416">#6416</a></li>
+<li>Added 'request_forms' block to base.html <a href="https://github.com/encode/django-rest-framework/issues/6340">#6340</a></li>
+<li>Fixed SchemaView to reset renderer on exception. <a href="https://github.com/encode/django-rest-framework/issues/6429">#6429</a></li>
+<li>Update Django Guardian dependency. <a href="https://github.com/encode/django-rest-framework/issues/6430">#6430</a></li>
+<li>Ensured support for Django 2.2 <a href="https://github.com/encode/django-rest-framework/issues/6422">#6422</a> &amp; <a href="https://github.com/encode/django-rest-framework/issues/6455">#6455</a></li>
+<li>Made templates compatible with session-based CSRF. <a href="https://github.com/encode/django-rest-framework/issues/6207">#6207</a></li>
+<li>Adjusted field <code>validators</code> to accept non-list iterables. <a href="https://github.com/encode/django-rest-framework/issues/6282">#6282</a></li>
+<li>Added SearchFilter.get_search_fields() hook. <a href="https://github.com/encode/django-rest-framework/issues/6279">#6279</a></li>
+<li>Fix DeprecationWarning when accessing collections.abc classes via collections <a href="https://github.com/encode/django-rest-framework/issues/6268">#6268</a></li>
+<li>Allowed Q objects in limit_choices_to introspection. <a href="https://github.com/encode/django-rest-framework/issues/6472">#6472</a></li>
+<li>Added lazy evaluation to composed permissions. <a href="https://github.com/encode/django-rest-framework/issues/6463">#6463</a></li>
+<li>Add negation ~ operator to permissions composition <a href="https://github.com/encode/django-rest-framework/issues/6361">#6361</a></li>
+<li>Avoided calling distinct on annotated fields in SearchFilter. <a href="https://github.com/encode/django-rest-framework/issues/6240">#6240</a></li>
+<li>Introduced <code>RemovedInDRF…Warning</code> classes to simplify deprecations. <a href="https://github.com/encode/django-rest-framework/issues/6480">#6480</a></li>
+</ul>
 <h3 id="391"><a class="toclink" href="#391">3.9.1</a></h3>
-<p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/milestone/70?closed=1">16th Janurary 2019</a></p>
+<p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/milestone/71?closed=1">16th Janurary 2019</a></p>
 <ul>
 <li>Resolve XSS issue in browsable API. <a href="https://github.com/encode/django-rest-framework/issues/6330">#6330</a></li>
 <li>Upgrade Bootstrap to 3.4.0 to resolve XSS issue.</li>
@@ -1557,6 +1576,8 @@ Previously may have been stored internally as <code>None</code>.</p>
 <!-- 3.9.0 -->
 
 <!-- 3.9.1 -->
+
+<!-- 3.9.2 -->
             
 
           </div> <!--/span-->
