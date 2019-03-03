@@ -18,9 +18,9 @@ REST framework releases follow a formal deprecation policy, which is in line wit
 
 The timeline for deprecation of a feature present in version 1.0 would work as follows:
 
-* Version 1.1 would remain **fully backwards compatible** with 1.0, but would raise `PendingDeprecationWarning` warnings if you use the feature that are due to be deprecated.  These warnings are **silent by default**, but can be explicitly enabled when you're ready to start migrating any required changes.  For example if you start running your tests using `python -Wd manage.py test`, you'll be warned of any API changes you need to make.
+* Version 1.1 would remain **fully backwards compatible** with 1.0, but would raise `RemovedInDRF13Warning` warnings, subclassing `PendingDeprecationWarning`, if you use the feature that are due to be deprecated.  These warnings are **silent by default**, but can be explicitly enabled when you're ready to start migrating any required changes.  For example if you start running your tests using `python -Wd manage.py test`, you'll be warned of any API changes you need to make.
 
-* Version 1.2 would escalate these warnings to `DeprecationWarning`, which is loud by default.
+* Version 1.2 would escalate these warnings to subclass `DeprecationWarning`, which is loud by default.
 
 * Version 1.3 would remove the deprecated bits of API entirely.
 

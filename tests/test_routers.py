@@ -10,7 +10,9 @@ from django.db import models
 from django.test import TestCase, override_settings
 from django.urls import resolve, reverse
 
-from rest_framework import permissions, serializers, viewsets
+from rest_framework import (
+    RemovedInDRF311Warning, permissions, serializers, viewsets
+)
 from rest_framework.compat import get_regex_pattern
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -508,7 +510,7 @@ class TestBaseNameRename(TestCase):
     def test_base_name_argument_deprecation(self):
         router = SimpleRouter()
 
-        with pytest.warns(PendingDeprecationWarning) as w:
+        with pytest.warns(RemovedInDRF311Warning) as w:
             warnings.simplefilter('always')
             router.register('mock', MockViewSet, base_name='mock')
 
@@ -535,7 +537,7 @@ class TestBaseNameRename(TestCase):
         msg = "`CustomRouter.get_default_base_name` method should be renamed `get_default_basename`."
 
         # Class definition should raise a warning
-        with pytest.warns(PendingDeprecationWarning) as w:
+        with pytest.warns(RemovedInDRF311Warning) as w:
             warnings.simplefilter('always')
 
             class CustomRouter(SimpleRouter):
