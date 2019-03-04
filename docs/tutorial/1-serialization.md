@@ -150,7 +150,7 @@ At this point we've translated the model instance into Python native datatypes. 
 
     content = JSONRenderer().render(serializer.data)
     content
-    # '{"id": 2, "title": "", "code": "print(\\"hello, world\\")\\n", "linenos": false, "language": "python", "style": "friendly"}'
+    # b'{"id": 2, "title": "", "code": "print(\\"hello, world\\")\\n", "linenos": false, "language": "python", "style": "friendly"}'
 
 Deserialization is similar.  First we parse a stream into Python native datatypes...
 
