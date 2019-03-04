@@ -2,11 +2,9 @@ source: relations.py
 
 # Serializer relations
 
-> Bad programmers worry about the code.
-> Good programmers worry about data structures and their relationships.
+> Data structures, not algorithms, are central to programming.
 >
-> &mdash; [Linus Torvalds][cite]
-
+> &mdash; [Rob Pike][cite]
 
 Relational fields are used to represent model relationships.  They can be applied to `ForeignKey`, `ManyToManyField` and `OneToOneField` relationships, as well as to reverse relationships, and custom relationships such as `GenericForeignKey`.
 
@@ -24,7 +22,7 @@ To do so, open the Django shell, using `python manage.py shell`, then import the
 
     >>> from myapp.serializers import AccountSerializer
     >>> serializer = AccountSerializer()
-    >>> print repr(serializer)  # Or `print(repr(serializer))` in Python 3.x.
+    >>> print(repr(serializer))
     AccountSerializer():
         id = IntegerField(label='ID', read_only=True)
         name = CharField(allow_blank=True, max_length=100, required=False)
@@ -48,12 +46,12 @@ In order to explain the various types of relational fields, we'll use a couple o
             unique_together = ('album', 'order')
             ordering = ['order']
 
-        def __unicode__(self):
+        def __str__(self):
             return '%d: %s' % (self.order, self.title)
 
 ## StringRelatedField
 
-`StringRelatedField` may be used to represent the target of the relationship using its `__unicode__` method.
+`StringRelatedField` may be used to represent the target of the relationship using its `__str__` method.
 
 For example, the following serializer.
 
@@ -512,7 +510,7 @@ For example, given the following model for a tag, which has a generic relationsh
         object_id = models.PositiveIntegerField()
         tagged_object = GenericForeignKey('content_type', 'object_id')
 
-        def __unicode__(self):
+        def __str__(self):
             return self.tag_name
 
 And the following two models, which may have associated tags:
@@ -592,7 +590,7 @@ The [drf-nested-routers package][drf-nested-routers] provides routers and relati
 
 The [rest-framework-generic-relations][drf-nested-relations] library provides read/write serialization for generic foreign keys.
 
-[cite]: https://lwn.net/Articles/193245/
+[cite]: http://users.ece.utexas.edu/~adnan/pike.html
 [reverse-relationships]: https://docs.djangoproject.com/en/stable/topics/db/queries/#following-relationships-backward
 [routers]: https://www.django-rest-framework.org/api-guide/routers#defaultrouter
 [generic-relations]: https://docs.djangoproject.com/en/stable/ref/contrib/contenttypes/#id1

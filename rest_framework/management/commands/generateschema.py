@@ -32,8 +32,10 @@ class Command(BaseCommand):
         self.stdout.write(output.decode('utf-8'))
 
     def get_renderer(self, format):
-        return {
-            'corejson': CoreJSONRenderer(),
-            'openapi': OpenAPIRenderer(),
-            'openapi-json': JSONOpenAPIRenderer()
+        renderer_cls = {
+            'corejson': CoreJSONRenderer,
+            'openapi': OpenAPIRenderer,
+            'openapi-json': JSONOpenAPIRenderer,
         }[format]
+
+        return renderer_cls()

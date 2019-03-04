@@ -82,8 +82,10 @@ The throttle classes provided by REST framework use Django's cache backend.  You
 
 If you need to use a cache other than `'default'`, you can do so by creating a custom throttle class and setting the `cache` attribute.  For example:
 
+    from django.core.cache import caches
+
     class CustomAnonRateThrottle(AnonRateThrottle):
-        cache = get_cache('alternate')
+        cache = caches['alternate']
 
 You'll need to remember to also set your custom throttle class in the `'DEFAULT_THROTTLE_CLASSES'` settings key, or using the `throttle_classes` view attribute.
 

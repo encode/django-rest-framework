@@ -137,7 +137,7 @@ You'll also need to create tokens for your users.
     from rest_framework.authtoken.models import Token
 
     token = Token.objects.create(user=...)
-    print token.key
+    print(token.key)
 
 For clients to authenticate, the token key should be included in the `Authorization` HTTP header.  The key should be prefixed by the string literal "Token", with whitespace separating the two strings.  For example:
 
@@ -390,10 +390,6 @@ Install the package using `pip`.
     pip install djangorestframework-oauth
 
 For details on configuration and usage see the Django REST framework OAuth documentation for [authentication][django-rest-framework-oauth-authentication] and [permissions][django-rest-framework-oauth-permissions].
-
-## Digest Authentication
-
-HTTP digest authentication is a widely implemented scheme that was intended to replace HTTP basic authentication, and which provides a simple encrypted authentication mechanism. [Juan Riaza][juanriaza] maintains the [djangorestframework-digestauth][djangorestframework-digestauth] package which provides HTTP digest authentication support for REST framework.
 
 ## JSON Web Token Authentication
 

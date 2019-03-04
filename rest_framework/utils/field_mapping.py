@@ -88,6 +88,9 @@ def get_field_kwargs(field_name, model_field):
     if decimal_places is not None:
         kwargs['decimal_places'] = decimal_places
 
+    if isinstance(model_field, models.SlugField):
+        kwargs['allow_unicode'] = model_field.allow_unicode
+
     if isinstance(model_field, models.TextField) or (postgres_fields and isinstance(model_field, postgres_fields.JSONField)):
         kwargs['style'] = {'base_template': 'textarea.html'}
 
@@ -245,6 +248,12 @@ def get_relation_kwargs(field_name, relation_info):
 
     if to_field:
         kwargs['to_field'] = to_field
+
+    limit_choices_to = model_field and model_field.get_limit_choices_to()
+    if limit_choices_to:
+        if not isinstance(limit_choices_to, models.Q):
+            limit_choices_to = models.Q(**limit_choices_to)
+        kwargs['queryset'] = kwargs['queryset'].filter(limit_choices_to)
 
     if has_through_model:
         kwargs['read_only'] = True

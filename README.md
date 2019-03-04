@@ -27,8 +27,9 @@ The initial aim is to provide a single full-time position on REST framework.
 [![][load-impact-img]][load-impact-url]
 [![][kloudless-img]][kloudless-url]
 [![][auklet-img]][auklet-url]
+[![][lightson-img]][lightson-url]
 
-Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Rover][rover-url], [Sentry][sentry-url], [Stream][stream-url], [Rollbar][rollbar-url], [Cadre][cadre-url], [Load Impact][load-impact-url], [Kloudless][kloudless-url], and [Auklet][auklet-url].
+Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Rover][rover-url], [Sentry][sentry-url], [Stream][stream-url], [Rollbar][rollbar-url], [Cadre][cadre-url], [Load Impact][load-impact-url], [Kloudless][kloudless-url], [Auklet][auklet-url], and [Lights On Software][lightson-url].
 
 ---
 
@@ -55,7 +56,11 @@ There is a live example API for testing purposes, [available here][sandbox].
 # Requirements
 
 * Python (3.4, 3.5, 3.6, 3.7)
-* Django (1.11, 2.0, 2.1)
+* Django (1.11, 2.0, 2.1, 2.2)
+
+
+We **highly recommend** and only officially support the latest patch release of
+each Python and Django series.
 
 # Installation
 
@@ -198,6 +203,7 @@ Send a description of the issue via email to [rest-framework-security@googlegrou
 [load-impact-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/load-impact-readme.png
 [kloudless-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/kloudless-readme.png
 [auklet-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/auklet-readme.png
+[lightson-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/lightson-readme.png
 
 [rover-url]: http://jobs.rover.com/
 [sentry-url]: https://getsentry.com/welcome/
@@ -207,6 +213,7 @@ Send a description of the issue via email to [rest-framework-security@googlegrou
 [load-impact-url]: https://loadimpact.com/?utm_campaign=Sponsorship%20links&utm_source=drf&utm_medium=drf
 [kloudless-url]: https://hubs.ly/H0f30Lf0
 [auklet-url]: https://auklet.io/
+[lightson-url]: https://lightsonsoftware.com
 
 [oauth1-section]: https://www.django-rest-framework.org/api-guide/authentication/#django-rest-framework-oauth
 [oauth2-section]: https://www.django-rest-framework.org/api-guide/authentication/#django-oauth-toolkit

@@ -94,6 +94,8 @@ To add branding and customize the look-and-feel of the login template, create a 
 
 You can add your site name or branding by including the branding block:
 
+    {% extends "rest_framework/login_base.html" %}
+
     {% block branding %}
         <h3 style="margin: 0 0 20px;">My Site Name</h3>
     {% endblock %}

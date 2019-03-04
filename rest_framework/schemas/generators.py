@@ -57,7 +57,7 @@ Schema Naming Collision.
 coreapi.Link for URL path {value_url} cannot be inserted into schema.
 Position conflicts with coreapi.Link for URL path {target_url}.
 
-Attemped to insert link with keys: {keys}.
+Attempted to insert link with keys: {keys}.
 
 Adjust URLs to avoid naming collision or override `SchemaGenerator.get_keys()`
 to customise schema structure.

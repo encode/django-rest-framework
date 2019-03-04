@@ -143,7 +143,7 @@ We can get a list of all of the snippets, as before.
       {
         "id": 2,
         "title": "",
-        "code": "print \"hello, world\"\n",
+        "code": "print(\"hello, world\")\n",
         "linenos": false,
         "language": "python",
         "style": "friendly"
@@ -163,24 +163,24 @@ Or by appending a format suffix:
 Similarly, we can control the format of the request that we send, using the `Content-Type` header.
 
     # POST using form data
-    http --form POST http://127.0.0.1:8000/snippets/ code="print 123"
+    http --form POST http://127.0.0.1:8000/snippets/ code="print(123)"
 
     {
       "id": 3,
       "title": "",
-      "code": "print 123",
+      "code": "print(123)",
       "linenos": false,
       "language": "python",
       "style": "friendly"
     }
 
     # POST using JSON
-    http --json POST http://127.0.0.1:8000/snippets/ code="print 456"
+    http --json POST http://127.0.0.1:8000/snippets/ code="print(456)"
 
     {
         "id": 4,
         "title": "",
-        "code": "print 456",
+        "code": "print(456)",
         "linenos": false,
         "language": "python",
         "style": "friendly"

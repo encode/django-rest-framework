@@ -102,7 +102,7 @@ If it is called without a `filename` URL keyword argument, then the client must 
 
 ##### Notes:
 
-* The `FileUploadParser` is for usage with native clients that can upload the file as a raw data request.  For web-based uploads, or for native clients with multipart upload support, you should use the `MultiPartParser` parser instead.
+* The `FileUploadParser` is for usage with native clients that can upload the file as a raw data request.  For web-based uploads, or for native clients with multipart upload support, you should use the `MultiPartParser` instead.
 * Since this parser's `media_type` matches any content type, `FileUploadParser` should generally be the only parser set on an API view.
 * `FileUploadParser` respects Django's standard `FILE_UPLOAD_HANDLERS` setting, and the `request.upload_handlers` attribute.  See the [Django documentation][upload-handlers] for more details.
 

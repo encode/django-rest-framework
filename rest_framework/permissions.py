@@ -10,7 +10,34 @@ from rest_framework import exceptions
 SAFE_METHODS = ('GET', 'HEAD', 'OPTIONS')
 
 
-class OperandHolder:
+class OperationHolderMixin:
+    def __and__(self, other):
+        return OperandHolder(AND, self, other)
+
+    def __or__(self, other):
+        return OperandHolder(OR, self, other)
+
+    def __rand__(self, other):
+        return OperandHolder(AND, other, self)
+
+    def __ror__(self, other):
+        return OperandHolder(OR, other, self)
+
+    def __invert__(self):
+        return SingleOperandHolder(NOT, self)
+
+
+class SingleOperandHolder(OperationHolderMixin):
+    def __init__(self, operator_class, op1_class):
+        self.operator_class = operator_class
+        self.op1_class = op1_class
+
+    def __call__(self, *args, **kwargs):
+        op1 = self.op1_class(*args, **kwargs)
+        return self.operator_class(op1)
+
+
+class OperandHolder(OperationHolderMixin):
     def __init__(self, operator_class, op1_class, op2_class):
         self.operator_class = operator_class
         self.op1_class = op1_class
@@ -29,13 +56,13 @@ class AND:
 
     def has_permission(self, request, view):
         return (
-            self.op1.has_permission(request, view) &
+            self.op1.has_permission(request, view) and
             self.op2.has_permission(request, view)
         )
 
     def has_object_permission(self, request, view, obj):
         return (
-            self.op1.has_object_permission(request, view, obj) &
+            self.op1.has_object_permission(request, view, obj) and
             self.op2.has_object_permission(request, view, obj)
         )
 
@@ -47,29 +74,30 @@ class OR:
 
     def has_permission(self, request, view):
         return (
-            self.op1.has_permission(request, view) |
+            self.op1.has_permission(request, view) or
             self.op2.has_permission(request, view)
         )
 
     def has_object_permission(self, request, view, obj):
         return (
-            self.op1.has_object_permission(request, view, obj) |
+            self.op1.has_object_permission(request, view, obj) or
             self.op2.has_object_permission(request, view, obj)
         )
 
 
-class BasePermissionMetaclass(type):
-    def __and__(cls, other):
-        return OperandHolder(AND, cls, other)
+class NOT:
+    def __init__(self, op1):
+        self.op1 = op1
 
-    def __or__(cls, other):
-        return OperandHolder(OR, cls, other)
+    def has_permission(self, request, view):
+        return not self.op1.has_permission(request, view)
 
-    def __rand__(cls, other):
-        return OperandHolder(AND, other, cls)
+    def has_object_permission(self, request, view, obj):
+        return not self.op1.has_object_permission(request, view, obj)
 
-    def __ror__(cls, other):
-        return OperandHolder(OR, other, cls)
+
+class BasePermissionMetaclass(OperationHolderMixin, type):
+    pass
 
 
 @six.add_metaclass(BasePermissionMetaclass)
@@ -109,7 +137,7 @@ class IsAuthenticated(BasePermission):
     """
 
     def has_permission(self, request, view):
-        return request.user and request.user.is_authenticated
+        return bool(request.user and request.user.is_authenticated)
 
 
 class IsAdminUser(BasePermission):
@@ -118,7 +146,7 @@ class IsAdminUser(BasePermission):
     """
 
     def has_permission(self, request, view):
-        return request.user and request.user.is_staff
+        return bool(request.user and request.user.is_staff)
 
 
 class IsAuthenticatedOrReadOnly(BasePermission):
@@ -127,7 +155,7 @@ class IsAuthenticatedOrReadOnly(BasePermission):
     """
 
     def has_permission(self, request, view):
-        return (
+        return bool(
             request.method in SAFE_METHODS or
             request.user and
             request.user.is_authenticated

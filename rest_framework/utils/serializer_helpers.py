@@ -1,9 +1,8 @@
-import collections
 from collections import OrderedDict
 
 from django.utils.encoding import force_text
 
-from rest_framework.compat import unicode_to_repr
+from rest_framework.compat import MutableMapping, unicode_to_repr
 from rest_framework.utils import json
 
 
@@ -128,7 +127,7 @@ class NestedBoundField(BoundField):
         return self.__class__(self._field, values, self.errors, self._prefix)
 
 
-class BindingDict(collections.MutableMapping):
+class BindingDict(MutableMapping):
     """
     This dict-like object is used to store fields on a serializer.
 
