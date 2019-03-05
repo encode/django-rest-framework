@@ -1486,7 +1486,7 @@ class MultipleChoiceField(ChoiceField):
         return dictionary.get(self.field_name, empty)
 
     def to_internal_value(self, data):
-        if isinstance(data, type('')) or not hasattr(data, '__iter__'):
+        if isinstance(data, six.text_type) or not hasattr(data, '__iter__'):
             self.fail('not_a_list', input_type=type(data).__name__)
         if not self.allow_empty and len(data) == 0:
             self.fail('empty')
@@ -1660,7 +1660,7 @@ class ListField(Field):
         """
         if html.is_html_input(data):
             data = html.parse_html_list(data, default=[])
-        if isinstance(data, (type(''), Mapping)) or not hasattr(data, '__iter__'):
+        if isinstance(data, (six.text_type, Mapping)) or not hasattr(data, '__iter__'):
             self.fail('not_a_list', input_type=type(data).__name__)
         if not self.allow_empty and len(data) == 0:
             self.fail('empty')
