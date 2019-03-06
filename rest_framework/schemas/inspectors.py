@@ -51,8 +51,10 @@ def field_to_schema(field):
             description=description
         )
     elif isinstance(field, serializers.ManyRelatedField):
+        related_field_schema = field_to_schema(field.child_relation)
+
         return coreschema.Array(
-            items=coreschema.String(),
+            items=related_field_schema,
             title=title,
             description=description
         )
