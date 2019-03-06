@@ -356,7 +356,6 @@ class APIView(View):
         request_allowed = all(
             [throttle.allow_request(request, self) for throttle in throttles]
         )
-        print(request_allowed, [throttle.allow_request(request, self) for throttle in throttles])
         if request_allowed:
             [throttle.throttle_success(request, self) for throttle in throttles]
         else:

@@ -124,7 +124,6 @@ class SimpleRateThrottle(BaseThrottle):
 
         self.history = self.cache.get(self.key, [])
         self.now = self.timer()
-        print(self.history)
 
         # Drop any requests from the history which have now passed the
         # throttle duration
