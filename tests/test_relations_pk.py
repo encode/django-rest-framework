@@ -1,7 +1,5 @@
 from django.test import TestCase
 from django.utils import six
-
-from rest_framework import serializers
 from tests.models import (
     ForeignKeySource, ForeignKeySourceWithLimitedChoices,
     ForeignKeySourceWithQLimitedChoices, ForeignKeyTarget, ManyToManySource,
@@ -9,6 +7,8 @@ from tests.models import (
     NullableUUIDForeignKeySource, OneToOnePKSource, OneToOneTarget,
     UUIDForeignKeyTarget
 )
+
+from rest_framework import serializers
 
 
 # ManyToMany

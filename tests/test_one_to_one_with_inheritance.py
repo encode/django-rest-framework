@@ -1,10 +1,10 @@
 from django.db import models
 from django.test import TestCase
-
-from rest_framework import serializers
 from tests.models import RESTFrameworkModel
 # Models
 from tests.test_multitable_inheritance import ChildModel
+
+from rest_framework import serializers
 
 
 # Regression test for #4290

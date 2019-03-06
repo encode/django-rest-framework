@@ -1,6 +1,7 @@
 from django.conf.urls import include, url
 from django.test import TestCase, override_settings
 from django.utils import six
+from tests.models import BasicModel
 
 from rest_framework import generics, routers, serializers, status, viewsets
 from rest_framework.parsers import JSONParser
@@ -9,7 +10,6 @@ from rest_framework.renderers import (
 )
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from tests.models import BasicModel
 
 
 # Serializer used to test BasicModel

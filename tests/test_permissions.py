@@ -8,6 +8,7 @@ from django.contrib.auth.models import AnonymousUser, Group, Permission, User
 from django.db import models
 from django.test import TestCase
 from django.urls import ResolverMatch
+from tests.models import BasicModel
 
 from rest_framework import (
     HTTP_HEADER_ENCODING, RemovedInDRF310Warning, authentication, generics,
@@ -17,7 +18,6 @@ from rest_framework.compat import PY36, is_guardian_installed, mock
 from rest_framework.filters import DjangoObjectPermissionsFilter
 from rest_framework.routers import DefaultRouter
 from rest_framework.test import APIRequestFactory
-from tests.models import BasicModel
 
 factory = APIRequestFactory()
 
