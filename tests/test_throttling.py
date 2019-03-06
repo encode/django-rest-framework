@@ -38,6 +38,9 @@ class NonTimeThrottle(BaseThrottle):
             return True
         return False
 
+    def throttle_success(self, request, view):
+        pass
+
 
 class MockView(APIView):
     throttle_classes = (User3SecRateThrottle,)
@@ -449,3 +452,143 @@ class AnonRateThrottleTests(TestCase):
         request = Request(HttpRequest())
         cache_key = self.throttle.get_cache_key(request, view={})
         assert cache_key == 'throttle_anon_None'
+
+
+class TwoPeriodRateThrottleTests(TestCase):
+    """
+    Tests for views with more than one period.
+    The order of the throttle classes should not matter
+    Eg.
+    2/min and 5/day
+    """
+
+    def setUp(self):
+        self.DEFAULT_THROTTLE_RATES = {
+            'burst-anon': '2/min',
+            'sustained-anon': '5/day'
+        }
+        self.TIMER_SECONDS = 0
+        cache.clear()
+
+        class BurstRateThrottle(AnonRateThrottle):
+            THROTTLE_RATES = self.DEFAULT_THROTTLE_RATES
+            TIMER_SECONDS = self.TIMER_SECONDS
+            scope = 'burst-anon'
+
+            def timer(self):
+                return self.TIMER_SECONDS
+
+        class SustainedRateThrottle(AnonRateThrottle):
+            THROTTLE_RATES = self.DEFAULT_THROTTLE_RATES
+            TIMER_SECONDS = self.TIMER_SECONDS
+            scope = 'sustained-anon'
+
+            def timer(self):
+                return self.TIMER_SECONDS
+
+        class BurstSustainedView(APIView):
+            throttle_classes = (BurstRateThrottle, SustainedRateThrottle)
+
+            def get(self, request):
+                return Response('x')
+
+        class SustainedBurstView(APIView):
+            throttle_classes = (SustainedRateThrottle, BurstRateThrottle)
+
+            def get(self, request):
+                return Response('y')
+
+        self.factory = APIRequestFactory()
+        self.sustained_burst_view = SustainedBurstView.as_view()
+        self.burst_sustained_view = BurstSustainedView.as_view()
+        self.burst_sustained_throttle = BurstRateThrottle
+        self.sustained_burst_throttle = SustainedRateThrottle
+
+    def increment_timer(self, seconds=1):
+        self.burst_sustained_throttle.TIMER_SECONDS += seconds
+        self.sustained_burst_throttle.TIMER_SECONDS += seconds
+
+    def test_sustained_burst_throttles_ordering(self):
+        request = self.factory.get('/')
+
+        # Should be able to hit x view 2 times per minute.
+
+        response = self.sustained_burst_view(request)
+        assert response.status_code == 200
+
+        self.increment_timer()
+        response = self.sustained_burst_view(request)
+        assert response.status_code == 200
+
+        self.increment_timer()
+        response = self.sustained_burst_view(request)
+        assert response.status_code == 429
+
+        # Ensure throttles properly reset by advancing the rest of the minute
+        self.increment_timer(58)
+
+        # Should still be able to hit x view 2 times per minute.
+        response = self.sustained_burst_view(request)
+        assert response.status_code == 200
+
+        self.increment_timer()
+        response = self.sustained_burst_view(request)
+        assert response.status_code == 200
+
+        self.increment_timer()
+        response = self.sustained_burst_view(request)
+        assert response.status_code == 429
+
+        # Ensure throttles properly reset by advancing the rest of the minute
+        self.increment_timer(58)
+
+        # Should still be able to hit y view 1 time per minute.
+        self.increment_timer()
+        response = self.sustained_burst_view(request)
+        assert response.status_code == 200
+
+        self.increment_timer()
+        response = self.sustained_burst_view(request)
+        assert response.status_code == 429
+
+    def test_burst_sustained_throttles_ordering(self):
+        request = self.factory.get('/')
+
+        # Should be able to hit x view 2 times per minute.
+        response = self.burst_sustained_view(request)
+        assert response.status_code == 200
+
+        self.increment_timer()
+        response = self.burst_sustained_view(request)
+        assert response.status_code == 200
+
+        self.increment_timer()
+        response = self.burst_sustained_view(request)
+        assert response.status_code == 429
+
+        # Ensure throttles properly reset by advancing the rest of the minute
+        self.increment_timer(58)
+
+        # Should still be able to hit x view 2 times per minute.
+        response = self.burst_sustained_view(request)
+        assert response.status_code == 200
+
+        self.increment_timer()
+        response = self.burst_sustained_view(request)
+        assert response.status_code == 200
+
+        self.increment_timer()
+        response = self.burst_sustained_view(request)
+        assert response.status_code == 429
+
+        # Ensure throttles properly reset by advancing the rest of the minute
+        self.increment_timer(58)
+
+        # Should still be able to hit y view 1 time per minute.
+        self.increment_timer()
+        response = self.burst_sustained_view(request)
+        assert response.status_code == 200
+
+        self.increment_timer()
+        response = self.burst_sustained_view(request)
+        assert response.status_code == 429
