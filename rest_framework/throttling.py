@@ -132,7 +132,7 @@ class SimpleRateThrottle(BaseThrottle):
 
         if len(self.history) >= self.num_requests:
             return False
-        return True  # self.throttle_success()
+        return True
 
     def throttle_success(self, request, view):
         """
