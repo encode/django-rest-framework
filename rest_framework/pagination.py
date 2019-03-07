@@ -772,7 +772,13 @@ class CursorPagination(BasePagination):
         if isinstance(instance, dict):
             attr = instance[field_name]
         else:
-            attr = getattr(instance, field_name)
+            if '__' in field_name:
+                field_names_nested = field_name.split('__')
+                attr = instance
+                for field in field_names_nested:
+                    attr = getattr(attr, field)
+            else:
+                attr = getattr(instance, field_name)
         return six.text_type(attr)
 
     def get_paginated_response(self, data):
