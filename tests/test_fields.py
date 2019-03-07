@@ -1203,8 +1203,8 @@ class TestRoundingDecimalField(TestCase):
         with pytest.raises(AssertionError) as excinfo:
             serializers.DecimalField(max_digits=1, decimal_places=1, rounding='ROUND_UNKNOWN')
         assert 'Invalid rounding option' in str(excinfo.value)
-        
-        
+
+
 # Date & time serializers...
 class TestDateField(FieldValues):
     """
