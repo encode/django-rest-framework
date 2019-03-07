@@ -199,7 +199,7 @@ Send a description of the issue via email to [rest-framework-security@googlegrou
 [cadre-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/cadre-readme.png
 [load-impact-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/load-impact-readme.png
 [kloudless-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/kloudless-readme.png
-[release-history-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/release-history-readme.png
+[release-history-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/release-history.png
 [lightson-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/lightson-readme.png
 
 [rover-url]: http://jobs.rover.com/
