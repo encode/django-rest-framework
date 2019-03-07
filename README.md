@@ -19,17 +19,15 @@ continued development by [signing up for a paid plan][funding].
 The initial aim is to provide a single full-time position on REST framework.
 *Every single sign-up makes a significant impact towards making that possible.*
 
-[![][rover-img]][rover-url]
 [![][sentry-img]][sentry-url]
 [![][stream-img]][stream-url]
 [![][rollbar-img]][rollbar-url]
 [![][cadre-img]][cadre-url]
-[![][load-impact-img]][load-impact-url]
 [![][kloudless-img]][kloudless-url]
-[![][auklet-img]][auklet-url]
+[![][release-history-img]][release-history-url]
 [![][lightson-img]][lightson-url]
 
-Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Rover][rover-url], [Sentry][sentry-url], [Stream][stream-url], [Rollbar][rollbar-url], [Cadre][cadre-url], [Load Impact][load-impact-url], [Kloudless][kloudless-url], [Auklet][auklet-url], and [Lights On Software][lightson-url].
+Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Sentry][sentry-url], [Stream][stream-url], [Rollbar][rollbar-url], [Cadre][cadre-url], [Kloudless][kloudless-url], [Release History][release-history-url], and [Lights On Software][lightson-url].
 
 ---
 
@@ -201,7 +199,7 @@ Send a description of the issue via email to [rest-framework-security@googlegrou
 [cadre-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/cadre-readme.png
 [load-impact-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/load-impact-readme.png
 [kloudless-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/kloudless-readme.png
-[auklet-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/auklet-readme.png
+[release-history-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/release-history-readme.png
 [lightson-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/lightson-readme.png
 
 [rover-url]: http://jobs.rover.com/
@@ -211,7 +209,7 @@ Send a description of the issue via email to [rest-framework-security@googlegrou
 [cadre-url]: https://cadre.com/
 [load-impact-url]: https://loadimpact.com/?utm_campaign=Sponsorship%20links&utm_source=drf&utm_medium=drf
 [kloudless-url]: https://hubs.ly/H0f30Lf0
-[auklet-url]: https://auklet.io/
+[release-history-url]: https://releasehistory.io
 [lightson-url]: https://lightsonsoftware.com
 
 [oauth1-section]: https://www.django-rest-framework.org/api-guide/authentication/#django-rest-framework-oauth
