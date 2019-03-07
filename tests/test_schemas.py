@@ -24,7 +24,7 @@ from rest_framework.utils import formatting
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
-from .models import BasicModel, ForeignKeySource
+from .models import BasicModel, ForeignKeySource, ManyToManySource
 
 factory = APIRequestFactory()
 
@@ -693,6 +693,51 @@ class TestSchemaGeneratorWithForeignKey(TestCase):
                         fields=[
                             coreapi.Field('name', required=True, location='form', schema=coreschema.String(title='Name')),
                             coreapi.Field('target', required=True, location='form', schema=coreschema.Integer(description='Target', title='Target')),
+                        ]
+                    )
+                }
+            }
+        )
+        assert schema == expected
+
+
+class ManyToManySourceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ManyToManySource
+        fields = ('id', 'name', 'targets')
+
+
+class ManyToManySourceView(generics.CreateAPIView):
+    queryset = ManyToManySource.objects.all()
+    serializer_class = ManyToManySourceSerializer
+
+
+@unittest.skipUnless(coreapi, 'coreapi is not installed')
+class TestSchemaGeneratorWithManyToMany(TestCase):
+    def setUp(self):
+        self.patterns = [
+            url(r'^example/?$', ManyToManySourceView.as_view()),
+        ]
+
+    def test_schema_for_regular_views(self):
+        """
+        Ensure that AutoField many to many fields are output as Integer.
+        """
+        generator = SchemaGenerator(title='Example API', patterns=self.patterns)
+        schema = generator.get_schema()
+
+        expected = coreapi.Document(
+            url='',
+            title='Example API',
+            content={
+                'example': {
+                    'create': coreapi.Link(
+                        url='/example/',
+                        action='post',
+                        encoding='application/json',
+                        fields=[
+                            coreapi.Field('name', required=True, location='form', schema=coreschema.String(title='Name')),
+                            coreapi.Field('targets', required=True, location='form', schema=coreschema.Array(title='Targets', items=coreschema.Integer())),
                         ]
                     )
                 }
