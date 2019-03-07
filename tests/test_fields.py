@@ -1168,10 +1168,10 @@ class TestQuantizedValueForDecimal(TestCase):
         value = field.to_internal_value('12.0').as_tuple()
         expected_digit_tuple = (0, (1, 2, 0, 0), -2)
         assert value == expected_digit_tuple
-    
+
     def test_rounding_value_for_decimal(self):
-        field = serializers.DecimalField(max_digits=4, decimal_places=2, rounding=ROUND_HALF_UP)
-        value = field.to_internal_value('12.004).as_tuple()
+        field = serializers.DecimalField(max_digits=4, decimal_places=2, rounding=ROUND_DOWN)
+        value = field.to_internal_value('12.004').as_tuple()
         expected_digit_tuple = (0, (1, 2, 0, 0), -2)
         assert value == expected_digit_tuple
 
