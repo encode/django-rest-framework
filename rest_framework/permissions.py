@@ -54,18 +54,31 @@ class AND:
     def __init__(self, op1, op2):
         self.op1 = op1
         self.op2 = op2
+        self.message1 = op1.message if hasattr(op1, 'message') else None
+        self.message2 = op2.message if hasattr(op2, 'message') else None
+        self.message = None
 
     def has_permission(self, request, view):
-        return (
-            self.op1.has_permission(request, view) and
-            self.op2.has_permission(request, view)
-        )
+        if not self.op1.has_permission(request, view):
+            self.message = self.message1
+            return False
+
+        if not self.op2.has_permission(request, view):
+            self.message = self.message2
+            return False
+
+        return True
 
     def has_object_permission(self, request, view, obj):
-        return (
-            self.op1.has_object_permission(request, view, obj) and
-            self.op2.has_object_permission(request, view, obj)
-        )
+        if not self.op1.has_object_permission(request, view, obj):
+            self.message = self.message1
+            return False
+
+        if not self.op2.has_object_permission(request, view, obj):
+            self.message = self.message2
+            return False
+
+        return True
 
 
 class OR:
