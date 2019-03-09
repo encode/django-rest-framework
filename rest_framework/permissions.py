@@ -2,6 +2,7 @@
 Provides a set of pluggable permission policies.
 """
 from django.http import Http404
+from django.utils.translation import gettext_lazy as _
 
 from rest_framework import exceptions
 
@@ -80,6 +81,13 @@ class OR:
     def __init__(self, op1, op2):
         self.op1 = op1
         self.op2 = op2
+        self.message1 = getattr(op1, 'message', None)
+        self.message2 = getattr(op2, 'message', None)
+        self.message = self.message1 or self.message2
+        if self.message1 and self.message2:
+            self.message = '"{0}" {1} "{2}"'.format(
+                self.message1, _('OR'), self.message2,
+            )
 
     def has_permission(self, request, view):
         return (
