@@ -522,6 +522,18 @@ class DeniedViewWithDetailAND3(PermissionInstanceView):
     permission_classes = (BasicPermWithDetail & AnotherBasicPermWithDetail,)
 
 
+class DeniedViewWithDetailOR1(PermissionInstanceView):
+    permission_classes = (BasicPerm | BasicPermWithDetail,)
+
+
+class DeniedViewWithDetailOR2(PermissionInstanceView):
+    permission_classes = (BasicPermWithDetail | BasicPerm,)
+
+
+class DeniedViewWithDetailOR3(PermissionInstanceView):
+    permission_classes = (BasicPermWithDetail | AnotherBasicPermWithDetail,)
+
+
 class DeniedObjectView(PermissionInstanceView):
     permission_classes = (BasicObjectPerm,)
 
@@ -542,6 +554,18 @@ class DeniedObjectViewWithDetailAND3(PermissionInstanceView):
     permission_classes = (AnotherBasicObjectPermWithDetail & BasicObjectPermWithDetail,)
 
 
+class DeniedObjectViewWithDetailOR1(PermissionInstanceView):
+    permission_classes = (BasicObjectPerm | BasicObjectPermWithDetail,)
+
+
+class DeniedObjectViewWithDetailOR2(PermissionInstanceView):
+    permission_classes = (BasicObjectPermWithDetail | BasicObjectPerm,)
+
+
+class DeniedObjectViewWithDetailOR3(PermissionInstanceView):
+    permission_classes = (BasicObjectPermWithDetail | AnotherBasicObjectPermWithDetail,)
+
+
 denied_view = DeniedView.as_view()
 
 denied_view_with_detail = DeniedViewWithDetail.as_view()
@@ -550,6 +574,10 @@ denied_view_with_detail_and_1 = DeniedViewWithDetailAND1.as_view()
 denied_view_with_detail_and_2 = DeniedViewWithDetailAND2.as_view()
 denied_view_with_detail_and_3 = DeniedViewWithDetailAND3.as_view()
 
+denied_view_with_detail_or_1 = DeniedViewWithDetailOR1.as_view()
+denied_view_with_detail_or_2 = DeniedViewWithDetailOR2.as_view()
+denied_view_with_detail_or_3 = DeniedViewWithDetailOR3.as_view()
+
 denied_object_view = DeniedObjectView.as_view()
 
 denied_object_view_with_detail = DeniedObjectViewWithDetail.as_view()
@@ -557,6 +585,10 @@ denied_object_view_with_detail = DeniedObjectViewWithDetail.as_view()
 denied_object_view_with_detail_and_1 = DeniedObjectViewWithDetailAND1.as_view()
 denied_object_view_with_detail_and_2 = DeniedObjectViewWithDetailAND2.as_view()
 denied_object_view_with_detail_and_3 = DeniedObjectViewWithDetailAND3.as_view()
+
+denied_object_view_with_detail_or_1 = DeniedObjectViewWithDetailOR1.as_view()
+denied_object_view_with_detail_or_2 = DeniedObjectViewWithDetailOR2.as_view()
+denied_object_view_with_detail_or_3 = DeniedObjectViewWithDetailOR3.as_view()
 
 
 class CustomPermissionsTests(TestCase):
@@ -595,6 +627,25 @@ class CustomPermissionsTests(TestCase):
             detail = response.data.get('detail')
             self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
             self.assertEqual(detail, CUSTOM_MESSAGE_1)
+
+    def test_permission_denied_with_custom_detail_or_1(self):
+            response = denied_view_with_detail_or_1(self.request, pk=1)
+            detail = response.data.get('detail')
+            self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+            self.assertEqual(detail, CUSTOM_MESSAGE_1)
+
+    def test_permission_denied_with_custom_detail_or_2(self):
+            response = denied_view_with_detail_or_2(self.request, pk=1)
+            detail = response.data.get('detail')
+            self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+            self.assertEqual(detail, CUSTOM_MESSAGE_1)
+
+    def test_permission_denied_with_custom_detail_or_3(self):
+            response = denied_view_with_detail_or_3(self.request, pk=1)
+            detail = response.data.get('detail')
+            self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+            expected_message = '"{0}" OR "{1}"'.format(CUSTOM_MESSAGE_1, CUSTOM_MESSAGE_2)
+            self.assertEqual(detail, expected_message)
 
     def test_permission_denied_for_object(self):
             response = denied_object_view(self.request, pk=1)

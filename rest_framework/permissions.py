@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 from django.http import Http404
 from django.utils import six
+from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import exceptions
 
@@ -85,6 +86,16 @@ class OR:
     def __init__(self, op1, op2):
         self.op1 = op1
         self.op2 = op2
+        self.message1 = op1.message if hasattr(op1, 'message') else None
+        self.message2 = op2.message if hasattr(op2, 'message') else None
+        self.message = self.message1 or self.message2
+        if self.message1 and self.message2:
+            self.message = _('"{message1}" OR "{message2}"').format(
+                message1=self.message1,
+                message2=self.message2,
+            )
+        else:
+            self.message = self.message1 or self.message2
 
     def has_permission(self, request, view):
         return (
