@@ -321,7 +321,7 @@ class TestHyperlinkedRelatedField(URLPatternsTestCase, APITestCase):
     def setUp(self):
         super(TestHyperlinkedRelatedField, self).setUp()
 
-        class MockQueryset(object):
+        class MockQueryset:
             def get(self, pk):
                 return 'object %s' % pk
 

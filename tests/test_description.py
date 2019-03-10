@@ -153,7 +153,7 @@ class TestViewNamesAndDescriptions(TestCase):
         # use a mock object instead of gettext_lazy to ensure that we can't end
         # up with a test case string in our l10n catalog
 
-        class MockLazyStr(object):
+        class MockLazyStr:
             def __init__(self, string):
                 self.s = string
 

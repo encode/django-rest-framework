@@ -795,11 +795,11 @@ class TestCursorPagination(CursorPaginationTestsMixin):
     """
 
     def setup(self):
-        class MockObject(object):
+        class MockObject:
             def __init__(self, idx):
                 self.created = idx
 
-        class MockQuerySet(object):
+        class MockQuerySet:
             def __init__(self, items):
                 self.items = items
 

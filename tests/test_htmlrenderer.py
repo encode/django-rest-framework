@@ -45,7 +45,7 @@ urlpatterns = [
 @override_settings(ROOT_URLCONF='tests.test_htmlrenderer')
 class TemplateHTMLRendererTests(TestCase):
     def setUp(self):
-        class MockResponse(object):
+        class MockResponse:
             template_name = None
         self.mock_response = MockResponse()
         self._monkey_patch_get_template()
@@ -103,14 +103,14 @@ class TemplateHTMLRendererTests(TestCase):
     def test_get_template_names_returns_view_template_name(self):
         renderer = TemplateHTMLRenderer()
 
-        class MockResponse(object):
+        class MockResponse:
             template_name = None
 
-        class MockView(object):
+        class MockView:
             def get_template_names(self):
                 return ['template from get_template_names method']
 
-        class MockView2(object):
+        class MockView2:
             template_name = 'template from template_name attribute'
 
         template_name = renderer.get_template_names(self.mock_response,

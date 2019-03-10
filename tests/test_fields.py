@@ -192,7 +192,7 @@ class TestSource:
         class ExampleSerializer(serializers.Serializer):
             example_field = serializers.CharField(source='example_callable')
 
-        class ExampleInstance(object):
+        class ExampleInstance:
             def example_callable(self):
                 return 'example callable value'
 
@@ -203,7 +203,7 @@ class TestSource:
         class ExampleSerializer(serializers.Serializer):
             example_field = serializers.CharField(source='example_callable', read_only=True)
 
-        class ExampleInstance(object):
+        class ExampleInstance:
             def example_callable(self):
                 raise AttributeError('method call failed')
 

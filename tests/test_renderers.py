@@ -345,7 +345,7 @@ class JSONRendererTests(TestCase):
         self.assertEqual(data, {'key': 'string value', '2': 3})
 
     def test_render_obj_with_getitem(self):
-        class DictLike(object):
+        class DictLike:
             def __init__(self):
                 self._dict = {}
 
@@ -644,7 +644,7 @@ class BrowsableAPIRendererTests(URLPatternsTestCase):
         assert self.renderer.get_description({}, status_code=403) == ''
 
     def test_get_filter_form_returns_none_if_data_is_not_list_instance(self):
-        class DummyView(object):
+        class DummyView:
             get_queryset = None
             filter_backends = None
 

@@ -39,7 +39,7 @@ class TestFormParser(TestCase):
 
 class TestFileUploadParser(TestCase):
     def setUp(self):
-        class MockRequest(object):
+        class MockRequest:
             pass
         self.stream = io.BytesIO(
             "Test text file".encode('utf-8')

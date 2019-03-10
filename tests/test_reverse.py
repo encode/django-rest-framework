@@ -17,7 +17,7 @@ urlpatterns = [
 ]
 
 
-class MockVersioningScheme(object):
+class MockVersioningScheme:
 
     def __init__(self, raise_error=False):
         self.raise_error = raise_error

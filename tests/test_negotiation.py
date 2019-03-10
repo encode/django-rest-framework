@@ -78,7 +78,7 @@ class TestAcceptedMediaType(TestCase):
         assert str(mediatype) == 'test/*; foo=bar'
 
     def test_raise_error_if_no_suitable_renderers_found(self):
-        class MockRenderer(object):
+        class MockRenderer:
             format = 'xml'
         renderers = [MockRenderer()]
         with pytest.raises(Http404):

@@ -29,7 +29,7 @@ from .models import BasicModel, ForeignKeySource
 factory = APIRequestFactory()
 
 
-class MockUser(object):
+class MockUser:
     def is_authenticated(self):
         return True
 

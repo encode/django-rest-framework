@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import pytest
 from django.conf.urls import url
 from django.core.management import call_command
