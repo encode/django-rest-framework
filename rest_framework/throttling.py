@@ -10,7 +10,7 @@ from django.core.exceptions import ImproperlyConfigured
 from rest_framework.settings import api_settings
 
 
-class BaseThrottle(object):
+class BaseThrottle:
     """
     Rate throttling of requests.
     """

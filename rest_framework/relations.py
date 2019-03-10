@@ -65,7 +65,7 @@ class Hyperlink(six.text_type):
     is_hyperlink = True
 
 
-class PKOnlyObject(object):
+class PKOnlyObject:
     """
     This is a mock object, used for when we only need the pk of the object
     instance, but still want to return an object with a .pk attribute,

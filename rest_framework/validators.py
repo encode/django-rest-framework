@@ -32,7 +32,7 @@ def qs_filter(queryset, **kwargs):
         return queryset.none()
 
 
-class UniqueValidator(object):
+class UniqueValidator:
     """
     Validator that corresponds to `unique=True` on a model field.
 
@@ -87,7 +87,7 @@ class UniqueValidator(object):
         ))
 
 
-class UniqueTogetherValidator(object):
+class UniqueTogetherValidator:
     """
     Validator that corresponds to `unique_together = (...)` on a model class.
 
@@ -176,7 +176,7 @@ class UniqueTogetherValidator(object):
         ))
 
 
-class BaseUniqueForValidator(object):
+class BaseUniqueForValidator:
     message = None
     missing_message = _('This field is required.')
 

@@ -38,7 +38,7 @@ Route = namedtuple('Route', ['url', 'mapping', 'name', 'detail', 'initkwargs'])
 DynamicRoute = namedtuple('DynamicRoute', ['url', 'name', 'detail', 'initkwargs'])
 
 
-class DynamicDetailRoute(object):
+class DynamicDetailRoute:
     def __new__(cls, url, name, initkwargs):
         warnings.warn(
             "`DynamicDetailRoute` is deprecated and will be removed in 3.10 "
@@ -49,7 +49,7 @@ class DynamicDetailRoute(object):
         return DynamicRoute(url, name, True, initkwargs)
 
 
-class DynamicListRoute(object):
+class DynamicListRoute:
     def __new__(cls, url, name, initkwargs):
         warnings.warn(
             "`DynamicListRoute` is deprecated and will be removed in 3.10 in "

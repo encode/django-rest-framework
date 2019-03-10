@@ -33,7 +33,7 @@ def _is_extra_action(attr):
     return hasattr(attr, 'mapping')
 
 
-class ViewSetMixin(object):
+class ViewSetMixin:
     """
     This is the magic.
 

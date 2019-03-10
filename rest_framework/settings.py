@@ -186,7 +186,7 @@ def import_from_string(val, setting_name):
         raise ImportError(msg)
 
 
-class APISettings(object):
+class APISettings:
     """
     A settings object, that allows API settings to be accessed as properties.
     For example:

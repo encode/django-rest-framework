@@ -249,7 +249,7 @@ class SessionAuthTests(TestCase):
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
-class BaseTokenAuthTests(object):
+class BaseTokenAuthTests:
     """Token authentication"""
     model = None
     path = None

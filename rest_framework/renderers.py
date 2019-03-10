@@ -39,7 +39,7 @@ def zero_as_none(value):
     return None if value == 0 else value
 
 
-class BaseRenderer(object):
+class BaseRenderer:
     """
     All renderers should extend this class, setting the `media_type`
     and `format` attributes, and override the `.render()` method.

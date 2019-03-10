@@ -183,18 +183,18 @@ def iter_options(grouped_choices, cutoff=None, cutoff_text=None):
     """
     Helper function for options and option groups in templates.
     """
-    class StartOptionGroup(object):
+    class StartOptionGroup:
         start_option_group = True
         end_option_group = False
 
         def __init__(self, label):
             self.label = label
 
-    class EndOptionGroup(object):
+    class EndOptionGroup:
         start_option_group = False
         end_option_group = True
 
-    class Option(object):
+    class Option:
         start_option_group = False
         end_option_group = False
 
@@ -249,7 +249,7 @@ def get_error_detail(exc_info):
     }
 
 
-class CreateOnlyDefault(object):
+class CreateOnlyDefault:
     """
     This class may be used to provide default values that are only used
     for create operations, but that do not return any value for update
@@ -276,7 +276,7 @@ class CreateOnlyDefault(object):
         )
 
 
-class CurrentUserDefault(object):
+class CurrentUserDefault:
     def set_context(self, serializer_field):
         self.user = serializer_field.context['request'].user
 
@@ -303,7 +303,7 @@ MISSING_ERROR_MESSAGE = (
 )
 
 
-class Field(object):
+class Field:
     _creation_counter = 0
 
     default_error_messages = {

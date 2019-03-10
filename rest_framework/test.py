@@ -30,7 +30,7 @@ if requests is not None:
         def get_all(self, key, default):
             return self.getheaders(key)
 
-    class MockOriginalResponse(object):
+    class MockOriginalResponse:
         def __init__(self, headers):
             self.msg = HeaderDict(headers)
             self.closed = False
