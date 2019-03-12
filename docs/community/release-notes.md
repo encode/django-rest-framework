@@ -62,7 +62,7 @@ You can determine your currently installed version using `pip show`:
 
 ### 3.9.1
 
-**Date**: [16th Janurary 2019][3.9.1-milestone]
+**Date**: [16th January 2019][3.9.1-milestone]
 
 * Resolve XSS issue in browsable API. [#6330][gh6330]
 * Upgrade Bootstrap to 3.4.0 to resolve XSS issue.
