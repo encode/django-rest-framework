@@ -1169,6 +1169,7 @@ class TestQuantizedValueForDecimal(TestCase):
         expected_digit_tuple = (0, (1, 2, 0, 0), -2)
         assert value == expected_digit_tuple
 
+
 class TestNormalizedValueDecimalField(TestCase):
     """
     Test that we get the expected behavior of on DecimalField when normalize=True
