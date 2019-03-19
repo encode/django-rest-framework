@@ -40,6 +40,9 @@ class BaseFilterBackend(object):
         assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
         return []
 
+    def get_schema_operation_parameters(self, view):
+        return []
+
 
 class SearchFilter(BaseFilterBackend):
     # The URL query parameter used for the search.
@@ -157,6 +160,19 @@ class SearchFilter(BaseFilterBackend):
                     description=force_text(self.search_description)
                 )
             )
+        ]
+
+    def get_schema_operation_parameters(self, view):
+        return [
+            {
+                'name': self.search_param,
+                'required': False,
+                'in': 'query',
+                'description': force_text(self.search_description),
+                'schema': {
+                    'type': 'string',
+                },
+            },
         ]
 
 
@@ -288,6 +304,19 @@ class OrderingFilter(BaseFilterBackend):
                     description=force_text(self.ordering_description)
                 )
             )
+        ]
+
+    def get_schema_operation_parameters(self, view):
+        return [
+            {
+                'name': self.ordering_param,
+                'required': False,
+                'in': 'query',
+                'description': force_text(self.ordering_description),
+                'schema': {
+                    'type': 'string',
+                },
+            },
         ]
 
 

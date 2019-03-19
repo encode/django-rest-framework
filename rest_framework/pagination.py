@@ -152,6 +152,9 @@ class BasePagination(object):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
         return []
 
+    def get_schema_operation_parameters(self, view):
+        return []
+
 
 class PageNumberPagination(BasePagination):
     """
@@ -305,6 +308,32 @@ class PageNumberPagination(BasePagination):
             )
         return fields
 
+    def get_schema_operation_parameters(self, view):
+        parameters = [
+            {
+                'name': self.page_query_param,
+                'required': False,
+                'in': 'query',
+                'description': force_text(self.page_query_description),
+                'schema': {
+                    'type': 'integer',
+                },
+            },
+        ]
+        if self.page_size_query_param is not None:
+            parameters.append(
+                {
+                    'name': self.page_size_query_param,
+                    'required': False,
+                    'in': 'query',
+                    'description': force_text(self.page_size_query_description),
+                    'schema': {
+                        'type': 'integer',
+                    },
+                },
+            )
+        return parameters
+
 
 class LimitOffsetPagination(BasePagination):
     """
@@ -434,6 +463,15 @@ class LimitOffsetPagination(BasePagination):
         context = self.get_html_context()
         return template.render(context)
 
+    def get_count(self, queryset):
+        """
+        Determine an object count, supporting either querysets or regular lists.
+        """
+        try:
+            return queryset.count()
+        except (AttributeError, TypeError):
+            return len(queryset)
+
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
         assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
@@ -458,14 +496,28 @@ class LimitOffsetPagination(BasePagination):
             )
         ]
 
-    def get_count(self, queryset):
-        """
-        Determine an object count, supporting either querysets or regular lists.
-        """
-        try:
-            return queryset.count()
-        except (AttributeError, TypeError):
-            return len(queryset)
+    def get_schema_operation_parameters(self, view):
+        parameters = [
+            {
+                'name': self.limit_query_param,
+                'required': False,
+                'in': 'query',
+                'description': force_text(self.limit_query_description),
+                'schema': {
+                    'type': 'integer',
+                },
+            },
+            {
+                'name': self.offset_query_param,
+                'required': False,
+                'in': 'query',
+                'description': force_text(self.offset_query_description),
+                'schema': {
+                    'type': 'integer',
+                },
+            },
+        ]
+        return parameters
 
 
 class CursorPagination(BasePagination):
@@ -820,3 +872,29 @@ class CursorPagination(BasePagination):
                 )
             )
         return fields
+
+    def get_schema_operation_parameters(self, view):
+        parameters = [
+            {
+                'name': self.cursor_query_param,
+                'required': False,
+                'in': 'query',
+                'description': force_text(self.cursor_query_description),
+                'schema': {
+                    'type': 'integer',
+                },
+            }
+        ]
+        if self.page_size_query_param is not None:
+            parameters.append(
+                {
+                    'name': self.page_size_query_param,
+                    'required': False,
+                    'in': 'query',
+                    'description': force_text(self.page_size_query_description),
+                    'schema': {
+                        'type': 'integer',
+                    },
+                }
+            )
+        return parameters

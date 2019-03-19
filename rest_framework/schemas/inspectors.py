@@ -179,20 +179,6 @@ class ViewInspector(object):
     def view(self):
         self._view = None
 
-    def get_link(self, path, method, base_url):
-        """
-        Generate `coreapi.Link` for self.view, path and method.
-
-        This is the main _public_ access point.
-
-        Parameters:
-
-        * path: Route path for view from URLConf.
-        * method: The HTTP request method.
-        * base_url: The project "mount point" as given to SchemaGenerator
-        """
-        raise NotImplementedError(".get_link() must be overridden.")
-
 
 class AutoSchema(ViewInspector):
     """
@@ -213,6 +199,17 @@ class AutoSchema(ViewInspector):
         self._manual_fields = manual_fields
 
     def get_link(self, path, method, base_url):
+        """
+        Generate `coreapi.Link` for self.view, path and method.
+
+        This is the main _public_ access point.
+
+        Parameters:
+
+        * path: Route path for view from URLConf.
+        * method: The HTTP request method.
+        * base_url: The project "mount point" as given to SchemaGenerator
+        """
         fields = self.get_path_fields(path, method)
         fields += self.get_serializer_fields(path, method)
         fields += self.get_pagination_fields(path, method)
@@ -509,3 +506,246 @@ class DefaultSchema(ViewInspector):
         inspector = inspector_class()
         inspector.view = instance
         return inspector
+
+
+class OpenAPIAutoSchema(ViewInspector):
+
+    content_types = ['application/json']
+
+    def get_operation(self, path, method):
+        operation = {}
+
+        parameters = []
+        parameters += self._get_path_parameters(path, method)
+        parameters += self._get_pagination_parameters(path, method)
+        parameters += self._get_filter_parameters(path, method)
+        operation['parameters'] = parameters
+
+        request_body = self._get_request_body(path, method)
+        if request_body:
+            operation['requestBody'] = request_body
+        operation['responses'] = self._get_responses(path, method)
+
+        return operation
+
+    def _get_path_parameters(self, path, method):
+        """
+        Return a list of parameters from templated path variables.
+        """
+        model = getattr(getattr(self.view, 'queryset', None), 'model', None)
+        parameters = []
+
+        for variable in uritemplate.variables(path):
+            description = ''
+            if model is not None:  # TODO: test this.
+                # Attempt to infer a field description if possible.
+                try:
+                    model_field = model._meta.get_field(variable)
+                except Exception:
+                    model_field = None
+
+                if model_field is not None and model_field.help_text:
+                    description = force_text(model_field.help_text)
+                elif model_field is not None and model_field.primary_key:
+                    description = get_pk_description(model, model_field)
+
+            parameter = {
+                "name": variable,
+                "in": "path",
+                "required": True,
+                "description": description,
+                'schema': {
+                    'type': 'string',  # TODO: integer, pattern, ...
+                },
+            }
+            parameters.append(parameter)
+
+        return parameters
+
+    def _get_filter_parameters(self, path, method):
+        if not self._allows_filters(path, method):
+            return []
+        parameters = []
+        for filter_backend in self.view.filter_backends:
+            parameters += filter_backend().get_schema_operation_parameters(self.view)
+        return parameters
+
+    def _allows_filters(self, path, method):
+        """
+        Determine whether to include filter Fields in schema.
+
+        Default implementation looks for ModelViewSet or GenericAPIView
+        actions/methods that cause filtering on the default implementation.
+        """
+        if getattr(self.view, 'filter_backends', None) is None:
+            return False
+        if hasattr(self.view, 'action'):
+            return self.view.action in ["list", "retrieve", "update", "partial_update", "destroy"]
+        return method.lower() in ["get", "put", "patch", "delete"]
+
+    def _get_pagination_parameters(self, path, method):
+        view = self.view
+
+        if not is_list_view(path, method, view):
+            return []
+
+        pagination = getattr(view, 'pagination_class', None)
+        if not pagination:
+            return []
+
+        paginator = view.pagination_class()
+        return paginator.get_schema_operation_parameters(view)
+
+    def _map_field(self, field):
+
+        # Nested Serializers, `many` or not.
+        if isinstance(field, serializers.ListSerializer):
+            return {
+                'type': 'array',
+                'items': self._map_serializer(field.child)
+            }
+        if isinstance(field, serializers.Serializer):
+            return {
+                'type': 'object',
+                'properties': self._map_serializer(field)
+            }
+
+        # Related fields.
+        if isinstance(field, serializers.ManyRelatedField):
+            return {
+                'type': 'array',
+                'items': self._map_field(field.child_relation)
+            }
+        if isinstance(field, serializers.PrimaryKeyRelatedField):
+            model = getattr(field.queryset, 'model', None)
+            if model is not None:
+                model_field = model._meta.pk
+                if isinstance(model_field, models.AutoField):
+                    return {'type': 'integer'}
+
+        # ChoiceFields (single and multiple).
+        # Q:
+        # - Is 'type' required?
+        # - can we determine the TYPE of a choicefield?
+        if isinstance(field, serializers.MultipleChoiceField):
+            return {
+                'type': 'array',
+                'items': {
+                    'enum': list(field.choices)
+                },
+            }
+
+        if isinstance(field, serializers.ChoiceField):
+            return {
+                'enum': list(field.choices),
+            }
+
+        # ListField.
+        if isinstance(field, serializers.ListField):
+            return {
+                'type': 'array',
+            }
+
+        # Simplest cases, default to 'string' type:
+        FIELD_CLASS_SCHEMA_TYPE = {
+            serializers.BooleanField: 'boolean',
+            serializers.DecimalField: 'number',
+            serializers.FloatField: 'number',
+            serializers.IntegerField: 'integer',
+            serializers.DateField: 'date',
+            serializers.DateTimeField: 'date-time',
+            serializers.JSONField: 'object',
+            serializers.DictField: 'object',
+        }
+        return {'type': FIELD_CLASS_SCHEMA_TYPE.get(field.__class__, 'string')}
+
+    def _map_serializer(self, serializer):
+        # Assuming we have a valid serializer instance.
+        # TODO:
+        #   - field is Nested or List serializer.
+        #   - Handle read_only/write_only for request/response differences.
+        #       - could do this with readOnly/writeOnly and then filter dict.
+        required = []
+        properties = {}
+
+        for field in serializer.fields.values():
+            if isinstance(field, serializers.HiddenField):
+                continue
+
+            if field.required:
+                required.append(field.field_name)
+
+            schema = self._map_field(field)
+            if field.read_only:
+                schema['readOnly'] = True
+            if field.write_only:
+                schema['writeOnly'] = True
+            if field.allow_null:
+                schema['nullable'] = True
+
+            properties[field.field_name] = schema
+        return {
+            'required': required,
+            'properties': properties,
+        }
+
+    def _get_request_body(self, path, method):
+        view = self.view
+
+        if method not in ('PUT', 'PATCH', 'POST'):
+            return {}
+
+        if not hasattr(view, 'get_serializer'):
+            return {}
+
+        try:
+            serializer = view.get_serializer()
+        except exceptions.APIException:
+            serializer = None
+            warnings.warn('{}.get_serializer() raised an exception during '
+                          'schema generation. Serializer fields will not be '
+                          'generated for {} {}.'
+                          .format(view.__class__.__name__, method, path))
+
+        if not isinstance(serializer, serializers.Serializer):
+            return {}
+
+        content = self._map_serializer(serializer)
+        # No required fields for PATCH
+        if method == 'PATCH':
+            del content['required']
+        # No read_only fields for request.
+        for name, schema in content['properties'].items():
+            if 'readOnly' in schema:
+                del content['properties']['name']
+
+        return {
+            'content': {ct: content for ct in self.content_types}
+        }
+
+    def _get_responses(self, path, method):
+        # TODO: Handle multiple codes.
+        content = {}
+        view = self.view
+        if hasattr(view, 'get_serializer'):
+            try:
+                serializer = view.get_serializer()
+            except exceptions.APIException:
+                serializer = None
+                warnings.warn('{}.get_serializer() raised an exception during '
+                              'schema generation. Serializer fields will not be '
+                              'generated for {} {}.'
+                              .format(view.__class__.__name__, method, path))
+
+            if isinstance(serializer, serializers.Serializer):
+                content = self._map_serializer(serializer)
+                # No write_only fields for response.
+                for name, schema in content['properties'].items():
+                    if 'writeOnly' in schema:
+                        del content['properties']['name']
+
+        return {
+            '200': {
+                'content': {ct: content for ct in self.content_types}
+            }
+        }
