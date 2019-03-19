@@ -7,8 +7,8 @@ from django.test import TestCase
 from django.test.utils import override_settings
 from django.utils import six
 
-from rest_framework.compat import coreapi
-from rest_framework.utils import formatting, json
+from rest_framework.compat import coreapi, yaml
+from rest_framework.utils import json
 from rest_framework.views import APIView
 
 
@@ -31,58 +31,21 @@ class GenerateSchemaTests(TestCase):
         self.out = six.StringIO()
 
     @pytest.mark.skipif(six.PY2, reason='PyYAML unicode output is malformed on PY2.')
+    @pytest.mark.skipif(yaml is None, reason='PyYAML is required.')
     def test_renders_default_schema_with_custom_title_url_and_description(self):
-        expected_out = """info:
-                            description: Sample description
-                            title: SampleAPI
-                            version: ''
-                          openapi: 3.0.0
-                          paths:
-                            /:
-                              get:
-                                operationId: list
-                          servers:
-                          - url: http://api.sample.com/
-                          """
         call_command('generateschema',
                      '--title=SampleAPI',
                      '--url=http://api.sample.com',
                      '--description=Sample description',
                      stdout=self.out)
-
-        self.assertIn(formatting.dedent(expected_out), self.out.getvalue())
+        # Check valid YAML was output.
+        schema = yaml.load(self.out.getvalue())
+        assert schema['openapi'] == '3.0.2'
 
     def test_renders_openapi_json_schema(self):
-        expected_out = {
-            "openapi": "3.0.0",
-            "info": {
-                "version": "",
-                "title": "",
-                "description": ""
-            },
-            "servers": [
-                {
-                    "url": ""
-                }
-            ],
-            "paths": {
-                "/": {
-                    "get": {
-                        "operationId": "list"
-                    }
-                }
-            }
-        }
         call_command('generateschema',
                      '--format=openapi-json',
                      stdout=self.out)
+        # Check valid JSON was output.
         out_json = json.loads(self.out.getvalue())
-
-        self.assertDictEqual(out_json, expected_out)
-
-    def test_renders_corejson_schema(self):
-        expected_out = """{"_type":"document","":{"list":{"_type":"link","url":"/","action":"get"}}}"""
-        call_command('generateschema',
-                     '--format=corejson',
-                     stdout=self.out)
-        self.assertIn(expected_out, self.out.getvalue())
+        assert out_json['openapi'] == '3.0.2'
