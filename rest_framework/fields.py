@@ -1014,10 +1014,11 @@ class DecimalField(Field):
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
 
     def __init__(self, max_digits, decimal_places, coerce_to_string=None, max_value=None, min_value=None,
-                 localize=False, rounding=None, **kwargs):
+                 localize=False, rounding=None, normalize=False, **kwargs):
         self.max_digits = max_digits
         self.decimal_places = decimal_places
         self.localize = localize
+        self.normalize = normalize
         if coerce_to_string is not None:
             self.coerce_to_string = coerce_to_string
         if self.localize:
@@ -1124,6 +1125,11 @@ class DecimalField(Field):
             value = decimal.Decimal(six.text_type(value).strip())
 
         quantized = self.quantize(value)
+
+        # TODO: Should maybe name the value to something not bound to
+        #   quantized. Ex: out_value
+        if self.normalize:
+            quantized = quantized.normalize()
 
         if not coerce_to_string:
             return quantized
