@@ -262,6 +262,9 @@ class BaseSerializer(Field):
                 self._data = self.to_representation(self.instance)
             elif hasattr(self, '_validated_data') and not getattr(self, '_errors', None):
                 self._data = self.to_representation(self.validated_data)
+            elif hasattr(self, '_validated_data') and getattr(self, '_errors', None):
+                msg = 'You can not access `.data` in an invalid serializer.'
+                raise AssertionError(msg)
             else:
                 self._data = self.get_initial()
         return self._data
@@ -547,7 +550,13 @@ class Serializer(BaseSerializer):
 
     def __getitem__(self, key):
         field = self.fields[key]
-        value = self.data.get(key)
+
+        # If the data is not valid, return the initial data
+        if not hasattr(self, '_data') and hasattr(self, '_validated_data') and getattr(self, '_errors', None):
+            value = self.get_initial().get(key)
+        else:
+            value = self.data.get(key)
+
         error = self.errors.get(key) if hasattr(self, '_errors') else None
         if isinstance(field, Serializer):
             return NestedBoundField(field, value, error)

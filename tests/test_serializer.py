@@ -86,15 +86,17 @@ class TestSerializer:
         serializer = self.Serializer(data={'char': 'abc'})
         assert not serializer.is_valid()
         assert serializer.validated_data == {}
-        assert serializer.data == {'char': 'abc'}
         assert serializer.errors == {'integer': ['This field is required.']}
+        with pytest.raises(AssertionError):
+            serializer.data
 
     def test_invalid_datatype(self):
         serializer = self.Serializer(data=[{'char': 'abc'}])
         assert not serializer.is_valid()
         assert serializer.validated_data == {}
-        assert serializer.data == {}
         assert serializer.errors == {'non_field_errors': ['Invalid data. Expected a dictionary, but got list.']}
+        with pytest.raises(AssertionError):
+            serializer.data
 
     def test_partial_validation(self):
         serializer = self.Serializer(data={'char': 'abc'}, partial=True)
@@ -208,11 +210,12 @@ class TestSerializer:
 
             serializer = ExampleSerializer(data=data)
             assert not serializer.is_valid()
-            assert serializer.data == data
             assert serializer.validated_data == {}
             assert serializer.errors == {'char': [
                 exceptions.ErrorDetail(string='Raised error', code='invalid')
             ]}
+            with pytest.raises(AssertionError):
+                serializer.data
 
 
 class TestValidateMethod:

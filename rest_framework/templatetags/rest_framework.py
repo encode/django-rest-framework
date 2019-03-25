@@ -13,6 +13,7 @@ from django.utils.safestring import SafeData, mark_safe
 
 from rest_framework.compat import apply_markdown, pygments_highlight
 from rest_framework.renderers import HTMLFormRenderer
+from rest_framework.utils.serializer_helpers import ReturnDict
 from rest_framework.utils.urls import replace_query_param
 
 register = template.Library()
@@ -79,9 +80,14 @@ def get_pagination_html(pager):
 
 @register.simple_tag
 def render_form(serializer, template_pack=None):
+    if hasattr(serializer, 'initial_data') and not serializer.is_valid():
+        data = ReturnDict(serializer.get_initial(), serializer=serializer)
+    else:
+        data = serializer.data
+
     style = {'template_pack': template_pack} if template_pack else {}
     renderer = HTMLFormRenderer()
-    return renderer.render(serializer.data, None, {'style': style})
+    return renderer.render(data, None, {'style': style})
 
 
 @register.simple_tag

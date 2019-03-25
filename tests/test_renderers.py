@@ -499,7 +499,7 @@ class TestHTMLFormRenderer(TestCase):
             test_field = serializers.CharField()
 
         self.renderer = HTMLFormRenderer()
-        self.serializer = TestSerializer(data={})
+        self.serializer = TestSerializer(data={'test_field': 'test'})
 
     def test_render_with_default_args(self):
         self.serializer.is_valid()

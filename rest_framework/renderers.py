@@ -34,6 +34,7 @@ from rest_framework.settings import api_settings
 from rest_framework.utils import encoders, json
 from rest_framework.utils.breadcrumbs import get_breadcrumbs
 from rest_framework.utils.field_mapping import ClassLookupDict
+from rest_framework.utils.serializer_helpers import ReturnDict
 
 
 def zero_as_none(value):
@@ -522,12 +523,14 @@ class BrowsableAPIRenderer(BaseRenderer):
             return self.render_form_for_serializer(serializer)
 
     def render_form_for_serializer(self, serializer):
-        if hasattr(serializer, 'initial_data'):
-            serializer.is_valid()
+        if hasattr(serializer, 'initial_data') and not serializer.is_valid():
+            data = ReturnDict(serializer.get_initial(), serializer=serializer)
+        else:
+            data = serializer.data
 
         form_renderer = self.form_renderer_class()
         return form_renderer.render(
-            serializer.data,
+            data,
             self.accepted_media_type,
             {'style': {'template_pack': 'rest_framework/horizontal'}}
         )
