@@ -121,7 +121,7 @@ class BasicViewSet(viewsets.ViewSet):
 
 class TestSimpleRouter(URLPatternsTestCase, TestCase):
     router = SimpleRouter()
-    router.register('basics', BasicViewSet, base_name='basic')
+    router.register('basics', BasicViewSet, basename='basic')
 
     urlpatterns = [
         url(r'^api/', include(router.urls)),
