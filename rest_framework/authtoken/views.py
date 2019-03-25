@@ -13,6 +13,7 @@ class ObtainAuthToken(APIView):
     parser_classes = (parsers.FormParser, parsers.MultiPartParser, parsers.JSONParser,)
     renderer_classes = (renderers.JSONRenderer,)
     serializer_class = AuthTokenSerializer
+    authentication_classes = ()
     if coreapi is not None and coreschema is not None:
         schema = ManualSchema(
             fields=[
