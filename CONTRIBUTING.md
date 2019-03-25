@@ -1,4 +1,5 @@
-Contributing to the REST framework
+#Contributing to the REST framework
+
 The world can only really be changed one piece at a time. The art is picking that piece.
 
 — Tim Berners-Lee
@@ -14,17 +15,17 @@ Other really great ways you can help move the community forward include helping 
 
 When answering questions make sure to help future contributors find their way around by hyperlinking wherever possible to related threads and tickets, and include backlinks from those items if relevant.
 
-Code of conduct
+#Code of conduct
 Please keep the tone polite & professional. For some users, a discussion on the REST framework mailing list or ticket tracker may be their first engagement with the open source community. First impressions count, so let's try to make everyone feel welcome.
 
 Be mindful in the language you choose. As an example, in an environment that is heavily male-dominated, posts that start 'Hey guys,' can come across as unintentionally exclusive. It's just as easy and more inclusive to use gender-neutral language in those situations. (e.g. 'Hey folks,')
 
 The Django code of conduct gives a fuller set of guidelines for participating in community forums.
 
-Issues
+#Issues
 It's really helpful if you can make sure to address issues on the correct channel. Usage questions should be directed to the discussion group. Feature requests, bug reports, and other issues should be raised on the GitHub issue tracker.
 
-Some tips on good issue reporting:
+#Some tips on good issue reporting:
 
 When describing issues try to phrase your ticket in terms of the behavior you think needs changing rather than the code you think need changing.
 Search the issue list first for related items, and make sure you're running the latest version of REST framework before reporting an issue.
@@ -39,13 +40,13 @@ Is the ticket reported in the correct place, would it be better suited as a disc
 If the ticket is a bug report, can you reproduce it? Are you able to write a failing test case that demonstrates the issue and that can be submitted as a pull request?
 If the ticket is a feature request, do you agree with it, and could the feature request instead be implemented as a third party package?
 If a ticket hasn't had much activity and it addresses something you need, then comment on the ticket and try to find out what's needed to get it moving again.
-Development
+#Development
 To start developing on Django REST framework, clone the repo:
 
 git clone https://github.com/encode/django-rest-framework
 Changes should broadly follow the PEP 8 style conventions, and we recommend you set up your editor to automatically indicate non-conforming styles.
 
-Testing
+#Testing
 To run the tests, clone the repository, and then:
 
 # Setup the virtual environment
