@@ -1,6 +1,6 @@
 # Contributing to REST framework
 
-> The world can only really be changed one piece at a time.  The art is picking that piece.
+> The world can only really be changed one piece at a time.  The art is picking that piece.said by
 >
 > &mdash; [Tim Berners-Lee][cite]
 
