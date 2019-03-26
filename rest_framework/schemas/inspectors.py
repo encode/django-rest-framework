@@ -719,7 +719,7 @@ class OpenAPIAutoSchema(ViewInspector):
         # No read_only fields for request.
         for name, schema in content['properties'].copy().items():
             if 'readOnly' in schema:
-                del content['properties']['name']
+                del content['properties'][name]
 
         return {
             'content': {ct: content for ct in self.content_types}
@@ -744,7 +744,8 @@ class OpenAPIAutoSchema(ViewInspector):
                 # No write_only fields for response.
                 for name, schema in content['properties'].copy().items():
                     if 'writeOnly' in schema:
-                        del content['properties']['name']
+                        del content['properties'][name]
+                        content['required'] = [f for f in content['required'] if f != name]
 
         return {
             '200': {

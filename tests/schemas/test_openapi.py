@@ -2,7 +2,7 @@ import pytest
 from django.conf.urls import url
 from django.test import RequestFactory, TestCase, override_settings
 
-from rest_framework import filters, pagination
+from rest_framework import filters, generics, pagination, serializers
 from rest_framework.compat import uritemplate
 from rest_framework.request import Request
 from rest_framework.schemas.generators import OpenAPISchemaGenerator
@@ -83,6 +83,52 @@ class TestOperationIntrospection(TestCase):
                 'type': 'string',
             },
         }]
+
+    def test_request_body(self):
+        path = '/'
+        method = 'POST'
+
+        class Serializer(serializers.Serializer):
+            text = serializers.CharField()
+            read_only = serializers.CharField(read_only=True)
+
+        class View(generics.GenericAPIView):
+            serializer_class = Serializer
+
+        view = create_view(
+            View,
+            method,
+            create_request(path)
+        )
+        inspector = OpenAPIAutoSchema()
+        inspector.view = view
+
+        request_body = inspector._get_request_body(path, method)
+        assert request_body['content']['application/json']['required'] == ['text']
+        assert list(request_body['content']['application/json']['properties'].keys()) == ['text']
+
+    def test_response_body_generation(self):
+        path = '/'
+        method = 'POST'
+
+        class Serializer(serializers.Serializer):
+            text = serializers.CharField()
+            write_only = serializers.CharField(write_only=True)
+
+        class View(generics.GenericAPIView):
+            serializer_class = Serializer
+
+        view = create_view(
+            View,
+            method,
+            create_request(path)
+        )
+        inspector = OpenAPIAutoSchema()
+        inspector.view = view
+
+        responses = inspector._get_responses(path, method)
+        assert responses['200']['content']['application/json']['required'] == ['text']
+        assert list(responses['200']['content']['application/json']['properties'].keys()) == ['text']
 
 
 @pytest.mark.skipif(uritemplate is None, reason='uritemplate not installed.')
