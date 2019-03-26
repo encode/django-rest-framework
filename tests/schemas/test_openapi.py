@@ -1,7 +1,9 @@
+import pytest
 from django.conf.urls import url
 from django.test import RequestFactory, TestCase, override_settings
 
 from rest_framework import filters, pagination
+from rest_framework.compat import uritemplate
 from rest_framework.request import Request
 from rest_framework.schemas.generators import OpenAPISchemaGenerator
 from rest_framework.schemas.inspectors import OpenAPIAutoSchema
@@ -38,6 +40,7 @@ class TestBasics(TestCase):
             assert f.get_schema_operation_parameters(self.dummy_view)
 
 
+@pytest.mark.skipif(uritemplate is None, reason='uritemplate not installed.')
 class TestOperationIntrospection(TestCase):
 
     def test_path_without_parameters(self):
@@ -82,6 +85,7 @@ class TestOperationIntrospection(TestCase):
         }]
 
 
+@pytest.mark.skipif(uritemplate is None, reason='uritemplate not installed.')
 @override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.inspectors.OpenAPIAutoSchema'})
 class TestGenerator(TestCase):
 

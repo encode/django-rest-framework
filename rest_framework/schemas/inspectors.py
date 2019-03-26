@@ -532,6 +532,8 @@ class OpenAPIAutoSchema(ViewInspector):
         """
         Return a list of parameters from templated path variables.
         """
+        assert uritemplate, '`uritemplate` must be installed for OpenAPI schema support.'
+
         model = getattr(getattr(self.view, 'queryset', None), 'model', None)
         parameters = []
 
