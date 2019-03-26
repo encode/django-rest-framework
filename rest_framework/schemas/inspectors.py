@@ -715,7 +715,7 @@ class OpenAPIAutoSchema(ViewInspector):
         if method == 'PATCH':
             del content['required']
         # No read_only fields for request.
-        for name, schema in content['properties'].items():
+        for name, schema in content['properties'].copy().items():
             if 'readOnly' in schema:
                 del content['properties']['name']
 
@@ -740,7 +740,7 @@ class OpenAPIAutoSchema(ViewInspector):
             if isinstance(serializer, serializers.Serializer):
                 content = self._map_serializer(serializer)
                 # No write_only fields for response.
-                for name, schema in content['properties'].items():
+                for name, schema in content['properties'].copy().items():
                     if 'writeOnly' in schema:
                         del content['properties']['name']
 
