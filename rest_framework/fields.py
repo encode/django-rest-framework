@@ -101,6 +101,8 @@ def get_attribute(instance, attrs):
                 instance = getattr(instance, attr)
         except ObjectDoesNotExist:
             return None
+        if instance == None:
+            return None
         if is_simple_callable(instance):
             try:
                 instance = instance()
