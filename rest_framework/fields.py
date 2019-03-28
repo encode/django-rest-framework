@@ -13,7 +13,8 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.validators import (
-    EmailValidator, RegexValidator, URLValidator, ip_address_validators
+    EmailValidator, MaxLengthValidator, MaxValueValidator, MinLengthValidator,
+    MinValueValidator, RegexValidator, URLValidator, ip_address_validators
 )
 from django.forms import FilePathField as DjangoFilePathField
 from django.forms import ImageField as DjangoImageField
@@ -24,7 +25,6 @@ from django.utils.dateparse import (
 from django.utils.duration import duration_string
 from django.utils.encoding import is_protected_type, smart_text
 from django.utils.formats import localize_input, sanitize_separators
-from django.utils.functional import lazy
 from django.utils.ipv6 import clean_ipv6_address
 from django.utils.timezone import utc
 from django.utils.translation import ugettext_lazy as _
@@ -32,9 +32,7 @@ from pytz.exceptions import InvalidTimeError
 
 from rest_framework import ISO_8601
 from rest_framework.compat import (
-    Mapping, MaxLengthValidator, MaxValueValidator, MinLengthValidator,
-    MinValueValidator, ProhibitNullCharactersValidator, unicode_repr,
-    unicode_to_repr
+    Mapping, ProhibitNullCharactersValidator, unicode_repr, unicode_to_repr
 )
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.settings import api_settings
@@ -234,17 +232,25 @@ def get_error_detail(exc_info):
     with the `code` populated.
     """
     code = getattr(exc_info, 'code', None) or 'invalid'
-
     try:
         error_dict = exc_info.error_dict
     except AttributeError:
+        for error in exc_info.error_list:
+            error.params = error.params or {}
+            error.params[error.code] = error.params.get('limit_value', '')
         return [
-            ErrorDetail(error.message % (error.params or ()),
+            ErrorDetail(error.message.format(**error.params),
                         code=error.code if error.code else code)
             for error in exc_info.error_list]
+
+    for k, errors in error_dict.items():
+        for error in errors:
+            error.params = error.params or {}
+            error.params[error.code] = error.params.get('limit_value', '')
+
     return {
         k: [
-            ErrorDetail(error.message % (error.params or ()),
+            ErrorDetail(error.message.format(**error.params),
                         code=error.code if error.code else code)
             for error in errors
         ] for k, errors in error_dict.items()
@@ -766,17 +772,19 @@ class CharField(Field):
         self.min_length = kwargs.pop('min_length', None)
         super(CharField, self).__init__(**kwargs)
         if self.max_length is not None:
-            message = lazy(
-                self.error_messages['max_length'].format,
-                six.text_type)(max_length=self.max_length)
             self.validators.append(
-                MaxLengthValidator(self.max_length, message=message))
+                MaxLengthValidator(
+                    self.max_length,
+                    message=self.error_messages['max_length']
+                )
+            )
         if self.min_length is not None:
-            message = lazy(
-                self.error_messages['min_length'].format,
-                six.text_type)(min_length=self.min_length)
             self.validators.append(
-                MinLengthValidator(self.min_length, message=message))
+                MinLengthValidator(
+                    self.min_length,
+                    message=self.error_messages['min_length']
+                )
+            )
 
         # ProhibitNullCharactersValidator is None on Django < 2.0
         if ProhibitNullCharactersValidator is not None:
@@ -935,17 +943,19 @@ class IntegerField(Field):
         self.min_value = kwargs.pop('min_value', None)
         super(IntegerField, self).__init__(**kwargs)
         if self.max_value is not None:
-            message = lazy(
-                self.error_messages['max_value'].format,
-                six.text_type)(max_value=self.max_value)
             self.validators.append(
-                MaxValueValidator(self.max_value, message=message))
+                MaxValueValidator(
+                    self.max_value,
+                    message=self.error_messages['max_value']
+                )
+            )
         if self.min_value is not None:
-            message = lazy(
-                self.error_messages['min_value'].format,
-                six.text_type)(min_value=self.min_value)
             self.validators.append(
-                MinValueValidator(self.min_value, message=message))
+                MinValueValidator(
+                    self.min_value,
+                    message=self.error_messages['min_value']
+                )
+            )
 
     def to_internal_value(self, data):
         if isinstance(data, six.text_type) and len(data) > self.MAX_STRING_LENGTH:
@@ -975,20 +985,21 @@ class FloatField(Field):
         self.min_value = kwargs.pop('min_value', None)
         super(FloatField, self).__init__(**kwargs)
         if self.max_value is not None:
-            message = lazy(
-                self.error_messages['max_value'].format,
-                six.text_type)(max_value=self.max_value)
             self.validators.append(
-                MaxValueValidator(self.max_value, message=message))
+                MaxValueValidator(
+                    self.max_value,
+                    message=self.error_messages['max_value']
+                )
+            )
         if self.min_value is not None:
-            message = lazy(
-                self.error_messages['min_value'].format,
-                six.text_type)(min_value=self.min_value)
             self.validators.append(
-                MinValueValidator(self.min_value, message=message))
+                MinValueValidator(
+                    self.min_value,
+                    message=self.error_messages['min_value']
+                )
+            )
 
     def to_internal_value(self, data):
-
         if isinstance(data, six.text_type) and len(data) > self.MAX_STRING_LENGTH:
             self.fail('max_string_length')
 
@@ -1034,17 +1045,20 @@ class DecimalField(Field):
         super(DecimalField, self).__init__(**kwargs)
 
         if self.max_value is not None:
-            message = lazy(
-                self.error_messages['max_value'].format,
-                six.text_type)(max_value=self.max_value)
             self.validators.append(
-                MaxValueValidator(self.max_value, message=message))
+                MaxValueValidator(
+                    self.max_value,
+                    message=self.error_messages['max_value']
+                )
+            )
+
         if self.min_value is not None:
-            message = lazy(
-                self.error_messages['min_value'].format,
-                six.text_type)(min_value=self.min_value)
             self.validators.append(
-                MinValueValidator(self.min_value, message=message))
+                MinValueValidator(
+                    self.min_value,
+                    message=self.error_messages['min_value']
+                )
+            )
 
         if rounding is not None:
             valid_roundings = [v for k, v in vars(decimal).items() if k.startswith('ROUND_')]
@@ -1380,17 +1394,19 @@ class DurationField(Field):
         self.min_value = kwargs.pop('min_value', None)
         super(DurationField, self).__init__(**kwargs)
         if self.max_value is not None:
-            message = lazy(
-                self.error_messages['max_value'].format,
-                six.text_type)(max_value=self.max_value)
             self.validators.append(
-                MaxValueValidator(self.max_value, message=message))
+                MaxValueValidator(
+                    self.max_value,
+                    message=self.error_messages['max_value']
+                )
+            )
         if self.min_value is not None:
-            message = lazy(
-                self.error_messages['min_value'].format,
-                six.text_type)(min_value=self.min_value)
             self.validators.append(
-                MinValueValidator(self.min_value, message=message))
+                MinValueValidator(
+                    self.min_value,
+                    message=self.error_messages['min_value']
+                )
+            )
 
     def to_internal_value(self, value):
         if isinstance(value, datetime.timedelta):
@@ -1907,11 +1923,12 @@ class ModelField(Field):
         max_length = kwargs.pop('max_length', None)
         super(ModelField, self).__init__(**kwargs)
         if max_length is not None:
-            message = lazy(
-                self.error_messages['max_length'].format,
-                six.text_type)(max_length=self.max_length)
             self.validators.append(
-                MaxLengthValidator(self.max_length, message=message))
+                MaxLengthValidator(
+                    self.max_value,
+                    message=self.error_messages['max_length']
+                )
+            )
 
     def to_internal_value(self, data):
         rel = self.model_field.remote_field
