@@ -121,7 +121,7 @@ If you're intending to use the browsable API you'll probably also want to add RE
 
     urlpatterns = [
         ...
-        url(r'^api-auth/', include('rest_framework.urls'))
+        re_path(r'^api-auth/', include('rest_framework.urls'))
     ]
 
 Note that the URL path can be whatever you want.
@@ -169,8 +169,8 @@ Here's our project's root `urls.py` module:
     # Wire up our API using automatic URL routing.
     # Additionally, we include login URLs for the browsable API.
     urlpatterns = [
-        url(r'^', include(router.urls)),
-        url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+        re_path(r'^', include(router.urls)),
+        re_path(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
     ]
 
 You can now open the API in your browser at [http://127.0.0.1:8000/](http://127.0.0.1:8000/), and view your new 'users' API. If you use the login control in the top right corner you'll also be able to add, create and delete users from the system.

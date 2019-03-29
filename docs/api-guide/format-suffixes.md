@@ -29,9 +29,9 @@ Example:
     from blog import views
 
     urlpatterns = [
-        url(r'^/$', views.apt_root),
-        url(r'^comments/$', views.comment_list),
-        url(r'^comments/(?P<pk>[0-9]+)/$', views.comment_detail)
+        re_path(r'^/$', views.apt_root),
+        re_path(r'^comments/$', views.comment_list),
+        re_path(r'^comments/(?P<pk>[0-9]+)/$', views.comment_detail)
     ]
 
     urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'html'])

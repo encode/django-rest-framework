@@ -358,7 +358,7 @@ List of url patterns to limit the schema introspection to. If you only want the 
 to be exposed in the schema:
 
     schema_url_patterns = [
-        url(r'^api/', include('myproject.api.urls')),
+        re_path(r'^api/', include('myproject.api.urls')),
     ]
 
     schema_view = get_schema_view(
