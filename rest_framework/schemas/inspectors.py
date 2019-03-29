@@ -511,9 +511,18 @@ class DefaultSchema(ViewInspector):
 class OpenAPIAutoSchema(ViewInspector):
 
     content_types = ['application/json']
+    method_mapping = {
+        'get': 'Retrieve',
+        'post': 'Create',
+        'put': 'Update',
+        'patch': 'PartialUpdate',
+        'delete': 'Destroy',
+    }
 
     def get_operation(self, path, method):
         operation = {}
+
+        operation['operationId'] = self._get_operation_id(path, method)
 
         parameters = []
         parameters += self._get_path_parameters(path, method)
@@ -527,6 +536,45 @@ class OpenAPIAutoSchema(ViewInspector):
         operation['responses'] = self._get_responses(path, method)
 
         return operation
+
+    def _get_operation_id(self, path, method):
+        """
+        Compute an operation ID from the model, serializer or view name.
+        """
+        # TODO: Allow an attribute/method on the view to change that ID?
+        # Avoid cyclic imports
+        from rest_framework.generics import GenericAPIView
+
+        if is_list_view(path, method, self.view):
+            action = 'List'
+        else:
+            action = self.method_mapping[method.lower()]
+
+        # Try to deduce the ID from the view's model
+        model = getattr(getattr(self.view, 'queryset', None), 'model', None)
+        if model is not None:
+            name = model.__name__
+
+        # Try with the serializer class name
+        elif isinstance(self.view, GenericAPIView):
+            name = self.view.get_serializer_class().__name__
+            if name.endswith('Serializer'):
+                name = name[:-10]
+
+        # Fallback to the view name
+        else:
+            name = self.view.__class__.__name__
+            if name.endswith('APIView'):
+                name = name[:-7]
+            elif name.endswith('View'):
+                name = name[:-4]
+            if name.endswith(action):  # ListView, UpdateAPIView, ThingDelete ...
+                name = name[:-len(action)]
+
+        if action == 'List' and not name.endswith('s'):  # ListThings instead of ListThing
+            name += 's'
+
+        return action + name
 
     def _get_path_parameters(self, path, method):
         """
