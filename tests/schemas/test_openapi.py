@@ -57,6 +57,7 @@ class TestOperationIntrospection(TestCase):
 
         operation = inspector.get_operation(path, method)
         assert operation == {
+            'operationId': 'ListExamples',
             'parameters': [],
             'responses': {'200': {'content': {'application/json': {}}}},
         }
