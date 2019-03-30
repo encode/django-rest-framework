@@ -26,7 +26,7 @@ To install the API documentation, you'll need to include it in your project's UR
 
     urlpatterns = [
         ...
-        re_path(r'^docs/', include_docs_urls(title='My API title'))
+        path('docs/', include_docs_urls(title='My API title'))
     ]
 
 This will include two different views:
@@ -48,7 +48,7 @@ You may ensure views are given a `request` instance by calling `include_docs_url
     urlpatterns = [
         ...
         # Generate schema with valid `request` instance:
-        re_path(r'^docs/', include_docs_urls(title='My API title', public=False))
+        path('docs/', include_docs_urls(title='My API title', public=False))
     ]
 
 

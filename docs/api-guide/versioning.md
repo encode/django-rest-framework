@@ -161,8 +161,8 @@ In the following example we're giving a set of views two different possible URL 
 
     # urls.py
     urlpatterns = [
-        re_path(r'^v1/bookings/', include('bookings.urls', namespace='v1')),
-        re_path(r'^v2/bookings/', include('bookings.urls', namespace='v2'))
+        path('v1/bookings/', include('bookings.urls', namespace='v1')),
+        path('v2/bookings/', include('bookings.urls', namespace='v2'))
     ]
 
 Both `URLPathVersioning` and `NamespaceVersioning` are reasonable if you just need a simple versioning scheme. The `URLPathVersioning` approach might be better suitable for small ad-hoc projects, and the `NamespaceVersioning` is probably easier to manage for larger projects.

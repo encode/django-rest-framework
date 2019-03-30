@@ -69,21 +69,21 @@ Alternatively you can use Django's `include` function, like so...
 
     urlpatterns = [
         re_path(r'^forgot-password/$', ForgotPasswordFormView.as_view()),
-        re_path(r'^', include(router.urls)),
+        path('', include(router.urls)),
     ]
 
 You may use `include` with an application namespace:
 
     urlpatterns = [
         re_path(r'^forgot-password/$', ForgotPasswordFormView.as_view()),
-        re_path(r'^api/', include((router.urls, 'app_name'))),
+        path('api/', include((router.urls, 'app_name'))),
     ]
 
 Or both an application and instance namespace:
 
     urlpatterns = [
         re_path(r'^forgot-password/$', ForgotPasswordFormView.as_view()),
-        re_path(r'^api/', include((router.urls, 'app_name'), namespace='instance_name')),
+        path('api/', include((router.urls, 'app_name'), namespace='instance_name')),
     ]
 
 See Django's [URL namespaces docs][url-namespace-docs] and the [`include` API reference][include-api-reference] for more details.
