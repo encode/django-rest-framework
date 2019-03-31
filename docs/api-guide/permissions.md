@@ -51,7 +51,7 @@ For example:
 ---
 
 **Note**: With the exception of `DjangoObjectPermissions`, the provided
-permission classes in `rest_framework.permssions` **do not** implement the
+permission classes in `rest_framework.permissions` **do not** implement the
 methods necessary to check object permissions.
 
 If you wish to use the provided permission classes in order to check object

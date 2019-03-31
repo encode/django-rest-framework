@@ -20,7 +20,7 @@ can render the schema into the commonly used YAML-based OpenAPI format.
 
 ## Quickstart
 
-There are two different ways you can serve a schema description for you API.
+There are two different ways you can serve a schema description for your API.
 
 ### Generating a schema with the `generateschema` management command
 

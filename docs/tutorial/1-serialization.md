@@ -8,7 +8,7 @@ The tutorial is fairly in-depth, so you should probably get a cookie and a cup o
 
 ---
 
-**Note**: The code for this tutorial is available in the [tomchristie/rest-framework-tutorial][repo] repository on GitHub.  The completed implementation is also online as a sandbox version for testing, [available here][sandbox].
+**Note**: The code for this tutorial is available in the [encode/rest-framework-tutorial][repo] repository on GitHub.  The completed implementation is also online as a sandbox version for testing, [available here][sandbox].
 
 ---
 
@@ -218,7 +218,6 @@ Edit the `snippets/views.py` file, and add the following.
 
     from django.http import HttpResponse, JsonResponse
     from django.views.decorators.csrf import csrf_exempt
-    from rest_framework.renderers import JSONRenderer
     from rest_framework.parsers import JSONParser
     from snippets.models import Snippet
     from snippets.serializers import SnippetSerializer
