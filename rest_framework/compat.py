@@ -8,7 +8,6 @@ from collections.abc import Mapping, MutableMapping  # noqa
 
 from django.conf import settings
 from django.core import validators
-from django.utils import six
 from django.views.generic import View
 
 try:
@@ -84,8 +83,7 @@ def make_url_resolver(regex, urlpatterns):
 def unicode_repr(instance):
     # Get the repr of an instance, but ensure it is a unicode string
     # on both python 3 (already the case) and 2 (not the case).
-    if six.PY2:
-        return repr(instance).decode('utf-8')
+
     return repr(instance)
 
 
@@ -93,8 +91,7 @@ def unicode_to_repr(value):
     # Coerce a unicode string to the correct repr return type, depending on
     # the Python version. We wrap all our `__repr__` implementations with
     # this and then use unicode throughout internally.
-    if six.PY2:
-        return value.encode('utf-8')
+
     return value
 
 
@@ -160,10 +157,7 @@ def is_guardian_installed():
     """
     django-guardian is optional and only imported if in INSTALLED_APPS.
     """
-    if six.PY2:
-        # Guardian 1.5.0, for Django 2.2 is NOT compatible with Python 2.7.
-        # Remove when dropping PY2.
-        return False
+
     return 'guardian' in settings.INSTALLED_APPS
 
 
@@ -276,14 +270,10 @@ except ImportError:
 
 # `separators` argument to `json.dumps()` differs between 2.x and 3.x
 # See: https://bugs.python.org/issue22767
-if six.PY3:
-    SHORT_SEPARATORS = (',', ':')
-    LONG_SEPARATORS = (', ', ': ')
-    INDENT_SEPARATORS = (',', ': ')
-else:
-    SHORT_SEPARATORS = (b',', b':')
-    LONG_SEPARATORS = (b', ', b': ')
-    INDENT_SEPARATORS = (b',', b': ')
+
+SHORT_SEPARATORS = (',', ':')
+LONG_SEPARATORS = (', ', ': ')
+INDENT_SEPARATORS = (',', ': ')
 
 
 class CustomValidatorMessage:
