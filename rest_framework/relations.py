@@ -13,7 +13,7 @@ from django.utils.encoding import (
     python_2_unicode_compatible, smart_text, uri_to_iri
 )
 from django.utils.six.moves.urllib import parse as urlparse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from rest_framework.fields import (
     Field, empty, get_attribute, is_simple_callable, iter_options

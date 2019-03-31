@@ -9,7 +9,7 @@ object creation, and makes it possible to switch between using the implicit
 from __future__ import unicode_literals
 
 from django.db import DataError
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from rest_framework.compat import unicode_to_repr
 from rest_framework.exceptions import ValidationError
