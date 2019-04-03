@@ -671,3 +671,19 @@ class TestDeclaredFieldInheritance:
         assert len(Parent().get_fields()) == 2
         assert len(Child().get_fields()) == 2
         assert len(Grandchild().get_fields()) == 2
+
+
+class TestQuerySetSerialization:
+    def test_queryset_serialization(self):
+        class MyModel(models.Model):
+            f1 = models.CharField(max_length=10)
+
+        class MyModelSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = MyModel
+                fields = '__all__'
+
+        m = MyModel(f1="f1")
+        s = MyModelSerializer(data=m)
+        assert s.is_valid() == True
+
