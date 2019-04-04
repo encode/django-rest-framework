@@ -16,8 +16,8 @@ from rest_framework.routers import DefaultRouter, SimpleRouter
 from rest_framework.schemas import (
     AutoSchema, ManualSchema, SchemaGenerator, get_schema_view
 )
+from rest_framework.schemas.coreapi import field_to_schema
 from rest_framework.schemas.generators import EndpointEnumerator
-from rest_framework.schemas.inspectors import field_to_schema
 from rest_framework.schemas.utils import is_list_view
 from rest_framework.test import APIClient, APIRequestFactory
 from rest_framework.utils import formatting

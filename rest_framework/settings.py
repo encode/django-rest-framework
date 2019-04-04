@@ -56,7 +56,7 @@ DEFAULTS = {
     'DEFAULT_FILTER_BACKENDS': (),
 
     # Schema
-    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.inspectors.OpenAPIAutoSchema',
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.openapi.AutoSchema',
 
     # Throttling
     'DEFAULT_THROTTLE_RATES': {
