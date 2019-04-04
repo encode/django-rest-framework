@@ -6,8 +6,65 @@ from django.utils.encoding import force_text
 from rest_framework import exceptions, serializers
 from rest_framework.compat import uritemplate
 
+from .generators import BaseSchemaGenerator
 from .inspectors import ViewInspector
 from .utils import get_pk_description, is_list_view
+
+# Generator
+
+
+class SchemaGenerator(BaseSchemaGenerator):
+
+    def get_info(self):
+        info = {
+            'title': self.title,
+            'version': 'TODO',
+        }
+
+        if self.description is not None:
+            info['description'] = self.description
+
+        return info
+
+    def get_paths(self, request=None):
+        result = {}
+
+        paths, view_endpoints = self._get_paths_and_endpoints(request)
+
+        # Only generate the path prefix for paths that will be included
+        if not paths:
+            return None
+        prefix = self.determine_path_prefix(paths)
+
+        for path, method, view in view_endpoints:
+            if not self.has_view_permissions(path, method, view):
+                continue
+            operation = view.schema.get_operation(path, method)
+            subpath = '/' + path[len(prefix):]
+            result.setdefault(subpath, {})
+            result[subpath][method.lower()] = operation
+
+        return result
+
+    def get_schema(self, request=None, public=False):
+        """
+        Generate a OpenAPI schema.
+        """
+        self._initialise_endpoints()
+
+        paths = self.get_paths(None if public else request)
+        if not paths:
+            return None
+
+        schema = {
+            'openapi': '3.0.2',
+            'info': self.get_info(),
+            'paths': paths,
+        }
+
+        return schema
+
+# View Inspectors
 
 
 class AutoSchema(ViewInspector):
