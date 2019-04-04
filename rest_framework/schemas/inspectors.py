@@ -770,7 +770,10 @@ class OpenAPIAutoSchema(ViewInspector):
                 del content['properties'][name]
 
         return {
-            'content': {ct: content for ct in self.content_types}
+            'content': {
+                ct: {'schema': content}
+                for ct in self.content_types
+            }
         }
 
     def _get_responses(self, path, method):
@@ -797,6 +800,9 @@ class OpenAPIAutoSchema(ViewInspector):
 
         return {
             '200': {
-                'content': {ct: content for ct in self.content_types}
+                'content': {
+                    ct: {'schema': content}
+                    for ct in self.content_types
+                }
             }
         }
