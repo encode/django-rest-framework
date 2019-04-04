@@ -105,8 +105,8 @@ class TestOperationIntrospection(TestCase):
         inspector.view = view
 
         request_body = inspector._get_request_body(path, method)
-        assert request_body['content']['application/json']['required'] == ['text']
-        assert list(request_body['content']['application/json']['properties'].keys()) == ['text']
+        assert request_body['content']['application/json']['schema']['required'] == ['text']
+        assert list(request_body['content']['application/json']['schema']['properties'].keys()) == ['text']
 
     def test_response_body_generation(self):
         path = '/'
