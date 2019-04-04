@@ -59,7 +59,7 @@ class TestOperationIntrospection(TestCase):
         assert operation == {
             'operationId': 'ListExamples',
             'parameters': [],
-            'responses': {'200': {'content': {'application/json': {}}}},
+            'responses': {'200': {'content': {'application/json': {'schema': {}}}}},
         }
 
     def test_path_with_id_parameter(self):
@@ -105,8 +105,8 @@ class TestOperationIntrospection(TestCase):
         inspector.view = view
 
         request_body = inspector._get_request_body(path, method)
-        assert request_body['content']['application/json']['required'] == ['text']
-        assert list(request_body['content']['application/json']['properties'].keys()) == ['text']
+        assert request_body['content']['application/json']['schema']['required'] == ['text']
+        assert list(request_body['content']['application/json']['schema']['properties'].keys()) == ['text']
 
     def test_response_body_generation(self):
         path = '/'
@@ -128,8 +128,8 @@ class TestOperationIntrospection(TestCase):
         inspector.view = view
 
         responses = inspector._get_responses(path, method)
-        assert responses['200']['content']['application/json']['required'] == ['text']
-        assert list(responses['200']['content']['application/json']['properties'].keys()) == ['text']
+        assert responses['200']['content']['application/json']['schema']['required'] == ['text']
+        assert list(responses['200']['content']['application/json']['schema']['properties'].keys()) == ['text']
 
 
 @pytest.mark.skipif(uritemplate is None, reason='uritemplate not installed.')
