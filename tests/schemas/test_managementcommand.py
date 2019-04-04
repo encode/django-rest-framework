@@ -7,7 +7,7 @@ from django.test import TestCase
 from django.test.utils import override_settings
 from django.utils import six
 
-from rest_framework.compat import yaml
+from rest_framework.compat import uritemplate, yaml
 from rest_framework.utils import json
 from rest_framework.views import APIView
 
@@ -23,6 +23,7 @@ urlpatterns = [
 
 
 @override_settings(ROOT_URLCONF=__name__)
+@pytest.mark.skipif(not uritemplate, reason='uritemplate is not installed')
 class GenerateSchemaTests(TestCase):
     """Tests for management command generateschema."""
 
