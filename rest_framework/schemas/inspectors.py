@@ -800,6 +800,9 @@ class OpenAPIAutoSchema(ViewInspector):
 
         return {
             '200': {
-                'content': {ct: content for ct in self.content_types}
+                'content': {
+                    ct: {'schema': content}
+                    for ct in self.content_types
+                }
             }
         }

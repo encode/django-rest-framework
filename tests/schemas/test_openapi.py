@@ -59,7 +59,7 @@ class TestOperationIntrospection(TestCase):
         assert operation == {
             'operationId': 'ListExamples',
             'parameters': [],
-            'responses': {'200': {'content': {'application/json': {}}}},
+            'responses': {'200': {'content': {'application/json': {'schema': {}}}}},
         }
 
     def test_path_with_id_parameter(self):
@@ -128,8 +128,8 @@ class TestOperationIntrospection(TestCase):
         inspector.view = view
 
         responses = inspector._get_responses(path, method)
-        assert responses['200']['content']['application/json']['required'] == ['text']
-        assert list(responses['200']['content']['application/json']['properties'].keys()) == ['text']
+        assert responses['200']['content']['application/json']['schema']['required'] == ['text']
+        assert list(responses['200']['content']['application/json']['schema']['properties'].keys()) == ['text']
 
 
 @pytest.mark.skipif(uritemplate is None, reason='uritemplate not installed.')
