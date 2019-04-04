@@ -7,7 +7,7 @@ from django.test import TestCase
 from django.test.utils import override_settings
 from django.utils import six
 
-from rest_framework.compat import coreapi, yaml
+from rest_framework.compat import yaml
 from rest_framework.utils import json
 from rest_framework.views import APIView
 
@@ -22,8 +22,7 @@ urlpatterns = [
 ]
 
 
-@override_settings(ROOT_URLCONF='tests.test_generateschema')
-@pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
+@override_settings(ROOT_URLCONF=__name__)
 class GenerateSchemaTests(TestCase):
     """Tests for management command generateschema."""
 
