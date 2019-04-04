@@ -6,7 +6,7 @@ from rest_framework import filters, generics, pagination, serializers
 from rest_framework.compat import uritemplate
 from rest_framework.request import Request
 from rest_framework.schemas.generators import OpenAPISchemaGenerator
-from rest_framework.schemas.inspectors import OpenAPIAutoSchema
+from rest_framework.schemas.openapi import AutoSchema
 
 from . import views
 
@@ -52,7 +52,7 @@ class TestOperationIntrospection(TestCase):
             method,
             create_request(path)
         )
-        inspector = OpenAPIAutoSchema()
+        inspector = AutoSchema()
         inspector.view = view
 
         operation = inspector.get_operation(path, method)
@@ -71,7 +71,7 @@ class TestOperationIntrospection(TestCase):
             method,
             create_request(path)
         )
-        inspector = OpenAPIAutoSchema()
+        inspector = AutoSchema()
         inspector.view = view
 
         parameters = inspector._get_path_parameters(path, method)
@@ -101,7 +101,7 @@ class TestOperationIntrospection(TestCase):
             method,
             create_request(path)
         )
-        inspector = OpenAPIAutoSchema()
+        inspector = AutoSchema()
         inspector.view = view
 
         request_body = inspector._get_request_body(path, method)
@@ -124,7 +124,7 @@ class TestOperationIntrospection(TestCase):
             method,
             create_request(path)
         )
-        inspector = OpenAPIAutoSchema()
+        inspector = AutoSchema()
         inspector.view = view
 
         responses = inspector._get_responses(path, method)
@@ -133,11 +133,11 @@ class TestOperationIntrospection(TestCase):
 
 
 @pytest.mark.skipif(uritemplate is None, reason='uritemplate not installed.')
-@override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.inspectors.OpenAPIAutoSchema'})
+@override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.openapi.AutoSchema'})
 class TestGenerator(TestCase):
 
     def test_override_settings(self):
-        assert isinstance(views.ExampleListView.schema, OpenAPIAutoSchema)
+        assert isinstance(views.ExampleListView.schema, AutoSchema)
 
     def test_paths_construction(self):
         """Construction of the `paths` key."""
