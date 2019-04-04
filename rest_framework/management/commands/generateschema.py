@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 
 from rest_framework.compat import yaml
-from rest_framework.schemas.generators import OpenAPISchemaGenerator
+from rest_framework.schemas.openapi import SchemaGenerator
 from rest_framework.utils import json
 
 
@@ -15,7 +15,7 @@ class Command(BaseCommand):
         parser.add_argument('--format', dest="format", choices=['openapi', 'openapi-json'], default='openapi', type=str)
 
     def handle(self, *args, **options):
-        generator = OpenAPISchemaGenerator(
+        generator = SchemaGenerator(
             url=options['url'],
             title=options['title'],
             description=options['description']

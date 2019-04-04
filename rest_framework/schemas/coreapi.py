@@ -1,6 +1,6 @@
 import re
 import warnings
-from collections import OrderedDict
+from collections import Counter, OrderedDict
 
 from django.db import models
 from django.utils.encoding import force_text, smart_text
@@ -11,12 +11,205 @@ from rest_framework.compat import coreapi, coreschema, uritemplate
 from rest_framework.settings import api_settings
 from rest_framework.utils import formatting
 
+from .generators import BaseSchemaGenerator
 from .inspectors import ViewInspector
 from .utils import get_pk_description, is_list_view
 
 # Used in _get_description_section()
 # TODO: ???: move up to base.
 header_regex = re.compile('^[a-zA-Z][0-9A-Za-z_]*:')
+
+# Generator #
+# TODO: Pull some of this into base.
+
+
+def is_custom_action(action):
+    return action not in {
+        'retrieve', 'list', 'create', 'update', 'partial_update', 'destroy'
+    }
+
+
+def distribute_links(obj):
+    for key, value in obj.items():
+        distribute_links(value)
+
+    for preferred_key, link in obj.links:
+        key = obj.get_available_key(preferred_key)
+        obj[key] = link
+
+
+INSERT_INTO_COLLISION_FMT = """
+Schema Naming Collision.
+
+coreapi.Link for URL path {value_url} cannot be inserted into schema.
+Position conflicts with coreapi.Link for URL path {target_url}.
+
+Attempted to insert link with keys: {keys}.
+
+Adjust URLs to avoid naming collision or override `SchemaGenerator.get_keys()`
+to customise schema structure.
+"""
+
+
+class LinkNode(OrderedDict):
+    def __init__(self):
+        self.links = []
+        self.methods_counter = Counter()
+        super(LinkNode, self).__init__()
+
+    def get_available_key(self, preferred_key):
+        if preferred_key not in self:
+            return preferred_key
+
+        while True:
+            current_val = self.methods_counter[preferred_key]
+            self.methods_counter[preferred_key] += 1
+
+            key = '{}_{}'.format(preferred_key, current_val)
+            if key not in self:
+                return key
+
+
+def insert_into(target, keys, value):
+    """
+    Nested dictionary insertion.
+
+    >>> example = {}
+    >>> insert_into(example, ['a', 'b', 'c'], 123)
+    >>> example
+    LinkNode({'a': LinkNode({'b': LinkNode({'c': LinkNode(links=[123])}}})))
+    """
+    for key in keys[:-1]:
+        if key not in target:
+            target[key] = LinkNode()
+        target = target[key]
+
+    try:
+        target.links.append((keys[-1], value))
+    except TypeError:
+        msg = INSERT_INTO_COLLISION_FMT.format(
+            value_url=value.url,
+            target_url=target.url,
+            keys=keys
+        )
+        raise ValueError(msg)
+
+
+class SchemaGenerator(BaseSchemaGenerator):
+    """
+    Original CoreAPI version.
+    """
+    # Map HTTP methods onto actions.
+    default_mapping = {
+        'get': 'retrieve',
+        'post': 'create',
+        'put': 'update',
+        'patch': 'partial_update',
+        'delete': 'destroy',
+    }
+
+    # Map the method names we use for viewset actions onto external schema names.
+    # These give us names that are more suitable for the external representation.
+    # Set by 'SCHEMA_COERCE_METHOD_NAMES'.
+    coerce_method_names = None
+
+    def __init__(self, title=None, url=None, description=None, patterns=None, urlconf=None):
+        assert coreapi, '`coreapi` must be installed for schema support.'
+        assert coreschema, '`coreschema` must be installed for schema support.'
+
+        super(SchemaGenerator, self).__init__(title, url, description, patterns, urlconf)
+        self.coerce_method_names = api_settings.SCHEMA_COERCE_METHOD_NAMES
+
+    def get_links(self, request=None):
+        """
+        Return a dictionary containing all the links that should be
+        included in the API schema.
+        """
+        links = LinkNode()
+
+        paths, view_endpoints = self._get_paths_and_endpoints(request)
+
+        # Only generate the path prefix for paths that will be included
+        if not paths:
+            return None
+        prefix = self.determine_path_prefix(paths)
+
+        for path, method, view in view_endpoints:
+            if not self.has_view_permissions(path, method, view):
+                continue
+            link = view.schema.get_link(path, method, base_url=self.url)
+            subpath = path[len(prefix):]
+            keys = self.get_keys(subpath, method, view)
+            insert_into(links, keys, link)
+
+        return links
+
+    def get_schema(self, request=None, public=False):
+        """
+        Generate a `coreapi.Document` representing the API schema.
+        """
+        self._initialise_endpoints()
+
+        links = self.get_links(None if public else request)
+        if not links:
+            return None
+
+        url = self.url
+        if not url and request is not None:
+            url = request.build_absolute_uri()
+
+        distribute_links(links)
+        return coreapi.Document(
+            title=self.title, description=self.description,
+            url=url, content=links
+        )
+
+    # Method for generating the link layout....
+    def get_keys(self, subpath, method, view):
+        """
+        Return a list of keys that should be used to layout a link within
+        the schema document.
+
+        /users/                   ("users", "list"), ("users", "create")
+        /users/{pk}/              ("users", "read"), ("users", "update"), ("users", "delete")
+        /users/enabled/           ("users", "enabled")  # custom viewset list action
+        /users/{pk}/star/         ("users", "star")     # custom viewset detail action
+        /users/{pk}/groups/       ("users", "groups", "list"), ("users", "groups", "create")
+        /users/{pk}/groups/{pk}/  ("users", "groups", "read"), ("users", "groups", "update"), ("users", "groups", "delete")
+        """
+        if hasattr(view, 'action'):
+            # Viewsets have explicitly named actions.
+            action = view.action
+        else:
+            # Views have no associated action, so we determine one from the method.
+            if is_list_view(subpath, method, view):
+                action = 'list'
+            else:
+                action = self.default_mapping[method.lower()]
+
+        named_path_components = [
+            component for component
+            in subpath.strip('/').split('/')
+            if '{' not in component
+        ]
+
+        if is_custom_action(action):
+            # Custom action, eg "/users/{pk}/activate/", "/users/active/"
+            if len(view.action_map) > 1:
+                action = self.default_mapping[method.lower()]
+                if action in self.coerce_method_names:
+                    action = self.coerce_method_names[action]
+                return named_path_components + [action]
+            else:
+                return named_path_components[:-1] + [action]
+
+        if action in self.coerce_method_names:
+            action = self.coerce_method_names[action]
+
+        # Default action, eg "/users/", "/users/{pk}/"
+        return named_path_components + [action]
+
+# View Inspectors #
 
 
 def field_to_schema(field):
