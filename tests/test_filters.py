@@ -172,11 +172,11 @@ class SearchFilterTests(TestCase):
             search_fields = ('$title', '$text')
 
         view = SearchListView.as_view()
-        request = factory.get('/', {'search': '^\w{3}$'})
+        request = factory.get('/', {'search': r'^\w{3}$'})
         response = view(request)
         assert len(response.data) == 10
 
-        request = factory.get('/', {'search': '^\w{3}$', 'title_only': 'true'})
+        request = factory.get('/', {'search': r'^\w{3}$', 'title_only': 'true'})
         response = view(request)
         assert response.data == [
             {'id': 3, 'title': 'zzz', 'text': 'cde'}
