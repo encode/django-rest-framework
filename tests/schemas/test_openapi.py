@@ -130,6 +130,36 @@ class TestOperationIntrospection(TestCase):
         assert responses['200']['content']['application/json']['schema']['required'] == ['text']
         assert list(responses['200']['content']['application/json']['schema']['properties'].keys()) == ['text']
 
+    def test_response_body_nested_serializer(self):
+        path = '/'
+        method = 'POST'
+
+        class NestedSerializer(serializers.Serializer):
+            number = serializers.IntegerField()
+
+        class Serializer(serializers.Serializer):
+            text = serializers.CharField()
+            nested = NestedSerializer()
+
+        class View(generics.GenericAPIView):
+            serializer_class = Serializer
+
+        view = create_view(
+            View,
+            method,
+            create_request(path),
+        )
+        inspector = AutoSchema()
+        inspector.view = view
+
+        responses = inspector._get_responses(path, method)
+        schema = responses['200']['content']['application/json']['schema']
+        assert schema['required'] == ['text', 'nested']
+        assert list(schema['properties'].keys()) == ['text', 'nested']
+        assert schema['properties']['nested']['type'] == 'object'
+        assert list(schema['properties']['nested']['properties'].keys()) == ['number']
+        assert schema['properties']['nested']['required'] == ['number']
+
 
 @pytest.mark.skipif(uritemplate is None, reason='uritemplate not installed.')
 @override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.openapi.AutoSchema'})
