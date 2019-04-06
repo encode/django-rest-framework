@@ -580,6 +580,13 @@ class PermissionsCompositionTests(TestCase):
         composed_perm = permissions.IsAuthenticated | permissions.AllowAny
         assert composed_perm().has_permission(request, None) is True
 
+    def test_or_as_block(self):
+        request = factory.get('/1', format='json')
+        request.user = AnonymousUser()
+        composed_perm = BasicObjectPerm | permissions.IsAuthenticated
+        assert composed_perm().has_permission(request, None) is True
+        assert composed_perm().has_object_permission(request, None, None) is False
+
     def test_not_false(self):
         request = factory.get('/1', format='json')
         request.user = AnonymousUser()

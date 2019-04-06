@@ -80,9 +80,12 @@ class OR:
         )
 
     def has_object_permission(self, request, view, obj):
+        # We enforce a "block" `OR`, so we need the result of `has_permission` too.
+        op1_hp_res = self.op1.has_permission(request, view)
+        op2_hp_res = self.op2.has_permission(request, view)
         return (
-            self.op1.has_object_permission(request, view, obj) or
-            self.op2.has_object_permission(request, view, obj)
+            (op1_hp_res and self.op1.has_object_permission(request, view, obj)) or
+            (op2_hp_res and self.op2.has_object_permission(request, view, obj))
         )
 
 
