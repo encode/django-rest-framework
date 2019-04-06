@@ -23,7 +23,6 @@ class ExampleDetailView(APIView):
 
 
 class ExampleGenericViewSet(GenericViewSet):
-
     class ExampleSerializer(serializers.Serializer):
         date = serializers.DateField()
         datetime = serializers.DateTimeField()
@@ -34,5 +33,5 @@ class ExampleGenericViewSet(GenericViewSet):
         from datetime import datetime
         now = datetime.now()
 
-        serializer = self.get_serializer(data=now.date(),datetime=now)
+        serializer = self.get_serializer(data=now.date(), datetime=now)
         return Response(serializer.data)
