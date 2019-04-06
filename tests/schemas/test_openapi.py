@@ -2,11 +2,10 @@ import pytest
 from django.conf.urls import url
 from django.test import RequestFactory, TestCase, override_settings
 
-from rest_framework import filters, generics, pagination, serializers
+from rest_framework import filters, generics, pagination, routers, serializers
 from rest_framework.compat import uritemplate
 from rest_framework.request import Request
 from rest_framework.schemas.openapi import AutoSchema, SchemaGenerator
-
 from . import views
 
 
@@ -129,6 +128,21 @@ class TestOperationIntrospection(TestCase):
         responses = inspector._get_responses(path, method)
         assert responses['200']['content']['application/json']['schema']['required'] == ['text']
         assert list(responses['200']['content']['application/json']['schema']['properties'].keys()) == ['text']
+
+    def test_repeat_operation_ids(self):
+        router = routers.SimpleRouter()
+        router.register('account', views.ExampleGenericViewSet, basename="account")
+        urlpatterns = router.urls
+
+        generator = SchemaGenerator(patterns=urlpatterns)
+
+        request = create_request('/')
+        schema = generator.get_schema(request=request)
+        schema_str = str(schema)
+        print(schema_str)
+        assert schema_str.count("operationId") == 2
+        assert schema_str.count("newExample") == 1
+        assert schema_str.count("oldExample") == 1
 
 
 @pytest.mark.skipif(uritemplate is None, reason='uritemplate not installed.')

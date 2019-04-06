@@ -5,10 +5,10 @@ from django.utils.encoding import force_text
 
 from rest_framework import exceptions, serializers
 from rest_framework.compat import uritemplate
-
 from .generators import BaseSchemaGenerator
 from .inspectors import ViewInspector
 from .utils import get_pk_description, is_list_view
+
 
 # Generator
 
@@ -100,12 +100,17 @@ class AutoSchema(ViewInspector):
         """
         Compute an operation ID from the model, serializer or view name.
         """
+
         # TODO: Allow an attribute/method on the view to change that ID?
         # Avoid cyclic imports
         from rest_framework.generics import GenericAPIView
 
+        method_name = getattr(self.view, 'action', method.lower())
+
         if is_list_view(path, method, self.view):
             action = 'List'
+        elif method_name not in self.method_mapping:
+            action = method_name
         else:
             action = self.method_mapping[method.lower()]
 
