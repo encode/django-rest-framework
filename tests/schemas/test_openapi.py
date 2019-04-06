@@ -166,3 +166,20 @@ class TestGenerator(TestCase):
 
         assert 'openapi' in schema
         assert 'paths' in schema
+
+    def test_serializer_datefield(self):
+
+        patterns = [
+            url(r'^example/?$', views.ExampleGenericViewSet.as_view({"get":"get"})),
+        ]
+        generator = SchemaGenerator(patterns=patterns)
+
+        request = create_request('/')
+        schema = generator.get_schema(request=request)
+
+        response_schema = schema['paths']['/example/']['get']['responses']['200']['content']['application/json']['schema']['properties']
+
+        assert response_schema['date']['type'] == response_schema['datetime']['type']== 'string'
+
+        assert response_schema['date']['format'] == 'date'
+        assert response_schema['datetime']['format'] == 'date-time'
