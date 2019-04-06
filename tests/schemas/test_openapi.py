@@ -154,8 +154,8 @@ class TestOperationIntrospection(TestCase):
 
         responses = inspector._get_responses(path, method)
         schema = responses['200']['content']['application/json']['schema']
-        assert schema['required'] == ['text', 'nested']
-        assert list(schema['properties'].keys()) == ['text', 'nested']
+        assert sorted(schema['required']) == ['nested', 'text']
+        assert sorted(list(schema['properties'].keys())) == ['nested', 'text']
         assert schema['properties']['nested']['type'] == 'object'
         assert list(schema['properties']['nested']['properties'].keys()) == ['number']
         assert schema['properties']['nested']['required'] == ['number']
