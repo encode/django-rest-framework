@@ -5,10 +5,10 @@ from django.utils.encoding import force_text
 
 from rest_framework import exceptions, serializers
 from rest_framework.compat import uritemplate
+
 from .generators import BaseSchemaGenerator
 from .inspectors import ViewInspector
 from .utils import get_pk_description, is_list_view
-
 
 # Generator
 
