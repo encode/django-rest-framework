@@ -187,9 +187,9 @@ try:
     if not hasattr(markdown, '__version__') and markdown.version <= '2.2':
         HEADERID_EXT_PATH = 'headerid'
         LEVEL_PARAM = 'level'
-    elif not hasattr(markdown, '__version__') or (
-                type(markdown.__version__) != type('') and markdown.version < '2.6'
-            ):
+    elif (not hasattr(markdown, '__version__') or
+            (isinstance(markdown.__version__, type(''))
+            and markdown.version < '2.6')):
         HEADERID_EXT_PATH = 'markdown.extensions.headerid'
         LEVEL_PARAM = 'level'
     else:
