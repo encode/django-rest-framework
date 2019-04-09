@@ -25,7 +25,9 @@ from django.urls import NoReverseMatch
 from django.utils import six
 from django.utils.deprecation import RenameMethodsBase
 
-from rest_framework import views
+from rest_framework import (
+    RemovedInDRF310Warning, RemovedInDRF311Warning, views
+)
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.schemas import SchemaGenerator
@@ -43,7 +45,7 @@ class DynamicDetailRoute(object):
             "`DynamicDetailRoute` is deprecated and will be removed in 3.10 "
             "in favor of `DynamicRoute`, which accepts a `detail` boolean. Use "
             "`DynamicRoute(url, name, True, initkwargs)` instead.",
-            DeprecationWarning, stacklevel=2
+            RemovedInDRF310Warning, stacklevel=2
         )
         return DynamicRoute(url, name, True, initkwargs)
 
@@ -54,7 +56,7 @@ class DynamicListRoute(object):
             "`DynamicListRoute` is deprecated and will be removed in 3.10 in "
             "favor of `DynamicRoute`, which accepts a `detail` boolean. Use "
             "`DynamicRoute(url, name, False, initkwargs)` instead.",
-            DeprecationWarning, stacklevel=2
+            RemovedInDRF310Warning, stacklevel=2
         )
         return DynamicRoute(url, name, False, initkwargs)
 
@@ -77,7 +79,7 @@ def flatten(list_of_lists):
 
 class RenameRouterMethods(RenameMethodsBase):
     renamed_methods = (
-        ('get_default_base_name', 'get_default_basename', PendingDeprecationWarning),
+        ('get_default_base_name', 'get_default_basename', RemovedInDRF311Warning),
     )
 
 
@@ -88,7 +90,7 @@ class BaseRouter(six.with_metaclass(RenameRouterMethods)):
     def register(self, prefix, viewset, basename=None, base_name=None):
         if base_name is not None:
             msg = "The `base_name` argument is pending deprecation in favor of `basename`."
-            warnings.warn(msg, PendingDeprecationWarning, 2)
+            warnings.warn(msg, RemovedInDRF311Warning, 2)
 
         assert not (basename and base_name), (
             "Do not provide both the `basename` and `base_name` arguments.")
@@ -99,6 +101,10 @@ class BaseRouter(six.with_metaclass(RenameRouterMethods)):
         if basename is None:
             basename = self.get_default_basename(viewset)
         self.registry.append((prefix, viewset, basename))
+
+        # invalidate the urls cache
+        if hasattr(self, '_urls'):
+            del self._urls
 
     def get_default_basename(self, viewset):
         """

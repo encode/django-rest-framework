@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 import pytest
 from django.test import TestCase
 
-from rest_framework import status
+from rest_framework import RemovedInDRF310Warning, status
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.decorators import (
     action, api_view, authentication_classes, detail_route, list_route,
@@ -290,7 +290,7 @@ class ActionDecoratorTestCase(TestCase):
                 raise NotImplementedError
 
     def test_detail_route_deprecation(self):
-        with pytest.warns(DeprecationWarning) as record:
+        with pytest.warns(RemovedInDRF310Warning) as record:
             @detail_route()
             def view(request):
                 raise NotImplementedError
@@ -303,7 +303,7 @@ class ActionDecoratorTestCase(TestCase):
         )
 
     def test_list_route_deprecation(self):
-        with pytest.warns(DeprecationWarning) as record:
+        with pytest.warns(RemovedInDRF310Warning) as record:
             @list_route()
             def view(request):
                 raise NotImplementedError
@@ -317,7 +317,7 @@ class ActionDecoratorTestCase(TestCase):
 
     def test_route_url_name_from_path(self):
         # pre-3.8 behavior was to base the `url_name` off of the `url_path`
-        with pytest.warns(DeprecationWarning):
+        with pytest.warns(RemovedInDRF310Warning):
             @list_route(url_path='foo_bar')
             def view(request):
                 raise NotImplementedError

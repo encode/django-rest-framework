@@ -305,6 +305,15 @@ class URLizerTests(TestCase):
             '&quot;foo_set&quot;: [\n    &quot;<a href="http://api/foos/1/">http://api/foos/1/</a>&quot;\n], '
         self._urlize_dict_check(data)
 
+    def test_template_render_with_autoescape(self):
+        """
+        Test that HTML is correctly escaped in Browsable API views.
+        """
+        template = Template("{% load rest_framework %}{{ content|urlize_quoted_links }}")
+        rendered = template.render(Context({'content': '<script>alert()</script> http://example.com'}))
+        assert rendered == '&lt;script&gt;alert()&lt;/script&gt;' \
+                           ' <a href="http://example.com" rel="nofollow">http://example.com</a>'
+
     def test_template_render_with_noautoescape(self):
         """
         Test if the autoescape value is getting passed to urlize_quoted_links filter.
@@ -312,8 +321,8 @@ class URLizerTests(TestCase):
         template = Template("{% load rest_framework %}"
                             "{% autoescape off %}{{ content|urlize_quoted_links }}"
                             "{% endautoescape %}")
-        rendered = template.render(Context({'content': '"http://example.com"'}))
-        assert rendered == '"<a href="http://example.com" rel="nofollow">http://example.com</a>"'
+        rendered = template.render(Context({'content': '<b> "http://example.com" </b>'}))
+        assert rendered == '<b> "<a href="http://example.com" rel="nofollow">http://example.com</a>" </b>'
 
 
 @unittest.skipUnless(coreapi, 'coreapi is not installed')

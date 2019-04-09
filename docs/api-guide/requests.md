@@ -50,7 +50,7 @@ The request exposes some properties that allow you to determine the result of th
 
 ## .accepted_renderer
 
-The renderer instance what was selected by the content negotiation stage.
+The renderer instance that was selected by the content negotiation stage.
 
 ## .accepted_media_type
 

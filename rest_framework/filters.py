@@ -17,6 +17,7 @@ from django.utils import six
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 
+from rest_framework import RemovedInDRF310Warning
 from rest_framework.compat import (
     coreapi, coreschema, distinct, is_guardian_installed
 )
@@ -53,6 +54,14 @@ class SearchFilter(BaseFilterBackend):
     search_title = _('Search')
     search_description = _('A search term.')
 
+    def get_search_fields(self, view, request):
+        """
+        Search fields are obtained from the view, but the request is always
+        passed to this method. Sub-classes can override this method to
+        dynamically change the search fields based on request content.
+        """
+        return getattr(view, 'search_fields', None)
+
     def get_search_terms(self, request):
         """
         Search terms are set by a ?search=... query parameter,
@@ -77,6 +86,9 @@ class SearchFilter(BaseFilterBackend):
             opts = queryset.model._meta
             if search_field[0] in self.lookup_prefixes:
                 search_field = search_field[1:]
+            # Annotated fields do not need to be distinct
+            if isinstance(queryset, models.QuerySet) and search_field in queryset.query.annotations:
+                return False
             parts = search_field.split(LOOKUP_SEP)
             for part in parts:
                 field = opts.get_field(part)
@@ -90,7 +102,7 @@ class SearchFilter(BaseFilterBackend):
         return False
 
     def filter_queryset(self, request, queryset, view):
-        search_fields = getattr(view, 'search_fields', None)
+        search_fields = self.get_search_fields(view, request)
         search_terms = self.get_search_terms(request)
 
         if not search_fields or not search_terms:
@@ -288,7 +300,7 @@ class DjangoObjectPermissionsFilter(BaseFilterBackend):
         warnings.warn(
             "`DjangoObjectPermissionsFilter` has been deprecated and moved to "
             "the 3rd-party django-rest-framework-guardian package.",
-            DeprecationWarning, stacklevel=2
+            RemovedInDRF310Warning, stacklevel=2
         )
         assert is_guardian_installed(), 'Using DjangoObjectPermissionsFilter, but django-guardian is not installed'
 

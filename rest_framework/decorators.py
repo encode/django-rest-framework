@@ -14,6 +14,7 @@ import warnings
 from django.forms.utils import pretty_name
 from django.utils import six
 
+from rest_framework import RemovedInDRF310Warning
 from rest_framework.views import APIView
 
 
@@ -225,7 +226,7 @@ def detail_route(methods=None, **kwargs):
     warnings.warn(
         "`detail_route` is deprecated and will be removed in 3.10 in favor of "
         "`action`, which accepts a `detail` bool. Use `@action(detail=True)` instead.",
-        DeprecationWarning, stacklevel=2
+        RemovedInDRF310Warning, stacklevel=2
     )
 
     def decorator(func):
@@ -243,7 +244,7 @@ def list_route(methods=None, **kwargs):
     warnings.warn(
         "`list_route` is deprecated and will be removed in 3.10 in favor of "
         "`action`, which accepts a `detail` bool. Use `@action(detail=False)` instead.",
-        DeprecationWarning, stacklevel=2
+        RemovedInDRF310Warning, stacklevel=2
     )
 
     def decorator(func):

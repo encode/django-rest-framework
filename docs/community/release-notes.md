@@ -18,9 +18,9 @@ REST framework releases follow a formal deprecation policy, which is in line wit
 
 The timeline for deprecation of a feature present in version 1.0 would work as follows:
 
-* Version 1.1 would remain **fully backwards compatible** with 1.0, but would raise `PendingDeprecationWarning` warnings if you use the feature that are due to be deprecated.  These warnings are **silent by default**, but can be explicitly enabled when you're ready to start migrating any required changes.  For example if you start running your tests using `python -Wd manage.py test`, you'll be warned of any API changes you need to make.
+* Version 1.1 would remain **fully backwards compatible** with 1.0, but would raise `RemovedInDRF13Warning` warnings, subclassing `PendingDeprecationWarning`, if you use the feature that are due to be deprecated.  These warnings are **silent by default**, but can be explicitly enabled when you're ready to start migrating any required changes.  For example if you start running your tests using `python -Wd manage.py test`, you'll be warned of any API changes you need to make.
 
-* Version 1.2 would escalate these warnings to `DeprecationWarning`, which is loud by default.
+* Version 1.2 would escalate these warnings to subclass `DeprecationWarning`, which is loud by default.
 
 * Version 1.3 would remove the deprecated bits of API entirely.
 
@@ -39,6 +39,35 @@ You can determine your currently installed version using `pip show`:
 ---
 
 ## 3.9.x series
+
+### 3.9.2
+
+**Date**: [3rd March 2019][3.9.1-milestone]
+
+* Routers: invalidate `_urls` cache on `register()` [#6407][gh6407]
+* Deferred schema renderer creation to avoid requiring pyyaml. [#6416][gh6416]
+* Added 'request_forms' block to base.html [#6340][gh6340]
+* Fixed SchemaView to reset renderer on exception. [#6429][gh6429]
+* Update Django Guardian dependency. [#6430][gh6430]
+* Ensured support for Django 2.2 [#6422][gh6422] & [#6455][gh6455]
+* Made templates compatible with session-based CSRF. [#6207][gh6207]
+* Adjusted field `validators` to accept non-list iterables. [#6282][gh6282]
+* Added SearchFilter.get_search_fields() hook. [#6279][gh6279]
+* Fix DeprecationWarning when accessing collections.abc classes via collections [#6268][gh6268]
+* Allowed Q objects in limit_choices_to introspection. [#6472][gh6472]
+* Added lazy evaluation to composed permissions. [#6463][gh6463]
+* Add negation ~ operator to permissions composition [#6361][gh6361]
+* Avoided calling distinct on annotated fields in SearchFilter. [#6240][gh6240]
+* Introduced `RemovedInDRF…Warning` classes to simplify deprecations. [#6480][gh6480]
+
+### 3.9.1
+
+**Date**: [16th January 2019][3.9.1-milestone]
+
+* Resolve XSS issue in browsable API. [#6330][gh6330]
+* Upgrade Bootstrap to 3.4.0 to resolve XSS issue.
+* Resolve issues with composable permissions. [#6299][gh6299]
+* Respect `limit_choices_to` on foreign keys. [#6371][gh6371]
 
 ### 3.9.0
 
@@ -1135,6 +1164,8 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [3.8.1-milestone]: https://github.com/encode/django-rest-framework/milestone/67?closed=1
 [3.8.2-milestone]: https://github.com/encode/django-rest-framework/milestone/68?closed=1
 [3.9.0-milestone]: https://github.com/encode/django-rest-framework/milestone/66?closed=1
+[3.9.1-milestone]: https://github.com/encode/django-rest-framework/milestone/70?closed=1
+[3.9.1-milestone]: https://github.com/encode/django-rest-framework/milestone/71?closed=1
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/encode/django-rest-framework/issues/2013
@@ -2052,3 +2083,26 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh6233]: https://github.com/encode/django-rest-framework/issues/6233
 [gh5753]: https://github.com/encode/django-rest-framework/issues/5753
 [gh6229]: https://github.com/encode/django-rest-framework/issues/6229
+
+<!-- 3.9.1 -->
+[gh6330]: https://github.com/encode/django-rest-framework/issues/6330
+[gh6299]: https://github.com/encode/django-rest-framework/issues/6299
+[gh6371]: https://github.com/encode/django-rest-framework/issues/6371
+
+<!-- 3.9.2 -->
+[gh6480]: https://github.com/encode/django-rest-framework/issues/6480
+[gh6240]: https://github.com/encode/django-rest-framework/issues/6240
+[gh6361]: https://github.com/encode/django-rest-framework/issues/6361
+[gh6463]: https://github.com/encode/django-rest-framework/issues/6463
+[gh6472]: https://github.com/encode/django-rest-framework/issues/6472
+[gh6268]: https://github.com/encode/django-rest-framework/issues/6268
+[gh6279]: https://github.com/encode/django-rest-framework/issues/6279
+[gh6282]: https://github.com/encode/django-rest-framework/issues/6282
+[gh6207]: https://github.com/encode/django-rest-framework/issues/6207
+[gh6455]: https://github.com/encode/django-rest-framework/issues/6455
+[gh6422]: https://github.com/encode/django-rest-framework/issues/6422
+[gh6430]: https://github.com/encode/django-rest-framework/issues/6430
+[gh6429]: https://github.com/encode/django-rest-framework/issues/6429
+[gh6340]: https://github.com/encode/django-rest-framework/issues/6340
+[gh6416]: https://github.com/encode/django-rest-framework/issues/6416
+[gh6407]: https://github.com/encode/django-rest-framework/issues/6407

@@ -1,6 +1,5 @@
 from __future__ import unicode_literals
 
-import collections
 import copy
 import datetime
 import decimal
@@ -33,7 +32,7 @@ from pytz.exceptions import InvalidTimeError
 
 from rest_framework import ISO_8601
 from rest_framework.compat import (
-    MaxLengthValidator, MaxValueValidator, MinLengthValidator,
+    Mapping, MaxLengthValidator, MaxValueValidator, MinLengthValidator,
     MinValueValidator, ProhibitNullCharactersValidator, unicode_repr,
     unicode_to_repr
 )
@@ -96,7 +95,7 @@ def get_attribute(instance, attrs):
     """
     for attr in attrs:
         try:
-            if isinstance(instance, collections.Mapping):
+            if isinstance(instance, Mapping):
                 instance = instance[attr]
             else:
                 instance = getattr(instance, attr)
@@ -350,7 +349,7 @@ class Field(object):
                 self.default_empty_html = default
 
         if validators is not None:
-            self.validators = validators[:]
+            self.validators = list(validators)
 
         # These are set up by `.bind()` when the field is added to a serializer.
         self.field_name = None
@@ -410,7 +409,7 @@ class Field(object):
         self._validators = validators
 
     def get_validators(self):
-        return self.default_validators[:]
+        return list(self.default_validators)
 
     def get_initial(self):
         """
@@ -1487,7 +1486,7 @@ class MultipleChoiceField(ChoiceField):
         return dictionary.get(self.field_name, empty)
 
     def to_internal_value(self, data):
-        if isinstance(data, type('')) or not hasattr(data, '__iter__'):
+        if isinstance(data, six.text_type) or not hasattr(data, '__iter__'):
             self.fail('not_a_list', input_type=type(data).__name__)
         if not self.allow_empty and len(data) == 0:
             self.fail('empty')
@@ -1661,7 +1660,7 @@ class ListField(Field):
         """
         if html.is_html_input(data):
             data = html.parse_html_list(data, default=[])
-        if isinstance(data, type('')) or isinstance(data, collections.Mapping) or not hasattr(data, '__iter__'):
+        if isinstance(data, (six.text_type, Mapping)) or not hasattr(data, '__iter__'):
             self.fail('not_a_list', input_type=type(data).__name__)
         if not self.allow_empty and len(data) == 0:
             self.fail('empty')
@@ -1725,9 +1724,6 @@ class DictField(Field):
         return self.run_child_validation(data)
 
     def to_representation(self, value):
-        """
-        List of object instances -> List of dicts of primitive datatypes.
-        """
         return {
             six.text_type(key): self.child.to_representation(val) if val is not None else None
             for key, val in value.items()

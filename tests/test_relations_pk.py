@@ -5,8 +5,9 @@ from django.utils import six
 
 from rest_framework import serializers
 from tests.models import (
-    ForeignKeySource, ForeignKeyTarget, ManyToManySource, ManyToManyTarget,
-    NullableForeignKeySource, NullableOneToOneSource,
+    ForeignKeySource, ForeignKeySourceWithLimitedChoices,
+    ForeignKeySourceWithQLimitedChoices, ForeignKeyTarget, ManyToManySource,
+    ManyToManyTarget, NullableForeignKeySource, NullableOneToOneSource,
     NullableUUIDForeignKeySource, OneToOnePKSource, OneToOneTarget,
     UUIDForeignKeyTarget
 )
@@ -36,6 +37,12 @@ class ForeignKeySourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = ForeignKeySource
         fields = ('id', 'name', 'target')
+
+
+class ForeignKeySourceWithLimitedChoicesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ForeignKeySourceWithLimitedChoices
+        fields = ("id", "target")
 
 
 # Nullable ForeignKey
@@ -359,6 +366,30 @@ class PKForeignKeyTests(TestCase):
         serializer = ModelSerializer(data={'name': 'test'})
         serializer.is_valid(raise_exception=True)
         assert 'target' not in serializer.validated_data
+
+    def test_queryset_size_without_limited_choices(self):
+        limited_target = ForeignKeyTarget(name="limited-target")
+        limited_target.save()
+        queryset = ForeignKeySourceSerializer().fields["target"].get_queryset()
+        assert len(queryset) == 3
+
+    def test_queryset_size_with_limited_choices(self):
+        limited_target = ForeignKeyTarget(name="limited-target")
+        limited_target.save()
+        queryset = ForeignKeySourceWithLimitedChoicesSerializer().fields["target"].get_queryset()
+        assert len(queryset) == 1
+
+    def test_queryset_size_with_Q_limited_choices(self):
+        limited_target = ForeignKeyTarget(name="limited-target")
+        limited_target.save()
+
+        class QLimitedChoicesSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = ForeignKeySourceWithQLimitedChoices
+                fields = ("id", "target")
+
+        queryset = QLimitedChoicesSerializer().fields["target"].get_queryset()
+        assert len(queryset) == 1
 
 
 class PKNullableForeignKeyTests(TestCase):

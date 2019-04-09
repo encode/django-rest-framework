@@ -8,7 +8,6 @@ import pytest
 from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib.auth.models import User
-from django.db import models
 from django.http import HttpResponse
 from django.test import TestCase, override_settings
 from django.utils import six
@@ -26,12 +25,9 @@ from rest_framework.response import Response
 from rest_framework.test import APIClient, APIRequestFactory
 from rest_framework.views import APIView
 
+from .models import CustomToken
+
 factory = APIRequestFactory()
-
-
-class CustomToken(models.Model):
-    key = models.CharField(max_length=40, primary_key=True)
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
 
 
 class CustomTokenAuthentication(TokenAuthentication):
@@ -87,7 +83,7 @@ urlpatterns = [
 ]
 
 
-@override_settings(ROOT_URLCONF='tests.test_authentication')
+@override_settings(ROOT_URLCONF=__name__)
 class BasicAuthTests(TestCase):
     """Basic authentication"""
     def setUp(self):
@@ -169,7 +165,7 @@ class BasicAuthTests(TestCase):
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
-@override_settings(ROOT_URLCONF='tests.test_authentication')
+@override_settings(ROOT_URLCONF=__name__)
 class SessionAuthTests(TestCase):
     """User session authentication"""
     def setUp(self):
@@ -370,7 +366,7 @@ class BaseTokenAuthTests(object):
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
-@override_settings(ROOT_URLCONF='tests.test_authentication')
+@override_settings(ROOT_URLCONF=__name__)
 class TokenAuthTests(BaseTokenAuthTests, TestCase):
     model = Token
     path = '/token/'
@@ -429,13 +425,13 @@ class TokenAuthTests(BaseTokenAuthTests, TestCase):
         assert response.data['token'] == self.key
 
 
-@override_settings(ROOT_URLCONF='tests.test_authentication')
+@override_settings(ROOT_URLCONF=__name__)
 class CustomTokenAuthTests(BaseTokenAuthTests, TestCase):
     model = CustomToken
     path = '/customtoken/'
 
 
-@override_settings(ROOT_URLCONF='tests.test_authentication')
+@override_settings(ROOT_URLCONF=__name__)
 class CustomKeywordTokenAuthTests(BaseTokenAuthTests, TestCase):
     model = Token
     path = '/customkeywordtoken/'
@@ -549,7 +545,7 @@ class BasicAuthenticationUnitTests(TestCase):
         authentication.authenticate = old_authenticate
 
 
-@override_settings(ROOT_URLCONF='tests.test_authentication',
+@override_settings(ROOT_URLCONF=__name__,
                    AUTHENTICATION_BACKENDS=('django.contrib.auth.backends.RemoteUserBackend',))
 class RemoteUserAuthenticationUnitTests(TestCase):
     def setUp(self):

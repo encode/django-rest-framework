@@ -2,20 +2,21 @@
 from __future__ import unicode_literals
 
 import re
-from collections import MutableMapping, OrderedDict
+from collections import OrderedDict
 
 import pytest
 from django.conf.urls import include, url
 from django.core.cache import cache
 from django.db import models
 from django.http.request import HttpRequest
+from django.template import loader
 from django.test import TestCase, override_settings
 from django.utils import six
 from django.utils.safestring import SafeText
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import permissions, serializers, status
-from rest_framework.compat import coreapi
+from rest_framework.compat import MutableMapping, coreapi
 from rest_framework.decorators import action
 from rest_framework.renderers import (
     AdminRenderer, BaseRenderer, BrowsableAPIRenderer, DocumentationRenderer,
@@ -635,7 +636,9 @@ class BrowsableAPIRendererTests(URLPatternsTestCase):
             raise NotImplementedError
 
     router = SimpleRouter()
-    router.register(r'examples/', ExampleViewSet, basename='example')
+
+    router.register('examples', ExampleViewSet, basename='example')
+
     urlpatterns = [url(r'^api/', include(router.urls))]
 
     def setUp(self):
@@ -826,6 +829,16 @@ class TestDocumentationRenderer(TestCase):
 
         html = renderer.render(document, accepted_media_type="text/html", renderer_context={"request": request})
         assert '<h1>Data Endpoint API</h1>' in html
+
+    def test_shell_code_example_rendering(self):
+        template = loader.get_template('rest_framework/docs/langs/shell.html')
+        context = {
+            'document': coreapi.Document(url='https://api.example.org/'),
+            'link_key': 'testcases > list',
+            'link': coreapi.Link(url='/data/', action='get', fields=[]),
+        }
+        html = template.render(context)
+        assert 'testcases list' in html
 
 
 @pytest.mark.skipif(not coreapi, reason='coreapi is not installed')

@@ -5,6 +5,8 @@ versions of Django/Python, and compatibility wrappers around optional packages.
 
 from __future__ import unicode_literals
 
+import sys
+
 from django.conf import settings
 from django.core import validators
 from django.utils import six
@@ -12,17 +14,10 @@ from django.views.generic import View
 
 try:
     # Python 3
-    from collections.abc import Mapping   # noqa
+    from collections.abc import Mapping, MutableMapping   # noqa
 except ImportError:
     # Python 2.7
-    from collections import Mapping   # noqa
-
-try:
-    # Python 3
-    import urllib.parse as urlparse   # noqa
-except ImportError:
-    # Python 2.7
-    from urlparse import urlparse   # noqa
+    from collections import Mapping, MutableMapping   # noqa
 
 try:
     from django.urls import (  # noqa
@@ -40,6 +35,11 @@ try:
     from django.core.validators import ProhibitNullCharactersValidator  # noqa
 except ImportError:
     ProhibitNullCharactersValidator = None
+
+try:
+    from unittest import mock
+except ImportError:
+    mock = None
 
 
 def get_original_route(urlpattern):
@@ -168,6 +168,10 @@ def is_guardian_installed():
     """
     django-guardian is optional and only imported if in INSTALLED_APPS.
     """
+    if six.PY2:
+        # Guardian 1.5.0, for Django 2.2 is NOT compatible with Python 2.7.
+        # Remove when dropping PY2.
+        return False
     return 'guardian' in settings.INSTALLED_APPS
 
 
@@ -317,3 +321,7 @@ class MinLengthValidator(CustomValidatorMessage, validators.MinLengthValidator):
 
 class MaxLengthValidator(CustomValidatorMessage, validators.MaxLengthValidator):
     pass
+
+
+# Version Constants.
+PY36 = sys.version_info >= (3, 6)

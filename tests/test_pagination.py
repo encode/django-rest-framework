@@ -5,6 +5,7 @@ import pytest
 from django.core.paginator import Paginator as DjangoPaginator
 from django.db import models
 from django.test import TestCase
+from django.utils import six
 
 from rest_framework import (
     exceptions, filters, generics, pagination, serializers, status
@@ -207,7 +208,7 @@ class TestPageNumberPagination:
             ]
         }
         assert self.pagination.display_page_controls
-        assert isinstance(self.pagination.to_html(), type(''))
+        assert isinstance(self.pagination.to_html(), six.text_type)
 
     def test_second_page(self):
         request = Request(factory.get('/', {'page': 2}))
@@ -313,7 +314,7 @@ class TestPageNumberPaginationOverride:
             ]
         }
         assert not self.pagination.display_page_controls
-        assert isinstance(self.pagination.to_html(), type(''))
+        assert isinstance(self.pagination.to_html(), six.text_type)
 
     def test_invalid_page(self):
         request = Request(factory.get('/', {'page': 'invalid'}))
@@ -368,7 +369,7 @@ class TestLimitOffset:
             ]
         }
         assert self.pagination.display_page_controls
-        assert isinstance(self.pagination.to_html(), type(''))
+        assert isinstance(self.pagination.to_html(), six.text_type)
 
     def test_pagination_not_applied_if_limit_or_default_limit_not_set(self):
         class MockPagination(pagination.LimitOffsetPagination):
@@ -631,7 +632,7 @@ class CursorPaginationTestsMixin:
         assert current == [1, 1, 1, 1, 1]
         assert next == [1, 2, 3, 4, 4]
 
-        assert isinstance(self.pagination.to_html(), type(''))
+        assert isinstance(self.pagination.to_html(), six.text_type)
 
     def test_cursor_pagination_with_page_size(self):
         (previous, current, next, previous_url, next_url) = self.get_pages('/?page_size=20')

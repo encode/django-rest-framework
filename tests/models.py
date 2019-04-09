@@ -52,6 +52,20 @@ class ForeignKeySource(RESTFrameworkModel):
                                on_delete=models.CASCADE)
 
 
+class ForeignKeySourceWithLimitedChoices(RESTFrameworkModel):
+    target = models.ForeignKey(ForeignKeyTarget, help_text='Target',
+                               verbose_name='Target',
+                               limit_choices_to={"name__startswith": "limited-"},
+                               on_delete=models.CASCADE)
+
+
+class ForeignKeySourceWithQLimitedChoices(RESTFrameworkModel):
+    target = models.ForeignKey(ForeignKeyTarget, help_text='Target',
+                               verbose_name='Target',
+                               limit_choices_to=models.Q(name__startswith="limited-"),
+                               on_delete=models.CASCADE)
+
+
 # Nullable ForeignKey
 class NullableForeignKeySource(RESTFrameworkModel):
     name = models.CharField(max_length=100)

@@ -1,9 +1,6 @@
 language: python
 cache: pip
 dist: xenial
-
-sudo: false
-
 matrix:
     fast_finish: true
     include:
@@ -15,15 +12,17 @@ matrix:
       - { python: "3.5", env: DJANGO=1.11 }
       - { python: "3.5", env: DJANGO=2.0 }
       - { python: "3.5", env: DJANGO=2.1 }
-      - { python: "3.5", env: DJANGO=master }
+      - { python: "3.5", env: DJANGO=2.2 }
 
       - { python: "3.6", env: DJANGO=1.11 }
       - { python: "3.6", env: DJANGO=2.0 }
       - { python: "3.6", env: DJANGO=2.1 }
+      - { python: "3.6", env: DJANGO=2.2 }
       - { python: "3.6", env: DJANGO=master }
 
       - { python: "3.7", env: DJANGO=2.0 }
       - { python: "3.7", env: DJANGO=2.1 }
+      - { python: "3.7", env: DJANGO=2.2 }
       - { python: "3.7", env: DJANGO=master }
 
       - { python: "3.7", env: TOXENV=base }

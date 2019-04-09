@@ -24,7 +24,7 @@ from rest_framework.utils import formatting
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
-from .models import BasicModel, ForeignKeySource
+from .models import BasicModel, ForeignKeySource, ManyToManySource
 
 factory = APIRequestFactory()
 
@@ -701,6 +701,51 @@ class TestSchemaGeneratorWithForeignKey(TestCase):
         assert schema == expected
 
 
+class ManyToManySourceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ManyToManySource
+        fields = ('id', 'name', 'targets')
+
+
+class ManyToManySourceView(generics.CreateAPIView):
+    queryset = ManyToManySource.objects.all()
+    serializer_class = ManyToManySourceSerializer
+
+
+@unittest.skipUnless(coreapi, 'coreapi is not installed')
+class TestSchemaGeneratorWithManyToMany(TestCase):
+    def setUp(self):
+        self.patterns = [
+            url(r'^example/?$', ManyToManySourceView.as_view()),
+        ]
+
+    def test_schema_for_regular_views(self):
+        """
+        Ensure that AutoField many to many fields are output as Integer.
+        """
+        generator = SchemaGenerator(title='Example API', patterns=self.patterns)
+        schema = generator.get_schema()
+
+        expected = coreapi.Document(
+            url='',
+            title='Example API',
+            content={
+                'example': {
+                    'create': coreapi.Link(
+                        url='/example/',
+                        action='post',
+                        encoding='application/json',
+                        fields=[
+                            coreapi.Field('name', required=True, location='form', schema=coreschema.String(title='Name')),
+                            coreapi.Field('targets', required=True, location='form', schema=coreschema.Array(title='Targets', items=coreschema.Integer())),
+                        ]
+                    )
+                }
+            }
+        )
+        assert schema == expected
+
+
 @unittest.skipUnless(coreapi, 'coreapi is not installed')
 class Test4605Regression(TestCase):
     def test_4605_regression(self):
@@ -1304,3 +1349,13 @@ class TestAutoSchemaAllowsFilters(object):
 
     def test_FOO(self):
         assert not self._test('FOO')
+
+
+@pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
+def test_schema_handles_exception():
+    schema_view = get_schema_view(permission_classes=[DenyAllUsingPermissionDenied])
+    request = factory.get('/')
+    response = schema_view(request)
+    response.render()
+    assert response.status_code == 403
+    assert "You do not have permission to perform this action." in str(response.content)

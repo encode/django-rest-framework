@@ -463,7 +463,7 @@ class APIView(View):
             renderer_format = getattr(request.accepted_renderer, 'format')
             use_plaintext_traceback = renderer_format not in ('html', 'api', 'admin')
             request.force_plaintext_errors(use_plaintext_traceback)
-        raise
+        raise exc
 
     # Note: Views are made CSRF exempt from within `as_view` as to prevent
     # accidental removal of this exemption in cases where `dispatch` needs to

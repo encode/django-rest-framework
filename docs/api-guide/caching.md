@@ -13,7 +13,7 @@ provided in Django.
 
 Django provides a [`method_decorator`][decorator] to use
 decorators with class based views. This can be used with
-with other cache decorators such as [`cache_page`][page] and
+other cache decorators such as [`cache_page`][page] and
 [`vary_on_cookie`][cookie].
 
 ```python

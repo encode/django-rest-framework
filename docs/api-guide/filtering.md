@@ -127,7 +127,7 @@ Note that you can use both an overridden `.get_queryset()` and generic filtering
         """
         model = Product
         serializer_class = ProductSerializer
-        filter_class = ProductFilter
+        filterset_class = ProductFilter
 
         def get_queryset(self):
             user = self.request.user
@@ -160,13 +160,13 @@ Or add the filter backend to an individual View or ViewSet.
         ...
         filter_backends = (DjangoFilterBackend,)
 
-If all you need is simple equality-based filtering, you can set a `filter_fields` attribute on the view, or viewset, listing the set of fields you wish to filter against.
+If all you need is simple equality-based filtering, you can set a `filterset_fields` attribute on the view, or viewset, listing the set of fields you wish to filter against.
 
     class ProductList(generics.ListAPIView):
         queryset = Product.objects.all()
         serializer_class = ProductSerializer
         filter_backends = (DjangoFilterBackend,)
-        filter_fields = ('category', 'in_stock')
+        filterset_fields = ('category', 'in_stock')
 
 This will automatically create a `FilterSet` class for the given fields, and will allow you to make requests such as:
 
@@ -188,7 +188,7 @@ When in use, the browsable API will include a `SearchFilter` control:
 The `SearchFilter` class will only be applied if the view has a `search_fields` attribute set.  The `search_fields` attribute should be a list of names of text type fields on the model, such as `CharField` or `TextField`.
 
     from rest_framework import filters
-    
+
     class UserListView(generics.ListAPIView):
         queryset = User.objects.all()
         serializer_class = UserSerializer
@@ -217,6 +217,16 @@ For example:
     search_fields = ('=username', '=email')
 
 By default, the search parameter is named `'search`', but this may be overridden with the `SEARCH_PARAM` setting.
+
+To dynamically change search fields based on request content, it's possible to subclass the `SearchFilter` and override the `get_search_fields()` function. For example, the following subclass will only search on `title` if the query parameter `title_only` is in the request:
+
+    from rest_framework import filters
+    
+    class CustomSearchFilter(filters.SearchFilter):
+        def get_search_fields(self, view, request):
+            if request.query_params.get('title_only'):
+                return ('title',)
+            return super(CustomSearchFilter, self).get_search_fields(view, request)
 
 For more details, see the [Django documentation][search-django-admin].
 
@@ -298,9 +308,9 @@ A complete example using both `DjangoObjectPermissionsFilter` and `DjangoObjectP
 **permissions.py**:
 
     class CustomObjectPermissions(permissions.DjangoObjectPermissions):
-		"""
-		Similar to `DjangoObjectPermissions`, but adding 'view' permissions.
-		"""
+        """
+        Similar to `DjangoObjectPermissions`, but adding 'view' permissions.
+        """
         perms_map = {
             'GET': ['%(app_label)s.view_%(model_name)s'],
             'OPTIONS': ['%(app_label)s.view_%(model_name)s'],
@@ -314,11 +324,11 @@ A complete example using both `DjangoObjectPermissionsFilter` and `DjangoObjectP
 **views.py**:
 
     class EventViewSet(viewsets.ModelViewSet):
-    	"""
-    	Viewset that only lists events if user has 'view' permissions, and only
-    	allows operations on individual events if user has appropriate 'view', 'add',
-    	'change' or 'delete' permissions.
-		"""
+        """
+        Viewset that only lists events if user has 'view' permissions, and only
+        allows operations on individual events if user has appropriate 'view', 'add',
+        'change' or 'delete' permissions.
+        """
         queryset = Event.objects.all()
         serializer_class = EventSerializer
         filter_backends = (filters.DjangoObjectPermissionsFilter,)

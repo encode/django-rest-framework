@@ -393,7 +393,7 @@ class Serializer(BaseSerializer):
         # Used by the lazily-evaluated `validators` property.
         meta = getattr(self, 'Meta', None)
         validators = getattr(meta, 'validators', None)
-        return validators[:] if validators else []
+        return list(validators) if validators else []
 
     def get_initial(self):
         if hasattr(self, 'initial_data'):
@@ -461,8 +461,11 @@ class Serializer(BaseSerializer):
         """
         Add read_only fields with defaults to value before running validators.
         """
-        to_validate = self._read_only_defaults()
-        to_validate.update(value)
+        if isinstance(value, dict):
+            to_validate = self._read_only_defaults()
+            to_validate.update(value)
+        else:
+            to_validate = value
         super(Serializer, self).run_validators(to_validate)
 
     def to_internal_value(self, data):
@@ -1477,7 +1480,7 @@ class ModelSerializer(Serializer):
         # If the validators have been declared explicitly then use that.
         validators = getattr(getattr(self, 'Meta', None), 'validators', None)
         if validators is not None:
-            return validators[:]
+            return list(validators)
 
         # Otherwise use the default set of validators.
         return (

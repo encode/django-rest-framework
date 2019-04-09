@@ -111,7 +111,7 @@ We can easily break these down into individual views if we need to, but using vi
 
 Okay, now let's wire up the API URLs.  On to `tutorial/urls.py`...
 
-    from django.conf.urls import url, include
+    from django.urls import include, path
     from rest_framework import routers
     from tutorial.quickstart import views
 
@@ -122,8 +122,8 @@ Okay, now let's wire up the API URLs.  On to `tutorial/urls.py`...
     # Wire up our API using automatic URL routing.
     # Additionally, we include login URLs for the browsable API.
     urlpatterns = [
-        url(r'^', include(router.urls)),
-        url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+        path('', include(router.urls)),
+        path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
     ]
 
 Because we're using viewsets instead of views, we can automatically generate the URL conf for our API, by simply registering the viewsets with a router class.
