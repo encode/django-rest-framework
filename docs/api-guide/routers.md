@@ -28,7 +28,7 @@ There are two mandatory arguments to the `register()` method:
 
 Optionally, you may also specify an additional argument:
 
-* `basename` - The base to use for the URL names that are created.  If unset the basename will be automatically generated based on the `queryset` attribute of the viewset, if it has one.  Note that if the viewset does not include a `queryset` attribute then you must set `basename` when registering the viewset.
+* `basename` - The base to use for the URL names that are created.  If unset the basename will be automatically generated based on the `queryset` attribute of the viewset, if it has one. For example, the queryset `User.objects.all()` will yield `user-list`.  Note that if the viewset does not include a `queryset` attribute then you must set `basename` when registering the viewset.
 
 The example above would generate the following URL patterns:
 
