@@ -635,7 +635,7 @@ class BrowsableAPIRendererTests(URLPatternsTestCase):
             raise NotImplementedError
 
     router = SimpleRouter()
-    router.register('examples', ExampleViewSet, base_name='example')
+    router.register(r'examples/', ExampleViewSet, basename='example')
     urlpatterns = [url(r'^api/', include(router.urls))]
 
     def setUp(self):
