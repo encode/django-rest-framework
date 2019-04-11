@@ -489,9 +489,10 @@ You can also use the declarative style, as with `ListField`. For example:
 
 A preconfigured `DictField` that is compatible with Django's postgres `HStoreField`.
 
-**Signature**: `HStoreField(child=<A_FIELD_INSTANCE>)`
+**Signature**: `HStoreField(child=<A_FIELD_INSTANCE>, allow_empty=True)`
 
 - `child` - A field instance that is used for validating the values in the dictionary. The default child field accepts both empty strings and null values.
+- `allow_empty` - Designates if empty dictionaries are allowed.
 
 Note that the child field **must** be an instance of `CharField`, as the hstore extension stores values as strings.
 
