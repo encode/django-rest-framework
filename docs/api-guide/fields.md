@@ -471,9 +471,10 @@ We can now reuse our custom `StringListField` class throughout our application, 
 
 A field class that validates a dictionary of objects. The keys in `DictField` are always assumed to be string values.
 
-**Signature**: `DictField(child=<A_FIELD_INSTANCE>)`
+**Signature**: `DictField(child=<A_FIELD_INSTANCE>, allow_empty=True)`
 
 - `child` - A field instance that should be used for validating the values in the dictionary. If this argument is not provided then values in the mapping will not be validated.
+- `allow_empty` - Designates if empty dictionaries are allowed.
 
 For example, to create a field that validates a mapping of strings to strings, you would write something like this:
 

@@ -1982,6 +1982,7 @@ class TestDictField(FieldValues):
     """
     valid_inputs = [
         ({'a': 1, 'b': '2', 3: 3}, {'a': '1', 'b': '2', '3': '3'}),
+        ({}, {}),
     ]
     invalid_inputs = [
         ({'a': 1, 'b': None, 'c': None}, {'b': ['This field may not be null.'], 'c': ['This field may not be null.']}),
@@ -2008,6 +2009,16 @@ class TestDictField(FieldValues):
         field = serializers.DictField(allow_null=True)
         output = field.run_validation(None)
         assert output is None
+
+    def test_allow_empty_disallowed(self):
+        """
+        If allow_empty is False then an empty dict is not a valid input.
+        """
+        field = serializers.DictField(allow_empty=False)
+        with pytest.raises(serializers.ValidationError) as exc_info:
+            field.run_validation({})
+
+        assert exc_info.value.detail == ['This dictionary may not be empty.']
 
 
 class TestNestedDictField(FieldValues):
