@@ -22,7 +22,7 @@ ISORT_ARGS = [
     "tests",
 ]
 
-BLACK_ARGS = ["--check", "--verbose"]
+BLACK_ARGS = ["--check"]
 
 
 def exit_on_failure(ret, message=None):
