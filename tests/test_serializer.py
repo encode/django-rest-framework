@@ -13,10 +13,9 @@ from rest_framework import exceptions, fields, relations, serializers
 from rest_framework.compat import Mapping, unicode_repr
 from rest_framework.fields import Field
 
-from .models import (
-    ForeignKeyTarget, NestedForeignKeySource, NullableForeignKeySource
-)
+from .models import ForeignKeyTarget, NestedForeignKeySource, NullableForeignKeySource
 from .utils import MockObject
+
 
 try:
     from collections import ChainMap
@@ -27,25 +26,26 @@ except ImportError:
 # Test serializer fields imports.
 # -------------------------------
 
+
 class TestFieldImports:
     def is_field(self, name, value):
         return (
-            isinstance(value, type) and
-            issubclass(value, Field) and
-            not name.startswith('_')
+            isinstance(value, type)
+            and issubclass(value, Field)
+            and not name.startswith("_")
         )
 
     def test_fields(self):
         msg = "Expected `fields.%s` to be imported in `serializers`"
         field_classes = [
-            key for key, value
-            in inspect.getmembers(fields)
+            key
+            for key, value in inspect.getmembers(fields)
             if self.is_field(key, value)
         ]
 
         # sanity check
-        assert 'Field' in field_classes
-        assert 'BooleanField' in field_classes
+        assert "Field" in field_classes
+        assert "BooleanField" in field_classes
 
         for field in field_classes:
             assert hasattr(serializers, field), msg % field
@@ -53,13 +53,13 @@ class TestFieldImports:
     def test_relations(self):
         msg = "Expected `relations.%s` to be imported in `serializers`"
         field_classes = [
-            key for key, value
-            in inspect.getmembers(relations)
+            key
+            for key, value in inspect.getmembers(relations)
             if self.is_field(key, value)
         ]
 
         # sanity check
-        assert 'RelatedField' in field_classes
+        assert "RelatedField" in field_classes
 
         for field in field_classes:
             assert hasattr(serializers, field), msg % field
@@ -68,47 +68,52 @@ class TestFieldImports:
 # Tests for core functionality.
 # -----------------------------
 
+
 class TestSerializer:
     def setup(self):
         class ExampleSerializer(serializers.Serializer):
             char = serializers.CharField()
             integer = serializers.IntegerField()
+
         self.Serializer = ExampleSerializer
 
     def test_valid_serializer(self):
-        serializer = self.Serializer(data={'char': 'abc', 'integer': 123})
+        serializer = self.Serializer(data={"char": "abc", "integer": 123})
         assert serializer.is_valid()
-        assert serializer.validated_data == {'char': 'abc', 'integer': 123}
-        assert serializer.data == {'char': 'abc', 'integer': 123}
+        assert serializer.validated_data == {"char": "abc", "integer": 123}
+        assert serializer.data == {"char": "abc", "integer": 123}
         assert serializer.errors == {}
 
     def test_invalid_serializer(self):
-        serializer = self.Serializer(data={'char': 'abc'})
+        serializer = self.Serializer(data={"char": "abc"})
         assert not serializer.is_valid()
         assert serializer.validated_data == {}
-        assert serializer.data == {'char': 'abc'}
-        assert serializer.errors == {'integer': ['This field is required.']}
+        assert serializer.data == {"char": "abc"}
+        assert serializer.errors == {"integer": ["This field is required."]}
 
     def test_invalid_datatype(self):
-        serializer = self.Serializer(data=[{'char': 'abc'}])
+        serializer = self.Serializer(data=[{"char": "abc"}])
         assert not serializer.is_valid()
         assert serializer.validated_data == {}
         assert serializer.data == {}
-        assert serializer.errors == {'non_field_errors': ['Invalid data. Expected a dictionary, but got list.']}
+        assert serializer.errors == {
+            "non_field_errors": ["Invalid data. Expected a dictionary, but got list."]
+        }
 
     def test_partial_validation(self):
-        serializer = self.Serializer(data={'char': 'abc'}, partial=True)
+        serializer = self.Serializer(data={"char": "abc"}, partial=True)
         assert serializer.is_valid()
-        assert serializer.validated_data == {'char': 'abc'}
+        assert serializer.validated_data == {"char": "abc"}
         assert serializer.errors == {}
 
     def test_empty_serializer(self):
         serializer = self.Serializer()
-        assert serializer.data == {'char': '', 'integer': None}
+        assert serializer.data == {"char": "", "integer": None}
 
     def test_missing_attribute_during_serialization(self):
         class MissingAttributes:
             pass
+
         instance = MissingAttributes()
         serializer = self.Serializer(instance)
         with pytest.raises(AttributeError):
@@ -117,10 +122,11 @@ class TestSerializer:
     def test_data_access_before_save_raises_error(self):
         def create(validated_data):
             return validated_data
-        serializer = self.Serializer(data={'char': 'abc', 'integer': 123})
+
+        serializer = self.Serializer(data={"char": "abc", "integer": 123})
         serializer.create = create
         assert serializer.is_valid()
-        assert serializer.data == {'char': 'abc', 'integer': 123}
+        assert serializer.data == {"char": "abc", "integer": 123}
         with pytest.raises(AssertionError):
             serializer.save()
 
@@ -128,31 +134,31 @@ class TestSerializer:
         data = None
         serializer = self.Serializer(data=data)
         assert not serializer.is_valid()
-        assert serializer.errors == {'non_field_errors': ['No data provided']}
+        assert serializer.errors == {"non_field_errors": ["No data provided"]}
 
-    @unittest.skipUnless(ChainMap, 'requires python 3.3')
+    @unittest.skipUnless(ChainMap, "requires python 3.3")
     def test_serialize_chainmap(self):
-        data = ChainMap({'char': 'abc'}, {'integer': 123})
+        data = ChainMap({"char": "abc"}, {"integer": 123})
         serializer = self.Serializer(data=data)
         assert serializer.is_valid()
-        assert serializer.validated_data == {'char': 'abc', 'integer': 123}
+        assert serializer.validated_data == {"char": "abc", "integer": 123}
         assert serializer.errors == {}
 
     def test_serialize_custom_mapping(self):
         class SinglePurposeMapping(Mapping):
             def __getitem__(self, key):
-                return 'abc' if key == 'char' else 123
+                return "abc" if key == "char" else 123
 
             def __iter__(self):
-                yield 'char'
-                yield 'integer'
+                yield "char"
+                yield "integer"
 
             def __len__(self):
                 return 2
 
         serializer = self.Serializer(data=SinglePurposeMapping())
         assert serializer.is_valid()
-        assert serializer.validated_data == {'char': 'abc', 'integer': 123}
+        assert serializer.validated_data == {"char": "abc", "integer": 123}
         assert serializer.errors == {}
 
     def test_custom_to_internal_value(self):
@@ -160,6 +166,7 @@ class TestSerializer:
         to_internal_value() is expected to return a dict, but subclasses may
         return application specific type.
         """
+
         class Point(object):
             def __init__(self, srid, x, y):
                 self.srid = srid
@@ -167,14 +174,16 @@ class TestSerializer:
 
         # Declares a serializer that converts data into an object
         class NestedPointSerializer(serializers.Serializer):
-            longitude = serializers.FloatField(source='x')
-            latitude = serializers.FloatField(source='y')
+            longitude = serializers.FloatField(source="x")
+            latitude = serializers.FloatField(source="y")
 
             def to_internal_value(self, data):
                 kwargs = super(NestedPointSerializer, self).to_internal_value(data)
                 return Point(srid=4326, **kwargs)
 
-        serializer = NestedPointSerializer(data={'longitude': 6.958307, 'latitude': 50.941357})
+        serializer = NestedPointSerializer(
+            data={"longitude": 6.958307, "latitude": 50.941357}
+        )
         assert serializer.is_valid()
         assert isinstance(serializer.validated_data, Point)
         assert serializer.validated_data.srid == 4326
@@ -186,9 +195,10 @@ class TestSerializer:
         """
         Ensure `validators` parameter is compatible with reasonable iterables.
         """
-        data = {'char': 'abc', 'integer': 123}
+        data = {"char": "abc", "integer": 123}
 
         for validators in ([], (), set()):
+
             class ExampleSerializer(serializers.Serializer):
                 char = serializers.CharField(validators=validators)
                 integer = serializers.IntegerField()
@@ -199,9 +209,14 @@ class TestSerializer:
             assert serializer.errors == {}
 
         def raise_exception(value):
-            raise exceptions.ValidationError('Raised error')
+            raise exceptions.ValidationError("Raised error")
 
-        for validators in ([raise_exception], (raise_exception,), set([raise_exception])):
+        for validators in (
+            [raise_exception],
+            (raise_exception,),
+            set([raise_exception]),
+        ):
+
             class ExampleSerializer(serializers.Serializer):
                 char = serializers.CharField(validators=validators)
                 integer = serializers.IntegerField()
@@ -210,9 +225,9 @@ class TestSerializer:
             assert not serializer.is_valid()
             assert serializer.data == data
             assert serializer.validated_data == {}
-            assert serializer.errors == {'char': [
-                exceptions.ErrorDetail(string='Raised error', code='invalid')
-            ]}
+            assert serializer.errors == {
+                "char": [exceptions.ErrorDetail(string="Raised error", code="invalid")]
+            }
 
 
 class TestValidateMethod:
@@ -222,11 +237,11 @@ class TestValidateMethod:
             integer = serializers.IntegerField()
 
             def validate(self, attrs):
-                raise serializers.ValidationError('Non field error')
+                raise serializers.ValidationError("Non field error")
 
-        serializer = ExampleSerializer(data={'char': 'abc', 'integer': 123})
+        serializer = ExampleSerializer(data={"char": "abc", "integer": 123})
         assert not serializer.is_valid()
-        assert serializer.errors == {'non_field_errors': ['Non field error']}
+        assert serializer.errors == {"non_field_errors": ["Non field error"]}
 
     def test_field_error_validate_method(self):
         class ExampleSerializer(serializers.Serializer):
@@ -234,29 +249,22 @@ class TestValidateMethod:
             integer = serializers.IntegerField()
 
             def validate(self, attrs):
-                raise serializers.ValidationError({'char': 'Field error'})
+                raise serializers.ValidationError({"char": "Field error"})
 
-        serializer = ExampleSerializer(data={'char': 'abc', 'integer': 123})
+        serializer = ExampleSerializer(data={"char": "abc", "integer": 123})
         assert not serializer.is_valid()
-        assert serializer.errors == {'char': ['Field error']}
+        assert serializer.errors == {"char": ["Field error"]}
 
 
 class TestBaseSerializer:
     def setup(self):
         class ExampleSerializer(serializers.BaseSerializer):
             def to_representation(self, obj):
-                return {
-                    'id': obj['id'],
-                    'email': obj['name'] + '@' + obj['domain']
-                }
+                return {"id": obj["id"], "email": obj["name"] + "@" + obj["domain"]}
 
             def to_internal_value(self, data):
-                name, domain = str(data['email']).split('@')
-                return {
-                    'id': int(data['id']),
-                    'name': name,
-                    'domain': domain,
-                }
+                name, domain = str(data["email"]).split("@")
+                return {"id": int(data["id"]), "name": name, "domain": domain}
 
         self.Serializer = ExampleSerializer
 
@@ -272,56 +280,56 @@ class TestBaseSerializer:
             serializer.create(None)
 
     def test_access_to_data_attribute_before_validation_raises_error(self):
-        serializer = serializers.BaseSerializer(data={'foo': 'bar'})
+        serializer = serializers.BaseSerializer(data={"foo": "bar"})
         with pytest.raises(AssertionError):
             serializer.data
 
     def test_access_to_errors_attribute_before_validation_raises_error(self):
-        serializer = serializers.BaseSerializer(data={'foo': 'bar'})
+        serializer = serializers.BaseSerializer(data={"foo": "bar"})
         with pytest.raises(AssertionError):
             serializer.errors
 
     def test_access_to_validated_data_attribute_before_validation_raises_error(self):
-        serializer = serializers.BaseSerializer(data={'foo': 'bar'})
+        serializer = serializers.BaseSerializer(data={"foo": "bar"})
         with pytest.raises(AssertionError):
             serializer.validated_data
 
     def test_serialize_instance(self):
-        instance = {'id': 1, 'name': 'tom', 'domain': 'example.com'}
+        instance = {"id": 1, "name": "tom", "domain": "example.com"}
         serializer = self.Serializer(instance)
-        assert serializer.data == {'id': 1, 'email': 'tom@example.com'}
+        assert serializer.data == {"id": 1, "email": "tom@example.com"}
 
     def test_serialize_list(self):
         instances = [
-            {'id': 1, 'name': 'tom', 'domain': 'example.com'},
-            {'id': 2, 'name': 'ann', 'domain': 'example.com'},
+            {"id": 1, "name": "tom", "domain": "example.com"},
+            {"id": 2, "name": "ann", "domain": "example.com"},
         ]
         serializer = self.Serializer(instances, many=True)
         assert serializer.data == [
-            {'id': 1, 'email': 'tom@example.com'},
-            {'id': 2, 'email': 'ann@example.com'}
+            {"id": 1, "email": "tom@example.com"},
+            {"id": 2, "email": "ann@example.com"},
         ]
 
     def test_validate_data(self):
-        data = {'id': 1, 'email': 'tom@example.com'}
+        data = {"id": 1, "email": "tom@example.com"}
         serializer = self.Serializer(data=data)
         assert serializer.is_valid()
         assert serializer.validated_data == {
-            'id': 1,
-            'name': 'tom',
-            'domain': 'example.com'
+            "id": 1,
+            "name": "tom",
+            "domain": "example.com",
         }
 
     def test_validate_list(self):
         data = [
-            {'id': 1, 'email': 'tom@example.com'},
-            {'id': 2, 'email': 'ann@example.com'},
+            {"id": 1, "email": "tom@example.com"},
+            {"id": 2, "email": "ann@example.com"},
         ]
         serializer = self.Serializer(data=data, many=True)
         assert serializer.is_valid()
         assert serializer.validated_data == [
-            {'id': 1, 'name': 'tom', 'domain': 'example.com'},
-            {'id': 2, 'name': 'ann', 'domain': 'example.com'}
+            {"id": 1, "name": "tom", "domain": "example.com"},
+            {"id": 2, "name": "ann", "domain": "example.com"},
         ]
 
 
@@ -333,10 +341,8 @@ class TestStarredSource:
 
         nested_field = NestedField(source='*')
     """
-    data = {
-        'nested1': {'a': 1, 'b': 2},
-        'nested2': {'c': 3, 'd': 4}
-    }
+
+    data = {"nested1": {"a": 1, "b": 2}, "nested2": {"c": 3, "d": 4}}
 
     def setup(self):
         class NestedSerializer1(serializers.Serializer):
@@ -348,8 +354,8 @@ class TestStarredSource:
             d = serializers.IntegerField()
 
         class TestSerializer(serializers.Serializer):
-            nested1 = NestedSerializer1(source='*')
-            nested2 = NestedSerializer2(source='*')
+            nested1 = NestedSerializer1(source="*")
+            nested2 = NestedSerializer2(source="*")
 
         self.Serializer = TestSerializer
 
@@ -359,18 +365,13 @@ class TestStarredSource:
         """
         serializer = self.Serializer(data=self.data)
         assert serializer.is_valid()
-        assert serializer.validated_data == {
-            'a': 1,
-            'b': 2,
-            'c': 3,
-            'd': 4
-        }
+        assert serializer.validated_data == {"a": 1, "b": 2, "c": 3, "d": 4}
 
     def test_nested_serialize(self):
         """
         An object can be serialized into a nested representation.
         """
-        instance = {'a': 1, 'b': 2, 'c': 3, 'd': 4}
+        instance = {"a": 1, "b": 2, "c": 3, "d": 4}
         serializer = self.Serializer(instance)
         assert serializer.data == self.data
 
@@ -403,7 +404,7 @@ class TestUnicodeRepr:
 
         class ExampleObject:
             def __init__(self):
-                self.example = '한국'
+                self.example = "한국"
 
             def __repr__(self):
                 return unicode_repr(self.example)
@@ -418,18 +419,20 @@ class TestNotRequiredOutput:
         """
         'required=False' should allow a dictionary key to be missing in output.
         """
+
         class ExampleSerializer(serializers.Serializer):
             omitted = serializers.CharField(required=False)
             included = serializers.CharField()
 
-        serializer = ExampleSerializer(data={'included': 'abc'})
+        serializer = ExampleSerializer(data={"included": "abc"})
         serializer.is_valid()
-        assert serializer.data == {'included': 'abc'}
+        assert serializer.data == {"included": "abc"}
 
     def test_not_required_output_for_object(self):
         """
         'required=False' should allow an object attribute to be missing in output.
         """
+
         class ExampleSerializer(serializers.Serializer):
             omitted = serializers.CharField(required=False)
             included = serializers.CharField()
@@ -437,115 +440,146 @@ class TestNotRequiredOutput:
             def create(self, validated_data):
                 return MockObject(**validated_data)
 
-        serializer = ExampleSerializer(data={'included': 'abc'})
+        serializer = ExampleSerializer(data={"included": "abc"})
         serializer.is_valid()
         serializer.save()
-        assert serializer.data == {'included': 'abc'}
+        assert serializer.data == {"included": "abc"}
 
 
 class TestDefaultOutput:
     def setup(self):
         class ExampleSerializer(serializers.Serializer):
-            has_default = serializers.CharField(default='x')
-            has_default_callable = serializers.CharField(default=lambda: 'y')
+            has_default = serializers.CharField(default="x")
+            has_default_callable = serializers.CharField(default=lambda: "y")
             no_default = serializers.CharField()
+
         self.Serializer = ExampleSerializer
 
     def test_default_used_for_dict(self):
         """
         'default="something"' should be used if dictionary key is missing from input.
         """
-        serializer = self.Serializer({'no_default': 'abc'})
-        assert serializer.data == {'has_default': 'x', 'has_default_callable': 'y', 'no_default': 'abc'}
+        serializer = self.Serializer({"no_default": "abc"})
+        assert serializer.data == {
+            "has_default": "x",
+            "has_default_callable": "y",
+            "no_default": "abc",
+        }
 
     def test_default_used_for_object(self):
         """
         'default="something"' should be used if object attribute is missing from input.
         """
-        instance = MockObject(no_default='abc')
+        instance = MockObject(no_default="abc")
         serializer = self.Serializer(instance)
-        assert serializer.data == {'has_default': 'x', 'has_default_callable': 'y', 'no_default': 'abc'}
+        assert serializer.data == {
+            "has_default": "x",
+            "has_default_callable": "y",
+            "no_default": "abc",
+        }
 
     def test_default_not_used_when_in_dict(self):
         """
         'default="something"' should not be used if dictionary key is present in input.
         """
-        serializer = self.Serializer({'has_default': 'def', 'has_default_callable': 'ghi', 'no_default': 'abc'})
-        assert serializer.data == {'has_default': 'def', 'has_default_callable': 'ghi', 'no_default': 'abc'}
+        serializer = self.Serializer(
+            {"has_default": "def", "has_default_callable": "ghi", "no_default": "abc"}
+        )
+        assert serializer.data == {
+            "has_default": "def",
+            "has_default_callable": "ghi",
+            "no_default": "abc",
+        }
 
     def test_default_not_used_when_in_object(self):
         """
         'default="something"' should not be used if object attribute is present in input.
         """
-        instance = MockObject(has_default='def', has_default_callable='ghi', no_default='abc')
+        instance = MockObject(
+            has_default="def", has_default_callable="ghi", no_default="abc"
+        )
         serializer = self.Serializer(instance)
-        assert serializer.data == {'has_default': 'def', 'has_default_callable': 'ghi', 'no_default': 'abc'}
+        assert serializer.data == {
+            "has_default": "def",
+            "has_default_callable": "ghi",
+            "no_default": "abc",
+        }
 
     def test_default_for_dotted_source(self):
         """
         'default="something"' should be used when a traversed attribute is missing from input.
         """
+
         class Serializer(serializers.Serializer):
-            traversed = serializers.CharField(default='x', source='traversed.attr')
+            traversed = serializers.CharField(default="x", source="traversed.attr")
 
-        assert Serializer({}).data == {'traversed': 'x'}
-        assert Serializer({'traversed': {}}).data == {'traversed': 'x'}
-        assert Serializer({'traversed': None}).data == {'traversed': 'x'}
+        assert Serializer({}).data == {"traversed": "x"}
+        assert Serializer({"traversed": {}}).data == {"traversed": "x"}
+        assert Serializer({"traversed": None}).data == {"traversed": "x"}
 
-        assert Serializer({'traversed': {'attr': 'abc'}}).data == {'traversed': 'abc'}
+        assert Serializer({"traversed": {"attr": "abc"}}).data == {"traversed": "abc"}
 
     def test_default_for_multiple_dotted_source(self):
         class Serializer(serializers.Serializer):
-            c = serializers.CharField(default='x', source='a.b.c')
+            c = serializers.CharField(default="x", source="a.b.c")
 
-        assert Serializer({}).data == {'c': 'x'}
-        assert Serializer({'a': {}}).data == {'c': 'x'}
-        assert Serializer({'a': None}).data == {'c': 'x'}
-        assert Serializer({'a': {'b': {}}}).data == {'c': 'x'}
-        assert Serializer({'a': {'b': None}}).data == {'c': 'x'}
+        assert Serializer({}).data == {"c": "x"}
+        assert Serializer({"a": {}}).data == {"c": "x"}
+        assert Serializer({"a": None}).data == {"c": "x"}
+        assert Serializer({"a": {"b": {}}}).data == {"c": "x"}
+        assert Serializer({"a": {"b": None}}).data == {"c": "x"}
 
-        assert Serializer({'a': {'b': {'c': 'abc'}}}).data == {'c': 'abc'}
+        assert Serializer({"a": {"b": {"c": "abc"}}}).data == {"c": "abc"}
 
         # Same test using model objects to exercise both paths in
         # rest_framework.fields.get_attribute() (#5880)
         class ModelSerializer(serializers.Serializer):
-            target = serializers.CharField(default='x', source='target.target.name')
+            target = serializers.CharField(default="x", source="target.target.name")
 
         a = NestedForeignKeySource(name="Root Object", target=None)
-        assert ModelSerializer(a).data == {'target': 'x'}
+        assert ModelSerializer(a).data == {"target": "x"}
 
         b = NullableForeignKeySource(name="Intermediary Object", target=None)
         a.target = b
-        assert ModelSerializer(a).data == {'target': 'x'}
+        assert ModelSerializer(a).data == {"target": "x"}
 
         c = ForeignKeyTarget(name="Target Object")
         b.target = c
-        assert ModelSerializer(a).data == {'target': 'Target Object'}
+        assert ModelSerializer(a).data == {"target": "Target Object"}
 
     def test_default_for_nested_serializer(self):
         class NestedSerializer(serializers.Serializer):
-            a = serializers.CharField(default='1')
-            c = serializers.CharField(default='2', source='b.c')
+            a = serializers.CharField(default="1")
+            c = serializers.CharField(default="2", source="b.c")
 
         class Serializer(serializers.Serializer):
             nested = NestedSerializer()
 
-        assert Serializer({'nested': None}).data == {'nested': None}
-        assert Serializer({'nested': {}}).data == {'nested': {'a': '1', 'c': '2'}}
-        assert Serializer({'nested': {'a': '3', 'b': {}}}).data == {'nested': {'a': '3', 'c': '2'}}
-        assert Serializer({'nested': {'a': '3', 'b': {'c': '4'}}}).data == {'nested': {'a': '3', 'c': '4'}}
+        assert Serializer({"nested": None}).data == {"nested": None}
+        assert Serializer({"nested": {}}).data == {"nested": {"a": "1", "c": "2"}}
+        assert Serializer({"nested": {"a": "3", "b": {}}}).data == {
+            "nested": {"a": "3", "c": "2"}
+        }
+        assert Serializer({"nested": {"a": "3", "b": {"c": "4"}}}).data == {
+            "nested": {"a": "3", "c": "4"}
+        }
 
     def test_default_for_allow_null(self):
         """
         Without an explicit default, allow_null implies default=None when serializing. #5518 #5708
         """
+
         class Serializer(serializers.Serializer):
             foo = serializers.CharField()
-            bar = serializers.CharField(source='foo.bar', allow_null=True)
+            bar = serializers.CharField(source="foo.bar", allow_null=True)
             optional = serializers.CharField(required=False, allow_null=True)
 
         # allow_null=True should imply default=None when serialising:
-        assert Serializer({'foo': None}).data == {'foo': None, 'bar': None, 'optional': None, }
+        assert Serializer({"foo": None}).data == {
+            "foo": None,
+            "bar": None,
+            "optional": None,
+        }
 
 
 class TestCacheSerializerData:
@@ -554,54 +588,57 @@ class TestCacheSerializerData:
         Caching serializer data with pickle will drop the serializer info,
         but does preserve the data itself.
         """
+
         class ExampleSerializer(serializers.Serializer):
             field1 = serializers.CharField()
             field2 = serializers.CharField()
 
-        serializer = ExampleSerializer({'field1': 'a', 'field2': 'b'})
+        serializer = ExampleSerializer({"field1": "a", "field2": "b"})
         pickled = pickle.dumps(serializer.data)
         data = pickle.loads(pickled)
-        assert data == {'field1': 'a', 'field2': 'b'}
+        assert data == {"field1": "a", "field2": "b"}
 
 
 class TestDefaultInclusions:
     def setup(self):
         class ExampleSerializer(serializers.Serializer):
-            char = serializers.CharField(default='abc')
+            char = serializers.CharField(default="abc")
             integer = serializers.IntegerField()
+
         self.Serializer = ExampleSerializer
 
     def test_default_should_included_on_create(self):
-        serializer = self.Serializer(data={'integer': 456})
+        serializer = self.Serializer(data={"integer": 456})
         assert serializer.is_valid()
-        assert serializer.validated_data == {'char': 'abc', 'integer': 456}
+        assert serializer.validated_data == {"char": "abc", "integer": 456}
         assert serializer.errors == {}
 
     def test_default_should_be_included_on_update(self):
-        instance = MockObject(char='def', integer=123)
-        serializer = self.Serializer(instance, data={'integer': 456})
+        instance = MockObject(char="def", integer=123)
+        serializer = self.Serializer(instance, data={"integer": 456})
         assert serializer.is_valid()
-        assert serializer.validated_data == {'char': 'abc', 'integer': 456}
+        assert serializer.validated_data == {"char": "abc", "integer": 456}
         assert serializer.errors == {}
 
     def test_default_should_not_be_included_on_partial_update(self):
-        instance = MockObject(char='def', integer=123)
-        serializer = self.Serializer(instance, data={'integer': 456}, partial=True)
+        instance = MockObject(char="def", integer=123)
+        serializer = self.Serializer(instance, data={"integer": 456}, partial=True)
         assert serializer.is_valid()
-        assert serializer.validated_data == {'integer': 456}
+        assert serializer.validated_data == {"integer": 456}
         assert serializer.errors == {}
 
 
 class TestSerializerValidationWithCompiledRegexField:
     def setup(self):
         class ExampleSerializer(serializers.Serializer):
-            name = serializers.RegexField(re.compile(r'\d'), required=True)
+            name = serializers.RegexField(re.compile(r"\d"), required=True)
+
         self.Serializer = ExampleSerializer
 
     def test_validation_success(self):
-        serializer = self.Serializer(data={'name': '2'})
+        serializer = self.Serializer(data={"name": "2"})
         assert serializer.is_valid()
-        assert serializer.validated_data == {'name': '2'}
+        assert serializer.validated_data == {"name": "2"}
         assert serializer.errors == {}
 
 
@@ -616,9 +653,9 @@ class Test2555Regression:
         class ParentSerializer(serializers.Serializer):
             nested = NestedSerializer()
 
-        serializer = ParentSerializer(data={}, context={'foo': 'bar'})
-        assert serializer.context == {'foo': 'bar'}
-        assert serializer.fields['nested'].context == {'foo': 'bar'}
+        serializer = ParentSerializer(data={}, context={"foo": "bar"})
+        assert serializer.context == {"foo": "bar"}
+        assert serializer.fields["nested"].context == {"foo": "bar"}
 
 
 class Test4606Regression:
@@ -626,6 +663,7 @@ class Test4606Regression:
         class ExampleSerializer(serializers.Serializer):
             name = serializers.CharField(required=True)
             choices = serializers.CharField(required=True)
+
         self.Serializer = ExampleSerializer
 
     def test_4606_regression(self):
@@ -660,7 +698,7 @@ class TestDeclaredFieldInheritance:
         class Parent(serializers.ModelSerializer):
             class Meta:
                 model = MyModel
-                fields = ['f1', 'f2']
+                fields = ["f1", "f2"]
 
         class Child(Parent):
             f1 = None

@@ -16,7 +16,7 @@ class ReturnDict(OrderedDict):
     """
 
     def __init__(self, *args, **kwargs):
-        self.serializer = kwargs.pop('serializer')
+        self.serializer = kwargs.pop("serializer")
         super(ReturnDict, self).__init__(*args, **kwargs)
 
     def copy(self):
@@ -39,7 +39,7 @@ class ReturnList(list):
     """
 
     def __init__(self, *args, **kwargs):
-        self.serializer = kwargs.pop('serializer')
+        self.serializer = kwargs.pop("serializer")
         super(ReturnList, self).__init__(*args, **kwargs)
 
     def __repr__(self):
@@ -58,7 +58,7 @@ class BoundField(object):
     providing an API similar to Django forms and form fields.
     """
 
-    def __init__(self, field, value, errors, prefix=''):
+    def __init__(self, field, value, errors, prefix=""):
         self._field = field
         self._prefix = prefix
         self.value = value
@@ -73,12 +73,13 @@ class BoundField(object):
         return self._field.__class__
 
     def __repr__(self):
-        return unicode_to_repr('<%s value=%s errors=%s>' % (
-            self.__class__.__name__, self.value, self.errors
-        ))
+        return unicode_to_repr(
+            "<%s value=%s errors=%s>"
+            % (self.__class__.__name__, self.value, self.errors)
+        )
 
     def as_form_field(self):
-        value = '' if (self.value is None or self.value is False) else self.value
+        value = "" if (self.value is None or self.value is False) else self.value
         return self.__class__(self._field, value, self.errors, self._prefix)
 
 
@@ -87,7 +88,7 @@ class JSONBoundField(BoundField):
         value = self.value
         # When HTML form input is used and the input is not valid
         # value will be a JSONString, rather than a JSON primitive.
-        if not getattr(value, 'is_json_string', False):
+        if not getattr(value, "is_json_string", False):
             try:
                 value = json.dumps(self.value, sort_keys=True, indent=4)
             except (TypeError, ValueError):
@@ -102,8 +103,8 @@ class NestedBoundField(BoundField):
     `BoundField` that is used for serializer fields.
     """
 
-    def __init__(self, field, value, errors, prefix=''):
-        if value is None or value is '':
+    def __init__(self, field, value, errors, prefix=""):
+        if value is None or value is "":
             value = {}
         super(NestedBoundField, self).__init__(field, value, errors, prefix)
 
@@ -115,9 +116,9 @@ class NestedBoundField(BoundField):
         field = self.fields[key]
         value = self.value.get(key) if self.value else None
         error = self.errors.get(key) if isinstance(self.errors, dict) else None
-        if hasattr(field, 'fields'):
-            return NestedBoundField(field, value, error, prefix=self.name + '.')
-        return BoundField(field, value, error, prefix=self.name + '.')
+        if hasattr(field, "fields"):
+            return NestedBoundField(field, value, error, prefix=self.name + ".")
+        return BoundField(field, value, error, prefix=self.name + ".")
 
     def as_form_field(self):
         values = {}
@@ -125,7 +126,9 @@ class NestedBoundField(BoundField):
             if isinstance(value, (list, dict)):
                 values[key] = value
             else:
-                values[key] = '' if (value is None or value is False) else force_text(value)
+                values[key] = (
+                    "" if (value is None or value is False) else force_text(value)
+                )
         return self.__class__(self._field, values, self.errors, self._prefix)
 
 

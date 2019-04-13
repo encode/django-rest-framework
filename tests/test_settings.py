@@ -10,11 +10,9 @@ class TestSettings(TestCase):
         """
         Make sure import errors are captured and raised sensibly.
         """
-        settings = APISettings({
-            'DEFAULT_RENDERER_CLASSES': [
-                'tests.invalid_module.InvalidClassName'
-            ]
-        })
+        settings = APISettings(
+            {"DEFAULT_RENDERER_CLASSES": ["tests.invalid_module.InvalidClassName"]}
+        )
         with self.assertRaises(ImportError):
             settings.DEFAULT_RENDERER_CLASSES
 
@@ -24,9 +22,7 @@ class TestSettings(TestCase):
         is set.
         """
         with self.assertRaises(RuntimeError):
-            APISettings({
-                'MAX_PAGINATE_BY': 100
-            })
+            APISettings({"MAX_PAGINATE_BY": 100})
 
     def test_compatibility_with_override_settings(self):
         """
@@ -40,7 +36,7 @@ class TestSettings(TestCase):
         """
         assert api_settings.PAGE_SIZE is None, "Checking a known default should be None"
 
-        with override_settings(REST_FRAMEWORK={'PAGE_SIZE': 10}):
+        with override_settings(REST_FRAMEWORK={"PAGE_SIZE": 10}):
             assert api_settings.PAGE_SIZE == 10, "Setting should have been updated"
 
         assert api_settings.PAGE_SIZE is None, "Setting should have been restored"
@@ -48,12 +44,10 @@ class TestSettings(TestCase):
 
 class TestSettingTypes(TestCase):
     def test_settings_consistently_coerced_to_list(self):
-        settings = APISettings({
-            'DEFAULT_THROTTLE_CLASSES': ('rest_framework.throttling.BaseThrottle',)
-        })
+        settings = APISettings(
+            {"DEFAULT_THROTTLE_CLASSES": ("rest_framework.throttling.BaseThrottle",)}
+        )
         self.assertTrue(isinstance(settings.DEFAULT_THROTTLE_CLASSES, list))
 
-        settings = APISettings({
-            'DEFAULT_THROTTLE_CLASSES': ()
-        })
+        settings = APISettings({"DEFAULT_THROTTLE_CLASSES": ()})
         self.assertTrue(isinstance(settings.DEFAULT_THROTTLE_CLASSES, list))

@@ -19,19 +19,20 @@ class BaseVersioning(object):
     version_param = api_settings.VERSION_PARAM
 
     def determine_version(self, request, *args, **kwargs):
-        msg = '{cls}.determine_version() must be implemented.'
-        raise NotImplementedError(msg.format(
-            cls=self.__class__.__name__
-        ))
+        msg = "{cls}.determine_version() must be implemented."
+        raise NotImplementedError(msg.format(cls=self.__class__.__name__))
 
-    def reverse(self, viewname, args=None, kwargs=None, request=None, format=None, **extra):
+    def reverse(
+        self, viewname, args=None, kwargs=None, request=None, format=None, **extra
+    ):
         return _reverse(viewname, args, kwargs, request, format, **extra)
 
     def is_allowed_version(self, version):
         if not self.allowed_versions:
             return True
-        return ((version is not None and version == self.default_version) or
-                (version in self.allowed_versions))
+        return (version is not None and version == self.default_version) or (
+            version in self.allowed_versions
+        )
 
 
 class AcceptHeaderVersioning(BaseVersioning):
@@ -40,6 +41,7 @@ class AcceptHeaderVersioning(BaseVersioning):
     Host: example.com
     Accept: application/json; version=1.0
     """
+
     invalid_version_message = _('Invalid version in "Accept" header.')
 
     def determine_version(self, request, *args, **kwargs):
@@ -71,7 +73,8 @@ class URLPathVersioning(BaseVersioning):
     Host: example.com
     Accept: application/json
     """
-    invalid_version_message = _('Invalid version in URL path.')
+
+    invalid_version_message = _("Invalid version in URL path.")
 
     def determine_version(self, request, *args, **kwargs):
         version = kwargs.get(self.version_param, self.default_version)
@@ -82,7 +85,9 @@ class URLPathVersioning(BaseVersioning):
             raise exceptions.NotFound(self.invalid_version_message)
         return version
 
-    def reverse(self, viewname, args=None, kwargs=None, request=None, format=None, **extra):
+    def reverse(
+        self, viewname, args=None, kwargs=None, request=None, format=None, **extra
+    ):
         if request.version is not None:
             kwargs = {} if (kwargs is None) else kwargs
             kwargs[self.version_param] = request.version
@@ -116,21 +121,26 @@ class NamespaceVersioning(BaseVersioning):
     Host: example.com
     Accept: application/json
     """
-    invalid_version_message = _('Invalid version in URL path. Does not match any version namespace.')
+
+    invalid_version_message = _(
+        "Invalid version in URL path. Does not match any version namespace."
+    )
 
     def determine_version(self, request, *args, **kwargs):
-        resolver_match = getattr(request, 'resolver_match', None)
+        resolver_match = getattr(request, "resolver_match", None)
         if resolver_match is None or not resolver_match.namespace:
             return self.default_version
 
         # Allow for possibly nested namespaces.
-        possible_versions = resolver_match.namespace.split(':')
+        possible_versions = resolver_match.namespace.split(":")
         for version in possible_versions:
             if self.is_allowed_version(version):
                 return version
         raise exceptions.NotFound(self.invalid_version_message)
 
-    def reverse(self, viewname, args=None, kwargs=None, request=None, format=None, **extra):
+    def reverse(
+        self, viewname, args=None, kwargs=None, request=None, format=None, **extra
+    ):
         if request.version is not None:
             viewname = self.get_versioned_viewname(viewname, request)
         return super(NamespaceVersioning, self).reverse(
@@ -138,7 +148,7 @@ class NamespaceVersioning(BaseVersioning):
         )
 
     def get_versioned_viewname(self, viewname, request):
-        return request.version + ':' + viewname
+        return request.version + ":" + viewname
 
 
 class HostNameVersioning(BaseVersioning):
@@ -147,11 +157,12 @@ class HostNameVersioning(BaseVersioning):
     Host: v1.example.com
     Accept: application/json
     """
-    hostname_regex = re.compile(r'^([a-zA-Z0-9]+)\.[a-zA-Z0-9]+\.[a-zA-Z0-9]+$')
-    invalid_version_message = _('Invalid version in hostname.')
+
+    hostname_regex = re.compile(r"^([a-zA-Z0-9]+)\.[a-zA-Z0-9]+\.[a-zA-Z0-9]+$")
+    invalid_version_message = _("Invalid version in hostname.")
 
     def determine_version(self, request, *args, **kwargs):
-        hostname, separator, port = request.get_host().partition(':')
+        hostname, separator, port = request.get_host().partition(":")
         match = self.hostname_regex.match(hostname)
         if not match:
             return self.default_version
@@ -170,7 +181,8 @@ class QueryParameterVersioning(BaseVersioning):
     Host: example.com
     Accept: application/json
     """
-    invalid_version_message = _('Invalid version in query parameter.')
+
+    invalid_version_message = _("Invalid version in query parameter.")
 
     def determine_version(self, request, *args, **kwargs):
         version = request.query_params.get(self.version_param, self.default_version)
@@ -178,7 +190,9 @@ class QueryParameterVersioning(BaseVersioning):
             raise exceptions.NotFound(self.invalid_version_message)
         return version
 
-    def reverse(self, viewname, args=None, kwargs=None, request=None, format=None, **extra):
+    def reverse(
+        self, viewname, args=None, kwargs=None, request=None, format=None, **extra
+    ):
         url = super(QueryParameterVersioning, self).reverse(
             viewname, args, kwargs, request, format, **extra
         )

@@ -3,9 +3,9 @@ from __future__ import unicode_literals
 from django.db import models
 from django.test import TestCase
 
+# Models
 from rest_framework import serializers
 from tests.models import RESTFrameworkModel
-# Models
 from tests.test_multitable_inheritance import ChildModel
 
 
@@ -19,25 +19,24 @@ class ChildAssociatedModel(RESTFrameworkModel):
 class DerivedModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = ChildModel
-        fields = ['id', 'name1', 'name2', 'childassociatedmodel']
+        fields = ["id", "name1", "name2", "childassociatedmodel"]
 
 
 class ChildAssociatedModelSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = ChildAssociatedModel
-        fields = ['id', 'child_name']
+        fields = ["id", "child_name"]
 
 
 # Tests
 class InheritedModelSerializationTests(TestCase):
-
     def test_multitable_inherited_model_fields_as_expected(self):
         """
         Assert that the parent pointer field is not included in the fields
         serialized fields
         """
-        child = ChildModel(name1='parent name', name2='child name')
+        child = ChildModel(name1="parent name", name2="child name")
         serializer = DerivedModelSerializer(child)
-        self.assertEqual(set(serializer.data),
-                         {'name1', 'name2', 'id', 'childassociatedmodel'})
+        self.assertEqual(
+            set(serializer.data), {"name1", "name2", "id", "childassociatedmodel"}
+        )

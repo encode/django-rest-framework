@@ -52,123 +52,125 @@ class ResourceViewSet(ModelViewSet):
     def detail_action(self, request, *args, **kwargs):
         raise NotImplementedError
 
-    @action(detail=True, name='Custom Name')
+    @action(detail=True, name="Custom Name")
     def named_action(self, request, *args, **kwargs):
         raise NotImplementedError
 
-    @action(detail=True, suffix='Custom Suffix')
+    @action(detail=True, suffix="Custom Suffix")
     def suffixed_action(self, request, *args, **kwargs):
         raise NotImplementedError
 
 
 router = SimpleRouter()
-router.register(r'resources', ResourceViewSet)
+router.register(r"resources", ResourceViewSet)
 urlpatterns = [
-    url(r'^$', Root.as_view()),
-    url(r'^resource/$', ResourceRoot.as_view()),
-    url(r'^resource/customname$', CustomNameResourceInstance.as_view()),
-    url(r'^resource/(?P<key>[0-9]+)$', ResourceInstance.as_view()),
-    url(r'^resource/(?P<key>[0-9]+)/$', NestedResourceRoot.as_view()),
-    url(r'^resource/(?P<key>[0-9]+)/(?P<other>[A-Za-z]+)$', NestedResourceInstance.as_view()),
+    url(r"^$", Root.as_view()),
+    url(r"^resource/$", ResourceRoot.as_view()),
+    url(r"^resource/customname$", CustomNameResourceInstance.as_view()),
+    url(r"^resource/(?P<key>[0-9]+)$", ResourceInstance.as_view()),
+    url(r"^resource/(?P<key>[0-9]+)/$", NestedResourceRoot.as_view()),
+    url(
+        r"^resource/(?P<key>[0-9]+)/(?P<other>[A-Za-z]+)$",
+        NestedResourceInstance.as_view(),
+    ),
 ]
 urlpatterns += router.urls
 
 
-@override_settings(ROOT_URLCONF='tests.test_utils')
+@override_settings(ROOT_URLCONF="tests.test_utils")
 class BreadcrumbTests(TestCase):
     """
     Tests the breadcrumb functionality used by the HTML renderer.
     """
+
     def test_root_breadcrumbs(self):
-        url = '/'
-        assert get_breadcrumbs(url) == [('Root', '/')]
+        url = "/"
+        assert get_breadcrumbs(url) == [("Root", "/")]
 
     def test_resource_root_breadcrumbs(self):
-        url = '/resource/'
-        assert get_breadcrumbs(url) == [
-            ('Root', '/'), ('Resource Root', '/resource/')
-        ]
+        url = "/resource/"
+        assert get_breadcrumbs(url) == [("Root", "/"), ("Resource Root", "/resource/")]
 
     def test_resource_instance_breadcrumbs(self):
-        url = '/resource/123'
+        url = "/resource/123"
         assert get_breadcrumbs(url) == [
-            ('Root', '/'),
-            ('Resource Root', '/resource/'),
-            ('Resource Instance', '/resource/123')
+            ("Root", "/"),
+            ("Resource Root", "/resource/"),
+            ("Resource Instance", "/resource/123"),
         ]
 
     def test_resource_instance_customname_breadcrumbs(self):
-        url = '/resource/customname'
+        url = "/resource/customname"
         assert get_breadcrumbs(url) == [
-            ('Root', '/'),
-            ('Resource Root', '/resource/'),
-            ('Foo', '/resource/customname')
+            ("Root", "/"),
+            ("Resource Root", "/resource/"),
+            ("Foo", "/resource/customname"),
         ]
 
     def test_nested_resource_breadcrumbs(self):
-        url = '/resource/123/'
+        url = "/resource/123/"
         assert get_breadcrumbs(url) == [
-            ('Root', '/'),
-            ('Resource Root', '/resource/'),
-            ('Resource Instance', '/resource/123'),
-            ('Nested Resource Root', '/resource/123/')
+            ("Root", "/"),
+            ("Resource Root", "/resource/"),
+            ("Resource Instance", "/resource/123"),
+            ("Nested Resource Root", "/resource/123/"),
         ]
 
     def test_nested_resource_instance_breadcrumbs(self):
-        url = '/resource/123/abc'
+        url = "/resource/123/abc"
         assert get_breadcrumbs(url) == [
-            ('Root', '/'),
-            ('Resource Root', '/resource/'),
-            ('Resource Instance', '/resource/123'),
-            ('Nested Resource Root', '/resource/123/'),
-            ('Nested Resource Instance', '/resource/123/abc')
+            ("Root", "/"),
+            ("Resource Root", "/resource/"),
+            ("Resource Instance", "/resource/123"),
+            ("Nested Resource Root", "/resource/123/"),
+            ("Nested Resource Instance", "/resource/123/abc"),
         ]
 
     def test_broken_url_breadcrumbs_handled_gracefully(self):
-        url = '/foobar'
-        assert get_breadcrumbs(url) == [('Root', '/')]
+        url = "/foobar"
+        assert get_breadcrumbs(url) == [("Root", "/")]
 
     def test_modelviewset_resource_instance_breadcrumbs(self):
-        url = '/resources/1/'
+        url = "/resources/1/"
         assert get_breadcrumbs(url) == [
-            ('Root', '/'),
-            ('Resource List', '/resources/'),
-            ('Resource Instance', '/resources/1/')
+            ("Root", "/"),
+            ("Resource List", "/resources/"),
+            ("Resource Instance", "/resources/1/"),
         ]
 
     def test_modelviewset_list_action_breadcrumbs(self):
-        url = '/resources/list_action/'
+        url = "/resources/list_action/"
         assert get_breadcrumbs(url) == [
-            ('Root', '/'),
-            ('Resource List', '/resources/'),
-            ('List action', '/resources/list_action/'),
+            ("Root", "/"),
+            ("Resource List", "/resources/"),
+            ("List action", "/resources/list_action/"),
         ]
 
     def test_modelviewset_detail_action_breadcrumbs(self):
-        url = '/resources/1/detail_action/'
+        url = "/resources/1/detail_action/"
         assert get_breadcrumbs(url) == [
-            ('Root', '/'),
-            ('Resource List', '/resources/'),
-            ('Resource Instance', '/resources/1/'),
-            ('Detail action', '/resources/1/detail_action/'),
+            ("Root", "/"),
+            ("Resource List", "/resources/"),
+            ("Resource Instance", "/resources/1/"),
+            ("Detail action", "/resources/1/detail_action/"),
         ]
 
     def test_modelviewset_action_name_kwarg(self):
-        url = '/resources/1/named_action/'
+        url = "/resources/1/named_action/"
         assert get_breadcrumbs(url) == [
-            ('Root', '/'),
-            ('Resource List', '/resources/'),
-            ('Resource Instance', '/resources/1/'),
-            ('Custom Name', '/resources/1/named_action/'),
+            ("Root", "/"),
+            ("Resource List", "/resources/"),
+            ("Resource Instance", "/resources/1/"),
+            ("Custom Name", "/resources/1/named_action/"),
         ]
 
     def test_modelviewset_action_suffix_kwarg(self):
-        url = '/resources/1/suffixed_action/'
+        url = "/resources/1/suffixed_action/"
         assert get_breadcrumbs(url) == [
-            ('Root', '/'),
-            ('Resource List', '/resources/'),
-            ('Resource Instance', '/resources/1/'),
-            ('Resource Custom Suffix', '/resources/1/suffixed_action/'),
+            ("Root", "/"),
+            ("Resource List", "/resources/"),
+            ("Resource Instance", "/resources/1/"),
+            ("Resource Custom Suffix", "/resources/1/suffixed_action/"),
         ]
 
 
@@ -179,10 +181,10 @@ class JsonFloatTests(TestCase):
 
     def test_dumps(self):
         with self.assertRaises(ValueError):
-            json.dumps(float('inf'))
+            json.dumps(float("inf"))
 
         with self.assertRaises(ValueError):
-            json.dumps(float('nan'))
+            json.dumps(float("nan"))
 
     def test_loads(self):
         with self.assertRaises(ValueError):
@@ -203,30 +205,31 @@ class UrlsReplaceQueryParamTests(TestCase):
     """
     Tests the replace_query_param functionality.
     """
+
     def test_valid_unicode_preserved(self):
         # Encoded string: '查询'
-        q = '/?q=%E6%9F%A5%E8%AF%A2'
-        new_key = 'page'
+        q = "/?q=%E6%9F%A5%E8%AF%A2"
+        new_key = "page"
         new_value = 2
-        value = '%E6%9F%A5%E8%AF%A2'
+        value = "%E6%9F%A5%E8%AF%A2"
 
         assert new_key in replace_query_param(q, new_key, new_value)
         assert value in replace_query_param(q, new_key, new_value)
 
     def test_valid_unicode_replaced(self):
-        q = '/?page=1'
-        value = '1'
-        new_key = 'q'
-        new_value = '%E6%9F%A5%E8%AF%A2'
+        q = "/?page=1"
+        value = "1"
+        new_key = "q"
+        new_value = "%E6%9F%A5%E8%AF%A2"
 
         assert new_key in replace_query_param(q, new_key, new_value)
         assert value in replace_query_param(q, new_key, new_value)
 
     def test_invalid_unicode(self):
         # Encoded string: '��<script>alert(313)</script>=1'
-        q = '/e/?%FF%FE%3C%73%63%72%69%70%74%3E%61%6C%65%72%74%28%33%31%33%29%3C%2F%73%63%72%69%70%74%3E=1'
-        key = 'from'
-        value = 'login'
+        q = "/e/?%FF%FE%3C%73%63%72%69%70%74%3E%61%6C%65%72%74%28%33%31%33%29%3C%2F%73%63%72%69%70%74%3E=1"
+        key = "from"
+        value = "login"
 
         assert key in replace_query_param(q, key, value)
 
@@ -235,28 +238,29 @@ class UrlsRemoveQueryParamTests(TestCase):
     """
     Tests the remove_query_param functionality.
     """
+
     def test_valid_unicode_preserved(self):
-        q = '/?q=%E6%9F%A5%E8%AF%A2'
-        new_key = 'page'
+        q = "/?q=%E6%9F%A5%E8%AF%A2"
+        new_key = "page"
         new_value = 2
-        value = '%E6%9F%A5%E8%AF%A2'
+        value = "%E6%9F%A5%E8%AF%A2"
 
         assert new_key in replace_query_param(q, new_key, new_value)
         assert value in replace_query_param(q, new_key, new_value)
 
     def test_valid_unicode_removed(self):
-        q = '/?page=2345&q=%E6%9F%A5%E8%AF%A2'
-        key = 'page'
-        value = '2345'
-        removed_key = 'q'
+        q = "/?page=2345&q=%E6%9F%A5%E8%AF%A2"
+        key = "page"
+        value = "2345"
+        removed_key = "q"
 
         assert key in remove_query_param(q, removed_key)
         assert value in remove_query_param(q, removed_key)
-        assert '%' not in remove_query_param(q, removed_key)
+        assert "%" not in remove_query_param(q, removed_key)
 
     def test_invalid_unicode(self):
-        q = '/?from=login&page=2&%FF%FE%3C%73%63%72%69%70%74%3E%61%6C%65%72%74%28%33%31%33%29%3C%2F%73%63%72%69%70%74%3E=1'
-        key = 'from'
-        removed_key = 'page'
+        q = "/?from=login&page=2&%FF%FE%3C%73%63%72%69%70%74%3E%61%6C%65%72%74%28%33%31%33%29%3C%2F%73%63%72%69%70%74%3E=1"
+        key = "from"
+        removed_key = "page"
 
         assert key in remove_query_param(q, removed_key)

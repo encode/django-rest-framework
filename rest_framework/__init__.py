@@ -7,22 +7,22 @@ ______ _____ _____ _____    __
 \_| \_\____/\____/  \_/   |_| |_|  \__,_|_| |_| |_|\___| \_/\_/ \___/|_|  |_|\_|
 """
 
-__title__ = 'Django REST framework'
-__version__ = '3.9.2'
-__author__ = 'Tom Christie'
-__license__ = 'BSD 2-Clause'
-__copyright__ = 'Copyright 2011-2019 Encode OSS Ltd'
+__title__ = "Django REST framework"
+__version__ = "3.9.2"
+__author__ = "Tom Christie"
+__license__ = "BSD 2-Clause"
+__copyright__ = "Copyright 2011-2019 Encode OSS Ltd"
 
 # Version synonym
 VERSION = __version__
 
 # Header encoding (see RFC5987)
-HTTP_HEADER_ENCODING = 'iso-8859-1'
+HTTP_HEADER_ENCODING = "iso-8859-1"
 
 # Default datetime input and output formats
-ISO_8601 = 'iso-8601'
+ISO_8601 = "iso-8601"
 
-default_app_config = 'rest_framework.apps.RestFrameworkConfig'
+default_app_config = "rest_framework.apps.RestFrameworkConfig"
 
 
 class RemovedInDRF310Warning(DeprecationWarning):

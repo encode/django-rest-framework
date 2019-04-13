@@ -7,6 +7,7 @@ from rest_framework.settings import api_settings
 from rest_framework.test import APIRequestFactory
 from rest_framework.views import APIView
 
+
 factory = APIRequestFactory()
 
 
@@ -20,7 +21,7 @@ class ErrorView(APIView):
         ExampleSerializer(data={}).is_valid(raise_exception=True)
 
 
-@api_view(['GET'])
+@api_view(["GET"])
 def error_view(request):
     ExampleSerializer(data={}).is_valid(raise_exception=True)
 
@@ -36,14 +37,8 @@ class TestValidationErrorWithFullDetails(TestCase):
         api_settings.EXCEPTION_HANDLER = exception_handler
 
         self.expected_response_data = {
-            'char': [{
-                'message': 'This field is required.',
-                'code': 'required',
-            }],
-            'integer': [{
-                'message': 'This field is required.',
-                'code': 'required'
-            }],
+            "char": [{"message": "This field is required.", "code": "required"}],
+            "integer": [{"message": "This field is required.", "code": "required"}],
         }
 
     def tearDown(self):
@@ -52,7 +47,7 @@ class TestValidationErrorWithFullDetails(TestCase):
     def test_class_based_view_exception_handler(self):
         view = ErrorView.as_view()
 
-        request = factory.get('/', content_type='application/json')
+        request = factory.get("/", content_type="application/json")
         response = view(request)
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.data == self.expected_response_data
@@ -60,7 +55,7 @@ class TestValidationErrorWithFullDetails(TestCase):
     def test_function_based_view_exception_handler(self):
         view = error_view
 
-        request = factory.get('/', content_type='application/json')
+        request = factory.get("/", content_type="application/json")
         response = view(request)
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.data == self.expected_response_data
@@ -76,10 +71,7 @@ class TestValidationErrorWithCodes(TestCase):
 
         api_settings.EXCEPTION_HANDLER = exception_handler
 
-        self.expected_response_data = {
-            'char': ['required'],
-            'integer': ['required'],
-        }
+        self.expected_response_data = {"char": ["required"], "integer": ["required"]}
 
     def tearDown(self):
         api_settings.EXCEPTION_HANDLER = self.DEFAULT_HANDLER
@@ -87,7 +79,7 @@ class TestValidationErrorWithCodes(TestCase):
     def test_class_based_view_exception_handler(self):
         view = ErrorView.as_view()
 
-        request = factory.get('/', content_type='application/json')
+        request = factory.get("/", content_type="application/json")
         response = view(request)
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.data == self.expected_response_data
@@ -95,7 +87,7 @@ class TestValidationErrorWithCodes(TestCase):
     def test_function_based_view_exception_handler(self):
         view = error_view
 
-        request = factory.get('/', content_type='application/json')
+        request = factory.get("/", content_type="application/json")
         response = view(request)
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.data == self.expected_response_data

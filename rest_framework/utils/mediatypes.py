@@ -49,20 +49,30 @@ def order_by_precedence(media_type_lst):
 @python_2_unicode_compatible
 class _MediaType(object):
     def __init__(self, media_type_str):
-        self.orig = '' if (media_type_str is None) else media_type_str
-        self.full_type, self.params = parse_header(self.orig.encode(HTTP_HEADER_ENCODING))
-        self.main_type, sep, self.sub_type = self.full_type.partition('/')
+        self.orig = "" if (media_type_str is None) else media_type_str
+        self.full_type, self.params = parse_header(
+            self.orig.encode(HTTP_HEADER_ENCODING)
+        )
+        self.main_type, sep, self.sub_type = self.full_type.partition("/")
 
     def match(self, other):
         """Return true if this MediaType satisfies the given MediaType."""
         for key in self.params:
-            if key != 'q' and other.params.get(key, None) != self.params.get(key, None):
+            if key != "q" and other.params.get(key, None) != self.params.get(key, None):
                 return False
 
-        if self.sub_type != '*' and other.sub_type != '*' and other.sub_type != self.sub_type:
+        if (
+            self.sub_type != "*"
+            and other.sub_type != "*"
+            and other.sub_type != self.sub_type
+        ):
             return False
 
-        if self.main_type != '*' and other.main_type != '*' and other.main_type != self.main_type:
+        if (
+            self.main_type != "*"
+            and other.main_type != "*"
+            and other.main_type != self.main_type
+        ):
             return False
 
         return True
@@ -72,16 +82,16 @@ class _MediaType(object):
         """
         Return a precedence level from 0-3 for the media type given how specific it is.
         """
-        if self.main_type == '*':
+        if self.main_type == "*":
             return 0
-        elif self.sub_type == '*':
+        elif self.sub_type == "*":
             return 1
-        elif not self.params or list(self.params) == ['q']:
+        elif not self.params or list(self.params) == ["q"]:
             return 2
         return 3
 
     def __str__(self):
         ret = "%s/%s" % (self.main_type, self.sub_type)
         for key, val in self.params.items():
-            ret += "; %s=%s" % (key, val.decode('ascii'))
+            ret += "; %s=%s" % (key, val.decode("ascii"))
         return ret

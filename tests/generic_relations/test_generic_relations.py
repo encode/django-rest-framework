@@ -9,11 +9,11 @@ from .models import Bookmark, Note, Tag
 
 class TestGenericRelations(TestCase):
     def setUp(self):
-        self.bookmark = Bookmark.objects.create(url='https://www.djangoproject.com/')
-        Tag.objects.create(tagged_item=self.bookmark, tag='django')
-        Tag.objects.create(tagged_item=self.bookmark, tag='python')
-        self.note = Note.objects.create(text='Remember the milk')
-        Tag.objects.create(tagged_item=self.note, tag='reminder')
+        self.bookmark = Bookmark.objects.create(url="https://www.djangoproject.com/")
+        Tag.objects.create(tagged_item=self.bookmark, tag="django")
+        Tag.objects.create(tagged_item=self.bookmark, tag="python")
+        self.note = Note.objects.create(text="Remember the milk")
+        Tag.objects.create(tagged_item=self.note, tag="reminder")
 
     def test_generic_relation(self):
         """
@@ -26,12 +26,12 @@ class TestGenericRelations(TestCase):
 
             class Meta:
                 model = Bookmark
-                fields = ('tags', 'url')
+                fields = ("tags", "url")
 
         serializer = BookmarkSerializer(self.bookmark)
         expected = {
-            'tags': ['django', 'python'],
-            'url': 'https://www.djangoproject.com/'
+            "tags": ["django", "python"],
+            "url": "https://www.djangoproject.com/",
         }
         assert serializer.data == expected
 
@@ -46,21 +46,18 @@ class TestGenericRelations(TestCase):
 
             class Meta:
                 model = Tag
-                fields = ('tag', 'tagged_item')
+                fields = ("tag", "tagged_item")
 
         serializer = TagSerializer(Tag.objects.all(), many=True)
         expected = [
             {
-                'tag': 'django',
-                'tagged_item': 'Bookmark: https://www.djangoproject.com/'
+                "tag": "django",
+                "tagged_item": "Bookmark: https://www.djangoproject.com/",
             },
             {
-                'tag': 'python',
-                'tagged_item': 'Bookmark: https://www.djangoproject.com/'
+                "tag": "python",
+                "tagged_item": "Bookmark: https://www.djangoproject.com/",
             },
-            {
-                'tag': 'reminder',
-                'tagged_item': 'Note: Remember the milk'
-            }
+            {"tag": "reminder", "tagged_item": "Note: Remember the milk"},
         ]
         assert serializer.data == expected

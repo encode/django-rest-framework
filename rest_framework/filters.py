@@ -18,9 +18,7 @@ from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import RemovedInDRF310Warning
-from rest_framework.compat import (
-    coreapi, coreschema, distinct, is_guardian_installed
-)
+from rest_framework.compat import coreapi, coreschema, distinct, is_guardian_installed
 from rest_framework.settings import api_settings
 
 
@@ -36,23 +34,22 @@ class BaseFilterBackend(object):
         raise NotImplementedError(".filter_queryset() must be overridden.")
 
     def get_schema_fields(self, view):
-        assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
-        assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
+        assert (
+            coreapi is not None
+        ), "coreapi must be installed to use `get_schema_fields()`"
+        assert (
+            coreschema is not None
+        ), "coreschema must be installed to use `get_schema_fields()`"
         return []
 
 
 class SearchFilter(BaseFilterBackend):
     # The URL query parameter used for the search.
     search_param = api_settings.SEARCH_PARAM
-    template = 'rest_framework/filters/search.html'
-    lookup_prefixes = {
-        '^': 'istartswith',
-        '=': 'iexact',
-        '@': 'search',
-        '$': 'iregex',
-    }
-    search_title = _('Search')
-    search_description = _('A search term.')
+    template = "rest_framework/filters/search.html"
+    lookup_prefixes = {"^": "istartswith", "=": "iexact", "@": "search", "$": "iregex"}
+    search_title = _("Search")
+    search_description = _("A search term.")
 
     def get_search_fields(self, view, request):
         """
@@ -60,22 +57,22 @@ class SearchFilter(BaseFilterBackend):
         passed to this method. Sub-classes can override this method to
         dynamically change the search fields based on request content.
         """
-        return getattr(view, 'search_fields', None)
+        return getattr(view, "search_fields", None)
 
     def get_search_terms(self, request):
         """
         Search terms are set by a ?search=... query parameter,
         and may be comma and/or whitespace delimited.
         """
-        params = request.query_params.get(self.search_param, '')
-        return params.replace(',', ' ').split()
+        params = request.query_params.get(self.search_param, "")
+        return params.replace(",", " ").split()
 
     def construct_search(self, field_name):
         lookup = self.lookup_prefixes.get(field_name[0])
         if lookup:
             field_name = field_name[1:]
         else:
-            lookup = 'icontains'
+            lookup = "icontains"
         return LOOKUP_SEP.join([field_name, lookup])
 
     def must_call_distinct(self, queryset, search_fields):
@@ -87,12 +84,15 @@ class SearchFilter(BaseFilterBackend):
             if search_field[0] in self.lookup_prefixes:
                 search_field = search_field[1:]
             # Annotated fields do not need to be distinct
-            if isinstance(queryset, models.QuerySet) and search_field in queryset.query.annotations:
+            if (
+                isinstance(queryset, models.QuerySet)
+                and search_field in queryset.query.annotations
+            ):
                 return False
             parts = search_field.split(LOOKUP_SEP)
             for part in parts:
                 field = opts.get_field(part)
-                if hasattr(field, 'get_path_info'):
+                if hasattr(field, "get_path_info"):
                     # This field is a relation, update opts to follow the relation
                     path_info = field.get_path_info()
                     opts = path_info[-1].to_opts
@@ -117,8 +117,7 @@ class SearchFilter(BaseFilterBackend):
         conditions = []
         for search_term in search_terms:
             queries = [
-                models.Q(**{orm_lookup: search_term})
-                for orm_lookup in orm_lookups
+                models.Q(**{orm_lookup: search_term}) for orm_lookup in orm_lookups
             ]
             conditions.append(reduce(operator.or_, queries))
         queryset = queryset.filter(reduce(operator.and_, conditions))
@@ -132,30 +131,31 @@ class SearchFilter(BaseFilterBackend):
         return queryset
 
     def to_html(self, request, queryset, view):
-        if not getattr(view, 'search_fields', None):
-            return ''
+        if not getattr(view, "search_fields", None):
+            return ""
 
         term = self.get_search_terms(request)
-        term = term[0] if term else ''
-        context = {
-            'param': self.search_param,
-            'term': term
-        }
+        term = term[0] if term else ""
+        context = {"param": self.search_param, "term": term}
         template = loader.get_template(self.template)
         return template.render(context)
 
     def get_schema_fields(self, view):
-        assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
-        assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
+        assert (
+            coreapi is not None
+        ), "coreapi must be installed to use `get_schema_fields()`"
+        assert (
+            coreschema is not None
+        ), "coreschema must be installed to use `get_schema_fields()`"
         return [
             coreapi.Field(
                 name=self.search_param,
                 required=False,
-                location='query',
+                location="query",
                 schema=coreschema.String(
                     title=force_text(self.search_title),
-                    description=force_text(self.search_description)
-                )
+                    description=force_text(self.search_description),
+                ),
             )
         ]
 
@@ -164,9 +164,9 @@ class OrderingFilter(BaseFilterBackend):
     # The URL query parameter used for the ordering.
     ordering_param = api_settings.ORDERING_PARAM
     ordering_fields = None
-    ordering_title = _('Ordering')
-    ordering_description = _('Which field to use when ordering the results.')
-    template = 'rest_framework/filters/ordering.html'
+    ordering_title = _("Ordering")
+    ordering_description = _("Which field to use when ordering the results.")
+    template = "rest_framework/filters/ordering.html"
 
     def get_ordering(self, request, queryset, view):
         """
@@ -178,7 +178,7 @@ class OrderingFilter(BaseFilterBackend):
         """
         params = request.query_params.get(self.ordering_param)
         if params:
-            fields = [param.strip() for param in params.split(',')]
+            fields = [param.strip() for param in params.split(",")]
             ordering = self.remove_invalid_fields(queryset, fields, view, request)
             if ordering:
                 return ordering
@@ -187,7 +187,7 @@ class OrderingFilter(BaseFilterBackend):
         return self.get_default_ordering(view)
 
     def get_default_ordering(self, view):
-        ordering = getattr(view, 'ordering', None)
+        ordering = getattr(view, "ordering", None)
         if isinstance(ordering, six.string_types):
             return (ordering,)
         return ordering
@@ -195,7 +195,7 @@ class OrderingFilter(BaseFilterBackend):
     def get_default_valid_fields(self, queryset, view, context={}):
         # If `ordering_fields` is not specified, then we determine a default
         # based on the serializer class, if one exists on the view.
-        if hasattr(view, 'get_serializer_class'):
+        if hasattr(view, "get_serializer_class"):
             try:
                 serializer_class = view.get_serializer_class()
             except AssertionError:
@@ -203,7 +203,7 @@ class OrderingFilter(BaseFilterBackend):
                 # no serializer_class was found
                 serializer_class = None
         else:
-            serializer_class = getattr(view, 'serializer_class', None)
+            serializer_class = getattr(view, "serializer_class", None)
 
         if serializer_class is None:
             msg = (
@@ -214,26 +214,26 @@ class OrderingFilter(BaseFilterBackend):
             raise ImproperlyConfigured(msg % self.__class__.__name__)
 
         return [
-            (field.source.replace('.', '__') or field_name, field.label)
+            (field.source.replace(".", "__") or field_name, field.label)
             for field_name, field in serializer_class(context=context).fields.items()
-            if not getattr(field, 'write_only', False) and not field.source == '*'
+            if not getattr(field, "write_only", False) and not field.source == "*"
         ]
 
     def get_valid_fields(self, queryset, view, context={}):
-        valid_fields = getattr(view, 'ordering_fields', self.ordering_fields)
+        valid_fields = getattr(view, "ordering_fields", self.ordering_fields)
 
         if valid_fields is None:
             # Default to allowing filtering on serializer fields
             return self.get_default_valid_fields(queryset, view, context)
 
-        elif valid_fields == '__all__':
+        elif valid_fields == "__all__":
             # View explicitly allows filtering on any model field
             valid_fields = [
-                (field.name, field.verbose_name) for field in queryset.model._meta.fields
+                (field.name, field.verbose_name)
+                for field in queryset.model._meta.fields
             ]
             valid_fields += [
-                (key, key.title().split('__'))
-                for key in queryset.query.annotations
+                (key, key.title().split("__")) for key in queryset.query.annotations
             ]
         else:
             valid_fields = [
@@ -244,8 +244,15 @@ class OrderingFilter(BaseFilterBackend):
         return valid_fields
 
     def remove_invalid_fields(self, queryset, fields, view, request):
-        valid_fields = [item[0] for item in self.get_valid_fields(queryset, view, {'request': request})]
-        return [term for term in fields if term.lstrip('-') in valid_fields and ORDER_PATTERN.match(term)]
+        valid_fields = [
+            item[0]
+            for item in self.get_valid_fields(queryset, view, {"request": request})
+        ]
+        return [
+            term
+            for term in fields
+            if term.lstrip("-") in valid_fields and ORDER_PATTERN.match(term)
+        ]
 
     def filter_queryset(self, request, queryset, view):
         ordering = self.get_ordering(request, queryset, view)
@@ -259,15 +266,11 @@ class OrderingFilter(BaseFilterBackend):
         current = self.get_ordering(request, queryset, view)
         current = None if not current else current[0]
         options = []
-        context = {
-            'request': request,
-            'current': current,
-            'param': self.ordering_param,
-        }
+        context = {"request": request, "current": current, "param": self.ordering_param}
         for key, label in self.get_valid_fields(queryset, view, context):
-            options.append((key, '%s - %s' % (label, _('ascending'))))
-            options.append(('-' + key, '%s - %s' % (label, _('descending'))))
-        context['options'] = options
+            options.append((key, "%s - %s" % (label, _("ascending"))))
+            options.append(("-" + key, "%s - %s" % (label, _("descending"))))
+        context["options"] = options
         return context
 
     def to_html(self, request, queryset, view):
@@ -276,17 +279,21 @@ class OrderingFilter(BaseFilterBackend):
         return template.render(context)
 
     def get_schema_fields(self, view):
-        assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
-        assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
+        assert (
+            coreapi is not None
+        ), "coreapi must be installed to use `get_schema_fields()`"
+        assert (
+            coreschema is not None
+        ), "coreschema must be installed to use `get_schema_fields()`"
         return [
             coreapi.Field(
                 name=self.ordering_param,
                 required=False,
-                location='query',
+                location="query",
                 schema=coreschema.String(
                     title=force_text(self.ordering_title),
-                    description=force_text(self.ordering_description)
-                )
+                    description=force_text(self.ordering_description),
+                ),
             )
         ]
 
@@ -296,15 +303,19 @@ class DjangoObjectPermissionsFilter(BaseFilterBackend):
     A filter backend that limits results to those where the requesting user
     has read object level permissions.
     """
+
     def __init__(self):
         warnings.warn(
             "`DjangoObjectPermissionsFilter` has been deprecated and moved to "
             "the 3rd-party django-rest-framework-guardian package.",
-            RemovedInDRF310Warning, stacklevel=2
+            RemovedInDRF310Warning,
+            stacklevel=2,
         )
-        assert is_guardian_installed(), 'Using DjangoObjectPermissionsFilter, but django-guardian is not installed'
+        assert (
+            is_guardian_installed()
+        ), "Using DjangoObjectPermissionsFilter, but django-guardian is not installed"
 
-    perm_format = '%(app_label)s.view_%(model_name)s'
+    perm_format = "%(app_label)s.view_%(model_name)s"
 
     def filter_queryset(self, request, queryset, view):
         # We want to defer this import until run-time, rather than import-time.
@@ -317,13 +328,13 @@ class DjangoObjectPermissionsFilter(BaseFilterBackend):
         user = request.user
         model_cls = queryset.model
         kwargs = {
-            'app_label': model_cls._meta.app_label,
-            'model_name': model_cls._meta.model_name
+            "app_label": model_cls._meta.app_label,
+            "model_name": model_cls._meta.model_name,
         }
         permission = self.perm_format % kwargs
         if tuple(guardian_version) >= (1, 3):
             # Maintain behavior compatibility with versions prior to 1.3
-            extra = {'accept_global_perms': False}
+            extra = {"accept_global_perms": False}
         else:
             extra = {}
         return get_objects_for_user(user, permission, queryset, **extra)

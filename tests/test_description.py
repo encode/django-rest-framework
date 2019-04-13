@@ -9,6 +9,7 @@ from rest_framework.compat import apply_markdown
 from rest_framework.utils.formatting import dedent
 from rest_framework.views import APIView
 
+
 # We check that docstrings get nicely un-indented.
 DESCRIPTION = """an example docstring
 ====================
@@ -81,28 +82,34 @@ class TestViewNamesAndDescriptions(TestCase):
         """
         Ensure view names are based on the class name.
         """
+
         class MockView(APIView):
             pass
-        assert MockView().get_view_name() == 'Mock'
+
+        assert MockView().get_view_name() == "Mock"
 
     def test_view_name_uses_name_attribute(self):
         class MockView(APIView):
-            name = 'Foo'
-        assert MockView().get_view_name() == 'Foo'
+            name = "Foo"
+
+        assert MockView().get_view_name() == "Foo"
 
     def test_view_name_uses_suffix_attribute(self):
         class MockView(APIView):
-            suffix = 'List'
-        assert MockView().get_view_name() == 'Mock List'
+            suffix = "List"
+
+        assert MockView().get_view_name() == "Mock List"
 
     def test_view_name_preferences_name_over_suffix(self):
         class MockView(APIView):
-            name = 'Foo'
-            suffix = 'List'
-        assert MockView().get_view_name() == 'Foo'
+            name = "Foo"
+            suffix = "List"
+
+        assert MockView().get_view_name() == "Foo"
 
     def test_view_description_uses_docstring(self):
         """Ensure view descriptions are based on the docstring."""
+
         class MockView(APIView):
             """an example docstring
             ====================
@@ -130,23 +137,28 @@ class TestViewNamesAndDescriptions(TestCase):
 
     def test_view_description_uses_description_attribute(self):
         class MockView(APIView):
-            description = 'Foo'
-        assert MockView().get_view_description() == 'Foo'
+            description = "Foo"
+
+        assert MockView().get_view_description() == "Foo"
 
     def test_view_description_allows_empty_description(self):
         class MockView(APIView):
             """Description."""
-            description = ''
-        assert MockView().get_view_description() == ''
+
+            description = ""
+
+        assert MockView().get_view_description() == ""
 
     def test_view_description_can_be_empty(self):
         """
         Ensure that if a view has no docstring,
         then it's description is the empty string.
         """
+
         class MockView(APIView):
             pass
-        assert MockView().get_view_description() == ''
+
+        assert MockView().get_view_description() == ""
 
     def test_view_description_can_be_promise(self):
         """
@@ -168,7 +180,7 @@ class TestViewNamesAndDescriptions(TestCase):
         class MockView(APIView):
             __doc__ = MockLazyStr("a gettext string")
 
-        assert MockView().get_view_description() == 'a gettext string'
+        assert MockView().get_view_description() == "a gettext string"
 
     def test_markdown(self):
         """
@@ -176,21 +188,17 @@ class TestViewNamesAndDescriptions(TestCase):
         """
         if apply_markdown:
             md_applied = apply_markdown(DESCRIPTION)
-            gte_21_match = (
-                md_applied == (
-                    MARKED_DOWN_gte_21 % MARKED_DOWN_HILITE) or
-                md_applied == (
-                    MARKED_DOWN_gte_21 % MARKED_DOWN_NOT_HILITE))
-            lt_21_match = (
-                md_applied == (
-                    MARKED_DOWN_lt_21 % MARKED_DOWN_HILITE) or
-                md_applied == (
-                    MARKED_DOWN_lt_21 % MARKED_DOWN_NOT_HILITE))
+            gte_21_match = md_applied == (
+                MARKED_DOWN_gte_21 % MARKED_DOWN_HILITE
+            ) or md_applied == (MARKED_DOWN_gte_21 % MARKED_DOWN_NOT_HILITE)
+            lt_21_match = md_applied == (
+                MARKED_DOWN_lt_21 % MARKED_DOWN_HILITE
+            ) or md_applied == (MARKED_DOWN_lt_21 % MARKED_DOWN_NOT_HILITE)
             assert gte_21_match or lt_21_match
 
 
 def test_dedent_tabs():
-    result = 'first string\n\nsecond string'
+    result = "first string\n\nsecond string"
     assert dedent("    first string\n\n    second string") == result
     assert dedent("first string\n\n    second string") == result
     assert dedent("\tfirst string\n\n\tsecond string") == result

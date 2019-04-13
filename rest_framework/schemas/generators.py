@@ -15,7 +15,11 @@ from django.utils import six
 
 from rest_framework import exceptions
 from rest_framework.compat import (
-    URLPattern, URLResolver, coreapi, coreschema, get_original_route
+    URLPattern,
+    URLResolver,
+    coreapi,
+    coreschema,
+    get_original_route,
 )
 from rest_framework.request import clone_request
 from rest_framework.settings import api_settings
@@ -25,7 +29,7 @@ from .utils import is_list_view
 
 
 def common_path(paths):
-    split_paths = [path.strip('/').split('/') for path in paths]
+    split_paths = [path.strip("/").split("/") for path in paths]
     s1 = min(split_paths)
     s2 = max(split_paths)
     common = s1
@@ -33,7 +37,7 @@ def common_path(paths):
         if c != s2[i]:
             common = s1[:i]
             break
-    return '/' + '/'.join(common)
+    return "/" + "/".join(common)
 
 
 def get_pk_name(model):
@@ -47,7 +51,8 @@ def is_api_view(callback):
     """
     # Avoid import cycle on APIView
     from rest_framework.views import APIView
-    cls = getattr(callback, 'cls', None)
+
+    cls = getattr(callback, "cls", None)
     return (cls is not None) and issubclass(cls, APIView)
 
 
@@ -78,7 +83,7 @@ class LinkNode(OrderedDict):
             current_val = self.methods_counter[preferred_key]
             self.methods_counter[preferred_key] += 1
 
-            key = '{}_{}'.format(preferred_key, current_val)
+            key = "{}_{}".format(preferred_key, current_val)
             if key not in self:
                 return key
 
@@ -101,9 +106,7 @@ def insert_into(target, keys, value):
         target.links.append((keys[-1], value))
     except TypeError:
         msg = INSERT_INTO_COLLISION_FMT.format(
-            value_url=value.url,
-            target_url=target.url,
-            keys=keys
+            value_url=value.url, target_url=target.url, keys=keys
         )
         raise ValueError(msg)
 
@@ -119,24 +122,25 @@ def distribute_links(obj):
 
 def is_custom_action(action):
     return action not in {
-        'retrieve', 'list', 'create', 'update', 'partial_update', 'destroy'
+        "retrieve",
+        "list",
+        "create",
+        "update",
+        "partial_update",
+        "destroy",
     }
 
 
 def endpoint_ordering(endpoint):
     path, method, callback = endpoint
-    method_priority = {
-        'GET': 0,
-        'POST': 1,
-        'PUT': 2,
-        'PATCH': 3,
-        'DELETE': 4
-    }.get(method, 5)
+    method_priority = {"GET": 0, "POST": 1, "PUT": 2, "PATCH": 3, "DELETE": 4}.get(
+        method, 5
+    )
     return (path, method_priority)
 
 
 _PATH_PARAMETER_COMPONENT_RE = re.compile(
-    r'<(?:(?P<converter>[^>:]+):)?(?P<parameter>\w+)>'
+    r"<(?:(?P<converter>[^>:]+):)?(?P<parameter>\w+)>"
 )
 
 
@@ -144,6 +148,7 @@ class EndpointEnumerator(object):
     """
     A class to determine the available API endpoints that a project exposes.
     """
+
     def __init__(self, patterns=None, urlconf=None):
         if patterns is None:
             if urlconf is None:
@@ -159,7 +164,7 @@ class EndpointEnumerator(object):
 
         self.patterns = patterns
 
-    def get_api_endpoints(self, patterns=None, prefix=''):
+    def get_api_endpoints(self, patterns=None, prefix=""):
         """
         Return a list of all available API endpoints by inspecting the URL conf.
         """
@@ -180,8 +185,7 @@ class EndpointEnumerator(object):
 
             elif isinstance(pattern, URLResolver):
                 nested_endpoints = self.get_api_endpoints(
-                    patterns=pattern.url_patterns,
-                    prefix=path_regex
+                    patterns=pattern.url_patterns, prefix=path_regex
                 )
                 api_endpoints.extend(nested_endpoints)
 
@@ -196,7 +200,7 @@ class EndpointEnumerator(object):
         path = simplify_regex(path_regex)
 
         # Strip Django 2.0 convertors as they are incompatible with uritemplate format
-        path = re.sub(_PATH_PARAMETER_COMPONENT_RE, r'{\g<parameter>}', path)
+        path = re.sub(_PATH_PARAMETER_COMPONENT_RE, r"{\g<parameter>}", path)
         return path
 
     def should_include_endpoint(self, path, callback):
@@ -209,11 +213,11 @@ class EndpointEnumerator(object):
         if callback.cls.schema is None:
             return False
 
-        if 'schema' in callback.initkwargs:
-            if callback.initkwargs['schema'] is None:
+        if "schema" in callback.initkwargs:
+            if callback.initkwargs["schema"] is None:
                 return False
 
-        if path.endswith('.{format}') or path.endswith('.{format}/'):
+        if path.endswith(".{format}") or path.endswith(".{format}/"):
             return False  # Ignore .json style URLs.
 
         return True
@@ -222,24 +226,24 @@ class EndpointEnumerator(object):
         """
         Return a list of the valid HTTP methods for this endpoint.
         """
-        if hasattr(callback, 'actions'):
+        if hasattr(callback, "actions"):
             actions = set(callback.actions)
             http_method_names = set(callback.cls.http_method_names)
             methods = [method.upper() for method in actions & http_method_names]
         else:
             methods = callback.cls().allowed_methods
 
-        return [method for method in methods if method not in ('OPTIONS', 'HEAD')]
+        return [method for method in methods if method not in ("OPTIONS", "HEAD")]
 
 
 class SchemaGenerator(object):
     # Map HTTP methods onto actions.
     default_mapping = {
-        'get': 'retrieve',
-        'post': 'create',
-        'put': 'update',
-        'patch': 'partial_update',
-        'delete': 'destroy',
+        "get": "retrieve",
+        "post": "create",
+        "put": "update",
+        "patch": "partial_update",
+        "delete": "destroy",
     }
     endpoint_inspector_cls = EndpointEnumerator
 
@@ -253,12 +257,14 @@ class SchemaGenerator(object):
     # Set by 'SCHEMA_COERCE_PATH_PK'.
     coerce_path_pk = None
 
-    def __init__(self, title=None, url=None, description=None, patterns=None, urlconf=None):
-        assert coreapi, '`coreapi` must be installed for schema support.'
-        assert coreschema, '`coreschema` must be installed for schema support.'
+    def __init__(
+        self, title=None, url=None, description=None, patterns=None, urlconf=None
+    ):
+        assert coreapi, "`coreapi` must be installed for schema support."
+        assert coreschema, "`coreschema` must be installed for schema support."
 
-        if url and not url.endswith('/'):
-            url += '/'
+        if url and not url.endswith("/"):
+            url += "/"
 
         self.coerce_method_names = api_settings.SCHEMA_COERCE_METHOD_NAMES
         self.coerce_path_pk = api_settings.SCHEMA_COERCE_PATH_PK
@@ -288,8 +294,7 @@ class SchemaGenerator(object):
 
         distribute_links(links)
         return coreapi.Document(
-            title=self.title, description=self.description,
-            url=url, content=links
+            title=self.title, description=self.description, url=url, content=links
         )
 
     def get_links(self, request=None):
@@ -317,7 +322,7 @@ class SchemaGenerator(object):
             if not self.has_view_permissions(path, method, view):
                 continue
             link = view.schema.get_link(path, method, base_url=self.url)
-            subpath = path[len(prefix):]
+            subpath = path[len(prefix) :]
             keys = self.get_keys(subpath, method, view)
             insert_into(links, keys, link)
 
@@ -342,35 +347,35 @@ class SchemaGenerator(object):
         """
         prefixes = []
         for path in paths:
-            components = path.strip('/').split('/')
+            components = path.strip("/").split("/")
             initial_components = []
             for component in components:
-                if '{' in component:
+                if "{" in component:
                     break
                 initial_components.append(component)
-            prefix = '/'.join(initial_components[:-1])
+            prefix = "/".join(initial_components[:-1])
             if not prefix:
                 # We can just break early in the case that there's at least
                 # one URL that doesn't have a path prefix.
-                return '/'
-            prefixes.append('/' + prefix + '/')
+                return "/"
+            prefixes.append("/" + prefix + "/")
         return common_path(prefixes)
 
     def create_view(self, callback, method, request=None):
         """
         Given a callback, return an actual view instance.
         """
-        view = callback.cls(**getattr(callback, 'initkwargs', {}))
+        view = callback.cls(**getattr(callback, "initkwargs", {}))
         view.args = ()
         view.kwargs = {}
         view.format_kwarg = None
         view.request = None
-        view.action_map = getattr(callback, 'actions', None)
+        view.action_map = getattr(callback, "actions", None)
 
-        actions = getattr(callback, 'actions', None)
+        actions = getattr(callback, "actions", None)
         if actions is not None:
-            if method == 'OPTIONS':
-                view.action = 'metadata'
+            if method == "OPTIONS":
+                view.action = "metadata"
             else:
                 view.action = actions.get(method.lower())
 
@@ -398,14 +403,14 @@ class SchemaGenerator(object):
         where possible. This is cleaner for an external representation.
         (Ie. "this is an identifier", not "this is a database primary key")
         """
-        if not self.coerce_path_pk or '{pk}' not in path:
+        if not self.coerce_path_pk or "{pk}" not in path:
             return path
-        model = getattr(getattr(view, 'queryset', None), 'model', None)
+        model = getattr(getattr(view, "queryset", None), "model", None)
         if model:
             field_name = get_pk_name(model)
         else:
-            field_name = 'id'
-        return path.replace('{pk}', '{%s}' % field_name)
+            field_name = "id"
+        return path.replace("{pk}", "{%s}" % field_name)
 
     # Method for generating the link layout....
 
@@ -421,20 +426,20 @@ class SchemaGenerator(object):
         /users/{pk}/groups/       ("users", "groups", "list"), ("users", "groups", "create")
         /users/{pk}/groups/{pk}/  ("users", "groups", "read"), ("users", "groups", "update"), ("users", "groups", "delete")
         """
-        if hasattr(view, 'action'):
+        if hasattr(view, "action"):
             # Viewsets have explicitly named actions.
             action = view.action
         else:
             # Views have no associated action, so we determine one from the method.
             if is_list_view(subpath, method, view):
-                action = 'list'
+                action = "list"
             else:
                 action = self.default_mapping[method.lower()]
 
         named_path_components = [
-            component for component
-            in subpath.strip('/').split('/')
-            if '{' not in component
+            component
+            for component in subpath.strip("/").split("/")
+            if "{" not in component
         ]
 
         if is_custom_action(action):

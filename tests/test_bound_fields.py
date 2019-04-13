@@ -11,41 +11,43 @@ class TestSimpleBoundField:
 
         serializer = ExampleSerializer()
 
-        assert serializer['text'].value == ''
-        assert serializer['text'].errors is None
-        assert serializer['text'].name == 'text'
-        assert serializer['amount'].value is None
-        assert serializer['amount'].errors is None
-        assert serializer['amount'].name == 'amount'
+        assert serializer["text"].value == ""
+        assert serializer["text"].errors is None
+        assert serializer["text"].name == "text"
+        assert serializer["amount"].value is None
+        assert serializer["amount"].errors is None
+        assert serializer["amount"].name == "amount"
 
     def test_populated_bound_field(self):
         class ExampleSerializer(serializers.Serializer):
             text = serializers.CharField(max_length=100)
             amount = serializers.IntegerField()
 
-        serializer = ExampleSerializer(data={'text': 'abc', 'amount': 123})
+        serializer = ExampleSerializer(data={"text": "abc", "amount": 123})
         assert serializer.is_valid()
-        assert serializer['text'].value == 'abc'
-        assert serializer['text'].errors is None
-        assert serializer['text'].name == 'text'
-        assert serializer['amount'].value is 123
-        assert serializer['amount'].errors is None
-        assert serializer['amount'].name == 'amount'
+        assert serializer["text"].value == "abc"
+        assert serializer["text"].errors is None
+        assert serializer["text"].name == "text"
+        assert serializer["amount"].value is 123
+        assert serializer["amount"].errors is None
+        assert serializer["amount"].name == "amount"
 
     def test_error_bound_field(self):
         class ExampleSerializer(serializers.Serializer):
             text = serializers.CharField(max_length=100)
             amount = serializers.IntegerField()
 
-        serializer = ExampleSerializer(data={'text': 'x' * 1000, 'amount': 123})
+        serializer = ExampleSerializer(data={"text": "x" * 1000, "amount": 123})
         serializer.is_valid()
 
-        assert serializer['text'].value == 'x' * 1000
-        assert serializer['text'].errors == ['Ensure this field has no more than 100 characters.']
-        assert serializer['text'].name == 'text'
-        assert serializer['amount'].value is 123
-        assert serializer['amount'].errors is None
-        assert serializer['amount'].name == 'amount'
+        assert serializer["text"].value == "x" * 1000
+        assert serializer["text"].errors == [
+            "Ensure this field has no more than 100 characters."
+        ]
+        assert serializer["text"].name == "text"
+        assert serializer["amount"].value is 123
+        assert serializer["amount"].errors is None
+        assert serializer["amount"].name == "amount"
 
     def test_delete_field(self):
         class ExampleSerializer(serializers.Serializer):
@@ -53,41 +55,45 @@ class TestSimpleBoundField:
             amount = serializers.IntegerField()
 
         serializer = ExampleSerializer()
-        del serializer.fields['text']
-        assert 'text' not in serializer.fields
+        del serializer.fields["text"]
+        assert "text" not in serializer.fields
 
     def test_as_form_fields(self):
         class ExampleSerializer(serializers.Serializer):
             bool_field = serializers.BooleanField()
             null_field = serializers.IntegerField(allow_null=True)
 
-        serializer = ExampleSerializer(data={'bool_field': False, 'null_field': None})
+        serializer = ExampleSerializer(data={"bool_field": False, "null_field": None})
         assert serializer.is_valid()
-        assert serializer['bool_field'].as_form_field().value == ''
-        assert serializer['null_field'].as_form_field().value == ''
+        assert serializer["bool_field"].as_form_field().value == ""
+        assert serializer["null_field"].as_form_field().value == ""
 
     def test_rendering_boolean_field(self):
         from rest_framework.renderers import HTMLFormRenderer
 
         class ExampleSerializer(serializers.Serializer):
             bool_field = serializers.BooleanField(
-                style={'base_template': 'checkbox.html', 'template_pack': 'rest_framework/vertical'})
+                style={
+                    "base_template": "checkbox.html",
+                    "template_pack": "rest_framework/vertical",
+                }
+            )
 
-        serializer = ExampleSerializer(data={'bool_field': True})
+        serializer = ExampleSerializer(data={"bool_field": True})
         assert serializer.is_valid()
         renderer = HTMLFormRenderer()
-        rendered = renderer.render_field(serializer['bool_field'], {})
+        rendered = renderer.render_field(serializer["bool_field"], {})
         expected_packed = (
             '<divclass="form-group">'
             '<divclass="checkbox">'
-            '<label>'
+            "<label>"
             '<inputtype="checkbox"name="bool_field"value="true"checked>'
-            'Boolfield'
-            '</label>'
-            '</div>'
-            '</div>'
+            "Boolfield"
+            "</label>"
+            "</div>"
+            "</div>"
         )
-        rendered_packed = ''.join(rendered.split())
+        rendered_packed = "".join(rendered.split())
         assert rendered_packed == expected_packed
 
 
@@ -103,15 +109,15 @@ class TestNestedBoundField:
 
         serializer = ExampleSerializer()
 
-        assert serializer['text'].value == ''
-        assert serializer['text'].errors is None
-        assert serializer['text'].name == 'text'
-        assert serializer['nested']['more_text'].value == ''
-        assert serializer['nested']['more_text'].errors is None
-        assert serializer['nested']['more_text'].name == 'nested.more_text'
-        assert serializer['nested']['amount'].value is None
-        assert serializer['nested']['amount'].errors is None
-        assert serializer['nested']['amount'].name == 'nested.amount'
+        assert serializer["text"].value == ""
+        assert serializer["text"].errors is None
+        assert serializer["text"].name == "text"
+        assert serializer["nested"]["more_text"].value == ""
+        assert serializer["nested"]["more_text"].errors is None
+        assert serializer["nested"]["more_text"].name == "nested.more_text"
+        assert serializer["nested"]["amount"].value is None
+        assert serializer["nested"]["amount"].errors is None
+        assert serializer["nested"]["amount"].name == "nested.amount"
 
     def test_as_form_fields(self):
         class Nested(serializers.Serializer):
@@ -121,10 +127,12 @@ class TestNestedBoundField:
         class ExampleSerializer(serializers.Serializer):
             nested = Nested()
 
-        serializer = ExampleSerializer(data={'nested': {'bool_field': False, 'null_field': None}})
+        serializer = ExampleSerializer(
+            data={"nested": {"bool_field": False, "null_field": None}}
+        )
         assert serializer.is_valid()
-        assert serializer['nested']['bool_field'].as_form_field().value == ''
-        assert serializer['nested']['null_field'].as_form_field().value == ''
+        assert serializer["nested"]["bool_field"].as_form_field().value == ""
+        assert serializer["nested"]["null_field"].as_form_field().value == ""
 
     def test_rendering_nested_fields_with_none_value(self):
         from rest_framework.renderers import HTMLFormRenderer
@@ -139,28 +147,30 @@ class TestNestedBoundField:
         class ExampleSerializer(serializers.Serializer):
             nested2 = Nested2()
 
-        serializer = ExampleSerializer(data={'nested2': {'nested1': None, 'text_field': 'test'}})
+        serializer = ExampleSerializer(
+            data={"nested2": {"nested1": None, "text_field": "test"}}
+        )
         assert serializer.is_valid()
         renderer = HTMLFormRenderer()
         for field in serializer:
             rendered = renderer.render_field(field, {})
             expected_packed = (
-                '<fieldset>'
-                '<legend>Nested2</legend>'
-                '<fieldset>'
-                '<legend>Nested1</legend>'
+                "<fieldset>"
+                "<legend>Nested2</legend>"
+                "<fieldset>"
+                "<legend>Nested1</legend>"
                 '<divclass="form-group">'
-                '<label>Textfield</label>'
+                "<label>Textfield</label>"
                 '<inputname="nested2.nested1.text_field"class="form-control"type="text"value="">'
-                '</div>'
-                '</fieldset>'
+                "</div>"
+                "</fieldset>"
                 '<divclass="form-group">'
-                '<label>Textfield</label>'
+                "<label>Textfield</label>"
                 '<inputname="nested2.text_field"class="form-control"type="text"value="test">'
-                '</div>'
-                '</fieldset>'
+                "</div>"
+                "</fieldset>"
             )
-            rendered_packed = ''.join(rendered.split())
+            rendered_packed = "".join(rendered.split())
             assert rendered_packed == expected_packed
 
 
@@ -170,7 +180,7 @@ class TestJSONBoundField:
             json_field = serializers.JSONField()
 
         data = QueryDict(mutable=True)
-        data.update({'json_field': '{"some": ["json"}'})
+        data.update({"json_field": '{"some": ["json"}'})
         serializer = TestSerializer(data=data)
         assert serializer.is_valid() is False
-        assert serializer['json_field'].as_form_field().value == '{"some": ["json"}'
+        assert serializer["json_field"].as_form_field().value == '{"some": ["json"}'

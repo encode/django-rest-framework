@@ -10,4 +10,4 @@ class MockView(APIView):
     renderer_classes = (renderers.BrowsableAPIRenderer, renderers.JSONRenderer)
 
     def get(self, request):
-        return Response({'a': 1, 'b': 2, 'c': 3})
+        return Response({"a": 1, "b": 2, "c": 3})

@@ -11,10 +11,12 @@ import codecs
 from django.conf import settings
 from django.core.files.uploadhandler import StopFutureHandlers
 from django.http import QueryDict
-from django.http.multipartparser import ChunkIter
-from django.http.multipartparser import \
-    MultiPartParser as DjangoMultiPartParser
-from django.http.multipartparser import MultiPartParserError, parse_header
+from django.http.multipartparser import (
+    ChunkIter,
+    MultiPartParser as DjangoMultiPartParser,
+    MultiPartParserError,
+    parse_header,
+)
 from django.utils import six
 from django.utils.encoding import force_text
 from django.utils.six.moves.urllib import parse as urlparse
@@ -36,6 +38,7 @@ class BaseParser(object):
     All parsers should extend `BaseParser`, specifying a `media_type`
     attribute, and overriding the `.parse()` method.
     """
+
     media_type = None
 
     def parse(self, stream, media_type=None, parser_context=None):
@@ -51,7 +54,8 @@ class JSONParser(BaseParser):
     """
     Parses JSON-serialized data.
     """
-    media_type = 'application/json'
+
+    media_type = "application/json"
     renderer_class = renderers.JSONRenderer
     strict = api_settings.STRICT_JSON
 
@@ -60,21 +64,22 @@ class JSONParser(BaseParser):
         Parses the incoming bytestream as JSON and returns the resulting data.
         """
         parser_context = parser_context or {}
-        encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
+        encoding = parser_context.get("encoding", settings.DEFAULT_CHARSET)
 
         try:
             decoded_stream = codecs.getreader(encoding)(stream)
             parse_constant = json.strict_constant if self.strict else None
             return json.load(decoded_stream, parse_constant=parse_constant)
         except ValueError as exc:
-            raise ParseError('JSON parse error - %s' % six.text_type(exc))
+            raise ParseError("JSON parse error - %s" % six.text_type(exc))
 
 
 class FormParser(BaseParser):
     """
     Parser for form data.
     """
-    media_type = 'application/x-www-form-urlencoded'
+
+    media_type = "application/x-www-form-urlencoded"
 
     def parse(self, stream, media_type=None, parser_context=None):
         """
@@ -82,7 +87,7 @@ class FormParser(BaseParser):
         and returns the resulting QueryDict.
         """
         parser_context = parser_context or {}
-        encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
+        encoding = parser_context.get("encoding", settings.DEFAULT_CHARSET)
         data = QueryDict(stream.read(), encoding=encoding)
         return data
 
@@ -91,7 +96,8 @@ class MultiPartParser(BaseParser):
     """
     Parser for multipart form data, which may include file data.
     """
-    media_type = 'multipart/form-data'
+
+    media_type = "multipart/form-data"
 
     def parse(self, stream, media_type=None, parser_context=None):
         """
@@ -102,10 +108,10 @@ class MultiPartParser(BaseParser):
         `.files` will be a `QueryDict` containing all the form files.
         """
         parser_context = parser_context or {}
-        request = parser_context['request']
-        encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
+        request = parser_context["request"]
+        encoding = parser_context.get("encoding", settings.DEFAULT_CHARSET)
         meta = request.META.copy()
-        meta['CONTENT_TYPE'] = media_type
+        meta["CONTENT_TYPE"] = media_type
         upload_handlers = request.upload_handlers
 
         try:
@@ -113,17 +119,18 @@ class MultiPartParser(BaseParser):
             data, files = parser.parse()
             return DataAndFiles(data, files)
         except MultiPartParserError as exc:
-            raise ParseError('Multipart form parse error - %s' % six.text_type(exc))
+            raise ParseError("Multipart form parse error - %s" % six.text_type(exc))
 
 
 class FileUploadParser(BaseParser):
     """
     Parser for file upload data.
     """
-    media_type = '*/*'
+
+    media_type = "*/*"
     errors = {
-        'unhandled': 'FileUpload parse error - none of upload handlers can handle the stream',
-        'no_filename': 'Missing filename. Request should include a Content-Disposition header with a filename parameter.',
+        "unhandled": "FileUpload parse error - none of upload handlers can handle the stream",
+        "no_filename": "Missing filename. Request should include a Content-Disposition header with a filename parameter.",
     }
 
     def parse(self, stream, media_type=None, parser_context=None):
@@ -135,34 +142,32 @@ class FileUploadParser(BaseParser):
         `.files` will be a `QueryDict` containing one 'file' element.
         """
         parser_context = parser_context or {}
-        request = parser_context['request']
-        encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
+        request = parser_context["request"]
+        encoding = parser_context.get("encoding", settings.DEFAULT_CHARSET)
         meta = request.META
         upload_handlers = request.upload_handlers
         filename = self.get_filename(stream, media_type, parser_context)
 
         if not filename:
-            raise ParseError(self.errors['no_filename'])
+            raise ParseError(self.errors["no_filename"])
 
         # Note that this code is extracted from Django's handling of
         # file uploads in MultiPartParser.
-        content_type = meta.get('HTTP_CONTENT_TYPE',
-                                meta.get('CONTENT_TYPE', ''))
+        content_type = meta.get("HTTP_CONTENT_TYPE", meta.get("CONTENT_TYPE", ""))
         try:
-            content_length = int(meta.get('HTTP_CONTENT_LENGTH',
-                                          meta.get('CONTENT_LENGTH', 0)))
+            content_length = int(
+                meta.get("HTTP_CONTENT_LENGTH", meta.get("CONTENT_LENGTH", 0))
+            )
         except (ValueError, TypeError):
             content_length = None
 
         # See if the handler will want to take care of the parsing.
         for handler in upload_handlers:
-            result = handler.handle_raw_input(stream,
-                                              meta,
-                                              content_length,
-                                              None,
-                                              encoding)
+            result = handler.handle_raw_input(
+                stream, meta, content_length, None, encoding
+            )
             if result is not None:
-                return DataAndFiles({}, {'file': result[1]})
+                return DataAndFiles({}, {"file": result[1]})
 
         # This is the standard case.
         possible_sizes = [x.chunk_size for x in upload_handlers if x.chunk_size]
@@ -172,10 +177,9 @@ class FileUploadParser(BaseParser):
 
         for index, handler in enumerate(upload_handlers):
             try:
-                handler.new_file(None, filename, content_type,
-                                 content_length, encoding)
+                handler.new_file(None, filename, content_type, content_length, encoding)
             except StopFutureHandlers:
-                upload_handlers = upload_handlers[:index + 1]
+                upload_handlers = upload_handlers[: index + 1]
                 break
 
         for chunk in chunks:
@@ -189,9 +193,9 @@ class FileUploadParser(BaseParser):
         for index, handler in enumerate(upload_handlers):
             file_obj = handler.file_complete(counters[index])
             if file_obj is not None:
-                return DataAndFiles({}, {'file': file_obj})
+                return DataAndFiles({}, {"file": file_obj})
 
-        raise ParseError(self.errors['unhandled'])
+        raise ParseError(self.errors["unhandled"])
 
     def get_filename(self, stream, media_type, parser_context):
         """
@@ -199,17 +203,17 @@ class FileUploadParser(BaseParser):
         Then tries to parse Content-Disposition header.
         """
         try:
-            return parser_context['kwargs']['filename']
+            return parser_context["kwargs"]["filename"]
         except KeyError:
             pass
 
         try:
-            meta = parser_context['request'].META
-            disposition = parse_header(meta['HTTP_CONTENT_DISPOSITION'].encode('utf-8'))
+            meta = parser_context["request"].META
+            disposition = parse_header(meta["HTTP_CONTENT_DISPOSITION"].encode("utf-8"))
             filename_parm = disposition[1]
-            if 'filename*' in filename_parm:
+            if "filename*" in filename_parm:
                 return self.get_encoded_filename(filename_parm)
-            return force_text(filename_parm['filename'])
+            return force_text(filename_parm["filename"])
         except (AttributeError, KeyError, ValueError):
             pass
 
@@ -218,10 +222,10 @@ class FileUploadParser(BaseParser):
         Handle encoded filenames per RFC6266. See also:
         https://tools.ietf.org/html/rfc2231#section-4
         """
-        encoded_filename = force_text(filename_parm['filename*'])
+        encoded_filename = force_text(filename_parm["filename*"])
         try:
-            charset, lang, filename = encoded_filename.split('\'', 2)
+            charset, lang, filename = encoded_filename.split("'", 2)
             filename = urlparse.unquote(filename)
         except (ValueError, LookupError):
-            filename = force_text(filename_parm['filename'])
+            filename = force_text(filename_parm["filename"])
         return filename

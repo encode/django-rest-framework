@@ -11,8 +11,7 @@ import math
 from django.http import JsonResponse
 from django.utils import six
 from django.utils.encoding import force_text
-from django.utils.translation import ugettext_lazy as _
-from django.utils.translation import ungettext
+from django.utils.translation import ugettext_lazy as _, ungettext
 
 from rest_framework import status
 from rest_framework.compat import unicode_to_repr
@@ -25,23 +24,20 @@ def _get_error_details(data, default_code=None):
     lazy translation strings or strings into `ErrorDetail`.
     """
     if isinstance(data, list):
-        ret = [
-            _get_error_details(item, default_code) for item in data
-        ]
+        ret = [_get_error_details(item, default_code) for item in data]
         if isinstance(data, ReturnList):
             return ReturnList(ret, serializer=data.serializer)
         return ret
     elif isinstance(data, dict):
         ret = {
-            key: _get_error_details(value, default_code)
-            for key, value in data.items()
+            key: _get_error_details(value, default_code) for key, value in data.items()
         }
         if isinstance(data, ReturnDict):
             return ReturnDict(ret, serializer=data.serializer)
         return ret
 
     text = force_text(data)
-    code = getattr(data, 'code', default_code)
+    code = getattr(data, "code", default_code)
     return ErrorDetail(text, code)
 
 
@@ -58,16 +54,14 @@ def _get_full_details(detail):
         return [_get_full_details(item) for item in detail]
     elif isinstance(detail, dict):
         return {key: _get_full_details(value) for key, value in detail.items()}
-    return {
-        'message': detail,
-        'code': detail.code
-    }
+    return {"message": detail, "code": detail.code}
 
 
 class ErrorDetail(six.text_type):
     """
     A string-like object that can additionally have a code.
     """
+
     code = None
 
     def __new__(cls, string, code=None):
@@ -86,10 +80,9 @@ class ErrorDetail(six.text_type):
         return not self.__eq__(other)
 
     def __repr__(self):
-        return unicode_to_repr('ErrorDetail(string=%r, code=%r)' % (
-            six.text_type(self),
-            self.code,
-        ))
+        return unicode_to_repr(
+            "ErrorDetail(string=%r, code=%r)" % (six.text_type(self), self.code)
+        )
 
     def __hash__(self):
         return hash(str(self))
@@ -100,9 +93,10 @@ class APIException(Exception):
     Base class for REST framework exceptions.
     Subclasses should provide `.status_code` and `.default_detail` properties.
     """
+
     status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-    default_detail = _('A server error occurred.')
-    default_code = 'error'
+    default_detail = _("A server error occurred.")
+    default_code = "error"
 
     def __init__(self, detail=None, code=None):
         if detail is None:
@@ -139,10 +133,11 @@ class APIException(Exception):
 # from rest_framework import serializers
 # raise serializers.ValidationError('Value was invalid')
 
+
 class ValidationError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
-    default_detail = _('Invalid input.')
-    default_code = 'invalid'
+    default_detail = _("Invalid input.")
+    default_code = "invalid"
 
     def __init__(self, detail=None, code=None):
         if detail is None:
@@ -160,38 +155,38 @@ class ValidationError(APIException):
 
 class ParseError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
-    default_detail = _('Malformed request.')
-    default_code = 'parse_error'
+    default_detail = _("Malformed request.")
+    default_code = "parse_error"
 
 
 class AuthenticationFailed(APIException):
     status_code = status.HTTP_401_UNAUTHORIZED
-    default_detail = _('Incorrect authentication credentials.')
-    default_code = 'authentication_failed'
+    default_detail = _("Incorrect authentication credentials.")
+    default_code = "authentication_failed"
 
 
 class NotAuthenticated(APIException):
     status_code = status.HTTP_401_UNAUTHORIZED
-    default_detail = _('Authentication credentials were not provided.')
-    default_code = 'not_authenticated'
+    default_detail = _("Authentication credentials were not provided.")
+    default_code = "not_authenticated"
 
 
 class PermissionDenied(APIException):
     status_code = status.HTTP_403_FORBIDDEN
-    default_detail = _('You do not have permission to perform this action.')
-    default_code = 'permission_denied'
+    default_detail = _("You do not have permission to perform this action.")
+    default_code = "permission_denied"
 
 
 class NotFound(APIException):
     status_code = status.HTTP_404_NOT_FOUND
-    default_detail = _('Not found.')
-    default_code = 'not_found'
+    default_detail = _("Not found.")
+    default_code = "not_found"
 
 
 class MethodNotAllowed(APIException):
     status_code = status.HTTP_405_METHOD_NOT_ALLOWED
     default_detail = _('Method "{method}" not allowed.')
-    default_code = 'method_not_allowed'
+    default_code = "method_not_allowed"
 
     def __init__(self, method, detail=None, code=None):
         if detail is None:
@@ -201,8 +196,8 @@ class MethodNotAllowed(APIException):
 
 class NotAcceptable(APIException):
     status_code = status.HTTP_406_NOT_ACCEPTABLE
-    default_detail = _('Could not satisfy the request Accept header.')
-    default_code = 'not_acceptable'
+    default_detail = _("Could not satisfy the request Accept header.")
+    default_code = "not_acceptable"
 
     def __init__(self, detail=None, code=None, available_renderers=None):
         self.available_renderers = available_renderers
@@ -212,7 +207,7 @@ class NotAcceptable(APIException):
 class UnsupportedMediaType(APIException):
     status_code = status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
     default_detail = _('Unsupported media type "{media_type}" in request.')
-    default_code = 'unsupported_media_type'
+    default_code = "unsupported_media_type"
 
     def __init__(self, media_type, detail=None, code=None):
         if detail is None:
@@ -222,21 +217,28 @@ class UnsupportedMediaType(APIException):
 
 class Throttled(APIException):
     status_code = status.HTTP_429_TOO_MANY_REQUESTS
-    default_detail = _('Request was throttled.')
-    extra_detail_singular = 'Expected available in {wait} second.'
-    extra_detail_plural = 'Expected available in {wait} seconds.'
-    default_code = 'throttled'
+    default_detail = _("Request was throttled.")
+    extra_detail_singular = "Expected available in {wait} second."
+    extra_detail_plural = "Expected available in {wait} seconds."
+    default_code = "throttled"
 
     def __init__(self, wait=None, detail=None, code=None):
         if detail is None:
             detail = force_text(self.default_detail)
         if wait is not None:
             wait = math.ceil(wait)
-            detail = ' '.join((
-                detail,
-                force_text(ungettext(self.extra_detail_singular.format(wait=wait),
-                                     self.extra_detail_plural.format(wait=wait),
-                                     wait))))
+            detail = " ".join(
+                (
+                    detail,
+                    force_text(
+                        ungettext(
+                            self.extra_detail_singular.format(wait=wait),
+                            self.extra_detail_plural.format(wait=wait),
+                            wait,
+                        )
+                    ),
+                )
+            )
         self.wait = wait
         super(Throttled, self).__init__(detail, code)
 
@@ -245,9 +247,7 @@ def server_error(request, *args, **kwargs):
     """
     Generic 500 error handler.
     """
-    data = {
-        'error': 'Server Error (500)'
-    }
+    data = {"error": "Server Error (500)"}
     return JsonResponse(data, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -255,7 +255,5 @@ def bad_request(request, exception, *args, **kwargs):
     """
     Generic 400 error handler.
     """
-    data = {
-        'error': 'Bad Request (400)'
-    }
+    data = {"error": "Bad Request (400)"}
     return JsonResponse(data, status=status.HTTP_400_BAD_REQUEST)

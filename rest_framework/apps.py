@@ -2,7 +2,7 @@ from django.apps import AppConfig
 
 
 class RestFrameworkConfig(AppConfig):
-    name = 'rest_framework'
+    name = "rest_framework"
     verbose_name = "Django REST framework"
 
     def ready(self):

@@ -11,9 +11,11 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.handlers.wsgi import WSGIHandler
 from django.test import override_settings, testcases
-from django.test.client import Client as DjangoClient
-from django.test.client import ClientHandler
-from django.test.client import RequestFactory as DjangoRequestFactory
+from django.test.client import (
+    Client as DjangoClient,
+    ClientHandler,
+    RequestFactory as DjangoRequestFactory,
+)
 from django.utils import six
 from django.utils.encoding import force_bytes
 from django.utils.http import urlencode
@@ -28,6 +30,7 @@ def force_authenticate(request, user=None, token=None):
 
 
 if requests is not None:
+
     class HeaderDict(requests.packages.urllib3._collections.HTTPHeaderDict):
         def get_all(self, key, default):
             return self.getheaders(key)
@@ -48,6 +51,7 @@ if requests is not None:
         A transport adapter for `requests`, that makes requests via the
         Django WSGI app, rather than making actual HTTP requests over the network.
         """
+
         def __init__(self):
             self.app = WSGIHandler()
             self.factory = DjangoRequestFactory()
@@ -62,19 +66,19 @@ if requests is not None:
 
             # Set request content, if any exists.
             if request.body is not None:
-                if hasattr(request.body, 'read'):
-                    kwargs['data'] = request.body.read()
+                if hasattr(request.body, "read"):
+                    kwargs["data"] = request.body.read()
                 else:
-                    kwargs['data'] = request.body
-            if 'content-type' in request.headers:
-                kwargs['content_type'] = request.headers['content-type']
+                    kwargs["data"] = request.body
+            if "content-type" in request.headers:
+                kwargs["content_type"] = request.headers["content-type"]
 
             # Set request headers.
             for key, value in request.headers.items():
                 key = key.upper()
-                if key in ('CONNECTION', 'CONTENT-LENGTH', 'CONTENT-TYPE'):
+                if key in ("CONNECTION", "CONTENT-LENGTH", "CONTENT-TYPE"):
                     continue
-                kwargs['HTTP_%s' % key.replace('-', '_')] = value
+                kwargs["HTTP_%s" % key.replace("-", "_")] = value
 
             return self.factory.generic(method, url, **kwargs).environ
 
@@ -85,20 +89,20 @@ if requests is not None:
             raw_kwargs = {}
 
             def start_response(wsgi_status, wsgi_headers):
-                status, _, reason = wsgi_status.partition(' ')
-                raw_kwargs['status'] = int(status)
-                raw_kwargs['reason'] = reason
-                raw_kwargs['headers'] = wsgi_headers
-                raw_kwargs['version'] = 11
-                raw_kwargs['preload_content'] = False
-                raw_kwargs['original_response'] = MockOriginalResponse(wsgi_headers)
+                status, _, reason = wsgi_status.partition(" ")
+                raw_kwargs["status"] = int(status)
+                raw_kwargs["reason"] = reason
+                raw_kwargs["headers"] = wsgi_headers
+                raw_kwargs["version"] = 11
+                raw_kwargs["preload_content"] = False
+                raw_kwargs["original_response"] = MockOriginalResponse(wsgi_headers)
 
             # Make the outgoing request via WSGI.
             environ = self.get_environ(request)
             wsgi_response = self.app(environ, start_response)
 
             # Build the underlying urllib3.HTTPResponse
-            raw_kwargs['body'] = io.BytesIO(b''.join(wsgi_response))
+            raw_kwargs["body"] = io.BytesIO(b"".join(wsgi_response))
             raw = requests.packages.urllib3.HTTPResponse(**raw_kwargs)
 
             # Build the requests.Response
@@ -111,33 +115,47 @@ if requests is not None:
         def __init__(self, *args, **kwargs):
             super(RequestsClient, self).__init__(*args, **kwargs)
             adapter = DjangoTestAdapter()
-            self.mount('http://', adapter)
-            self.mount('https://', adapter)
+            self.mount("http://", adapter)
+            self.mount("https://", adapter)
 
         def request(self, method, url, *args, **kwargs):
-            if not url.startswith('http'):
-                raise ValueError('Missing "http:" or "https:". Use a fully qualified URL, eg "http://testserver%s"' % url)
+            if not url.startswith("http"):
+                raise ValueError(
+                    'Missing "http:" or "https:". Use a fully qualified URL, eg "http://testserver%s"'
+                    % url
+                )
             return super(RequestsClient, self).request(method, url, *args, **kwargs)
 
+
 else:
+
     def RequestsClient(*args, **kwargs):
-        raise ImproperlyConfigured('requests must be installed in order to use RequestsClient.')
+        raise ImproperlyConfigured(
+            "requests must be installed in order to use RequestsClient."
+        )
 
 
 if coreapi is not None:
+
     class CoreAPIClient(coreapi.Client):
         def __init__(self, *args, **kwargs):
             self._session = RequestsClient()
-            kwargs['transports'] = [coreapi.transports.HTTPTransport(session=self.session)]
+            kwargs["transports"] = [
+                coreapi.transports.HTTPTransport(session=self.session)
+            ]
             return super(CoreAPIClient, self).__init__(*args, **kwargs)
 
         @property
         def session(self):
             return self._session
 
+
 else:
+
     def CoreAPIClient(*args, **kwargs):
-        raise ImproperlyConfigured('coreapi must be installed in order to use CoreAPIClient.')
+        raise ImproperlyConfigured(
+            "coreapi must be installed in order to use CoreAPIClient."
+        )
 
 
 class APIRequestFactory(DjangoRequestFactory):
@@ -157,11 +175,11 @@ class APIRequestFactory(DjangoRequestFactory):
         """
 
         if data is None:
-            return ('', content_type)
+            return ("", content_type)
 
-        assert format is None or content_type is None, (
-            'You may not set both `format` and `content_type`.'
-        )
+        assert (
+            format is None or content_type is None
+        ), "You may not set both `format` and `content_type`."
 
         if content_type:
             # Content type specified explicitly, treat data as a raw bytestring
@@ -175,7 +193,7 @@ class APIRequestFactory(DjangoRequestFactory):
                 "Set TEST_REQUEST_RENDERER_CLASSES to enable "
                 "extra request formats.".format(
                     format,
-                    ', '.join(["'" + fmt + "'" for fmt in self.renderer_classes])
+                    ", ".join(["'" + fmt + "'" for fmt in self.renderer_classes]),
                 )
             )
 
@@ -195,47 +213,53 @@ class APIRequestFactory(DjangoRequestFactory):
         return ret, content_type
 
     def get(self, path, data=None, **extra):
-        r = {
-            'QUERY_STRING': urlencode(data or {}, doseq=True),
-        }
-        if not data and '?' in path:
+        r = {"QUERY_STRING": urlencode(data or {}, doseq=True)}
+        if not data and "?" in path:
             # Fix to support old behavior where you have the arguments in the
             # url. See #1461.
-            query_string = force_bytes(path.split('?')[1])
+            query_string = force_bytes(path.split("?")[1])
             if six.PY3:
-                query_string = query_string.decode('iso-8859-1')
-            r['QUERY_STRING'] = query_string
+                query_string = query_string.decode("iso-8859-1")
+            r["QUERY_STRING"] = query_string
         r.update(extra)
-        return self.generic('GET', path, **r)
+        return self.generic("GET", path, **r)
 
     def post(self, path, data=None, format=None, content_type=None, **extra):
         data, content_type = self._encode_data(data, format, content_type)
-        return self.generic('POST', path, data, content_type, **extra)
+        return self.generic("POST", path, data, content_type, **extra)
 
     def put(self, path, data=None, format=None, content_type=None, **extra):
         data, content_type = self._encode_data(data, format, content_type)
-        return self.generic('PUT', path, data, content_type, **extra)
+        return self.generic("PUT", path, data, content_type, **extra)
 
     def patch(self, path, data=None, format=None, content_type=None, **extra):
         data, content_type = self._encode_data(data, format, content_type)
-        return self.generic('PATCH', path, data, content_type, **extra)
+        return self.generic("PATCH", path, data, content_type, **extra)
 
     def delete(self, path, data=None, format=None, content_type=None, **extra):
         data, content_type = self._encode_data(data, format, content_type)
-        return self.generic('DELETE', path, data, content_type, **extra)
+        return self.generic("DELETE", path, data, content_type, **extra)
 
     def options(self, path, data=None, format=None, content_type=None, **extra):
         data, content_type = self._encode_data(data, format, content_type)
-        return self.generic('OPTIONS', path, data, content_type, **extra)
+        return self.generic("OPTIONS", path, data, content_type, **extra)
 
-    def generic(self, method, path, data='',
-                content_type='application/octet-stream', secure=False, **extra):
+    def generic(
+        self,
+        method,
+        path,
+        data="",
+        content_type="application/octet-stream",
+        secure=False,
+        **extra
+    ):
         # Include the CONTENT_TYPE, regardless of whether or not data is empty.
         if content_type is not None:
-            extra['CONTENT_TYPE'] = str(content_type)
+            extra["CONTENT_TYPE"] = str(content_type)
 
         return super(APIRequestFactory, self).generic(
-            method, path, data, content_type, secure, **extra)
+            method, path, data, content_type, secure, **extra
+        )
 
     def request(self, **kwargs):
         request = super(APIRequestFactory, self).request(**kwargs)
@@ -294,42 +318,52 @@ class APIClient(APIRequestFactory, DjangoClient):
             response = self._handle_redirects(response, **extra)
         return response
 
-    def post(self, path, data=None, format=None, content_type=None,
-             follow=False, **extra):
+    def post(
+        self, path, data=None, format=None, content_type=None, follow=False, **extra
+    ):
         response = super(APIClient, self).post(
-            path, data=data, format=format, content_type=content_type, **extra)
+            path, data=data, format=format, content_type=content_type, **extra
+        )
         if follow:
             response = self._handle_redirects(response, **extra)
         return response
 
-    def put(self, path, data=None, format=None, content_type=None,
-            follow=False, **extra):
+    def put(
+        self, path, data=None, format=None, content_type=None, follow=False, **extra
+    ):
         response = super(APIClient, self).put(
-            path, data=data, format=format, content_type=content_type, **extra)
+            path, data=data, format=format, content_type=content_type, **extra
+        )
         if follow:
             response = self._handle_redirects(response, **extra)
         return response
 
-    def patch(self, path, data=None, format=None, content_type=None,
-              follow=False, **extra):
+    def patch(
+        self, path, data=None, format=None, content_type=None, follow=False, **extra
+    ):
         response = super(APIClient, self).patch(
-            path, data=data, format=format, content_type=content_type, **extra)
+            path, data=data, format=format, content_type=content_type, **extra
+        )
         if follow:
             response = self._handle_redirects(response, **extra)
         return response
 
-    def delete(self, path, data=None, format=None, content_type=None,
-               follow=False, **extra):
+    def delete(
+        self, path, data=None, format=None, content_type=None, follow=False, **extra
+    ):
         response = super(APIClient, self).delete(
-            path, data=data, format=format, content_type=content_type, **extra)
+            path, data=data, format=format, content_type=content_type, **extra
+        )
         if follow:
             response = self._handle_redirects(response, **extra)
         return response
 
-    def options(self, path, data=None, format=None, content_type=None,
-                follow=False, **extra):
+    def options(
+        self, path, data=None, format=None, content_type=None, follow=False, **extra
+    ):
         response = super(APIClient, self).options(
-            path, data=data, format=format, content_type=content_type, **extra)
+            path, data=data, format=format, content_type=content_type, **extra
+        )
         if follow:
             response = self._handle_redirects(response, **extra)
         return response
@@ -377,13 +411,14 @@ class URLPatternsTestCase(testcases.SimpleTestCase):
         def test_something_else(self):
             ...
     """
+
     @classmethod
     def setUpClass(cls):
         # Get the module of the TestCase subclass
         cls._module = import_module(cls.__module__)
         cls._override = override_settings(ROOT_URLCONF=cls.__module__)
 
-        if hasattr(cls._module, 'urlpatterns'):
+        if hasattr(cls._module, "urlpatterns"):
             cls._module_urlpatterns = cls._module.urlpatterns
 
         cls._module.urlpatterns = cls.urlpatterns
@@ -396,7 +431,7 @@ class URLPatternsTestCase(testcases.SimpleTestCase):
         super(URLPatternsTestCase, cls).tearDownClass()
         cls._override.disable()
 
-        if hasattr(cls, '_module_urlpatterns'):
+        if hasattr(cls, "_module_urlpatterns"):
             cls._module.urlpatterns = cls._module_urlpatterns
         else:
             del cls._module.urlpatterns

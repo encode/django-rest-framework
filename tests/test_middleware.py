@@ -17,8 +17,8 @@ class PostView(APIView):
 
 
 urlpatterns = [
-    url(r'^auth$', APIView.as_view(authentication_classes=(TokenAuthentication,))),
-    url(r'^post$', PostView.as_view()),
+    url(r"^auth$", APIView.as_view(authentication_classes=(TokenAuthentication,))),
+    url(r"^post$", PostView.as_view()),
 ]
 
 
@@ -28,8 +28,8 @@ class RequestUserMiddleware(object):
 
     def __call__(self, request):
         response = self.get_response(request)
-        assert hasattr(request, 'user'), '`user` is not set on request'
-        assert request.user.is_authenticated, '`user` is not authenticated'
+        assert hasattr(request, "user"), "`user` is not set on request"
+        assert request.user.is_authenticated, "`user` is not authenticated"
 
         return response
 
@@ -49,28 +49,27 @@ class RequestPOSTMiddleware(object):
 
         # Ensure request.POST is set as appropriate
         if is_form_media_type(request.content_type):
-            assert request.POST == {'foo': ['bar']}
+            assert request.POST == {"foo": ["bar"]}
         else:
             assert request.POST == {}
 
         return response
 
 
-@override_settings(ROOT_URLCONF='tests.test_middleware')
+@override_settings(ROOT_URLCONF="tests.test_middleware")
 class TestMiddleware(APITestCase):
-
-    @override_settings(MIDDLEWARE=('tests.test_middleware.RequestUserMiddleware',))
+    @override_settings(MIDDLEWARE=("tests.test_middleware.RequestUserMiddleware",))
     def test_middleware_can_access_user_when_processing_response(self):
-        user = User.objects.create_user('john', 'john@example.com', 'password')
-        key = 'abcd1234'
+        user = User.objects.create_user("john", "john@example.com", "password")
+        key = "abcd1234"
         Token.objects.create(key=key, user=user)
 
-        self.client.get('/auth', HTTP_AUTHORIZATION='Token %s' % key)
+        self.client.get("/auth", HTTP_AUTHORIZATION="Token %s" % key)
 
-    @override_settings(MIDDLEWARE=('tests.test_middleware.RequestPOSTMiddleware',))
+    @override_settings(MIDDLEWARE=("tests.test_middleware.RequestPOSTMiddleware",))
     def test_middleware_can_access_request_post_when_processing_response(self):
-        response = self.client.post('/post', {'foo': 'bar'})
+        response = self.client.post("/post", {"foo": "bar"})
         assert response.status_code == 200
 
-        response = self.client.post('/post', {'foo': 'bar'}, format='json')
+        response = self.client.post("/post", {"foo": "bar"}, format="json")
         assert response.status_code == 200

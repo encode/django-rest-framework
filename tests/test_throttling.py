@@ -15,25 +15,28 @@ from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.test import APIRequestFactory, force_authenticate
 from rest_framework.throttling import (
-    AnonRateThrottle, BaseThrottle, ScopedRateThrottle, SimpleRateThrottle,
-    UserRateThrottle
+    AnonRateThrottle,
+    BaseThrottle,
+    ScopedRateThrottle,
+    SimpleRateThrottle,
+    UserRateThrottle,
 )
 from rest_framework.views import APIView
 
 
 class User3SecRateThrottle(UserRateThrottle):
-    rate = '3/sec'
-    scope = 'seconds'
+    rate = "3/sec"
+    scope = "seconds"
 
 
 class User3MinRateThrottle(UserRateThrottle):
-    rate = '3/min'
-    scope = 'minutes'
+    rate = "3/min"
+    scope = "minutes"
 
 
 class NonTimeThrottle(BaseThrottle):
     def allow_request(self, request, view):
-        if not hasattr(self.__class__, 'called'):
+        if not hasattr(self.__class__, "called"):
             self.__class__.called = True
             return True
         return False
@@ -43,21 +46,21 @@ class MockView(APIView):
     throttle_classes = (User3SecRateThrottle,)
 
     def get(self, request):
-        return Response('foo')
+        return Response("foo")
 
 
 class MockView_MinuteThrottling(APIView):
     throttle_classes = (User3MinRateThrottle,)
 
     def get(self, request):
-        return Response('foo')
+        return Response("foo")
 
 
 class MockView_NonTimeThrottling(APIView):
     throttle_classes = (NonTimeThrottle,)
 
     def get(self, request):
-        return Response('foo')
+        return Response("foo")
 
 
 class ThrottlingTests(TestCase):
@@ -72,7 +75,7 @@ class ThrottlingTests(TestCase):
         """
         Ensure request rate is limited
         """
-        request = self.factory.get('/')
+        request = self.factory.get("/")
         for dummy in range(4):
             response = MockView.as_view()(request)
         assert response.status_code == 429
@@ -89,7 +92,7 @@ class ThrottlingTests(TestCase):
         """
         self.set_throttle_timer(MockView, 0)
 
-        request = self.factory.get('/')
+        request = self.factory.get("/")
         for dummy in range(4):
             response = MockView.as_view()(request)
         assert response.status_code == 429
@@ -101,11 +104,11 @@ class ThrottlingTests(TestCase):
         assert response.status_code == 200
 
     def ensure_is_throttled(self, view, expect):
-        request = self.factory.get('/')
-        request.user = User.objects.create(username='a')
+        request = self.factory.get("/")
+        request.user = User.objects.create(username="a")
         for dummy in range(3):
             view.as_view()(request)
-        request.user = User.objects.create(username='b')
+        request.user = User.objects.create(username="b")
         response = view.as_view()(request)
         assert response.status_code == expect
 
@@ -116,31 +119,28 @@ class ThrottlingTests(TestCase):
         """
         self.ensure_is_throttled(MockView, 200)
 
-    def ensure_response_header_contains_proper_throttle_field(self, view, expected_headers):
+    def ensure_response_header_contains_proper_throttle_field(
+        self, view, expected_headers
+    ):
         """
         Ensure the response returns an Retry-After field with status and next attributes
         set properly.
         """
-        request = self.factory.get('/')
+        request = self.factory.get("/")
         for timer, expect in expected_headers:
             self.set_throttle_timer(view, timer)
             response = view.as_view()(request)
             if expect is not None:
-                assert response['Retry-After'] == expect
+                assert response["Retry-After"] == expect
             else:
-                assert not'Retry-After' in response
+                assert "Retry-After" not in response
 
     def test_seconds_fields(self):
         """
         Ensure for second based throttles.
         """
         self.ensure_response_header_contains_proper_throttle_field(
-            MockView, (
-                (0, None),
-                (0, None),
-                (0, None),
-                (0, '1')
-            )
+            MockView, ((0, None), (0, None), (0, None), (0, "1"))
         )
 
     def test_minutes_fields(self):
@@ -148,12 +148,7 @@ class ThrottlingTests(TestCase):
         Ensure for minute based throttles.
         """
         self.ensure_response_header_contains_proper_throttle_field(
-            MockView_MinuteThrottling, (
-                (0, None),
-                (0, None),
-                (0, None),
-                (0, '60')
-            )
+            MockView_MinuteThrottling, ((0, None), (0, None), (0, None), (0, "60"))
         )
 
     def test_next_rate_remains_constant_if_followed(self):
@@ -162,30 +157,27 @@ class ThrottlingTests(TestCase):
         the throttling rate should stay constant.
         """
         self.ensure_response_header_contains_proper_throttle_field(
-            MockView_MinuteThrottling, (
-                (0, None),
-                (20, None),
-                (40, None),
-                (60, None),
-                (80, None)
-            )
+            MockView_MinuteThrottling,
+            ((0, None), (20, None), (40, None), (60, None), (80, None)),
         )
 
     def test_non_time_throttle(self):
         """
         Ensure for second based throttles.
         """
-        request = self.factory.get('/')
+        request = self.factory.get("/")
 
-        self.assertFalse(hasattr(MockView_NonTimeThrottling.throttle_classes[0], 'called'))
+        self.assertFalse(
+            hasattr(MockView_NonTimeThrottling.throttle_classes[0], "called")
+        )
 
         response = MockView_NonTimeThrottling.as_view()(request)
-        self.assertFalse('Retry-After' in response)
+        self.assertFalse("Retry-After" in response)
 
         self.assertTrue(MockView_NonTimeThrottling.throttle_classes[0].called)
 
         response = MockView_NonTimeThrottling.as_view()(request)
-        self.assertFalse('Retry-After' in response)
+        self.assertFalse("Retry-After" in response)
 
 
 class ScopedRateThrottleTests(TestCase):
@@ -198,30 +190,30 @@ class ScopedRateThrottleTests(TestCase):
 
         class XYScopedRateThrottle(ScopedRateThrottle):
             TIMER_SECONDS = 0
-            THROTTLE_RATES = {'x': '3/min', 'y': '1/min'}
+            THROTTLE_RATES = {"x": "3/min", "y": "1/min"}
 
             def timer(self):
                 return self.TIMER_SECONDS
 
         class XView(APIView):
             throttle_classes = (XYScopedRateThrottle,)
-            throttle_scope = 'x'
+            throttle_scope = "x"
 
             def get(self, request):
-                return Response('x')
+                return Response("x")
 
         class YView(APIView):
             throttle_classes = (XYScopedRateThrottle,)
-            throttle_scope = 'y'
+            throttle_scope = "y"
 
             def get(self, request):
-                return Response('y')
+                return Response("y")
 
         class UnscopedView(APIView):
             throttle_classes = (XYScopedRateThrottle,)
 
             def get(self, request):
-                return Response('y')
+                return Response("y")
 
         self.throttle_class = XYScopedRateThrottle
         self.factory = APIRequestFactory()
@@ -233,7 +225,7 @@ class ScopedRateThrottleTests(TestCase):
         self.throttle_class.TIMER_SECONDS += seconds
 
     def test_scoped_rate_throttle(self):
-        request = self.factory.get('/')
+        request = self.factory.get("/")
 
         # Should be able to hit x view 3 times per minute.
         response = self.x_view(request)
@@ -288,7 +280,7 @@ class ScopedRateThrottleTests(TestCase):
         assert response.status_code == 429
 
     def test_unscoped_view_not_throttled(self):
-        request = self.factory.get('/')
+        request = self.factory.get("/")
 
         for idx in range(10):
             self.increment_timer()
@@ -297,22 +289,21 @@ class ScopedRateThrottleTests(TestCase):
 
     def test_get_cache_key_returns_correct_key_if_user_is_authenticated(self):
         class DummyView(object):
-            throttle_scope = 'user'
+            throttle_scope = "user"
 
         request = Request(HttpRequest())
-        user = User.objects.create(username='test')
+        user = User.objects.create(username="test")
         force_authenticate(request, user)
         request.user = user
         self.throttle.allow_request(request, DummyView())
         cache_key = self.throttle.get_cache_key(request, view=DummyView())
-        assert cache_key == 'throttle_user_%s' % user.pk
+        assert cache_key == "throttle_user_%s" % user.pk
 
 
 class XffTestingBase(TestCase):
     def setUp(self):
-
         class Throttle(ScopedRateThrottle):
-            THROTTLE_RATES = {'test_limit': '1/day'}
+            THROTTLE_RATES = {"test_limit": "1/day"}
             TIMER_SECONDS = 0
 
             def timer(self):
@@ -320,20 +311,20 @@ class XffTestingBase(TestCase):
 
         class View(APIView):
             throttle_classes = (Throttle,)
-            throttle_scope = 'test_limit'
+            throttle_scope = "test_limit"
 
             def get(self, request):
-                return Response('test_limit')
+                return Response("test_limit")
 
         cache.clear()
         self.throttle = Throttle()
         self.view = View.as_view()
-        self.request = APIRequestFactory().get('/some_uri')
-        self.request.META['REMOTE_ADDR'] = '3.3.3.3'
-        self.request.META['HTTP_X_FORWARDED_FOR'] = '0.0.0.0, 1.1.1.1, 2.2.2.2'
+        self.request = APIRequestFactory().get("/some_uri")
+        self.request.META["REMOTE_ADDR"] = "3.3.3.3"
+        self.request.META["HTTP_X_FORWARDED_FOR"] = "0.0.0.0, 1.1.1.1, 2.2.2.2"
 
     def config_proxy(self, num_proxies):
-        setattr(api_settings, 'NUM_PROXIES', num_proxies)
+        setattr(api_settings, "NUM_PROXIES", num_proxies)
 
 
 class IdWithXffBasicTests(XffTestingBase):
@@ -351,13 +342,13 @@ class XffSpoofingTests(XffTestingBase):
     def test_xff_spoofing_doesnt_change_machine_id_with_one_app_proxy(self):
         self.config_proxy(1)
         self.view(self.request)
-        self.request.META['HTTP_X_FORWARDED_FOR'] = '4.4.4.4, 5.5.5.5, 2.2.2.2'
+        self.request.META["HTTP_X_FORWARDED_FOR"] = "4.4.4.4, 5.5.5.5, 2.2.2.2"
         assert self.view(self.request).status_code == 429
 
     def test_xff_spoofing_doesnt_change_machine_id_with_two_app_proxies(self):
         self.config_proxy(2)
         self.view(self.request)
-        self.request.META['HTTP_X_FORWARDED_FOR'] = '4.4.4.4, 1.1.1.1, 2.2.2.2'
+        self.request.META["HTTP_X_FORWARDED_FOR"] = "4.4.4.4, 1.1.1.1, 2.2.2.2"
         assert self.view(self.request).status_code == 429
 
 
@@ -365,27 +356,25 @@ class XffUniqueMachinesTest(XffTestingBase):
     def test_unique_clients_are_counted_independently_with_one_proxy(self):
         self.config_proxy(1)
         self.view(self.request)
-        self.request.META['HTTP_X_FORWARDED_FOR'] = '0.0.0.0, 1.1.1.1, 7.7.7.7'
+        self.request.META["HTTP_X_FORWARDED_FOR"] = "0.0.0.0, 1.1.1.1, 7.7.7.7"
         assert self.view(self.request).status_code == 200
 
     def test_unique_clients_are_counted_independently_with_two_proxies(self):
         self.config_proxy(2)
         self.view(self.request)
-        self.request.META['HTTP_X_FORWARDED_FOR'] = '0.0.0.0, 7.7.7.7, 2.2.2.2'
+        self.request.META["HTTP_X_FORWARDED_FOR"] = "0.0.0.0, 7.7.7.7, 2.2.2.2"
         assert self.view(self.request).status_code == 200
 
 
 class BaseThrottleTests(TestCase):
-
     def test_allow_request_raises_not_implemented_error(self):
         with pytest.raises(NotImplementedError):
             BaseThrottle().allow_request(request={}, view={})
 
 
 class SimpleRateThrottleTests(TestCase):
-
     def setUp(self):
-        SimpleRateThrottle.scope = 'anon'
+        SimpleRateThrottle.scope = "anon"
 
     def test_get_rate_raises_error_if_scope_is_missing(self):
         throttle = SimpleRateThrottle()
@@ -394,7 +383,7 @@ class SimpleRateThrottleTests(TestCase):
             throttle.get_rate()
 
     def test_throttle_raises_error_if_rate_is_missing(self):
-        SimpleRateThrottle.scope = 'invalid scope'
+        SimpleRateThrottle.scope = "invalid scope"
         with pytest.raises(ImproperlyConfigured):
             SimpleRateThrottle()
 
@@ -411,7 +400,7 @@ class SimpleRateThrottleTests(TestCase):
 
     def test_allow_request_returns_true_if_key_is_none(self):
         throttle = SimpleRateThrottle()
-        throttle.rate = 'some rate'
+        throttle.rate = "some rate"
         throttle.get_cache_key = lambda *args: None
         assert throttle.allow_request(request={}, view={}) is True
 
@@ -434,13 +423,12 @@ class SimpleRateThrottleTests(TestCase):
 
 
 class AnonRateThrottleTests(TestCase):
-
     def setUp(self):
         self.throttle = AnonRateThrottle()
 
     def test_authenticated_user_not_affected(self):
         request = Request(HttpRequest())
-        user = User.objects.create(username='test')
+        user = User.objects.create(username="test")
         force_authenticate(request, user)
         request.user = user
         assert self.throttle.get_cache_key(request, view={}) is None
@@ -448,4 +436,4 @@ class AnonRateThrottleTests(TestCase):
     def test_get_cache_key_returns_correct_value(self):
         request = Request(HttpRequest())
         cache_key = self.throttle.get_cache_key(request, view={})
-        assert cache_key == 'throttle_anon_None'
+        assert cache_key == "throttle_anon_None"

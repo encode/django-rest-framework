@@ -1,18 +1,25 @@
 from django.conf.urls import include, url
 
 from rest_framework.renderers import (
-    CoreJSONRenderer, DocumentationRenderer, SchemaJSRenderer
+    CoreJSONRenderer,
+    DocumentationRenderer,
+    SchemaJSRenderer,
 )
 from rest_framework.schemas import SchemaGenerator, get_schema_view
 from rest_framework.settings import api_settings
 
 
 def get_docs_view(
-        title=None, description=None, schema_url=None, public=True,
-        patterns=None, generator_class=SchemaGenerator,
-        authentication_classes=api_settings.DEFAULT_AUTHENTICATION_CLASSES,
-        permission_classes=api_settings.DEFAULT_PERMISSION_CLASSES,
-        renderer_classes=None):
+    title=None,
+    description=None,
+    schema_url=None,
+    public=True,
+    patterns=None,
+    generator_class=SchemaGenerator,
+    authentication_classes=api_settings.DEFAULT_AUTHENTICATION_CLASSES,
+    permission_classes=api_settings.DEFAULT_PERMISSION_CLASSES,
+    renderer_classes=None,
+):
 
     if renderer_classes is None:
         renderer_classes = [DocumentationRenderer, CoreJSONRenderer]
@@ -31,10 +38,15 @@ def get_docs_view(
 
 
 def get_schemajs_view(
-        title=None, description=None, schema_url=None, public=True,
-        patterns=None, generator_class=SchemaGenerator,
-        authentication_classes=api_settings.DEFAULT_AUTHENTICATION_CLASSES,
-        permission_classes=api_settings.DEFAULT_PERMISSION_CLASSES):
+    title=None,
+    description=None,
+    schema_url=None,
+    public=True,
+    patterns=None,
+    generator_class=SchemaGenerator,
+    authentication_classes=api_settings.DEFAULT_AUTHENTICATION_CLASSES,
+    permission_classes=api_settings.DEFAULT_PERMISSION_CLASSES,
+):
     renderer_classes = [SchemaJSRenderer]
 
     return get_schema_view(
@@ -51,11 +63,16 @@ def get_schemajs_view(
 
 
 def include_docs_urls(
-        title=None, description=None, schema_url=None, public=True,
-        patterns=None, generator_class=SchemaGenerator,
-        authentication_classes=api_settings.DEFAULT_AUTHENTICATION_CLASSES,
-        permission_classes=api_settings.DEFAULT_PERMISSION_CLASSES,
-        renderer_classes=None):
+    title=None,
+    description=None,
+    schema_url=None,
+    public=True,
+    patterns=None,
+    generator_class=SchemaGenerator,
+    authentication_classes=api_settings.DEFAULT_AUTHENTICATION_CLASSES,
+    permission_classes=api_settings.DEFAULT_PERMISSION_CLASSES,
+    renderer_classes=None,
+):
     docs_view = get_docs_view(
         title=title,
         description=description,
@@ -78,7 +95,7 @@ def include_docs_urls(
         permission_classes=permission_classes,
     )
     urls = [
-        url(r'^$', docs_view, name='docs-index'),
-        url(r'^schema.js$', schema_js_view, name='schema-js')
+        url(r"^$", docs_view, name="docs-index"),
+        url(r"^schema.js$", schema_js_view, name="schema-js"),
     ]
-    return include((urls, 'api-docs'), namespace='api-docs')
+    return include((urls, "api-docs"), namespace="api-docs")

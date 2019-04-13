@@ -12,18 +12,16 @@ from django.core import validators
 from django.utils import six
 from django.views.generic import View
 
-try:
-    # Python 3
-    from collections.abc import Mapping, MutableMapping   # noqa
-except ImportError:
-    # Python 2.7
-    from collections import Mapping, MutableMapping   # noqa
 
 try:
-    from django.urls import (  # noqa
-        URLPattern,
-        URLResolver,
-    )
+    # Python 3
+    from collections.abc import Mapping, MutableMapping  # noqa
+except ImportError:
+    # Python 2.7
+    from collections import Mapping, MutableMapping  # noqa
+
+try:
+    from django.urls import URLPattern, URLResolver  # noqa
 except ImportError:
     # Will be removed in Django 2.0
     from django.urls import (  # noqa
@@ -47,7 +45,7 @@ def get_original_route(urlpattern):
     Get the original route/regex that was typed in by the user into the path(), re_path() or url() directive. This
     is in contrast with get_regex_pattern below, which for RoutePattern returns the raw regex generated from the path().
     """
-    if hasattr(urlpattern, 'pattern'):
+    if hasattr(urlpattern, "pattern"):
         # Django 2.0
         return str(urlpattern.pattern)
     else:
@@ -60,7 +58,7 @@ def get_regex_pattern(urlpattern):
     Get the raw regex out of the urlpattern's RegexPattern or RoutePattern. This is always a regular expression,
     unlike get_original_route above.
     """
-    if hasattr(urlpattern, 'pattern'):
+    if hasattr(urlpattern, "pattern"):
         # Django 2.0
         return urlpattern.pattern.regex.pattern
     else:
@@ -69,9 +67,10 @@ def get_regex_pattern(urlpattern):
 
 
 def is_route_pattern(urlpattern):
-    if hasattr(urlpattern, 'pattern'):
+    if hasattr(urlpattern, "pattern"):
         # Django 2.0
         from django.urls.resolvers import RoutePattern
+
         return isinstance(urlpattern.pattern, RoutePattern)
     else:
         # Django < 2.0
@@ -82,6 +81,7 @@ def make_url_resolver(regex, urlpatterns):
     try:
         # Django 2.0
         from django.urls.resolvers import RegexPattern
+
         return URLResolver(RegexPattern(regex), urlpatterns)
 
     except ImportError:
@@ -93,7 +93,7 @@ def unicode_repr(instance):
     # Get the repr of an instance, but ensure it is a unicode string
     # on both python 3 (already the case) and 2 (not the case).
     if six.PY2:
-        return repr(instance).decode('utf-8')
+        return repr(instance).decode("utf-8")
     return repr(instance)
 
 
@@ -102,21 +102,21 @@ def unicode_to_repr(value):
     # the Python version. We wrap all our `__repr__` implementations with
     # this and then use unicode throughout internally.
     if six.PY2:
-        return value.encode('utf-8')
+        return value.encode("utf-8")
     return value
 
 
 def unicode_http_header(value):
     # Coerce HTTP header value to unicode.
     if isinstance(value, bytes):
-        return value.decode('iso-8859-1')
+        return value.decode("iso-8859-1")
     return value
 
 
 def distinct(queryset, base):
     if settings.DATABASES[queryset.db]["ENGINE"] == "django.db.backends.oracle":
         # distinct analogue for Oracle users
-        return base.filter(pk__in=set(queryset.values_list('pk', flat=True)))
+        return base.filter(pk__in=set(queryset.values_list("pk", flat=True)))
     return queryset.distinct()
 
 
@@ -172,27 +172,27 @@ def is_guardian_installed():
         # Guardian 1.5.0, for Django 2.2 is NOT compatible with Python 2.7.
         # Remove when dropping PY2.
         return False
-    return 'guardian' in settings.INSTALLED_APPS
+    return "guardian" in settings.INSTALLED_APPS
 
 
 # PATCH method is not implemented by Django
-if 'patch' not in View.http_method_names:
-    View.http_method_names = View.http_method_names + ['patch']
+if "patch" not in View.http_method_names:
+    View.http_method_names = View.http_method_names + ["patch"]
 
 
 # Markdown is optional
 try:
     import markdown
 
-    if markdown.version <= '2.2':
-        HEADERID_EXT_PATH = 'headerid'
-        LEVEL_PARAM = 'level'
-    elif markdown.version < '2.6':
-        HEADERID_EXT_PATH = 'markdown.extensions.headerid'
-        LEVEL_PARAM = 'level'
+    if markdown.version <= "2.2":
+        HEADERID_EXT_PATH = "headerid"
+        LEVEL_PARAM = "level"
+    elif markdown.version < "2.6":
+        HEADERID_EXT_PATH = "markdown.extensions.headerid"
+        LEVEL_PARAM = "level"
     else:
-        HEADERID_EXT_PATH = 'markdown.extensions.toc'
-        LEVEL_PARAM = 'baselevel'
+        HEADERID_EXT_PATH = "markdown.extensions.toc"
+        LEVEL_PARAM = "baselevel"
 
     def apply_markdown(text):
         """
@@ -200,16 +200,14 @@ try:
         of '#' style headers to <h2>.
         """
         extensions = [HEADERID_EXT_PATH]
-        extension_configs = {
-            HEADERID_EXT_PATH: {
-                LEVEL_PARAM: '2'
-            }
-        }
+        extension_configs = {HEADERID_EXT_PATH: {LEVEL_PARAM: "2"}}
         md = markdown.Markdown(
             extensions=extensions, extension_configs=extension_configs
         )
         md_filter_add_syntax_highlight(md)
         return md.convert(text)
+
+
 except ImportError:
     apply_markdown = None
     markdown = None
@@ -227,7 +225,8 @@ try:
 
     def pygments_css(style):
         formatter = HtmlFormatter(style=style)
-        return formatter.get_style_defs('.highlight')
+        return formatter.get_style_defs(".highlight")
+
 
 except ImportError:
     pygments = None
@@ -238,6 +237,7 @@ except ImportError:
     def pygments_css(style):
         return None
 
+
 if markdown is not None and pygments is not None:
     # starting from this blogpost and modified to support current markdown extensions API
     # https://zerokspot.com/weblog/2008/06/18/syntax-highlighting-in-markdown-with-pygments/
@@ -246,8 +246,7 @@ if markdown is not None and pygments is not None:
     import re
 
     class CodeBlockPreprocessor(Preprocessor):
-        pattern = re.compile(
-            r'^\s*``` *([^\n]+)\n(.+?)^\s*```', re.M | re.S)
+        pattern = re.compile(r"^\s*``` *([^\n]+)\n(.+?)^\s*```", re.M | re.S)
 
         formatter = HtmlFormatter()
 
@@ -257,17 +256,25 @@ if markdown is not None and pygments is not None:
                     lexer = get_lexer_by_name(m.group(1))
                 except (ValueError, NameError):
                     lexer = TextLexer()
-                code = m.group(2).replace('\t', '    ')
+                code = m.group(2).replace("\t", "    ")
                 code = pygments.highlight(code, lexer, self.formatter)
-                code = code.replace('\n\n', '\n&nbsp;\n').replace('\n', '<br />').replace('\\@', '@')
-                return '\n\n%s\n\n' % code
+                code = (
+                    code.replace("\n\n", "\n&nbsp;\n")
+                    .replace("\n", "<br />")
+                    .replace("\\@", "@")
+                )
+                return "\n\n%s\n\n" % code
+
             ret = self.pattern.sub(repl, "\n".join(lines))
             return ret.split("\n")
 
     def md_filter_add_syntax_highlight(md):
-        md.preprocessors.add('highlight', CodeBlockPreprocessor(), "_begin")
+        md.preprocessors.add("highlight", CodeBlockPreprocessor(), "_begin")
         return True
+
+
 else:
+
     def md_filter_add_syntax_highlight(md):
         return False
 
@@ -276,7 +283,8 @@ else:
 try:
     from django.urls import include, path, re_path, register_converter  # noqa
 except ImportError:
-    from django.conf.urls import include, url # noqa
+    from django.conf.urls import include, url  # noqa
+
     path = None
     register_converter = None
     re_path = url
@@ -285,13 +293,13 @@ except ImportError:
 # `separators` argument to `json.dumps()` differs between 2.x and 3.x
 # See: https://bugs.python.org/issue22767
 if six.PY3:
-    SHORT_SEPARATORS = (',', ':')
-    LONG_SEPARATORS = (', ', ': ')
-    INDENT_SEPARATORS = (',', ': ')
+    SHORT_SEPARATORS = (",", ":")
+    LONG_SEPARATORS = (", ", ": ")
+    INDENT_SEPARATORS = (",", ": ")
 else:
-    SHORT_SEPARATORS = (b',', b':')
-    LONG_SEPARATORS = (b', ', b': ')
-    INDENT_SEPARATORS = (b',', b': ')
+    SHORT_SEPARATORS = (b",", b":")
+    LONG_SEPARATORS = (b", ", b": ")
+    INDENT_SEPARATORS = (b",", b": ")
 
 
 class CustomValidatorMessage(object):
@@ -303,7 +311,7 @@ class CustomValidatorMessage(object):
     """
 
     def __init__(self, *args, **kwargs):
-        self.message = kwargs.pop('message', self.message)
+        self.message = kwargs.pop("message", self.message)
         super(CustomValidatorMessage, self).__init__(*args, **kwargs)
 
 

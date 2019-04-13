@@ -9,10 +9,10 @@ from django.utils.datastructures import MultiValueDict
 def is_html_input(dictionary):
     # MultiDict type datastructures are used to represent HTML form input,
     # which may have more than one value for each key.
-    return hasattr(dictionary, 'getlist')
+    return hasattr(dictionary, "getlist")
 
 
-def parse_html_list(dictionary, prefix='', default=None):
+def parse_html_list(dictionary, prefix="", default=None):
     """
     Used to support list values in HTML forms.
     Supports lists of primitives and/or dictionaries.
@@ -48,7 +48,7 @@ def parse_html_list(dictionary, prefix='', default=None):
     :returns a list of objects, or the value specified in ``default`` if the list is empty
     """
     ret = {}
-    regex = re.compile(r'^%s\[([0-9]+)\](.*)$' % re.escape(prefix))
+    regex = re.compile(r"^%s\[([0-9]+)\](.*)$" % re.escape(prefix))
     for field, value in dictionary.items():
         match = regex.match(field)
         if not match:
@@ -66,7 +66,7 @@ def parse_html_list(dictionary, prefix='', default=None):
     return [ret[item] for item in sorted(ret)] if ret else default
 
 
-def parse_html_dict(dictionary, prefix=''):
+def parse_html_dict(dictionary, prefix=""):
     """
     Used to support dictionary values in HTML forms.
 
@@ -83,7 +83,7 @@ def parse_html_dict(dictionary, prefix=''):
     }
     """
     ret = MultiValueDict()
-    regex = re.compile(r'^%s\.(.+)$' % re.escape(prefix))
+    regex = re.compile(r"^%s\.(.+)$" % re.escape(prefix))
     for field in dictionary:
         match = regex.match(field)
         if not match:

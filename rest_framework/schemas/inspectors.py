@@ -21,46 +21,38 @@ from rest_framework.utils import formatting
 
 from .utils import is_list_view
 
-header_regex = re.compile('^[a-zA-Z][0-9A-Za-z_]*:')
+
+header_regex = re.compile("^[a-zA-Z][0-9A-Za-z_]*:")
 
 
 def field_to_schema(field):
-    title = force_text(field.label) if field.label else ''
-    description = force_text(field.help_text) if field.help_text else ''
+    title = force_text(field.label) if field.label else ""
+    description = force_text(field.help_text) if field.help_text else ""
 
     if isinstance(field, (serializers.ListSerializer, serializers.ListField)):
         child_schema = field_to_schema(field.child)
         return coreschema.Array(
-            items=child_schema,
-            title=title,
-            description=description
+            items=child_schema, title=title, description=description
         )
     elif isinstance(field, serializers.DictField):
-        return coreschema.Object(
-            title=title,
-            description=description
-        )
+        return coreschema.Object(title=title, description=description)
     elif isinstance(field, serializers.Serializer):
         return coreschema.Object(
-            properties=OrderedDict([
-                (key, field_to_schema(value))
-                for key, value
-                in field.fields.items()
-            ]),
+            properties=OrderedDict(
+                [(key, field_to_schema(value)) for key, value in field.fields.items()]
+            ),
             title=title,
-            description=description
+            description=description,
         )
     elif isinstance(field, serializers.ManyRelatedField):
         related_field_schema = field_to_schema(field.child_relation)
 
         return coreschema.Array(
-            items=related_field_schema,
-            title=title,
-            description=description
+            items=related_field_schema, title=title, description=description
         )
     elif isinstance(field, serializers.PrimaryKeyRelatedField):
         schema_cls = coreschema.String
-        model = getattr(field.queryset, 'model', None)
+        model = getattr(field.queryset, "model", None)
         if model is not None:
             model_field = model._meta.pk
             if isinstance(model_field, models.AutoField):
@@ -72,13 +64,11 @@ def field_to_schema(field):
         return coreschema.Array(
             items=coreschema.Enum(enum=list(field.choices)),
             title=title,
-            description=description
+            description=description,
         )
     elif isinstance(field, serializers.ChoiceField):
         return coreschema.Enum(
-            enum=list(field.choices),
-            title=title,
-            description=description
+            enum=list(field.choices), title=title, description=description
         )
     elif isinstance(field, serializers.BooleanField):
         return coreschema.Boolean(title=title, description=description)
@@ -87,25 +77,17 @@ def field_to_schema(field):
     elif isinstance(field, serializers.IntegerField):
         return coreschema.Integer(title=title, description=description)
     elif isinstance(field, serializers.DateField):
-        return coreschema.String(
-            title=title,
-            description=description,
-            format='date'
-        )
+        return coreschema.String(title=title, description=description, format="date")
     elif isinstance(field, serializers.DateTimeField):
         return coreschema.String(
-            title=title,
-            description=description,
-            format='date-time'
+            title=title, description=description, format="date-time"
         )
     elif isinstance(field, serializers.JSONField):
         return coreschema.Object(title=title, description=description)
 
-    if field.style.get('base_template') == 'textarea.html':
+    if field.style.get("base_template") == "textarea.html":
         return coreschema.String(
-            title=title,
-            description=description,
-            format='textarea'
+            title=title, description=description, format="textarea"
         )
 
     return coreschema.String(title=title, description=description)
@@ -113,15 +95,14 @@ def field_to_schema(field):
 
 def get_pk_description(model, model_field):
     if isinstance(model_field, models.AutoField):
-        value_type = _('unique integer value')
+        value_type = _("unique integer value")
     elif isinstance(model_field, models.UUIDField):
-        value_type = _('UUID string')
+        value_type = _("UUID string")
     else:
-        value_type = _('unique value')
+        value_type = _("unique value")
 
-    return _('A {value_type} identifying this {name}.').format(
-        value_type=value_type,
-        name=model._meta.verbose_name,
+    return _("A {value_type} identifying this {name}.").format(
+        value_type=value_type, name=model._meta.verbose_name
     )
 
 
@@ -200,6 +181,7 @@ class AutoSchema(ViewInspector):
 
     Responsible for per-view introspection and schema generation.
     """
+
     def __init__(self, manual_fields=None):
         """
         Parameters:
@@ -221,14 +203,14 @@ class AutoSchema(ViewInspector):
         manual_fields = self.get_manual_fields(path, method)
         fields = self.update_fields(fields, manual_fields)
 
-        if fields and any([field.location in ('form', 'body') for field in fields]):
+        if fields and any([field.location in ("form", "body") for field in fields]):
             encoding = self.get_encoding(path, method)
         else:
             encoding = None
 
         description = self.get_description(path, method)
 
-        if base_url and path.startswith('/'):
+        if base_url and path.startswith("/"):
             path = path[1:]
 
         return coreapi.Link(
@@ -236,7 +218,7 @@ class AutoSchema(ViewInspector):
             action=method.lower(),
             encoding=encoding,
             fields=fields,
-            description=description
+            description=description,
         )
 
     def get_description(self, path, method):
@@ -248,25 +230,31 @@ class AutoSchema(ViewInspector):
         """
         view = self.view
 
-        method_name = getattr(view, 'action', method.lower())
+        method_name = getattr(view, "action", method.lower())
         method_docstring = getattr(view, method_name, None).__doc__
         if method_docstring:
             # An explicit docstring on the method or action.
-            return self._get_description_section(view, method.lower(), formatting.dedent(smart_text(method_docstring)))
+            return self._get_description_section(
+                view, method.lower(), formatting.dedent(smart_text(method_docstring))
+            )
         else:
-            return self._get_description_section(view, getattr(view, 'action', method.lower()), view.get_view_description())
+            return self._get_description_section(
+                view,
+                getattr(view, "action", method.lower()),
+                view.get_view_description(),
+            )
 
     def _get_description_section(self, view, header, description):
         lines = [line for line in description.splitlines()]
-        current_section = ''
-        sections = {'': ''}
+        current_section = ""
+        sections = {"": ""}
 
         for line in lines:
             if header_regex.match(line):
-                current_section, seperator, lead = line.partition(':')
+                current_section, seperator, lead = line.partition(":")
                 sections[current_section] = lead.strip()
             else:
-                sections[current_section] += '\n' + line
+                sections[current_section] += "\n" + line
 
         # TODO: SCHEMA_COERCE_METHOD_NAMES appears here and in `SchemaGenerator.get_keys`
         coerce_method_names = api_settings.SCHEMA_COERCE_METHOD_NAMES
@@ -275,7 +263,7 @@ class AutoSchema(ViewInspector):
         if header in coerce_method_names:
             if coerce_method_names[header] in sections:
                 return sections[coerce_method_names[header]].strip()
-        return sections[''].strip()
+        return sections[""].strip()
 
     def get_path_fields(self, path, method):
         """
@@ -283,12 +271,12 @@ class AutoSchema(ViewInspector):
         templated path variables.
         """
         view = self.view
-        model = getattr(getattr(view, 'queryset', None), 'model', None)
+        model = getattr(getattr(view, "queryset", None), "model", None)
         fields = []
 
         for variable in uritemplate.variables(path):
-            title = ''
-            description = ''
+            title = ""
+            description = ""
             schema_cls = coreschema.String
             kwargs = {}
             if model is not None:
@@ -306,16 +294,19 @@ class AutoSchema(ViewInspector):
                 elif model_field is not None and model_field.primary_key:
                     description = get_pk_description(model, model_field)
 
-                if hasattr(view, 'lookup_value_regex') and view.lookup_field == variable:
-                    kwargs['pattern'] = view.lookup_value_regex
+                if (
+                    hasattr(view, "lookup_value_regex")
+                    and view.lookup_field == variable
+                ):
+                    kwargs["pattern"] = view.lookup_value_regex
                 elif isinstance(model_field, models.AutoField):
                     schema_cls = coreschema.Integer
 
             field = coreapi.Field(
                 name=variable,
-                location='path',
+                location="path",
                 required=True,
-                schema=schema_cls(title=title, description=description, **kwargs)
+                schema=schema_cls(title=title, description=description, **kwargs),
             )
             fields.append(field)
 
@@ -328,28 +319,29 @@ class AutoSchema(ViewInspector):
         """
         view = self.view
 
-        if method not in ('PUT', 'PATCH', 'POST'):
+        if method not in ("PUT", "PATCH", "POST"):
             return []
 
-        if not hasattr(view, 'get_serializer'):
+        if not hasattr(view, "get_serializer"):
             return []
 
         try:
             serializer = view.get_serializer()
         except exceptions.APIException:
             serializer = None
-            warnings.warn('{}.get_serializer() raised an exception during '
-                          'schema generation. Serializer fields will not be '
-                          'generated for {} {}.'
-                          .format(view.__class__.__name__, method, path))
+            warnings.warn(
+                "{}.get_serializer() raised an exception during "
+                "schema generation. Serializer fields will not be "
+                "generated for {} {}.".format(view.__class__.__name__, method, path)
+            )
 
         if isinstance(serializer, serializers.ListSerializer):
             return [
                 coreapi.Field(
-                    name='data',
-                    location='body',
+                    name="data",
+                    location="body",
                     required=True,
-                    schema=coreschema.Array()
+                    schema=coreschema.Array(),
                 )
             ]
 
@@ -361,12 +353,12 @@ class AutoSchema(ViewInspector):
             if field.read_only or isinstance(field, serializers.HiddenField):
                 continue
 
-            required = field.required and method != 'PATCH'
+            required = field.required and method != "PATCH"
             field = coreapi.Field(
                 name=field.field_name,
-                location='form',
+                location="form",
                 required=required,
-                schema=field_to_schema(field)
+                schema=field_to_schema(field),
             )
             fields.append(field)
 
@@ -378,7 +370,7 @@ class AutoSchema(ViewInspector):
         if not is_list_view(path, method, view):
             return []
 
-        pagination = getattr(view, 'pagination_class', None)
+        pagination = getattr(view, "pagination_class", None)
         if not pagination:
             return []
 
@@ -397,11 +389,17 @@ class AutoSchema(ViewInspector):
         Note: Introduced in v3.7: Initially "private" (i.e. with leading underscore)
             to allow changes based on user experience.
         """
-        if getattr(self.view, 'filter_backends', None) is None:
+        if getattr(self.view, "filter_backends", None) is None:
             return False
 
-        if hasattr(self.view, 'action'):
-            return self.view.action in ["list", "retrieve", "update", "partial_update", "destroy"]
+        if hasattr(self.view, "action"):
+            return self.view.action in [
+                "list",
+                "retrieve",
+                "update",
+                "partial_update",
+                "destroy",
+            ]
 
         return method.lower() in ["get", "put", "patch", "delete"]
 
@@ -447,18 +445,18 @@ class AutoSchema(ViewInspector):
 
         # Core API supports the following request encodings over HTTP...
         supported_media_types = {
-            'application/json',
-            'application/x-www-form-urlencoded',
-            'multipart/form-data',
+            "application/json",
+            "application/x-www-form-urlencoded",
+            "multipart/form-data",
         }
-        parser_classes = getattr(view, 'parser_classes', [])
+        parser_classes = getattr(view, "parser_classes", [])
         for parser_class in parser_classes:
-            media_type = getattr(parser_class, 'media_type', None)
+            media_type = getattr(parser_class, "media_type", None)
             if media_type in supported_media_types:
                 return media_type
             # Raw binary uploads are supported with "application/octet-stream"
-            if media_type == '*/*':
-                return 'application/octet-stream'
+            if media_type == "*/*":
+                return "application/octet-stream"
 
         return None
 
@@ -468,7 +466,8 @@ class ManualSchema(ViewInspector):
     Allows providing a list of coreapi.Fields,
     plus an optional description.
     """
-    def __init__(self, fields, description='', encoding=None):
+
+    def __init__(self, fields, description="", encoding=None):
         """
         Parameters:
 
@@ -476,14 +475,16 @@ class ManualSchema(ViewInspector):
         * `description`: String description for view. Optional.
         """
         super(ManualSchema, self).__init__()
-        assert all(isinstance(f, coreapi.Field) for f in fields), "`fields` must be a list of coreapi.Field instances"
+        assert all(
+            isinstance(f, coreapi.Field) for f in fields
+        ), "`fields` must be a list of coreapi.Field instances"
         self._fields = fields
         self._description = description
         self._encoding = encoding
 
     def get_link(self, path, method, base_url):
 
-        if base_url and path.startswith('/'):
+        if base_url and path.startswith("/"):
             path = path[1:]
 
         return coreapi.Link(
@@ -491,21 +492,22 @@ class ManualSchema(ViewInspector):
             action=method.lower(),
             encoding=self._encoding,
             fields=self._fields,
-            description=self._description
+            description=self._description,
         )
 
 
 class DefaultSchema(ViewInspector):
     """Allows overriding AutoSchema using DEFAULT_SCHEMA_CLASS setting"""
+
     def __get__(self, instance, owner):
         result = super(DefaultSchema, self).__get__(instance, owner)
         if not isinstance(result, DefaultSchema):
             return result
 
         inspector_class = api_settings.DEFAULT_SCHEMA_CLASS
-        assert issubclass(inspector_class, ViewInspector), (
-            "DEFAULT_SCHEMA_CLASS must be set to a ViewInspector (usually an AutoSchema) subclass"
-        )
+        assert issubclass(
+            inspector_class, ViewInspector
+        ), "DEFAULT_SCHEMA_CLASS must be set to a ViewInspector (usually an AutoSchema) subclass"
         inspector = inspector_class()
         inspector.view = instance
         return inspector

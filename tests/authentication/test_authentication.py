@@ -13,11 +13,18 @@ from django.test import TestCase, override_settings
 from django.utils import six
 
 from rest_framework import (
-    HTTP_HEADER_ENCODING, exceptions, permissions, renderers, status
+    HTTP_HEADER_ENCODING,
+    exceptions,
+    permissions,
+    renderers,
+    status,
 )
 from rest_framework.authentication import (
-    BaseAuthentication, BasicAuthentication, RemoteUserAuthentication,
-    SessionAuthentication, TokenAuthentication
+    BaseAuthentication,
+    BasicAuthentication,
+    RemoteUserAuthentication,
+    SessionAuthentication,
+    TokenAuthentication,
 )
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import obtain_auth_token
@@ -27,6 +34,7 @@ from rest_framework.views import APIView
 
 from .models import CustomToken
 
+
 factory = APIRequestFactory()
 
 
@@ -35,92 +43,77 @@ class CustomTokenAuthentication(TokenAuthentication):
 
 
 class CustomKeywordTokenAuthentication(TokenAuthentication):
-    keyword = 'Bearer'
+    keyword = "Bearer"
 
 
 class MockView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
-        return HttpResponse({'a': 1, 'b': 2, 'c': 3})
+        return HttpResponse({"a": 1, "b": 2, "c": 3})
 
     def post(self, request):
-        return HttpResponse({'a': 1, 'b': 2, 'c': 3})
+        return HttpResponse({"a": 1, "b": 2, "c": 3})
 
     def put(self, request):
-        return HttpResponse({'a': 1, 'b': 2, 'c': 3})
+        return HttpResponse({"a": 1, "b": 2, "c": 3})
 
 
 urlpatterns = [
     url(
-        r'^session/$',
-        MockView.as_view(authentication_classes=[SessionAuthentication])
+        r"^session/$", MockView.as_view(authentication_classes=[SessionAuthentication])
+    ),
+    url(r"^basic/$", MockView.as_view(authentication_classes=[BasicAuthentication])),
+    url(
+        r"^remote-user/$",
+        MockView.as_view(authentication_classes=[RemoteUserAuthentication]),
+    ),
+    url(r"^token/$", MockView.as_view(authentication_classes=[TokenAuthentication])),
+    url(
+        r"^customtoken/$",
+        MockView.as_view(authentication_classes=[CustomTokenAuthentication]),
     ),
     url(
-        r'^basic/$',
-        MockView.as_view(authentication_classes=[BasicAuthentication])
+        r"^customkeywordtoken/$",
+        MockView.as_view(authentication_classes=[CustomKeywordTokenAuthentication]),
     ),
-    url(
-        r'^remote-user/$',
-        MockView.as_view(authentication_classes=[RemoteUserAuthentication])
-    ),
-    url(
-        r'^token/$',
-        MockView.as_view(authentication_classes=[TokenAuthentication])
-    ),
-    url(
-        r'^customtoken/$',
-        MockView.as_view(authentication_classes=[CustomTokenAuthentication])
-    ),
-    url(
-        r'^customkeywordtoken/$',
-        MockView.as_view(
-            authentication_classes=[CustomKeywordTokenAuthentication]
-        )
-    ),
-    url(r'^auth-token/$', obtain_auth_token),
-    url(r'^auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r"^auth-token/$", obtain_auth_token),
+    url(r"^auth/", include("rest_framework.urls", namespace="rest_framework")),
 ]
 
 
 @override_settings(ROOT_URLCONF=__name__)
 class BasicAuthTests(TestCase):
     """Basic authentication"""
+
     def setUp(self):
         self.csrf_client = APIClient(enforce_csrf_checks=True)
-        self.username = 'john'
-        self.email = 'lennon@thebeatles.com'
-        self.password = 'password'
-        self.user = User.objects.create_user(
-            self.username, self.email, self.password
-        )
+        self.username = "john"
+        self.email = "lennon@thebeatles.com"
+        self.password = "password"
+        self.user = User.objects.create_user(self.username, self.email, self.password)
 
     def test_post_form_passing_basic_auth(self):
         """Ensure POSTing json over basic auth with correct credentials passes and does not require CSRF"""
-        credentials = ('%s:%s' % (self.username, self.password))
+        credentials = "%s:%s" % (self.username, self.password)
         base64_credentials = base64.b64encode(
             credentials.encode(HTTP_HEADER_ENCODING)
         ).decode(HTTP_HEADER_ENCODING)
-        auth = 'Basic %s' % base64_credentials
+        auth = "Basic %s" % base64_credentials
         response = self.csrf_client.post(
-            '/basic/',
-            {'example': 'example'},
-            HTTP_AUTHORIZATION=auth
+            "/basic/", {"example": "example"}, HTTP_AUTHORIZATION=auth
         )
         assert response.status_code == status.HTTP_200_OK
 
     def test_post_json_passing_basic_auth(self):
         """Ensure POSTing form over basic auth with correct credentials passes and does not require CSRF"""
-        credentials = ('%s:%s' % (self.username, self.password))
+        credentials = "%s:%s" % (self.username, self.password)
         base64_credentials = base64.b64encode(
             credentials.encode(HTTP_HEADER_ENCODING)
         ).decode(HTTP_HEADER_ENCODING)
-        auth = 'Basic %s' % base64_credentials
+        auth = "Basic %s" % base64_credentials
         response = self.csrf_client.post(
-            '/basic/',
-            {'example': 'example'},
-            format='json',
-            HTTP_AUTHORIZATION=auth
+            "/basic/", {"example": "example"}, format="json", HTTP_AUTHORIZATION=auth
         )
         assert response.status_code == status.HTTP_200_OK
 
@@ -128,39 +121,34 @@ class BasicAuthTests(TestCase):
         """Ensure POSTing JSON over basic auth with incorrectly padded Base64 string is handled correctly"""
         # regression test for issue in 'rest_framework.authentication.BasicAuthentication.authenticate'
         # https://github.com/encode/django-rest-framework/issues/4089
-        auth = 'Basic =a='
+        auth = "Basic =a="
         response = self.csrf_client.post(
-            '/basic/',
-            {'example': 'example'},
-            format='json',
-            HTTP_AUTHORIZATION=auth
+            "/basic/", {"example": "example"}, format="json", HTTP_AUTHORIZATION=auth
         )
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
     def test_post_form_failing_basic_auth(self):
         """Ensure POSTing form over basic auth without correct credentials fails"""
-        response = self.csrf_client.post('/basic/', {'example': 'example'})
+        response = self.csrf_client.post("/basic/", {"example": "example"})
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
     def test_post_json_failing_basic_auth(self):
         """Ensure POSTing json over basic auth without correct credentials fails"""
         response = self.csrf_client.post(
-            '/basic/',
-            {'example': 'example'},
-            format='json'
+            "/basic/", {"example": "example"}, format="json"
         )
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
-        assert response['WWW-Authenticate'] == 'Basic realm="api"'
+        assert response["WWW-Authenticate"] == 'Basic realm="api"'
 
     def test_fail_post_if_credentials_are_missing(self):
         response = self.csrf_client.post(
-            '/basic/', {'example': 'example'}, HTTP_AUTHORIZATION='Basic ')
+            "/basic/", {"example": "example"}, HTTP_AUTHORIZATION="Basic "
+        )
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
     def test_fail_post_if_credentials_contain_spaces(self):
         response = self.csrf_client.post(
-            '/basic/', {'example': 'example'},
-            HTTP_AUTHORIZATION='Basic foo bar'
+            "/basic/", {"example": "example"}, HTTP_AUTHORIZATION="Basic foo bar"
         )
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
@@ -168,15 +156,14 @@ class BasicAuthTests(TestCase):
 @override_settings(ROOT_URLCONF=__name__)
 class SessionAuthTests(TestCase):
     """User session authentication"""
+
     def setUp(self):
         self.csrf_client = APIClient(enforce_csrf_checks=True)
         self.non_csrf_client = APIClient(enforce_csrf_checks=False)
-        self.username = 'john'
-        self.email = 'lennon@thebeatles.com'
-        self.password = 'password'
-        self.user = User.objects.create_user(
-            self.username, self.email, self.password
-        )
+        self.username = "john"
+        self.email = "lennon@thebeatles.com"
+        self.password = "password"
+        self.user = User.objects.create_user(self.username, self.email, self.password)
 
     def tearDown(self):
         self.csrf_client.logout()
@@ -187,8 +174,8 @@ class SessionAuthTests(TestCase):
 
         cf. [#1810](https://github.com/encode/django-rest-framework/pull/1810)
         """
-        response = self.csrf_client.get('/auth/login/')
-        content = response.content.decode('utf8')
+        response = self.csrf_client.get("/auth/login/")
+        content = response.content.decode("utf8")
         assert '<label for="id_username">Username:</label>' in content
 
     def test_post_form_session_auth_failing_csrf(self):
@@ -196,7 +183,7 @@ class SessionAuthTests(TestCase):
         Ensure POSTing form over session authentication without CSRF token fails.
         """
         self.csrf_client.login(username=self.username, password=self.password)
-        response = self.csrf_client.post('/session/', {'example': 'example'})
+        response = self.csrf_client.post("/session/", {"example": "example"})
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
     def test_post_form_session_auth_passing_csrf(self):
@@ -213,10 +200,9 @@ class SessionAuthTests(TestCase):
         self.csrf_client.cookies[settings.CSRF_COOKIE_NAME] = token
 
         # Post the token matching the cookie value
-        response = self.csrf_client.post('/session/', {
-            'example': 'example',
-            'csrfmiddlewaretoken': token,
-        })
+        response = self.csrf_client.post(
+            "/session/", {"example": "example", "csrfmiddlewaretoken": token}
+        )
         assert response.status_code == status.HTTP_200_OK
 
     def test_post_form_session_auth_passing(self):
@@ -224,12 +210,8 @@ class SessionAuthTests(TestCase):
         Ensure POSTing form over session authentication with logged in
         user and CSRF token passes.
         """
-        self.non_csrf_client.login(
-            username=self.username, password=self.password
-        )
-        response = self.non_csrf_client.post(
-            '/session/', {'example': 'example'}
-        )
+        self.non_csrf_client.login(username=self.username, password=self.password)
+        response = self.non_csrf_client.post("/session/", {"example": "example"})
         assert response.status_code == status.HTTP_200_OK
 
     def test_put_form_session_auth_passing(self):
@@ -237,38 +219,33 @@ class SessionAuthTests(TestCase):
         Ensure PUTting form over session authentication with
         logged in user and CSRF token passes.
         """
-        self.non_csrf_client.login(
-            username=self.username, password=self.password
-        )
-        response = self.non_csrf_client.put(
-            '/session/', {'example': 'example'}
-        )
+        self.non_csrf_client.login(username=self.username, password=self.password)
+        response = self.non_csrf_client.put("/session/", {"example": "example"})
         assert response.status_code == status.HTTP_200_OK
 
     def test_post_form_session_auth_failing(self):
         """
         Ensure POSTing form over session authentication without logged in user fails.
         """
-        response = self.csrf_client.post('/session/', {'example': 'example'})
+        response = self.csrf_client.post("/session/", {"example": "example"})
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
 class BaseTokenAuthTests(object):
     """Token authentication"""
+
     model = None
     path = None
-    header_prefix = 'Token '
+    header_prefix = "Token "
 
     def setUp(self):
         self.csrf_client = APIClient(enforce_csrf_checks=True)
-        self.username = 'john'
-        self.email = 'lennon@thebeatles.com'
-        self.password = 'password'
-        self.user = User.objects.create_user(
-            self.username, self.email, self.password
-        )
+        self.username = "john"
+        self.email = "lennon@thebeatles.com"
+        self.password = "password"
+        self.user = User.objects.create_user(self.username, self.email, self.password)
 
-        self.key = 'abcd1234'
+        self.key = "abcd1234"
         self.token = self.model.objects.create(key=self.key, user=self.user)
 
     def test_post_form_passing_token_auth(self):
@@ -278,39 +255,41 @@ class BaseTokenAuthTests(object):
         """
         auth = self.header_prefix + self.key
         response = self.csrf_client.post(
-            self.path, {'example': 'example'}, HTTP_AUTHORIZATION=auth
+            self.path, {"example": "example"}, HTTP_AUTHORIZATION=auth
         )
         assert response.status_code == status.HTTP_200_OK
 
     def test_fail_authentication_if_user_is_not_active(self):
-        user = User.objects.create_user('foo', 'bar', 'baz')
+        user = User.objects.create_user("foo", "bar", "baz")
         user.is_active = False
         user.save()
-        self.model.objects.create(key='foobar_token', user=user)
+        self.model.objects.create(key="foobar_token", user=user)
         response = self.csrf_client.post(
-            self.path, {'example': 'example'},
-            HTTP_AUTHORIZATION=self.header_prefix + 'foobar_token'
+            self.path,
+            {"example": "example"},
+            HTTP_AUTHORIZATION=self.header_prefix + "foobar_token",
         )
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
     def test_fail_post_form_passing_nonexistent_token_auth(self):
         # use a nonexistent token key
-        auth = self.header_prefix + 'wxyz6789'
+        auth = self.header_prefix + "wxyz6789"
         response = self.csrf_client.post(
-            self.path, {'example': 'example'}, HTTP_AUTHORIZATION=auth
+            self.path, {"example": "example"}, HTTP_AUTHORIZATION=auth
         )
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
     def test_fail_post_if_token_is_missing(self):
         response = self.csrf_client.post(
-            self.path, {'example': 'example'},
-            HTTP_AUTHORIZATION=self.header_prefix)
+            self.path, {"example": "example"}, HTTP_AUTHORIZATION=self.header_prefix
+        )
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
     def test_fail_post_if_token_contains_spaces(self):
         response = self.csrf_client.post(
-            self.path, {'example': 'example'},
-            HTTP_AUTHORIZATION=self.header_prefix + 'foo bar'
+            self.path,
+            {"example": "example"},
+            HTTP_AUTHORIZATION=self.header_prefix + "foo bar",
         )
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
@@ -318,7 +297,7 @@ class BaseTokenAuthTests(object):
         # add an 'invalid' unicode character
         auth = self.header_prefix + self.key + "¸"
         response = self.csrf_client.post(
-            self.path, {'example': 'example'}, HTTP_AUTHORIZATION=auth
+            self.path, {"example": "example"}, HTTP_AUTHORIZATION=auth
         )
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
@@ -329,8 +308,7 @@ class BaseTokenAuthTests(object):
         """
         auth = self.header_prefix + self.key
         response = self.csrf_client.post(
-            self.path, {'example': 'example'},
-            format='json', HTTP_AUTHORIZATION=auth
+            self.path, {"example": "example"}, format="json", HTTP_AUTHORIZATION=auth
         )
         assert response.status_code == status.HTTP_200_OK
 
@@ -343,8 +321,10 @@ class BaseTokenAuthTests(object):
 
         def func_to_test():
             return self.csrf_client.post(
-                self.path, {'example': 'example'},
-                format='json', HTTP_AUTHORIZATION=auth
+                self.path,
+                {"example": "example"},
+                format="json",
+                HTTP_AUTHORIZATION=auth,
             )
 
         self.assertNumQueries(1, func_to_test)
@@ -353,7 +333,7 @@ class BaseTokenAuthTests(object):
         """
         Ensure POSTing form over token auth without correct credentials fails
         """
-        response = self.csrf_client.post(self.path, {'example': 'example'})
+        response = self.csrf_client.post(self.path, {"example": "example"})
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
     def test_post_json_failing_token_auth(self):
@@ -361,7 +341,7 @@ class BaseTokenAuthTests(object):
         Ensure POSTing json over token auth without correct credentials fails
         """
         response = self.csrf_client.post(
-            self.path, {'example': 'example'}, format='json'
+            self.path, {"example": "example"}, format="json"
         )
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
@@ -369,7 +349,7 @@ class BaseTokenAuthTests(object):
 @override_settings(ROOT_URLCONF=__name__)
 class TokenAuthTests(BaseTokenAuthTests, TestCase):
     model = Token
-    path = '/token/'
+    path = "/token/"
 
     def test_token_has_auto_assigned_key_if_none_provided(self):
         """Ensure creating a token with no key will auto-assign a key"""
@@ -387,12 +367,12 @@ class TokenAuthTests(BaseTokenAuthTests, TestCase):
         """Ensure token login view using JSON POST works."""
         client = APIClient(enforce_csrf_checks=True)
         response = client.post(
-            '/auth-token/',
-            {'username': self.username, 'password': self.password},
-            format='json'
+            "/auth-token/",
+            {"username": self.username, "password": self.password},
+            format="json",
         )
         assert response.status_code == status.HTTP_200_OK
-        assert response.data['token'] == self.key
+        assert response.data["token"] == self.key
 
     def test_token_login_json_bad_creds(self):
         """
@@ -401,41 +381,41 @@ class TokenAuthTests(BaseTokenAuthTests, TestCase):
         """
         client = APIClient(enforce_csrf_checks=True)
         response = client.post(
-            '/auth-token/',
-            {'username': self.username, 'password': "badpass"},
-            format='json'
+            "/auth-token/",
+            {"username": self.username, "password": "badpass"},
+            format="json",
         )
         assert response.status_code == 400
 
     def test_token_login_json_missing_fields(self):
         """Ensure token login view using JSON POST fails if missing fields."""
         client = APIClient(enforce_csrf_checks=True)
-        response = client.post('/auth-token/',
-                               {'username': self.username}, format='json')
+        response = client.post(
+            "/auth-token/", {"username": self.username}, format="json"
+        )
         assert response.status_code == 400
 
     def test_token_login_form(self):
         """Ensure token login view using form POST works."""
         client = APIClient(enforce_csrf_checks=True)
         response = client.post(
-            '/auth-token/',
-            {'username': self.username, 'password': self.password}
+            "/auth-token/", {"username": self.username, "password": self.password}
         )
         assert response.status_code == status.HTTP_200_OK
-        assert response.data['token'] == self.key
+        assert response.data["token"] == self.key
 
 
 @override_settings(ROOT_URLCONF=__name__)
 class CustomTokenAuthTests(BaseTokenAuthTests, TestCase):
     model = CustomToken
-    path = '/customtoken/'
+    path = "/customtoken/"
 
 
 @override_settings(ROOT_URLCONF=__name__)
 class CustomKeywordTokenAuthTests(BaseTokenAuthTests, TestCase):
     model = Token
-    path = '/customkeywordtoken/'
-    header_prefix = 'Bearer '
+    path = "/customkeywordtoken/"
+    header_prefix = "Bearer "
 
 
 class IncorrectCredentialsTests(TestCase):
@@ -445,42 +425,42 @@ class IncorrectCredentialsTests(TestCase):
         authentication should run and error, even if no permissions
         are set on the view.
         """
+
         class IncorrectCredentialsAuth(BaseAuthentication):
             def authenticate(self, request):
-                raise exceptions.AuthenticationFailed('Bad credentials')
+                raise exceptions.AuthenticationFailed("Bad credentials")
 
-        request = factory.get('/')
+        request = factory.get("/")
         view = MockView.as_view(
-            authentication_classes=(IncorrectCredentialsAuth,),
-            permission_classes=()
+            authentication_classes=(IncorrectCredentialsAuth,), permission_classes=()
         )
         response = view(request)
         assert response.status_code == status.HTTP_403_FORBIDDEN
-        assert response.data == {'detail': 'Bad credentials'}
+        assert response.data == {"detail": "Bad credentials"}
 
 
 class FailingAuthAccessedInRenderer(TestCase):
     def setUp(self):
         class AuthAccessingRenderer(renderers.BaseRenderer):
-            media_type = 'text/plain'
-            format = 'txt'
+            media_type = "text/plain"
+            format = "txt"
 
             def render(self, data, media_type=None, renderer_context=None):
-                request = renderer_context['request']
+                request = renderer_context["request"]
                 if request.user.is_authenticated:
-                    return b'authenticated'
-                return b'not authenticated'
+                    return b"authenticated"
+                return b"not authenticated"
 
         class FailingAuth(BaseAuthentication):
             def authenticate(self, request):
-                raise exceptions.AuthenticationFailed('authentication failed')
+                raise exceptions.AuthenticationFailed("authentication failed")
 
         class ExampleView(APIView):
             authentication_classes = (FailingAuth,)
             renderer_classes = (AuthAccessingRenderer,)
 
             def get(self, request):
-                return Response({'foo': 'bar'})
+                return Response({"foo": "bar"})
 
         self.view = ExampleView.as_view()
 
@@ -490,10 +470,10 @@ class FailingAuthAccessedInRenderer(TestCase):
         `request.user` without raising an exception. Particularly relevant
         to HTML responses that might reasonably access `request.user`.
         """
-        request = factory.get('/')
+        request = factory.get("/")
         response = self.view(request)
         content = response.render().content
-        assert content == b'not authenticated'
+        assert content == b"not authenticated"
 
 
 class NoAuthenticationClassesTests(TestCase):
@@ -505,23 +485,21 @@ class NoAuthenticationClassesTests(TestCase):
         """
 
         class DummyPermission(permissions.BasePermission):
-            message = 'Dummy permission message'
+            message = "Dummy permission message"
 
             def has_permission(self, request, view):
                 return False
 
-        request = factory.get('/')
+        request = factory.get("/")
         view = MockView.as_view(
-            authentication_classes=(),
-            permission_classes=(DummyPermission,),
+            authentication_classes=(), permission_classes=(DummyPermission,)
         )
         response = view(request)
         assert response.status_code == status.HTTP_403_FORBIDDEN
-        assert response.data == {'detail': 'Dummy permission message'}
+        assert response.data == {"detail": "Dummy permission message"}
 
 
 class BasicAuthenticationUnitTests(TestCase):
-
     def test_base_authentication_abstract_method(self):
         with pytest.raises(NotImplementedError):
             BaseAuthentication().authenticate({})
@@ -529,34 +507,34 @@ class BasicAuthenticationUnitTests(TestCase):
     def test_basic_authentication_raises_error_if_user_not_found(self):
         auth = BasicAuthentication()
         with pytest.raises(exceptions.AuthenticationFailed):
-            auth.authenticate_credentials('invalid id', 'invalid password')
+            auth.authenticate_credentials("invalid id", "invalid password")
 
     def test_basic_authentication_raises_error_if_user_not_active(self):
         from rest_framework import authentication
 
         class MockUser(object):
             is_active = False
+
         old_authenticate = authentication.authenticate
         authentication.authenticate = lambda **kwargs: MockUser()
         auth = authentication.BasicAuthentication()
         with pytest.raises(exceptions.AuthenticationFailed) as error:
-            auth.authenticate_credentials('foo', 'bar')
-        assert 'User inactive or deleted.' in str(error)
+            auth.authenticate_credentials("foo", "bar")
+        assert "User inactive or deleted." in str(error)
         authentication.authenticate = old_authenticate
 
 
-@override_settings(ROOT_URLCONF=__name__,
-                   AUTHENTICATION_BACKENDS=('django.contrib.auth.backends.RemoteUserBackend',))
+@override_settings(
+    ROOT_URLCONF=__name__,
+    AUTHENTICATION_BACKENDS=("django.contrib.auth.backends.RemoteUserBackend",),
+)
 class RemoteUserAuthenticationUnitTests(TestCase):
     def setUp(self):
-        self.username = 'john'
-        self.email = 'lennon@thebeatles.com'
-        self.password = 'password'
-        self.user = User.objects.create_user(
-            self.username, self.email, self.password
-        )
+        self.username = "john"
+        self.email = "lennon@thebeatles.com"
+        self.password = "password"
+        self.user = User.objects.create_user(self.username, self.email, self.password)
 
     def test_remote_user_works(self):
-        response = self.client.post('/remote-user/',
-                                    REMOTE_USER=self.username)
+        response = self.client.post("/remote-user/", REMOTE_USER=self.username)
         self.assertEqual(response.status_code, status.HTTP_200_OK)

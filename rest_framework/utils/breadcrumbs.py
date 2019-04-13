@@ -23,8 +23,8 @@ def get_breadcrumbs(url, request=None):
         else:
             # Check if this is a REST framework view,
             # and if so add it to the breadcrumbs
-            cls = getattr(view, 'cls', None)
-            initkwargs = getattr(view, 'initkwargs', {})
+            cls = getattr(view, "cls", None)
+            initkwargs = getattr(view, "initkwargs", {})
             if cls is not None and issubclass(cls, APIView):
                 # Don't list the same view twice in a row.
                 # Probably an optional trailing slash.
@@ -35,21 +35,21 @@ def get_breadcrumbs(url, request=None):
                     breadcrumbs_list.insert(0, (name, insert_url))
                     seen.append(view)
 
-        if url == '':
+        if url == "":
             # All done
             return breadcrumbs_list
 
-        elif url.endswith('/'):
+        elif url.endswith("/"):
             # Drop trailing slash off the end and continue to try to
             # resolve more breadcrumbs
-            url = url.rstrip('/')
+            url = url.rstrip("/")
             return breadcrumbs_recursive(url, breadcrumbs_list, prefix, seen)
 
         # Drop trailing non-slash off the end and continue to try to
         # resolve more breadcrumbs
-        url = url[:url.rfind('/') + 1]
+        url = url[: url.rfind("/") + 1]
         return breadcrumbs_recursive(url, breadcrumbs_list, prefix, seen)
 
-    prefix = get_script_prefix().rstrip('/')
-    url = url[len(prefix):]
+    prefix = get_script_prefix().rstrip("/")
+    url = url[len(prefix) :]
     return breadcrumbs_recursive(url, [], prefix, [])
