@@ -1,8 +1,8 @@
 from django.db import models
 from django.test import TestCase
-from tests.models import RESTFrameworkModel
 
 from rest_framework import serializers
+from tests.models import RESTFrameworkModel
 
 
 # Models

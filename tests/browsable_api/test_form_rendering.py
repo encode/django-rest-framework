@@ -1,9 +1,9 @@
 from django.test import TestCase
-from tests.models import BasicModel
 
 from rest_framework import generics, renderers, serializers, status
 from rest_framework.response import Response
 from rest_framework.test import APIRequestFactory
+from tests.models import BasicModel
 
 factory = APIRequestFactory()
 

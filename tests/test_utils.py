@@ -1,6 +1,5 @@
 from django.conf.urls import url
 from django.test import TestCase, override_settings
-from tests.models import BasicModel
 
 from rest_framework.decorators import action
 from rest_framework.routers import SimpleRouter
@@ -10,6 +9,7 @@ from rest_framework.utils.breadcrumbs import get_breadcrumbs
 from rest_framework.utils.urls import remove_query_param, replace_query_param
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
+from tests.models import BasicModel
 
 
 class Root(APIView):

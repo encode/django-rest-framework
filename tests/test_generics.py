@@ -4,14 +4,14 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.test import TestCase
 from django.utils import six
-from tests.models import (
-    BasicModel, ForeignKeySource, ForeignKeyTarget, RESTFrameworkModel,
-    UUIDForeignKeyTarget
-)
 
 from rest_framework import generics, renderers, serializers, status
 from rest_framework.response import Response
 from rest_framework.test import APIRequestFactory
+from tests.models import (
+    BasicModel, ForeignKeySource, ForeignKeyTarget, RESTFrameworkModel,
+    UUIDForeignKeyTarget
+)
 
 factory = APIRequestFactory()
 
