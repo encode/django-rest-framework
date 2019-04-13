@@ -115,10 +115,10 @@ class BaseSerializer(Field):
         self.partial = kwargs.pop('partial', False)
         self._context = kwargs.pop('context', {})
         kwargs.pop('many', None)
-        super(BaseSerializer, self).__init__(**kwargs)
+        super(BaseSerializer, self).__init__(**kwargs)  
 
     def __new__(cls, *args, **kwargs):
-        # We override this method in order to automagically create
+        # We override this method in order to automatically create
         # `ListSerializer` classes instead when `many=True` is set.
         if kwargs.pop('many', False):
             return cls.many_init(*args, **kwargs)
