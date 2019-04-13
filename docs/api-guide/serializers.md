@@ -572,6 +572,8 @@ This option is a dictionary, mapping field names to a dictionary of keyword argu
             user.save()
             return user
 
+Please keep in mind that, if the field has already been explicitly declared on the serializer class, then the `extra_kwargs` option will be ignored.
+
 ## Relational fields
 
 When serializing model instances, there are a number of different ways you might choose to represent relationships.  The default representation for `ModelSerializer` is to use the primary keys of the related instances.
