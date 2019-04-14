@@ -10,7 +10,7 @@ from django.test import TestCase
 from django.test.utils import override_settings
 from django.utils.six.moves import reload_module
 
-from rest_framework import filters, generics, serializers
+from rest_framework import filters, generics, serializers, viewsets
 from rest_framework.compat import coreschema
 from rest_framework.test import APIRequestFactory
 
@@ -181,6 +181,18 @@ class SearchFilterTests(TestCase):
         assert response.data == [
             {'id': 3, 'title': 'zzz', 'text': 'cde'}
         ]
+
+    def test_search_field_with_breaking_params(self):
+        class SearchListViewSet(viewsets.ReadOnlyModelViewSet):
+            queryset = SearchFilterModel.objects.all()
+            serializer_class = SearchFilterSerializer
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('title', 'text')
+
+        view = SearchListViewSet.as_view({'get': 'list'})
+        request = factory.get('/', {'search': ',,,,'})
+        response = view(request)
+        assert len(response.data) == 0
 
 
 class AttributeModel(models.Model):
