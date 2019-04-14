@@ -189,7 +189,7 @@ class SearchFilterTests(TestCase):
             filter_backends = (filters.SearchFilter,)
             search_fields = ('title', 'text')
 
-        payload = {'search': 'ijk'}
+        payload = {'invalid-search-param': 'ijk'}
         view = SearchListViewSet.as_view({'get': 'list'})
         request = factory.get('/', payload)
         response = view(request)
