@@ -182,7 +182,7 @@ class SearchFilterTests(TestCase):
             {'id': 3, 'title': 'zzz', 'text': 'cde'}
         ]
 
-    def test_search_field_with_breaking_params(self):
+    def test_search_field_with_invalid_search_param(self):
         class SearchListViewSet(viewsets.ReadOnlyModelViewSet):
             queryset = SearchFilterModel.objects.all()
             serializer_class = SearchFilterSerializer
@@ -190,6 +190,19 @@ class SearchFilterTests(TestCase):
             search_fields = ('title', 'text')
 
         payload = {'invalid-search-param': 'ijk'}
+        view = SearchListViewSet.as_view({'get': 'list'})
+        request = factory.get('/', payload)
+        response = view(request)
+        assert len(response.data) == 10
+
+    def test_search_field_with_valid_search_param(self):
+        class SearchListViewSet(viewsets.ReadOnlyModelViewSet):
+            queryset = SearchFilterModel.objects.all()
+            serializer_class = SearchFilterSerializer
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('title', 'text')
+
+        payload = {'search': 'ijk'}
         view = SearchListViewSet.as_view({'get': 'list'})
         request = factory.get('/', payload)
         response = view(request)
