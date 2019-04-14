@@ -189,11 +189,11 @@ class SearchFilterTests(TestCase):
             filter_backends = (filters.SearchFilter,)
             search_fields = ('title', 'text')
 
-        payload = {'search': 'some funky string'}
+        payload = {'search': 'ijk'}
         view = SearchListViewSet.as_view({'get': 'list'})
         request = factory.get('/', payload)
         response = view(request)
-        assert len(response.data) == 0
+        assert len(response.data) == 1
 
 
 class AttributeModel(models.Model):
