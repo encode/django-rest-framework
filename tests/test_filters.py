@@ -191,7 +191,6 @@ class SearchFilterTests(TestCase):
 
         payload = {'search': 'some funky string'}
         view = SearchListViewSet.as_view({'get': 'list'})
-        # print(SearchListViewSet.__dict__)
         request = factory.get('/', payload)
         response = view(request)
         assert len(response.data) == 0
