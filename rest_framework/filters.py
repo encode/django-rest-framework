@@ -27,7 +27,7 @@ from rest_framework.settings import api_settings
 
 class SearchFilterForm(forms.Form):
     def __init__(self, search_field, *args, **kwargs):
-        super(self, SearchFilterForm).__init__(*args, **kwargs)
+        super(SearchFilterForm, self).__init__(*args, **kwargs)
         self.fields[search_field] = forms.CharField()
 
 
