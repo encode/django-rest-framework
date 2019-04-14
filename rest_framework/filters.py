@@ -8,6 +8,7 @@ import operator
 import warnings
 from functools import reduce
 
+from django import forms
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.db.models.constants import LOOKUP_SEP
@@ -22,6 +23,12 @@ from rest_framework.compat import (
     coreapi, coreschema, distinct, is_guardian_installed
 )
 from rest_framework.settings import api_settings
+
+
+class SearchFilterForm(forms.Form):
+    def __init__(self, search_field, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields[search_field] = forms.CharField()
 
 
 class BaseFilterBackend(object):
@@ -67,8 +74,11 @@ class SearchFilter(BaseFilterBackend):
         Search terms are set by a ?search=... query parameter,
         and may be comma and/or whitespace delimited.
         """
-        params = request.query_params.get(self.search_param, '')
-        return params.replace(',', ' ').split()
+        form = SearchFilterForm(self.search_param, request.query_params.dict())
+        if form.is_valid():
+            return form.cleaned_data[
+                self.search_param
+            ].replace(',', ' ').split()
 
     def construct_search(self, field_name):
         lookup = self.lookup_prefixes.get(field_name[0])
