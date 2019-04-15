@@ -50,6 +50,13 @@ class SearchFilterSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class SearchListViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = SearchFilterModel.objects.all()
+    serializer_class = SearchFilterSerializer
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('title', 'text')
+
+
 class SearchFilterTests(TestCase):
     def setUp(self):
         # Sequence of title/text is:
@@ -183,30 +190,26 @@ class SearchFilterTests(TestCase):
         ]
 
     def test_search_field_with_invalid_search_param(self):
-        class SearchListViewSet(viewsets.ReadOnlyModelViewSet):
-            queryset = SearchFilterModel.objects.all()
-            serializer_class = SearchFilterSerializer
-            filter_backends = (filters.SearchFilter,)
-            search_fields = ('title', 'text')
-
         payload = {'invalid-search-param': 'ijk'}
         view = SearchListViewSet.as_view({'get': 'list'})
         request = factory.get('/', payload)
         response = view(request)
+        # ignores incorrect search param, returns all objects
         assert len(response.data) == 10
 
     def test_search_field_with_valid_search_param(self):
-        class SearchListViewSet(viewsets.ReadOnlyModelViewSet):
-            queryset = SearchFilterModel.objects.all()
-            serializer_class = SearchFilterSerializer
-            filter_backends = (filters.SearchFilter,)
-            search_fields = ('title', 'text')
-
         payload = {'search': 'ijk'}
         view = SearchListViewSet.as_view({'get': 'list'})
         request = factory.get('/', payload)
         response = view(request)
         assert len(response.data) == 1
+
+    def test_search_field_with_non_existing_value(self):
+        payload = {'search': 'nothing-to-find'}
+        view = SearchListViewSet.as_view({'get': 'list'})
+        request = factory.get('/', payload)
+        response = view(request)
+        assert len(response.data) == 0
 
 
 class AttributeModel(models.Model):

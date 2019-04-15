@@ -79,6 +79,7 @@ class SearchFilter(BaseFilterBackend):
             return form.cleaned_data[
                 self.search_param
             ].replace(',', ' ').split()
+        return []
 
     def construct_search(self, field_name):
         lookup = self.lookup_prefixes.get(field_name[0])
