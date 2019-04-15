@@ -184,10 +184,10 @@ Note that you'll want to ensure you place this code snippet in an installed `mod
 
 If you've already created some users, you can generate tokens for all existing users like this:
 
-    from django.contrib.auth.models import User
+    from django.contrib.auth import get_user_model
     from rest_framework.authtoken.models import Token
 
-    for user in User.objects.all():
+    for user in get_user_model().objects.all():
         Token.objects.get_or_create(user=user)
 
 ##### By exposing an api endpoint
