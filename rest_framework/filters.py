@@ -26,7 +26,13 @@ from rest_framework.settings import api_settings
 
 
 class SearchFilterForm(forms.Form):
+    """
+    A form to sanitize incoming search parameter value.
+    """
     def __init__(self, search_field, *args, **kwargs):
+        """
+        Override to pass search_param name (e.g. "search") and dynamically set as a CharField.
+        """
         super(SearchFilterForm, self).__init__(*args, **kwargs)
         self.fields[search_field] = forms.CharField()
 
@@ -72,7 +78,8 @@ class SearchFilter(BaseFilterBackend):
     def get_search_terms(self, request):
         """
         Search terms are set by a ?search=... query parameter,
-        and may be comma and/or whitespace delimited.
+        and may be comma and/or whitespace delimited. Sanitize
+        the search param string by running it through a form.
         """
         form = SearchFilterForm(self.search_param, request.query_params.dict())
         if form.is_valid():
