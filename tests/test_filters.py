@@ -212,7 +212,7 @@ class SearchFilterTests(TestCase):
         assert len(response.data) == 0
 
     def test_search_field_with_dangerous_value(self):
-        payload = {'search': 'select * from user where 1=1'}
+        payload = {'search': 'Exploit%20String:%200%0d%0a%00%3Cscript%20src=//example.com%3E'}
         view = SearchListViewSet.as_view({'get': 'list'})
         request = factory.get('/', payload)
         response = view(request)
