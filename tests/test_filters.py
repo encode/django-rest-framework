@@ -211,6 +211,13 @@ class SearchFilterTests(TestCase):
         response = view(request)
         assert len(response.data) == 0
 
+    def test_search_field_with_dangerous_value(self):
+        payload = {'search': 'select * from user where 1=1'}
+        view = SearchListViewSet.as_view({'get': 'list'})
+        request = factory.get('/', payload)
+        response = view(request)
+        assert len(response.data) == 0
+
 
 class AttributeModel(models.Model):
     label = models.CharField(max_length=32)
