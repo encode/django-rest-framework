@@ -150,13 +150,6 @@ except ImportError:
     yaml = None
 
 
-# django-crispy-forms is optional
-try:
-    import crispy_forms
-except ImportError:
-    crispy_forms = None
-
-
 # requests is optional
 try:
     import requests
