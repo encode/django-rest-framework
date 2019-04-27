@@ -626,7 +626,7 @@ The default implementation returns a serializer class based on the `serializer_f
 
 Called to generate a serializer field that maps to a relational model field.
 
-The default implementation returns a serializer class based on the `serializer_relational_field` attribute.
+The default implementation returns a serializer class based on the `serializer_related_field` attribute.
 
 The `relation_info` argument is a named tuple, that contains `model_field`, `related_model`, `to_many` and `has_through_model` properties.
 
