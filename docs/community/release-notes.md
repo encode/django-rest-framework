@@ -40,7 +40,7 @@ You can determine your currently installed version using `pip show`:
 
 ## 3.9.x series
 
-### 3.9.2
+### 3.9.3
 
 **Date**: [29th April 2019]
 
