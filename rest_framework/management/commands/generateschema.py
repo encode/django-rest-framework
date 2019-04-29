@@ -1,32 +1,60 @@
 from django.core.management.base import BaseCommand
 
-from rest_framework.compat import yaml
+from rest_framework import renderers
+from rest_framework.schemas import coreapi
 from rest_framework.schemas.openapi import SchemaGenerator
-from rest_framework.utils import json
+from rest_framework.settings import api_settings
+
+OPENAPI_MODE = 'openapi'
+COREAPI_MODE = 'coreapi'
 
 
 class Command(BaseCommand):
     help = "Generates configured API schema for project."
 
+    def get_mode(self):
+        default_schema_class = api_settings.DEFAULT_SCHEMA_CLASS
+        if issubclass(default_schema_class, coreapi.AutoSchema):
+            return COREAPI_MODE
+        return OPENAPI_MODE
+
     def add_arguments(self, parser):
         parser.add_argument('--title', dest="title", default='', type=str)
         parser.add_argument('--url', dest="url", default=None, type=str)
         parser.add_argument('--description', dest="description", default=None, type=str)
-        parser.add_argument('--format', dest="format", choices=['openapi', 'openapi-json'], default='openapi', type=str)
+        if self.get_mode() == COREAPI_MODE:
+            parser.add_argument('--format', dest="format", choices=['openapi', 'openapi-json', 'corejson'], default='openapi', type=str)
+        else:
+            parser.add_argument('--format', dest="format", choices=['openapi', 'openapi-json'], default='openapi', type=str)
 
     def handle(self, *args, **options):
-        generator = SchemaGenerator(
+        generator_class = self.get_generator_class()
+        generator = generator_class(
             url=options['url'],
             title=options['title'],
             description=options['description']
         )
-
         schema = generator.get_schema(request=None, public=True)
+        renderer = self.get_renderer(options['format'])
+        output = renderer.render(schema, renderer_context={})
+        self.stdout.write(output.decode('utf-8'))
 
-        # TODO: Handle via renderer? More options?
-        if options['format'] == 'openapi':
-            output = yaml.dump(schema, default_flow_style=False)
-        else:
-            output = json.dumps(schema, indent=2)
+    def get_renderer(self, format):
+        if self.get_mode() == COREAPI_MODE:
+            renderer_cls = {
+                'corejson': renderers.CoreJSONRenderer,
+                'openapi': renderers.CoreAPIOpenAPIRenderer,
+                'openapi-json': renderers.CoreAPIJSONOpenAPIRenderer,
+            }[format]
+            return renderer_cls()
 
-        self.stdout.write(output)
+        renderer_cls = {
+            'openapi': renderers.OpenAPIRenderer,
+            'openapi-json': renderers.JSONOpenAPIRenderer,
+        }[format]
+        return renderer_cls()
+
+    def get_generator_class(self):
+        if self.get_mode() == COREAPI_MODE:
+            return coreapi.SchemaGenerator
+        return SchemaGenerator

@@ -20,7 +20,7 @@ class SchemaView(APIView):
         super(SchemaView, self).__init__(*args, **kwargs)
         if self.renderer_classes is None:
             self.renderer_classes = [
-                renderers.OpenAPIRenderer,
+                renderers.CoreAPIOpenAPIRenderer,
                 renderers.CoreJSONRenderer
             ]
             if renderers.BrowsableAPIRenderer in api_settings.DEFAULT_RENDERER_CLASSES:
