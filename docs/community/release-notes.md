@@ -42,6 +42,16 @@ You can determine your currently installed version using `pip show`:
 
 ### 3.9.2
 
+**Date**: [29th April 2019]
+
+This is the last Django REST Framework release that will support Python 2.
+Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.
+
+* Adjusted the compat check for django-guardian to allow the last guardian
+  version (v1.4.9) compatible with Python 2. [#6613][gh6613]
+
+### 3.9.2
+
 **Date**: [3rd March 2019][3.9.1-milestone]
 
 * Routers: invalidate `_urls` cache on `register()` [#6407][gh6407]
@@ -2106,3 +2116,6 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh6340]: https://github.com/encode/django-rest-framework/issues/6340
 [gh6416]: https://github.com/encode/django-rest-framework/issues/6416
 [gh6407]: https://github.com/encode/django-rest-framework/issues/6407
+
+<!-- 3.9.3 -->
+[gh6613]: https://github.com/encode/django-rest-framework/issues/6613
