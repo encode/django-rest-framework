@@ -1085,6 +1085,7 @@ AccountSerializer():
         user.save()
         return user
 </code></pre>
+<p>Please keep in mind that, if the field has already been explicitly declared on the serializer class, then the <code>extra_kwargs</code> option will be ignored.</p>
 <h2 id="relational-fields"><a class="toclink" href="#relational-fields">Relational fields</a></h2>
 <p>When serializing model instances, there are a number of different ways you might choose to represent relationships.  The default representation for <code>ModelSerializer</code> is to use the primary keys of the related instances.</p>
 <p>Alternative representations include serializing using hyperlinks, serializing complete nested representations, or serializing with a custom representation.</p>
@@ -1111,7 +1112,7 @@ AccountSerializer():
 <p>The default implementation returns a serializer class based on the <code>serializer_field_mapping</code> attribute.</p>
 <h3 id="build_relational_fieldself-field_name-relation_info"><a class="toclink" href="#build_relational_fieldself-field_name-relation_info"><code>.build_relational_field(self, field_name, relation_info)</code></a></h3>
 <p>Called to generate a serializer field that maps to a relational model field.</p>
-<p>The default implementation returns a serializer class based on the <code>serializer_relational_field</code> attribute.</p>
+<p>The default implementation returns a serializer class based on the <code>serializer_related_field</code> attribute.</p>
 <p>The <code>relation_info</code> argument is a named tuple, that contains <code>model_field</code>, <code>related_model</code>, <code>to_many</code> and <code>has_through_model</code> properties.</p>
 <h3 id="build_nested_fieldself-field_name-relation_info-nested_depth"><a class="toclink" href="#build_nested_fieldself-field_name-relation_info-nested_depth"><code>.build_nested_field(self, field_name, relation_info, nested_depth)</code></a></h3>
 <p>Called to generate a serializer field that maps to a relational model field, when the <code>depth</code> option has been set.</p>
@@ -1375,7 +1376,7 @@ def all_high_scores(request):
     def to_representation(self, obj):
         for attribute_name in dir(obj):
             attribute = getattr(obj, attribute_name)
-            if attribute_name('_'):
+            if attribute_name.startswith('_'):
                 # Ignore private attributes.
                 pass
             elif hasattr(attribute, '__call__'):

@@ -875,7 +875,7 @@ def all_high_scores(request):
     def to_representation(self, obj):
         for attribute_name in dir(obj):
             attribute = getattr(obj, attribute_name)
-            if attribute_name('_'):
+            if attribute_name.startswith('_'):
                 # Ignore private attributes.
                 pass
             elif hasattr(attribute, '__call__'):
