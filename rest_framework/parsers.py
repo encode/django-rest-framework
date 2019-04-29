@@ -4,9 +4,8 @@ Parsers are used to parse the content of incoming HTTP requests.
 They give us a generic way of being able to handle various media types
 on the request, such as form content or json encoded data.
 """
-from __future__ import unicode_literals
-
 import codecs
+from urllib import parse
 
 from django.conf import settings
 from django.core.files.uploadhandler import StopFutureHandlers
@@ -15,9 +14,7 @@ from django.http.multipartparser import ChunkIter
 from django.http.multipartparser import \
     MultiPartParser as DjangoMultiPartParser
 from django.http.multipartparser import MultiPartParserError, parse_header
-from django.utils import six
 from django.utils.encoding import force_text
-from django.utils.six.moves.urllib import parse as urlparse
 
 from rest_framework import renderers
 from rest_framework.exceptions import ParseError
@@ -25,13 +22,13 @@ from rest_framework.settings import api_settings
 from rest_framework.utils import json
 
 
-class DataAndFiles(object):
+class DataAndFiles:
     def __init__(self, data, files):
         self.data = data
         self.files = files
 
 
-class BaseParser(object):
+class BaseParser:
     """
     All parsers should extend `BaseParser`, specifying a `media_type`
     attribute, and overriding the `.parse()` method.
@@ -67,7 +64,7 @@ class JSONParser(BaseParser):
             parse_constant = json.strict_constant if self.strict else None
             return json.load(decoded_stream, parse_constant=parse_constant)
         except ValueError as exc:
-            raise ParseError('JSON parse error - %s' % six.text_type(exc))
+            raise ParseError('JSON parse error - %s' % str(exc))
 
 
 class FormParser(BaseParser):
@@ -113,7 +110,7 @@ class MultiPartParser(BaseParser):
             data, files = parser.parse()
             return DataAndFiles(data, files)
         except MultiPartParserError as exc:
-            raise ParseError('Multipart form parse error - %s' % six.text_type(exc))
+            raise ParseError('Multipart form parse error - %s' % str(exc))
 
 
 class FileUploadParser(BaseParser):
@@ -221,7 +218,7 @@ class FileUploadParser(BaseParser):
         encoded_filename = force_text(filename_parm['filename*'])
         try:
             charset, lang, filename = encoded_filename.split('\'', 2)
-            filename = urlparse.unquote(filename)
+            filename = parse.unquote(filename)
         except (ValueError, LookupError):
             filename = force_text(filename_parm['filename'])
         return filename

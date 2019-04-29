@@ -629,7 +629,7 @@ Our `ColorField` class above currently does not perform any data validation.
 To indicate invalid data, we should raise a `serializers.ValidationError`, like so:
 
     def to_internal_value(self, data):
-        if not isinstance(data, six.text_type):
+        if not isinstance(data, str):
             msg = 'Incorrect type. Expected a string, but got %s'
             raise ValidationError(msg % type(data).__name__)
 
@@ -653,7 +653,7 @@ The `.fail()` method is a shortcut for raising `ValidationError` that takes a me
     }
 
     def to_internal_value(self, data):
-        if not isinstance(data, six.text_type):
+        if not isinstance(data, str):
             self.fail('incorrect_type', input_type=type(data).__name__)
 
         if not re.match(r'^rgb\([0-9]+,[0-9]+,[0-9]+\)$', data):

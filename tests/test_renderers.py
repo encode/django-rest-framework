@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 import re
 from collections import OrderedDict
 
@@ -11,7 +8,6 @@ from django.db import models
 from django.http.request import HttpRequest
 from django.template import loader
 from django.test import TestCase, override_settings
-from django.utils import six
 from django.utils.safestring import SafeText
 from django.utils.translation import ugettext_lazy as _
 
@@ -175,7 +171,7 @@ class RendererEndToEndTests(TestCase):
         resp = self.client.head('/')
         self.assertEqual(resp.status_code, DUMMYSTATUS)
         self.assertEqual(resp['Content-Type'], RendererA.media_type + '; charset=utf-8')
-        self.assertEqual(resp.content, six.b(''))
+        self.assertEqual(resp.content, b'')
 
     def test_default_renderer_serializes_content_on_accept_any(self):
         """If the Accept header is set to */* the default renderer should serialize the response."""
@@ -348,7 +344,7 @@ class JSONRendererTests(TestCase):
         self.assertEqual(data, {'key': 'string value', '2': 3})
 
     def test_render_obj_with_getitem(self):
-        class DictLike(object):
+        class DictLike:
             def __init__(self):
                 self._dict = {}
 
@@ -647,7 +643,7 @@ class BrowsableAPIRendererTests(URLPatternsTestCase):
         assert self.renderer.get_description({}, status_code=403) == ''
 
     def test_get_filter_form_returns_none_if_data_is_not_list_instance(self):
-        class DummyView(object):
+        class DummyView:
             get_queryset = None
             filter_backends = None
 

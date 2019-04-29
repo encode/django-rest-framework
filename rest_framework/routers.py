@@ -13,8 +13,6 @@ For example, you might have a `urls.py` that looks something like this:
 
     urlpatterns = router.urls
 """
-from __future__ import unicode_literals
-
 import itertools
 import warnings
 from collections import OrderedDict, namedtuple
@@ -22,7 +20,6 @@ from collections import OrderedDict, namedtuple
 from django.conf.urls import url
 from django.core.exceptions import ImproperlyConfigured
 from django.urls import NoReverseMatch
-from django.utils import six
 from django.utils.deprecation import RenameMethodsBase
 
 from rest_framework import (
@@ -39,7 +36,7 @@ Route = namedtuple('Route', ['url', 'mapping', 'name', 'detail', 'initkwargs'])
 DynamicRoute = namedtuple('DynamicRoute', ['url', 'name', 'detail', 'initkwargs'])
 
 
-class DynamicDetailRoute(object):
+class DynamicDetailRoute:
     def __new__(cls, url, name, initkwargs):
         warnings.warn(
             "`DynamicDetailRoute` is deprecated and will be removed in 3.10 "
@@ -50,7 +47,7 @@ class DynamicDetailRoute(object):
         return DynamicRoute(url, name, True, initkwargs)
 
 
-class DynamicListRoute(object):
+class DynamicListRoute:
     def __new__(cls, url, name, initkwargs):
         warnings.warn(
             "`DynamicListRoute` is deprecated and will be removed in 3.10 in "
@@ -83,7 +80,7 @@ class RenameRouterMethods(RenameMethodsBase):
     )
 
 
-class BaseRouter(six.with_metaclass(RenameRouterMethods)):
+class BaseRouter(metaclass=RenameRouterMethods):
     def __init__(self):
         self.registry = []
 
@@ -173,7 +170,7 @@ class SimpleRouter(BaseRouter):
 
     def __init__(self, trailing_slash=True):
         self.trailing_slash = '/' if trailing_slash else ''
-        super(SimpleRouter, self).__init__()
+        super().__init__()
 
     def get_default_basename(self, viewset):
         """
@@ -365,7 +362,7 @@ class DefaultRouter(SimpleRouter):
             self.root_renderers = kwargs.pop('root_renderers')
         else:
             self.root_renderers = list(api_settings.DEFAULT_RENDERER_CLASSES)
-        super(DefaultRouter, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_api_root_view(self, api_urls=None):
         """
@@ -383,7 +380,7 @@ class DefaultRouter(SimpleRouter):
         Generate the list of URL patterns, including a default root view
         for the API, and appending `.json` style format suffixes.
         """
-        urls = super(DefaultRouter, self).get_urls()
+        urls = super().get_urls()
 
         if self.include_root_view:
             view = self.get_api_root_view(api_urls=urls)

@@ -2,8 +2,6 @@
 Provides generic filtering backends that can be used to filter the results
 returned by list views.
 """
-from __future__ import unicode_literals
-
 import operator
 import warnings
 from functools import reduce
@@ -13,7 +11,6 @@ from django.db import models
 from django.db.models.constants import LOOKUP_SEP
 from django.db.models.sql.constants import ORDER_PATTERN
 from django.template import loader
-from django.utils import six
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 
@@ -24,7 +21,7 @@ from rest_framework.compat import (
 from rest_framework.settings import api_settings
 
 
-class BaseFilterBackend(object):
+class BaseFilterBackend:
     """
     A base class from which all filter backend classes should inherit.
     """
@@ -109,7 +106,7 @@ class SearchFilter(BaseFilterBackend):
             return queryset
 
         orm_lookups = [
-            self.construct_search(six.text_type(search_field))
+            self.construct_search(str(search_field))
             for search_field in search_fields
         ]
 
@@ -188,7 +185,7 @@ class OrderingFilter(BaseFilterBackend):
 
     def get_default_ordering(self, view):
         ordering = getattr(view, 'ordering', None)
-        if isinstance(ordering, six.string_types):
+        if isinstance(ordering, str):
             return (ordering,)
         return ordering
 
@@ -237,7 +234,7 @@ class OrderingFilter(BaseFilterBackend):
             ]
         else:
             valid_fields = [
-                (item, item) if isinstance(item, six.string_types) else item
+                (item, item) if isinstance(item, str) else item
                 for item in valid_fields
             ]
 

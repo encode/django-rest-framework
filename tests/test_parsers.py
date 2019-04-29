@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 import io
 import math
 
@@ -11,7 +8,6 @@ from django.core.files.uploadhandler import (
 )
 from django.http.request import RawPostDataException
 from django.test import TestCase
-from django.utils.six import StringIO
 
 from rest_framework.exceptions import ParseError
 from rest_framework.parsers import (
@@ -34,7 +30,7 @@ class TestFormParser(TestCase):
         """ Make sure the `QueryDict` works OK """
         parser = FormParser()
 
-        stream = StringIO(self.string)
+        stream = io.StringIO(self.string)
         data = parser.parse(stream)
 
         assert Form(data).is_valid() is True
@@ -42,7 +38,7 @@ class TestFormParser(TestCase):
 
 class TestFileUploadParser(TestCase):
     def setUp(self):
-        class MockRequest(object):
+        class MockRequest:
             pass
         self.stream = io.BytesIO(
             "Test text file".encode('utf-8')

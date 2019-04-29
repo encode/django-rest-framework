@@ -6,8 +6,6 @@ some fairly ad-hoc information about the view.
 Future implementations might use JSON schema or other definitions in order
 to return this information in a more standardized way.
 """
-from __future__ import unicode_literals
-
 from collections import OrderedDict
 
 from django.core.exceptions import PermissionDenied
@@ -19,7 +17,7 @@ from rest_framework.request import clone_request
 from rest_framework.utils.field_mapping import ClassLookupDict
 
 
-class BaseMetadata(object):
+class BaseMetadata:
     def determine_metadata(self, request, view):
         """
         Return a dictionary of metadata about the view.

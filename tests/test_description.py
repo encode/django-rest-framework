@@ -1,9 +1,4 @@
-# -- coding: utf-8 --
-
-from __future__ import unicode_literals
-
 from django.test import TestCase
-from django.utils.encoding import python_2_unicode_compatible
 
 from rest_framework.compat import apply_markdown
 from rest_framework.utils.formatting import dedent
@@ -157,8 +152,8 @@ class TestViewNamesAndDescriptions(TestCase):
         """
         # use a mock object instead of gettext_lazy to ensure that we can't end
         # up with a test case string in our l10n catalog
-        @python_2_unicode_compatible
-        class MockLazyStr(object):
+
+        class MockLazyStr:
             def __init__(self, string):
                 self.s = string
 
