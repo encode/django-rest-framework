@@ -609,3 +609,8 @@ class ManualSchema(ViewInspector):
             fields=self._fields,
             description=self._description
         )
+
+
+def is_enabled():
+    """Is CoreAPI Mode enabled?"""
+    return issubclass(api_settings.DEFAULT_SCHEMA_CLASS, AutoSchema)

@@ -134,11 +134,12 @@ class ExampleViewSet(ModelViewSet):
         pass
 
 
-if coreapi:
-    schema_view = get_schema_view(title='Example API')
-else:
-    def schema_view(request):
-        pass
+with override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema'}):
+    if coreapi:
+        schema_view = get_schema_view(title='Example API')
+    else:
+        def schema_view(request):
+            pass
 
 router = DefaultRouter()
 router.register('example', ExampleViewSet, basename='example')

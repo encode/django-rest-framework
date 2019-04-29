@@ -3,7 +3,6 @@ from django.core.management.base import BaseCommand
 from rest_framework import renderers
 from rest_framework.schemas import coreapi
 from rest_framework.schemas.openapi import SchemaGenerator
-from rest_framework.settings import api_settings
 
 OPENAPI_MODE = 'openapi'
 COREAPI_MODE = 'coreapi'
@@ -13,10 +12,7 @@ class Command(BaseCommand):
     help = "Generates configured API schema for project."
 
     def get_mode(self):
-        default_schema_class = api_settings.DEFAULT_SCHEMA_CLASS
-        if issubclass(default_schema_class, coreapi.AutoSchema):
-            return COREAPI_MODE
-        return OPENAPI_MODE
+        return COREAPI_MODE if coreapi.is_enabled() else OPENAPI_MODE
 
     def add_arguments(self, parser):
         parser.add_argument('--title', dest="title", default='', type=str)
