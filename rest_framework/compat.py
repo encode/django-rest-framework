@@ -168,7 +168,12 @@ def is_guardian_installed():
     """
     django-guardian is optional and only imported if in INSTALLED_APPS.
     """
-    if six.PY2:
+    try:
+        import guardian
+    except ImportError:
+        guardian = None
+
+    if six.PY2 and (not guardian or guardian.VERSION >= (1, 5)):
         # Guardian 1.5.0, for Django 2.2 is NOT compatible with Python 2.7.
         # Remove when dropping PY2.
         return False
