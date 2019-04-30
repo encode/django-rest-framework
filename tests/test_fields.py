@@ -1,6 +1,7 @@
 import datetime
 import os
 import re
+import typing
 import unittest
 import uuid
 from decimal import ROUND_DOWN, ROUND_UP, Decimal
@@ -17,11 +18,6 @@ import rest_framework
 from rest_framework import exceptions, serializers
 from rest_framework.compat import ProhibitNullCharactersValidator
 from rest_framework.fields import DjangoImageField, is_simple_callable
-
-try:
-    import typing
-except ImportError:
-    typing = False
 
 
 # Tests for helper functions.
