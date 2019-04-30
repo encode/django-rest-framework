@@ -100,7 +100,7 @@ The validator should be applied to *serializer classes*, like so:
 
 ---
 
-**Note**: The `UniqueTogetherValidation` class always imposes an implicit constraint that all the fields it applies to are always treated as required. Fields with `default` values are an exception to this as they always supply a value even when omitted from user input.
+**Note**: The `UniqueTogetherValidator` class always imposes an implicit constraint that all the fields it applies to are always treated as required. Fields with `default` values are an exception to this as they always supply a value even when omitted from user input.
 
 ---
 
