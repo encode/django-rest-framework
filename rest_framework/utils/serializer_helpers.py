@@ -1,8 +1,8 @@
 from collections import OrderedDict
+from collections.abc import MutableMapping
 
 from django.utils.encoding import force_text
 
-from rest_framework.compat import MutableMapping
 from rest_framework.utils import json
 
 
