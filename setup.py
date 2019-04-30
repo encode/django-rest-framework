@@ -79,8 +79,7 @@ setup(
     packages=find_packages(exclude=['tests*']),
     include_package_data=True,
     install_requires=[],
-    python_requires="!=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*,",
-    python_requires=">=3.5",
+    python_requires=">=3.5.*, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*,",
     zip_safe=False,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
