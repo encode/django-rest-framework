@@ -148,10 +148,15 @@ if 'patch' not in View.http_method_names:
 try:
     import markdown
 
-    if markdown.version <= '2.2':
+    if 'version' in dir(markdown):
+        markdown_version = markdown.version  # prior to 3.0 release
+    else:
+        markdown_version = markdown.__version__
+
+    if markdown_version <= '2.2':
         HEADERID_EXT_PATH = 'headerid'
         LEVEL_PARAM = 'level'
-    elif markdown.version < '2.6':
+    elif markdown_version < '2.6':
         HEADERID_EXT_PATH = 'markdown.extensions.headerid'
         LEVEL_PARAM = 'level'
     else:
