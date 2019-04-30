@@ -13,6 +13,7 @@ FLAKE8_ARGS = ['rest_framework', 'tests']
 
 ISORT_ARGS = ['--recursive', '--check-only', '--diff', '-o' 'uritemplate', '-p', 'tests', 'rest_framework', 'tests']
 
+BLACK_ARGS = ['--check', '--verbose']
 
 def exit_on_failure(ret, message=None):
     if ret:
@@ -37,6 +38,16 @@ def isort_main(args):
 
     return ret
 
+def black_main(args):
+    print('Running black code checking')
+    ret = subprocess.call(['black', '.'] + args)
+
+    if ret:
+        print('black failed: Some code have incorrectly formatted. Fix by running `black .`')
+    else:
+        print('black passed')
+        return ret
+
 
 def split_class_and_function(string):
     class_string, function_string = string.split('.', 1)
@@ -57,9 +68,11 @@ if __name__ == "__main__":
     try:
         sys.argv.remove('--nolint')
     except ValueError:
+        run_black = True
         run_flake8 = True
         run_isort = True
     else:
+        run_black = False
         run_flake8 = False
         run_isort = False
 
@@ -76,6 +89,7 @@ if __name__ == "__main__":
         style = 'default'
     else:
         style = 'fast'
+        run_black = False
         run_flake8 = False
         run_isort = False
 
@@ -115,3 +129,6 @@ if __name__ == "__main__":
 
     if run_isort:
         exit_on_failure(isort_main(ISORT_ARGS))
+
+    if run_black:
+        exit_on_failure(black_main(BLACK_ARGS))
