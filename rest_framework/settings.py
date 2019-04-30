@@ -18,10 +18,9 @@ This module provides the `api_setting` object, that is used to access
 REST framework settings, checking for user settings first, then falling
 back to the defaults.
 """
-from importlib import import_module
-
 from django.conf import settings
 from django.test.signals import setting_changed
+from django.utils.module_loading import import_string
 
 from rest_framework import ISO_8601
 
@@ -175,11 +174,8 @@ def import_from_string(val, setting_name):
     Attempt to import a class from a string representation.
     """
     try:
-        # Nod to tastypie's use of importlib.
-        module_path, class_name = val.rsplit('.', 1)
-        module = import_module(module_path)
-        return getattr(module, class_name)
-    except (ImportError, AttributeError) as e:
+        return import_string(val)
+    except ImportError as e:
         msg = "Could not import '%s' for API setting '%s'. %s: %s." % (val, setting_name, e.__class__.__name__, e)
         raise ImportError(msg)
 
