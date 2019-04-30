@@ -8,8 +8,8 @@ import math
 
 from django.http import JsonResponse
 from django.utils.encoding import force_text
-from django.utils.translation import ugettext_lazy as _
-from django.utils.translation import ungettext
+from django.utils.translation import gettext_lazy as _
+from django.utils.translation import ngettext
 
 from rest_framework import status
 from rest_framework.utils.serializer_helpers import ReturnDict, ReturnList
@@ -230,9 +230,9 @@ class Throttled(APIException):
             wait = math.ceil(wait)
             detail = ' '.join((
                 detail,
-                force_text(ungettext(self.extra_detail_singular.format(wait=wait),
-                                     self.extra_detail_plural.format(wait=wait),
-                                     wait))))
+                force_text(ngettext(self.extra_detail_singular.format(wait=wait),
+                                    self.extra_detail_plural.format(wait=wait),
+                                    wait))))
         self.wait = wait
         super().__init__(detail, code)
 

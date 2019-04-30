@@ -11,7 +11,7 @@ from weakref import WeakKeyDictionary
 
 from django.db import models
 from django.utils.encoding import force_text, smart_text
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from rest_framework import exceptions, serializers
 from rest_framework.compat import coreapi, coreschema, uritemplate
