@@ -6,10 +6,9 @@ on the response, such as JSON encoded data or HTML output.
 
 REST framework also provides an HTML renderer that renders the browsable API.
 """
-from __future__ import unicode_literals
-
 import base64
 from collections import OrderedDict
+from urllib import parse
 
 from django import forms
 from django.conf import settings
@@ -19,9 +18,7 @@ from django.http.multipartparser import parse_header
 from django.template import engines, loader
 from django.test.client import encode_multipart
 from django.urls import NoReverseMatch
-from django.utils import six
 from django.utils.html import mark_safe
-from django.utils.six.moves.urllib import parse as urlparse
 
 from rest_framework import VERSION, exceptions, serializers, status
 from rest_framework.compat import (
@@ -40,7 +37,7 @@ def zero_as_none(value):
     return None if value == 0 else value
 
 
-class BaseRenderer(object):
+class BaseRenderer:
     """
     All renderers should extend this class, setting the `media_type`
     and `format` attributes, and override the `.render()` method.
@@ -111,7 +108,7 @@ class JSONRenderer(BaseRenderer):
         # but if ensure_ascii=False, the return type is underspecified,
         # and may (or may not) be unicode.
         # On python 3.x json.dumps() returns unicode strings.
-        if isinstance(ret, six.text_type):
+        if isinstance(ret, str):
             # We always fully escape \u2028 and \u2029 to ensure we output JSON
             # that is a strict javascript subset. If bytes were returned
             # by json.dumps() then we don't have these characters in any case.
@@ -349,7 +346,7 @@ class HTMLFormRenderer(BaseRenderer):
         # Get a clone of the field with text-only value representation.
         field = field.as_form_field()
 
-        if style.get('input_type') == 'datetime-local' and isinstance(field.value, six.text_type):
+        if style.get('input_type') == 'datetime-local' and isinstance(field.value, str):
             field.value = field.value.rstrip('Z')
 
         if 'template' in style:
@@ -791,7 +788,7 @@ class AdminRenderer(BrowsableAPIRenderer):
         """
         Render the HTML for the browsable API representation.
         """
-        context = super(AdminRenderer, self).get_context(
+        context = super().get_context(
             data, accepted_media_type, renderer_context
         )
 
@@ -995,14 +992,14 @@ class _BaseOpenAPIRenderer:
 
         tag = None
         for name, link in document.links.items():
-            path = urlparse.urlparse(link.url).path
+            path = parse.urlparse(link.url).path
             method = link.action.lower()
             paths.setdefault(path, {})
             paths[path][method] = self.get_operation(link, name, tag=tag)
 
         for tag, section in document.data.items():
             for name, link in section.links.items():
-                path = urlparse.urlparse(link.url).path
+                path = parse.urlparse(link.url).path
                 method = link.action.lower()
                 paths.setdefault(path, {})
                 paths[path][method] = self.get_operation(link, name, tag=tag)

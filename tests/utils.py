@@ -2,7 +2,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.urls import NoReverseMatch
 
 
-class MockObject(object):
+class MockObject:
     def __init__(self, **kwargs):
         self._kwargs = kwargs
         for key, val in kwargs.items():
@@ -16,7 +16,7 @@ class MockObject(object):
         return '<MockObject %s>' % kwargs_str
 
 
-class MockQueryset(object):
+class MockQueryset:
     def __init__(self, iterable):
         self.items = iterable
 
@@ -33,7 +33,7 @@ class MockQueryset(object):
         raise ObjectDoesNotExist()
 
 
-class BadType(object):
+class BadType:
     """
     When used as a lookup with a `MockQueryset`, these objects
     will raise a `TypeError`, as occurs in Django when making

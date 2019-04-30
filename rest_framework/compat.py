@@ -2,22 +2,12 @@
 The `compat` module provides support for backwards compatibility with older
 versions of Django/Python, and compatibility wrappers around optional packages.
 """
-
-from __future__ import unicode_literals
-
 import sys
+from collections.abc import Mapping, MutableMapping  # noqa
 
 from django.conf import settings
 from django.core import validators
-from django.utils import six
 from django.views.generic import View
-
-try:
-    # Python 3
-    from collections.abc import Mapping, MutableMapping   # noqa
-except ImportError:
-    # Python 2.7
-    from collections import Mapping, MutableMapping   # noqa
 
 try:
     from django.urls import (  # noqa
@@ -35,11 +25,6 @@ try:
     from django.core.validators import ProhibitNullCharactersValidator  # noqa
 except ImportError:
     ProhibitNullCharactersValidator = None
-
-try:
-    from unittest import mock
-except ImportError:
-    mock = None
 
 
 def get_original_route(urlpattern):
@@ -87,23 +72,6 @@ def make_url_resolver(regex, urlpatterns):
     except ImportError:
         # Django < 2.0
         return URLResolver(regex, urlpatterns)
-
-
-def unicode_repr(instance):
-    # Get the repr of an instance, but ensure it is a unicode string
-    # on both python 3 (already the case) and 2 (not the case).
-    if six.PY2:
-        return repr(instance).decode('utf-8')
-    return repr(instance)
-
-
-def unicode_to_repr(value):
-    # Coerce a unicode string to the correct repr return type, depending on
-    # the Python version. We wrap all our `__repr__` implementations with
-    # this and then use unicode throughout internally.
-    if six.PY2:
-        return value.encode('utf-8')
-    return value
 
 
 def unicode_http_header(value):
@@ -168,15 +136,6 @@ def is_guardian_installed():
     """
     django-guardian is optional and only imported if in INSTALLED_APPS.
     """
-    try:
-        import guardian
-    except ImportError:
-        guardian = None
-
-    if six.PY2 and (not guardian or guardian.VERSION >= (1, 5)):
-        # Guardian 1.5.0, for Django 2.2 is NOT compatible with Python 2.7.
-        # Remove when dropping PY2.
-        return False
     return 'guardian' in settings.INSTALLED_APPS
 
 
@@ -289,17 +248,12 @@ except ImportError:
 
 # `separators` argument to `json.dumps()` differs between 2.x and 3.x
 # See: https://bugs.python.org/issue22767
-if six.PY3:
-    SHORT_SEPARATORS = (',', ':')
-    LONG_SEPARATORS = (', ', ': ')
-    INDENT_SEPARATORS = (',', ': ')
-else:
-    SHORT_SEPARATORS = (b',', b':')
-    LONG_SEPARATORS = (b', ', b': ')
-    INDENT_SEPARATORS = (b',', b': ')
+SHORT_SEPARATORS = (',', ':')
+LONG_SEPARATORS = (', ', ': ')
+INDENT_SEPARATORS = (',', ': ')
 
 
-class CustomValidatorMessage(object):
+class CustomValidatorMessage:
     """
     We need to avoid evaluation of `lazy` translated `message` in `django.core.validators.BaseValidator.__init__`.
     https://github.com/django/django/blob/75ed5900321d170debef4ac452b8b3cf8a1c2384/django/core/validators.py#L297
@@ -309,7 +263,7 @@ class CustomValidatorMessage(object):
 
     def __init__(self, *args, **kwargs):
         self.message = kwargs.pop('message', self.message)
-        super(CustomValidatorMessage, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
 
 class MinValueValidator(CustomValidatorMessage, validators.MinValueValidator):

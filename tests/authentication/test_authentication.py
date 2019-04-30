@@ -1,7 +1,3 @@
-# coding: utf-8
-
-from __future__ import unicode_literals
-
 import base64
 
 import pytest
@@ -10,7 +6,6 @@ from django.conf.urls import include, url
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.test import TestCase, override_settings
-from django.utils import six
 
 from rest_framework import (
     HTTP_HEADER_ENCODING, exceptions, permissions, renderers, status
@@ -253,7 +248,7 @@ class SessionAuthTests(TestCase):
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
-class BaseTokenAuthTests(object):
+class BaseTokenAuthTests:
     """Token authentication"""
     model = None
     path = None
@@ -381,7 +376,7 @@ class TokenAuthTests(BaseTokenAuthTests, TestCase):
         """Ensure generate_key returns a string"""
         token = self.model()
         key = token.generate_key()
-        assert isinstance(key, six.string_types)
+        assert isinstance(key, str)
 
     def test_token_login_json(self):
         """Ensure token login view using JSON POST works."""
@@ -534,7 +529,7 @@ class BasicAuthenticationUnitTests(TestCase):
     def test_basic_authentication_raises_error_if_user_not_active(self):
         from rest_framework import authentication
 
-        class MockUser(object):
+        class MockUser:
             is_active = False
         old_authenticate = authentication.authenticate
         authentication.authenticate = lambda **kwargs: MockUser()

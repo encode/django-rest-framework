@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 inspectors.py   # Per-endpoint view introspection
 
@@ -7,11 +6,11 @@ See schemas.__init__.py for package overview.
 import re
 import warnings
 from collections import OrderedDict
+from urllib import parse
 from weakref import WeakKeyDictionary
 
 from django.db import models
 from django.utils.encoding import force_text, smart_text
-from django.utils.six.moves.urllib import parse as urlparse
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import exceptions, serializers
@@ -125,7 +124,7 @@ def get_pk_description(model, model_field):
     )
 
 
-class ViewInspector(object):
+class ViewInspector:
     """
     Descriptor class on APIView.
 
@@ -207,7 +206,7 @@ class AutoSchema(ViewInspector):
         * `manual_fields`: list of `coreapi.Field` instances that
             will be added to auto-generated fields, overwriting on `Field.name`
         """
-        super(AutoSchema, self).__init__()
+        super().__init__()
         if manual_fields is None:
             manual_fields = []
         self._manual_fields = manual_fields
@@ -232,7 +231,7 @@ class AutoSchema(ViewInspector):
             path = path[1:]
 
         return coreapi.Link(
-            url=urlparse.urljoin(base_url, path),
+            url=parse.urljoin(base_url, path),
             action=method.lower(),
             encoding=encoding,
             fields=fields,
@@ -475,7 +474,7 @@ class ManualSchema(ViewInspector):
         * `fields`: list of `coreapi.Field` instances.
         * `description`: String description for view. Optional.
         """
-        super(ManualSchema, self).__init__()
+        super().__init__()
         assert all(isinstance(f, coreapi.Field) for f in fields), "`fields` must be a list of coreapi.Field instances"
         self._fields = fields
         self._description = description
@@ -487,7 +486,7 @@ class ManualSchema(ViewInspector):
             path = path[1:]
 
         return coreapi.Link(
-            url=urlparse.urljoin(base_url, path),
+            url=parse.urljoin(base_url, path),
             action=method.lower(),
             encoding=self._encoding,
             fields=self._fields,
@@ -498,7 +497,7 @@ class ManualSchema(ViewInspector):
 class DefaultSchema(ViewInspector):
     """Allows overriding AutoSchema using DEFAULT_SCHEMA_CLASS setting"""
     def __get__(self, instance, owner):
-        result = super(DefaultSchema, self).__get__(instance, owner)
+        result = super().__get__(instance, owner)
         if not isinstance(result, DefaultSchema):
             return result
 

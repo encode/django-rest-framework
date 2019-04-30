@@ -29,7 +29,7 @@ from .models import BasicModel, ForeignKeySource, ManyToManySource
 factory = APIRequestFactory()
 
 
-class MockUser(object):
+class MockUser:
     def is_authenticated(self):
         return True
 
@@ -112,7 +112,7 @@ class ExampleViewSet(ModelViewSet):
     def get_serializer(self, *args, **kwargs):
         assert self.request
         assert self.action
-        return super(ExampleViewSet, self).get_serializer(*args, **kwargs)
+        return super().get_serializer(*args, **kwargs)
 
     @action(methods=['get', 'post'], detail=False)
     def documented_custom_action(self, request):
@@ -1303,7 +1303,7 @@ def test_head_and_options_methods_are_excluded():
 
 
 @pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
-class TestAutoSchemaAllowsFilters(object):
+class TestAutoSchemaAllowsFilters:
     class MockAPIView(APIView):
         filter_backends = [filters.OrderingFilter]
 

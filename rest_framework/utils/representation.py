@@ -2,15 +2,11 @@
 Helper functions for creating user-friendly representations
 of serializer classes and serializer fields.
 """
-from __future__ import unicode_literals
-
 import re
 
 from django.db import models
 from django.utils.encoding import force_text
 from django.utils.functional import Promise
-
-from rest_framework.compat import unicode_repr
 
 
 def manager_repr(value):
@@ -34,7 +30,7 @@ def smart_repr(value):
     if isinstance(value, Promise) and value._delegate_text:
         value = force_text(value)
 
-    value = unicode_repr(value)
+    value = repr(value)
 
     # Representations like u'help text'
     # should simply be presented as 'help text'

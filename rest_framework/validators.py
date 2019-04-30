@@ -6,12 +6,9 @@ This gives us better separation of concerns, allows us to use single-step
 object creation, and makes it possible to switch between using the implicit
 `ModelSerializer` class and an equivalent explicit `Serializer` class.
 """
-from __future__ import unicode_literals
-
 from django.db import DataError
 from django.utils.translation import ugettext_lazy as _
 
-from rest_framework.compat import unicode_to_repr
 from rest_framework.exceptions import ValidationError
 from rest_framework.utils.representation import smart_repr
 
@@ -33,7 +30,7 @@ def qs_filter(queryset, **kwargs):
         return queryset.none()
 
 
-class UniqueValidator(object):
+class UniqueValidator:
     """
     Validator that corresponds to `unique=True` on a model field.
 
@@ -82,13 +79,13 @@ class UniqueValidator(object):
             raise ValidationError(self.message, code='unique')
 
     def __repr__(self):
-        return unicode_to_repr('<%s(queryset=%s)>' % (
+        return '<%s(queryset=%s)>' % (
             self.__class__.__name__,
             smart_repr(self.queryset)
-        ))
+        )
 
 
-class UniqueTogetherValidator(object):
+class UniqueTogetherValidator:
     """
     Validator that corresponds to `unique_together = (...)` on a model class.
 
@@ -170,14 +167,14 @@ class UniqueTogetherValidator(object):
             raise ValidationError(message, code='unique')
 
     def __repr__(self):
-        return unicode_to_repr('<%s(queryset=%s, fields=%s)>' % (
+        return '<%s(queryset=%s, fields=%s)>' % (
             self.__class__.__name__,
             smart_repr(self.queryset),
             smart_repr(self.fields)
-        ))
+        )
 
 
-class BaseUniqueForValidator(object):
+class BaseUniqueForValidator:
     message = None
     missing_message = _('This field is required.')
 
@@ -236,12 +233,12 @@ class BaseUniqueForValidator(object):
             }, code='unique')
 
     def __repr__(self):
-        return unicode_to_repr('<%s(queryset=%s, field=%s, date_field=%s)>' % (
+        return '<%s(queryset=%s, field=%s, date_field=%s)>' % (
             self.__class__.__name__,
             smart_repr(self.queryset),
             smart_repr(self.field),
             smart_repr(self.date_field)
-        ))
+        )
 
 
 class UniqueForDateValidator(BaseUniqueForValidator):

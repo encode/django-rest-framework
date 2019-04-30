@@ -1,12 +1,9 @@
-from __future__ import absolute_import, unicode_literals
-
 import re
 from collections import OrderedDict
 
 from django import template
 from django.template import loader
 from django.urls import NoReverseMatch, reverse
-from django.utils import six
 from django.utils.encoding import force_text, iri_to_uri
 from django.utils.html import escape, format_html, smart_urlquote
 from django.utils.safestring import SafeData, mark_safe
@@ -187,7 +184,7 @@ def add_class(value, css_class):
     In the case of REST Framework, the filter is used to add Bootstrap-specific
     classes to the forms.
     """
-    html = six.text_type(value)
+    html = str(value)
     match = class_re.search(html)
     if match:
         m = re.search(r'^%s$|^%s\s|\s%s\s|\s%s$' % (css_class, css_class,
@@ -204,7 +201,7 @@ def add_class(value, css_class):
 @register.filter
 def format_value(value):
     if getattr(value, 'is_hyperlink', False):
-        name = six.text_type(value.obj)
+        name = str(value.obj)
         return mark_safe('<a href=%s>%s</a>' % (value, escape(name)))
     if value is None or isinstance(value, bool):
         return mark_safe('<code>%s</code>' % {True: 'true', False: 'false', None: 'null'}[value])
@@ -219,7 +216,7 @@ def format_value(value):
         template = loader.get_template('rest_framework/admin/dict_value.html')
         context = {'value': value}
         return template.render(context)
-    elif isinstance(value, six.string_types):
+    elif isinstance(value, str):
         if (
             (value.startswith('http:') or value.startswith('https:')) and not
             re.search(r'\s', value)
@@ -229,7 +226,7 @@ def format_value(value):
             return mark_safe('<a href="mailto:{value}">{value}</a>'.format(value=escape(value)))
         elif '\n' in value:
             return mark_safe('<pre>%s</pre>' % escape(value))
-    return six.text_type(value)
+    return str(value)
 
 
 @register.filter
