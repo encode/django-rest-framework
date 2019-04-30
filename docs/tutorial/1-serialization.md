@@ -14,18 +14,18 @@ The tutorial is fairly in-depth, so you should probably get a cookie and a cup o
 
 ## Setting up a new environment
 
-Before we do anything else we'll create a new virtual environment, using [virtualenv].  This will make sure our package configuration is kept nicely isolated from any other projects we're working on.
+Before we do anything else we'll create a new virtual environment, using [venv]. This will make sure our package configuration is kept nicely isolated from any other projects we're working on.
 
-    virtualenv env
+    python3 -m venv env
     source env/bin/activate
 
-Now that we're inside a virtualenv environment, we can install our package requirements.
+Now that we're inside a virtual environment, we can install our package requirements.
 
     pip install django
     pip install djangorestframework
     pip install pygments  # We'll be using this for the code highlighting
 
-**Note:** To exit the virtualenv environment at any time, just type `deactivate`.  For more information see the [virtualenv documentation][virtualenv].
+**Note:** To exit the virtual environment at any time, just type `deactivate`.  For more information see the [venv documentation][venv].
 
 ## Getting started
 
@@ -372,7 +372,7 @@ We'll see how we can start to improve things in [part 2 of the tutorial][tut-2].
 [quickstart]: quickstart.md
 [repo]: https://github.com/encode/rest-framework-tutorial
 [sandbox]: https://restframework.herokuapp.com/
-[virtualenv]: http://www.virtualenv.org/en/latest/index.html
+[venv]: https://docs.python.org/3/library/venv.html
 [tut-2]: 2-requests-and-responses.md
 [httpie]: https://github.com/jakubroztocil/httpie#installation
 [curl]: https://curl.haxx.se/

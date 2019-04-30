@@ -59,7 +59,7 @@ Changes should broadly follow the [PEP 8][pep-8] style conventions, and we recom
 To run the tests, clone the repository, and then:
 
     # Setup the virtual environment
-    virtualenv env
+    python3 -m venv env
     source env/bin/activate
     pip install django
     pip install -r requirements.txt
