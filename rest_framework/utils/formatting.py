@@ -1,8 +1,6 @@
 """
 Utility functions to return a formatted name and description for a given view.
 """
-from __future__ import unicode_literals
-
 import re
 
 from django.utils.encoding import force_text

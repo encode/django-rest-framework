@@ -11,7 +11,6 @@ from django.conf import settings
 from django.contrib.admindocs.views import simplify_regex
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
-from django.utils import six
 
 from rest_framework import exceptions
 from rest_framework.compat import (
@@ -68,7 +67,7 @@ class LinkNode(OrderedDict):
     def __init__(self):
         self.links = []
         self.methods_counter = Counter()
-        super(LinkNode, self).__init__()
+        super().__init__()
 
     def get_available_key(self, preferred_key):
         if preferred_key not in self:
@@ -140,7 +139,7 @@ _PATH_PARAMETER_COMPONENT_RE = re.compile(
 )
 
 
-class EndpointEnumerator(object):
+class EndpointEnumerator:
     """
     A class to determine the available API endpoints that a project exposes.
     """
@@ -151,7 +150,7 @@ class EndpointEnumerator(object):
                 urlconf = settings.ROOT_URLCONF
 
             # Load the given URLconf module
-            if isinstance(urlconf, six.string_types):
+            if isinstance(urlconf, str):
                 urls = import_module(urlconf)
             else:
                 urls = urlconf
@@ -232,7 +231,7 @@ class EndpointEnumerator(object):
         return [method for method in methods if method not in ('OPTIONS', 'HEAD')]
 
 
-class SchemaGenerator(object):
+class SchemaGenerator:
     # Map HTTP methods onto actions.
     default_mapping = {
         'get': 'retrieve',

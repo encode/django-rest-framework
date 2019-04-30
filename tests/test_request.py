@@ -1,8 +1,6 @@
 """
 Tests for content parsing, and form-overloaded content parsing.
 """
-from __future__ import unicode_literals
-
 import os.path
 import tempfile
 
@@ -15,7 +13,6 @@ from django.contrib.sessions.middleware import SessionMiddleware
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http.request import RawPostDataException
 from django.test import TestCase, override_settings
-from django.utils import six
 
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
@@ -82,7 +79,7 @@ class TestContentParsing(TestCase):
         Ensure request.data returns content for POST request with
         non-form content.
         """
-        content = six.b('qwerty')
+        content = b'qwerty'
         content_type = 'text/plain'
         request = Request(factory.post('/', content, content_type=content_type))
         request.parsers = (PlainTextParser(),)
@@ -121,7 +118,7 @@ class TestContentParsing(TestCase):
         Ensure request.data returns content for PUT request with
         non-form content.
         """
-        content = six.b('qwerty')
+        content = b'qwerty'
         content_type = 'text/plain'
         request = Request(factory.put('/', content, content_type=content_type))
         request.parsers = (PlainTextParser(), )
@@ -235,7 +232,7 @@ class TestUserSetter(TestCase):
         This proves that when an AttributeError is raised inside of the request.user
         property, that we can handle this and report the true, underlying error.
         """
-        class AuthRaisesAttributeError(object):
+        class AuthRaisesAttributeError:
             def authenticate(self, request):
                 self.MISSPELLED_NAME_THAT_DOESNT_EXIST
 
@@ -248,10 +245,6 @@ class TestUserSetter(TestCase):
         expected = r"no attribute 'MISSPELLED_NAME_THAT_DOESNT_EXIST'"
         with pytest.raises(WrappedAttributeError, match=expected):
             request.user
-
-        # python 2 hasattr fails for *any* exception, not just AttributeError
-        if six.PY2:
-            return
 
         with pytest.raises(WrappedAttributeError, match=expected):
             hasattr(request, 'user')

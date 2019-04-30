@@ -10,7 +10,6 @@ import pytz
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.http import QueryDict
 from django.test import TestCase, override_settings
-from django.utils import six
 from django.utils.timezone import activate, deactivate, override, utc
 
 import rest_framework
@@ -167,7 +166,7 @@ class TestEmpty:
         """
         field = serializers.IntegerField(default=123)
         output = field.run_validation()
-        assert output is 123
+        assert output == 123
 
 
 class TestSource:
@@ -193,7 +192,7 @@ class TestSource:
         class ExampleSerializer(serializers.Serializer):
             example_field = serializers.CharField(source='example_callable')
 
-        class ExampleInstance(object):
+        class ExampleInstance:
             def example_callable(self):
                 return 'example callable value'
 
@@ -204,7 +203,7 @@ class TestSource:
         class ExampleSerializer(serializers.Serializer):
             example_field = serializers.CharField(source='example_callable', read_only=True)
 
-        class ExampleInstance(object):
+        class ExampleInstance:
             def example_callable(self):
                 raise AttributeError('method call failed')
 
@@ -754,7 +753,7 @@ class TestCharField(FieldValues):
         def raise_exception(value):
             raise exceptions.ValidationError('Raised error')
 
-        for validators in ([raise_exception], (raise_exception,), set([raise_exception])):
+        for validators in ([raise_exception], (raise_exception,), {raise_exception}):
             field = serializers.CharField(validators=validators)
             with pytest.raises(serializers.ValidationError) as exc_info:
                 field.run_validation(value)
@@ -822,7 +821,7 @@ class TestSlugField(FieldValues):
 
         validation_error = False
         try:
-            field.run_validation(u'slug-99-\u0420')
+            field.run_validation('slug-99-\u0420')
         except serializers.ValidationError:
             validation_error = True
 
@@ -1148,7 +1147,7 @@ class TestLocalizedDecimalField(TestCase):
 
     def test_localize_forces_coerce_to_string(self):
         field = serializers.DecimalField(max_digits=2, decimal_places=1, coerce_to_string=False, localize=True)
-        assert isinstance(field.to_representation(Decimal('1.1')), six.string_types)
+        assert isinstance(field.to_representation(Decimal('1.1')), str)
 
 
 class TestQuantizedValueForDecimal(TestCase):
@@ -1219,7 +1218,7 @@ class TestDateField(FieldValues):
     outputs = {
         datetime.date(2001, 1, 1): '2001-01-01',
         '2001-01-01': '2001-01-01',
-        six.text_type('2016-01-10'): '2016-01-10',
+        str('2016-01-10'): '2016-01-10',
         None: None,
         '': None,
     }
@@ -1286,7 +1285,7 @@ class TestDateTimeField(FieldValues):
         datetime.datetime(2001, 1, 1, 13, 00): '2001-01-01T13:00:00Z',
         datetime.datetime(2001, 1, 1, 13, 00, tzinfo=utc): '2001-01-01T13:00:00Z',
         '2001-01-01T00:00:00': '2001-01-01T00:00:00',
-        six.text_type('2016-01-10T00:00:00'): '2016-01-10T00:00:00',
+        str('2016-01-10T00:00:00'): '2016-01-10T00:00:00',
         None: None,
         '': None,
     }
@@ -1628,7 +1627,7 @@ class TestChoiceField(FieldValues):
             ]
         )
         field.choices = [1]
-        assert field.run_validation(1) is 1
+        assert field.run_validation(1) == 1
         with pytest.raises(serializers.ValidationError) as exc_info:
             field.run_validation(2)
         assert exc_info.value.detail == ['"2" is not a valid choice.']

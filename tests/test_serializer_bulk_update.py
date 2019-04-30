@@ -1,10 +1,7 @@
 """
 Tests to cover bulk create and update using serializers.
 """
-from __future__ import unicode_literals
-
 from django.test import TestCase
-from django.utils import six
 
 from rest_framework import serializers
 
@@ -87,8 +84,7 @@ class BulkCreateSerializerTests(TestCase):
         serializer = self.BookSerializer(data=data, many=True)
         assert serializer.is_valid() is False
 
-        text_type_string = six.text_type.__name__
-        message = 'Invalid data. Expected a dictionary, but got %s.' % text_type_string
+        message = 'Invalid data. Expected a dictionary, but got str.'
         expected_errors = [
             {'non_field_errors': [message]},
             {'non_field_errors': [message]},

@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django.test import TestCase, override_settings
 
 from rest_framework.settings import APISettings, api_settings

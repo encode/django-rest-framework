@@ -1,16 +1,13 @@
-# coding: utf-8
-from __future__ import unicode_literals
-
 import inspect
 import pickle
 import re
-import unittest
+from collections import ChainMap
 
 import pytest
 from django.db import models
 
 from rest_framework import exceptions, fields, relations, serializers
-from rest_framework.compat import Mapping, unicode_repr
+from rest_framework.compat import Mapping
 from rest_framework.fields import Field
 
 from .models import (
@@ -18,15 +15,9 @@ from .models import (
 )
 from .utils import MockObject
 
-try:
-    from collections import ChainMap
-except ImportError:
-    ChainMap = False
-
 
 # Test serializer fields imports.
 # -------------------------------
-
 class TestFieldImports:
     def is_field(self, name, value):
         return (
@@ -130,7 +121,6 @@ class TestSerializer:
         assert not serializer.is_valid()
         assert serializer.errors == {'non_field_errors': ['No data provided']}
 
-    @unittest.skipUnless(ChainMap, 'requires python 3.3')
     def test_serialize_chainmap(self):
         data = ChainMap({'char': 'abc'}, {'integer': 123})
         serializer = self.Serializer(data=data)
@@ -160,7 +150,7 @@ class TestSerializer:
         to_internal_value() is expected to return a dict, but subclasses may
         return application specific type.
         """
-        class Point(object):
+        class Point:
             def __init__(self, srid, x, y):
                 self.srid = srid
                 self.coords = (x, y)
@@ -171,7 +161,7 @@ class TestSerializer:
             latitude = serializers.FloatField(source='y')
 
             def to_internal_value(self, data):
-                kwargs = super(NestedPointSerializer, self).to_internal_value(data)
+                kwargs = super().to_internal_value(data)
                 return Point(srid=4326, **kwargs)
 
         serializer = NestedPointSerializer(data={'longitude': 6.958307, 'latitude': 50.941357})
@@ -201,7 +191,7 @@ class TestSerializer:
         def raise_exception(value):
             raise exceptions.ValidationError('Raised error')
 
-        for validators in ([raise_exception], (raise_exception,), set([raise_exception])):
+        for validators in ([raise_exception], (raise_exception,), {raise_exception}):
             class ExampleSerializer(serializers.Serializer):
                 char = serializers.CharField(validators=validators)
                 integer = serializers.IntegerField()
@@ -397,7 +387,7 @@ class TestIncorrectlyConfigured:
 
 
 class TestUnicodeRepr:
-    def test_unicode_repr(self):
+    def test_repr(self):
         class ExampleSerializer(serializers.Serializer):
             example = serializers.CharField()
 
@@ -406,7 +396,7 @@ class TestUnicodeRepr:
                 self.example = '한국'
 
             def __repr__(self):
-                return unicode_repr(self.example)
+                return repr(self.example)
 
         instance = ExampleObject()
         serializer = ExampleSerializer(instance)
@@ -609,7 +599,7 @@ class Test2555Regression:
     def test_serializer_context(self):
         class NestedSerializer(serializers.Serializer):
             def __init__(self, *args, **kwargs):
-                super(NestedSerializer, self).__init__(*args, **kwargs)
+                super().__init__(*args, **kwargs)
                 # .context should not cache
                 self.context
 

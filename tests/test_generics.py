@@ -1,11 +1,8 @@
-from __future__ import unicode_literals
-
 import pytest
 from django.db import models
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.test import TestCase
-from django.utils import six
 
 from rest_framework import generics, renderers, serializers, status
 from rest_framework.response import Response
@@ -245,7 +242,7 @@ class TestInstanceView(TestCase):
         with self.assertNumQueries(2):
             response = self.view(request, pk=1).render()
         assert response.status_code == status.HTTP_204_NO_CONTENT
-        assert response.content == six.b('')
+        assert response.content == b''
         ids = [obj.id for obj in self.objects.all()]
         assert ids == [2, 3]
 
@@ -291,7 +288,7 @@ class TestInstanceView(TestCase):
         """
         data = {'text': 'foo'}
         filtered_out_pk = BasicModel.objects.filter(text='filtered out')[0].pk
-        request = factory.put('/{0}'.format(filtered_out_pk), data, format='json')
+        request = factory.put('/{}'.format(filtered_out_pk), data, format='json')
         response = self.view(request, pk=filtered_out_pk).render()
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
@@ -446,12 +443,12 @@ class TestM2MBrowsableAPI(TestCase):
         assert response.status_code == status.HTTP_200_OK
 
 
-class InclusiveFilterBackend(object):
+class InclusiveFilterBackend:
     def filter_queryset(self, request, queryset, view):
         return queryset.filter(text='foo')
 
 
-class ExclusiveFilterBackend(object):
+class ExclusiveFilterBackend:
     def filter_queryset(self, request, queryset, view):
         return queryset.filter(text='other')
 
@@ -653,7 +650,7 @@ class ApiViewsTests(TestCase):
 
 class GetObjectOr404Tests(TestCase):
     def setUp(self):
-        super(GetObjectOr404Tests, self).setUp()
+        super().setUp()
         self.uuid_object = UUIDForeignKeyTarget.objects.create(name='bar')
 
     def test_get_object_or_404_with_valid_uuid(self):
