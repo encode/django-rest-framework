@@ -73,7 +73,7 @@ class Response(SimpleTemplateResponse):
                 'renderer returned unicode, and did not specify '
                 'a charset value.'
             )
-            return bytes(ret.encode(charset))
+            return ret.encode(charset)
 
         if not ret:
             del self['Content-Type']
