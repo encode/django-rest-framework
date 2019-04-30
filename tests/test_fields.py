@@ -19,9 +19,9 @@ from rest_framework.compat import ProhibitNullCharactersValidator
 from rest_framework.fields import DjangoImageField, is_simple_callable
 
 try:
-    import typings
+    import typing
 except ImportError:
-    typings = False
+    typing = False
 
 
 # Tests for helper functions.
@@ -93,11 +93,12 @@ class TestIsSimpleCallable:
 
         assert is_simple_callable(ChoiceModel().get_choice_field_display)
 
-    @unittest.skipUnless(typings, 'requires python 3.5')
+    @unittest.skipUnless(typing, 'requires python 3.5')
     def test_type_annotation(self):
         # The annotation will otherwise raise a syntax error in python < 3.5
-        exec("def valid(param: str='value'):  pass", locals())
-        valid = locals()['valid']
+        locals = {}
+        exec("def valid(param: str='value'):  pass", locals)
+        valid = locals['valid']
 
         assert is_simple_callable(valid)
 
