@@ -674,7 +674,7 @@ class BrowsableAPIRenderer(BaseRenderer):
             csrf_header_name = csrf_header_name[5:]
         csrf_header_name = csrf_header_name.replace('_', '-')
 
-        context = {
+        return {
             'content': self.get_content(renderer, data, accepted_media_type, renderer_context),
             'code_style': pygments_css(self.code_style),
             'view': view,
@@ -710,7 +710,6 @@ class BrowsableAPIRenderer(BaseRenderer):
             'csrf_cookie_name': csrf_cookie_name,
             'csrf_header_name': csrf_header_name
         }
-        return context
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """

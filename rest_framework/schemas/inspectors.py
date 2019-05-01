@@ -435,8 +435,7 @@ class AutoSchema(ViewInspector):
         by_name = OrderedDict((f.name, f) for f in fields)
         for f in update_with:
             by_name[f.name] = f
-        fields = list(by_name.values())
-        return fields
+        return list(by_name.values())
 
     def get_encoding(self, path, method):
         """

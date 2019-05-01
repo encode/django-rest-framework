@@ -80,8 +80,7 @@ class FormParser(BaseParser):
         """
         parser_context = parser_context or {}
         encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
-        data = QueryDict(stream.read(), encoding=encoding)
-        return data
+        return QueryDict(stream.read(), encoding=encoding)
 
 
 class MultiPartParser(BaseParser):
