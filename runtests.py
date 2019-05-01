@@ -11,7 +11,7 @@ PYTEST_ARGS = {
 
 FLAKE8_ARGS = ['rest_framework', 'tests']
 
-ISORT_ARGS = ['--recursive', '--check-only', '--diff', '-o' 'uritemplate', '-p', 'tests', 'rest_framework', 'tests']
+ISORT_ARGS = ['--recursive', '--check-only', '--diff', 'rest_framework', 'tests']
 
 
 def exit_on_failure(ret, message=None):
