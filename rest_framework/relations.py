@@ -7,7 +7,7 @@ from django.db.models import Manager
 from django.db.models.query import QuerySet
 from django.urls import NoReverseMatch, Resolver404, get_script_prefix, resolve
 from django.utils.encoding import smart_text, uri_to_iri
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from rest_framework.fields import (
     Field, empty, get_attribute, is_simple_callable, iter_options

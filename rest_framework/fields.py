@@ -26,7 +26,7 @@ from django.utils.formats import localize_input, sanitize_separators
 from django.utils.functional import lazy
 from django.utils.ipv6 import clean_ipv6_address
 from django.utils.timezone import utc
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from pytz.exceptions import InvalidTimeError
 
 from rest_framework import ISO_8601

@@ -10,7 +10,7 @@ from django.core.paginator import InvalidPage
 from django.core.paginator import Paginator as DjangoPaginator
 from django.template import loader
 from django.utils.encoding import force_text
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from rest_framework.compat import coreapi, coreschema
 from rest_framework.exceptions import NotFound

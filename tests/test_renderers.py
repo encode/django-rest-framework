@@ -10,7 +10,7 @@ from django.http.request import HttpRequest
 from django.template import loader
 from django.test import TestCase, override_settings
 from django.utils.safestring import SafeText
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from rest_framework import permissions, serializers, status
 from rest_framework.compat import coreapi
