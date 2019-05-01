@@ -1358,4 +1358,4 @@ def test_schema_handles_exception():
     response = schema_view(request)
     response.render()
     assert response.status_code == 403
-    assert "You do not have permission to perform this action." in str(response.content)
+    assert b"You do not have permission to perform this action." in response.content
