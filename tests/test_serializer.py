@@ -386,23 +386,6 @@ class TestIncorrectlyConfigured:
         )
 
 
-class TestUnicodeRepr:
-    def test_repr(self):
-        class ExampleSerializer(serializers.Serializer):
-            example = serializers.CharField()
-
-        class ExampleObject:
-            def __init__(self):
-                self.example = '한국'
-
-            def __repr__(self):
-                return repr(self.example)
-
-        instance = ExampleObject()
-        serializer = ExampleSerializer(instance)
-        repr(serializer)  # Should not error.
-
-
 class TestNotRequiredOutput:
     def test_not_required_output_for_dict(self):
         """
