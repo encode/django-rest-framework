@@ -438,13 +438,13 @@ class TestEmptyPrefix(URLPatternsTestCase, TestCase):
     def test_empty_prefix_list(self):
         response = self.client.get('/empty-prefix/')
         assert response.status_code == 200
-        assert json.loads(response.content.decode('utf-8')) == [{'uuid': '111', 'text': 'First'},
-                                                                {'uuid': '222', 'text': 'Second'}]
+        assert json.loads(response.content.decode()) == [{'uuid': '111', 'text': 'First'},
+                                                         {'uuid': '222', 'text': 'Second'}]
 
     def test_empty_prefix_detail(self):
         response = self.client.get('/empty-prefix/1/')
         assert response.status_code == 200
-        assert json.loads(response.content.decode('utf-8')) == {'uuid': '111', 'text': 'First'}
+        assert json.loads(response.content.decode()) == {'uuid': '111', 'text': 'First'}
 
 
 class TestRegexUrlPath(URLPatternsTestCase, TestCase):
@@ -456,14 +456,14 @@ class TestRegexUrlPath(URLPatternsTestCase, TestCase):
         kwarg = '1234'
         response = self.client.get('/regex/list/{}/'.format(kwarg))
         assert response.status_code == 200
-        assert json.loads(response.content.decode('utf-8')) == {'kwarg': kwarg}
+        assert json.loads(response.content.decode()) == {'kwarg': kwarg}
 
     def test_regex_url_path_detail(self):
         pk = '1'
         kwarg = '1234'
         response = self.client.get('/regex/{}/detail/{}/'.format(pk, kwarg))
         assert response.status_code == 200
-        assert json.loads(response.content.decode('utf-8')) == {'pk': pk, 'kwarg': kwarg}
+        assert json.loads(response.content.decode()) == {'pk': pk, 'kwarg': kwarg}
 
 
 class TestViewInitkwargs(URLPatternsTestCase, TestCase):

@@ -24,18 +24,18 @@ class DropdownWithAuthTests(TestCase):
     def test_name_shown_when_logged_in(self):
         self.client.login(username=self.username, password=self.password)
         response = self.client.get('/')
-        content = response.content.decode('utf8')
+        content = response.content.decode()
         assert 'john' in content
 
     def test_logout_shown_when_logged_in(self):
         self.client.login(username=self.username, password=self.password)
         response = self.client.get('/')
-        content = response.content.decode('utf8')
+        content = response.content.decode()
         assert '>Log out<' in content
 
     def test_login_shown_when_logged_out(self):
         response = self.client.get('/')
-        content = response.content.decode('utf8')
+        content = response.content.decode()
         assert '>Log in<' in content
 
 
@@ -59,16 +59,16 @@ class NoDropdownWithoutAuthTests(TestCase):
     def test_name_shown_when_logged_in(self):
         self.client.login(username=self.username, password=self.password)
         response = self.client.get('/')
-        content = response.content.decode('utf8')
+        content = response.content.decode()
         assert 'john' in content
 
     def test_dropdown_not_shown_when_logged_in(self):
         self.client.login(username=self.username, password=self.password)
         response = self.client.get('/')
-        content = response.content.decode('utf8')
+        content = response.content.decode()
         assert '<li class="dropdown">' not in content
 
     def test_dropdown_not_shown_when_logged_out(self):
         response = self.client.get('/')
-        content = response.content.decode('utf8')
+        content = response.content.decode()
         assert '<li class="dropdown">' not in content

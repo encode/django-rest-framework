@@ -47,7 +47,7 @@ class JSONEncoder(json.JSONEncoder):
             return tuple(obj)
         elif isinstance(obj, bytes):
             # Best-effort for binary blobs. See #4187.
-            return obj.decode('utf-8')
+            return obj.decode()
         elif hasattr(obj, 'tolist'):
             # Numpy arrays and array scalars.
             return obj.tolist()
