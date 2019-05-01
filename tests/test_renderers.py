@@ -304,14 +304,14 @@ class JSONRendererTests(TestCase):
         o = DummyTestModel.objects.create(name='dummy')
         qs = DummyTestModel.objects.values('id', 'name')
         ret = JSONRenderer().render(qs)
-        data = json.loads(ret.decode('utf-8'))
+        data = json.loads(ret.decode())
         self.assertEqual(data, [{'id': o.id, 'name': o.name}])
 
     def test_render_queryset_values_list(self):
         o = DummyTestModel.objects.create(name='dummy')
         qs = DummyTestModel.objects.values_list('id', 'name')
         ret = JSONRenderer().render(qs)
-        data = json.loads(ret.decode('utf-8'))
+        data = json.loads(ret.decode())
         self.assertEqual(data, [[o.id, o.name]])
 
     def test_render_dict_abc_obj(self):
@@ -341,7 +341,7 @@ class JSONRendererTests(TestCase):
         x['key'] = 'string value'
         x[2] = 3
         ret = JSONRenderer().render(x)
-        data = json.loads(ret.decode('utf-8'))
+        data = json.loads(ret.decode())
         self.assertEqual(data, {'key': 'string value', '2': 3})
 
     def test_render_obj_with_getitem(self):
@@ -381,7 +381,7 @@ class JSONRendererTests(TestCase):
         renderer = JSONRenderer()
         content = renderer.render(obj, 'application/json')
         # Fix failing test case which depends on version of JSON library.
-        self.assertEqual(content.decode('utf-8'), _flat_repr)
+        self.assertEqual(content.decode(), _flat_repr)
 
     def test_with_content_type_args(self):
         """
@@ -390,7 +390,7 @@ class JSONRendererTests(TestCase):
         obj = {'foo': ['bar', 'baz']}
         renderer = JSONRenderer()
         content = renderer.render(obj, 'application/json; indent=2')
-        self.assertEqual(strip_trailing_whitespace(content.decode('utf-8')), _indented_repr)
+        self.assertEqual(strip_trailing_whitespace(content.decode()), _indented_repr)
 
 
 class UnicodeJSONRendererTests(TestCase):
@@ -401,7 +401,7 @@ class UnicodeJSONRendererTests(TestCase):
         obj = {'countries': ['United Kingdom', 'France', 'España']}
         renderer = JSONRenderer()
         content = renderer.render(obj, 'application/json')
-        self.assertEqual(content, '{"countries":["United Kingdom","France","España"]}'.encode('utf-8'))
+        self.assertEqual(content, '{"countries":["United Kingdom","France","España"]}'.encode())
 
     def test_u2028_u2029(self):
         # The \u2028 and \u2029 characters should be escaped,
@@ -410,7 +410,7 @@ class UnicodeJSONRendererTests(TestCase):
         obj = {'should_escape': '\u2028\u2029'}
         renderer = JSONRenderer()
         content = renderer.render(obj, 'application/json')
-        self.assertEqual(content, '{"should_escape":"\\u2028\\u2029"}'.encode('utf-8'))
+        self.assertEqual(content, '{"should_escape":"\\u2028\\u2029"}'.encode())
 
 
 class AsciiJSONRendererTests(TestCase):
@@ -423,7 +423,7 @@ class AsciiJSONRendererTests(TestCase):
         obj = {'countries': ['United Kingdom', 'France', 'España']}
         renderer = AsciiJSONRenderer()
         content = renderer.render(obj, 'application/json')
-        self.assertEqual(content, '{"countries":["United Kingdom","France","Espa\\u00f1a"]}'.encode('utf-8'))
+        self.assertEqual(content, '{"countries":["United Kingdom","France","Espa\\u00f1a"]}'.encode())
 
 
 # Tests for caching issue, #346
@@ -654,9 +654,9 @@ class BrowsableAPIRendererTests(URLPatternsTestCase):
 
     def test_extra_actions_dropdown(self):
         resp = self.client.get('/api/examples/', HTTP_ACCEPT='text/html')
-        assert 'id="extra-actions-menu"' in resp.content.decode('utf-8')
-        assert '/api/examples/list_action/' in resp.content.decode('utf-8')
-        assert '>Extra list action<' in resp.content.decode('utf-8')
+        assert 'id="extra-actions-menu"' in resp.content.decode()
+        assert '/api/examples/list_action/' in resp.content.decode()
+        assert '>Extra list action<' in resp.content.decode()
 
 
 class AdminRendererTests(TestCase):

@@ -1754,7 +1754,7 @@ class JSONField(Field):
         try:
             if self.binary or getattr(data, 'is_json_string', False):
                 if isinstance(data, bytes):
-                    data = data.decode('utf-8')
+                    data = data.decode()
                 return json.loads(data)
             else:
                 json.dumps(data)
@@ -1765,10 +1765,7 @@ class JSONField(Field):
     def to_representation(self, value):
         if self.binary:
             value = json.dumps(value)
-            # On python 2.x the return type for json.dumps() is underspecified.
-            # On python 3.x json.dumps() returns unicode strings.
-            if isinstance(value, str):
-                value = bytes(value.encode('utf-8'))
+            value = value.encode()
         return value
 
 
