@@ -3,7 +3,6 @@ The `compat` module provides support for backwards compatibility with older
 versions of Django/Python, and compatibility wrappers around optional packages.
 """
 import sys
-from collections.abc import Mapping, MutableMapping  # noqa
 
 from django.conf import settings
 from django.core import validators

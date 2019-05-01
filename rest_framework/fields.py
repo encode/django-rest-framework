@@ -6,6 +6,7 @@ import inspect
 import re
 import uuid
 from collections import OrderedDict
+from collections.abc import Mapping
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -30,7 +31,7 @@ from pytz.exceptions import InvalidTimeError
 
 from rest_framework import ISO_8601
 from rest_framework.compat import (
-    Mapping, MaxLengthValidator, MaxValueValidator, MinLengthValidator,
+    MaxLengthValidator, MaxValueValidator, MinLengthValidator,
     MinValueValidator, ProhibitNullCharactersValidator
 )
 from rest_framework.exceptions import ErrorDetail, ValidationError
