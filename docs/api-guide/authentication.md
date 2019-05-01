@@ -354,7 +354,7 @@ The following third party packages are also available.
 
 ## Django OAuth Toolkit
 
-The [Django OAuth Toolkit][django-oauth-toolkit] package provides OAuth 2.0 support, and works with Python 2.7 and Python 3.3+. The package is maintained by [Evonove][evonove] and uses the excellent [OAuthLib][oauthlib].  The package is well documented, and well supported and is currently our **recommended package for OAuth 2.0 support**.
+The [Django OAuth Toolkit][django-oauth-toolkit] package provides OAuth 2.0 support and works with Python 3.4+. The package is maintained by [Evonove][evonove] and uses the excellent [OAuthLib][oauthlib].  The package is well documented, and well supported and is currently our **recommended package for OAuth 2.0 support**.
 
 #### Installation & configuration
 
