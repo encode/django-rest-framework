@@ -16,7 +16,7 @@ NUMERIC_FIELD_TYPES = (
 )
 
 
-class ClassLookupDict(object):
+class ClassLookupDict:
     """
     Takes a dictionary with classes as keys.
     Lookups against this object will traverses the object's inheritance

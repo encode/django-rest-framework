@@ -1,6 +1,5 @@
-from __future__ import unicode_literals
-
 import datetime
+from importlib import reload as reload_module
 
 import pytest
 from django.core.exceptions import ImproperlyConfigured
@@ -8,7 +7,6 @@ from django.db import models
 from django.db.models.functions import Concat, Upper
 from django.test import TestCase
 from django.test.utils import override_settings
-from django.utils.six.moves import reload_module
 
 from rest_framework import filters, generics, serializers
 from rest_framework.compat import coreschema
@@ -163,7 +161,7 @@ class SearchFilterTests(TestCase):
             def get_search_fields(self, view, request):
                 if request.query_params.get('title_only'):
                     return ('$title',)
-                return super(CustomSearchFilter, self).get_search_fields(view, request)
+                return super().get_search_fields(view, request)
 
         class SearchListView(generics.ListAPIView):
             queryset = SearchFilterModel.objects.all()
@@ -172,11 +170,11 @@ class SearchFilterTests(TestCase):
             search_fields = ('$title', '$text')
 
         view = SearchListView.as_view()
-        request = factory.get('/', {'search': '^\w{3}$'})
+        request = factory.get('/', {'search': r'^\w{3}$'})
         response = view(request)
         assert len(response.data) == 10
 
-        request = factory.get('/', {'search': '^\w{3}$', 'title_only': 'true'})
+        request = factory.get('/', {'search': r'^\w{3}$', 'title_only': 'true'})
         response = view(request)
         assert response.data == [
             {'id': 3, 'title': 'zzz', 'text': 'cde'}

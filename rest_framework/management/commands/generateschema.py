@@ -29,7 +29,7 @@ class Command(BaseCommand):
 
         renderer = self.get_renderer(options['format'])
         output = renderer.render(schema, renderer_context={})
-        self.stdout.write(output.decode('utf-8'))
+        self.stdout.write(output.decode())
 
     def get_renderer(self, format):
         renderer_cls = {

@@ -353,7 +353,7 @@ class TestUniquenessTogetherValidation(TestCase):
         filter_queryset should add value from existing instance attribute
         if it is not provided in attributes dict
         """
-        class MockQueryset(object):
+        class MockQueryset:
             def filter(self, **kwargs):
                 self.called_with = kwargs
 
@@ -558,19 +558,19 @@ class TestHiddenFieldUniquenessForDateValidation(TestCase):
 class ValidatorsTests(TestCase):
 
     def test_qs_exists_handles_type_error(self):
-        class TypeErrorQueryset(object):
+        class TypeErrorQueryset:
             def exists(self):
                 raise TypeError
         assert qs_exists(TypeErrorQueryset()) is False
 
     def test_qs_exists_handles_value_error(self):
-        class ValueErrorQueryset(object):
+        class ValueErrorQueryset:
             def exists(self):
                 raise ValueError
         assert qs_exists(ValueErrorQueryset()) is False
 
     def test_qs_exists_handles_data_error(self):
-        class DataErrorQueryset(object):
+        class DataErrorQueryset:
             def exists(self):
                 raise DataError
         assert qs_exists(DataErrorQueryset()) is False

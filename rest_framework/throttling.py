@@ -1,8 +1,6 @@
 """
 Provides various throttling policies.
 """
-from __future__ import unicode_literals
-
 import time
 
 from django.core.cache import cache as default_cache
@@ -11,7 +9,7 @@ from django.core.exceptions import ImproperlyConfigured
 from rest_framework.settings import api_settings
 
 
-class BaseThrottle(object):
+class BaseThrottle:
     """
     Rate throttling of requests.
     """
@@ -232,7 +230,7 @@ class ScopedRateThrottle(SimpleRateThrottle):
         self.num_requests, self.duration = self.parse_rate(self.rate)
 
         # We can now proceed as normal.
-        return super(ScopedRateThrottle, self).allow_request(request, view)
+        return super().allow_request(request, view)
 
     def get_cache_key(self, request, view):
         """

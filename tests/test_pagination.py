@@ -1,11 +1,7 @@
-# coding: utf-8
-from __future__ import unicode_literals
-
 import pytest
 from django.core.paginator import Paginator as DjangoPaginator
 from django.db import models
 from django.test import TestCase
-from django.utils import six
 
 from rest_framework import (
     exceptions, filters, generics, pagination, serializers, status
@@ -208,7 +204,7 @@ class TestPageNumberPagination:
             ]
         }
         assert self.pagination.display_page_controls
-        assert isinstance(self.pagination.to_html(), six.text_type)
+        assert isinstance(self.pagination.to_html(), str)
 
     def test_second_page(self):
         request = Request(factory.get('/', {'page': 2}))
@@ -314,7 +310,7 @@ class TestPageNumberPaginationOverride:
             ]
         }
         assert not self.pagination.display_page_controls
-        assert isinstance(self.pagination.to_html(), six.text_type)
+        assert isinstance(self.pagination.to_html(), str)
 
     def test_invalid_page(self):
         request = Request(factory.get('/', {'page': 'invalid'}))
@@ -369,7 +365,7 @@ class TestLimitOffset:
             ]
         }
         assert self.pagination.display_page_controls
-        assert isinstance(self.pagination.to_html(), six.text_type)
+        assert isinstance(self.pagination.to_html(), str)
 
     def test_pagination_not_applied_if_limit_or_default_limit_not_set(self):
         class MockPagination(pagination.LimitOffsetPagination):
@@ -503,7 +499,7 @@ class TestLimitOffset:
         content = self.get_paginated_content(queryset)
         next_limit = self.pagination.default_limit
         next_offset = self.pagination.default_limit
-        next_url = 'http://testserver/?limit={0}&offset={1}'.format(next_limit, next_offset)
+        next_url = 'http://testserver/?limit={}&offset={}'.format(next_limit, next_offset)
         assert queryset == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
         assert content.get('next') == next_url
 
@@ -516,7 +512,7 @@ class TestLimitOffset:
         content = self.get_paginated_content(queryset)
         next_limit = self.pagination.default_limit
         next_offset = self.pagination.default_limit
-        next_url = 'http://testserver/?limit={0}&offset={1}'.format(next_limit, next_offset)
+        next_url = 'http://testserver/?limit={}&offset={}'.format(next_limit, next_offset)
         assert queryset == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
         assert content.get('next') == next_url
 
@@ -532,9 +528,9 @@ class TestLimitOffset:
         max_limit = self.pagination.max_limit
         next_offset = offset + max_limit
         prev_offset = offset - max_limit
-        base_url = 'http://testserver/?limit={0}'.format(max_limit)
-        next_url = base_url + '&offset={0}'.format(next_offset)
-        prev_url = base_url + '&offset={0}'.format(prev_offset)
+        base_url = 'http://testserver/?limit={}'.format(max_limit)
+        next_url = base_url + '&offset={}'.format(next_offset)
+        prev_url = base_url + '&offset={}'.format(prev_offset)
         assert queryset == list(range(51, 66))
         assert content.get('next') == next_url
         assert content.get('previous') == prev_url
@@ -632,7 +628,7 @@ class CursorPaginationTestsMixin:
         assert current == [1, 1, 1, 1, 1]
         assert next == [1, 2, 3, 4, 4]
 
-        assert isinstance(self.pagination.to_html(), six.text_type)
+        assert isinstance(self.pagination.to_html(), str)
 
     def test_cursor_pagination_with_page_size(self):
         (previous, current, next, previous_url, next_url) = self.get_pages('/?page_size=20')
@@ -799,11 +795,11 @@ class TestCursorPagination(CursorPaginationTestsMixin):
     """
 
     def setup(self):
-        class MockObject(object):
+        class MockObject:
             def __init__(self, idx):
                 self.created = idx
 
-        class MockQuerySet(object):
+        class MockQuerySet:
             def __init__(self, items):
                 self.items = items
 

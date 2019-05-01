@@ -1,7 +1,4 @@
-from __future__ import unicode_literals
-
 from django.test import TestCase
-from django.utils import six
 
 from rest_framework import serializers
 from tests.models import (
@@ -263,7 +260,7 @@ class PKForeignKeyTests(TestCase):
         instance = ForeignKeySource.objects.get(pk=1)
         serializer = ForeignKeySourceSerializer(instance, data=data)
         assert not serializer.is_valid()
-        assert serializer.errors == {'target': ['Incorrect type. Expected pk value, received %s.' % six.text_type.__name__]}
+        assert serializer.errors == {'target': ['Incorrect type. Expected pk value, received str.']}
 
     def test_reverse_foreign_key_update(self):
         data = {'id': 2, 'name': 'target-2', 'sources': [1, 3]}
@@ -562,7 +559,7 @@ class OneToOnePrimaryKeyTests(TestCase):
         # When: Trying to create a second object
         second_source = OneToOnePKSourceSerializer(data=data)
         self.assertFalse(second_source.is_valid())
-        expected = {'target': [u'one to one pk source with this target already exists.']}
+        expected = {'target': ['one to one pk source with this target already exists.']}
         self.assertDictEqual(second_source.errors, expected)
 
     def test_one_to_one_when_primary_key_does_not_exist(self):

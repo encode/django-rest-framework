@@ -1,11 +1,10 @@
-from __future__ import unicode_literals
+import io
 
 import pytest
 from django.conf.urls import url
 from django.core.management import call_command
 from django.test import TestCase
 from django.test.utils import override_settings
-from django.utils import six
 
 from rest_framework.compat import coreapi
 from rest_framework.utils import formatting, json
@@ -28,9 +27,8 @@ class GenerateSchemaTests(TestCase):
     """Tests for management command generateschema."""
 
     def setUp(self):
-        self.out = six.StringIO()
+        self.out = io.StringIO()
 
-    @pytest.mark.skipif(six.PY2, reason='PyYAML unicode output is malformed on PY2.')
     def test_renders_default_schema_with_custom_title_url_and_description(self):
         expected_out = """info:
                             description: Sample description

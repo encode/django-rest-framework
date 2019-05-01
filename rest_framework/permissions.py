@@ -1,10 +1,7 @@
 """
 Provides a set of pluggable permission policies.
 """
-from __future__ import unicode_literals
-
 from django.http import Http404
-from django.utils import six
 
 from rest_framework import exceptions
 
@@ -101,8 +98,7 @@ class BasePermissionMetaclass(OperationHolderMixin, type):
     pass
 
 
-@six.add_metaclass(BasePermissionMetaclass)
-class BasePermission(object):
+class BasePermission(metaclass=BasePermissionMetaclass):
     """
     A base class from which all permission classes should inherit.
     """

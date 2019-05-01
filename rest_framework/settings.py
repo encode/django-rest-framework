@@ -18,13 +18,10 @@ This module provides the `api_setting` object, that is used to access
 REST framework settings, checking for user settings first, then falling
 back to the defaults.
 """
-from __future__ import unicode_literals
-
 from importlib import import_module
 
 from django.conf import settings
 from django.test.signals import setting_changed
-from django.utils import six
 
 from rest_framework import ISO_8601
 
@@ -166,7 +163,7 @@ def perform_import(val, setting_name):
     """
     if val is None:
         return None
-    elif isinstance(val, six.string_types):
+    elif isinstance(val, str):
         return import_from_string(val, setting_name)
     elif isinstance(val, (list, tuple)):
         return [import_from_string(item, setting_name) for item in val]
@@ -187,7 +184,7 @@ def import_from_string(val, setting_name):
         raise ImportError(msg)
 
 
-class APISettings(object):
+class APISettings:
     """
     A settings object, that allows API settings to be accessed as properties.
     For example:
