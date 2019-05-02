@@ -255,14 +255,26 @@ class AutoSchema(ViewInspector):
                 'type': 'array',
             }
 
+        # DateField
+        if isinstance(field, serializers.DateField):
+            return {
+                'type': 'string',
+                'format': 'date'
+            }
+
+        # DateTimeField
+        if isinstance(field, serializers.DateTimeField):
+            return {
+                'type': 'string',
+                'format': 'date-time'
+            }
+
         # Simplest cases, default to 'string' type:
         FIELD_CLASS_SCHEMA_TYPE = {
             serializers.BooleanField: 'boolean',
             serializers.DecimalField: 'number',
             serializers.FloatField: 'number',
             serializers.IntegerField: 'integer',
-            serializers.DateField: 'date',
-            serializers.DateTimeField: 'date-time',
             serializers.JSONField: 'object',
             serializers.DictField: 'object',
         }
