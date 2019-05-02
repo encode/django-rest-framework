@@ -5,7 +5,6 @@ versions of Django/Python, and compatibility wrappers around optional packages.
 import sys
 
 from django.conf import settings
-from django.core import validators
 from django.views.generic import View
 
 try:
@@ -236,35 +235,6 @@ except ImportError:
 SHORT_SEPARATORS = (',', ':')
 LONG_SEPARATORS = (', ', ': ')
 INDENT_SEPARATORS = (',', ': ')
-
-
-class CustomValidatorMessage:
-    """
-    We need to avoid evaluation of `lazy` translated `message` in `django.core.validators.BaseValidator.__init__`.
-    https://github.com/django/django/blob/75ed5900321d170debef4ac452b8b3cf8a1c2384/django/core/validators.py#L297
-
-    Ref: https://github.com/encode/django-rest-framework/pull/5452
-    """
-
-    def __init__(self, *args, **kwargs):
-        self.message = kwargs.pop('message', self.message)
-        super().__init__(*args, **kwargs)
-
-
-class MinValueValidator(CustomValidatorMessage, validators.MinValueValidator):
-    pass
-
-
-class MaxValueValidator(CustomValidatorMessage, validators.MaxValueValidator):
-    pass
-
-
-class MinLengthValidator(CustomValidatorMessage, validators.MinLengthValidator):
-    pass
-
-
-class MaxLengthValidator(CustomValidatorMessage, validators.MaxLengthValidator):
-    pass
 
 
 # Version Constants.
