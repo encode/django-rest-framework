@@ -127,7 +127,7 @@ Note that you can use both an overridden `.get_queryset()` and generic filtering
         """
         model = Product
         serializer_class = ProductSerializer
-        filterset_class = ProductFilter
+        filter_class = ProductFilter
 
         def get_queryset(self):
             user = self.request.user
