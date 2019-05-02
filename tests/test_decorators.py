@@ -202,8 +202,7 @@ class ActionDecoratorTestCase(TestCase):
             def method():
                 raise NotImplementedError
 
-            # Python 2.x compatibility - cast __name__ to str
-            method.__name__ = str(name)
+            method.__name__ = name
             getattr(test_action.mapping, name)(method)
 
         # ensure the mapping returns the correct method name

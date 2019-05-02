@@ -40,9 +40,7 @@ class TestFileUploadParser(TestCase):
     def setUp(self):
         class MockRequest:
             pass
-        self.stream = io.BytesIO(
-            "Test text file".encode('utf-8')
-        )
+        self.stream = io.BytesIO(b"Test text file")
         request = MockRequest()
         request.upload_handlers = (MemoryFileUploadHandler(),)
         request.META = {
@@ -128,7 +126,7 @@ class TestFileUploadParser(TestCase):
 
 class TestJSONParser(TestCase):
     def bytes(self, value):
-        return io.BytesIO(value.encode('utf-8'))
+        return io.BytesIO(value.encode())
 
     def test_float_strictness(self):
         parser = JSONParser()

@@ -104,18 +104,11 @@ class JSONRenderer(BaseRenderer):
             allow_nan=not self.strict, separators=separators
         )
 
-        # On python 2.x json.dumps() returns bytestrings if ensure_ascii=True,
-        # but if ensure_ascii=False, the return type is underspecified,
-        # and may (or may not) be unicode.
-        # On python 3.x json.dumps() returns unicode strings.
-        if isinstance(ret, str):
-            # We always fully escape \u2028 and \u2029 to ensure we output JSON
-            # that is a strict javascript subset. If bytes were returned
-            # by json.dumps() then we don't have these characters in any case.
-            # See: http://timelessrepo.com/json-isnt-a-javascript-subset
-            ret = ret.replace('\u2028', '\\u2028').replace('\u2029', '\\u2029')
-            return bytes(ret.encode('utf-8'))
-        return ret
+        # We always fully escape \u2028 and \u2029 to ensure we output JSON
+        # that is a strict javascript subset.
+        # See: http://timelessrepo.com/json-isnt-a-javascript-subset
+        ret = ret.replace('\u2028', '\\u2028').replace('\u2029', '\\u2029')
+        return ret.encode()
 
 
 class TemplateHTMLRenderer(BaseRenderer):
@@ -574,7 +567,7 @@ class BrowsableAPIRenderer(BaseRenderer):
                         data.pop(name, None)
                 content = renderer.render(data, accepted, context)
                 # Renders returns bytes, but CharField expects a str.
-                content = content.decode('utf-8')
+                content = content.decode()
             else:
                 content = None
 
@@ -681,7 +674,7 @@ class BrowsableAPIRenderer(BaseRenderer):
             csrf_header_name = csrf_header_name[5:]
         csrf_header_name = csrf_header_name.replace('_', '-')
 
-        context = {
+        return {
             'content': self.get_content(renderer, data, accepted_media_type, renderer_context),
             'code_style': pygments_css(self.code_style),
             'view': view,
@@ -717,7 +710,6 @@ class BrowsableAPIRenderer(BaseRenderer):
             'csrf_cookie_name': csrf_cookie_name,
             'csrf_header_name': csrf_header_name
         }
-        return context
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
@@ -1032,7 +1024,7 @@ class OpenAPIRenderer(_BaseOpenAPIRenderer):
 
     def render(self, data, media_type=None, renderer_context=None):
         structure = self.get_structure(data)
-        return yaml.dump(structure, default_flow_style=False).encode('utf-8')
+        return yaml.dump(structure, default_flow_style=False).encode()
 
 
 class JSONOpenAPIRenderer(_BaseOpenAPIRenderer):
@@ -1045,4 +1037,4 @@ class JSONOpenAPIRenderer(_BaseOpenAPIRenderer):
 
     def render(self, data, media_type=None, renderer_context=None):
         structure = self.get_structure(data)
-        return json.dumps(structure, indent=4).encode('utf-8')
+        return json.dumps(structure, indent=4).encode()

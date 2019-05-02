@@ -12,7 +12,7 @@ from django.db.models.constants import LOOKUP_SEP
 from django.db.models.sql.constants import ORDER_PATTERN
 from django.template import loader
 from django.utils.encoding import force_text
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from rest_framework import RemovedInDRF310Warning
 from rest_framework.compat import (

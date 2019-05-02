@@ -6,6 +6,7 @@ import inspect
 import re
 import uuid
 from collections import OrderedDict
+from collections.abc import Mapping
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -25,12 +26,12 @@ from django.utils.formats import localize_input, sanitize_separators
 from django.utils.functional import lazy
 from django.utils.ipv6 import clean_ipv6_address
 from django.utils.timezone import utc
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from pytz.exceptions import InvalidTimeError
 
 from rest_framework import ISO_8601
 from rest_framework.compat import (
-    Mapping, MaxLengthValidator, MaxValueValidator, MinLengthValidator,
+    MaxLengthValidator, MaxValueValidator, MinLengthValidator,
     MinValueValidator, ProhibitNullCharactersValidator
 )
 from rest_framework.exceptions import ErrorDetail, ValidationError
@@ -1753,7 +1754,7 @@ class JSONField(Field):
         try:
             if self.binary or getattr(data, 'is_json_string', False):
                 if isinstance(data, bytes):
-                    data = data.decode('utf-8')
+                    data = data.decode()
                 return json.loads(data)
             else:
                 json.dumps(data)
@@ -1764,10 +1765,7 @@ class JSONField(Field):
     def to_representation(self, value):
         if self.binary:
             value = json.dumps(value)
-            # On python 2.x the return type for json.dumps() is underspecified.
-            # On python 3.x json.dumps() returns unicode strings.
-            if isinstance(value, str):
-                value = bytes(value.encode('utf-8'))
+            value = value.encode()
         return value
 
 

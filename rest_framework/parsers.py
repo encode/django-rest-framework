@@ -80,8 +80,7 @@ class FormParser(BaseParser):
         """
         parser_context = parser_context or {}
         encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
-        data = QueryDict(stream.read(), encoding=encoding)
-        return data
+        return QueryDict(stream.read(), encoding=encoding)
 
 
 class MultiPartParser(BaseParser):
@@ -202,7 +201,7 @@ class FileUploadParser(BaseParser):
 
         try:
             meta = parser_context['request'].META
-            disposition = parse_header(meta['HTTP_CONTENT_DISPOSITION'].encode('utf-8'))
+            disposition = parse_header(meta['HTTP_CONTENT_DISPOSITION'].encode())
             filename_parm = disposition[1]
             if 'filename*' in filename_parm:
                 return self.get_encoded_filename(filename_parm)

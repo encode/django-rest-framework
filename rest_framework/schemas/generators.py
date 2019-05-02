@@ -184,9 +184,7 @@ class EndpointEnumerator:
                 )
                 api_endpoints.extend(nested_endpoints)
 
-        api_endpoints = sorted(api_endpoints, key=endpoint_ordering)
-
-        return api_endpoints
+        return sorted(api_endpoints, key=endpoint_ordering)
 
     def get_path_from_regex(self, path_regex):
         """
@@ -195,8 +193,7 @@ class EndpointEnumerator:
         path = simplify_regex(path_regex)
 
         # Strip Django 2.0 convertors as they are incompatible with uritemplate format
-        path = re.sub(_PATH_PARAMETER_COMPONENT_RE, r'{\g<parameter>}', path)
-        return path
+        return re.sub(_PATH_PARAMETER_COMPONENT_RE, r'{\g<parameter>}', path)
 
     def should_include_endpoint(self, path, callback):
         """

@@ -1,6 +1,6 @@
 from django.test import RequestFactory, TestCase
 from django.utils import translation
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from rest_framework.exceptions import (
     APIException, ErrorDetail, Throttled, _get_error_details, bad_request,
