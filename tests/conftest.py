@@ -95,6 +95,20 @@ def pytest_configure(config):
         settings.STATIC_ROOT = os.path.join(os.path.dirname(rest_framework.__file__), 'static-root')
         settings.STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
+    # Test that serializer fields can be created before django is set-up.
+    # This is not an ideal place for a test, but what can you do.
+    # See issue #3354.
+    from rest_framework.serializers import (
+        CharField, DecimalField, DurationField, FloatField, IntegerField,
+        ListField,
+    )
+    CharField(min_length=1, max_length=2)
+    IntegerField(min_value=1, max_value=2)
+    FloatField(min_value=1, max_value=2)
+    DecimalField(max_digits=10, decimal_places=1, min_value=1, max_value=2)
+    DurationField(min_value=1, max_value=2)
+    ListField(min_length=1, max_length=2)
+
     django.setup()
 
     if config.getoption('--staticfiles'):
