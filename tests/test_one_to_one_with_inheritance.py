@@ -28,14 +28,12 @@ class ChildAssociatedModelSerializer(serializers.ModelSerializer):
 
 
 # Tests
-class InheritedModelSerializationTests(TestCase):
 
-    def test_multitable_inherited_model_fields_as_expected(self):
-        """
+def test_multitable_inherited_model_fields_as_expected(self):
+    """
         Assert that the parent pointer field is not included in the fields
         serialized fields
         """
-        child = ChildModel(name1='parent name', name2='child name')
-        serializer = DerivedModelSerializer(child)
-        self.assertEqual(set(serializer.data),
-                         {'name1', 'name2', 'id', 'childassociatedmodel'})
+    child = ChildModel(name1='parent name', name2='child name')
+    serializer = DerivedModelSerializer(child)
+    assert set(serializer.data) ==    {'name1', 'name2', 'id', 'childassociatedmodel'}

@@ -69,37 +69,34 @@ MARKED_DOWN_gte_21 = """<h2 id="an-example-docstring">an example docstring</h2>
 </code></pre>
 <p>indented</p>
 <h2 id="hash-style-header">hash style header</h2>%s"""
-
-
-class TestViewNamesAndDescriptions(TestCase):
-    def test_view_name_uses_class_name(self):
-        """
+def test_view_name_uses_class_name(self):
+    """
         Ensure view names are based on the class name.
         """
-        class MockView(APIView):
-            pass
+    class MockView(APIView):
+        pass
         assert MockView().get_view_name() == 'Mock'
 
     def test_view_name_uses_name_attribute(self):
-        class MockView(APIView):
-            name = 'Foo'
+    class MockView(APIView):
+        name = 'Foo'
         assert MockView().get_view_name() == 'Foo'
 
     def test_view_name_uses_suffix_attribute(self):
-        class MockView(APIView):
-            suffix = 'List'
+    class MockView(APIView):
+        suffix = 'List'
         assert MockView().get_view_name() == 'Mock List'
 
     def test_view_name_preferences_name_over_suffix(self):
-        class MockView(APIView):
-            name = 'Foo'
-            suffix = 'List'
+    class MockView(APIView):
+        name = 'Foo'
+        suffix = 'List'
         assert MockView().get_view_name() == 'Foo'
 
     def test_view_description_uses_docstring(self):
-        """Ensure view descriptions are based on the docstring."""
-        class MockView(APIView):
-            """an example docstring
+    """Ensure view descriptions are based on the docstring."""
+    class MockView(APIView):
+        """an example docstring
             ====================
 
             * list
@@ -124,64 +121,53 @@ class TestViewNamesAndDescriptions(TestCase):
         assert MockView().get_view_description() == DESCRIPTION
 
     def test_view_description_uses_description_attribute(self):
-        class MockView(APIView):
-            description = 'Foo'
+    class MockView(APIView):
+        description = 'Foo'
         assert MockView().get_view_description() == 'Foo'
 
     def test_view_description_allows_empty_description(self):
-        class MockView(APIView):
-            """Description."""
-            description = ''
+    class MockView(APIView):
+        """Description."""
+        description = ''
         assert MockView().get_view_description() == ''
 
     def test_view_description_can_be_empty(self):
-        """
+    """
         Ensure that if a view has no docstring,
         then it's description is the empty string.
         """
-        class MockView(APIView):
-            pass
+    class MockView(APIView):
+        pass
         assert MockView().get_view_description() == ''
 
     def test_view_description_can_be_promise(self):
-        """
+    """
         Ensure a view may have a docstring that is actually a lazily evaluated
         class that can be converted to a string.
 
         See: https://github.com/encode/django-rest-framework/issues/1708
         """
-        # use a mock object instead of gettext_lazy to ensure that we can't end
-        # up with a test case string in our l10n catalog
-
-        class MockLazyStr:
-            def __init__(self, string):
-                self.s = string
+    class MockLazyStr:
+        def __init__(self, string):
+            self.s = string
 
             def __str__(self):
-                return self.s
+            return self.s
 
         class MockView(APIView):
-            __doc__ = MockLazyStr("a gettext string")
+        __doc__ = MockLazyStr("a gettext string")
 
         assert MockView().get_view_description() == 'a gettext string'
 
     def test_markdown(self):
-        """
+    """
         Ensure markdown to HTML works as expected.
         """
-        if apply_markdown:
-            md_applied = apply_markdown(DESCRIPTION)
-            gte_21_match = (
-                md_applied == (
-                    MARKED_DOWN_gte_21 % MARKED_DOWN_HILITE) or
-                md_applied == (
-                    MARKED_DOWN_gte_21 % MARKED_DOWN_NOT_HILITE))
-            lt_21_match = (
-                md_applied == (
-                    MARKED_DOWN_lt_21 % MARKED_DOWN_HILITE) or
-                md_applied == (
-                    MARKED_DOWN_lt_21 % MARKED_DOWN_NOT_HILITE))
-            assert gte_21_match or lt_21_match
+    if apply_markdown:
+        md_applied = apply_markdown(DESCRIPTION)
+        gte_21_match = (        md_applied == (        MARKED_DOWN_gte_21 % MARKED_DOWN_HILITE) or        md_applied == (        MARKED_DOWN_gte_21 % MARKED_DOWN_NOT_HILITE))
+        lt_21_match = (        md_applied == (        MARKED_DOWN_lt_21 % MARKED_DOWN_HILITE) or        md_applied == (        MARKED_DOWN_lt_21 % MARKED_DOWN_NOT_HILITE))
+        assert gte_21_match or lt_21_match
 
 
 def test_dedent_tabs():

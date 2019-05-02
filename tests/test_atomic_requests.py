@@ -11,6 +11,7 @@ from rest_framework.response import Response
 from rest_framework.test import APIRequestFactory
 from rest_framework.views import APIView
 from tests.models import BasicModel
+import pytest
 
 factory = APIRequestFactory()
 
@@ -52,51 +53,49 @@ urlpatterns = (
     connection.features.uses_savepoints,
     "'atomic' requires transactions and savepoints."
 )
-class DBTransactionTests(TestCase):
-    def setUp(self):
-        self.view = BasicView.as_view()
-        connections.databases['default']['ATOMIC_REQUESTS'] = True
+def setUp(self):
+    self.view = BasicView.as_view()
+    connections.databases['default']['ATOMIC_REQUESTS'] = True
 
     def tearDown(self):
-        connections.databases['default']['ATOMIC_REQUESTS'] = False
+    connections.databases['default']['ATOMIC_REQUESTS'] = False
 
     def test_no_exception_commit_transaction(self):
-        request = factory.post('/')
-
-        with self.assertNumQueries(1):
-            response = self.view(request)
+    request = factory.post('/')
+    with self.assertNumQueries(1):
+        response = self.view(request)
         assert not transaction.get_rollback()
-        assert response.status_code == status.HTTP_200_OK
-        assert BasicModel.objects.count() == 1
+assertresponse.status_code==status.HTTP_200_OK
+assertBasicModel.objects.count()==1
 
 
 @unittest.skipUnless(
     connection.features.uses_savepoints,
     "'atomic' requires transactions and savepoints."
 )
-class DBTransactionErrorTests(TestCase):
-    def setUp(self):
-        self.view = ErrorView.as_view()
-        connections.databases['default']['ATOMIC_REQUESTS'] = True
+def setUp(self):
+    self.view = ErrorView.as_view()
+    connections.databases['default']['ATOMIC_REQUESTS'] = True
 
     def tearDown(self):
-        connections.databases['default']['ATOMIC_REQUESTS'] = False
+    connections.databases['default']['ATOMIC_REQUESTS'] = False
 
     def test_generic_exception_delegate_transaction_management(self):
-        """
+    """
         Transaction is eventually managed by outer-most transaction atomic
         block. DRF do not try to interfere here.
 
         We let django deal with the transaction when it will catch the Exception.
         """
-        request = factory.post('/')
-        with self.assertNumQueries(3):
+    request = factory.post('/')
+    with self.assertNumQueries(3):
             # 1 - begin savepoint
             # 2 - insert
             # 3 - release savepoint
-            with transaction.atomic():
-                self.assertRaises(Exception, self.view, request)
-                assert not transaction.get_rollback()
+        with transaction.atomic():
+            with pytest.raises(Exception):
+                    self.view(request)
+            assert not transaction.get_rollback()
         assert BasicModel.objects.count() == 1
 
 
@@ -104,30 +103,29 @@ class DBTransactionErrorTests(TestCase):
     connection.features.uses_savepoints,
     "'atomic' requires transactions and savepoints."
 )
-class DBTransactionAPIExceptionTests(TestCase):
-    def setUp(self):
-        self.view = APIExceptionView.as_view()
-        connections.databases['default']['ATOMIC_REQUESTS'] = True
+def setUp(self):
+    self.view = APIExceptionView.as_view()
+    connections.databases['default']['ATOMIC_REQUESTS'] = True
 
     def tearDown(self):
-        connections.databases['default']['ATOMIC_REQUESTS'] = False
+    connections.databases['default']['ATOMIC_REQUESTS'] = False
 
     def test_api_exception_rollback_transaction(self):
-        """
+    """
         Transaction is rollbacked by our transaction atomic block.
         """
-        request = factory.post('/')
-        num_queries = 4 if connection.features.can_release_savepoints else 3
-        with self.assertNumQueries(num_queries):
+    request = factory.post('/')
+    num_queries = 4 if connection.features.can_release_savepoints else 3
+    with self.assertNumQueries(num_queries):
             # 1 - begin savepoint
             # 2 - insert
             # 3 - rollback savepoint
             # 4 - release savepoint
-            with transaction.atomic():
-                response = self.view(request)
-                assert transaction.get_rollback()
+        with transaction.atomic():
+            response = self.view(request)
+            assert transaction.get_rollback()
         assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
-        assert BasicModel.objects.count() == 0
+assertBasicModel.objects.count()==0
 
 
 @unittest.skipUnless(

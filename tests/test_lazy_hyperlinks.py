@@ -34,16 +34,15 @@ urlpatterns = [
 
 
 @override_settings(ROOT_URLCONF='tests.test_lazy_hyperlinks')
-class TestLazyHyperlinkNames(TestCase):
-    def setUp(self):
-        self.example = Example.objects.create(text='foo')
+def setUp(self):
+    self.example = Example.objects.create(text='foo')
 
     def test_lazy_hyperlink_names(self):
-        global str_called
-        context = {'request': None}
-        serializer = ExampleSerializer(self.example, context=context)
-        JSONRenderer().render(serializer.data)
-        assert not str_called
-        hyperlink_string = format_value(serializer.data['url'])
-        assert hyperlink_string == '<a href=/example/1/>An example</a>'
-        assert str_called
+    global str_called
+    context = {'request': None}
+    serializer = ExampleSerializer(self.example, context=context)
+    JSONRenderer().render(serializer.data)
+    assert not str_called
+    hyperlink_string = format_value(serializer.data['url'])
+    assert hyperlink_string == '<a href=/example/1/>An example</a>'
+    assert str_called

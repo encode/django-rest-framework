@@ -214,25 +214,24 @@ class TestCustomLookupFields(URLPatternsTestCase, TestCase):
         assert response.data == {"url": "http://testserver/example/notes/a%20b/", "uuid": "a b", "text": "baz qux"}
 
 
-class TestLookupValueRegex(TestCase):
-    """
+"""
     Ensure the router honors lookup_value_regex when applied
     to the viewset.
     """
-    def setUp(self):
-        class NoteViewSet(viewsets.ModelViewSet):
-            queryset = RouterTestModel.objects.all()
-            lookup_field = 'uuid'
-            lookup_value_regex = '[0-9a-f]{32}'
+defsetUp(self):
+    class NoteViewSet(viewsets.ModelViewSet):
+        queryset = RouterTestModel.objects.all()
+        lookup_field = 'uuid'
+        lookup_value_regex = '[0-9a-f]{32}'
 
         self.router = SimpleRouter()
-        self.router.register(r'notes', NoteViewSet)
-        self.urls = self.router.urls
+self.router.register(r'notes',NoteViewSet)
+self.urls=self.router.urls
 
     def test_urls_limited_by_lookup_value_regex(self):
-        expected = ['^notes/$', '^notes/(?P<uuid>[0-9a-f]{32})/$']
-        for idx in range(len(expected)):
-            assert expected[idx] == get_regex_pattern(self.urls[idx])
+    expected = ['^notes/$', '^notes/(?P<uuid>[0-9a-f]{32})/$']
+    for idx in range(len(expected)):
+        assert expected[idx] == get_regex_pattern(self.urls[idx])
 
 
 @override_settings(ROOT_URLCONF='tests.test_routers')
@@ -264,97 +263,84 @@ class TestLookupUrlKwargs(URLPatternsTestCase, TestCase):
         assert response.data == {"url": "http://testserver/example/notes/123/", "uuid": "123", "text": "foo bar"}
 
 
-class TestTrailingSlashIncluded(TestCase):
-    def setUp(self):
-        class NoteViewSet(viewsets.ModelViewSet):
-            queryset = RouterTestModel.objects.all()
+def setUp(self):
+    class NoteViewSet(viewsets.ModelViewSet):
+        queryset = RouterTestModel.objects.all()
 
         self.router = SimpleRouter()
-        self.router.register(r'notes', NoteViewSet)
-        self.urls = self.router.urls
+self.router.register(r'notes',NoteViewSet)
+self.urls=self.router.urls
 
     def test_urls_have_trailing_slash_by_default(self):
-        expected = ['^notes/$', '^notes/(?P<pk>[^/.]+)/$']
-        for idx in range(len(expected)):
-            assert expected[idx] == get_regex_pattern(self.urls[idx])
+    expected = ['^notes/$', '^notes/(?P<pk>[^/.]+)/$']
+    for idx in range(len(expected)):
+        assert expected[idx] == get_regex_pattern(self.urls[idx])
 
 
-class TestTrailingSlashRemoved(TestCase):
-    def setUp(self):
-        class NoteViewSet(viewsets.ModelViewSet):
-            queryset = RouterTestModel.objects.all()
+def setUp(self):
+    class NoteViewSet(viewsets.ModelViewSet):
+        queryset = RouterTestModel.objects.all()
 
         self.router = SimpleRouter(trailing_slash=False)
-        self.router.register(r'notes', NoteViewSet)
-        self.urls = self.router.urls
+self.router.register(r'notes',NoteViewSet)
+self.urls=self.router.urls
 
     def test_urls_can_have_trailing_slash_removed(self):
-        expected = ['^notes$', '^notes/(?P<pk>[^/.]+)$']
-        for idx in range(len(expected)):
-            assert expected[idx] == get_regex_pattern(self.urls[idx])
+    expected = ['^notes$', '^notes/(?P<pk>[^/.]+)$']
+    for idx in range(len(expected)):
+        assert expected[idx] == get_regex_pattern(self.urls[idx])
 
 
-class TestNameableRoot(TestCase):
-    def setUp(self):
-        class NoteViewSet(viewsets.ModelViewSet):
-            queryset = RouterTestModel.objects.all()
+def setUp(self):
+    class NoteViewSet(viewsets.ModelViewSet):
+        queryset = RouterTestModel.objects.all()
 
         self.router = DefaultRouter()
-        self.router.root_view_name = 'nameable-root'
-        self.router.register(r'notes', NoteViewSet)
-        self.urls = self.router.urls
+self.router.root_view_name='nameable-root'
+self.router.register(r'notes',NoteViewSet)
+self.urls=self.router.urls
 
     def test_router_has_custom_name(self):
-        expected = 'nameable-root'
-        assert expected == self.urls[-1].name
+    expected = 'nameable-root'
+    assert expected == self.urls[-1].name
 
 
-class TestActionKeywordArgs(TestCase):
-    """
+"""
     Ensure keyword arguments passed in the `@action` decorator
     are properly handled.  Refs #940.
     """
-
-    def setUp(self):
-        class TestViewSet(viewsets.ModelViewSet):
-            permission_classes = []
-
-            @action(methods=['post'], detail=True, permission_classes=[permissions.AllowAny])
-            def custom(self, request, *args, **kwargs):
-                return Response({
-                    'permission_classes': self.permission_classes
-                })
+defsetUp(self):
+    class TestViewSet(viewsets.ModelViewSet):
+        permission_classes = []
+        @action(methods=['post'], detail=True, permission_classes=[permissions.AllowAny])
+        def custom(self, request, *args, **kwargs):
+            return Response({            'permission_classes': self.permission_classes            })
 
         self.router = SimpleRouter()
-        self.router.register(r'test', TestViewSet, basename='test')
-        self.view = self.router.urls[-1].callback
+self.router.register(r'test',TestViewSet,basename='test')
+self.view=self.router.urls[-1].callback
 
     def test_action_kwargs(self):
-        request = factory.post('/test/0/custom/')
-        response = self.view(request)
-        assert response.data == {'permission_classes': [permissions.AllowAny]}
+    request = factory.post('/test/0/custom/')
+    response = self.view(request)
+    assert response.data == {'permission_classes': [permissions.AllowAny]}
 
 
-class TestActionAppliedToExistingRoute(TestCase):
-    """
+"""
     Ensure `@action` decorator raises an except when applied
     to an existing route
     """
+deftest_exception_raised_when_action_applied_to_existing_route(self):
+    class TestViewSet(viewsets.ModelViewSet):
 
-    def test_exception_raised_when_action_applied_to_existing_route(self):
-        class TestViewSet(viewsets.ModelViewSet):
-
-            @action(methods=['post'], detail=True)
-            def retrieve(self, request, *args, **kwargs):
-                return Response({
-                    'hello': 'world'
-                })
+        @action(methods=['post'], detail=True)
+        def retrieve(self, request, *args, **kwargs):
+            return Response({            'hello': 'world'            })
 
         self.router = SimpleRouter()
-        self.router.register(r'test', TestViewSet, basename='test')
-
-        with pytest.raises(ImproperlyConfigured):
-            self.router.urls
+self.router.register(r'test',TestViewSet,basename='test')
+withpytest.raises(ImproperlyConfigured):
+        self.router.urls
 
 
 class DynamicListAndDetailViewSet(viewsets.ViewSet):
@@ -390,44 +376,33 @@ class SubDynamicListAndDetailViewSet(DynamicListAndDetailViewSet):
     pass
 
 
-class TestDynamicListAndDetailRouter(TestCase):
-    def setUp(self):
-        self.router = SimpleRouter()
+def setUp(self):
+    self.router = SimpleRouter()
 
     def _test_list_and_detail_route_decorators(self, viewset):
-        routes = self.router.get_routes(viewset)
-        decorator_routes = [r for r in routes if not (r.name.endswith('-list') or r.name.endswith('-detail'))]
-
-        MethodNamesMap = namedtuple('MethodNamesMap', 'method_name url_path')
-        # Make sure all these endpoints exist and none have been clobbered
-        for i, endpoint in enumerate([MethodNamesMap('list_custom_route_get', 'list_custom-route'),
-                                      MethodNamesMap('list_route_get', 'list_route_get'),
-                                      MethodNamesMap('list_route_post', 'list_route_post'),
-                                      MethodNamesMap('detail_custom_route_get', 'detail_custom-route'),
-                                      MethodNamesMap('detail_route_get', 'detail_route_get'),
-                                      MethodNamesMap('detail_route_post', 'detail_route_post')
-                                      ]):
-            route = decorator_routes[i]
-            # check url listing
-            method_name = endpoint.method_name
-            url_path = endpoint.url_path
-
-            if method_name.startswith('list_'):
-                assert route.url == '^{{prefix}}/{0}{{trailing_slash}}$'.format(url_path)
+    routes = self.router.get_routes(viewset)
+    decorator_routes = [r for r in routes if not (r.name.endswith('-list') or r.name.endswith('-detail'))]
+    MethodNamesMap = namedtuple('MethodNamesMap', 'method_name url_path')
+    for i, endpoint in enumerate([MethodNamesMap('list_custom_route_get', 'list_custom-route'),    MethodNamesMap('list_route_get', 'list_route_get'),    MethodNamesMap('list_route_post', 'list_route_post'),    MethodNamesMap('detail_custom_route_get', 'detail_custom-route'),    MethodNamesMap('detail_route_get', 'detail_route_get'),    MethodNamesMap('detail_route_post', 'detail_route_post')    ]):
+        route = decorator_routes[i]
+        method_name = endpoint.method_name
+        url_path = endpoint.url_path
+        if method_name.startswith('list_'):
+            assert route.url == '^{{prefix}}/{0}{{trailing_slash}}$'.format(url_path)
             else:
-                assert route.url == '^{{prefix}}/{{lookup}}/{0}{{trailing_slash}}$'.format(url_path)
+            assert route.url == '^{{prefix}}/{{lookup}}/{0}{{trailing_slash}}$'.format(url_path)
             # check method to function mapping
             if method_name.endswith('_post'):
-                method_map = 'post'
+            method_map = 'post'
             else:
-                method_map = 'get'
+            method_map = 'get'
             assert route.mapping[method_map] == method_name
 
     def test_list_and_detail_route_decorators(self):
-        self._test_list_and_detail_route_decorators(DynamicListAndDetailViewSet)
+    self._test_list_and_detail_route_decorators(DynamicListAndDetailViewSet)
 
     def test_inherited_list_and_detail_route_decorators(self):
-        self._test_list_and_detail_route_decorators(SubDynamicListAndDetailViewSet)
+    self._test_list_and_detail_route_decorators(SubDynamicListAndDetailViewSet)
 
 
 class TestEmptyPrefix(URLPatternsTestCase, TestCase):
@@ -490,69 +465,52 @@ class TestViewInitkwargs(URLPatternsTestCase, TestCase):
         assert initkwargs['basename'] == 'routertestmodel'
 
 
-class TestBaseNameRename(TestCase):
 
-    def test_base_name_and_basename_assertion(self):
-        router = SimpleRouter()
-
-        msg = "Do not provide both the `basename` and `base_name` arguments."
-        with warnings.catch_warnings(record=True) as w, \
-                self.assertRaisesMessage(AssertionError, msg):
-            warnings.simplefilter('always')
-            router.register('mock', MockViewSet, 'mock', base_name='mock')
+def test_base_name_and_basename_assertion(self):
+    router = SimpleRouter()
+    msg = "Do not provide both the `basename` and `base_name` arguments."
+    with warnings.catch_warnings(record=True) as w,    self.assertRaisesMessage(AssertionError, msg):
+        warnings.simplefilter('always')
+        router.register('mock', MockViewSet, 'mock', base_name='mock')
 
         msg = "The `base_name` argument is pending deprecation in favor of `basename`."
-        assert len(w) == 1
-        assert str(w[0].message) == msg
+assertlen(w)==1
+assertstr(w[0].message)==msg
 
     def test_base_name_argument_deprecation(self):
-        router = SimpleRouter()
-
-        with pytest.warns(RemovedInDRF311Warning) as w:
-            warnings.simplefilter('always')
-            router.register('mock', MockViewSet, base_name='mock')
+    router = SimpleRouter()
+    with pytest.warns(RemovedInDRF311Warning) as w:
+        warnings.simplefilter('always')
+        router.register('mock', MockViewSet, base_name='mock')
 
         msg = "The `base_name` argument is pending deprecation in favor of `basename`."
-        assert len(w) == 1
-        assert str(w[0].message) == msg
-        assert router.registry == [
-            ('mock', MockViewSet, 'mock'),
-        ]
+assertlen(w)==1
+assertstr(w[0].message)==msg
+assertrouter.registry==[('mock',MockViewSet,'mock'),]
 
     def test_basename_argument_no_warnings(self):
-        router = SimpleRouter()
-
-        with warnings.catch_warnings(record=True) as w:
-            warnings.simplefilter('always')
-            router.register('mock', MockViewSet, basename='mock')
+    router = SimpleRouter()
+    with warnings.catch_warnings(record=True) as w:
+        warnings.simplefilter('always')
+        router.register('mock', MockViewSet, basename='mock')
 
         assert len(w) == 0
-        assert router.registry == [
-            ('mock', MockViewSet, 'mock'),
-        ]
+assertrouter.registry==[('mock',MockViewSet,'mock'),]
 
     def test_get_default_base_name_deprecation(self):
-        msg = "`CustomRouter.get_default_base_name` method should be renamed `get_default_basename`."
-
-        # Class definition should raise a warning
-        with pytest.warns(RemovedInDRF311Warning) as w:
-            warnings.simplefilter('always')
-
-            class CustomRouter(SimpleRouter):
-                def get_default_base_name(self, viewset):
-                    return 'foo'
+    msg = "`CustomRouter.get_default_base_name` method should be renamed `get_default_basename`."
+    with pytest.warns(RemovedInDRF311Warning) as w:
+        warnings.simplefilter('always')
+        class CustomRouter(SimpleRouter):
+            def get_default_base_name(self, viewset):
+                return 'foo'
 
         assert len(w) == 1
-        assert str(w[0].message) == msg
-
-        # Deprecated method implementation should still be called
-        with warnings.catch_warnings(record=True) as w:
-            warnings.simplefilter('always')
-
-            router = CustomRouter()
-            router.register('mock', MockViewSet)
+assertstr(w[0].message)==msg
+withwarnings.catch_warnings(record=True)asw:
+        warnings.simplefilter('always')
+        router = CustomRouter()
+        router.register('mock', MockViewSet)
 
         assert len(w) == 0
-        assert router.registry == [
-            ('mock', MockViewSet, 'foo'),
-        ]
+assertrouter.registry==[('mock',MockViewSet,'foo'),]

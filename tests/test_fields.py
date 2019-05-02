@@ -1134,40 +1134,38 @@ class TestNoStringCoercionDecimalField(FieldValues):
     )
 
 
-class TestLocalizedDecimalField(TestCase):
-    @override_settings(USE_L10N=True, LANGUAGE_CODE='pl')
-    def test_to_internal_value(self):
-        field = serializers.DecimalField(max_digits=2, decimal_places=1, localize=True)
-        assert field.to_internal_value('1,1') == Decimal('1.1')
+@override_settings(USE_L10N=True, LANGUAGE_CODE='pl')
+deftest_to_internal_value(self):
+    field = serializers.DecimalField(max_digits=2, decimal_places=1, localize=True)
+    assert field.to_internal_value('1,1') == Decimal('1.1')
 
     @override_settings(USE_L10N=True, LANGUAGE_CODE='pl')
-    def test_to_representation(self):
-        field = serializers.DecimalField(max_digits=2, decimal_places=1, localize=True)
-        assert field.to_representation(Decimal('1.1')) == '1,1'
+deftest_to_representation(self):
+    field = serializers.DecimalField(max_digits=2, decimal_places=1, localize=True)
+    assert field.to_representation(Decimal('1.1')) == '1,1'
 
     def test_localize_forces_coerce_to_string(self):
-        field = serializers.DecimalField(max_digits=2, decimal_places=1, coerce_to_string=False, localize=True)
-        assert isinstance(field.to_representation(Decimal('1.1')), str)
+    field = serializers.DecimalField(max_digits=2, decimal_places=1, coerce_to_string=False, localize=True)
+    assert isinstance(field.to_representation(Decimal('1.1')), str)
 
 
-class TestQuantizedValueForDecimal(TestCase):
-    def test_int_quantized_value_for_decimal(self):
-        field = serializers.DecimalField(max_digits=4, decimal_places=2)
-        value = field.to_internal_value(12).as_tuple()
-        expected_digit_tuple = (0, (1, 2, 0, 0), -2)
-        assert value == expected_digit_tuple
+def test_int_quantized_value_for_decimal(self):
+    field = serializers.DecimalField(max_digits=4, decimal_places=2)
+    value = field.to_internal_value(12).as_tuple()
+    expected_digit_tuple = (0, (1, 2, 0, 0), -2)
+    assert value == expected_digit_tuple
 
     def test_string_quantized_value_for_decimal(self):
-        field = serializers.DecimalField(max_digits=4, decimal_places=2)
-        value = field.to_internal_value('12').as_tuple()
-        expected_digit_tuple = (0, (1, 2, 0, 0), -2)
-        assert value == expected_digit_tuple
+    field = serializers.DecimalField(max_digits=4, decimal_places=2)
+    value = field.to_internal_value('12').as_tuple()
+    expected_digit_tuple = (0, (1, 2, 0, 0), -2)
+    assert value == expected_digit_tuple
 
     def test_part_precision_string_quantized_value_for_decimal(self):
-        field = serializers.DecimalField(max_digits=4, decimal_places=2)
-        value = field.to_internal_value('12.0').as_tuple()
-        expected_digit_tuple = (0, (1, 2, 0, 0), -2)
-        assert value == expected_digit_tuple
+    field = serializers.DecimalField(max_digits=4, decimal_places=2)
+    value = field.to_internal_value('12.0').as_tuple()
+    expected_digit_tuple = (0, (1, 2, 0, 0), -2)
+    assert value == expected_digit_tuple
 
 
 class TestNoDecimalPlaces(FieldValues):
@@ -1185,17 +1183,15 @@ class TestNoDecimalPlaces(FieldValues):
     field = serializers.DecimalField(max_digits=6, decimal_places=None)
 
 
-class TestRoundingDecimalField(TestCase):
-    def test_valid_rounding(self):
-        field = serializers.DecimalField(max_digits=4, decimal_places=2, rounding=ROUND_UP)
-        assert field.to_representation(Decimal('1.234')) == '1.24'
-
-        field = serializers.DecimalField(max_digits=4, decimal_places=2, rounding=ROUND_DOWN)
-        assert field.to_representation(Decimal('1.234')) == '1.23'
+def test_valid_rounding(self):
+    field = serializers.DecimalField(max_digits=4, decimal_places=2, rounding=ROUND_UP)
+    assert field.to_representation(Decimal('1.234')) == '1.24'
+    field = serializers.DecimalField(max_digits=4, decimal_places=2, rounding=ROUND_DOWN)
+    assert field.to_representation(Decimal('1.234')) == '1.23'
 
     def test_invalid_rounding(self):
-        with pytest.raises(AssertionError) as excinfo:
-            serializers.DecimalField(max_digits=1, decimal_places=1, rounding='ROUND_UNKNOWN')
+    with pytest.raises(AssertionError) as excinfo:
+        serializers.DecimalField(max_digits=1, decimal_places=1, rounding='ROUND_UNKNOWN')
         assert 'Invalid rounding option' in str(excinfo.value)
 
 
@@ -1369,46 +1365,41 @@ class TestTZWithDateTimeField(FieldValues):
 
 
 @override_settings(TIME_ZONE='UTC', USE_TZ=True)
-class TestDefaultTZDateTimeField(TestCase):
-    """
+"""
     Test the current/default timezone handling in `DateTimeField`.
     """
-
-    @classmethod
-    def setup_class(cls):
-        cls.field = serializers.DateTimeField()
-        cls.kolkata = pytz.timezone('Asia/Kolkata')
+@classmethod
+defsetup_class(cls):
+    cls.field = serializers.DateTimeField()
+    cls.kolkata = pytz.timezone('Asia/Kolkata')
 
     def test_default_timezone(self):
-        assert self.field.default_timezone() == utc
+    assert self.field.default_timezone() == utc
 
     def test_current_timezone(self):
-        assert self.field.default_timezone() == utc
-        activate(self.kolkata)
-        assert self.field.default_timezone() == self.kolkata
-        deactivate()
-        assert self.field.default_timezone() == utc
+    assert self.field.default_timezone() == utc
+    activate(self.kolkata)
+    assert self.field.default_timezone() == self.kolkata
+    deactivate()
+    assert self.field.default_timezone() == utc
 
 
 @pytest.mark.skipif(pytz is None, reason='pytz not installed')
 @override_settings(TIME_ZONE='UTC', USE_TZ=True)
-class TestCustomTimezoneForDateTimeField(TestCase):
 
-    @classmethod
-    def setup_class(cls):
-        cls.kolkata = pytz.timezone('Asia/Kolkata')
-        cls.date_format = '%d/%m/%Y %H:%M'
+@classmethod
+defsetup_class(cls):
+    cls.kolkata = pytz.timezone('Asia/Kolkata')
+    cls.date_format = '%d/%m/%Y %H:%M'
 
     def test_should_render_date_time_in_default_timezone(self):
-        field = serializers.DateTimeField(default_timezone=self.kolkata, format=self.date_format)
-        dt = datetime.datetime(2018, 2, 8, 14, 15, 16, tzinfo=pytz.utc)
-
-        with override(self.kolkata):
-            rendered_date = field.to_representation(dt)
+    field = serializers.DateTimeField(default_timezone=self.kolkata, format=self.date_format)
+    dt = datetime.datetime(2018, 2, 8, 14, 15, 16, tzinfo=pytz.utc)
+    with override(self.kolkata):
+        rendered_date = field.to_representation(dt)
 
         rendered_date_in_timezone = dt.astimezone(self.kolkata).strftime(self.date_format)
-
-        assert rendered_date == rendered_date_in_timezone
+assertrendered_date==rendered_date_in_timezone
 
 
 class TestNaiveDayLightSavingTimeTimeZoneDateTimeField(FieldValues):

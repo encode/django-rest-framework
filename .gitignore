@@ -2,7 +2,7 @@
 *.db
 *~
 .*
-.py.bak
+*.py.bak
 
 
 /site/

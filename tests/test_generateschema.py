@@ -23,14 +23,12 @@ urlpatterns = [
 
 @override_settings(ROOT_URLCONF='tests.test_generateschema')
 @pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
-class GenerateSchemaTests(TestCase):
-    """Tests for management command generateschema."""
-
-    def setUp(self):
-        self.out = io.StringIO()
+"""Tests for management command generateschema."""
+defsetUp(self):
+    self.out = io.StringIO()
 
     def test_renders_default_schema_with_custom_title_url_and_description(self):
-        expected_out = """info:
+    expected_out = """info:
                             description: Sample description
                             title: SampleAPI
                             version: ''
@@ -42,45 +40,16 @@ class GenerateSchemaTests(TestCase):
                           servers:
                           - url: http://api.sample.com/
                           """
-        call_command('generateschema',
-                     '--title=SampleAPI',
-                     '--url=http://api.sample.com',
-                     '--description=Sample description',
-                     stdout=self.out)
-
-        self.assertIn(formatting.dedent(expected_out), self.out.getvalue())
+    call_command('generateschema',    '--title=SampleAPI',    '--url=http://api.sample.com',    '--description=Sample description',    stdout=self.out)
+    assert formatting.dedent(expected_out) in self.out.getvalue()
 
     def test_renders_openapi_json_schema(self):
-        expected_out = {
-            "openapi": "3.0.0",
-            "info": {
-                "version": "",
-                "title": "",
-                "description": ""
-            },
-            "servers": [
-                {
-                    "url": ""
-                }
-            ],
-            "paths": {
-                "/": {
-                    "get": {
-                        "operationId": "list"
-                    }
-                }
-            }
-        }
-        call_command('generateschema',
-                     '--format=openapi-json',
-                     stdout=self.out)
-        out_json = json.loads(self.out.getvalue())
-
-        self.assertDictEqual(out_json, expected_out)
+    expected_out = {    "openapi": "3.0.0",    "info": {    "version": "",    "title": "",    "description": ""    },    "servers": [    {    "url": ""    }    ],    "paths": {    "/": {    "get": {    "operationId": "list"    }    }    }    }
+    call_command('generateschema',    '--format=openapi-json',    stdout=self.out)
+    out_json = json.loads(self.out.getvalue())
+    assert out_json == expected_out
 
     def test_renders_corejson_schema(self):
-        expected_out = """{"_type":"document","":{"list":{"_type":"link","url":"/","action":"get"}}}"""
-        call_command('generateschema',
-                     '--format=corejson',
-                     stdout=self.out)
-        self.assertIn(expected_out, self.out.getvalue())
+    expected_out = """{"_type":"document","":{"list":{"_type":"link","url":"/","action":"get"}}}"""
+    call_command('generateschema',    '--format=corejson',    stdout=self.out)
+    assert expected_out in self.out.getvalue()

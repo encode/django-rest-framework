@@ -308,98 +308,49 @@ class TestMetadata:
         assert options.get_serializer_info(list_serializer) == options.get_serializer_info(child_serializer)
 
 
-class TestSimpleMetadataFieldInfo(TestCase):
-    def test_null_boolean_field_info_type(self):
-        options = metadata.SimpleMetadata()
-        field_info = options.get_field_info(serializers.NullBooleanField())
-        assert field_info['type'] == 'boolean'
+def test_null_boolean_field_info_type(self):
+    options = metadata.SimpleMetadata()
+    field_info = options.get_field_info(serializers.NullBooleanField())
+    assert field_info['type'] == 'boolean'
 
     def test_related_field_choices(self):
-        options = metadata.SimpleMetadata()
-        BasicModel.objects.create()
-        with self.assertNumQueries(0):
-            field_info = options.get_field_info(
-                serializers.RelatedField(queryset=BasicModel.objects.all())
-            )
+    options = metadata.SimpleMetadata()
+    BasicModel.objects.create()
+    with self.assertNumQueries(0):
+        field_info = options.get_field_info(        serializers.RelatedField(queryset=BasicModel.objects.all())        )
         assert 'choices' not in field_info
 
 
-class TestModelSerializerMetadata(TestCase):
-    def test_read_only_primary_key_related_field(self):
-        """
+def test_read_only_primary_key_related_field(self):
+    """
         On generic views OPTIONS should return an 'actions' key with metadata
         on the fields that may be supplied to PUT and POST requests. It should
         not fail when a read_only PrimaryKeyRelatedField is present
         """
-        class Parent(models.Model):
-            integer_field = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(1000)])
-            children = models.ManyToManyField('Child')
-            name = models.CharField(max_length=100, blank=True, null=True)
+    class Parent(models.Model):
+        integer_field = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(1000)])
+        children = models.ManyToManyField('Child')
+        name = models.CharField(max_length=100, blank=True, null=True)
 
         class Child(models.Model):
-            name = models.CharField(max_length=100)
+        name = models.CharField(max_length=100)
 
         class ExampleSerializer(serializers.ModelSerializer):
-            children = serializers.PrimaryKeyRelatedField(read_only=True, many=True)
-
-            class Meta:
-                model = Parent
-                fields = '__all__'
+        children = serializers.PrimaryKeyRelatedField(read_only=True, many=True)
+        class Meta:
+            model = Parent
+            fields = '__all__'
 
         class ExampleView(views.APIView):
-            """Example view."""
-            def post(self, request):
-                pass
+        """Example view."""
+        def post(self, request):
+            pass
 
             def get_serializer(self):
-                return ExampleSerializer()
+            return ExampleSerializer()
 
         view = ExampleView.as_view()
-        response = view(request=request)
-        expected = {
-            'name': 'Example',
-            'description': 'Example view.',
-            'renders': [
-                'application/json',
-                'text/html'
-            ],
-            'parses': [
-                'application/json',
-                'application/x-www-form-urlencoded',
-                'multipart/form-data'
-            ],
-            'actions': {
-                'POST': {
-                    'id': {
-                        'type': 'integer',
-                        'required': False,
-                        'read_only': True,
-                        'label': 'ID'
-                    },
-                    'children': {
-                        'type': 'field',
-                        'required': False,
-                        'read_only': True,
-                        'label': 'Children'
-                    },
-                    'integer_field': {
-                        'type': 'integer',
-                        'required': True,
-                        'read_only': False,
-                        'label': 'Integer field',
-                        'min_value': 1,
-                        'max_value': 1000
-                    },
-                    'name': {
-                        'type': 'string',
-                        'required': False,
-                        'read_only': False,
-                        'label': 'Name',
-                        'max_length': 100
-                    }
-                }
-            }
-        }
-
-        assert response.status_code == status.HTTP_200_OK
-        assert response.data == expected
+response=view(request=request)
+expected={'name':'Example','description':'Example view.','renders':['application/json','text/html'],'parses':['application/json','application/x-www-form-urlencoded','multipart/form-data'],'actions':{'POST':{'id':{'type':'integer','required':False,'read_only':True,'label':'ID'},'children':{'type':'field','required':False,'read_only':True,'label':'Children'},'integer_field':{'type':'integer','required':True,'read_only':False,'label':'Integer field','min_value':1,'max_value':1000},'name':{'type':'string','required':False,'read_only':False,'label':'Name','max_length':100}}}}
+assertresponse.status_code==status.HTTP_200_OK
+assertresponse.data==expected
