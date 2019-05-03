@@ -17,7 +17,7 @@ The built-in API documentation includes:
 ### Installation
 
 The `coreapi` library is required as a dependency for the API docs. Make sure
-to install the latest version. The `pygments` and `markdown` libraries
+to install the latest version. The `Pygments` and `Markdown` libraries
 are optional but recommended.
 
 To install the API documentation, you'll need to include it in your project's URLconf:
@@ -277,7 +277,7 @@ When working with viewsets, an appropriate suffix is appended to each generated 
 
 The description in the browsable API is generated from the docstring of the view or viewset.
 
-If the python `markdown` library is installed, then [markdown syntax][markdown] may be used in the docstring, and will be converted to HTML in the browsable API.  For example:
+If the python `Markdown` library is installed, then [markdown syntax][markdown] may be used in the docstring, and will be converted to HTML in the browsable API.  For example:
 
     class AccountListView(views.APIView):
         """
@@ -331,7 +331,7 @@ To implement a hypermedia API you'll need to decide on an appropriate media type
 [open-api]: https://openapis.org/
 [rest-framework-docs]: https://github.com/marcgibbons/django-rest-framework-docs
 [apiary]: https://apiary.io/
-[markdown]: https://daringfireball.net/projects/markdown/
+[markdown]: https://daringfireball.net/projects/markdown/syntax
 [hypermedia-docs]: rest-hypermedia-hateoas.md
 [image-drf-docs]: ../img/drfdocs.png
 [image-django-rest-swagger]: ../img/django-rest-swagger.png
