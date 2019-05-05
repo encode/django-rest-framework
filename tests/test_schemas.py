@@ -1191,24 +1191,25 @@ class TestURLNamingCollisions(TestCase):
         schema = generator.get_schema()
 
         # not important here
-        desc_0 = schema['detail']['detail_export'].description
-        desc_1 = schema['detail_0'].description
+        desc_0 = schema['detail']['detail'].description
+        desc_1 = schema['detail']['detail_export'].description
 
         expected = coreapi.Document(
             url='',
             title='Naming Colisions',
             content={
                 'detail': {
+                    'detail': coreapi.Link(
+                        url='/from-routercollision/detail/',
+                        action='get',
+                        description=desc_0
+                    ),
                     'detail_export': coreapi.Link(
                         url='/from-routercollision/detail/export/',
                         action='get',
-                        description=desc_0)
-                },
-                'detail_0': coreapi.Link(
-                    url='/from-routercollision/detail/',
-                    action='get',
-                    description=desc_1
-                )
+                        description=desc_1
+                    )
+                }
             }
         )
 

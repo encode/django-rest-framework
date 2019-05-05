@@ -65,11 +65,13 @@ class AnotherTestRouterGeneratedSchema(TestCase):
             url='http://testserver/',
             title='Example API',
             content={
-                'example': {
+                'test1': {
                     'test1': coreapi.Link(
                         url='/example/example/test1/',
                         action='get'
-                    ),
+                    )
+                },
+                'test2': {
                     'test2': coreapi.Link(
                         url='/example/example/test2/',
                         action='get'
@@ -77,7 +79,6 @@ class AnotherTestRouterGeneratedSchema(TestCase):
                 }
             }
         )
-        print(response.data)
         assert response.data == expected
 
     def test_authenticated_request(self):
@@ -90,11 +91,13 @@ class AnotherTestRouterGeneratedSchema(TestCase):
             url='http://testserver/',
             title='Example API',
             content={
-                'example': {
+                'test1': {
                     'test1': coreapi.Link(
                         url='/example/example/test1/',
                         action='get'
-                    ),
+                    )
+                },
+                'test2': {
                     'test2': coreapi.Link(
                         url='/example/example/test2/',
                         action='get'
