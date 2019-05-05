@@ -1,15 +1,14 @@
 import unittest
 
 from django.conf.urls import include, url
-
 from django.test import TestCase, override_settings
 
 from rest_framework import serializers
 from rest_framework.compat import coreapi
 from rest_framework.decorators import action
+from rest_framework.response import Response
 from rest_framework.routers import SimpleRouter
 from rest_framework.schemas import get_schema_view
-from rest_framework.response import Response
 from rest_framework.test import APIClient, APIRequestFactory
 from rest_framework.viewsets import GenericViewSet
 
