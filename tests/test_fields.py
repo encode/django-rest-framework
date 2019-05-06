@@ -1,7 +1,6 @@
 import datetime
 import os
 import re
-import unittest
 import uuid
 from decimal import ROUND_DOWN, ROUND_UP, Decimal
 
@@ -17,14 +16,9 @@ from rest_framework import exceptions, serializers
 from rest_framework.compat import ProhibitNullCharactersValidator
 from rest_framework.fields import DjangoImageField, is_simple_callable
 
-try:
-    import typing
-except ImportError:
-    typing = False
-
-
 # Tests for helper functions.
 # ---------------------------
+
 
 class TestIsSimpleCallable:
 
@@ -92,7 +86,6 @@ class TestIsSimpleCallable:
 
         assert is_simple_callable(ChoiceModel().get_choice_field_display)
 
-    @unittest.skipUnless(typing, 'requires python 3.5')
     def test_type_annotation(self):
         # The annotation will otherwise raise a syntax error in python < 3.5
         locals = {}
