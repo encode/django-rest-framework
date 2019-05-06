@@ -264,6 +264,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [djangorest-alchemy][djangorest-alchemy] - SQLAlchemy support for REST framework.
 * [djangorestframework-datatables][djangorestframework-datatables] - Seamless integration between Django REST framework and [Datatables](https://datatables.net).
 * [django-rest-framework-condition][django-rest-framework-condition] - Decorators for managing HTTP cache headers for Django REST framework (ETag and Last-modified).
+* [django-rest-witchcraft][django-rest-witchcraft] - Provides DRF integration with SQLAlchemy with SQLAlchemy model serializers/viewsets and a bunch of other goodies
 
 [cite]: http://www.software-ecosystems.com/Software_Ecosystems/Ecosystems.html
 [cookiecutter]: https://github.com/jpadilla/cookiecutter-django-rest-framework
@@ -338,3 +339,4 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [djangorest-alchemy]: https://github.com/dealertrack/djangorest-alchemy
 [djangorestframework-datatables]: https://github.com/izimobil/django-rest-framework-datatables
 [django-rest-framework-condition]: https://github.com/jozo/django-rest-framework-condition
+[django-rest-witchcraft]: https://github.com/shosca/django-rest-witchcraft
