@@ -377,6 +377,40 @@ class Serializer(BaseSerializer):
             if not field.write_only
         ]
 
+    def get_extra_kwargs(self):
+        """
+        Return a dictionary mapping field names to a dictionary of
+        additional keyword arguments. Return empty dictionary when no Metaclass
+        is implemented
+        """
+        if not hasattr(self, 'Meta'):
+            return dict()
+
+        extra_kwargs = copy.deepcopy(getattr(self.Meta, 'extra_kwargs', {}))
+
+        read_only_fields = getattr(self.Meta, 'read_only_fields', None)
+        if read_only_fields is not None:
+            if not isinstance(read_only_fields, (list, tuple)):
+                raise TypeError(
+                    'The `read_only_fields` option must be a list or tuple. '
+                    'Got %s.' % type(read_only_fields).__name__
+                )
+            for field_name in read_only_fields:
+                kwargs = extra_kwargs.get(field_name, {})
+                kwargs['read_only'] = True
+                extra_kwargs[field_name] = kwargs
+
+        else:
+            # Guard against the possible misspelling `readonly_fields` (used
+            # by the Django admin and others).
+            assert not hasattr(self.Meta, 'readonly_fields'), (
+                'Serializer `%s.%s` has field `readonly_fields`; '
+                'the correct spelling for the option is `read_only_fields`.' %
+                (self.__class__.__module__, self.__class__.__name__)
+            )
+
+        return extra_kwargs
+
     def get_fields(self):
         """
         Returns a dictionary of {field_name: field_instance}.
@@ -509,6 +543,8 @@ class Serializer(BaseSerializer):
         ret = OrderedDict()
         fields = self._readable_fields
 
+        extra_kwargs = self.get_extra_kwargs()
+
         for field in fields:
             try:
                 attribute = field.get_attribute(instance)
@@ -521,10 +557,19 @@ class Serializer(BaseSerializer):
             # For related fields with `use_pk_only_optimization` we need to
             # resolve the pk value.
             check_for_none = attribute.pk if isinstance(attribute, PKOnlyObject) else attribute
+
+            field_key = field.field_name
+            field_kwargs = extra_kwargs.get(field.field_name, {})
+
+            # When use_label is set to True, use the given label
+            # If no label is given explicitly, use the default label
+            if field_kwargs.get('use_label', False) is True:
+                field_key = field_kwargs.get('label', field.label)
+
             if check_for_none is None:
-                ret[field.field_name] = None
+                ret[field_key] = None
             else:
-                ret[field.field_name] = field.to_representation(attribute)
+                ret[field_key] = field.to_representation(attribute)
 
         return ret
 
@@ -1328,36 +1373,6 @@ class ModelSerializer(Serializer):
         return kwargs
 
     # Methods for determining additional keyword arguments to apply...
-
-    def get_extra_kwargs(self):
-        """
-        Return a dictionary mapping field names to a dictionary of
-        additional keyword arguments.
-        """
-        extra_kwargs = copy.deepcopy(getattr(self.Meta, 'extra_kwargs', {}))
-
-        read_only_fields = getattr(self.Meta, 'read_only_fields', None)
-        if read_only_fields is not None:
-            if not isinstance(read_only_fields, (list, tuple)):
-                raise TypeError(
-                    'The `read_only_fields` option must be a list or tuple. '
-                    'Got %s.' % type(read_only_fields).__name__
-                )
-            for field_name in read_only_fields:
-                kwargs = extra_kwargs.get(field_name, {})
-                kwargs['read_only'] = True
-                extra_kwargs[field_name] = kwargs
-
-        else:
-            # Guard against the possible misspelling `readonly_fields` (used
-            # by the Django admin and others).
-            assert not hasattr(self.Meta, 'readonly_fields'), (
-                'Serializer `%s.%s` has field `readonly_fields`; '
-                'the correct spelling for the option is `read_only_fields`.' %
-                (self.__class__.__module__, self.__class__.__name__)
-            )
-
-        return extra_kwargs
 
     def get_uniqueness_extra_kwargs(self, field_names, declared_fields, extra_kwargs):
         """
