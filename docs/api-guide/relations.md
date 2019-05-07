@@ -598,6 +598,5 @@ The [rest-framework-generic-relations][drf-nested-relations] library provides re
 [generic-relations]: https://docs.djangoproject.com/en/stable/ref/contrib/contenttypes/#id1
 [drf-nested-routers]: https://github.com/alanjds/drf-nested-routers
 [drf-nested-relations]: https://github.com/Ian-Foote/rest-framework-generic-relations
-
 [django-intermediary-manytomany]: https://docs.djangoproject.com/en/2.2/topics/db/models/#intermediary-manytomany
 [dealing-with-nested-objects]: https://www.django-rest-framework.org/api-guide/serializers/#dealing-with-nested-objects
