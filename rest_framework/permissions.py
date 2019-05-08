@@ -175,7 +175,7 @@ class DjangoModelPermissions(BasePermission):
     # Override this if you need to also provide 'view' permissions,
     # or if you want to provide custom permission codes.
     perms_map = {
-        'GET': [],
+        'GET': ['%(app_label)s.view_%(model_name)s'],
         'OPTIONS': [],
         'HEAD': [],
         'POST': ['%(app_label)s.add_%(model_name)s'],
@@ -226,8 +226,14 @@ class DjangoModelPermissions(BasePermission):
            not request.user.is_authenticated and self.authenticated_users_only):
             return False
 
-        queryset = self._queryset(view)
-        perms = self.get_required_permissions(request.method, queryset.model)
+        if hasattr(view, 'perms_map') and request.method in view.perms_map:
+            # Override default perms_map from view / ViewSet.
+            perms = view.perms_map[request.method]
+            if isinstance(perms, str):
+                perms = [perms]
+        else:
+            queryset = self._queryset(view)
+            perms = self.get_required_permissions(request.method, queryset.model)
 
         return request.user.has_perms(perms)
 
