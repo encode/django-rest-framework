@@ -1,9 +1,13 @@
 """
 Provides a set of pluggable permission policies.
 """
+from django import get_version
 from django.http import Http404
 
+from distutils.version import LooseVersion
+
 from rest_framework import exceptions
+
 
 SAFE_METHODS = ('GET', 'HEAD', 'OPTIONS')
 
@@ -175,7 +179,7 @@ class DjangoModelPermissions(BasePermission):
     # Override this if you need to also provide 'view' permissions,
     # or if you want to provide custom permission codes.
     perms_map = {
-        'GET': ['%(app_label)s.view_%(model_name)s'],
+        'GET': [] if LooseVersion(get_version()) < LooseVersion('2.1') else ['%(app_label)s.view_%(model_name)s'],
         'OPTIONS': [],
         'HEAD': [],
         'POST': ['%(app_label)s.add_%(model_name)s'],
