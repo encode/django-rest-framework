@@ -1,7 +1,6 @@
 import copy
 import datetime
 import decimal
-import functools
 import inspect
 import re
 import uuid
@@ -53,7 +52,7 @@ def is_simple_callable(obj):
     """
     True if the object is a callable that takes no arguments.
     """
-    if not (inspect.isfunction(obj) or inspect.ismethod(obj) or isinstance(obj, functools.partial)):
+    if not callable(obj):
         return False
 
     sig = inspect.signature(obj)
