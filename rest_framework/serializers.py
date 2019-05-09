@@ -348,7 +348,7 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
         'invalid': _('Invalid data. Expected a dictionary, but got {datatype}.')
     }
 
-    @property
+    @cached_property
     def fields(self):
         """
         A dictionary of {field_name: field_instance}.
@@ -356,11 +356,10 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
         # `fields` is evaluated lazily. We do this to ensure that we don't
         # have issues importing modules that use ModelSerializers as fields,
         # even if Django's app-loading stage has not yet run.
-        if not hasattr(self, '_fields'):
-            self._fields = BindingDict(self)
-            for key, value in self.get_fields().items():
-                self._fields[key] = value
-        return self._fields
+        fields = BindingDict(self)
+        for key, value in self.get_fields().items():
+            fields[key] = value
+        return fields
 
     @cached_property
     def _writable_fields(self):
