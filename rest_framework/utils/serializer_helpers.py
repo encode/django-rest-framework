@@ -1,5 +1,4 @@
 from collections import OrderedDict
-from collections.abc import MutableMapping
 
 from django.utils.encoding import force_text
 
@@ -125,36 +124,3 @@ class NestedBoundField(BoundField):
             else:
                 values[key] = '' if (value is None or value is False) else force_text(value)
         return self.__class__(self._field, values, self.errors, self._prefix)
-
-
-class BindingDict(MutableMapping):
-    """
-    This dict-like object is used to store fields on a serializer.
-
-    This ensures that whenever fields are added to the serializer we call
-    `field.bind()` so that the `field_name` and `parent` attributes
-    can be set correctly.
-    """
-
-    def __init__(self, serializer):
-        self.serializer = serializer
-        self.fields = OrderedDict()
-
-    def __setitem__(self, key, field):
-        self.fields[key] = field
-        field.bind(field_name=key, parent=self.serializer)
-
-    def __getitem__(self, key):
-        return self.fields[key]
-
-    def __delitem__(self, key):
-        del self.fields[key]
-
-    def __iter__(self):
-        return iter(self.fields)
-
-    def __len__(self):
-        return len(self.fields)
-
-    def __repr__(self):
-        return dict.__repr__(self.fields)

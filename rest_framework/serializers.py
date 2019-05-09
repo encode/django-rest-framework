@@ -36,8 +36,7 @@ from rest_framework.utils.field_mapping import (
     get_relation_kwargs, get_url_kwargs
 )
 from rest_framework.utils.serializer_helpers import (
-    BindingDict, BoundField, JSONBoundField, NestedBoundField, ReturnDict,
-    ReturnList
+    BoundField, JSONBoundField, NestedBoundField, ReturnDict, ReturnList
 )
 from rest_framework.validators import (
     UniqueForDateValidator, UniqueForMonthValidator, UniqueForYearValidator,
@@ -356,9 +355,10 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
         # `fields` is evaluated lazily. We do this to ensure that we don't
         # have issues importing modules that use ModelSerializers as fields,
         # even if Django's app-loading stage has not yet run.
-        fields = BindingDict(self)
-        for key, value in self.get_fields().items():
-            fields[key] = value
+        fields = OrderedDict()
+        for field_name, field in self.get_fields().items():
+            fields[field_name] = field
+            field.bind(field_name=field_name, parent=self)
         return fields
 
     @cached_property
