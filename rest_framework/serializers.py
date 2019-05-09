@@ -361,18 +361,6 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
             field.bind(field_name=field_name, parent=self)
         return fields
 
-    @property
-    def _writable_fields(self):
-        for field in self.fields.values():
-            if not field.read_only:
-                yield field
-
-    @property
-    def _readable_fields(self):
-        for field in self.fields.values():
-            if not field.write_only:
-                yield field
-
     def get_fields(self):
         """
         Returns a dictionary of {field_name: field_instance}.
@@ -478,9 +466,11 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
 
         ret = OrderedDict()
         errors = OrderedDict()
-        fields = self._writable_fields
 
-        for field in fields:
+        for field in self.fields.values():
+            if field.read_only:
+                continue
+
             validate_method = getattr(self, 'validate_' + field.field_name, None)
             primitive_value = field.get_value(data)
             try:
@@ -506,9 +496,11 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
         Object instance -> Dict of primitive datatypes.
         """
         ret = OrderedDict()
-        fields = self._readable_fields
 
-        for field in fields:
+        for field in self.fields.values():
+            if field.write_only:
+                continue
+
             try:
                 attribute = field.get_attribute(instance)
             except SkipField:
@@ -808,7 +800,8 @@ def raise_errors_on_nested_writes(method_name, serializer, validated_data):
         isinstance(field, BaseSerializer) and
         (field.source in validated_data) and
         isinstance(validated_data[field.source], (list, dict))
-        for field in serializer._writable_fields
+        for field in serializer.fields.values()
+        if not field.read_only
     ), (
         'The `.{method_name}()` method does not support writable nested '
         'fields by default.\nWrite an explicit `.{method_name}()` method for '
@@ -1498,8 +1491,8 @@ class ModelSerializer(Serializer):
         # cannot map to a field, and must be a traversal, so we're not
         # including those.
         field_names = {
-            field.source for field in self._writable_fields
-            if (field.source != '*') and ('.' not in field.source)
+            field.source for field in self.fields.values()
+            if not field.read_only and field.source != '*' and '.' not in field.source
         }
 
         # Special Case: Add read_only fields with defaults.
