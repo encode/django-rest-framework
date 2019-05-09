@@ -219,7 +219,7 @@ class TestReadOnly:
         Read-only fields should not be writable, even with default ()
         """
         serializer = self.Serializer()
-        assert len(serializer._writable_fields) == 1
+        assert len(list(serializer._writable_fields)) == 1
 
     def test_validate_read_only(self):
         """
