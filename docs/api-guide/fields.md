@@ -448,9 +448,10 @@ Requires either the `Pillow` package or `PIL` package.  The `Pillow` package is 
 
 A field class that validates a list of objects.
 
-**Signature**: `ListField(child=<A_FIELD_INSTANCE>, min_length=None, max_length=None)`
+**Signature**: `ListField(child=<A_FIELD_INSTANCE>, allow_empty=True, min_length=None, max_length=None)`
 
 - `child` - A field instance that should be used for validating the objects in the list. If this argument is not provided then objects in the list will not be validated.
+- `allow_empty` - Designates if empty lists are allowed.
 - `min_length` - Validates that the list contains no fewer than this number of elements.
 - `max_length` - Validates that the list contains no more than this number of elements.
 
@@ -471,9 +472,10 @@ We can now reuse our custom `StringListField` class throughout our application, 
 
 A field class that validates a dictionary of objects. The keys in `DictField` are always assumed to be string values.
 
-**Signature**: `DictField(child=<A_FIELD_INSTANCE>)`
+**Signature**: `DictField(child=<A_FIELD_INSTANCE>, allow_empty=True)`
 
 - `child` - A field instance that should be used for validating the values in the dictionary. If this argument is not provided then values in the mapping will not be validated.
+- `allow_empty` - Designates if empty dictionaries are allowed.
 
 For example, to create a field that validates a mapping of strings to strings, you would write something like this:
 
@@ -488,9 +490,10 @@ You can also use the declarative style, as with `ListField`. For example:
 
 A preconfigured `DictField` that is compatible with Django's postgres `HStoreField`.
 
-**Signature**: `HStoreField(child=<A_FIELD_INSTANCE>)`
+**Signature**: `HStoreField(child=<A_FIELD_INSTANCE>, allow_empty=True)`
 
 - `child` - A field instance that is used for validating the values in the dictionary. The default child field accepts both empty strings and null values.
+- `allow_empty` - Designates if empty dictionaries are allowed.
 
 Note that the child field **must** be an instance of `CharField`, as the hstore extension stores values as strings.
 

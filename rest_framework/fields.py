@@ -1663,11 +1663,13 @@ class DictField(Field):
     child = _UnvalidatedField()
     initial = {}
     default_error_messages = {
-        'not_a_dict': _('Expected a dictionary of items but got type "{input_type}".')
+        'not_a_dict': _('Expected a dictionary of items but got type "{input_type}".'),
+        'empty': _('This dictionary may not be empty.'),
     }
 
     def __init__(self, *args, **kwargs):
         self.child = kwargs.pop('child', copy.deepcopy(self.child))
+        self.allow_empty = kwargs.pop('allow_empty', True)
 
         assert not inspect.isclass(self.child), '`child` has not been instantiated.'
         assert self.child.source is None, (
@@ -1693,6 +1695,9 @@ class DictField(Field):
             data = html.parse_html_dict(data)
         if not isinstance(data, dict):
             self.fail('not_a_dict', input_type=type(data).__name__)
+        if not self.allow_empty and len(data) == 0:
+            self.fail('empty')
+
         return self.run_child_validation(data)
 
     def to_representation(self, value):
