@@ -614,7 +614,7 @@ class Field:
             for item in self._args
         ]
         kwargs = {
-            key: (copy.deepcopy(value) if (key not in ('validators', 'regex')) else value)
+            key: (copy.deepcopy(value, memo) if (key not in ('validators', 'regex')) else value)
             for key, value in self._kwargs.items()
         }
         return self.__class__(*args, **kwargs)
