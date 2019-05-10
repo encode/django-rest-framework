@@ -40,6 +40,12 @@ You can determine your currently installed version using `pip show`:
 
 ## 3.9.x series
 
+### 3.9.4
+
+**Date**: [10th May 2019]
+
+This is a maintenance release that fixes an error handling bug under Python 2.
+
 ### 3.9.3
 
 **Date**: [29th April 2019]
