@@ -131,19 +131,26 @@ class SimpleRateThrottle(BaseThrottle):
             return self.throttle_failure()
         return self.throttle_success()
 
-    def throttle_success(self):
+    def add_request_to_history(self):
         """
         Inserts the current request's timestamp along with the key
         into the cache.
         """
         self.history.insert(0, self.now)
         self.cache.set(self.key, self.history, self.duration)
+
+    def throttle_success(self):
+        """
+        Called when a request to the API has passed throttling checks.
+        """
+        self.add_request_to_history()
         return True
 
     def throttle_failure(self):
         """
         Called when a request to the API has failed due to throttling.
         """
+        self.add_request_to_history()
         return False
 
     def wait(self):
@@ -155,9 +162,12 @@ class SimpleRateThrottle(BaseThrottle):
         else:
             remaining_duration = self.duration
 
-        available_requests = self.num_requests - len(self.history) + 1
-        if available_requests <= 0:
-            return None
+        # If we go over the num of requests in history, ensure the
+        # 'available_requests' will stay at 1, suggesting clients to wait for
+        # the full duration of the throttle.
+        available_requests = (
+            self.num_requests - min(self.num_requests, len(self.history)) + 1
+        )
 
         return remaining_duration / float(available_requests)
 
