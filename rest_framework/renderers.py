@@ -1013,28 +1013,49 @@ class _BaseOpenAPIRenderer:
         }
 
 
-class OpenAPIRenderer(_BaseOpenAPIRenderer):
+class CoreAPIOpenAPIRenderer(_BaseOpenAPIRenderer):
     media_type = 'application/vnd.oai.openapi'
     charset = None
     format = 'openapi'
 
     def __init__(self):
-        assert coreapi, 'Using OpenAPIRenderer, but `coreapi` is not installed.'
-        assert yaml, 'Using OpenAPIRenderer, but `pyyaml` is not installed.'
+        assert coreapi, 'Using CoreAPIOpenAPIRenderer, but `coreapi` is not installed.'
+        assert yaml, 'Using CoreAPIOpenAPIRenderer, but `pyyaml` is not installed.'
 
     def render(self, data, media_type=None, renderer_context=None):
         structure = self.get_structure(data)
         return yaml.dump(structure, default_flow_style=False).encode()
 
 
-class JSONOpenAPIRenderer(_BaseOpenAPIRenderer):
+class CoreAPIJSONOpenAPIRenderer(_BaseOpenAPIRenderer):
     media_type = 'application/vnd.oai.openapi+json'
     charset = None
     format = 'openapi-json'
 
     def __init__(self):
-        assert coreapi, 'Using JSONOpenAPIRenderer, but `coreapi` is not installed.'
+        assert coreapi, 'Using CoreAPIJSONOpenAPIRenderer, but `coreapi` is not installed.'
 
     def render(self, data, media_type=None, renderer_context=None):
         structure = self.get_structure(data)
-        return json.dumps(structure, indent=4).encode()
+        return json.dumps(structure, indent=4).encode('utf-8')
+
+
+class OpenAPIRenderer(BaseRenderer):
+    media_type = 'application/vnd.oai.openapi'
+    charset = None
+    format = 'openapi'
+
+    def __init__(self):
+        assert yaml, 'Using OpenAPIRenderer, but `pyyaml` is not installed.'
+
+    def render(self, data, media_type=None, renderer_context=None):
+        return yaml.dump(data, default_flow_style=False).encode('utf-8')
+
+
+class JSONOpenAPIRenderer(BaseRenderer):
+    media_type = 'application/vnd.oai.openapi+json'
+    charset = None
+    format = 'openapi-json'
+
+    def render(self, data, media_type=None, renderer_context=None):
+        return json.dumps(data, indent=2).encode('utf-8')
