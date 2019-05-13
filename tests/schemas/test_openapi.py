@@ -226,6 +226,29 @@ class TestGenerator(TestCase):
 
         assert 'openapi' in schema
         assert 'paths' in schema
+        assert 'info' in schema
+        assert 'title' in schema['info']
+        assert 'version' in schema['info']
+        assert schema['info']['title'] is None
+        assert schema['info']['version'] == 'TODO'
+
+    def test_schema_initializer(self):
+        """Construction of top-level dictionary with an initializer."""
+        class MyListView(views.ExampleListView):
+            schema = AutoSchema(openapi_schema={'info': {'title': 'mytitle', 'version': 'myversion'}})
+
+        patterns = [
+            url(r'^example/?$', MyListView.as_view()),
+        ]
+        generator = SchemaGenerator(patterns=patterns)
+
+        request = create_request('/')
+        schema = generator.get_schema(request=request)
+
+        assert 'info' in schema
+        assert 'title' in schema['info']
+        assert 'version' in schema['info']
+        assert schema['info']['title'] == 'mytitle' and schema['info']['version'] == 'myversion'
 
     def test_serializer_datefield(self):
         patterns = [

@@ -14,6 +14,10 @@ from .utils import get_pk_description, is_list_view
 
 
 class SchemaGenerator(BaseSchemaGenerator):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        #: the openapi schema document:
+        self.openapi_schema = {}
 
     def get_info(self):
         info = {
@@ -43,6 +47,9 @@ class SchemaGenerator(BaseSchemaGenerator):
             subpath = '/' + path[len(prefix):]
             result.setdefault(subpath, {})
             result[subpath][method.lower()] = operation
+            if hasattr(view.schema, 'openapi_schema'):
+                # TODO: shallow or deep merge?
+                self.openapi_schema = {**self.openapi_schema, **view.schema.openapi_schema}
 
         return result
 
@@ -61,13 +68,19 @@ class SchemaGenerator(BaseSchemaGenerator):
             'info': self.get_info(),
             'paths': paths,
         }
+        # TODO: shallow or deep merge?
+        self.openapi_schema = {**schema, **self.openapi_schema}
 
-        return schema
+        return self.openapi_schema
 
 # View Inspectors
 
 
 class AutoSchema(ViewInspector):
+    def __init__(self, openapi_schema={}):
+        super().__init__()
+        # TODO: call this manual_fields ala coreapi?
+        self.openapi_schema = openapi_schema
 
     content_types = ['application/json']
     method_mapping = {

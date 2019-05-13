@@ -327,6 +327,33 @@ May be used to pass a canonical URL for the schema.
         url='https://www.example.org/api/'
     )
 
+#### `openapi_schema`
+
+May be used to pass a static initial OpenAPI schema document, typically
+containing top-level OpenAPI fields. The schema document will
+be added to by the AutoSchema generator.
+
+    schema_view = get_schema_view(
+        openapi_schema = {
+            'info': {
+                'title': 'my title',
+                'version': '1.0',
+                'contact': {
+                    'name': 'API Support',
+                    'url': 'http://www.example.com/support',
+                    'email': 'support@example.com'
+                },
+                'license': {
+                    'name': 'Apache 2.0',
+                    'url': 'https://www.apache.org/licenses/LICENSE-2.0.html'
+            }.
+            'servers': [
+                {'url': 'https://api.example.com'}
+            ]
+        }
+    )
+
+
 #### `urlconf`
 
 A string representing the import path to the URL conf that you want

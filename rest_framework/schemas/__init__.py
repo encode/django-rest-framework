@@ -28,7 +28,7 @@ from .coreapi import AutoSchema, ManualSchema, SchemaGenerator  # noqa
 
 
 def get_schema_view(
-        title=None, url=None, description=None, urlconf=None, renderer_classes=None,
+        title=None, url=None, description=None, openapi_schema=None, urlconf=None, renderer_classes=None,
         public=False, patterns=None, generator_class=None,
         authentication_classes=api_settings.DEFAULT_AUTHENTICATION_CLASSES,
         permission_classes=api_settings.DEFAULT_PERMISSION_CLASSES):
@@ -41,10 +41,17 @@ def get_schema_view(
         else:
             generator_class = openapi.SchemaGenerator
 
-    generator = generator_class(
-        title=title, url=url, description=description,
-        urlconf=urlconf, patterns=patterns,
-    )
+    if isinstance(generator_class, openapi.SchemaGenerator):
+        generator = generator_class(
+            title=title, url=url, description=description,
+            urlconf=urlconf, patterns=patterns,
+            openapi_schema=openapi_schema,
+        )
+    else:
+        generator = generator_class(
+            title=title, url=url, description=description,
+            urlconf=urlconf, patterns=patterns,
+        )
 
     # Avoid import cycle on APIView
     from .views import SchemaView

@@ -12,6 +12,11 @@ class GetSchemaViewTests(TestCase):
         assert isinstance(schema_view.initkwargs['schema_generator'], openapi.SchemaGenerator)
         assert renderers.OpenAPIRenderer in schema_view.cls().renderer_classes
 
+    def test_openapi_initialized(self):
+        schema_view = get_schema_view(openapi_schema={'info': {'title': 'With OpenAPI'}})
+        assert isinstance(schema_view.initkwargs['schema_generator'], openapi.SchemaGenerator)
+        assert renderers.OpenAPIRenderer in schema_view.cls().renderer_classes
+
     @pytest.mark.skipif(not coreapi.coreapi, reason='coreapi is not installed')
     def test_coreapi(self):
         with override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema'}):
