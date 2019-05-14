@@ -189,7 +189,7 @@ class JsonFloatTests(TestCase):
             json.loads("NaN")
 
 
-@override_settings(STRICT_JSON=False)
+@override_settings(REST_FRAMEWORK={'STRICT_JSON': False})
 class NonStrictJsonFloatTests(JsonFloatTests):
     """
     'STRICT_JSON = False' should not somehow affect internal json behavior

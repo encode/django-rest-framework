@@ -39,11 +39,12 @@ class ExampleViewSet(GenericViewSet):
         return Response({})
 
 
-if coreapi:
-    schema_view = get_schema_view(title='Example API')
-else:
-    def schema_view(request):
-        pass
+with override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema'}):
+    if coreapi:
+        schema_view = get_schema_view(title='Example API')
+    else:
+        def schema_view(request):
+            pass
 
 router = SimpleRouter()
 router.register('example', ExampleViewSet, basename='example')
@@ -54,7 +55,7 @@ urlpatterns = [
 
 
 @unittest.skipUnless(coreapi, 'coreapi is not installed')
-@override_settings(ROOT_URLCONF='tests.test_schema_with_single_common_prefix')
+@override_settings(ROOT_URLCONF=__name__, REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema'})
 class AnotherTestRouterGeneratedSchema(TestCase):
     def test_anonymous_request(self):
         client = APIClient()

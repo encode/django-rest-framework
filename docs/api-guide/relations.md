@@ -576,6 +576,8 @@ If you explicitly specify a relational field pointing to a
 ``ManyToManyField`` with a through model, be sure to set ``read_only``
 to ``True``.
 
+If you wish to represent [extra fields on a through model][django-intermediary-manytomany] then you may serialize the through model as [a nested object][dealing-with-nested-objects].
+
 ---
 
 # Third Party Packages
@@ -596,3 +598,5 @@ The [rest-framework-generic-relations][drf-nested-relations] library provides re
 [generic-relations]: https://docs.djangoproject.com/en/stable/ref/contrib/contenttypes/#id1
 [drf-nested-routers]: https://github.com/alanjds/drf-nested-routers
 [drf-nested-relations]: https://github.com/Ian-Foote/rest-framework-generic-relations
+[django-intermediary-manytomany]: https://docs.djangoproject.com/en/2.2/topics/db/models/#intermediary-manytomany
+[dealing-with-nested-objects]: https://www.django-rest-framework.org/api-guide/serializers/#dealing-with-nested-objects

@@ -1,7 +1,6 @@
 import datetime
 import os
 import re
-import unittest
 import uuid
 from decimal import ROUND_DOWN, ROUND_UP, Decimal
 
@@ -17,14 +16,9 @@ from rest_framework import exceptions, serializers
 from rest_framework.compat import ProhibitNullCharactersValidator
 from rest_framework.fields import DjangoImageField, is_simple_callable
 
-try:
-    import typing
-except ImportError:
-    typing = False
-
-
 # Tests for helper functions.
 # ---------------------------
+
 
 class TestIsSimpleCallable:
 
@@ -92,7 +86,6 @@ class TestIsSimpleCallable:
 
         assert is_simple_callable(ChoiceModel().get_choice_field_display)
 
-    @unittest.skipUnless(typing, 'requires python 3.5')
     def test_type_annotation(self):
         # The annotation will otherwise raise a syntax error in python < 3.5
         locals = {}
@@ -1989,6 +1982,7 @@ class TestDictField(FieldValues):
     """
     valid_inputs = [
         ({'a': 1, 'b': '2', 3: 3}, {'a': '1', 'b': '2', '3': '3'}),
+        ({}, {}),
     ]
     invalid_inputs = [
         ({'a': 1, 'b': None, 'c': None}, {'b': ['This field may not be null.'], 'c': ['This field may not be null.']}),
@@ -2015,6 +2009,16 @@ class TestDictField(FieldValues):
         field = serializers.DictField(allow_null=True)
         output = field.run_validation(None)
         assert output is None
+
+    def test_allow_empty_disallowed(self):
+        """
+        If allow_empty is False then an empty dict is not a valid input.
+        """
+        field = serializers.DictField(allow_empty=False)
+        with pytest.raises(serializers.ValidationError) as exc_info:
+            field.run_validation({})
+
+        assert exc_info.value.detail == ['This dictionary may not be empty.']
 
 
 class TestNestedDictField(FieldValues):

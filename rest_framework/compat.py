@@ -143,19 +143,12 @@ if 'patch' not in View.http_method_names:
     View.http_method_names = View.http_method_names + ['patch']
 
 
-# Markdown is optional
+# Markdown is optional (version 2.6+ required)
 try:
     import markdown
 
-    if markdown.version <= '2.2':
-        HEADERID_EXT_PATH = 'headerid'
-        LEVEL_PARAM = 'level'
-    elif markdown.version < '2.6':
-        HEADERID_EXT_PATH = 'markdown.extensions.headerid'
-        LEVEL_PARAM = 'level'
-    else:
-        HEADERID_EXT_PATH = 'markdown.extensions.toc'
-        LEVEL_PARAM = 'baselevel'
+    HEADERID_EXT_PATH = 'markdown.extensions.toc'
+    LEVEL_PARAM = 'baselevel'
 
     def apply_markdown(text):
         """
