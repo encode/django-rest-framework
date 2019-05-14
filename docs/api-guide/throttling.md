@@ -23,6 +23,9 @@ As with permissions and authentication, throttling in REST framework is always d
 Before running the main body of the view each throttle in the list is checked.
 If any throttle check fails an `exceptions.Throttled` exception will be raised, and the main body of the view will not run.
 
+**Note:** Prior to version 3.10, throttle checking stopped on the first failure encountered.
+This has been changed in 3.10 so that all throttles are checked.
+
 ## Setting the throttling policy
 
 The default throttling policy may be set globally, using the `DEFAULT_THROTTLE_CLASSES` and `DEFAULT_THROTTLE_RATES` settings.  For example.
