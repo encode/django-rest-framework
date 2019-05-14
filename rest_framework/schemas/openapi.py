@@ -389,8 +389,6 @@ class AutoSchema(ViewInspector):
                 schema['format'] = 'email'
             if isinstance(v, URLValidator):
                 schema['format'] = 'uri'
-            if isinstance(v, URLValidator):
-                schema['format'] = 'uri'
             if isinstance(v, RegexValidator):
                 schema['pattern'] = v.regex.pattern
             elif isinstance(v, MaxLengthValidator):
