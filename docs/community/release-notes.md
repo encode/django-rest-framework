@@ -38,6 +38,20 @@ You can determine your currently installed version using `pip show`:
 
 ---
 
+## 3.10.x series
+
+### 3.10.0
+
+**Date**: [?][3.10.0-milestone]
+
+* **Breaking Change**:  Always add all requests to all throttling classes history. [#6666][gh6666], [#6667][gh6667]
+
+    Following this change, the throttling classes based on `SimpleRateThrottle` (this includes `AnonRateThrottle`, `UserRateThrottle` and `ScopedRateThrottle`) will add all requests to their history, even ones that are being throttled. In order to maintain the old behaviour, change the implementation of `throttle_failure()` on the throttling classes you're using to only `return False`.
+
+    In addition, the `APIView`'s `check_throttles()` method is now calling `allow_request()` on each throttle even when one of them is already causing the current request to be throttled. The wait time returned is the largest from all failing throttles. Previously it would check them in order and raise the first time one would disallow the request. 
+
+    This punishes brute-forcing, rewarding clients that wait for the full duration of the suggested throttle wait time before making new requests, and also makes setting multiple throttling classes more useful as they all receive every request regardless of what is happening with the others.
+
 ## 3.9.x series
 
 ### 3.9.3
