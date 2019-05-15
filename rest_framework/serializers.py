@@ -244,6 +244,29 @@ class BaseSerializer(Field):
 
         return not bool(self._errors)
 
+    def run_validation(self, data=empty):
+        """
+        We override the default `run_validation`, because the validation
+        performed by validators and the `.validate()` method should
+        be coerced into an error dictionary with a 'non_fields_error' key.
+        """
+        (is_empty_value, data) = self.validate_empty_values(data)
+        if is_empty_value:
+            return data
+
+        value = self.to_internal_value(data)
+        try:
+            self.run_validators(value)
+            value = self.validate(value)
+            assert value is not None, '.validate() should return the validated data'
+        except (ValidationError, DjangoValidationError) as exc:
+            raise ValidationError(detail=as_serializer_error(exc))
+
+        return value
+
+    def validate(self, attrs):
+        return attrs
+
     @property
     def data(self):
         if hasattr(self, 'initial_data') and not hasattr(self, '_validated_data'):
@@ -419,26 +442,6 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
             return html.parse_html_dict(dictionary, prefix=self.field_name) or empty
         return dictionary.get(self.field_name, empty)
 
-    def run_validation(self, data=empty):
-        """
-        We override the default `run_validation`, because the validation
-        performed by validators and the `.validate()` method should
-        be coerced into an error dictionary with a 'non_fields_error' key.
-        """
-        (is_empty_value, data) = self.validate_empty_values(data)
-        if is_empty_value:
-            return data
-
-        value = self.to_internal_value(data)
-        try:
-            self.run_validators(value)
-            value = self.validate(value)
-            assert value is not None, '.validate() should return the validated data'
-        except (ValidationError, DjangoValidationError) as exc:
-            raise ValidationError(detail=as_serializer_error(exc))
-
-        return value
-
     def _read_only_defaults(self):
         fields = [
             field for field in self.fields.values()
@@ -529,9 +532,6 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
 
         return ret
 
-    def validate(self, attrs):
-        return attrs
-
     def __repr__(self):
         return representation.serializer_repr(self, indent=1)
 
@@ -611,26 +611,6 @@ class ListSerializer(BaseSerializer):
             return html.parse_html_list(dictionary, prefix=self.field_name, default=empty)
         return dictionary.get(self.field_name, empty)
 
-    def run_validation(self, data=empty):
-        """
-        We override the default `run_validation`, because the validation
-        performed by validators and the `.validate()` method should
-        be coerced into an error dictionary with a 'non_fields_error' key.
-        """
-        (is_empty_value, data) = self.validate_empty_values(data)
-        if is_empty_value:
-            return data
-
-        value = self.to_internal_value(data)
-        try:
-            self.run_validators(value)
-            value = self.validate(value)
-            assert value is not None, '.validate() should return the validated data'
-        except (ValidationError, DjangoValidationError) as exc:
-            raise ValidationError(detail=as_serializer_error(exc))
-
-        return value
-
     def to_internal_value(self, data):
         """
         List of dicts of native values <- List of dicts of primitive datatypes.
@@ -683,9 +663,6 @@ class ListSerializer(BaseSerializer):
         return [
             self.child.to_representation(item) for item in iterable
         ]
-
-    def validate(self, attrs):
-        return attrs
 
     def update(self, instance, validated_data):
         raise NotImplementedError(
