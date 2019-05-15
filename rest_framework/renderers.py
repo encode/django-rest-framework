@@ -1049,7 +1049,7 @@ class OpenAPIRenderer(BaseRenderer):
         assert yaml, 'Using OpenAPIRenderer, but `pyyaml` is not installed.'
 
     def render(self, data, media_type=None, renderer_context=None):
-        return yaml.dump(data, default_flow_style=False).encode('utf-8')
+        return yaml.dump(data, default_flow_style=False, sort_keys=False).encode('utf-8')
 
 
 class JSONOpenAPIRenderer(BaseRenderer):
