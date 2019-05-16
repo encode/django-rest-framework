@@ -43,7 +43,7 @@ REST framework includes these built-in translations both for standard exception 
 
 Note that the translations only apply to the error strings themselves. The format of error messages, and the keys of field names will remain the same. An example `400 Bad Request` response body might look like this:
 
-    {"detail": {"username": ["Esse campo deve ser unico."]}}
+    {"detail": {"username": ["Esse campo deve ser único."]}}
 
 If you want to use different string for parts of the response such as `detail` and `non_field_errors` then you can modify this behavior by using a [custom exception handler][custom-exception-handler].
 

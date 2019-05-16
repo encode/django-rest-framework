@@ -89,7 +89,7 @@ The default JSON encoding style can be altered using the `UNICODE_JSON` and `COM
 
 **.media_type**: `application/json`
 
-**.format**: `'.json'`
+**.format**: `'json'`
 
 **.charset**: `None`
 
@@ -127,7 +127,7 @@ See the [_HTML & Forms_ Topic Page][html-and-forms] for further examples of `Tem
 
 **.media_type**: `text/html`
 
-**.format**: `'.html'`
+**.format**: `'html'`
 
 **.charset**: `utf-8`
 
@@ -149,7 +149,7 @@ You can use `StaticHTMLRenderer` either to return regular HTML pages using REST 
 
 **.media_type**: `text/html`
 
-**.format**: `'.html'`
+**.format**: `'html'`
 
 **.charset**: `utf-8`
 
@@ -165,7 +165,7 @@ This renderer will determine which other renderer would have been given highest 
 
 **.media_type**: `text/html`
 
-**.format**: `'.api'`
+**.format**: `'api'`
 
 **.charset**: `utf-8`
 
@@ -200,7 +200,7 @@ Note that views that have nested or list serializers for their input won't work 
 
 **.media_type**: `text/html`
 
-**.format**: `'.admin'`
+**.format**: `'admin'`
 
 **.charset**: `utf-8`
 
@@ -224,7 +224,7 @@ For more information see the [HTML & Forms][html-and-forms] documentation.
 
 **.media_type**: `text/html`
 
-**.format**: `'.form'`
+**.format**: `'form'`
 
 **.charset**: `utf-8`
 
@@ -236,7 +236,7 @@ This renderer is used for rendering HTML multipart form data.  **It is not suita
 
 **.media_type**: `multipart/form-data; boundary=BoUnDaRyStRiNg`
 
-**.format**: `'.multipart'`
+**.format**: `'multipart'`
 
 **.charset**: `utf-8`
 
@@ -521,13 +521,13 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 [browser-accept-headers]: http://www.gethifi.com/blog/browser-rest-http-accept-headers
 [testing]: testing.md
 [HATEOAS]: http://timelessrepo.com/haters-gonna-hateoas
-[quote]: http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
+[quote]: https://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
 [application/vnd.github+json]: https://developer.github.com/v3/media/
 [application/vnd.collection+json]: http://www.amundsen.com/media-types/collection/
 [django-error-views]: https://docs.djangoproject.com/en/stable/topics/http/views/#customizing-error-views
 [rest-framework-jsonp]: https://jpadilla.github.io/django-rest-framework-jsonp/
 [cors]: https://www.w3.org/TR/cors/
-[cors-docs]: http://www.django-rest-framework.org/topics/ajax-csrf-cors/
+[cors-docs]: https://www.django-rest-framework.org/topics/ajax-csrf-cors/
 [jsonp-security]: https://stackoverflow.com/questions/613962/is-jsonp-safe-to-use
 [rest-framework-yaml]: https://jpadilla.github.io/django-rest-framework-yaml/
 [rest-framework-xml]: https://jpadilla.github.io/django-rest-framework-xml/

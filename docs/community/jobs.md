@@ -9,14 +9,12 @@ Looking for a new Django REST Framework related role? On this site we provide a 
 * [https://www.python.org/jobs/][python-org-jobs]
 * [https://djangogigs.com][django-gigs-com]
 * [https://djangojobs.net/jobs/][django-jobs-net]
-* [http://djangojobbers.com][django-jobbers-com]
 * [https://www.indeed.com/q-Django-jobs.html][indeed-com]
 * [https://stackoverflow.com/jobs/developer-jobs-using-django][stackoverflow-com]
 * [https://www.upwork.com/o/jobs/browse/skill/django-framework/][upwork-com]
 * [https://www.technojobs.co.uk/django-jobs][technobjobs-co-uk]
 * [https://remoteok.io/remote-django-jobs][remoteok-io]
 * [https://www.remotepython.com/jobs/][remotepython-com]
-* [https://weworkcontract.com/python-contract-jobs][weworkcontract-com]
 
 
 Know of any other great resources for Django REST Framework jobs that are missing in our list? Please [submit a pull request][submit-pr] or [email us][anna-email].
@@ -28,14 +26,12 @@ Wonder how else you can help? One of the best ways you can help Django REST Fram
 [python-org-jobs]: https://www.python.org/jobs/
 [django-gigs-com]: https://djangogigs.com
 [django-jobs-net]: https://djangojobs.net/jobs/
-[django-jobbers-com]: http://djangojobbers.com
 [indeed-com]: https://www.indeed.com/q-Django-jobs.html
 [stackoverflow-com]: https://stackoverflow.com/jobs/developer-jobs-using-django
 [upwork-com]: https://www.upwork.com/o/jobs/browse/skill/django-framework/
 [technobjobs-co-uk]: https://www.technojobs.co.uk/django-jobs
 [remoteok-io]: https://remoteok.io/remote-django-jobs
 [remotepython-com]: https://www.remotepython.com/jobs/
-[weworkcontract-com]: https://weworkcontract.com/python-contract-jobs
 [drf-funding]: https://fund.django-rest-framework.org/topics/funding/
 [submit-pr]: https://github.com/encode/django-rest-framework
 [anna-email]: mailto:anna@django-rest-framework.org

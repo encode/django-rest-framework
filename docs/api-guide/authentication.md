@@ -137,7 +137,7 @@ You'll also need to create tokens for your users.
     from rest_framework.authtoken.models import Token
 
     token = Token.objects.create(user=...)
-    print token.key
+    print(token.key)
 
 For clients to authenticate, the token key should be included in the `Authorization` HTTP header.  The key should be prefixed by the string literal "Token", with whitespace separating the two strings.  For example:
 
@@ -354,7 +354,7 @@ The following third party packages are also available.
 
 ## Django OAuth Toolkit
 
-The [Django OAuth Toolkit][django-oauth-toolkit] package provides OAuth 2.0 support, and works with Python 2.7 and Python 3.3+. The package is maintained by [Evonove][evonove] and uses the excellent [OAuthLib][oauthlib].  The package is well documented, and well supported and is currently our **recommended package for OAuth 2.0 support**.
+The [Django OAuth Toolkit][django-oauth-toolkit] package provides OAuth 2.0 support and works with Python 3.4+. The package is maintained by [Evonove][evonove] and uses the excellent [OAuthLib][oauthlib].  The package is well documented, and well supported and is currently our **recommended package for OAuth 2.0 support**.
 
 #### Installation & configuration
 
@@ -391,13 +391,9 @@ Install the package using `pip`.
 
 For details on configuration and usage see the Django REST framework OAuth documentation for [authentication][django-rest-framework-oauth-authentication] and [permissions][django-rest-framework-oauth-permissions].
 
-## Digest Authentication
-
-HTTP digest authentication is a widely implemented scheme that was intended to replace HTTP basic authentication, and which provides a simple encrypted authentication mechanism. [Juan Riaza][juanriaza] maintains the [djangorestframework-digestauth][djangorestframework-digestauth] package which provides HTTP digest authentication support for REST framework.
-
 ## JSON Web Token Authentication
 
-JSON Web Token is a fairly new standard which can be used for token-based authentication. Unlike the built-in TokenAuthentication scheme, JWT Authentication doesn't need to use a database to validate a token. [Blimp][blimp] maintains the [djangorestframework-jwt][djangorestframework-jwt] package which provides a JWT Authentication class as well as a mechanism for clients to obtain a JWT given the username and password. An alternative package for JWT authentication is [djangorestframework-simplejwt][djangorestframework-simplejwt] which provides different features as well as a pluggable token blacklist app.
+JSON Web Token is a fairly new standard which can be used for token-based authentication. Unlike the built-in TokenAuthentication scheme, JWT Authentication doesn't need to use a database to validate a token. A package for JWT authentication is [djangorestframework-simplejwt][djangorestframework-simplejwt] which provides some features as well as a pluggable token blacklist app.
 
 ## Hawk HTTP Authentication
 
@@ -445,8 +441,6 @@ HTTP Signature (currently a [IETF draft][http-signature-ietf-draft]) provides a 
 [django-oauth-toolkit]: https://github.com/evonove/django-oauth-toolkit
 [evonove]: https://github.com/evonove/
 [oauthlib]: https://github.com/idan/oauthlib
-[blimp]: https://github.com/GetBlimp
-[djangorestframework-jwt]: https://github.com/GetBlimp/django-rest-framework-jwt
 [djangorestframework-simplejwt]: https://github.com/davesque/django-rest-framework-simplejwt
 [etoccalino]: https://github.com/etoccalino/
 [djangorestframework-httpsignature]: https://github.com/etoccalino/django-rest-framework-httpsignature

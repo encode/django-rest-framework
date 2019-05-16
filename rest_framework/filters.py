@@ -2,9 +2,8 @@
 Provides generic filtering backends that can be used to filter the results
 returned by list views.
 """
-from __future__ import unicode_literals
-
 import operator
+import warnings
 from functools import reduce
 
 from django.core.exceptions import ImproperlyConfigured
@@ -12,17 +11,17 @@ from django.db import models
 from django.db.models.constants import LOOKUP_SEP
 from django.db.models.sql.constants import ORDER_PATTERN
 from django.template import loader
-from django.utils import six
 from django.utils.encoding import force_text
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
+from rest_framework import RemovedInDRF310Warning
 from rest_framework.compat import (
     coreapi, coreschema, distinct, is_guardian_installed
 )
 from rest_framework.settings import api_settings
 
 
-class BaseFilterBackend(object):
+class BaseFilterBackend:
     """
     A base class from which all filter backend classes should inherit.
     """
@@ -38,6 +37,9 @@ class BaseFilterBackend(object):
         assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
         return []
 
+    def get_schema_operation_parameters(self, view):
+        return []
+
 
 class SearchFilter(BaseFilterBackend):
     # The URL query parameter used for the search.
@@ -51,6 +53,14 @@ class SearchFilter(BaseFilterBackend):
     }
     search_title = _('Search')
     search_description = _('A search term.')
+
+    def get_search_fields(self, view, request):
+        """
+        Search fields are obtained from the view, but the request is always
+        passed to this method. Sub-classes can override this method to
+        dynamically change the search fields based on request content.
+        """
+        return getattr(view, 'search_fields', None)
 
     def get_search_terms(self, request):
         """
@@ -76,6 +86,9 @@ class SearchFilter(BaseFilterBackend):
             opts = queryset.model._meta
             if search_field[0] in self.lookup_prefixes:
                 search_field = search_field[1:]
+            # Annotated fields do not need to be distinct
+            if isinstance(queryset, models.QuerySet) and search_field in queryset.query.annotations:
+                return False
             parts = search_field.split(LOOKUP_SEP)
             for part in parts:
                 field = opts.get_field(part)
@@ -89,14 +102,14 @@ class SearchFilter(BaseFilterBackend):
         return False
 
     def filter_queryset(self, request, queryset, view):
-        search_fields = getattr(view, 'search_fields', None)
+        search_fields = self.get_search_fields(view, request)
         search_terms = self.get_search_terms(request)
 
         if not search_fields or not search_terms:
             return queryset
 
         orm_lookups = [
-            self.construct_search(six.text_type(search_field))
+            self.construct_search(str(search_field))
             for search_field in search_fields
         ]
 
@@ -146,6 +159,19 @@ class SearchFilter(BaseFilterBackend):
             )
         ]
 
+    def get_schema_operation_parameters(self, view):
+        return [
+            {
+                'name': self.search_param,
+                'required': False,
+                'in': 'query',
+                'description': force_text(self.search_description),
+                'schema': {
+                    'type': 'string',
+                },
+            },
+        ]
+
 
 class OrderingFilter(BaseFilterBackend):
     # The URL query parameter used for the ordering.
@@ -175,7 +201,7 @@ class OrderingFilter(BaseFilterBackend):
 
     def get_default_ordering(self, view):
         ordering = getattr(view, 'ordering', None)
-        if isinstance(ordering, six.string_types):
+        if isinstance(ordering, str):
             return (ordering,)
         return ordering
 
@@ -224,7 +250,7 @@ class OrderingFilter(BaseFilterBackend):
             ]
         else:
             valid_fields = [
-                (item, item) if isinstance(item, six.string_types) else item
+                (item, item) if isinstance(item, str) else item
                 for item in valid_fields
             ]
 
@@ -277,6 +303,19 @@ class OrderingFilter(BaseFilterBackend):
             )
         ]
 
+    def get_schema_operation_parameters(self, view):
+        return [
+            {
+                'name': self.ordering_param,
+                'required': False,
+                'in': 'query',
+                'description': force_text(self.ordering_description),
+                'schema': {
+                    'type': 'string',
+                },
+            },
+        ]
+
 
 class DjangoObjectPermissionsFilter(BaseFilterBackend):
     """
@@ -284,6 +323,11 @@ class DjangoObjectPermissionsFilter(BaseFilterBackend):
     has read object level permissions.
     """
     def __init__(self):
+        warnings.warn(
+            "`DjangoObjectPermissionsFilter` has been deprecated and moved to "
+            "the 3rd-party django-rest-framework-guardian package.",
+            RemovedInDRF310Warning, stacklevel=2
+        )
         assert is_guardian_installed(), 'Using DjangoObjectPermissionsFilter, but django-guardian is not installed'
 
     perm_format = '%(app_label)s.view_%(model_name)s'

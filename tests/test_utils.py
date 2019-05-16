@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 from django.conf.urls import url
 from django.test import TestCase, override_settings
 
@@ -50,6 +47,14 @@ class ResourceViewSet(ModelViewSet):
 
     @action(detail=True)
     def detail_action(self, request, *args, **kwargs):
+        raise NotImplementedError
+
+    @action(detail=True, name='Custom Name')
+    def named_action(self, request, *args, **kwargs):
+        raise NotImplementedError
+
+    @action(detail=True, suffix='Custom Suffix')
+    def suffixed_action(self, request, *args, **kwargs):
         raise NotImplementedError
 
 
@@ -145,6 +150,24 @@ class BreadcrumbTests(TestCase):
             ('Detail action', '/resources/1/detail_action/'),
         ]
 
+    def test_modelviewset_action_name_kwarg(self):
+        url = '/resources/1/named_action/'
+        assert get_breadcrumbs(url) == [
+            ('Root', '/'),
+            ('Resource List', '/resources/'),
+            ('Resource Instance', '/resources/1/'),
+            ('Custom Name', '/resources/1/named_action/'),
+        ]
+
+    def test_modelviewset_action_suffix_kwarg(self):
+        url = '/resources/1/suffixed_action/'
+        assert get_breadcrumbs(url) == [
+            ('Root', '/'),
+            ('Resource List', '/resources/'),
+            ('Resource Instance', '/resources/1/'),
+            ('Resource Custom Suffix', '/resources/1/suffixed_action/'),
+        ]
+
 
 class JsonFloatTests(TestCase):
     """
@@ -166,7 +189,7 @@ class JsonFloatTests(TestCase):
             json.loads("NaN")
 
 
-@override_settings(STRICT_JSON=False)
+@override_settings(REST_FRAMEWORK={'STRICT_JSON': False})
 class NonStrictJsonFloatTests(JsonFloatTests):
     """
     'STRICT_JSON = False' should not somehow affect internal json behavior

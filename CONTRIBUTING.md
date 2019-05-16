@@ -20,7 +20,7 @@ When answering questions make sure to help future contributors find their way ar
 
 Please keep the tone polite & professional.  For some users a discussion on the REST framework mailing list or ticket tracker may be their first engagement with the open source community.  First impressions count, so let's try to make everyone feel welcome.
 
-Be mindful in the language you choose.  As an example, in an environment that is heavily male-dominated, posts that start 'Hey guys,' can come across as unintentionally exclusive.  It's just as easy, and more inclusive to use gender neutral language in those situations.
+Be mindful in the language you choose.  As an example, in an environment that is heavily male-dominated, posts that start 'Hey guys,' can come across as unintentionally exclusive.  It's just as easy, and more inclusive to use gender neutral language in those situations. (e.g. 'Hey folks,')
 
 The [Django code of conduct][code-of-conduct] gives a fuller set of guidelines for participating in community forums.
 
@@ -50,7 +50,7 @@ Getting involved in triaging incoming issues is a good way to start contributing
 
 To start developing on Django REST framework, clone the repo:
 
-    git clone git@github.com:encode/django-rest-framework.git
+    git clone https://github.com/encode/django-rest-framework
 
 Changes should broadly follow the [PEP 8][pep-8] style conventions, and we recommend you set up your editor to automatically indicate non-conforming styles.
 
@@ -59,7 +59,7 @@ Changes should broadly follow the [PEP 8][pep-8] style conventions, and we recom
 To run the tests, clone the repository, and then:
 
     # Setup the virtual environment
-    virtualenv env
+    python3 -m venv env
     source env/bin/activate
     pip install django
     pip install -r requirements.txt
@@ -115,7 +115,7 @@ It's also useful to remember that if you have an outstanding pull request then p
 
 GitHub's documentation for working on pull requests is [available here][pull-requests].
 
-Always run the tests before submitting pull requests, and ideally run `tox` in order to check that your modifications are compatible with both Python 2 and Python 3, and that they run properly on all supported versions of Django.
+Always run the tests before submitting pull requests, and ideally run `tox` in order to check that your modifications are compatible on all supported versions of Python and Django.
 
 Once you've made a pull request take a look at the Travis build status in the GitHub interface and make sure the tests are running as you'd expect.
 

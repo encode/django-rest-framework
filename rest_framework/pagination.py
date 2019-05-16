@@ -1,20 +1,16 @@
-# coding: utf-8
 """
 Pagination serializers determine the structure of the output that should
 be used for paginated responses.
 """
-from __future__ import unicode_literals
-
 from base64 import b64decode, b64encode
 from collections import OrderedDict, namedtuple
+from urllib import parse
 
 from django.core.paginator import InvalidPage
 from django.core.paginator import Paginator as DjangoPaginator
 from django.template import loader
-from django.utils import six
 from django.utils.encoding import force_text
-from django.utils.six.moves.urllib import parse as urlparse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from rest_framework.compat import coreapi, coreschema
 from rest_framework.exceptions import NotFound
@@ -133,7 +129,7 @@ PageLink = namedtuple('PageLink', ['url', 'number', 'is_active', 'is_break'])
 PAGE_BREAK = PageLink(url=None, number=None, is_active=False, is_break=True)
 
 
-class BasePagination(object):
+class BasePagination:
     display_page_controls = False
 
     def paginate_queryset(self, queryset, request, view=None):  # pragma: no cover
@@ -150,6 +146,9 @@ class BasePagination(object):
 
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
+        return []
+
+    def get_schema_operation_parameters(self, view):
         return []
 
 
@@ -204,7 +203,7 @@ class PageNumberPagination(BasePagination):
             self.page = paginator.page(page_number)
         except InvalidPage as exc:
             msg = self.invalid_page_message.format(
-                page_number=page_number, message=six.text_type(exc)
+                page_number=page_number, message=str(exc)
             )
             raise NotFound(msg)
 
@@ -304,6 +303,32 @@ class PageNumberPagination(BasePagination):
                 )
             )
         return fields
+
+    def get_schema_operation_parameters(self, view):
+        parameters = [
+            {
+                'name': self.page_query_param,
+                'required': False,
+                'in': 'query',
+                'description': force_text(self.page_query_description),
+                'schema': {
+                    'type': 'integer',
+                },
+            },
+        ]
+        if self.page_size_query_param is not None:
+            parameters.append(
+                {
+                    'name': self.page_size_query_param,
+                    'required': False,
+                    'in': 'query',
+                    'description': force_text(self.page_size_query_description),
+                    'schema': {
+                        'type': 'integer',
+                    },
+                },
+            )
+        return parameters
 
 
 class LimitOffsetPagination(BasePagination):
@@ -434,6 +459,15 @@ class LimitOffsetPagination(BasePagination):
         context = self.get_html_context()
         return template.render(context)
 
+    def get_count(self, queryset):
+        """
+        Determine an object count, supporting either querysets or regular lists.
+        """
+        try:
+            return queryset.count()
+        except (AttributeError, TypeError):
+            return len(queryset)
+
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
         assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
@@ -458,21 +492,35 @@ class LimitOffsetPagination(BasePagination):
             )
         ]
 
-    def get_count(self, queryset):
-        """
-        Determine an object count, supporting either querysets or regular lists.
-        """
-        try:
-            return queryset.count()
-        except (AttributeError, TypeError):
-            return len(queryset)
+    def get_schema_operation_parameters(self, view):
+        parameters = [
+            {
+                'name': self.limit_query_param,
+                'required': False,
+                'in': 'query',
+                'description': force_text(self.limit_query_description),
+                'schema': {
+                    'type': 'integer',
+                },
+            },
+            {
+                'name': self.offset_query_param,
+                'required': False,
+                'in': 'query',
+                'description': force_text(self.offset_query_description),
+                'schema': {
+                    'type': 'integer',
+                },
+            },
+        ]
+        return parameters
 
 
 class CursorPagination(BasePagination):
     """
     The cursor pagination implementation is necessarily complex.
     For an overview of the position/offset style we use, see this post:
-    http://cra.mr/2011/03/08/building-cursors-for-the-disqus-api
+    https://cra.mr/2011/03/08/building-cursors-for-the-disqus-api
     """
     cursor_query_param = 'cursor'
     cursor_query_description = _('The pagination cursor value.')
@@ -716,13 +764,13 @@ class CursorPagination(BasePagination):
                 'nearly-unique field on the model, such as "-created" or "pk".'
             )
 
-        assert isinstance(ordering, (six.string_types, list, tuple)), (
+        assert isinstance(ordering, (str, list, tuple)), (
             'Invalid ordering. Expected string or tuple, but got {type}'.format(
                 type=type(ordering).__name__
             )
         )
 
-        if isinstance(ordering, six.string_types):
+        if isinstance(ordering, str):
             return (ordering,)
         return tuple(ordering)
 
@@ -737,7 +785,7 @@ class CursorPagination(BasePagination):
 
         try:
             querystring = b64decode(encoded.encode('ascii')).decode('ascii')
-            tokens = urlparse.parse_qs(querystring, keep_blank_values=True)
+            tokens = parse.parse_qs(querystring, keep_blank_values=True)
 
             offset = tokens.get('o', ['0'])[0]
             offset = _positive_int(offset, cutoff=self.offset_cutoff)
@@ -763,7 +811,7 @@ class CursorPagination(BasePagination):
         if cursor.position is not None:
             tokens['p'] = cursor.position
 
-        querystring = urlparse.urlencode(tokens, doseq=True)
+        querystring = parse.urlencode(tokens, doseq=True)
         encoded = b64encode(querystring.encode('ascii')).decode('ascii')
         return replace_query_param(self.base_url, self.cursor_query_param, encoded)
 
@@ -773,7 +821,7 @@ class CursorPagination(BasePagination):
             attr = instance[field_name]
         else:
             attr = getattr(instance, field_name)
-        return six.text_type(attr)
+        return str(attr)
 
     def get_paginated_response(self, data):
         return Response(OrderedDict([
@@ -820,3 +868,29 @@ class CursorPagination(BasePagination):
                 )
             )
         return fields
+
+    def get_schema_operation_parameters(self, view):
+        parameters = [
+            {
+                'name': self.cursor_query_param,
+                'required': False,
+                'in': 'query',
+                'description': force_text(self.cursor_query_description),
+                'schema': {
+                    'type': 'integer',
+                },
+            }
+        ]
+        if self.page_size_query_param is not None:
+            parameters.append(
+                {
+                    'name': self.page_size_query_param,
+                    'required': False,
+                    'in': 'query',
+                    'description': force_text(self.page_size_query_description),
+                    'schema': {
+                        'type': 'integer',
+                    },
+                }
+            )
+        return parameters

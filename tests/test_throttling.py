@@ -1,7 +1,6 @@
 """
 Tests for the throttling implementations in the permissions module.
 """
-from __future__ import unicode_literals
 
 import pytest
 from django.contrib.auth.models import User
@@ -296,7 +295,7 @@ class ScopedRateThrottleTests(TestCase):
             assert response.status_code == 200
 
     def test_get_cache_key_returns_correct_key_if_user_is_authenticated(self):
-        class DummyView(object):
+        class DummyView:
             throttle_scope = 'user'
 
         request = Request(HttpRequest())

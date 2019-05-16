@@ -1,17 +1,11 @@
-# coding: utf-8
-
-from __future__ import unicode_literals
-
 import base64
 
 import pytest
 from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib.auth.models import User
-from django.db import models
 from django.http import HttpResponse
 from django.test import TestCase, override_settings
-from django.utils import six
 
 from rest_framework import (
     HTTP_HEADER_ENCODING, exceptions, permissions, renderers, status
@@ -26,12 +20,9 @@ from rest_framework.response import Response
 from rest_framework.test import APIClient, APIRequestFactory
 from rest_framework.views import APIView
 
+from .models import CustomToken
+
 factory = APIRequestFactory()
-
-
-class CustomToken(models.Model):
-    key = models.CharField(max_length=40, primary_key=True)
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
 
 
 class CustomTokenAuthentication(TokenAuthentication):
@@ -87,7 +78,7 @@ urlpatterns = [
 ]
 
 
-@override_settings(ROOT_URLCONF='tests.test_authentication')
+@override_settings(ROOT_URLCONF=__name__)
 class BasicAuthTests(TestCase):
     """Basic authentication"""
     def setUp(self):
@@ -169,7 +160,7 @@ class BasicAuthTests(TestCase):
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
-@override_settings(ROOT_URLCONF='tests.test_authentication')
+@override_settings(ROOT_URLCONF=__name__)
 class SessionAuthTests(TestCase):
     """User session authentication"""
     def setUp(self):
@@ -192,7 +183,7 @@ class SessionAuthTests(TestCase):
         cf. [#1810](https://github.com/encode/django-rest-framework/pull/1810)
         """
         response = self.csrf_client.get('/auth/login/')
-        content = response.content.decode('utf8')
+        content = response.content.decode()
         assert '<label for="id_username">Username:</label>' in content
 
     def test_post_form_session_auth_failing_csrf(self):
@@ -257,7 +248,7 @@ class SessionAuthTests(TestCase):
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
-class BaseTokenAuthTests(object):
+class BaseTokenAuthTests:
     """Token authentication"""
     model = None
     path = None
@@ -370,7 +361,7 @@ class BaseTokenAuthTests(object):
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
-@override_settings(ROOT_URLCONF='tests.test_authentication')
+@override_settings(ROOT_URLCONF=__name__)
 class TokenAuthTests(BaseTokenAuthTests, TestCase):
     model = Token
     path = '/token/'
@@ -385,7 +376,7 @@ class TokenAuthTests(BaseTokenAuthTests, TestCase):
         """Ensure generate_key returns a string"""
         token = self.model()
         key = token.generate_key()
-        assert isinstance(key, six.string_types)
+        assert isinstance(key, str)
 
     def test_token_login_json(self):
         """Ensure token login view using JSON POST works."""
@@ -429,13 +420,13 @@ class TokenAuthTests(BaseTokenAuthTests, TestCase):
         assert response.data['token'] == self.key
 
 
-@override_settings(ROOT_URLCONF='tests.test_authentication')
+@override_settings(ROOT_URLCONF=__name__)
 class CustomTokenAuthTests(BaseTokenAuthTests, TestCase):
     model = CustomToken
     path = '/customtoken/'
 
 
-@override_settings(ROOT_URLCONF='tests.test_authentication')
+@override_settings(ROOT_URLCONF=__name__)
 class CustomKeywordTokenAuthTests(BaseTokenAuthTests, TestCase):
     model = Token
     path = '/customkeywordtoken/'
@@ -538,7 +529,7 @@ class BasicAuthenticationUnitTests(TestCase):
     def test_basic_authentication_raises_error_if_user_not_active(self):
         from rest_framework import authentication
 
-        class MockUser(object):
+        class MockUser:
             is_active = False
         old_authenticate = authentication.authenticate
         authentication.authenticate = lambda **kwargs: MockUser()
@@ -549,7 +540,7 @@ class BasicAuthenticationUnitTests(TestCase):
         authentication.authenticate = old_authenticate
 
 
-@override_settings(ROOT_URLCONF='tests.test_authentication',
+@override_settings(ROOT_URLCONF=__name__,
                    AUTHENTICATION_BACKENDS=('django.contrib.auth.backends.RemoteUserBackend',))
 class RemoteUserAuthenticationUnitTests(TestCase):
     def setUp(self):

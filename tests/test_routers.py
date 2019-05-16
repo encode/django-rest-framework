@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import warnings
 from collections import namedtuple
 
@@ -10,7 +8,9 @@ from django.db import models
 from django.test import TestCase, override_settings
 from django.urls import resolve, reverse
 
-from rest_framework import permissions, serializers, viewsets
+from rest_framework import (
+    RemovedInDRF311Warning, permissions, serializers, viewsets
+)
 from rest_framework.compat import get_regex_pattern
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -119,7 +119,7 @@ class BasicViewSet(viewsets.ViewSet):
 
 class TestSimpleRouter(URLPatternsTestCase, TestCase):
     router = SimpleRouter()
-    router.register('basics', BasicViewSet, base_name='basic')
+    router.register('basics', BasicViewSet, basename='basic')
 
     urlpatterns = [
         url(r'^api/', include(router.urls)),
@@ -157,6 +157,12 @@ class TestSimpleRouter(URLPatternsTestCase, TestCase):
         # Additional handler registered with MethodMapper
         response = self.client.delete(reverse('basic-action3', args=[1]))
         assert response.data == {'delete': '1'}
+
+    def test_register_after_accessing_urls(self):
+        self.router.register(r'notes', NoteViewSet)
+        assert len(self.router.urls) == 2  # list and detail
+        self.router.register(r'notes_bis', NoteViewSet)
+        assert len(self.router.urls) == 4
 
 
 class TestRootView(URLPatternsTestCase, TestCase):
@@ -432,13 +438,13 @@ class TestEmptyPrefix(URLPatternsTestCase, TestCase):
     def test_empty_prefix_list(self):
         response = self.client.get('/empty-prefix/')
         assert response.status_code == 200
-        assert json.loads(response.content.decode('utf-8')) == [{'uuid': '111', 'text': 'First'},
-                                                                {'uuid': '222', 'text': 'Second'}]
+        assert json.loads(response.content.decode()) == [{'uuid': '111', 'text': 'First'},
+                                                         {'uuid': '222', 'text': 'Second'}]
 
     def test_empty_prefix_detail(self):
         response = self.client.get('/empty-prefix/1/')
         assert response.status_code == 200
-        assert json.loads(response.content.decode('utf-8')) == {'uuid': '111', 'text': 'First'}
+        assert json.loads(response.content.decode()) == {'uuid': '111', 'text': 'First'}
 
 
 class TestRegexUrlPath(URLPatternsTestCase, TestCase):
@@ -450,14 +456,14 @@ class TestRegexUrlPath(URLPatternsTestCase, TestCase):
         kwarg = '1234'
         response = self.client.get('/regex/list/{}/'.format(kwarg))
         assert response.status_code == 200
-        assert json.loads(response.content.decode('utf-8')) == {'kwarg': kwarg}
+        assert json.loads(response.content.decode()) == {'kwarg': kwarg}
 
     def test_regex_url_path_detail(self):
         pk = '1'
         kwarg = '1234'
         response = self.client.get('/regex/{}/detail/{}/'.format(pk, kwarg))
         assert response.status_code == 200
-        assert json.loads(response.content.decode('utf-8')) == {'pk': pk, 'kwarg': kwarg}
+        assert json.loads(response.content.decode()) == {'pk': pk, 'kwarg': kwarg}
 
 
 class TestViewInitkwargs(URLPatternsTestCase, TestCase):
@@ -495,18 +501,18 @@ class TestBaseNameRename(TestCase):
             warnings.simplefilter('always')
             router.register('mock', MockViewSet, 'mock', base_name='mock')
 
-        msg = "The `base_name` argument has been deprecated in favor of `basename`."
+        msg = "The `base_name` argument is pending deprecation in favor of `basename`."
         assert len(w) == 1
         assert str(w[0].message) == msg
 
     def test_base_name_argument_deprecation(self):
         router = SimpleRouter()
 
-        with warnings.catch_warnings(record=True) as w:
+        with pytest.warns(RemovedInDRF311Warning) as w:
             warnings.simplefilter('always')
             router.register('mock', MockViewSet, base_name='mock')
 
-        msg = "The `base_name` argument has been deprecated in favor of `basename`."
+        msg = "The `base_name` argument is pending deprecation in favor of `basename`."
         assert len(w) == 1
         assert str(w[0].message) == msg
         assert router.registry == [
@@ -529,7 +535,7 @@ class TestBaseNameRename(TestCase):
         msg = "`CustomRouter.get_default_base_name` method should be renamed `get_default_basename`."
 
         # Class definition should raise a warning
-        with warnings.catch_warnings(record=True) as w:
+        with pytest.warns(RemovedInDRF311Warning) as w:
             warnings.simplefilter('always')
 
             class CustomRouter(SimpleRouter):

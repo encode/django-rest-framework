@@ -4,14 +4,12 @@ Basic building blocks for generic class based views.
 We don't bind behaviour to http method handlers yet,
 which allows mixin classes to be composed in interesting ways.
 """
-from __future__ import unicode_literals
-
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 
 
-class CreateModelMixin(object):
+class CreateModelMixin:
     """
     Create a model instance.
     """
@@ -32,7 +30,7 @@ class CreateModelMixin(object):
             return {}
 
 
-class ListModelMixin(object):
+class ListModelMixin:
     """
     List a queryset.
     """
@@ -48,7 +46,7 @@ class ListModelMixin(object):
         return Response(serializer.data)
 
 
-class RetrieveModelMixin(object):
+class RetrieveModelMixin:
     """
     Retrieve a model instance.
     """
@@ -58,7 +56,7 @@ class RetrieveModelMixin(object):
         return Response(serializer.data)
 
 
-class UpdateModelMixin(object):
+class UpdateModelMixin:
     """
     Update a model instance.
     """
@@ -84,7 +82,7 @@ class UpdateModelMixin(object):
         return self.update(request, *args, **kwargs)
 
 
-class DestroyModelMixin(object):
+class DestroyModelMixin:
     """
     Destroy a model instance.
     """

@@ -36,7 +36,7 @@ What REST framework doesn't do is give you machine readable hypermedia formats s
 
 [cite]: https://vimeo.com/channels/restfest/page:2
 [dissertation]: https://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm
-[hypertext-driven]: http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
+[hypertext-driven]: https://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
 [restful-web-apis]: http://restfulwebapis.org/
 [building-hypermedia-apis]: https://www.amazon.com/Building-Hypermedia-APIs-HTML5-Node/dp/1449306578
 [designing-hypermedia-apis]: http://designinghypermediaapis.com/

@@ -16,20 +16,21 @@ from rest_framework.routers import DefaultRouter, SimpleRouter
 from rest_framework.schemas import (
     AutoSchema, ManualSchema, SchemaGenerator, get_schema_view
 )
+from rest_framework.schemas.coreapi import field_to_schema
 from rest_framework.schemas.generators import EndpointEnumerator
-from rest_framework.schemas.inspectors import field_to_schema
 from rest_framework.schemas.utils import is_list_view
 from rest_framework.test import APIClient, APIRequestFactory
 from rest_framework.utils import formatting
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
-from .models import BasicModel, ForeignKeySource
+from . import views
+from ..models import BasicModel, ForeignKeySource, ManyToManySource
 
 factory = APIRequestFactory()
 
 
-class MockUser(object):
+class MockUser:
     def is_authenticated(self):
         return True
 
@@ -112,14 +113,33 @@ class ExampleViewSet(ModelViewSet):
     def get_serializer(self, *args, **kwargs):
         assert self.request
         assert self.action
-        return super(ExampleViewSet, self).get_serializer(*args, **kwargs)
+        return super().get_serializer(*args, **kwargs)
 
+    @action(methods=['get', 'post'], detail=False)
+    def documented_custom_action(self, request):
+        """
+        get:
+        A description of the get method on the custom action.
 
-if coreapi:
-    schema_view = get_schema_view(title='Example API')
-else:
-    def schema_view(request):
+        post:
+        A description of the post method on the custom action.
+        """
         pass
+
+    @documented_custom_action.mapping.put
+    def put_documented_custom_action(self, request, *args, **kwargs):
+        """
+        A description of the put method on the custom action from mapping.
+        """
+        pass
+
+
+with override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema'}):
+    if coreapi:
+        schema_view = get_schema_view(title='Example API')
+    else:
+        def schema_view(request):
+            pass
 
 router = DefaultRouter()
 router.register('example', ExampleViewSet, basename='example')
@@ -130,7 +150,7 @@ urlpatterns = [
 
 
 @unittest.skipUnless(coreapi, 'coreapi is not installed')
-@override_settings(ROOT_URLCONF='tests.test_schemas')
+@override_settings(ROOT_URLCONF=__name__, REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema'})
 class TestRouterGeneratedSchema(TestCase):
     def test_anonymous_request(self):
         client = APIClient()
@@ -159,6 +179,13 @@ class TestRouterGeneratedSchema(TestCase):
                             url='/example/custom_list_action_multiple_methods/',
                             action='get',
                             description='Custom description.',
+                        )
+                    },
+                    'documented_custom_action': {
+                        'read': coreapi.Link(
+                            url='/example/documented_custom_action/',
+                            action='get',
+                            description='A description of the get method on the custom action.',
                         )
                     },
                     'read': coreapi.Link(
@@ -263,6 +290,33 @@ class TestRouterGeneratedSchema(TestCase):
                             description='Deletion description.',
                         ),
                     },
+                    'documented_custom_action': {
+                        'read': coreapi.Link(
+                            url='/example/documented_custom_action/',
+                            action='get',
+                            description='A description of the get method on the custom action.',
+                        ),
+                        'create': coreapi.Link(
+                            url='/example/documented_custom_action/',
+                            action='post',
+                            description='A description of the post method on the custom action.',
+                            encoding='application/json',
+                            fields=[
+                                coreapi.Field('a', required=True, location='form', schema=coreschema.String(title='A', description='A field description')),
+                                coreapi.Field('b', required=False, location='form', schema=coreschema.String(title='B'))
+                            ]
+                        ),
+                        'update': coreapi.Link(
+                            url='/example/documented_custom_action/',
+                            action='put',
+                            description='A description of the put method on the custom action from mapping.',
+                            encoding='application/json',
+                            fields=[
+                                coreapi.Field('a', required=True, location='form', schema=coreschema.String(title='A', description='A field description')),
+                                coreapi.Field('b', required=False, location='form', schema=coreschema.String(title='B'))
+                            ]
+                        ),
+                    },
                     'update': coreapi.Link(
                         url='/example/{id}/',
                         action='put',
@@ -348,12 +402,13 @@ class ExampleDetailView(APIView):
 
 
 @unittest.skipUnless(coreapi, 'coreapi is not installed')
+@override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema'})
 class TestSchemaGenerator(TestCase):
     def setUp(self):
         self.patterns = [
-            url(r'^example/?$', ExampleListView.as_view()),
-            url(r'^example/(?P<pk>\d+)/?$', ExampleDetailView.as_view()),
-            url(r'^example/(?P<pk>\d+)/sub/?$', ExampleDetailView.as_view()),
+            url(r'^example/?$', views.ExampleListView.as_view()),
+            url(r'^example/(?P<pk>\d+)/?$', views.ExampleDetailView.as_view()),
+            url(r'^example/(?P<pk>\d+)/sub/?$', views.ExampleDetailView.as_view()),
         ]
 
     def test_schema_for_regular_views(self):
@@ -401,12 +456,13 @@ class TestSchemaGenerator(TestCase):
 
 @unittest.skipUnless(coreapi, 'coreapi is not installed')
 @unittest.skipUnless(path, 'needs Django 2')
+@override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema'})
 class TestSchemaGeneratorDjango2(TestCase):
     def setUp(self):
         self.patterns = [
-            path('example/', ExampleListView.as_view()),
-            path('example/<int:pk>/', ExampleDetailView.as_view()),
-            path('example/<int:pk>/sub/', ExampleDetailView.as_view()),
+            path('example/', views.ExampleListView.as_view()),
+            path('example/<int:pk>/', views.ExampleDetailView.as_view()),
+            path('example/<int:pk>/sub/', views.ExampleDetailView.as_view()),
         ]
 
     def test_schema_for_regular_views(self):
@@ -453,12 +509,13 @@ class TestSchemaGeneratorDjango2(TestCase):
 
 
 @unittest.skipUnless(coreapi, 'coreapi is not installed')
+@override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema'})
 class TestSchemaGeneratorNotAtRoot(TestCase):
     def setUp(self):
         self.patterns = [
-            url(r'^api/v1/example/?$', ExampleListView.as_view()),
-            url(r'^api/v1/example/(?P<pk>\d+)/?$', ExampleDetailView.as_view()),
-            url(r'^api/v1/example/(?P<pk>\d+)/sub/?$', ExampleDetailView.as_view()),
+            url(r'^api/v1/example/?$', views.ExampleListView.as_view()),
+            url(r'^api/v1/example/(?P<pk>\d+)/?$', views.ExampleDetailView.as_view()),
+            url(r'^api/v1/example/(?P<pk>\d+)/sub/?$', views.ExampleDetailView.as_view()),
         ]
 
     def test_schema_for_regular_views(self):
@@ -506,6 +563,7 @@ class TestSchemaGeneratorNotAtRoot(TestCase):
 
 
 @unittest.skipUnless(coreapi, 'coreapi is not installed')
+@override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema'})
 class TestSchemaGeneratorWithMethodLimitedViewSets(TestCase):
     def setUp(self):
         router = DefaultRouter()
@@ -548,6 +606,13 @@ class TestSchemaGeneratorWithMethodLimitedViewSets(TestCase):
                             description='Custom description.',
                         )
                     },
+                    'documented_custom_action': {
+                        'read': coreapi.Link(
+                            url='/example1/documented_custom_action/',
+                            action='get',
+                            description='A description of the get method on the custom action.',
+                        ),
+                    },
                     'read': coreapi.Link(
                         url='/example1/{id}/',
                         action='get',
@@ -563,13 +628,14 @@ class TestSchemaGeneratorWithMethodLimitedViewSets(TestCase):
 
 
 @unittest.skipUnless(coreapi, 'coreapi is not installed')
+@override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema'})
 class TestSchemaGeneratorWithRestrictedViewSets(TestCase):
     def setUp(self):
         router = DefaultRouter()
         router.register('example1', Http404ExampleViewSet, basename='example1')
         router.register('example2', PermissionDeniedExampleViewSet, basename='example2')
         self.patterns = [
-            url('^example/?$', ExampleListView.as_view()),
+            url('^example/?$', views.ExampleListView.as_view()),
             url(r'^', include(router.urls))
         ]
 
@@ -609,6 +675,7 @@ class ForeignKeySourceView(generics.CreateAPIView):
 
 
 @unittest.skipUnless(coreapi, 'coreapi is not installed')
+@override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema'})
 class TestSchemaGeneratorWithForeignKey(TestCase):
     def setUp(self):
         self.patterns = [
@@ -642,7 +709,54 @@ class TestSchemaGeneratorWithForeignKey(TestCase):
         assert schema == expected
 
 
+class ManyToManySourceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ManyToManySource
+        fields = ('id', 'name', 'targets')
+
+
+class ManyToManySourceView(generics.CreateAPIView):
+    queryset = ManyToManySource.objects.all()
+    serializer_class = ManyToManySourceSerializer
+
+
 @unittest.skipUnless(coreapi, 'coreapi is not installed')
+@override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema'})
+class TestSchemaGeneratorWithManyToMany(TestCase):
+    def setUp(self):
+        self.patterns = [
+            url(r'^example/?$', ManyToManySourceView.as_view()),
+        ]
+
+    def test_schema_for_regular_views(self):
+        """
+        Ensure that AutoField many to many fields are output as Integer.
+        """
+        generator = SchemaGenerator(title='Example API', patterns=self.patterns)
+        schema = generator.get_schema()
+
+        expected = coreapi.Document(
+            url='',
+            title='Example API',
+            content={
+                'example': {
+                    'create': coreapi.Link(
+                        url='/example/',
+                        action='post',
+                        encoding='application/json',
+                        fields=[
+                            coreapi.Field('name', required=True, location='form', schema=coreschema.String(title='Name')),
+                            coreapi.Field('targets', required=True, location='form', schema=coreschema.Array(title='Targets', items=coreschema.Integer())),
+                        ]
+                    )
+                }
+            }
+        )
+        assert schema == expected
+
+
+@unittest.skipUnless(coreapi, 'coreapi is not installed')
+@override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema'})
 class Test4605Regression(TestCase):
     def test_4605_regression(self):
         generator = SchemaGenerator()
@@ -658,6 +772,7 @@ class CustomViewInspector(AutoSchema):
     pass
 
 
+@override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema'})
 class TestAutoSchema(TestCase):
 
     def test_apiview_schema_descriptor(self):
@@ -673,7 +788,7 @@ class TestAutoSchema(TestCase):
         assert isinstance(view.schema, CustomViewInspector)
 
     def test_set_custom_inspector_class_via_settings(self):
-        with override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'tests.test_schemas.CustomViewInspector'}):
+        with override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'tests.schemas.test_coreapi.CustomViewInspector'}):
             view = APIView()
             assert isinstance(view.schema, CustomViewInspector)
 
@@ -867,6 +982,7 @@ class TestAutoSchema(TestCase):
             self.assertEqual(field_to_schema(case[0]), case[1])
 
 
+@override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema'})
 def test_docstring_is_not_stripped_by_get_description():
     class ExampleDocstringAPIView(APIView):
         """
@@ -903,25 +1019,25 @@ def test_docstring_is_not_stripped_by_get_description():
 
 
 # Views for SchemaGenerationExclusionTests
-class ExcludedAPIView(APIView):
-    schema = None
+with override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema'}):
+    class ExcludedAPIView(APIView):
+        schema = None
 
-    def get(self, request, *args, **kwargs):
+        def get(self, request, *args, **kwargs):
+            pass
+
+    @api_view(['GET'])
+    @schema(None)
+    def excluded_fbv(request):
+        pass
+
+    @api_view(['GET'])
+    def included_fbv(request):
         pass
 
 
-@api_view(['GET'])
-@schema(None)
-def excluded_fbv(request):
-    pass
-
-
-@api_view(['GET'])
-def included_fbv(request):
-    pass
-
-
 @unittest.skipUnless(coreapi, 'coreapi is not installed')
+@override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema'})
 class SchemaGenerationExclusionTests(TestCase):
     def setUp(self):
         self.patterns = [
@@ -973,43 +1089,6 @@ class SchemaGenerationExclusionTests(TestCase):
 
         assert should_include == expected
 
-    def test_deprecations(self):
-        with pytest.warns(DeprecationWarning) as record:
-            @api_view(["GET"], exclude_from_schema=True)
-            def view(request):
-                pass
-
-        assert len(record) == 1
-        assert str(record[0].message) == (
-            "The `exclude_from_schema` argument to `api_view` is deprecated. "
-            "Use the `schema` decorator instead, passing `None`."
-        )
-
-        class OldFashionedExcludedView(APIView):
-            exclude_from_schema = True
-
-            def get(self, request, *args, **kwargs):
-                pass
-
-        patterns = [
-            url('^excluded-old-fashioned/$', OldFashionedExcludedView.as_view()),
-        ]
-
-        inspector = EndpointEnumerator(patterns)
-        with pytest.warns(DeprecationWarning) as record:
-            inspector.get_api_endpoints()
-
-        assert len(record) == 1
-        assert str(record[0].message) == (
-            "The `OldFashionedExcludedView.exclude_from_schema` attribute is "
-            "deprecated. Set `schema = None` instead."
-        )
-
-
-@api_view(["GET"])
-def simple_fbv(request):
-    pass
-
 
 class BasicModelSerializer(serializers.ModelSerializer):
     class Meta:
@@ -1046,11 +1125,16 @@ naming_collisions_router.register(r'collision', NamingCollisionViewSet, basename
 
 
 @pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
+@override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema'})
 class TestURLNamingCollisions(TestCase):
     """
     Ref: https://github.com/encode/django-rest-framework/issues/4704
     """
     def test_manually_routing_nested_routes(self):
+        @api_view(["GET"])
+        def simple_fbv(request):
+            pass
+
         patterns = [
             url(r'^test', simple_fbv),
             url(r'^test/list/', simple_fbv),
@@ -1156,6 +1240,10 @@ class TestURLNamingCollisions(TestCase):
 
     def test_url_under_same_key_not_replaced_another(self):
 
+        @api_view(["GET"])
+        def simple_fbv(request):
+            pass
+
         patterns = [
             url(r'^test/list/', simple_fbv),
             url(r'^test/(?P<pk>\d+)/list/', simple_fbv),
@@ -1230,10 +1318,8 @@ def test_head_and_options_methods_are_excluded():
     assert inspector.get_allowed_methods(callback) == ["GET"]
 
 
-@pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
-class TestAutoSchemaAllowsFilters(object):
-    class MockAPIView(APIView):
-        filter_backends = [filters.OrderingFilter]
+class MockAPIView(APIView):
+    filter_backends = [filters.OrderingFilter]
 
     def _test(self, method):
         view = self.MockAPIView()
@@ -1277,3 +1363,13 @@ class TestAutoSchemaAllowsFilters(object):
 
     def test_FOO(self):
         assert not self._test('FOO')
+
+
+@pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
+def test_schema_handles_exception():
+    schema_view = get_schema_view(permission_classes=[DenyAllUsingPermissionDenied])
+    request = factory.get('/')
+    response = schema_view(request)
+    response.render()
+    assert response.status_code == 403
+    assert b"You do not have permission to perform this action." in response.content

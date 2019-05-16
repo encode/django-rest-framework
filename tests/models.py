@@ -1,9 +1,7 @@
-from __future__ import unicode_literals
-
 import uuid
 
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 
 class RESTFrameworkModel(models.Model):
@@ -49,6 +47,20 @@ class ForeignKeySource(RESTFrameworkModel):
     name = models.CharField(max_length=100)
     target = models.ForeignKey(ForeignKeyTarget, related_name='sources',
                                help_text='Target', verbose_name='Target',
+                               on_delete=models.CASCADE)
+
+
+class ForeignKeySourceWithLimitedChoices(RESTFrameworkModel):
+    target = models.ForeignKey(ForeignKeyTarget, help_text='Target',
+                               verbose_name='Target',
+                               limit_choices_to={"name__startswith": "limited-"},
+                               on_delete=models.CASCADE)
+
+
+class ForeignKeySourceWithQLimitedChoices(RESTFrameworkModel):
+    target = models.ForeignKey(ForeignKeyTarget, help_text='Target',
+                               verbose_name='Target',
+                               limit_choices_to=models.Q(name__startswith="limited-"),
                                on_delete=models.CASCADE)
 
 

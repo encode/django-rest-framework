@@ -26,7 +26,7 @@ class TestStringRelatedField(APISimpleTestCase):
         assert representation == '<MockObject name=foo, pk=1>'
 
 
-class MockApiSettings(object):
+class MockApiSettings:
     def __init__(self, cutoff, cutoff_text):
         self.HTML_SELECT_CUTOFF = cutoff
         self.HTML_SELECT_CUTOFF_TEXT = cutoff_text

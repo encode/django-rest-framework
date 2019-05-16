@@ -124,7 +124,14 @@ A boolean representation.
 
 When using HTML encoded form input be aware that omitting a value will always be treated as setting a field to `False`, even if it has a `default=True` option specified. This is because HTML checkbox inputs represent the unchecked state by omitting the value, so REST framework treats omission as if it is an empty checkbox input.
 
-Note that default `BooleanField` instances will be generated with a `required=False` option (since Django `models.BooleanField` is always `blank=True`). If you want to change this behaviour explicitly declare the `BooleanField` on the serializer class.
+Note that Django 2.1 removed the `blank` kwarg from `models.BooleanField`.
+Prior to Django 2.1 `models.BooleanField` fields were always `blank=True`. Thus
+since Django 2.1 default `serializers.BooleanField` instances will be generated
+without the `required` kwarg (i.e. equivalent to `required=True`) whereas with
+previous versions of Django, default `BooleanField` instances will be generated
+with a `required=False` option.  If you want to control this behaviour manually,
+explicitly declare the `BooleanField` on the serializer class, or use the
+`extra_kwargs` option to set the `required` flag.
 
 Corresponds to `django.db.models.fields.BooleanField`.
 
@@ -299,10 +306,11 @@ A date and time representation.
 
 Corresponds to `django.db.models.fields.DateTimeField`.
 
-**Signature:** `DateTimeField(format=api_settings.DATETIME_FORMAT, input_formats=None)`
+**Signature:** `DateTimeField(format=api_settings.DATETIME_FORMAT, input_formats=None, default_timezone=None)`
 
 * `format` - A string representing the output format. If not specified, this defaults to the same value as the `DATETIME_FORMAT` settings key, which will be `'iso-8601'` unless set. Setting to a format string indicates that `to_representation` return values should be coerced to string output. Format strings are described below. Setting this value to `None` indicates that Python `datetime` objects should be returned by `to_representation`. In this case the datetime encoding will be determined by the renderer.
 * `input_formats` - A list of strings representing the input formats which may be used to parse the date.  If not specified, the `DATETIME_INPUT_FORMATS` setting will be used, which defaults to `['iso-8601']`.
+* `default_timezone` - A `pytz.timezone` representing the timezone. If not specified and the `USE_TZ` setting is enabled, this defaults to the [current timezone][django-current-timezone]. If `USE_TZ` is disabled, then datetime objects will be naive.
 
 #### `DateTimeField` format strings.
 
@@ -440,9 +448,10 @@ Requires either the `Pillow` package or `PIL` package.  The `Pillow` package is 
 
 A field class that validates a list of objects.
 
-**Signature**: `ListField(child=<A_FIELD_INSTANCE>, min_length=None, max_length=None)`
+**Signature**: `ListField(child=<A_FIELD_INSTANCE>, allow_empty=True, min_length=None, max_length=None)`
 
 - `child` - A field instance that should be used for validating the objects in the list. If this argument is not provided then objects in the list will not be validated.
+- `allow_empty` - Designates if empty lists are allowed.
 - `min_length` - Validates that the list contains no fewer than this number of elements.
 - `max_length` - Validates that the list contains no more than this number of elements.
 
@@ -463,9 +472,10 @@ We can now reuse our custom `StringListField` class throughout our application, 
 
 A field class that validates a dictionary of objects. The keys in `DictField` are always assumed to be string values.
 
-**Signature**: `DictField(child=<A_FIELD_INSTANCE>)`
+**Signature**: `DictField(child=<A_FIELD_INSTANCE>, allow_empty=True)`
 
 - `child` - A field instance that should be used for validating the values in the dictionary. If this argument is not provided then values in the mapping will not be validated.
+- `allow_empty` - Designates if empty dictionaries are allowed.
 
 For example, to create a field that validates a mapping of strings to strings, you would write something like this:
 
@@ -480,9 +490,10 @@ You can also use the declarative style, as with `ListField`. For example:
 
 A preconfigured `DictField` that is compatible with Django's postgres `HStoreField`.
 
-**Signature**: `HStoreField(child=<A_FIELD_INSTANCE>)`
+**Signature**: `HStoreField(child=<A_FIELD_INSTANCE>, allow_empty=True)`
 
 - `child` - A field instance that is used for validating the values in the dictionary. The default child field accepts both empty strings and null values.
+- `allow_empty` - Designates if empty dictionaries are allowed.
 
 Note that the child field **must** be an instance of `CharField`, as the hstore extension stores values as strings.
 
@@ -621,7 +632,7 @@ Our `ColorField` class above currently does not perform any data validation.
 To indicate invalid data, we should raise a `serializers.ValidationError`, like so:
 
     def to_internal_value(self, data):
-        if not isinstance(data, six.text_type):
+        if not isinstance(data, str):
             msg = 'Incorrect type. Expected a string, but got %s'
             raise ValidationError(msg % type(data).__name__)
 
@@ -645,7 +656,7 @@ The `.fail()` method is a shortcut for raising `ValidationError` that takes a me
     }
 
     def to_internal_value(self, data):
-        if not isinstance(data, six.text_type):
+        if not isinstance(data, str):
             self.fail('incorrect_type', input_type=type(data).__name__)
 
         if not re.match(r'^rgb\([0-9]+,[0-9]+,[0-9]+\)$', data):
@@ -828,3 +839,4 @@ The [django-rest-framework-hstore][django-rest-framework-hstore] package provide
 [django-rest-framework-hstore]: https://github.com/djangonauts/django-rest-framework-hstore
 [django-hstore]: https://github.com/djangonauts/django-hstore
 [python-decimal-rounding-modes]: https://docs.python.org/3/library/decimal.html#rounding-modes
+[django-current-timezone]: https://docs.djangoproject.com/en/stable/topics/i18n/timezones/#default-time-zone-and-current-time-zone

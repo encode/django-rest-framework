@@ -65,7 +65,7 @@ Changes should broadly follow the [PEP 8][pep-8] style conventions, and we recom
 To run the tests, clone the repository, and then:
 
     # Setup the virtual environment
-    virtualenv env
+    python3 -m venv env
     source env/bin/activate
     pip install django
     pip install -r requirements.txt
@@ -121,7 +121,7 @@ It's also useful to remember that if you have an outstanding pull request then p
 
 GitHub's documentation for working on pull requests is [available here][pull-requests].
 
-Always run the tests before submitting pull requests, and ideally run `tox` in order to check that your modifications are compatible with both Python 2 and Python 3, and that they run properly on all supported versions of Django.
+Always run the tests before submitting pull requests, and ideally run `tox` in order to check that your modifications are compatible on all supported versions of Python and Django.
 
 Once you've made a pull request take a look at the Travis build status in the GitHub interface and make sure the tests are running as you'd expect.
 

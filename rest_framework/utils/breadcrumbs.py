@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django.urls import get_script_prefix, resolve
 
 

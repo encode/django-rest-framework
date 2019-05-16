@@ -183,8 +183,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 
 * [djangorestframework-digestauth][djangorestframework-digestauth] - Provides Digest Access Authentication support.
 * [django-oauth-toolkit][django-oauth-toolkit] - Provides OAuth 2.0 support.
-* [djangorestframework-jwt][djangorestframework-jwt] - Provides JSON Web Token Authentication support.
-* [djangorestframework-simplejwt][djangorestframework-simplejwt] - An alternative package that provides JSON Web Token Authentication support.
+* [djangorestframework-simplejwt][djangorestframework-simplejwt] - Provides JSON Web Token Authentication support.
 * [hawkrest][hawkrest] - Provides Hawk HTTP Authorization.
 * [djangorestframework-httpsignature][djangorestframework-httpsignature] - Provides an easy to use HTTP Signature Authentication mechanism.
 * [djoser][djoser] - Provides a set of views to handle basic actions such as registration, login, logout, password reset and account activation.
@@ -264,6 +263,8 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [django-rest-messaging][django-rest-messaging], [django-rest-messaging-centrifugo][django-rest-messaging-centrifugo] and [django-rest-messaging-js][django-rest-messaging-js] - A real-time pluggable messaging service using DRM.
 * [djangorest-alchemy][djangorest-alchemy] - SQLAlchemy support for REST framework.
 * [djangorestframework-datatables][djangorestframework-datatables] - Seamless integration between Django REST framework and [Datatables](https://datatables.net).
+* [django-rest-framework-condition][django-rest-framework-condition] - Decorators for managing HTTP cache headers for Django REST framework (ETag and Last-modified).
+* [django-rest-witchcraft][django-rest-witchcraft] - Provides DRF integration with SQLAlchemy with SQLAlchemy model serializers/viewsets and a bunch of other goodies
 
 [cite]: http://www.software-ecosystems.com/Software_Ecosystems/Ecosystems.html
 [cookiecutter]: https://github.com/jpadilla/cookiecutter-django-rest-framework
@@ -337,3 +338,5 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [drfpasswordless]: https://github.com/aaronn/django-rest-framework-passwordless
 [djangorest-alchemy]: https://github.com/dealertrack/djangorest-alchemy
 [djangorestframework-datatables]: https://github.com/izimobil/django-rest-framework-datatables
+[django-rest-framework-condition]: https://github.com/jozo/django-rest-framework-condition
+[django-rest-witchcraft]: https://github.com/shosca/django-rest-witchcraft

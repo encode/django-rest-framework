@@ -8,8 +8,7 @@ The wrapped request then offers a richer API, in particular :
     - full support of PUT method, including support for file uploads
     - form overloading of HTTP method, content type and content
 """
-from __future__ import unicode_literals
-
+import io
 import sys
 from contextlib import contextmanager
 
@@ -17,7 +16,6 @@ from django.conf import settings
 from django.http import HttpRequest, QueryDict
 from django.http.multipartparser import parse_header
 from django.http.request import RawPostDataException
-from django.utils import six
 from django.utils.datastructures import MultiValueDict
 
 from rest_framework import HTTP_HEADER_ENCODING, exceptions
@@ -33,7 +31,7 @@ def is_form_media_type(media_type):
             base_media_type == 'multipart/form-data')
 
 
-class override_method(object):
+class override_method:
     """
     A context manager that temporarily overrides the method on a request,
     additionally setting the `view.request` attribute.
@@ -77,10 +75,10 @@ def wrap_attributeerrors():
     except AttributeError:
         info = sys.exc_info()
         exc = WrappedAttributeError(str(info[1]))
-        six.reraise(type(exc), exc, info[2])
+        raise exc.with_traceback(info[2])
 
 
-class Empty(object):
+class Empty:
     """
     Placeholder for unset attributes.
     Cannot use `None`, as that may be a valid value.
@@ -125,7 +123,7 @@ def clone_request(request, method):
     return ret
 
 
-class ForcedAuthentication(object):
+class ForcedAuthentication:
     """
     This authentication class is used if the test client or request factory
     forcibly authenticated the request.
@@ -139,7 +137,7 @@ class ForcedAuthentication(object):
         return (self.force_user, self.force_token)
 
 
-class Request(object):
+class Request:
     """
     Wrapper allowing to enhance a standard `HttpRequest` instance.
 
@@ -301,7 +299,7 @@ class Request(object):
         elif not self._request._read_started:
             self._stream = self._request
         else:
-            self._stream = six.BytesIO(self.body)
+            self._stream = io.BytesIO(self.body)
 
     def _supports_form_parsing(self):
         """

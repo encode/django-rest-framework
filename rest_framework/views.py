@@ -1,8 +1,6 @@
 """
 Provides an APIView class that is the base of all views in REST framework.
 """
-from __future__ import unicode_literals
-
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.db import connection, models, transaction
@@ -23,7 +21,7 @@ from rest_framework.utils import formatting
 
 def get_view_name(view):
     """
-    Given a view class, return a textual name to represent the view.
+    Given a view instance, return a textual name to represent the view.
     This name is used in the browsable API, and in OPTIONS responses.
 
     This function is the default for the `VIEW_NAME_FUNCTION` setting.
@@ -48,7 +46,7 @@ def get_view_name(view):
 
 def get_view_description(view, html=False):
     """
-    Given a view class, return a textual description to represent the view.
+    Given a view instance, return a textual description to represent the view.
     This name is used in the browsable API, and in OPTIONS responses.
 
     This function is the default for the `VIEW_DESCRIPTION_FUNCTION` setting.
@@ -137,7 +135,7 @@ class APIView(View):
                 )
             cls.queryset._fetch_all = force_evaluation
 
-        view = super(APIView, cls).as_view(**initkwargs)
+        view = super().as_view(**initkwargs)
         view.cls = cls
         view.initkwargs = initkwargs
 
@@ -463,7 +461,7 @@ class APIView(View):
             renderer_format = getattr(request.accepted_renderer, 'format')
             use_plaintext_traceback = renderer_format not in ('html', 'api', 'admin')
             request.force_plaintext_errors(use_plaintext_traceback)
-        raise
+        raise exc
 
     # Note: Views are made CSRF exempt from within `as_view` as to prevent
     # accidental removal of this exemption in cases where `dispatch` needs to

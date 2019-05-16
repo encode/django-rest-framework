@@ -1,12 +1,9 @@
-from __future__ import absolute_import, unicode_literals
-
 import re
 from collections import OrderedDict
 
 from django import template
 from django.template import loader
 from django.urls import NoReverseMatch, reverse
-from django.utils import six
 from django.utils.encoding import force_text, iri_to_uri
 from django.utils.html import escape, format_html, smart_urlquote
 from django.utils.safestring import SafeData, mark_safe
@@ -187,7 +184,7 @@ def add_class(value, css_class):
     In the case of REST Framework, the filter is used to add Bootstrap-specific
     classes to the forms.
     """
-    html = six.text_type(value)
+    html = str(value)
     match = class_re.search(html)
     if match:
         m = re.search(r'^%s$|^%s\s|\s%s\s|\s%s$' % (css_class, css_class,
@@ -204,7 +201,7 @@ def add_class(value, css_class):
 @register.filter
 def format_value(value):
     if getattr(value, 'is_hyperlink', False):
-        name = six.text_type(value.obj)
+        name = str(value.obj)
         return mark_safe('<a href=%s>%s</a>' % (value, escape(name)))
     if value is None or isinstance(value, bool):
         return mark_safe('<code>%s</code>' % {True: 'true', False: 'false', None: 'null'}[value])
@@ -219,7 +216,7 @@ def format_value(value):
         template = loader.get_template('rest_framework/admin/dict_value.html')
         context = {'value': value}
         return template.render(context)
-    elif isinstance(value, six.string_types):
+    elif isinstance(value, str):
         if (
             (value.startswith('http:') or value.startswith('https:')) and not
             re.search(r'\s', value)
@@ -229,7 +226,7 @@ def format_value(value):
             return mark_safe('<a href="mailto:{value}">{value}</a>'.format(value=escape(value)))
         elif '\n' in value:
             return mark_safe('<pre>%s</pre>' % escape(value))
-    return six.text_type(value)
+    return str(value)
 
 
 @register.filter
@@ -314,7 +311,7 @@ def smart_urlquote_wrapper(matched_url):
         return None
 
 
-@register.filter
+@register.filter(needs_autoescape=True)
 def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=True):
     """
     Converts any URLs in text into clickable links.
@@ -336,6 +333,12 @@ def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=Tru
         return limit is not None and (len(x) > limit and ('%s...' % x[:max(0, limit - 3)])) or x
 
     safe_input = isinstance(text, SafeData)
+
+    # Unfortunately, Django built-in cannot be used here, because escaping
+    # is to be performed on words, which have been forcibly coerced to text
+    def conditional_escape(text):
+        return escape(text) if autoescape and not safe_input else text
+
     words = word_split_re.split(force_text(text))
     for i, word in enumerate(words):
         if '.' in word or '@' in word or ':' in word:
@@ -376,21 +379,15 @@ def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=Tru
             # Make link.
             if url:
                 trimmed = trim_url(middle)
-                if autoescape and not safe_input:
-                    lead, trail = escape(lead), escape(trail)
-                    url, trimmed = escape(url), escape(trimmed)
+                lead, trail = conditional_escape(lead), conditional_escape(trail)
+                url, trimmed = conditional_escape(url), conditional_escape(trimmed)
                 middle = '<a href="%s"%s>%s</a>' % (url, nofollow_attr, trimmed)
-                words[i] = mark_safe('%s%s%s' % (lead, middle, trail))
+                words[i] = '%s%s%s' % (lead, middle, trail)
             else:
-                if safe_input:
-                    words[i] = mark_safe(word)
-                elif autoescape:
-                    words[i] = escape(word)
-        elif safe_input:
-            words[i] = mark_safe(word)
-        elif autoescape:
-            words[i] = escape(word)
-    return ''.join(words)
+                words[i] = conditional_escape(word)
+        else:
+            words[i] = conditional_escape(word)
+    return mark_safe(''.join(words))
 
 
 @register.filter

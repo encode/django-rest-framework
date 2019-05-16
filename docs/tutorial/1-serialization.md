@@ -8,24 +8,24 @@ The tutorial is fairly in-depth, so you should probably get a cookie and a cup o
 
 ---
 
-**Note**: The code for this tutorial is available in the [tomchristie/rest-framework-tutorial][repo] repository on GitHub.  The completed implementation is also online as a sandbox version for testing, [available here][sandbox].
+**Note**: The code for this tutorial is available in the [encode/rest-framework-tutorial][repo] repository on GitHub.  The completed implementation is also online as a sandbox version for testing, [available here][sandbox].
 
 ---
 
 ## Setting up a new environment
 
-Before we do anything else we'll create a new virtual environment, using [virtualenv].  This will make sure our package configuration is kept nicely isolated from any other projects we're working on.
+Before we do anything else we'll create a new virtual environment, using [venv]. This will make sure our package configuration is kept nicely isolated from any other projects we're working on.
 
-    virtualenv env
+    python3 -m venv env
     source env/bin/activate
 
-Now that we're inside a virtualenv environment, we can install our package requirements.
+Now that we're inside a virtual environment, we can install our package requirements.
 
     pip install django
     pip install djangorestframework
     pip install pygments  # We'll be using this for the code highlighting
 
-**Note:** To exit the virtualenv environment at any time, just type `deactivate`.  For more information see the [virtualenv documentation][virtualenv].
+**Note:** To exit the virtual environment at any time, just type `deactivate`.  For more information see the [venv documentation][venv].
 
 ## Getting started
 
@@ -33,7 +33,7 @@ Okay, we're ready to get coding.
 To get started, let's create a new project to work with.
 
     cd ~
-    django-admin.py startproject tutorial
+    django-admin startproject tutorial
     cd tutorial
 
 Once that's done we can create an app that we'll use to create a simple Web API.
@@ -137,26 +137,26 @@ Okay, once we've got a few imports out of the way, let's create a couple of code
     snippet = Snippet(code='foo = "bar"\n')
     snippet.save()
 
-    snippet = Snippet(code='print "hello, world"\n')
+    snippet = Snippet(code='print("hello, world")\n')
     snippet.save()
 
 We've now got a few snippet instances to play with.  Let's take a look at serializing one of those instances.
 
     serializer = SnippetSerializer(snippet)
     serializer.data
-    # {'id': 2, 'title': u'', 'code': u'print "hello, world"\n', 'linenos': False, 'language': u'python', 'style': u'friendly'}
+    # {'id': 2, 'title': '', 'code': 'print("hello, world")\n', 'linenos': False, 'language': 'python', 'style': 'friendly'}
 
 At this point we've translated the model instance into Python native datatypes.  To finalize the serialization process we render the data into `json`.
 
     content = JSONRenderer().render(serializer.data)
     content
-    # '{"id": 2, "title": "", "code": "print \\"hello, world\\"\\n", "linenos": false, "language": "python", "style": "friendly"}'
+    # b'{"id": 2, "title": "", "code": "print(\\"hello, world\\")\\n", "linenos": false, "language": "python", "style": "friendly"}'
 
 Deserialization is similar.  First we parse a stream into Python native datatypes...
 
-    from django.utils.six import BytesIO
+    import io
 
-    stream = BytesIO(content)
+    stream = io.BytesIO(content)
     data = JSONParser().parse(stream)
 
 ...then we restore those native datatypes into a fully populated object instance.
@@ -165,7 +165,7 @@ Deserialization is similar.  First we parse a stream into Python native datatype
     serializer.is_valid()
     # True
     serializer.validated_data
-    # OrderedDict([('title', ''), ('code', 'print "hello, world"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])
+    # OrderedDict([('title', ''), ('code', 'print("hello, world")\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])
     serializer.save()
     # <Snippet: Snippet object>
 
@@ -175,7 +175,7 @@ We can also serialize querysets instead of model instances.  To do so we simply 
 
     serializer = SnippetSerializer(Snippet.objects.all(), many=True)
     serializer.data
-    # [OrderedDict([('id', 1), ('title', u''), ('code', u'foo = "bar"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('id', 2), ('title', u''), ('code', u'print "hello, world"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('id', 3), ('title', u''), ('code', u'print "hello, world"'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])]
+    # [OrderedDict([('id', 1), ('title', ''), ('code', 'foo = "bar"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('id', 2), ('title', ''), ('code', 'print("hello, world")\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('id', 3), ('title', ''), ('code', 'print("hello, world")'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])]
 
 ## Using ModelSerializers
 
@@ -218,7 +218,6 @@ Edit the `snippets/views.py` file, and add the following.
 
     from django.http import HttpResponse, JsonResponse
     from django.views.decorators.csrf import csrf_exempt
-    from rest_framework.renderers import JSONRenderer
     from rest_framework.parsers import JSONParser
     from snippets.models import Snippet
     from snippets.serializers import SnippetSerializer
@@ -338,7 +337,7 @@ Finally, we can get a list of all of the snippets:
       {
         "id": 2,
         "title": "",
-        "code": "print \"hello, world\"\n",
+        "code": "print(\"hello, world\")\n",
         "linenos": false,
         "language": "python",
         "style": "friendly"
@@ -354,7 +353,7 @@ Or we can get a particular snippet by referencing its id:
     {
       "id": 2,
       "title": "",
-      "code": "print \"hello, world\"\n",
+      "code": "print(\"hello, world\")\n",
       "linenos": false,
       "language": "python",
       "style": "friendly"
@@ -373,7 +372,7 @@ We'll see how we can start to improve things in [part 2 of the tutorial][tut-2].
 [quickstart]: quickstart.md
 [repo]: https://github.com/encode/rest-framework-tutorial
 [sandbox]: https://restframework.herokuapp.com/
-[virtualenv]: http://www.virtualenv.org/en/latest/index.html
+[venv]: https://docs.python.org/3/library/venv.html
 [tut-2]: 2-requests-and-responses.md
 [httpie]: https://github.com/jakubroztocil/httpie#installation
 [curl]: https://curl.haxx.se/

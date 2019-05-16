@@ -66,16 +66,17 @@ continued development by **[signing up for a paid plan][funding]**.
 *Every single sign-up helps us make REST framework long-term financially sustainable.*
 
 <ul class="premium-promo promo">
-    <li><a href="http://jobs.rover.com/" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/rover_130x130.png)">Rover.com</a></li>
     <li><a href="https://getsentry.com/welcome/" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/sentry130.png)">Sentry</a></li>
     <li><a href="https://getstream.io/try-the-api/?utm_source=drf&utm_medium=banner&utm_campaign=drf" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/stream-130.png)">Stream</a></li>
-    <li><a href="https://hello.machinalis.co.uk/" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/Machinalis130.png)">Machinalis</a></li>
+    <li><a href="https://releasehistory.io" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/release-history.png)">Release History</a></li>
     <li><a href="https://rollbar.com" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/rollbar2.png)">Rollbar</a></li>
     <li><a href="https://cadre.com" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/cadre.png)">Cadre</a></li>
+    <li><a href="https://hubs.ly/H0f30Lf0" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/kloudless-plus-text.png)">Kloudless</a></li>
+    <li><a href="https://lightsonsoftware.com" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/lightson-dark.png)">Lights On Software</a></li>
 </ul>
 <div style="clear: both; padding-bottom: 20px;"></div>
 
-*Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Rover](http://jobs.rover.com/), [Sentry](https://getsentry.com/welcome/), [Stream](https://getstream.io/?utm_source=drf&utm_medium=banner&utm_campaign=drf), [Machinalis](https://hello.machinalis.co.uk/), [Rollbar](https://rollbar.com), and [Cadre](https://cadre.com).*
+*Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Sentry](https://getsentry.com/welcome/), [Stream](https://getstream.io/?utm_source=drf&utm_medium=banner&utm_campaign=drf), [Release History](https://releasehistory.io), [Rollbar](https://rollbar.com), [Cadre](https://cadre.com), [Kloudless](https://hubs.ly/H0f30Lf0), and [Lights On Software](https://lightsonsoftware.com).*
 
 ---
 
@@ -83,13 +84,16 @@ continued development by **[signing up for a paid plan][funding]**.
 
 REST framework requires the following:
 
-* Python (2.7, 3.4, 3.5, 3.6)
-* Django (1.11, 2.0, 2.1)
+* Python (3.5, 3.6, 3.7)
+* Django (1.11, 2.0, 2.1, 2.2)
+
+We **highly recommend** and only officially support the latest patch release of
+each Python and Django series.
 
 The following packages are optional:
 
 * [coreapi][coreapi] (1.32.0+) - Schema generation support.
-* [Markdown][markdown] (2.1.0+) - Markdown support for the browsable API.
+* [Markdown][markdown] (2.6.0+) - Markdown support for the browsable API.
 * [django-filter][django-filter] (1.0.1+) - Filtering support.
 * [django-crispy-forms][django-crispy-forms] - Improved HTML display for filtering.
 * [django-guardian][django-guardian] (1.1.1+) - Object level permissions support.
@@ -104,7 +108,7 @@ Install using `pip`, including any optional packages you want...
 
 ...or clone the project from github.
 
-    git clone git@github.com:encode/django-rest-framework.git
+    git clone https://github.com/encode/django-rest-framework
 
 Add `'rest_framework'` to your `INSTALLED_APPS` setting.
 
@@ -200,17 +204,22 @@ Send a description of the issue via email to [rest-framework-security@googlegrou
 
 ## License
 
-Copyright (c) 2011-2017, Tom Christie
+Copyright © 2011-present, [Encode OSS Ltd](https://www.encode.io/).
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
 
-Redistributions of source code must retain the above copyright notice, this
-list of conditions and the following disclaimer.
-Redistributions in binary form must reproduce the above copyright notice, this
-list of conditions and the following disclaimer in the documentation and/or
-other materials provided with the distribution.
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of the copyright holder nor the names of its
+  contributors may be used to endorse or promote products derived from
+  this software without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED

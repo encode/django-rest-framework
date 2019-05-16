@@ -16,7 +16,7 @@ NUMERIC_FIELD_TYPES = (
 )
 
 
-class ClassLookupDict(object):
+class ClassLookupDict:
     """
     Takes a dictionary with classes as keys.
     Lookups against this object will traverses the object's inheritance
@@ -88,6 +88,9 @@ def get_field_kwargs(field_name, model_field):
     if decimal_places is not None:
         kwargs['decimal_places'] = decimal_places
 
+    if isinstance(model_field, models.SlugField):
+        kwargs['allow_unicode'] = model_field.allow_unicode
+
     if isinstance(model_field, models.TextField) or (postgres_fields and isinstance(model_field, postgres_fields.JSONField)):
         kwargs['style'] = {'base_template': 'textarea.html'}
 
@@ -103,8 +106,7 @@ def get_field_kwargs(field_name, model_field):
     if model_field.null and not isinstance(model_field, models.NullBooleanField):
         kwargs['allow_null'] = True
 
-    if model_field.blank and (isinstance(model_field, models.CharField) or
-                              isinstance(model_field, models.TextField)):
+    if model_field.blank and (isinstance(model_field, (models.CharField, models.TextField))):
         kwargs['allow_blank'] = True
 
     if isinstance(model_field, models.FilePathField):
@@ -191,9 +193,7 @@ def get_field_kwargs(field_name, model_field):
     # Ensure that max_length is passed explicitly as a keyword arg,
     # rather than as a validator.
     max_length = getattr(model_field, 'max_length', None)
-    if max_length is not None and (isinstance(model_field, models.CharField) or
-                                   isinstance(model_field, models.TextField) or
-                                   isinstance(model_field, models.FileField)):
+    if max_length is not None and (isinstance(model_field, (models.CharField, models.TextField, models.FileField))):
         kwargs['max_length'] = max_length
         validator_kwarg = [
             validator for validator in validator_kwarg
@@ -246,6 +246,12 @@ def get_relation_kwargs(field_name, relation_info):
 
     if to_field:
         kwargs['to_field'] = to_field
+
+    limit_choices_to = model_field and model_field.get_limit_choices_to()
+    if limit_choices_to:
+        if not isinstance(limit_choices_to, models.Q):
+            limit_choices_to = models.Q(**limit_choices_to)
+        kwargs['queryset'] = kwargs['queryset'].filter(limit_choices_to)
 
     if has_through_model:
         kwargs['read_only'] = True

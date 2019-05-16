@@ -119,7 +119,7 @@ Extends [Django's existing `Client` class][client].
 
 ## Making requests
 
-The `APIClient` class supports the same request interface as Django's standard `Client` class.  This means the that standard `.get()`, `.post()`, `.put()`, `.patch()`, `.delete()`, `.head()` and `.options()` methods are all available.  For example:
+The `APIClient` class supports the same request interface as Django's standard `Client` class.  This means that the standard `.get()`, `.post()`, `.put()`, `.patch()`, `.delete()`, `.head()` and `.options()` methods are all available.  For example:
 
     from rest_framework.test import APIClient
 
@@ -209,7 +209,7 @@ directly.
 
 Note that the requests client requires you to pass fully qualified URLs.
 
-## `RequestsClient` and working with the database
+## RequestsClient and working with the database
 
 The `RequestsClient` class is useful if you want to write tests that solely interact with the service interface. This is a little stricter than using the standard Django test client, as it means that all interactions should be via the API.
 

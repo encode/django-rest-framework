@@ -2,12 +2,10 @@
 The `compat` module provides support for backwards compatibility with older
 versions of Django/Python, and compatibility wrappers around optional packages.
 """
-
-from __future__ import unicode_literals
+import sys
 
 from django.conf import settings
 from django.core import validators
-from django.utils import six
 from django.views.generic import View
 
 try:
@@ -21,6 +19,11 @@ except ImportError:
         RegexURLPattern as URLPattern,
         RegexURLResolver as URLResolver,
     )
+
+try:
+    from django.core.validators import ProhibitNullCharactersValidator  # noqa
+except ImportError:
+    ProhibitNullCharactersValidator = None
 
 
 def get_original_route(urlpattern):
@@ -70,26 +73,9 @@ def make_url_resolver(regex, urlpatterns):
         return URLResolver(regex, urlpatterns)
 
 
-def unicode_repr(instance):
-    # Get the repr of an instance, but ensure it is a unicode string
-    # on both python 3 (already the case) and 2 (not the case).
-    if six.PY2:
-        return repr(instance).decode('utf-8')
-    return repr(instance)
-
-
-def unicode_to_repr(value):
-    # Coerce a unicode string to the correct repr return type, depending on
-    # the Python version. We wrap all our `__repr__` implementations with
-    # this and then use unicode throughout internally.
-    if six.PY2:
-        return value.encode('utf-8')
-    return value
-
-
 def unicode_http_header(value):
     # Coerce HTTP header value to unicode.
-    if isinstance(value, six.binary_type):
+    if isinstance(value, bytes):
         return value.decode('iso-8859-1')
     return value
 
@@ -124,6 +110,13 @@ except ImportError:
     coreschema = None
 
 
+# pyyaml is optional
+try:
+    import yaml
+except ImportError:
+    yaml = None
+
+
 # django-crispy-forms is optional
 try:
     import crispy_forms
@@ -150,19 +143,12 @@ if 'patch' not in View.http_method_names:
     View.http_method_names = View.http_method_names + ['patch']
 
 
-# Markdown is optional
+# Markdown is optional (version 2.6+ required)
 try:
     import markdown
 
-    if markdown.version <= '2.2':
-        HEADERID_EXT_PATH = 'headerid'
-        LEVEL_PARAM = 'level'
-    elif markdown.version < '2.6':
-        HEADERID_EXT_PATH = 'markdown.extensions.headerid'
-        LEVEL_PARAM = 'level'
-    else:
-        HEADERID_EXT_PATH = 'markdown.extensions.toc'
-        LEVEL_PARAM = 'baselevel'
+    HEADERID_EXT_PATH = 'markdown.extensions.toc'
+    LEVEL_PARAM = 'baselevel'
 
     def apply_markdown(text):
         """
@@ -254,17 +240,12 @@ except ImportError:
 
 # `separators` argument to `json.dumps()` differs between 2.x and 3.x
 # See: https://bugs.python.org/issue22767
-if six.PY3:
-    SHORT_SEPARATORS = (',', ':')
-    LONG_SEPARATORS = (', ', ': ')
-    INDENT_SEPARATORS = (',', ': ')
-else:
-    SHORT_SEPARATORS = (b',', b':')
-    LONG_SEPARATORS = (b', ', b': ')
-    INDENT_SEPARATORS = (b',', b': ')
+SHORT_SEPARATORS = (',', ':')
+LONG_SEPARATORS = (', ', ': ')
+INDENT_SEPARATORS = (',', ': ')
 
 
-class CustomValidatorMessage(object):
+class CustomValidatorMessage:
     """
     We need to avoid evaluation of `lazy` translated `message` in `django.core.validators.BaseValidator.__init__`.
     https://github.com/django/django/blob/75ed5900321d170debef4ac452b8b3cf8a1c2384/django/core/validators.py#L297
@@ -274,7 +255,7 @@ class CustomValidatorMessage(object):
 
     def __init__(self, *args, **kwargs):
         self.message = kwargs.pop('message', self.message)
-        super(CustomValidatorMessage, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
 
 class MinValueValidator(CustomValidatorMessage, validators.MinValueValidator):
@@ -291,3 +272,7 @@ class MinLengthValidator(CustomValidatorMessage, validators.MinLengthValidator):
 
 class MaxLengthValidator(CustomValidatorMessage, validators.MaxLengthValidator):
     pass
+
+
+# Version Constants.
+PY36 = sys.version_info >= (3, 6)

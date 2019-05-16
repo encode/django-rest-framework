@@ -1,8 +1,5 @@
-from __future__ import unicode_literals
-
 from django.conf.urls import include, url
 from django.test import TestCase, override_settings
-from django.utils import six
 
 from rest_framework import generics, routers, serializers, status, viewsets
 from rest_framework.parsers import JSONParser
@@ -150,7 +147,7 @@ class RendererIntegrationTests(TestCase):
         resp = self.client.head('/')
         self.assertEqual(resp.status_code, DUMMYSTATUS)
         self.assertEqual(resp['Content-Type'], RendererA.media_type + '; charset=utf-8')
-        self.assertEqual(resp.content, six.b(''))
+        self.assertEqual(resp.content, b'')
 
     def test_default_renderer_serializes_content_on_accept_any(self):
         """If the Accept header is set to */* the default renderer should serialize the response."""
@@ -260,7 +257,7 @@ class Issue807Tests(TestCase):
         """
         headers = {"HTTP_ACCEPT": RendererA.media_type}
         resp = self.client.get('/', **headers)
-        expected = "{0}; charset={1}".format(RendererA.media_type, 'utf-8')
+        expected = "{}; charset={}".format(RendererA.media_type, 'utf-8')
         self.assertEqual(expected, resp['Content-Type'])
 
     def test_if_there_is_charset_specified_on_renderer_it_gets_appended(self):
@@ -270,7 +267,7 @@ class Issue807Tests(TestCase):
         """
         headers = {"HTTP_ACCEPT": RendererC.media_type}
         resp = self.client.get('/', **headers)
-        expected = "{0}; charset={1}".format(RendererC.media_type, RendererC.charset)
+        expected = "{}; charset={}".format(RendererC.media_type, RendererC.charset)
         self.assertEqual(expected, resp['Content-Type'])
 
     def test_content_type_set_explicitly_on_response(self):

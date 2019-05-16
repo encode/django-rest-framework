@@ -90,4 +90,4 @@ It is actually a misconception.  For example, take the following quote from Roy 
 The quote does not mention Accept headers, but it does make it clear that format suffixes should be considered an acceptable pattern.
 
 [cite]: http://tech.groups.yahoo.com/group/rest-discuss/message/5857
-[cite2]: http://tech.groups.yahoo.com/group/rest-discuss/message/14844
+[cite2]: https://groups.yahoo.com/neo/groups/rest-discuss/conversations/topics/14844

@@ -4,7 +4,7 @@ We have recently been [awarded a Mozilla grant](https://blog.mozilla.org/blog/20
 
 Additionally, we will be building on the realtime support that Django Channels provides, supporting and documenting how to build realtime APIs with REST framework. Again, this will include supporting work in the associated client libraries, making it easier to build richly interactive applications.
 
-The [Core API](http://www.coreapi.org) project will provide the foundations for our client library support, and will allow us to support interaction using a wide range of schemas and hypermedia formats. It's worth noting that these client libraries won't be tightly coupled to solely REST framework APIs either, and will be able to interact with *any* API that exposes a supported schema or hypermedia format.
+The [Core API](https://www.coreapi.org/) project will provide the foundations for our client library support, and will allow us to support interaction using a wide range of schemas and hypermedia formats. It's worth noting that these client libraries won't be tightly coupled to solely REST framework APIs either, and will be able to interact with *any* API that exposes a supported schema or hypermedia format.
 
 Specifically, the work includes:
 
@@ -34,7 +34,7 @@ In order to ensure that I can be fully focused on trying to secure a sustainable
 & well-funded open source business I will be leaving my current role at [DabApps](https://www.dabapps.com/)
 at the end of May 2016.
 
-I have formed a UK limited company, [Encode](http://www.encode.io), which will
+I have formed a UK limited company, [Encode](https://www.encode.io/), which will
 act as the business entity behind REST framework. I will be issuing monthly reports
 from Encode on progress both towards the Mozilla grant, and for development time
 funded via the [REST framework paid plans](funding.md).

@@ -117,5 +117,5 @@ If you wish to do so, it also provides an exporter that can export those schema 
 
 [cite]: https://tools.ietf.org/html/rfc7231#section-4.3.7
 [no-options]: https://www.mnot.net/blog/2012/10/29/NO_OPTIONS
-[json-schema]: http://json-schema.org/
+[json-schema]: https://json-schema.org/
 [drf-schema-adapter]: https://github.com/drf-forms/drf-schema-adapter
