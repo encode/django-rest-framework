@@ -56,7 +56,7 @@ msgstr "En-tête « token » non valide. Un token ne doit pas contenir de caract
 
 #: authentication.py:195
 msgid "Invalid token."
-msgstr "Token non valide."
+msgstr "Jeton non valide."
 
 #: authtoken/apps.py:7
 msgid "Auth Token"
@@ -132,7 +132,7 @@ msgstr "Méthode \"{method}\" non autorisée."
 
 #: exceptions.py:120
 msgid "Could not satisfy the request Accept header."
-msgstr "L'en-tête « Accept » n'a pas pu être satisfaite."
+msgstr "L'en-tête « Accept » n'a pas pu être satisfait."
 
 #: exceptions.py:132
 msgid "Unsupported media type \"{media_type}\" in request."
