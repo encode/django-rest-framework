@@ -57,6 +57,12 @@ class SimpleMetadata(BaseMetadata):
         serializers.DictField: 'nested object',
         serializers.Serializer: 'nested object',
     })
+    methods = {"PUT", "POST"}
+    attrs = [
+        'read_only', 'label', 'help_text',
+        'min_length', 'max_length',
+        'min_value', 'max_value',
+    ]
 
     def determine_metadata(self, request, view):
         metadata = OrderedDict()
@@ -76,7 +82,7 @@ class SimpleMetadata(BaseMetadata):
         the fields that are accepted for 'PUT' and 'POST' methods.
         """
         actions = {}
-        for method in {'PUT', 'POST'} & set(view.allowed_methods):
+        for method in self.methods & set(view.allowed_methods):
             view.request = clone_request(request, method)
             try:
                 # Test global permissions
@@ -121,13 +127,7 @@ class SimpleMetadata(BaseMetadata):
         field_info['type'] = self.label_lookup[field]
         field_info['required'] = getattr(field, 'required', False)
 
-        attrs = [
-            'read_only', 'label', 'help_text',
-            'min_length', 'max_length',
-            'min_value', 'max_value'
-        ]
-
-        for attr in attrs:
+        for attr in self.attrs:
             value = getattr(field, attr, None)
             if value is not None and value != '':
                 field_info[attr] = force_text(value, strings_only=True)
