@@ -5,6 +5,7 @@ import functools
 import inspect
 import re
 import uuid
+import warnings
 from collections import OrderedDict
 from collections.abc import Mapping
 
@@ -519,13 +520,25 @@ class Field:
         Test the given value against all the validators on the field,
         and either raise a `ValidationError` or simply return.
         """
+        from rest_framework.validators import ContextBasedValidator
+
         errors = []
         for validator in self.validators:
             if hasattr(validator, 'set_context'):
+                warnings.warn(
+                    "Method `set_context` on validators is deprecated and will "
+                    "no longer be called starting with 3.11. Instead derive the "
+                    "validator from `rest_framwork.validators.ContextBasedValidator` "
+                    "and accept the context as an additional argument.",
+                    DeprecationWarning, stacklevel=2
+                )
                 validator.set_context(self)
 
             try:
-                validator(value)
+                if isinstance(validator, ContextBasedValidator):
+                    validator(value, self)
+                else:
+                    validator(value)
             except ValidationError as exc:
                 # If the validation error contains a mapping of fields to
                 # errors then simply raise it immediately rather than
