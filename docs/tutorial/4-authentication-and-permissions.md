@@ -12,7 +12,7 @@ Currently our API doesn't have any restrictions on who can edit or delete code s
 We're going to make a couple of changes to our `Snippet` model class.
 First, let's add a couple of fields.  One of those fields will be used to represent the user who created the code snippet.  The other field will be used to store the highlighted HTML representation of the code.
 
-Add the following two fields to the `Snippet` model in `models.py`.
+Add the following two fields to the `Snippet` model in `snippets/models.py`.
 
     owner = models.ForeignKey('auth.User', related_name='snippets', on_delete=models.CASCADE)
     highlighted = models.TextField()
@@ -54,7 +54,7 @@ You might also want to create a few different users, to use for testing the API.
 
 ## Adding endpoints for our User models
 
-Now that we've got some users to work with, we'd better add representations of those users to our API.  Creating a new serializer is easy. In `serializers.py` add:
+Now that we've got some users to work with, we'd better add representations of those users to our API.  Creating a new serializer is easy. In `snippets/serializers.py` add:
 
     from django.contrib.auth.models import User
 
@@ -67,7 +67,7 @@ Now that we've got some users to work with, we'd better add representations of t
 
 Because `'snippets'` is a *reverse* relationship on the User model, it will not be included by default when using the `ModelSerializer` class, so we needed to add an explicit field for it.
 
-We'll also add a couple of views to `views.py`.  We'd like to just use read-only views for the user representations, so we'll use the `ListAPIView` and `RetrieveAPIView` generic class-based views.
+We'll also add a couple of views to `snippets/views.py`.  We'd like to just use read-only views for the user representations, so we'll use the `ListAPIView` and `RetrieveAPIView` generic class-based views.
 
     from django.contrib.auth.models import User
 
@@ -81,7 +81,7 @@ We'll also add a couple of views to `views.py`.  We'd like to just use read-only
         queryset = User.objects.all()
         serializer_class = UserSerializer
 
-Make sure to also import the `UserSerializer` class
+Make sure to also import the `UserSerializer` class in `snippets/serializers.py`:
 
     from snippets.serializers import UserSerializer
 
@@ -96,7 +96,7 @@ Right now, if we created a code snippet, there'd be no way of associating the us
 
 The way we deal with that is by overriding a `.perform_create()` method on our snippet views, that allows us to modify how the instance save is managed, and handle any information that is implicit in the incoming request or requested URL.
 
-On the `SnippetList` view class, add the following method:
+On the `SnippetList` view class, add the following method in `snippets/views.py`:
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -105,7 +105,7 @@ The `create()` method of our serializer will now be passed an additional `'owner
 
 ## Updating our serializer
 
-Now that snippets are associated with the user that created them, let's update our `SnippetSerializer` to reflect that.  Add the following field to the serializer definition in `serializers.py`:
+Now that snippets are associated with the user that created them, let's update our `SnippetSerializer` to reflect that.  Add the following field to the serializer definition in `snippets/serializers.py`:
 
     owner = serializers.ReadOnlyField(source='owner.username')
 
@@ -121,7 +121,7 @@ Now that code snippets are associated with users, we want to make sure that only
 
 REST framework includes a number of permission classes that we can use to restrict who can access a given view.  In this case the one we're looking for is `IsAuthenticatedOrReadOnly`, which will ensure that authenticated requests get read-write access, and unauthenticated requests get read-only access.
 
-First add the following import in the views module
+First add the following import in `snippets/views.py`.
 
     from rest_framework import permissions
 
@@ -133,7 +133,7 @@ Then, add the following property to **both** the `SnippetList` and `SnippetDetai
 
 If you open a browser and navigate to the browsable API at the moment, you'll find that you're no longer able to create new code snippets.  In order to do so we'd need to be able to login as a user.
 
-We can add a login view for use with the browsable API, by editing the URLconf in our project-level `urls.py` file.
+We can add a login view for use with the browsable API, by editing the URLconf in our project-level `tutorial/urls.py` file.
 
 Add the following import at the top of the file:
 
@@ -149,7 +149,7 @@ The `'api-auth/'` part of pattern can actually be whatever URL you want to use.
 
 Now if you open up the browser again and refresh the page you'll see a 'Login' link in the top right of the page.  If you log in as one of the users you created earlier, you'll be able to create code snippets again.
 
-Once you've created a few code snippets, navigate to the '/users/' endpoint, and notice that the representation includes a list of the snippet ids that are associated with each user, in each user's 'snippets' field.
+Once you've created a few code snippets, navigate to the /users/ endpoint, and notice that the representation includes a list of the snippet ids that are associated with each user, in each user's 'snippets' field.
 
 ## Object level permissions
 
@@ -157,7 +157,7 @@ Really we'd like all code snippets to be visible to anyone, but also make sure t
 
 To do that we're going to need to create a custom permission.
 
-In the snippets app, create a new file, `permissions.py`
+In the snippets app, create a new file, `snippets/permissions.py`
 
     from rest_framework import permissions
 
@@ -176,7 +176,7 @@ In the snippets app, create a new file, `permissions.py`
             # Write permissions are only allowed to the owner of the snippet.
             return obj.owner == request.user
 
-Now we can add that custom permission to our snippet instance endpoint, by editing the `permission_classes` property on the `SnippetDetail` view class:
+Now we can add that custom permission to our snippet instance endpoint, by editing the `permission_classes` property on the `SnippetDetail` view class in `snippets/views.py`:
 
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
