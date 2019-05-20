@@ -1373,3 +1373,64 @@ def test_schema_handles_exception():
     response.render()
     assert response.status_code == 403
     assert b"You do not have permission to perform this action." in response.content
+
+
+class SingleCommonPrefixViewSet(GenericViewSet):
+    permision_class = ()
+
+    @action(detail=False)
+    def route1(self, request):
+        return {}
+
+    @action(detail=False)
+    def route2(self, request):
+        return {}
+
+
+single_common_prefix_router = SimpleRouter()
+single_common_prefix_router.register(r'prefix', SingleCommonPrefixViewSet, basename="prefix")
+
+
+@pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
+@override_settings(ROOT_URLCONF=__name__, REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema'})
+class TestSingleCommonPrefix(TestCase):
+    """
+    Test for #6007
+    https://github.com/encode/django-rest-framework/issues/6007
+
+    get_schema_view raise exceptions.PermissionDenied() with single common prefix urlpatterns.
+
+    Initial cases here shown to be working as expected.
+    """
+
+    def test_single_prefix(self):
+        patterns = [
+            url(r'^single-common-prefix/', include(single_common_prefix_router.urls)),
+        ]
+
+        generator = SchemaGenerator(title='Single Prefix', patterns=patterns)
+        schema = generator.get_schema()
+        assert schema is not None
+
+        desc_1 = schema['route1']['route1'].description
+        desc_2 = schema['route2']['route2'].description
+        expected = coreapi.Document(
+            url='',
+            title='Single Prefix',
+            content={
+                'route1': {
+                    'route1': coreapi.Link(
+                        url='/single-common-prefix/prefix/route1/',
+                        action='get',
+                        description=desc_1)
+                },
+                'route2': {
+                    'route2': coreapi.Link(
+                        url='/single-common-prefix/prefix/route2/',
+                        action='get',
+                        description=desc_2)
+                }
+            }
+        )
+
+        assert schema == expected
