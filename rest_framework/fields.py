@@ -493,6 +493,11 @@ class Field:
         if data is None:
             if not self.allow_null:
                 self.fail('null')
+            # Nullable `source='*'` fields should not be skipped when its named
+            # field is given a null value. This is because `source='*'` means
+            # the field is passed the entire object, which is not null.
+            elif self.source == '*':
+                return (False, None)
             return (True, None)
 
         return (False, data)

@@ -317,7 +317,8 @@ class TestBaseSerializer:
 
 class TestStarredSource:
     """
-    Tests for `source='*'` argument, which is used for nested representations.
+    Tests for `source='*'` argument, which is often used for complex field or
+    nested representations.
 
     For example:
 
@@ -337,11 +338,28 @@ class TestStarredSource:
             c = serializers.IntegerField()
             d = serializers.IntegerField()
 
-        class TestSerializer(serializers.Serializer):
+        class NestedBaseSerializer(serializers.Serializer):
             nested1 = NestedSerializer1(source='*')
             nested2 = NestedSerializer2(source='*')
 
-        self.Serializer = TestSerializer
+        # nullable nested serializer testing
+        class NullableNestedSerializer(serializers.Serializer):
+            nested = NestedSerializer1(source='*', allow_null=True)
+
+        # nullable custom field testing
+        class CustomField(serializers.Field):
+            def to_representation(self, instance):
+                return getattr(instance, 'foo', None)
+
+            def to_internal_value(self, data):
+                return {'foo': data}
+
+        class NullableFieldSerializer(serializers.Serializer):
+            field = CustomField(source='*', allow_null=True)
+
+        self.Serializer = NestedBaseSerializer
+        self.NullableNestedSerializer = NullableNestedSerializer
+        self.NullableFieldSerializer = NullableFieldSerializer
 
     def test_nested_validate(self):
         """
@@ -356,6 +374,12 @@ class TestStarredSource:
             'd': 4
         }
 
+    def test_nested_null_validate(self):
+        serializer = self.NullableNestedSerializer(data={'nested': None})
+
+        # validation should fail (but not error) since nested fields are required
+        assert not serializer.is_valid()
+
     def test_nested_serialize(self):
         """
         An object can be serialized into a nested representation.
@@ -363,6 +387,20 @@ class TestStarredSource:
         instance = {'a': 1, 'b': 2, 'c': 3, 'd': 4}
         serializer = self.Serializer(instance)
         assert serializer.data == self.data
+
+    def test_field_validate(self):
+        serializer = self.NullableFieldSerializer(data={'field': 'bar'})
+
+        # validation should pass since no internal validation
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'foo': 'bar'}
+
+    def test_field_null_validate(self):
+        serializer = self.NullableFieldSerializer(data={'field': None})
+
+        # validation should pass since no internal validation
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'foo': None}
 
 
 class TestIncorrectlyConfigured:
