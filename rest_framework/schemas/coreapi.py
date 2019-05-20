@@ -85,6 +85,9 @@ def insert_into(target, keys, value):
         target = target[key]
 
     try:
+        if len(keys) == 1:
+            target[keys[-1]] = LinkNode()
+            target = target[keys[-1]]
         target.links.append((keys[-1], value))
     except TypeError:
         msg = INSERT_INTO_COLLISION_FMT.format(

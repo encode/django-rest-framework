@@ -1204,7 +1204,7 @@ class TestURLNamingCollisions(TestCase):
 
         # not important here
         desc_0 = schema['detail']['detail_export'].description
-        desc_1 = schema['detail_0'].description
+        desc_1 = schema['detail']['detail'].description
 
         expected = coreapi.Document(
             url='',
@@ -1214,13 +1214,13 @@ class TestURLNamingCollisions(TestCase):
                     'detail_export': coreapi.Link(
                         url='/from-routercollision/detail/export/',
                         action='get',
-                        description=desc_0)
-                },
-                'detail_0': coreapi.Link(
-                    url='/from-routercollision/detail/',
-                    action='get',
-                    description=desc_1
-                )
+                        description=desc_0),
+                    'detail': coreapi.Link(
+                        url='/from-routercollision/detail/',
+                        action='get',
+                        description=desc_1
+                    )
+                }
             }
         )
 
