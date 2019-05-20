@@ -630,6 +630,52 @@ class CursorPaginationTestsMixin:
 
         assert isinstance(self.pagination.to_html(), str)
 
+    def test_cursor_pagination_current_page_empty_forward(self):
+        # Regression test for #6504
+        self.pagination.base_url = "/"
+
+        # We have a cursor on the element at position 100, but this element doesn't exist
+        # anymore.
+        cursor = pagination.Cursor(reverse=False, offset=0, position=100)
+        url = self.pagination.encode_cursor(cursor)
+        self.pagination.base_url = "/"
+
+        # Loading the page with this cursor doesn't crash
+        (previous, current, next, previous_url, next_url) = self.get_pages(url)
+
+        # The previous url doesn't crash either
+        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
+
+        # And point to things that are not completely off.
+        assert previous == [7, 7, 7, 8, 9]
+        assert current == [9, 9, 9, 9, 9]
+        assert next == []
+        assert previous_url is not None
+        assert next_url is not None
+
+    def test_cursor_pagination_current_page_empty_reverse(self):
+        # Regression test for #6504
+        self.pagination.base_url = "/"
+
+        # We have a cursor on the element at position 100, but this element doesn't exist
+        # anymore.
+        cursor = pagination.Cursor(reverse=True, offset=0, position=100)
+        url = self.pagination.encode_cursor(cursor)
+        self.pagination.base_url = "/"
+
+        # Loading the page with this cursor doesn't crash
+        (previous, current, next, previous_url, next_url) = self.get_pages(url)
+
+        # The previous url doesn't crash either
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+
+        # And point to things that are not completely off.
+        assert previous == [7, 7, 7, 7, 8]
+        assert current == []
+        assert next is None
+        assert previous_url is not None
+        assert next_url is None
+
     def test_cursor_pagination_with_page_size(self):
         (previous, current, next, previous_url, next_url) = self.get_pages('/?page_size=20')
 
