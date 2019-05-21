@@ -3,7 +3,6 @@ Provides generic filtering backends that can be used to filter the results
 returned by list views.
 """
 import operator
-import warnings
 from functools import reduce
 
 from django.core.exceptions import ImproperlyConfigured
@@ -14,10 +13,7 @@ from django.template import loader
 from django.utils.encoding import force_text
 from django.utils.translation import gettext_lazy as _
 
-from rest_framework import RemovedInDRF310Warning
-from rest_framework.compat import (
-    coreapi, coreschema, distinct, is_guardian_installed
-)
+from rest_framework.compat import coreapi, coreschema, distinct
 from rest_framework.settings import api_settings
 
 
@@ -315,41 +311,3 @@ class OrderingFilter(BaseFilterBackend):
                 },
             },
         ]
-
-
-class DjangoObjectPermissionsFilter(BaseFilterBackend):
-    """
-    A filter backend that limits results to those where the requesting user
-    has read object level permissions.
-    """
-    def __init__(self):
-        warnings.warn(
-            "`DjangoObjectPermissionsFilter` has been deprecated and moved to "
-            "the 3rd-party django-rest-framework-guardian package.",
-            RemovedInDRF310Warning, stacklevel=2
-        )
-        assert is_guardian_installed(), 'Using DjangoObjectPermissionsFilter, but django-guardian is not installed'
-
-    perm_format = '%(app_label)s.view_%(model_name)s'
-
-    def filter_queryset(self, request, queryset, view):
-        # We want to defer this import until run-time, rather than import-time.
-        # See https://github.com/encode/django-rest-framework/issues/4608
-        # (Also see #1624 for why we need to make this import explicitly)
-        from guardian import VERSION as guardian_version
-        from guardian.shortcuts import get_objects_for_user
-
-        extra = {}
-        user = request.user
-        model_cls = queryset.model
-        kwargs = {
-            'app_label': model_cls._meta.app_label,
-            'model_name': model_cls._meta.model_name
-        }
-        permission = self.perm_format % kwargs
-        if tuple(guardian_version) >= (1, 3):
-            # Maintain behavior compatibility with versions prior to 1.3
-            extra = {'accept_global_perms': False}
-        else:
-            extra = {}
-        return get_objects_for_user(user, permission, queryset, **extra)

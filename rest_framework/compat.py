@@ -131,13 +131,6 @@ except ImportError:
     requests = None
 
 
-def is_guardian_installed():
-    """
-    django-guardian is optional and only imported if in INSTALLED_APPS.
-    """
-    return 'guardian' in settings.INSTALLED_APPS
-
-
 # PATCH method is not implemented by Django
 if 'patch' not in View.http_method_names:
     View.http_method_names = View.http_method_names + ['patch']
