@@ -22,9 +22,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.urls import NoReverseMatch
 from django.utils.deprecation import RenameMethodsBase
 
-from rest_framework import (
-    RemovedInDRF310Warning, RemovedInDRF311Warning, views
-)
+from rest_framework import RemovedInDRF311Warning, views
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.schemas import SchemaGenerator
@@ -34,28 +32,6 @@ from rest_framework.urlpatterns import format_suffix_patterns
 
 Route = namedtuple('Route', ['url', 'mapping', 'name', 'detail', 'initkwargs'])
 DynamicRoute = namedtuple('DynamicRoute', ['url', 'name', 'detail', 'initkwargs'])
-
-
-class DynamicDetailRoute:
-    def __new__(cls, url, name, initkwargs):
-        warnings.warn(
-            "`DynamicDetailRoute` is deprecated and will be removed in 3.10 "
-            "in favor of `DynamicRoute`, which accepts a `detail` boolean. Use "
-            "`DynamicRoute(url, name, True, initkwargs)` instead.",
-            RemovedInDRF310Warning, stacklevel=2
-        )
-        return DynamicRoute(url, name, True, initkwargs)
-
-
-class DynamicListRoute:
-    def __new__(cls, url, name, initkwargs):
-        warnings.warn(
-            "`DynamicListRoute` is deprecated and will be removed in 3.10 in "
-            "favor of `DynamicRoute`, which accepts a `detail` boolean. Use "
-            "`DynamicRoute(url, name, False, initkwargs)` instead.",
-            RemovedInDRF310Warning, stacklevel=2
-        )
-        return DynamicRoute(url, name, False, initkwargs)
 
 
 def escape_curly_brackets(url_path):
