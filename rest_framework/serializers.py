@@ -361,18 +361,17 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
             fields[key] = value
         return fields
 
-    @cached_property
+    @property
     def _writable_fields(self):
-        return [
-            field for field in self.fields.values() if not field.read_only
-        ]
+        for field in self.fields.values():
+            if not field.read_only:
+                yield field
 
-    @cached_property
+    @property
     def _readable_fields(self):
-        return [
-            field for field in self.fields.values()
-            if not field.write_only
-        ]
+        for field in self.fields.values():
+            if not field.write_only:
+                yield field
 
     def get_fields(self):
         """
