@@ -25,9 +25,9 @@ ISO_8601 = 'iso-8601'
 default_app_config = 'rest_framework.apps.RestFrameworkConfig'
 
 
-class RemovedInDRF310Warning(DeprecationWarning):
+class RemovedInDRF311Warning(DeprecationWarning):
     pass
 
 
-class RemovedInDRF311Warning(PendingDeprecationWarning):
+class RemovedInDRF312Warning(PendingDeprecationWarning):
     pass
