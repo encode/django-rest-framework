@@ -7,11 +7,9 @@ based views, as well as the `@detail_route` and `@list_route` decorators, which 
 used to annotate methods on viewsets that should be included by routers.
 """
 import types
-import warnings
 
 from django.forms.utils import pretty_name
 
-from rest_framework import RemovedInDRF310Warning
 from rest_framework.views import APIView
 
 
@@ -214,39 +212,3 @@ class MethodMapper(dict):
 
     def trace(self, func):
         return self._map('trace', func)
-
-
-def detail_route(methods=None, **kwargs):
-    """
-    Used to mark a method on a ViewSet that should be routed for detail requests.
-    """
-    warnings.warn(
-        "`detail_route` is deprecated and will be removed in 3.10 in favor of "
-        "`action`, which accepts a `detail` bool. Use `@action(detail=True)` instead.",
-        RemovedInDRF310Warning, stacklevel=2
-    )
-
-    def decorator(func):
-        func = action(methods, detail=True, **kwargs)(func)
-        if 'url_name' not in kwargs:
-            func.url_name = func.url_path.replace('_', '-')
-        return func
-    return decorator
-
-
-def list_route(methods=None, **kwargs):
-    """
-    Used to mark a method on a ViewSet that should be routed for list requests.
-    """
-    warnings.warn(
-        "`list_route` is deprecated and will be removed in 3.10 in favor of "
-        "`action`, which accepts a `detail` bool. Use `@action(detail=False)` instead.",
-        RemovedInDRF310Warning, stacklevel=2
-    )
-
-    def decorator(func):
-        func = action(methods, detail=False, **kwargs)(func)
-        if 'url_name' not in kwargs:
-            func.url_name = func.url_path.replace('_', '-')
-        return func
-    return decorator

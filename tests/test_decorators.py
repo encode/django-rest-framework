@@ -1,12 +1,11 @@
 import pytest
 from django.test import TestCase
 
-from rest_framework import RemovedInDRF310Warning, status
+from rest_framework import status
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.decorators import (
-    action, api_view, authentication_classes, detail_route, list_route,
-    parser_classes, permission_classes, renderer_classes, schema,
-    throttle_classes
+    action, api_view, authentication_classes, parser_classes,
+    permission_classes, renderer_classes, schema, throttle_classes
 )
 from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAuthenticated
@@ -285,39 +284,3 @@ class ActionDecoratorTestCase(TestCase):
             @test_action.mapping.post
             def test_action():
                 raise NotImplementedError
-
-    def test_detail_route_deprecation(self):
-        with pytest.warns(RemovedInDRF310Warning) as record:
-            @detail_route()
-            def view(request):
-                raise NotImplementedError
-
-        assert len(record) == 1
-        assert str(record[0].message) == (
-            "`detail_route` is deprecated and will be removed in "
-            "3.10 in favor of `action`, which accepts a `detail` bool. Use "
-            "`@action(detail=True)` instead."
-        )
-
-    def test_list_route_deprecation(self):
-        with pytest.warns(RemovedInDRF310Warning) as record:
-            @list_route()
-            def view(request):
-                raise NotImplementedError
-
-        assert len(record) == 1
-        assert str(record[0].message) == (
-            "`list_route` is deprecated and will be removed in "
-            "3.10 in favor of `action`, which accepts a `detail` bool. Use "
-            "`@action(detail=False)` instead."
-        )
-
-    def test_route_url_name_from_path(self):
-        # pre-3.8 behavior was to base the `url_name` off of the `url_path`
-        with pytest.warns(RemovedInDRF310Warning):
-            @list_route(url_path='foo_bar')
-            def view(request):
-                raise NotImplementedError
-
-        assert view.url_path == 'foo_bar'
-        assert view.url_name == 'foo-bar'
