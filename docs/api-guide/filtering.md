@@ -2,11 +2,11 @@ source: filters.py
 
 # Filtering
 
-> The root QuerySet provided by the Manager describes all objects in the database table.  Usually, though, you'll need to select only a subset of the complete set of objects.
+> The root QuerySet provided by the Manager describes all objects in the database table. Usually, though, you'll need to select only a subset of the complete set of objects.
 >
 > &mdash; [Django documentation][cite]
 
-The default behavior of REST framework's generic list views is to return the entire queryset for a model manager.  Often you will want your API to restrict the items that are returned by the queryset.
+The default behavior of REST framework's generic list views is to return the entire queryset for a model manager. Often you will want your API to restrict the items that are returned by the queryset.
 
 The simplest way to filter the queryset of any view that subclasses `GenericAPIView` is to override the `.get_queryset()` method.
 
@@ -118,7 +118,7 @@ For instance, given the previous example, and a product with an id of `4675`, th
 
 ## Overriding the initial queryset
 
-Note that you can use both an overridden `.get_queryset()` and generic filtering together, and everything will work as expected.  For example, if `Product` had a many-to-many relationship with `User`, named `purchase`, you might want to write a view like this:
+Note that you can use both an overridden `.get_queryset()` and generic filtering together, and everything will work as expected. For example, if `Product` had a many-to-many relationship with `User`, named `purchase`, you might want to write a view like this:
 
     class PurchasedProductsList(generics.ListAPIView):
         """
@@ -185,7 +185,7 @@ When in use, the browsable API will include a `SearchFilter` control:
 
 ![Search Filter](../img/search-filter.png)
 
-The `SearchFilter` class will only be applied if the view has a `search_fields` attribute set.  The `search_fields` attribute should be a list of names of text type fields on the model, such as `CharField` or `TextField`.
+The `SearchFilter` class will only be applied if the view has a `search_fields` attribute set. The `search_fields` attribute should be a list of names of text type fields on the model, such as `CharField` or `TextField`.
 
     from rest_framework import filters
 
@@ -203,13 +203,13 @@ You can also perform a related lookup on a ForeignKey or ManyToManyField with th
 
     search_fields = ('username', 'email', 'profile__profession')
 
-By default, searches will use case-insensitive partial matches.  The search parameter may contain multiple search terms, which should be whitespace and/or comma separated.  If multiple search terms are used then objects will be returned in the list only if all the provided terms are matched.
+By default, searches will use case-insensitive partial matches. The search parameter may contain multiple search terms, which should be whitespace and/or comma separated. If multiple search terms are used then objects will be returned in the list only if all the provided terms are matched.
 
 The search behavior may be restricted by prepending various characters to the `search_fields`.
 
 * '^' Starts-with search.
 * '=' Exact matches.
-* '@' Full-text search.  (Currently only supported Django's MySQL backend.)
+* '@' Full-text search. (Currently only supported Django's MySQL backend.)
 * '$' Regex search.
 
 For example:
@@ -254,7 +254,7 @@ Multiple orderings may also be specified:
 
 ### Specifying which fields may be ordered against
 
-It's recommended that you explicitly specify which fields the API should allowing in the ordering filter.  You can do this by setting an `ordering_fields` attribute on the view, like so:
+It's recommended that you explicitly specify which fields the API should allow in the ordering filter. You can do this by setting an `ordering_fields` attribute on the view, like so:
 
     class UserListView(generics.ListAPIView):
         queryset = User.objects.all()
@@ -278,7 +278,7 @@ If you are confident that the queryset being used by the view doesn't contain an
 
 If an `ordering` attribute is set on the view, this will be used as the default ordering.
 
-Typically you'd instead control this by setting `order_by` on the initial queryset, but using the `ordering` parameter on the view allows you to specify the ordering in a way that it can then be passed automatically as context to a rendered template.  This makes it possible to automatically render column headers differently if they are being used to order the results.
+Typically you'd instead control this by setting `order_by` on the initial queryset, but using the `ordering` parameter on the view allows you to specify the ordering in a way that it can then be passed automatically as context to a rendered template. This makes it possible to automatically render column headers differently if they are being used to order the results.
 
     class UserListView(generics.ListAPIView):
         queryset = User.objects.all()
@@ -293,7 +293,7 @@ The `ordering` attribute may be either a string or a list/tuple of strings.
 
 ## DjangoObjectPermissionsFilter
 
-The `DjangoObjectPermissionsFilter` is intended to be used together with the [`django-guardian`][guardian] package, with custom `'view'` permissions added.  The filter will ensure that querysets only returns objects for which the user has the appropriate view permission.
+The `DjangoObjectPermissionsFilter` is intended to be used together with the [`django-guardian`][guardian] package, with custom `'view'` permissions added. The filter will ensure that querysets only return objects for which the user has the appropriate view permission.
 
 ---
 
@@ -301,7 +301,7 @@ The `DjangoObjectPermissionsFilter` is intended to be used together with the [`d
 
 ---
 
-If you're using `DjangoObjectPermissionsFilter`, you'll probably also want to add an appropriate object permissions class, to ensure that users can only operate on instances if they have the appropriate object permissions.  The easiest way to do this is to subclass `DjangoObjectPermissions` and add `'view'` permissions to the `perms_map` attribute.
+If you're using `DjangoObjectPermissionsFilter`, you'll probably also want to add an appropriate object permissions class, to ensure that users can only operate on instances if they have the appropriate object permissions. The easiest way to do this is to subclass `DjangoObjectPermissions` and add `'view'` permissions to the `perms_map` attribute.
 
 A complete example using both `DjangoObjectPermissionsFilter` and `DjangoObjectPermissions` might look something like this.
 
@@ -342,7 +342,7 @@ For more information on adding `'view'` permissions for models, see the [relevan
 
 You can also provide your own generic filtering backend, or write an installable app for other developers to use.
 
-To do so override `BaseFilterBackend`, and override the `.filter_queryset(self, request, queryset, view)` method.  The method should return a new, filtered queryset.
+To do so override `BaseFilterBackend`, and override the `.filter_queryset(self, request, queryset, view)` method. The method should return a new, filtered queryset.
 
 As well as allowing clients to perform searches and filtering, generic filter backends can be useful for restricting which objects should be visible to any given request or user.
 
