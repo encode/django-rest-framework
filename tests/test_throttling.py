@@ -30,12 +30,24 @@ class User3MinRateThrottle(UserRateThrottle):
     scope = 'minutes'
 
 
+class User6MinRateThrottle(UserRateThrottle):
+    rate = '6/min'
+    scope = 'minutes'
+
+
 class NonTimeThrottle(BaseThrottle):
     def allow_request(self, request, view):
         if not hasattr(self.__class__, 'called'):
             self.__class__.called = True
             return True
         return False
+
+
+class MockView_DoubleThrottling(APIView):
+    throttle_classes = (User3SecRateThrottle, User6MinRateThrottle,)
+
+    def get(self, request):
+        return Response('foo')
 
 
 class MockView(APIView):
@@ -80,7 +92,8 @@ class ThrottlingTests(TestCase):
         """
         Explicitly set the timer, overriding time.time()
         """
-        view.throttle_classes[0].timer = lambda self: value
+        for cls in view.throttle_classes:
+            cls.timer = lambda self: value
 
     def test_request_throttling_expires(self):
         """
@@ -114,6 +127,37 @@ class ThrottlingTests(TestCase):
         PerUserThrottles
         """
         self.ensure_is_throttled(MockView, 200)
+
+    def test_request_throttling_multiple_throttles(self):
+        """
+        Ensure all throttle classes see each request even when the request is
+        already being throttled
+        """
+        self.set_throttle_timer(MockView_DoubleThrottling, 0)
+        request = self.factory.get('/')
+        for dummy in range(4):
+            response = MockView_DoubleThrottling.as_view()(request)
+        assert response.status_code == 429
+        assert int(response['retry-after']) == 1
+
+        # At this point our client made 4 requests (one was throttled) in a
+        # second. If we advance the timer by one additional second, the client
+        # should be allowed to make 2 more before being throttled by the 2nd
+        # throttle class, which has a limit of 6 per minute.
+        self.set_throttle_timer(MockView_DoubleThrottling, 1)
+        for dummy in range(2):
+            response = MockView_DoubleThrottling.as_view()(request)
+            assert response.status_code == 200
+
+        response = MockView_DoubleThrottling.as_view()(request)
+        assert response.status_code == 429
+        assert int(response['retry-after']) == 59
+
+        # Just to make sure check again after two more seconds.
+        self.set_throttle_timer(MockView_DoubleThrottling, 2)
+        response = MockView_DoubleThrottling.as_view()(request)
+        assert response.status_code == 429
+        assert int(response['retry-after']) == 58
 
     def ensure_response_header_contains_proper_throttle_field(self, view, expected_headers):
         """
