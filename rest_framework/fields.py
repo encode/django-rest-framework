@@ -1610,10 +1610,10 @@ class ListField(Field):
         super().__init__(*args, **kwargs)
         self.child.bind(field_name='', parent=self)
         if self.max_length is not None:
-            message = self.error_messages['max_length'].format(max_length=self.max_length)
+            message = lazy(self.error_messages['max_length'].format, str)(max_length=self.max_length)
             self.validators.append(MaxLengthValidator(self.max_length, message=message))
         if self.min_length is not None:
-            message = self.error_messages['min_length'].format(min_length=self.min_length)
+            message = lazy(self.error_messages['min_length'].format, str)(min_length=self.min_length)
             self.validators.append(MinLengthValidator(self.min_length, message=message))
 
     def get_value(self, dictionary):
