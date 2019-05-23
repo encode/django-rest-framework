@@ -1232,6 +1232,11 @@ class ModelSerializer(Serializer):
             # `allow_blank` is only valid for textual fields.
             field_kwargs.pop('allow_blank', None)
 
+        if postgres_fields and isinstance(model_field, postgres_fields.JSONField):
+            # Populate the `encoder` argument of `JSONField` instances generated
+            # for the PostgreSQL specific `JSONField`.
+            field_kwargs['encoder'] = getattr(model_field, 'encoder', None)
+
         if postgres_fields and isinstance(model_field, postgres_fields.ArrayField):
             # Populate the `child` argument on `ListField` instances generated
             # for the PostgreSQL specific `ArrayField`.

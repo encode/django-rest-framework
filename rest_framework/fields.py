@@ -1746,6 +1746,7 @@ class JSONField(Field):
 
     def __init__(self, *args, **kwargs):
         self.binary = kwargs.pop('binary', False)
+        self.encoder = kwargs.pop('encoder', None)
         super().__init__(*args, **kwargs)
 
     def get_value(self, dictionary):
@@ -1767,14 +1768,14 @@ class JSONField(Field):
                     data = data.decode()
                 return json.loads(data)
             else:
-                json.dumps(data)
+                json.dumps(data, cls=self.encoder)
         except (TypeError, ValueError):
             self.fail('invalid')
         return data
 
     def to_representation(self, value):
         if self.binary:
-            value = json.dumps(value)
+            value = json.dumps(value, cls=self.encoder)
             value = value.encode()
         return value
 
