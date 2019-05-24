@@ -501,9 +501,10 @@ Note that the child field **must** be an instance of `CharField`, as the hstore 
 
 A field class that validates that the incoming data structure consists of valid JSON primitives. In its alternate binary mode, it will represent and validate JSON-encoded binary strings.
 
-**Signature**: `JSONField(binary)`
+**Signature**: `JSONField(binary, encoder)`
 
 - `binary` - If set to `True` then the field will output and validate a JSON encoded string, rather than a primitive data structure. Defaults to `False`.
+- `encoder` - Use this JSON encoder to serialize input object. Defaults to `None`.
 
 ---
 

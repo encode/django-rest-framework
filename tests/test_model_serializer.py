@@ -13,6 +13,7 @@ from collections import OrderedDict
 import django
 import pytest
 from django.core.exceptions import ImproperlyConfigured
+from django.core.serializers.json import DjangoJSONEncoder
 from django.core.validators import (
     MaxValueValidator, MinLengthValidator, MinValueValidator
 )
@@ -452,15 +453,17 @@ class TestPosgresFieldsMapping(TestCase):
     def test_json_field(self):
         class JSONFieldModel(models.Model):
             json_field = postgres_fields.JSONField()
+            json_field_with_encoder = postgres_fields.JSONField(encoder=DjangoJSONEncoder)
 
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
                 model = JSONFieldModel
-                fields = ['json_field']
+                fields = ['json_field', 'json_field_with_encoder']
 
         expected = dedent("""
             TestSerializer():
-                json_field = JSONField(style={'base_template': 'textarea.html'})
+                json_field = JSONField(encoder=None, style={'base_template': 'textarea.html'})
+                json_field_with_encoder = JSONField(encoder=<class 'django.core.serializers.json.DjangoJSONEncoder'>, style={'base_template': 'textarea.html'})
         """)
         self.assertEqual(repr(TestSerializer()), expected)
 
