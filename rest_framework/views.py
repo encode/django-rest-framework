@@ -9,7 +9,7 @@ from django.http.response import HttpResponseBase
 from django.utils.cache import cc_delim_re, patch_vary_headers
 from django.utils.encoding import smart_text
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import View
+from django.views import View
 
 from rest_framework import exceptions, status
 from rest_framework.request import Request
