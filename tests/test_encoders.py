@@ -93,3 +93,17 @@ class JSONEncoderTests(TestCase):
         """
         foo = MockList()
         assert self.encoder.default(foo) == [1, 2, 3]
+
+    def test_encode_int_outside_rfc7159_range(self):
+        # Values lower than minimum allowed must fail
+        with pytest.raises(ValueError):
+            self.encoder.default(self.encoder.rfc7159_min_number - 1)
+
+        # Values greater than maximum allowed must fail
+        with pytest.raises(ValueError):
+            self.encoder.default(self.encoder.rfc7159_max_number + 1)
+
+        # Values within RFC 7159 range are allowed
+        self.encoder.default(self.encoder.rfc7159_min_number) == self.encoder.rfc7159_min_number
+        self.encoder.default(self.encoder.rfc7159_max_number) == self.encoder.rfc7159_max_number
+        self.encoder.default(42) == 42

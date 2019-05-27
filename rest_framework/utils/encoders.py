@@ -19,6 +19,11 @@ class JSONEncoder(json.JSONEncoder):
     JSONEncoder subclass that knows how to encode date/time/timedelta,
     decimal types, generators and other basic python objects.
     """
+
+    enforce_rfc7159_numbers = True
+    rfc7159_min_number = -(2**53) + 1
+    rfc7159_max_number = (2**53) - 1
+
     def default(self, obj):
         # For Date Time string spec, see ECMA 262
         # https://ecma-international.org/ecma-262/5.1/#sec-15.9.1.15
@@ -63,4 +68,17 @@ class JSONEncoder(json.JSONEncoder):
                 pass
         elif hasattr(obj, '__iter__'):
             return tuple(item for item in obj)
+        elif isinstance(obj, int):
+            # If RFC-7159 is enforced, numbers must not be outside its range
+            if self.enforce_rfc7159_numbers and not (
+                self.rfc7159_min_number <= obj <= self.rfc7159_max_number
+            ):
+                raise ValueError(
+                    "Cannot render number {} as integer if RFC 7159 is enforced. "
+                    "Value must be between {} and {}".format(
+                        obj, self.rfc7159_min_number, self.rfc7159_max_number
+                    )
+                )
+            else:
+                return obj
         return super().default(obj)
