@@ -175,9 +175,7 @@ You may also want to [follow the author on Twitter][twitter].
 
 # Security
 
-If you believe you've found something in Django REST framework which has security implications, please **do not raise the issue in a public forum**.
-
-Send a description of the issue via email to [rest-framework-security@googlegroups.com][security-mail].  The project maintainers will then work with you to resolve any issues where required, prior to any public disclosure.
+Please see the [security policy][security-policy].
 
 [build-status-image]: https://secure.travis-ci.org/encode/django-rest-framework.svg?branch=master
 [travis]: https://travis-ci.org/encode/django-rest-framework?branch=master
@@ -225,4 +223,4 @@ Send a description of the issue via email to [rest-framework-security@googlegrou
 [image]: https://www.django-rest-framework.org/img/quickstart.png
 
 [docs]: https://www.django-rest-framework.org/
-[security-mail]: mailto:rest-framework-security@googlegroups.com
+[security-policy]: https://github.com/encode/django-rest-framework/security/policy
