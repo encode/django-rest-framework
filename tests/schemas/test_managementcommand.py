@@ -45,7 +45,7 @@ class GenerateSchemaTests(TestCase):
                      '--description=Sample description',
                      stdout=self.out)
         # Check valid YAML was output.
-        schema = yaml.load(self.out.getvalue())
+        schema = yaml.safe_load(self.out.getvalue())
         assert schema['openapi'] == '3.0.2'
 
     def test_renders_openapi_json_schema(self):
