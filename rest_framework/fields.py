@@ -12,7 +12,8 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.validators import (
-    EmailValidator, RegexValidator, URLValidator, ip_address_validators
+    EmailValidator, MaxLengthValidator, MaxValueValidator, MinLengthValidator,
+    MinValueValidator, RegexValidator, URLValidator, ip_address_validators
 )
 from django.forms import FilePathField as DjangoFilePathField
 from django.forms import ImageField as DjangoImageField
@@ -23,20 +24,17 @@ from django.utils.dateparse import (
 from django.utils.duration import duration_string
 from django.utils.encoding import is_protected_type, smart_text
 from django.utils.formats import localize_input, sanitize_separators
-from django.utils.functional import lazy
 from django.utils.ipv6 import clean_ipv6_address
 from django.utils.timezone import utc
 from django.utils.translation import gettext_lazy as _
 from pytz.exceptions import InvalidTimeError
 
 from rest_framework import ISO_8601
-from rest_framework.compat import (
-    MaxLengthValidator, MaxValueValidator, MinLengthValidator,
-    MinValueValidator, ProhibitNullCharactersValidator
-)
+from rest_framework.compat import ProhibitNullCharactersValidator
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, humanize_datetime, json, representation
+from rest_framework.utils.formatting import lazy_format
 
 
 class empty:
@@ -749,12 +747,11 @@ class CharField(Field):
         self.min_length = kwargs.pop('min_length', None)
         super().__init__(**kwargs)
         if self.max_length is not None:
-            message = lazy(self.error_messages['max_length'].format, str)(max_length=self.max_length)
+            message = lazy_format(self.error_messages['max_length'], max_length=self.max_length)
             self.validators.append(
                 MaxLengthValidator(self.max_length, message=message))
         if self.min_length is not None:
-            message = lazy(
-                self.error_messages['min_length'].format, str)(min_length=self.min_length)
+            message = lazy_format(self.error_messages['min_length'], min_length=self.min_length)
             self.validators.append(
                 MinLengthValidator(self.min_length, message=message))
 
@@ -915,13 +912,11 @@ class IntegerField(Field):
         self.min_value = kwargs.pop('min_value', None)
         super().__init__(**kwargs)
         if self.max_value is not None:
-            message = lazy(
-                self.error_messages['max_value'].format, str)(max_value=self.max_value)
+            message = lazy_format(self.error_messages['max_value'], max_value=self.max_value)
             self.validators.append(
                 MaxValueValidator(self.max_value, message=message))
         if self.min_value is not None:
-            message = lazy(
-                self.error_messages['min_value'].format, str)(min_value=self.min_value)
+            message = lazy_format(self.error_messages['min_value'], min_value=self.min_value)
             self.validators.append(
                 MinValueValidator(self.min_value, message=message))
 
@@ -953,15 +948,11 @@ class FloatField(Field):
         self.min_value = kwargs.pop('min_value', None)
         super().__init__(**kwargs)
         if self.max_value is not None:
-            message = lazy(
-                self.error_messages['max_value'].format,
-                str)(max_value=self.max_value)
+            message = lazy_format(self.error_messages['max_value'], max_value=self.max_value)
             self.validators.append(
                 MaxValueValidator(self.max_value, message=message))
         if self.min_value is not None:
-            message = lazy(
-                self.error_messages['min_value'].format,
-                str)(min_value=self.min_value)
+            message = lazy_format(self.error_messages['min_value'], min_value=self.min_value)
             self.validators.append(
                 MinValueValidator(self.min_value, message=message))
 
@@ -1012,14 +1003,11 @@ class DecimalField(Field):
         super().__init__(**kwargs)
 
         if self.max_value is not None:
-            message = lazy(
-                self.error_messages['max_value'].format,
-                str)(max_value=self.max_value)
+            message = lazy_format(self.error_messages['max_value'], max_value=self.max_value)
             self.validators.append(
                 MaxValueValidator(self.max_value, message=message))
         if self.min_value is not None:
-            message = lazy(
-                self.error_messages['min_value'].format, str)(min_value=self.min_value)
+            message = lazy_format(self.error_messages['min_value'], min_value=self.min_value)
             self.validators.append(
                 MinValueValidator(self.min_value, message=message))
 
@@ -1357,15 +1345,11 @@ class DurationField(Field):
         self.min_value = kwargs.pop('min_value', None)
         super().__init__(**kwargs)
         if self.max_value is not None:
-            message = lazy(
-                self.error_messages['max_value'].format,
-                str)(max_value=self.max_value)
+            message = lazy_format(self.error_messages['max_value'], max_value=self.max_value)
             self.validators.append(
                 MaxValueValidator(self.max_value, message=message))
         if self.min_value is not None:
-            message = lazy(
-                self.error_messages['min_value'].format,
-                str)(min_value=self.min_value)
+            message = lazy_format(self.error_messages['min_value'], min_value=self.min_value)
             self.validators.append(
                 MinValueValidator(self.min_value, message=message))
 
@@ -1610,10 +1594,10 @@ class ListField(Field):
         super().__init__(*args, **kwargs)
         self.child.bind(field_name='', parent=self)
         if self.max_length is not None:
-            message = lazy(self.error_messages['max_length'].format, str)(max_length=self.max_length)
+            message = lazy_format(self.error_messages['max_length'], max_length=self.max_length)
             self.validators.append(MaxLengthValidator(self.max_length, message=message))
         if self.min_length is not None:
-            message = lazy(self.error_messages['min_length'].format, str)(min_length=self.min_length)
+            message = lazy_format(self.error_messages['min_length'], min_length=self.min_length)
             self.validators.append(MinLengthValidator(self.min_length, message=message))
 
     def get_value(self, dictionary):
@@ -1887,8 +1871,7 @@ class ModelField(Field):
         max_length = kwargs.pop('max_length', None)
         super().__init__(**kwargs)
         if max_length is not None:
-            message = lazy(
-                self.error_messages['max_length'].format, str)(max_length=self.max_length)
+            message = lazy_format(self.error_messages['max_length'], max_length=self.max_length)
             self.validators.append(
                 MaxLengthValidator(self.max_length, message=message))
 
