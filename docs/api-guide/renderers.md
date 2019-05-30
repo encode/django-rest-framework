@@ -534,7 +534,7 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 [messagepack]: https://msgpack.org/
 [juanriaza]: https://github.com/juanriaza
 [mjumbewu]: https://github.com/mjumbewu
-[flipperpa]: https://githuc.com/flipperpa
+[flipperpa]: https://github.com/flipperpa
 [wharton]: https://github.com/wharton
 [drf-renderer-xlsx]: https://github.com/wharton/drf-renderer-xlsx
 [vbabiy]: https://github.com/vbabiy
