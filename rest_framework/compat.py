@@ -128,7 +128,7 @@ if 'patch' not in View.http_method_names:
     View.http_method_names = View.http_method_names + ['patch']
 
 
-# Markdown is optional (version 2.6+ required)
+# Markdown is optional (version 3.0+ required)
 try:
     import markdown
 
@@ -206,7 +206,7 @@ if markdown is not None and pygments is not None:
             return ret.split("\n")
 
     def md_filter_add_syntax_highlight(md):
-        md.preprocessors.add('highlight', CodeBlockPreprocessor(), "_begin")
+        md.preprocessors.register(CodeBlockPreprocessor(), 'highlight', 40)
         return True
 else:
     def md_filter_add_syntax_highlight(md):
