@@ -128,7 +128,7 @@ if 'patch' not in View.http_method_names:
     View.http_method_names = View.http_method_names + ['patch']
 
 
-# Markdown is optional (version 2.6+ required)
+# Markdown is optional (version 3.0+ required)
 try:
     import markdown
 
