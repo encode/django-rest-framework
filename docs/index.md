@@ -95,7 +95,6 @@ The following packages are optional:
 * [coreapi][coreapi] (1.32.0+) - Schema generation support.
 * [Markdown][markdown] (2.6.0+) - Markdown support for the browsable API.
 * [django-filter][django-filter] (1.0.1+) - Filtering support.
-* [django-crispy-forms][django-crispy-forms] - Improved HTML display for filtering.
 * [django-guardian][django-guardian] (1.1.1+) - Object level permissions support.
 
 ## Installation
@@ -239,7 +238,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [coreapi]: https://pypi.org/project/coreapi/
 [markdown]: https://pypi.org/project/Markdown/
 [django-filter]: https://pypi.org/project/django-filter/
-[django-crispy-forms]: https://github.com/maraujop/django-crispy-forms
 [django-guardian]: https://github.com/django-guardian/django-guardian
 [index]: .
 [oauth1-section]: api-guide/authentication/#django-rest-framework-oauth
