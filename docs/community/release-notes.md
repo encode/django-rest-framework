@@ -42,13 +42,13 @@ You can determine your currently installed version using `pip show`:
 
 ### 3.9.4
 
-**Date**: [10th May 2019]
+**Date**: 10th May 2019
 
 This is a maintenance release that fixes an error handling bug under Python 2.
 
 ### 3.9.3
 
-**Date**: [29th April 2019]
+**Date**: 29th April 2019
 
 This is the last Django REST Framework release that will support Python 2.
 Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.
@@ -58,7 +58,7 @@ Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.
 
 ### 3.9.2
 
-**Date**: [3rd March 2019][3.9.1-milestone]
+**Date**: [3rd March 2019][3.9.2-milestone]
 
 * Routers: invalidate `_urls` cache on `register()` [#6407][gh6407]
 * Deferred schema renderer creation to avoid requiring pyyaml. [#6416][gh6416]
@@ -1181,7 +1181,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [3.8.2-milestone]: https://github.com/encode/django-rest-framework/milestone/68?closed=1
 [3.9.0-milestone]: https://github.com/encode/django-rest-framework/milestone/66?closed=1
 [3.9.1-milestone]: https://github.com/encode/django-rest-framework/milestone/70?closed=1
-[3.9.1-milestone]: https://github.com/encode/django-rest-framework/milestone/71?closed=1
+[3.9.2-milestone]: https://github.com/encode/django-rest-framework/milestone/71?closed=1
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/encode/django-rest-framework/issues/2013
