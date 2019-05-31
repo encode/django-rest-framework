@@ -38,6 +38,15 @@ You can determine your currently installed version using `pip show`:
 
 ---
 
+## 3.10.x series
+
+### 3.10.0
+
+**Date**: [Unreleased][3.10.0-milestone]
+
+* Resolve DeprecationWarning with markdown. [#6317][gh6317]
+
+
 ## 3.9.x series
 
 ### 3.9.4
@@ -1182,6 +1191,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [3.9.0-milestone]: https://github.com/encode/django-rest-framework/milestone/66?closed=1
 [3.9.1-milestone]: https://github.com/encode/django-rest-framework/milestone/70?closed=1
 [3.9.2-milestone]: https://github.com/encode/django-rest-framework/milestone/71?closed=1
+[3.10.0-milestone]: https://github.com/encode/django-rest-framework/milestone/69?closed=1
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/encode/django-rest-framework/issues/2013
@@ -2125,3 +2135,6 @@ For older release notes, [please see the version 2.x documentation][old-release-
 
 <!-- 3.9.3 -->
 [gh6613]: https://github.com/encode/django-rest-framework/issues/6613
+
+<!-- 3.10.0 -->
+[gh6317]: https://github.com/encode/django-rest-framework/issues/6317
