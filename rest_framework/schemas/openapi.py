@@ -35,12 +35,14 @@ class SchemaGenerator(BaseSchemaGenerator):
         if not paths:
             return None
         prefix = self.determine_path_prefix(paths)
+        if prefix == '/':  # no prefix
+            prefix = ''
 
         for path, method, view in view_endpoints:
             if not self.has_view_permissions(path, method, view):
                 continue
             operation = view.schema.get_operation(path, method)
-            subpath = '/' + path[len(prefix):]
+            subpath = path[len(prefix):]
             result.setdefault(subpath, {})
             result[subpath][method.lower()] = operation
 

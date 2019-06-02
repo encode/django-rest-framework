@@ -214,6 +214,20 @@ class TestGenerator(TestCase):
         assert 'get' in example_operations
         assert 'post' in example_operations
 
+    def test_prefixed_paths_construction(self):
+        """Construction of the `paths` key with a common prefix."""
+        patterns = [
+            url(r'^api/v1/example/?$', views.ExampleListView.as_view()),
+            url(r'^api/v1/example/{pk}/?$', views.ExampleDetailView.as_view()),
+        ]
+        generator = SchemaGenerator(patterns=patterns)
+        generator._initialise_endpoints()
+
+        paths = generator.get_paths()
+
+        assert '/example/' in paths
+        assert '/example/{id}/' in paths
+
     def test_schema_construction(self):
         """Construction of the top level dictionary."""
         patterns = [
