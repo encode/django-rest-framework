@@ -16,8 +16,6 @@ automatically.
     router.register(r'users', UserViewSet, 'user')
     urlpatterns = router.urls
 """
-from __future__ import unicode_literals
-
 from collections import OrderedDict
 from functools import update_wrapper
 from inspect import getmembers
@@ -34,7 +32,7 @@ def _is_extra_action(attr):
     return hasattr(attr, 'mapping')
 
 
-class ViewSetMixin(object):
+class ViewSetMixin:
     """
     This is the magic.
 
@@ -134,7 +132,7 @@ class ViewSetMixin(object):
         """
         Set the `.action` attribute on the view, depending on the request method.
         """
-        request = super(ViewSetMixin, self).initialize_request(request, *args, **kwargs)
+        request = super().initialize_request(request, *args, **kwargs)
         method = request.method.lower()
         if method == 'options':
             # This is a special case as we always provide handling for the

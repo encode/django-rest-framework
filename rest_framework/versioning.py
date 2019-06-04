@@ -1,9 +1,6 @@
-# coding: utf-8
-from __future__ import unicode_literals
-
 import re
 
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from rest_framework import exceptions
 from rest_framework.compat import unicode_http_header
@@ -13,7 +10,7 @@ from rest_framework.templatetags.rest_framework import replace_query_param
 from rest_framework.utils.mediatypes import _MediaType
 
 
-class BaseVersioning(object):
+class BaseVersioning:
     default_version = api_settings.DEFAULT_VERSION
     allowed_versions = api_settings.ALLOWED_VERSIONS
     version_param = api_settings.VERSION_PARAM
@@ -87,7 +84,7 @@ class URLPathVersioning(BaseVersioning):
             kwargs = {} if (kwargs is None) else kwargs
             kwargs[self.version_param] = request.version
 
-        return super(URLPathVersioning, self).reverse(
+        return super().reverse(
             viewname, args, kwargs, request, format, **extra
         )
 
@@ -133,7 +130,7 @@ class NamespaceVersioning(BaseVersioning):
     def reverse(self, viewname, args=None, kwargs=None, request=None, format=None, **extra):
         if request.version is not None:
             viewname = self.get_versioned_viewname(viewname, request)
-        return super(NamespaceVersioning, self).reverse(
+        return super().reverse(
             viewname, args, kwargs, request, format, **extra
         )
 
@@ -179,7 +176,7 @@ class QueryParameterVersioning(BaseVersioning):
         return version
 
     def reverse(self, viewname, args=None, kwargs=None, request=None, format=None, **extra):
-        url = super(QueryParameterVersioning, self).reverse(
+        url = super().reverse(
             viewname, args, kwargs, request, format, **extra
         )
         if request.version is not None:

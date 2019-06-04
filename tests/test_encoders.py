@@ -10,7 +10,7 @@ from rest_framework.compat import coreapi
 from rest_framework.utils.encoders import JSONEncoder
 
 
-class MockList(object):
+class MockList:
     def tolist(self):
         return [1, 2, 3]
 

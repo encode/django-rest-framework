@@ -10,12 +10,11 @@ python primitives.
 2. The process of marshalling between python primitives and request and
 response content is handled by parsers and renderers.
 """
-from __future__ import unicode_literals
-
 import copy
 import inspect
 import traceback
 from collections import OrderedDict
+from collections.abc import Mapping
 
 from django.core.exceptions import ImproperlyConfigured
 from django.core.exceptions import ValidationError as DjangoValidationError
@@ -23,11 +22,11 @@ from django.db import models
 from django.db.models import DurationField as ModelDurationField
 from django.db.models.fields import Field as DjangoModelField
 from django.db.models.fields import FieldDoesNotExist
-from django.utils import six, timezone
+from django.utils import timezone
 from django.utils.functional import cached_property
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
-from rest_framework.compat import Mapping, postgres_fields, unicode_to_repr
+from rest_framework.compat import postgres_fields
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.fields import get_error_detail, set_value
 from rest_framework.settings import api_settings
@@ -115,14 +114,14 @@ class BaseSerializer(Field):
         self.partial = kwargs.pop('partial', False)
         self._context = kwargs.pop('context', {})
         kwargs.pop('many', None)
-        super(BaseSerializer, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def __new__(cls, *args, **kwargs):
         # We override this method in order to automagically create
         # `ListSerializer` classes instead when `many=True` is set.
         if kwargs.pop('many', False):
             return cls.many_init(*args, **kwargs)
-        return super(BaseSerializer, cls).__new__(cls, *args, **kwargs)
+        return super().__new__(cls, *args, **kwargs)
 
     @classmethod
     def many_init(cls, *args, **kwargs):
@@ -315,7 +314,7 @@ class SerializerMetaclass(type):
 
     def __new__(cls, name, bases, attrs):
         attrs['_declared_fields'] = cls._get_declared_fields(bases, attrs)
-        return super(SerializerMetaclass, cls).__new__(cls, name, bases, attrs)
+        return super().__new__(cls, name, bases, attrs)
 
 
 def as_serializer_error(exc):
@@ -344,13 +343,12 @@ def as_serializer_error(exc):
     }
 
 
-@six.add_metaclass(SerializerMetaclass)
-class Serializer(BaseSerializer):
+class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
     default_error_messages = {
         'invalid': _('Invalid data. Expected a dictionary, but got {datatype}.')
     }
 
-    @property
+    @cached_property
     def fields(self):
         """
         A dictionary of {field_name: field_instance}.
@@ -358,24 +356,22 @@ class Serializer(BaseSerializer):
         # `fields` is evaluated lazily. We do this to ensure that we don't
         # have issues importing modules that use ModelSerializers as fields,
         # even if Django's app-loading stage has not yet run.
-        if not hasattr(self, '_fields'):
-            self._fields = BindingDict(self)
-            for key, value in self.get_fields().items():
-                self._fields[key] = value
-        return self._fields
+        fields = BindingDict(self)
+        for key, value in self.get_fields().items():
+            fields[key] = value
+        return fields
 
-    @cached_property
+    @property
     def _writable_fields(self):
-        return [
-            field for field in self.fields.values() if not field.read_only
-        ]
+        for field in self.fields.values():
+            if not field.read_only:
+                yield field
 
-    @cached_property
+    @property
     def _readable_fields(self):
-        return [
-            field for field in self.fields.values()
-            if not field.write_only
-        ]
+        for field in self.fields.values():
+            if not field.write_only:
+                yield field
 
     def get_fields(self):
         """
@@ -466,7 +462,7 @@ class Serializer(BaseSerializer):
             to_validate.update(value)
         else:
             to_validate = value
-        super(Serializer, self).run_validators(to_validate)
+        super().run_validators(to_validate)
 
     def to_internal_value(self, data):
         """
@@ -535,7 +531,7 @@ class Serializer(BaseSerializer):
         return attrs
 
     def __repr__(self):
-        return unicode_to_repr(representation.serializer_repr(self, indent=1))
+        return representation.serializer_repr(self, indent=1)
 
     # The following are used for accessing `BoundField` instances on the
     # serializer, for the purposes of presenting a form-like API onto the
@@ -560,12 +556,12 @@ class Serializer(BaseSerializer):
 
     @property
     def data(self):
-        ret = super(Serializer, self).data
+        ret = super().data
         return ReturnDict(ret, serializer=self)
 
     @property
     def errors(self):
-        ret = super(Serializer, self).errors
+        ret = super().errors
         if isinstance(ret, list) and len(ret) == 1 and getattr(ret[0], 'code', None) == 'null':
             # Edge case. Provide a more descriptive error than
             # "this field may not be null", when no data is passed.
@@ -591,11 +587,11 @@ class ListSerializer(BaseSerializer):
         self.allow_empty = kwargs.pop('allow_empty', True)
         assert self.child is not None, '`child` is a required argument.'
         assert not inspect.isclass(self.child), '`child` has not been instantiated.'
-        super(ListSerializer, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.child.bind(field_name='', parent=self)
 
     def bind(self, field_name, parent):
-        super(ListSerializer, self).bind(field_name, parent)
+        super().bind(field_name, parent)
         self.partial = self.parent.partial
 
     def get_initial(self):
@@ -758,19 +754,19 @@ class ListSerializer(BaseSerializer):
         return not bool(self._errors)
 
     def __repr__(self):
-        return unicode_to_repr(representation.list_repr(self, indent=1))
+        return representation.list_repr(self, indent=1)
 
     # Include a backlink to the serializer class on return objects.
     # Allows renderers such as HTMLFormRenderer to get the full field info.
 
     @property
     def data(self):
-        ret = super(ListSerializer, self).data
+        ret = super().data
         return ReturnList(ret, serializer=self)
 
     @property
     def errors(self):
-        ret = super(ListSerializer, self).errors
+        ret = super().errors
         if isinstance(ret, list) and len(ret) == 1 and getattr(ret[0], 'code', None) == 'null':
             # Edge case. Provide a more descriptive error than
             # "this field may not be null", when no data is passed.
@@ -1235,6 +1231,11 @@ class ModelSerializer(Serializer):
         if not issubclass(field_class, CharField) and not issubclass(field_class, ChoiceField):
             # `allow_blank` is only valid for textual fields.
             field_kwargs.pop('allow_blank', None)
+
+        if postgres_fields and isinstance(model_field, postgres_fields.JSONField):
+            # Populate the `encoder` argument of `JSONField` instances generated
+            # for the PostgreSQL specific `JSONField`.
+            field_kwargs['encoder'] = getattr(model_field, 'encoder', None)
 
         if postgres_fields and isinstance(model_field, postgres_fields.ArrayField):
             # Populate the `child` argument on `ListField` instances generated

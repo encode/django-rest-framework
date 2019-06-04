@@ -3,10 +3,7 @@ Handling of media types, as found in HTTP Content-Type and Accept headers.
 
 See https://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.7
 """
-from __future__ import unicode_literals
-
 from django.http.multipartparser import parse_header
-from django.utils.encoding import python_2_unicode_compatible
 
 from rest_framework import HTTP_HEADER_ENCODING
 
@@ -46,8 +43,7 @@ def order_by_precedence(media_type_lst):
     return [media_types for media_types in ret if media_types]
 
 
-@python_2_unicode_compatible
-class _MediaType(object):
+class _MediaType:
     def __init__(self, media_type_str):
         self.orig = '' if (media_type_str is None) else media_type_str
         self.full_type, self.params = parse_header(self.orig.encode(HTTP_HEADER_ENCODING))

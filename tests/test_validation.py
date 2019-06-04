@@ -1,11 +1,8 @@
-from __future__ import unicode_literals
-
 import re
 
 from django.core.validators import MaxValueValidator, RegexValidator
 from django.db import models
 from django.test import TestCase
-from django.utils import six
 
 from rest_framework import generics, serializers, status
 from rest_framework.test import APIRequestFactory
@@ -112,7 +109,7 @@ class TestAvoidValidation(TestCase):
         assert not serializer.is_valid()
         assert serializer.errors == {
             'non_field_errors': [
-                'Invalid data. Expected a dictionary, but got %s.' % six.text_type.__name__
+                'Invalid data. Expected a dictionary, but got str.',
             ]
         }
 
@@ -151,14 +148,14 @@ class TestMaxValueValidatorValidation(TestCase):
 
     def test_max_value_validation_success(self):
         obj = ValidationMaxValueValidatorModel.objects.create(number_value=100)
-        request = factory.patch('/{0}'.format(obj.pk), {'number_value': 98}, format='json')
+        request = factory.patch('/{}'.format(obj.pk), {'number_value': 98}, format='json')
         view = UpdateMaxValueValidationModel().as_view()
         response = view(request, pk=obj.pk).render()
         assert response.status_code == status.HTTP_200_OK
 
     def test_max_value_validation_fail(self):
         obj = ValidationMaxValueValidatorModel.objects.create(number_value=100)
-        request = factory.patch('/{0}'.format(obj.pk), {'number_value': 101}, format='json')
+        request = factory.patch('/{}'.format(obj.pk), {'number_value': 101}, format='json')
         view = UpdateMaxValueValidationModel().as_view()
         response = view(request, pk=obj.pk).render()
         assert response.content == b'{"number_value":["Ensure this value is less than or equal to 100."]}'

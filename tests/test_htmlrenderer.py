@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import django.template.loader
 import pytest
 from django.conf.urls import url
@@ -7,7 +5,6 @@ from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from django.http import Http404
 from django.template import TemplateDoesNotExist, engines
 from django.test import TestCase, override_settings
-from django.utils import six
 
 from rest_framework import status
 from rest_framework.decorators import api_view, renderer_classes
@@ -47,7 +44,7 @@ urlpatterns = [
 @override_settings(ROOT_URLCONF='tests.test_htmlrenderer')
 class TemplateHTMLRendererTests(TestCase):
     def setUp(self):
-        class MockResponse(object):
+        class MockResponse:
             template_name = None
         self.mock_response = MockResponse()
         self._monkey_patch_get_template()
@@ -85,13 +82,13 @@ class TemplateHTMLRendererTests(TestCase):
     def test_not_found_html_view(self):
         response = self.client.get('/not_found')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertEqual(response.content, six.b("404 Not Found"))
+        self.assertEqual(response.content, b"404 Not Found")
         self.assertEqual(response['Content-Type'], 'text/html; charset=utf-8')
 
     def test_permission_denied_html_view(self):
         response = self.client.get('/permission_denied')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(response.content, six.b("403 Forbidden"))
+        self.assertEqual(response.content, b"403 Forbidden")
         self.assertEqual(response['Content-Type'], 'text/html; charset=utf-8')
 
     # 2 tests below are based on order of if statements in corresponding method
@@ -105,14 +102,14 @@ class TemplateHTMLRendererTests(TestCase):
     def test_get_template_names_returns_view_template_name(self):
         renderer = TemplateHTMLRenderer()
 
-        class MockResponse(object):
+        class MockResponse:
             template_name = None
 
-        class MockView(object):
+        class MockView:
             def get_template_names(self):
                 return ['template from get_template_names method']
 
-        class MockView2(object):
+        class MockView2:
             template_name = 'template from template_name attribute'
 
         template_name = renderer.get_template_names(self.mock_response,
@@ -156,12 +153,11 @@ class TemplateHTMLRendererExceptionTests(TestCase):
         response = self.client.get('/not_found')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertTrue(response.content in (
-            six.b("404: Not found"), six.b("404 Not Found")))
+            b"404: Not found", b"404 Not Found"))
         self.assertEqual(response['Content-Type'], 'text/html; charset=utf-8')
 
     def test_permission_denied_html_view_with_template(self):
         response = self.client.get('/permission_denied')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertTrue(response.content in (
-            six.b("403: Permission denied"), six.b("403 Forbidden")))
+        self.assertTrue(response.content in (b"403: Permission denied", b"403 Forbidden"))
         self.assertEqual(response['Content-Type'], 'text/html; charset=utf-8')

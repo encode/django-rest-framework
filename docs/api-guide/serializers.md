@@ -572,6 +572,8 @@ This option is a dictionary, mapping field names to a dictionary of keyword argu
             user.save()
             return user
 
+Please keep in mind that, if the field has already been explicitly declared on the serializer class, then the `extra_kwargs` option will be ignored.
+
 ## Relational fields
 
 When serializing model instances, there are a number of different ways you might choose to represent relationships.  The default representation for `ModelSerializer` is to use the primary keys of the related instances.
@@ -624,7 +626,7 @@ The default implementation returns a serializer class based on the `serializer_f
 
 Called to generate a serializer field that maps to a relational model field.
 
-The default implementation returns a serializer class based on the `serializer_relational_field` attribute.
+The default implementation returns a serializer class based on the `serializer_related_field` attribute.
 
 The `relation_info` argument is a named tuple, that contains `model_field`, `related_model`, `to_many` and `has_through_model` properties.
 
@@ -963,7 +965,7 @@ The following class is an example of a generic serializer that can handle coerci
         def to_representation(self, obj):
             for attribute_name in dir(obj):
                 attribute = getattr(obj, attribute_name)
-                if attribute_name('_'):
+                if attribute_name.startswith('_'):
                     # Ignore private attributes.
                     pass
                 elif hasattr(attribute, '__call__'):
