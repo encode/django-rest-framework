@@ -24,10 +24,10 @@ The initial aim is to provide a single full-time position on REST framework.
 [![][rollbar-img]][rollbar-url]
 [![][cadre-img]][cadre-url]
 [![][kloudless-img]][kloudless-url]
-[![][release-history-img]][release-history-url]
+[![][esg-img]][esg-url]
 [![][lightson-img]][lightson-url]
 
-Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Sentry][sentry-url], [Stream][stream-url], [Rollbar][rollbar-url], [Cadre][cadre-url], [Kloudless][kloudless-url], [Release History][release-history-url], and [Lights On Software][lightson-url].
+Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Sentry][sentry-url], [Stream][stream-url], [Rollbar][rollbar-url], [Cadre][cadre-url], [Kloudless][kloudless-url], [ESG][esg-url], and [Lights On Software][lightson-url].
 
 ---
 
@@ -197,17 +197,15 @@ Please see the [security policy][security-policy].
 [cadre-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/cadre-readme.png
 [load-impact-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/load-impact-readme.png
 [kloudless-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/kloudless-readme.png
-[release-history-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/release-history.png
+[esg-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/esg-readme.png
 [lightson-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/lightson-readme.png
 
-[rover-url]: http://jobs.rover.com/
 [sentry-url]: https://getsentry.com/welcome/
 [stream-url]: https://getstream.io/try-the-api/?utm_source=drf&utm_medium=banner&utm_campaign=drf
 [rollbar-url]: https://rollbar.com/
 [cadre-url]: https://cadre.com/
-[load-impact-url]: https://loadimpact.com/?utm_campaign=Sponsorship%20links&utm_source=drf&utm_medium=drf
 [kloudless-url]: https://hubs.ly/H0f30Lf0
-[release-history-url]: https://releasehistory.io
+[esg-url]: https://software.esg-usa.com/
 [lightson-url]: https://lightsonsoftware.com
 
 [oauth1-section]: https://www.django-rest-framework.org/api-guide/authentication/#django-rest-framework-oauth
