@@ -468,16 +468,16 @@
 <p><strong>Note</strong>: The code for this tutorial is available in the <a href="https://github.com/encode/rest-framework-tutorial">encode/rest-framework-tutorial</a> repository on GitHub.  The completed implementation is also online as a sandbox version for testing, <a href="https://restframework.herokuapp.com/">available here</a>.</p>
 <hr />
 <h2 id="setting-up-a-new-environment"><a class="toclink" href="#setting-up-a-new-environment">Setting up a new environment</a></h2>
-<p>Before we do anything else we'll create a new virtual environment, using <a href="http://www.virtualenv.org/en/latest/index.html">virtualenv</a>.  This will make sure our package configuration is kept nicely isolated from any other projects we're working on.</p>
-<pre><code>virtualenv env
+<p>Before we do anything else we'll create a new virtual environment, using <a href="https://docs.python.org/3/library/venv.html">venv</a>. This will make sure our package configuration is kept nicely isolated from any other projects we're working on.</p>
+<pre><code>python3 -m venv env
 source env/bin/activate
 </code></pre>
-<p>Now that we're inside a virtualenv environment, we can install our package requirements.</p>
+<p>Now that we're inside a virtual environment, we can install our package requirements.</p>
 <pre><code>pip install django
 pip install djangorestframework
 pip install pygments  # We'll be using this for the code highlighting
 </code></pre>
-<p><strong>Note:</strong> To exit the virtualenv environment at any time, just type <code>deactivate</code>.  For more information see the <a href="http://www.virtualenv.org/en/latest/index.html">virtualenv documentation</a>.</p>
+<p><strong>Note:</strong> To exit the virtual environment at any time, just type <code>deactivate</code>.  For more information see the <a href="https://docs.python.org/3/library/venv.html">venv documentation</a>.</p>
 <h2 id="getting-started"><a class="toclink" href="#getting-started">Getting started</a></h2>
 <p>Okay, we're ready to get coding.
 To get started, let's create a new project to work with.</p>
@@ -789,7 +789,7 @@ HTTP/1.1 200 OK
   <script src="../../js/jquery-1.8.1-min.js"></script>
   <script src="../../js/prettify-1.0.js"></script>
   <script src="../../js/bootstrap-2.1.1-min.js"></script>
-  <script src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
+  <script async src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
   <script>var base_url = '../..';</script>
   <script src="../../mkdocs/js/require.js"></script>
   <script src="../../js/theme.js"></script>

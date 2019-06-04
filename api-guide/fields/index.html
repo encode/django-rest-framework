@@ -930,9 +930,10 @@ Django's regular <a href="https://docs.djangoproject.com/en/stable/ref/settings/
 <h1 id="composite-fields"><a class="toclink" href="#composite-fields">Composite fields</a></h1>
 <h2 id="listfield"><a class="toclink" href="#listfield">ListField</a></h2>
 <p>A field class that validates a list of objects.</p>
-<p><strong>Signature</strong>: <code>ListField(child=&lt;A_FIELD_INSTANCE&gt;, min_length=None, max_length=None)</code></p>
+<p><strong>Signature</strong>: <code>ListField(child=&lt;A_FIELD_INSTANCE&gt;, allow_empty=True, min_length=None, max_length=None)</code></p>
 <ul>
 <li><code>child</code> - A field instance that should be used for validating the objects in the list. If this argument is not provided then objects in the list will not be validated.</li>
+<li><code>allow_empty</code> - Designates if empty lists are allowed.</li>
 <li><code>min_length</code> - Validates that the list contains no fewer than this number of elements.</li>
 <li><code>max_length</code> - Validates that the list contains no more than this number of elements.</li>
 </ul>
@@ -948,9 +949,10 @@ Django's regular <a href="https://docs.djangoproject.com/en/stable/ref/settings/
 <p>We can now reuse our custom <code>StringListField</code> class throughout our application, without having to provide a <code>child</code> argument to it.</p>
 <h2 id="dictfield"><a class="toclink" href="#dictfield">DictField</a></h2>
 <p>A field class that validates a dictionary of objects. The keys in <code>DictField</code> are always assumed to be string values.</p>
-<p><strong>Signature</strong>: <code>DictField(child=&lt;A_FIELD_INSTANCE&gt;)</code></p>
+<p><strong>Signature</strong>: <code>DictField(child=&lt;A_FIELD_INSTANCE&gt;, allow_empty=True)</code></p>
 <ul>
 <li><code>child</code> - A field instance that should be used for validating the values in the dictionary. If this argument is not provided then values in the mapping will not be validated.</li>
+<li><code>allow_empty</code> - Designates if empty dictionaries are allowed.</li>
 </ul>
 <p>For example, to create a field that validates a mapping of strings to strings, you would write something like this:</p>
 <pre><code>document = DictField(child=CharField())
@@ -961,16 +963,18 @@ Django's regular <a href="https://docs.djangoproject.com/en/stable/ref/settings/
 </code></pre>
 <h2 id="hstorefield"><a class="toclink" href="#hstorefield">HStoreField</a></h2>
 <p>A preconfigured <code>DictField</code> that is compatible with Django's postgres <code>HStoreField</code>.</p>
-<p><strong>Signature</strong>: <code>HStoreField(child=&lt;A_FIELD_INSTANCE&gt;)</code></p>
+<p><strong>Signature</strong>: <code>HStoreField(child=&lt;A_FIELD_INSTANCE&gt;, allow_empty=True)</code></p>
 <ul>
 <li><code>child</code> - A field instance that is used for validating the values in the dictionary. The default child field accepts both empty strings and null values.</li>
+<li><code>allow_empty</code> - Designates if empty dictionaries are allowed.</li>
 </ul>
 <p>Note that the child field <strong>must</strong> be an instance of <code>CharField</code>, as the hstore extension stores values as strings.</p>
 <h2 id="jsonfield"><a class="toclink" href="#jsonfield">JSONField</a></h2>
 <p>A field class that validates that the incoming data structure consists of valid JSON primitives. In its alternate binary mode, it will represent and validate JSON-encoded binary strings.</p>
-<p><strong>Signature</strong>: <code>JSONField(binary)</code></p>
+<p><strong>Signature</strong>: <code>JSONField(binary, encoder)</code></p>
 <ul>
 <li><code>binary</code> - If set to <code>True</code> then the field will output and validate a JSON encoded string, rather than a primitive data structure. Defaults to <code>False</code>.</li>
+<li><code>encoder</code> - Use this JSON encoder to serialize input object. Defaults to <code>None</code>.</li>
 </ul>
 <hr />
 <h1 id="miscellaneous-fields"><a class="toclink" href="#miscellaneous-fields">Miscellaneous fields</a></h1>
@@ -1065,7 +1069,7 @@ class ColorField(serializers.Field):
 <p>Our <code>ColorField</code> class above currently does not perform any data validation.
 To indicate invalid data, we should raise a <code>serializers.ValidationError</code>, like so:</p>
 <pre><code>def to_internal_value(self, data):
-    if not isinstance(data, six.text_type):
+    if not isinstance(data, str):
         msg = 'Incorrect type. Expected a string, but got %s'
         raise ValidationError(msg % type(data).__name__)
 
@@ -1088,7 +1092,7 @@ To indicate invalid data, we should raise a <code>serializers.ValidationError</c
 }
 
 def to_internal_value(self, data):
-    if not isinstance(data, six.text_type):
+    if not isinstance(data, str):
         self.fail('incorrect_type', input_type=type(data).__name__)
 
     if not re.match(r'^rgb\([0-9]+,[0-9]+,[0-9]+\)$', data):
@@ -1257,7 +1261,7 @@ or overly complex.</p>
   <script src="../../js/jquery-1.8.1-min.js"></script>
   <script src="../../js/prettify-1.0.js"></script>
   <script src="../../js/bootstrap-2.1.1-min.js"></script>
-  <script src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
+  <script async src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
   <script>var base_url = '../..';</script>
   <script src="../../mkdocs/js/require.js"></script>
   <script src="../../js/theme.js"></script>

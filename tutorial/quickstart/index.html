@@ -456,11 +456,11 @@
 mkdir tutorial
 cd tutorial
 
-# Create a virtualenv to isolate our package dependencies locally
-virtualenv env
+# Create a virtual environment to isolate our package dependencies locally
+python3 -m venv env
 source env/bin/activate  # On Windows use `env\Scripts\activate`
 
-# Install Django and Django REST framework into the virtualenv
+# Install Django and Django REST framework into the virtual environment
 pip install django
 pip install djangorestframework
 
@@ -653,7 +653,7 @@ HTTP/1.1 200 OK
   <script src="../../js/jquery-1.8.1-min.js"></script>
   <script src="../../js/prettify-1.0.js"></script>
   <script src="../../js/bootstrap-2.1.1-min.js"></script>
-  <script src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
+  <script async src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
   <script>var base_url = '../..';</script>
   <script src="../../mkdocs/js/require.js"></script>
   <script src="../../js/theme.js"></script>
