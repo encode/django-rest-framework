@@ -20,13 +20,13 @@ The full set of HTTP status codes included in the `status` module is listed belo
 The module also includes a set of helper functions for testing if a status code is in a given range.
 
     from rest_framework import status
-	from rest_framework.test import APITestCase
+    from rest_framework.test import APITestCase
 
-	class ExampleTestCase(APITestCase):
-	    def test_url_root(self):
-	        url = reverse('index')
-	        response = self.client.get(url)
-	        self.assertTrue(status.is_success(response.status_code))
+    class ExampleTestCase(APITestCase):
+        def test_url_root(self):
+            url = reverse('index')
+            response = self.client.get(url)
+            self.assertTrue(status.is_success(response.status_code))
 
 
 For more information on proper usage of HTTP status codes see [RFC 2616][rfc2616]
