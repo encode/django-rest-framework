@@ -45,6 +45,7 @@ You can determine your currently installed version using `pip show`:
 **Date**: [Unreleased][3.10.0-milestone]
 
 * Resolve DeprecationWarning with markdown. [#6317][gh6317]
+* Add `generateschema --generator_class` CLI option
 
 
 ## 3.9.x series
