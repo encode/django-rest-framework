@@ -166,7 +166,7 @@ If all you need is simple equality-based filtering, you can set a `filterset_fie
         queryset = Product.objects.all()
         serializer_class = ProductSerializer
         filter_backends = (DjangoFilterBackend,)
-        filterset_fields = ('category', 'in_stock')
+        filter_fields = ('category', 'in_stock')
 
 This will automatically create a `FilterSet` class for the given fields, and will allow you to make requests such as:
 
