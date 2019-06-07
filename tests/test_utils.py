@@ -235,15 +235,6 @@ class UrlsRemoveQueryParamTests(TestCase):
     """
     Tests the remove_query_param functionality.
     """
-    def test_valid_unicode_preserved(self):
-        q = '/?q=%E6%9F%A5%E8%AF%A2'
-        new_key = 'page'
-        new_value = 2
-        value = '%E6%9F%A5%E8%AF%A2'
-
-        assert new_key in replace_query_param(q, new_key, new_value)
-        assert value in replace_query_param(q, new_key, new_value)
-
     def test_valid_unicode_removed(self):
         q = '/?page=2345&q=%E6%9F%A5%E8%AF%A2'
         key = 'page'
