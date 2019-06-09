@@ -23,6 +23,7 @@ class Command(BaseCommand):
             parser.add_argument('--format', dest="format", choices=['openapi', 'openapi-json', 'corejson'], default='openapi', type=str)
         else:
             parser.add_argument('--format', dest="format", choices=['openapi', 'openapi-json'], default='openapi', type=str)
+        parser.add_argument('--urlconf', dest="urlconf", default=None, type=str)
         parser.add_argument('--generator_class', dest="generator_class", default=None, type=str)
 
     def handle(self, *args, **options):
@@ -33,7 +34,8 @@ class Command(BaseCommand):
         generator = generator_class(
             url=options['url'],
             title=options['title'],
-            description=options['description']
+            description=options['description'],
+            urlconf=options['urlconf'],
         )
         schema = generator.get_schema(request=None, public=True)
         renderer = self.get_renderer(options['format'])
