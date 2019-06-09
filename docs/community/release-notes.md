@@ -44,6 +44,7 @@ You can determine your currently installed version using `pip show`:
 
 **Date**: [Unreleased][3.10.0-milestone]
 
+* Updated PyYaml dependency for OpenAPI schema generation to `pyyaml>=5.1` [#6680][gh6680]
 * Resolve DeprecationWarning with markdown. [#6317][gh6317]
 * Add `generateschema --generator_class` CLI option
 
@@ -2138,4 +2139,5 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh6613]: https://github.com/encode/django-rest-framework/issues/6613
 
 <!-- 3.10.0 -->
+[gh6680]: https://github.com/encode/django-rest-framework/issues/6680
 [gh6317]: https://github.com/encode/django-rest-framework/issues/6317

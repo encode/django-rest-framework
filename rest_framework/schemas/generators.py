@@ -54,7 +54,7 @@ def endpoint_ordering(endpoint):
         'PATCH': 3,
         'DELETE': 4
     }.get(method, 5)
-    return (path, method_priority)
+    return (method_priority,)
 
 
 _PATH_PARAMETER_COMPONENT_RE = re.compile(

@@ -6,4 +6,4 @@ django-guardian==1.5.0
 django-filter>=2.1.0, <2.2
 coreapi==2.3.1
 coreschema==0.0.4
-pyyaml
+pyyaml>=5.1
