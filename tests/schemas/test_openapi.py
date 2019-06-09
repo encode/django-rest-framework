@@ -257,3 +257,53 @@ class TestGenerator(TestCase):
 
         assert response_schema['date']['format'] == 'date'
         assert response_schema['datetime']['format'] == 'date-time'
+
+    def test_serializer_validators(self):
+        patterns = [
+            url(r'^example/?$', views.ExampleValdidatedAPIView.as_view()),
+        ]
+        generator = SchemaGenerator(patterns=patterns)
+
+        request = create_request('/')
+        schema = generator.get_schema(request=request)
+
+        response = schema['paths']['/example/']['get']['responses']
+        response_schema = response['200']['content']['application/json']['schema']['properties']
+
+        assert response_schema['integer']['type'] == 'integer'
+        assert response_schema['integer']['maximum'] == 99
+        assert response_schema['integer']['minimum'] == -11
+
+        assert response_schema['string']['minLength'] == 2
+        assert response_schema['string']['maxLength'] == 10
+
+        assert response_schema['regex']['pattern'] == r'[ABC]12{3}'
+        assert response_schema['regex']['description'] == 'must have an A, B, or C followed by 1222'
+
+        assert response_schema['decimal1']['type'] == 'number'
+        assert response_schema['decimal1']['multipleOf'] == .01
+        assert response_schema['decimal1']['maximum'] == 10000
+        assert response_schema['decimal1']['minimum'] == -10000
+
+        assert response_schema['decimal2']['type'] == 'number'
+        assert response_schema['decimal2']['multipleOf'] == .0001
+
+        assert response_schema['email']['type'] == 'string'
+        assert response_schema['email']['format'] == 'email'
+        assert response_schema['email']['default'] == 'foo@bar.com'
+
+        assert response_schema['url']['type'] == 'string'
+        assert response_schema['url']['nullable'] is True
+        assert response_schema['url']['default'] == 'http://www.example.com'
+
+        assert response_schema['uuid']['type'] == 'string'
+        assert response_schema['uuid']['format'] == 'uuid'
+
+        assert response_schema['ip4']['type'] == 'string'
+        assert response_schema['ip4']['format'] == 'ipv4'
+
+        assert response_schema['ip6']['type'] == 'string'
+        assert response_schema['ip6']['format'] == 'ipv6'
+
+        assert response_schema['ip']['type'] == 'string'
+        assert 'format' not in response_schema['ip']

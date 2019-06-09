@@ -1,10 +1,15 @@
 import warnings
 
+from django.core.validators import (
+    DecimalValidator, EmailValidator, MaxLengthValidator, MaxValueValidator,
+    MinLengthValidator, MinValueValidator, RegexValidator, URLValidator
+)
 from django.db import models
 from django.utils.encoding import force_text
 
 from rest_framework import exceptions, serializers
 from rest_framework.compat import uritemplate
+from rest_framework.fields import empty
 
 from .generators import BaseSchemaGenerator
 from .inspectors import ViewInspector
@@ -268,17 +273,75 @@ class AutoSchema(ViewInspector):
                 'format': 'date-time',
             }
 
+        # "Formats such as "email", "uuid", and so on, MAY be used even though undefined by this specification."
+        # see: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#data-types
+        # see also: https://swagger.io/docs/specification/data-models/data-types/#string
+        if isinstance(field, serializers.EmailField):
+            return {
+                'type': 'string',
+                'format': 'email'
+            }
+
+        if isinstance(field, serializers.URLField):
+            return {
+                'type': 'string',
+                'format': 'uri'
+            }
+
+        if isinstance(field, serializers.UUIDField):
+            return {
+                'type': 'string',
+                'format': 'uuid'
+            }
+
+        if isinstance(field, serializers.IPAddressField):
+            content = {
+                'type': 'string',
+            }
+            if field.protocol != 'both':
+                content['format'] = field.protocol
+            return content
+
+        # DecimalField has multipleOf based on decimal_places
+        if isinstance(field, serializers.DecimalField):
+            content = {
+                'type': 'number'
+            }
+            if field.decimal_places:
+                content['multipleOf'] = float('.' + (field.decimal_places - 1) * '0' + '1')
+            if field.max_whole_digits:
+                content['maximum'] = int(field.max_whole_digits * '9') + 1
+                content['minimum'] = -content['maximum']
+            self._map_min_max(field, content)
+            return content
+
+        if isinstance(field, serializers.FloatField):
+            content = {
+                'type': 'number'
+            }
+            self._map_min_max(field, content)
+            return content
+
+        if isinstance(field, serializers.IntegerField):
+            content = {
+                'type': 'integer'
+            }
+            self._map_min_max(field, content)
+            return content
+
         # Simplest cases, default to 'string' type:
         FIELD_CLASS_SCHEMA_TYPE = {
             serializers.BooleanField: 'boolean',
-            serializers.DecimalField: 'number',
-            serializers.FloatField: 'number',
-            serializers.IntegerField: 'integer',
-
             serializers.JSONField: 'object',
             serializers.DictField: 'object',
         }
         return {'type': FIELD_CLASS_SCHEMA_TYPE.get(field.__class__, 'string')}
+
+    def _map_min_max(self, field, content):
+        if field.max_value:
+            content['maximum'] = field.max_value
+        if field.min_value:
+            content['minimum'] = field.min_value
 
     def _map_serializer(self, serializer):
         # Assuming we have a valid serializer instance.
@@ -303,12 +366,50 @@ class AutoSchema(ViewInspector):
                 schema['writeOnly'] = True
             if field.allow_null:
                 schema['nullable'] = True
+            if field.default and field.default != empty:  # why don't they use None?!
+                schema['default'] = field.default
+            if field.help_text:
+                schema['description'] = field.help_text
+            self._map_field_validators(field.validators, schema)
 
             properties[field.field_name] = schema
         return {
             'required': required,
             'properties': properties,
         }
+
+    def _map_field_validators(self, validators, schema):
+        """
+        map field validators
+        :param list:validators: list of field validators
+        :param dict:schema: schema that the validators get added to
+        """
+        for v in validators:
+            # "Formats such as "email", "uuid", and so on, MAY be used even though undefined by this specification."
+            # https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#data-types
+            if isinstance(v, EmailValidator):
+                schema['format'] = 'email'
+            if isinstance(v, URLValidator):
+                schema['format'] = 'uri'
+            if isinstance(v, RegexValidator):
+                schema['pattern'] = v.regex.pattern
+            elif isinstance(v, MaxLengthValidator):
+                schema['maxLength'] = v.limit_value
+            elif isinstance(v, MinLengthValidator):
+                schema['minLength'] = v.limit_value
+            elif isinstance(v, MaxValueValidator):
+                schema['maximum'] = v.limit_value
+            elif isinstance(v, MinValueValidator):
+                schema['minimum'] = v.limit_value
+            elif isinstance(v, DecimalValidator):
+                if v.decimal_places:
+                    schema['multipleOf'] = float('.' + (v.decimal_places - 1) * '0' + '1')
+                if v.max_digits:
+                    digits = v.max_digits
+                    if v.decimal_places is not None and v.decimal_places > 0:
+                        digits -= v.decimal_places
+                    schema['maximum'] = int(digits * '9') + 1
+                    schema['minimum'] = -schema['maximum']
 
     def _get_request_body(self, path, method):
         view = self.view
