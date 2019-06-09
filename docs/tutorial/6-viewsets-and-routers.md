@@ -128,8 +128,3 @@ The `DefaultRouter` class we're using also automatically creates the API root vi
 Using viewsets can be a really useful abstraction.  It helps ensure that URL conventions will be consistent across your API, minimizes the amount of code you need to write, and allows you to concentrate on the interactions and representations your API provides rather than the specifics of the URL conf.
 
 That doesn't mean it's always the right approach to take.  There's a similar set of trade-offs to consider as when using class-based views instead of function based views.  Using viewsets is less explicit than building your views individually.
-
-In [part 7][tut-7] of the tutorial we'll look at how we can add an API schema,
-and interact with our API using a client library or command line tool.
-
-[tut-7]: 7-schemas-and-client-libraries.md
