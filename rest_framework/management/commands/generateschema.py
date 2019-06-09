@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+from django.utils.module_loading import import_string
 
 from rest_framework import renderers
 from rest_framework.schemas import coreapi
@@ -22,9 +23,13 @@ class Command(BaseCommand):
             parser.add_argument('--format', dest="format", choices=['openapi', 'openapi-json', 'corejson'], default='openapi', type=str)
         else:
             parser.add_argument('--format', dest="format", choices=['openapi', 'openapi-json'], default='openapi', type=str)
+        parser.add_argument('--generator_class', dest="generator_class", default=None, type=str)
 
     def handle(self, *args, **options):
-        generator_class = self.get_generator_class()
+        if options['generator_class']:
+            generator_class = import_string(options['generator_class'])
+        else:
+            generator_class = self.get_generator_class()
         generator = generator_class(
             url=options['url'],
             title=options['title'],
