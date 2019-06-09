@@ -249,7 +249,7 @@ class BaseSchemaGenerator(object):
         /api/v1/users/
         /api/v1/users/{pk}/
 
-        The path prefix is '/api/v1/'
+        The path prefix is '/api/v1'
         """
         prefixes = []
         for path in paths:
