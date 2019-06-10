@@ -19,7 +19,7 @@ Two popular options are [Swagger UI][swagger-ui] and [ReDoc][redoc].
 Both require little more than the location of your static schema file or
 dynamic `SchemaView` endpoint.
 
-### A mimimal example with Swagger UI
+### A minimal example with Swagger UI
 
 Assuming you've followed the example from the schemas documentation for routing
 a dynamic `SchemaView`, a minimal Django template for using Swagger UI might be
