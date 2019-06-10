@@ -22,7 +22,7 @@ dynamic `SchemaView` endpoint.
 ### A mimimal example with Swagger UI
 
 Assuming you've followed the example from the schemas documentation for routing
-a dynamic `SchemaView`, a mimimal Django template for using Swagger UI might be
+a dynamic `SchemaView`, a minimal Django template for using Swagger UI might be
 this:
 
 ```html
