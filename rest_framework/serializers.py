@@ -773,7 +773,7 @@ class ListSerializer(BaseSerializer):
 # ModelSerializer & HyperlinkedModelSerializer
 # --------------------------------------------
 
-def raise_errors_on_nested_writes(method_name, serializer, validated_data):
+def raise_errors_on_nested_writes(method_name, serializer, validated_data, model_field_info):
     """
     Give explicit errors when users attempt to pass writable nested data.
 
@@ -800,6 +800,7 @@ def raise_errors_on_nested_writes(method_name, serializer, validated_data):
     assert not any(
         isinstance(field, BaseSerializer) and
         (field.source in validated_data) and
+        (field.source in model_field_info.relations) and
         isinstance(validated_data[field.source], (list, dict))
         for field in serializer._writable_fields
     ), (
@@ -915,14 +916,14 @@ class ModelSerializer(Serializer):
         If you want to support writable nested relationships you'll need
         to write an explicit `.create()` method.
         """
-        raise_errors_on_nested_writes('create', self, validated_data)
-
         ModelClass = self.Meta.model
+        info = model_meta.get_field_info(ModelClass)
+
+        raise_errors_on_nested_writes('create', self, validated_data, info)
 
         # Remove many-to-many relationships from validated_data.
         # They are not valid arguments to the default `.create()` method,
         # as they require that the instance has already been saved.
-        info = model_meta.get_field_info(ModelClass)
         many_to_many = {}
         for field_name, relation_info in info.relations.items():
             if relation_info.to_many and (field_name in validated_data):
@@ -959,8 +960,8 @@ class ModelSerializer(Serializer):
         return instance
 
     def update(self, instance, validated_data):
-        raise_errors_on_nested_writes('update', self, validated_data)
         info = model_meta.get_field_info(instance)
+        raise_errors_on_nested_writes('update', self, validated_data, info)
 
         # Simply set each attribute on the instance, and then save it.
         # Note that unlike `.create()` we don't need to treat many-to-many
