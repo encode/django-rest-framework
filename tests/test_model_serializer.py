@@ -154,6 +154,57 @@ class TestModelSerializer(TestCase):
         with self.assertRaisesMessage(ValueError, msginitial):
             serializer.is_valid()
 
+    def test_read_only_fields(self):
+        class TestModel(models.Model):
+            field1 = models.CharField(max_length=255)
+            field2 = models.CharField(max_length=255)
+
+        class TestSerializer1(serializers.ModelSerializer):
+            class Meta:
+                model = TestModel
+                read_only_fields = ('field1',)
+                fields = ('field1', 'field2')
+
+        class TestSerializer2(serializers.ModelSerializer):
+            class Meta:
+                model = TestModel
+                read_only_fields = ('field1',)
+                fields = ('field1', 'field2')
+
+            def get_read_only_fields(self):
+                return ('field2',)
+
+        class TestSerializer3(serializers.ModelSerializer):
+            class Meta:
+                model = TestModel
+                read_only_fields = ('field1',)
+                fields = ('field1', 'field2')
+
+            def get_read_only_fields(self):
+                return None
+
+        test_expected1 = dedent("""
+            TestSerializer1():
+                field1 = CharField(read_only=True)
+                field2 = CharField(max_length=255)
+        """)
+
+        test_expected2 = dedent("""
+            TestSerializer2():
+                field1 = CharField(max_length=255)
+                field2 = CharField(read_only=True)
+        """)
+
+        test_expected3 = dedent("""
+            TestSerializer3():
+                field1 = CharField(max_length=255)
+                field2 = CharField(max_length=255)
+        """)
+
+        self.assertEqual(repr(TestSerializer1()), test_expected1)
+        self.assertEqual(repr(TestSerializer2()), test_expected2)
+        self.assertEqual(repr(TestSerializer3()), test_expected3)
+
 
 class TestRegularFieldMappings(TestCase):
     def test_regular_fields(self):

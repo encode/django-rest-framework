@@ -1333,6 +1333,9 @@ class ModelSerializer(Serializer):
 
     # Methods for determining additional keyword arguments to apply...
 
+    def get_read_only_fields(self):
+        return getattr(self.Meta, 'read_only_fields', None)
+
     def get_extra_kwargs(self):
         """
         Return a dictionary mapping field names to a dictionary of
@@ -1340,7 +1343,7 @@ class ModelSerializer(Serializer):
         """
         extra_kwargs = copy.deepcopy(getattr(self.Meta, 'extra_kwargs', {}))
 
-        read_only_fields = getattr(self.Meta, 'read_only_fields', None)
+        read_only_fields = self.get_read_only_fields()
         if read_only_fields is not None:
             if not isinstance(read_only_fields, (list, tuple)):
                 raise TypeError(
