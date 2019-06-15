@@ -130,7 +130,7 @@ def paginate(view_method):
     @wraps(view_method)
     def inner(view, *args, **kwargs):
         assert isinstance(view, APIView), (
-                "paginate must be applied on an APIView, but applied on %s." % APIView
+            "paginate must be applied on an APIView, but applied on %s." % APIView
         )
 
         queryset = view_method(view, *args, **kwargs)
