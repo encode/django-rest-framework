@@ -7,10 +7,13 @@ based views, as well as the `@detail_route` and `@list_route` decorators, which 
 used to annotate methods on viewsets that should be included by routers.
 """
 import types
+from functools import wraps
+from django.db.models import QuerySet
 
 from django.forms.utils import pretty_name
 
 from rest_framework.views import APIView
+from rest_framework.response import Response
 
 
 def api_view(http_method_names=None):
@@ -118,6 +121,32 @@ def schema(view_inspector):
         func.schema = view_inspector
         return func
     return decorator
+
+
+def paginate(view_method):
+    """
+    Adds Pagination to the method
+    """
+    @wraps(view_method)
+    def inner(view, *args, **kwargs):
+        assert isinstance(view, APIView), (
+                "paginate must be applied on an APIView, but applied on %s." % APIView
+        )
+
+        queryset = view_method(view, *args, **kwargs)
+
+        assert isinstance(queryset, (list, QuerySet)), (
+            "paginate expects a list or a QuerySet but got %s." % queryset
+        )
+
+        page = view.paginate_queryset(queryset)
+        if page is not None:
+            serializer = view.get_serializer(page, many=True)
+            return view.get_paginated_response(serializer.data)
+
+        serializer = view.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+    return inner
 
 
 def action(methods=None, detail=None, url_path=None, url_name=None, **kwargs):
