@@ -8,12 +8,12 @@ used to annotate methods on viewsets that should be included by routers.
 """
 import types
 from functools import wraps
-from django.db.models import QuerySet
 
+from django.db.models import QuerySet
 from django.forms.utils import pretty_name
 
-from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 
 def api_view(http_method_names=None):
