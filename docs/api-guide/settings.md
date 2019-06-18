@@ -404,7 +404,7 @@ This should be a function with the following signature:
 
 If the view instance inherits `ViewSet`, it may have been initialized with several optional arguments:
 
-* `name`: A name expliticly provided to a view in the viewset. Typically, this value should be used as-is when provided.
+* `name`: A name explicitly provided to a view in the viewset. Typically, this value should be used as-is when provided.
 * `suffix`: Text used when differentiating individual views in a viewset. This argument is mutually exclusive to `name`.
 * `detail`: Boolean that differentiates an individual view in a viewset as either being a 'list' or 'detail' view.
 

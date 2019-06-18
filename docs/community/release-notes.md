@@ -321,7 +321,7 @@ Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.
     Note: `AutoSchema.__init__` now ensures `manual_fields` is a list.
     Previously may have been stored internally as `None`.
 
-* Remove ulrparse compatability shim; use six instead [#5579][gh5579]
+* Remove ulrparse compatibility shim; use six instead [#5579][gh5579]
 * Drop compat wrapper for `TimeDelta.total_seconds()` [#5577][gh5577]
 * Clean up all whitespace throughout project [#5578][gh5578]
 * Compat cleanup [#5581][gh5581]

@@ -20,7 +20,7 @@ If you have an idea for a new feature please consider how it may be packaged as 
 
 You can use [this cookiecutter template][cookiecutter] for creating reusable Django REST Framework packages quickly. Cookiecutter creates projects from project templates. While optional, this cookiecutter template includes best practices from Django REST framework and other packages, as well as a Travis CI configuration, Tox configuration, and a sane setup.py for easy PyPI registration/distribution.
 
-Note: Let us know if you have an alternate cookiecuter package so we can also link to it.
+Note: Let us know if you have an alternate cookiecutter package so we can also link to it.
 
 #### Running the initial cookiecutter command
 

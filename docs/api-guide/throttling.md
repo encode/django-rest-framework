@@ -74,7 +74,7 @@ If you need to strictly identify unique client IP addresses, you'll need to firs
 
 It is important to understand that if you configure the `NUM_PROXIES` setting, then all clients behind a unique [NAT'd](https://en.wikipedia.org/wiki/Network_address_translation) gateway will be treated as a single client.
 
-Further context on how the `X-Forwarded-For` header works, and identifying a remote client IP can be [found here][identifing-clients].
+Further context on how the `X-Forwarded-For` header works, and identifying a remote client IP can be [found here][identifying-clients].
 
 ## Setting up the cache
 
@@ -194,6 +194,6 @@ The following is an example of a rate throttle, that will randomly throttle 1 in
 
 [cite]: https://developer.twitter.com/en/docs/basics/rate-limiting
 [permissions]: permissions.md
-[identifing-clients]: http://oxpedia.org/wiki/index.php?title=AppSuite:Grizzly#Multiple_Proxies_in_front_of_the_cluster
+[identifying-clients]: http://oxpedia.org/wiki/index.php?title=AppSuite:Grizzly#Multiple_Proxies_in_front_of_the_cluster
 [cache-setting]: https://docs.djangoproject.com/en/stable/ref/settings/#caches
 [cache-docs]: https://docs.djangoproject.com/en/stable/topics/cache/#setting-up-the-cache
