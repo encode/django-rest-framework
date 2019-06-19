@@ -973,12 +973,17 @@ class ModelSerializer(Serializer):
         # Note that unlike `.create()` we don't need to treat many-to-many
         # relationships as being a special case. During updates we already
         # have an instance pk for the relationships to be associated with.
+        m2m_fields = []
         for attr, value in validated_data.items():
-            if attr in info.relations and info.relations[attr].to_many:
-                field = getattr(instance, attr)
-                field.set(value)
-            else:
+            if attr not in info.relations or not info.relations[attr].to_many:
                 setattr(instance, attr, value)
+            else:
+                m2m_fields.append((attr, value))
+
+        for attr, value in m2m_fields:
+            field = getattr(instance, attr)
+            field.set(value)
+
         instance.save()
 
         return instance
