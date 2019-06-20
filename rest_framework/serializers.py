@@ -979,14 +979,12 @@ class ModelSerializer(Serializer):
                 m2m_fields.append((attr, value))
             else:
                 setattr(instance, attr, value)
-            else:
-                m2m_fields.append((attr, value))
+
+        instance.save()
 
         for attr, value in m2m_fields:
             field = getattr(instance, attr)
             field.set(value)
-
-        instance.save()
 
         return instance
 
