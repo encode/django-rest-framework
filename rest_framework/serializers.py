@@ -975,7 +975,9 @@ class ModelSerializer(Serializer):
         # have an instance pk for the relationships to be associated with.
         m2m_fields = []
         for attr, value in validated_data.items():
-            if attr not in info.relations or not info.relations[attr].to_many:
+            if attr in info.relations and info.relations[attr].to_many:
+                m2m_fields.append((attr, value))
+            else:
                 setattr(instance, attr, value)
             else:
                 m2m_fields.append((attr, value))
