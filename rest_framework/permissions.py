@@ -68,6 +68,7 @@ class BasePermission(metaclass=BasePermissionMetaclass):
         """
         return True
 
+
 class AND(BasePermission):
     def __init__(self, *args):
         self.permissions = args
@@ -111,7 +112,6 @@ class NOT(BasePermission):
 
     def has_object_permission(self, request, view, obj):
         return not self.op1.has_object_permission(request, view, obj)
-
 
 
 class AllowAny(BasePermission):
