@@ -1251,7 +1251,6 @@ class Issue6110ModelSerializer(serializers.ModelSerializer):
 
 
 class Issue6110Test(TestCase):
-
     def test_model_serializer_custom_manager(self):
         instance = Issue6110ModelSerializer().create({'name': 'test_name'})
         self.assertEqual(instance.name, 'test_name')
