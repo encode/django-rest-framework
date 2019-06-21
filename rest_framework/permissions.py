@@ -87,7 +87,7 @@ class AND(BasePermission):
 
 class OR(BasePermission):
     def __init__(self, *args):
-        self.permissions = op1
+        self.permissions = args
 
     def has_permission(self, request, view):
         for permission in self.permissions:
