@@ -74,13 +74,13 @@ class AND(BasePermission):
 
     def has_permission(self, request, view):
         for permission in self.permissions:
-            if not permissions.has_permission(request, view):
+            if not permission.has_permission(request, view):
                 return False
         return True
 
     def has_object_permission(self, request, view, obj):
         for permission in self.permissions:
-            if not permissions.has_object_permission(request, view, obj):
+            if not permission.has_object_permission(request, view, obj):
                 return False
         return True
 
