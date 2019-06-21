@@ -47,53 +47,6 @@ class OperandHolder(OperationHolderMixin):
         return self.operator_class(op1, op2)
 
 
-class AND:
-    def __init__(self, op1, op2):
-        self.op1 = op1
-        self.op2 = op2
-
-    def has_permission(self, request, view):
-        return (
-            self.op1.has_permission(request, view) and
-            self.op2.has_permission(request, view)
-        )
-
-    def has_object_permission(self, request, view, obj):
-        return (
-            self.op1.has_object_permission(request, view, obj) and
-            self.op2.has_object_permission(request, view, obj)
-        )
-
-
-class OR:
-    def __init__(self, op1, op2):
-        self.op1 = op1
-        self.op2 = op2
-
-    def has_permission(self, request, view):
-        return (
-            self.op1.has_permission(request, view) or
-            self.op2.has_permission(request, view)
-        )
-
-    def has_object_permission(self, request, view, obj):
-        return (
-            self.op1.has_object_permission(request, view, obj) or
-            self.op2.has_object_permission(request, view, obj)
-        )
-
-
-class NOT:
-    def __init__(self, op1):
-        self.op1 = op1
-
-    def has_permission(self, request, view):
-        return not self.op1.has_permission(request, view)
-
-    def has_object_permission(self, request, view, obj):
-        return not self.op1.has_object_permission(request, view, obj)
-
-
 class BasePermissionMetaclass(OperationHolderMixin, type):
     pass
 
@@ -114,6 +67,51 @@ class BasePermission(metaclass=BasePermissionMetaclass):
         Return `True` if permission is granted, `False` otherwise.
         """
         return True
+
+class AND(BasePermission):
+    def __init__(self, *args):
+        self.permissions = args
+
+    def has_permission(self, request, view):
+        for permission in self.permissions:
+            if not permissions.has_permission(request, view):
+                return False
+        return True
+
+    def has_object_permission(self, request, view, obj):
+        for permission in self.permissions:
+            if not permissions.has_object_permission(request, view, obj):
+                return False
+        return True
+
+
+class OR(BasePermission):
+    def __init__(self, *args):
+        self.permissions = op1
+
+    def has_permission(self, request, view):
+        for permission in self.permissions:
+            if permission.has_permission(request, view):
+                return True
+        return False
+
+    def has_object_permission(self, request, view, obj):
+        for permission in self.permissions:
+            if permission.has_object_permission(request, view, obj):
+                return True
+        return False
+
+
+class NOT(BasePermission):
+    def __init__(self, op1):
+        self.op1 = op1
+
+    def has_permission(self, request, view):
+        return not self.op1.has_permission(request, view)
+
+    def has_object_permission(self, request, view, obj):
+        return not self.op1.has_object_permission(request, view, obj)
+
 
 
 class AllowAny(BasePermission):
