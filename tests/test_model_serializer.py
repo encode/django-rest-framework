@@ -18,6 +18,8 @@ from django.core.validators import (
     MaxValueValidator, MinLengthValidator, MinValueValidator
 )
 from django.db import models
+from django.db.models.signals import m2m_changed
+from django.dispatch import receiver
 from django.test import TestCase
 
 from rest_framework import serializers
@@ -1251,7 +1253,6 @@ class Issue6110ModelSerializer(serializers.ModelSerializer):
 
 
 class Issue6110Test(TestCase):
-
     def test_model_serializer_custom_manager(self):
         instance = Issue6110ModelSerializer().create({'name': 'test_name'})
         self.assertEqual(instance.name, 'test_name')
@@ -1260,3 +1261,43 @@ class Issue6110Test(TestCase):
         msginitial = ('Got a `TypeError` when calling `Issue6110TestModel.all_objects.create()`.')
         with self.assertRaisesMessage(TypeError, msginitial):
             Issue6110ModelSerializer().create({'wrong_param': 'wrong_param'})
+
+
+class Issue6751Model(models.Model):
+    many_to_many = models.ManyToManyField(ManyToManyTargetModel, related_name='+')
+    char_field = models.CharField(max_length=100)
+    char_field2 = models.CharField(max_length=100)
+
+
+@receiver(m2m_changed, sender=Issue6751Model.many_to_many.through)
+def process_issue6751model_m2m_changed(action, instance, **_):
+    if action == 'post_add':
+        instance.char_field = 'value changed by signal'
+        instance.save()
+
+
+class Issue6751Test(TestCase):
+    def test_model_serializer_save_m2m_after_instance(self):
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Issue6751Model
+                fields = (
+                    'many_to_many',
+                    'char_field',
+                )
+
+        instance = Issue6751Model.objects.create(char_field='initial value')
+        m2m_target = ManyToManyTargetModel.objects.create(name='target')
+
+        serializer = TestSerializer(
+            instance=instance,
+            data={
+                'many_to_many': (m2m_target.id,),
+                'char_field': 'will be changed by signal',
+            }
+        )
+
+        serializer.is_valid()
+        serializer.save()
+
+        self.assertEqual(instance.char_field, 'value changed by signal')
