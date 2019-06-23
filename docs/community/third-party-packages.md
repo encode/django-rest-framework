@@ -197,6 +197,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [djangorestframework-composed-permissions][djangorestframework-composed-permissions] - Provides a simple way to define complex permissions.
 * [rest_condition][rest-condition] - Another extension for building complex permissions in a simple and convenient way.
 * [dry-rest-permissions][dry-rest-permissions] - Provides a simple way to define permissions for individual api actions.
+* [drf-access-policy][drf-access-policy] - Declarative and flexible permissions inspired by AWS' IAM policies.
 
 ### Serializers
 
@@ -208,6 +209,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [django-rest-framework-serializer-extensions][drf-serializer-extensions] -
   Enables black/whitelisting fields, and conditionally expanding child serializers on a per-view/request basis.
 * [djangorestframework-queryfields][djangorestframework-queryfields] - Serializer mixin allowing clients to control which fields will be sent in the API response.
+* [drf-flex-fields][drf-flex-fields] - Serializer providing dynamic field expansion and sparse field sets via URL parameters.
 
 ### Serializer fields
 
@@ -340,3 +342,5 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [djangorestframework-datatables]: https://github.com/izimobil/django-rest-framework-datatables
 [django-rest-framework-condition]: https://github.com/jozo/django-rest-framework-condition
 [django-rest-witchcraft]: https://github.com/shosca/django-rest-witchcraft
+[drf-access-policy]: https://github.com/rsinger86/drf-access-policy
+[drf-flex-fields]: https://github.com/rsinger86/drf-flex-fields
