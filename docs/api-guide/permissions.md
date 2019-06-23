@@ -281,6 +281,10 @@ Also note that the generic views will only check the object-level permissions fo
 
 The following third party packages are also available.
 
+## DRF - Access Policy
+
+The [Django REST - Access Policy][drf-access-policy] package provides a way to define complex access rules in declaritive policy classes that are attached to view sets or function-based views. The policies are defined in JSON in a format similer to AWS' Identity & Access Management policies. 
+
 ## Composed Permissions
 
 The [Composed Permissions][composed-permissions] package provides a simple way to define complex and multi-depth (with logic operators) permission objects, using small and reusable components.
@@ -320,3 +324,4 @@ The [Django Rest Framework Role Filters][django-rest-framework-role-filters] pac
 [djangorestframework-api-key]: https://github.com/florimondmanca/djangorestframework-api-key
 [django-rest-framework-role-filters]: https://github.com/allisson/django-rest-framework-role-filters
 [django-rest-framework-guardian]: https://github.com/rpkilby/django-rest-framework-guardian
+[drf-access-policy]: https://github.com/rsinger86/drf-access-policy
