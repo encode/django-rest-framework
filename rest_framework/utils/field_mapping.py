@@ -109,6 +109,9 @@ def get_field_kwargs(field_name, model_field):
     if model_field.blank and (isinstance(model_field, (models.CharField, models.TextField))):
         kwargs['allow_blank'] = True
 
+    if not model_field.blank and (postgres_fields and isinstance(model_field, postgres_fields.ArrayField)):
+        kwargs['allow_empty'] = False
+
     if isinstance(model_field, models.FilePathField):
         kwargs['path'] = model_field.path
 
