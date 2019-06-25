@@ -283,7 +283,7 @@ The following third party packages are also available.
 
 ## DRF - Access Policy
 
-The [Django REST - Access Policy][drf-access-policy] package provides a way to define complex access rules in declaritive policy classes that are attached to view sets or function-based views. The policies are defined in JSON in a format similer to AWS' Identity & Access Management policies. 
+The [Django REST - Access Policy][drf-access-policy] package provides a way to define complex access rules in declaritive policy classes that are attached to view sets or function-based views. The policies are defined in JSON in a format similar to AWS' Identity & Access Management policies. 
 
 ## Composed Permissions
 
