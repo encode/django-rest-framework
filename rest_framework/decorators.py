@@ -3,8 +3,8 @@ The most important decorator in this module is `@api_view`, which is used
 for writing function-based views with REST framework.
 
 There are also various decorators for setting the API policies on function
-based views, as well as the `@detail_route` and `@list_route` decorators, which are
-used to annotate methods on viewsets that should be included by routers.
+based views, as well as the `@action` decorator, which is used to annotate
+methods on viewsets that should be included by routers.
 """
 import types
 
