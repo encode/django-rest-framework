@@ -246,6 +246,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [djangorestframework-chain][djangorestframework-chain] - Allows arbitrary chaining of both relations and lookup filters.
 * [django-url-filter][django-url-filter] - Allows a safe way to filter data via human-friendly URLs. It is a generic library which is not tied to DRF but it provides easy integration with DRF.
 * [drf-url-filter][drf-url-filter] is a simple Django app to apply filters on drf `ModelViewSet`'s `Queryset` in a clean, simple and configurable way. It also supports validations on incoming query params and their values.
+* [django-rest-framework-guardian][django-rest-framework-guardian] - Provides integration with django-guardian, including the `DjangoObjectPermissionsFilter` previously found in DRF.
 
 ### Misc
 
@@ -346,3 +347,4 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [drf-access-policy]: https://github.com/rsinger86/drf-access-policy
 [drf-flex-fields]: https://github.com/rsinger86/drf-flex-fields
 [djangorestframework-mvt]: https://github.com/corteva/djangorestframework-mvt
+[django-rest-framework-guardian]: https://github.com/rpkilby/django-rest-framework-guardian
