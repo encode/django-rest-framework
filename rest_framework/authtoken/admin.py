@@ -7,6 +7,7 @@ class TokenAdmin(admin.ModelAdmin):
     list_display = ('key', 'user', 'created')
     fields = ('user',)
     ordering = ('-created',)
+    autocomplete_fields = ('user',)
 
 
 admin.site.register(Token, TokenAdmin)
