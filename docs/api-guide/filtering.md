@@ -221,7 +221,7 @@ By default, the search parameter is named `'search`', but this may be overridden
 To dynamically change search fields based on request content, it's possible to subclass the `SearchFilter` and override the `get_search_fields()` function. For example, the following subclass will only search on `title` if the query parameter `title_only` is in the request:
 
     from rest_framework import filters
-    
+
     class CustomSearchFilter(filters.SearchFilter):
         def get_search_fields(self, view, request):
             if request.query_params.get('title_only'):
@@ -291,53 +291,6 @@ The `ordering` attribute may be either a string or a list/tuple of strings.
 
 ---
 
-## DjangoObjectPermissionsFilter
-
-The `DjangoObjectPermissionsFilter` is intended to be used together with the [`django-guardian`][guardian] package, with custom `'view'` permissions added.  The filter will ensure that querysets only returns objects for which the user has the appropriate view permission.
-
----
-
-**Note:** This filter has been deprecated as of version 3.9 and moved to the 3rd-party [`djangorestframework-guardian` package][django-rest-framework-guardian].
-
----
-
-If you're using `DjangoObjectPermissionsFilter`, you'll probably also want to add an appropriate object permissions class, to ensure that users can only operate on instances if they have the appropriate object permissions.  The easiest way to do this is to subclass `DjangoObjectPermissions` and add `'view'` permissions to the `perms_map` attribute.
-
-A complete example using both `DjangoObjectPermissionsFilter` and `DjangoObjectPermissions` might look something like this.
-
-**permissions.py**:
-
-    class CustomObjectPermissions(permissions.DjangoObjectPermissions):
-        """
-        Similar to `DjangoObjectPermissions`, but adding 'view' permissions.
-        """
-        perms_map = {
-            'GET': ['%(app_label)s.view_%(model_name)s'],
-            'OPTIONS': ['%(app_label)s.view_%(model_name)s'],
-            'HEAD': ['%(app_label)s.view_%(model_name)s'],
-            'POST': ['%(app_label)s.add_%(model_name)s'],
-            'PUT': ['%(app_label)s.change_%(model_name)s'],
-            'PATCH': ['%(app_label)s.change_%(model_name)s'],
-            'DELETE': ['%(app_label)s.delete_%(model_name)s'],
-        }
-
-**views.py**:
-
-    class EventViewSet(viewsets.ModelViewSet):
-        """
-        Viewset that only lists events if user has 'view' permissions, and only
-        allows operations on individual events if user has appropriate 'view', 'add',
-        'change' or 'delete' permissions.
-        """
-        queryset = Event.objects.all()
-        serializer_class = EventSerializer
-        filter_backends = (filters.DjangoObjectPermissionsFilter,)
-        permission_classes = (myapp.permissions.CustomObjectPermissions,)
-
-For more information on adding `'view'` permissions for models, see the [relevant section][view-permissions] of the `django-guardian` documentation, and [this blogpost][view-permissions-blogpost].
-
----
-
 # Custom generic filtering
 
 You can also provide your own generic filtering backend, or write an installable app for other developers to use.
@@ -399,12 +352,8 @@ The [djangorestframework-word-filter][django-rest-framework-word-search-filter] 
 [cite]: https://docs.djangoproject.com/en/stable/topics/db/queries/#retrieving-specific-objects-with-filters
 [django-filter-docs]: https://django-filter.readthedocs.io/en/latest/index.html
 [django-filter-drf-docs]: https://django-filter.readthedocs.io/en/latest/guide/rest_framework.html
-[guardian]: https://django-guardian.readthedocs.io/
-[view-permissions]: https://django-guardian.readthedocs.io/en/latest/userguide/assign.html
-[view-permissions-blogpost]: https://blog.nyaruka.com/adding-a-view-permission-to-django-models
 [search-django-admin]: https://docs.djangoproject.com/en/stable/ref/contrib/admin/#django.contrib.admin.ModelAdmin.search_fields
 [django-rest-framework-filters]: https://github.com/philipn/django-rest-framework-filters
-[django-rest-framework-guardian]: https://github.com/rpkilby/django-rest-framework-guardian
 [django-rest-framework-word-search-filter]: https://github.com/trollknurr/django-rest-framework-word-search-filter
 [django-url-filter]: https://github.com/miki725/django-url-filter
 [drf-url-filter]: https://github.com/manjitkumar/drf-url-filters
