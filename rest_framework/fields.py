@@ -47,10 +47,24 @@ class empty:
     pass
 
 
+class BuiltinSignatureError(Exception):
+    """
+    Built-in function signatures are not inspectable. This exception is raised
+    so the serializer can raise a helpful error message.
+    """
+    pass
+
+
 def is_simple_callable(obj):
     """
     True if the object is a callable that takes no arguments.
     """
+    # Bail early since we cannot inspect built-in function signatures.
+    if inspect.isbuiltin(obj):
+        raise BuiltinSignatureError(
+            'Built-in function signatures are not inspectable. '
+            'Wrap the function call in a simple, pure Python function.')
+
     if not (inspect.isfunction(obj) or inspect.ismethod(obj) or isinstance(obj, functools.partial)):
         return False
 
@@ -427,6 +441,18 @@ class Field:
         """
         try:
             return get_attribute(instance, self.source_attrs)
+        except BuiltinSignatureError as exc:
+            msg = (
+                'Field source for `{serializer}.{field}` maps to a built-in '
+                'function type and is invalid. Define a property or method on '
+                'the `{instance}` instance that wraps the call to the built-in '
+                'function.'.format(
+                    serializer=self.parent.__class__.__name__,
+                    field=self.field_name,
+                    instance=instance.__class__.__name__,
+                )
+            )
+            raise type(exc)(msg)
         except (KeyError, AttributeError) as exc:
             if self.default is not empty:
                 return self.get_default()

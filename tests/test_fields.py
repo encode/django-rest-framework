@@ -14,7 +14,9 @@ from django.utils.timezone import activate, deactivate, override, utc
 import rest_framework
 from rest_framework import exceptions, serializers
 from rest_framework.compat import ProhibitNullCharactersValidator
-from rest_framework.fields import DjangoImageField, is_simple_callable
+from rest_framework.fields import (
+    BuiltinSignatureError, DjangoImageField, is_simple_callable
+)
 
 # Tests for helper functions.
 # ---------------------------
@@ -85,6 +87,18 @@ class TestIsSimpleCallable:
                 app_label = 'tests'
 
         assert is_simple_callable(ChoiceModel().get_choice_field_display)
+
+    def test_builtin_function(self):
+        # Built-in function signatures are not easily inspectable, so the
+        # current expectation is to just raise a helpful error message.
+        timestamp = datetime.datetime.now()
+
+        with pytest.raises(BuiltinSignatureError) as exc_info:
+            is_simple_callable(timestamp.date)
+
+        assert str(exc_info.value) == (
+            'Built-in function signatures are not inspectable. Wrap the '
+            'function call in a simple, pure Python function.')
 
     def test_type_annotation(self):
         # The annotation will otherwise raise a syntax error in python < 3.5
@@ -205,6 +219,18 @@ class TestSource:
             serializer.data.items()
 
         assert 'method call failed' in str(exc_info.value)
+
+    def test_builtin_callable_source_raises(self):
+        class BuiltinSerializer(serializers.Serializer):
+            date = serializers.ReadOnlyField(source='timestamp.date')
+
+        with pytest.raises(BuiltinSignatureError) as exc_info:
+            BuiltinSerializer({'timestamp': datetime.datetime.now()}).data
+
+        assert str(exc_info.value) == (
+            'Field source for `BuiltinSerializer.date` maps to a built-in '
+            'function type and is invalid. Define a property or method on '
+            'the `dict` instance that wraps the call to the built-in function.')
 
 
 class TestReadOnly:
