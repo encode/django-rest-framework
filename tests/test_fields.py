@@ -2255,14 +2255,33 @@ class TestValidationErrorCode:
             password = serializers.CharField()
 
             def validate_password(self, obj):
-                err = DjangoValidationError('exc_msg', code='exc_code')
+                err = DjangoValidationError(
+                    'exc_msg %s', code='exc_code', params=('exc_param',),
+                )
                 if use_list:
                     err = DjangoValidationError([err])
                 raise err
 
         serializer = ExampleSerializer(data={'password': 123})
         serializer.is_valid()
-        assert serializer.errors == {'password': ['exc_msg']}
+        assert serializer.errors == {'password': ['exc_msg exc_param']}
+        assert serializer.errors['password'][0].code == 'exc_code'
+
+    @pytest.mark.parametrize('use_list', (False, True))
+    def test_validationerror_code_with_msg_including_percent(self, use_list):
+
+        class ExampleSerializer(serializers.Serializer):
+            password = serializers.CharField()
+
+            def validate_password(self, obj):
+                err = DjangoValidationError('exc_msg with %', code='exc_code')
+                if use_list:
+                    err = DjangoValidationError([err])
+                raise err
+
+        serializer = ExampleSerializer(data={'password': 123})
+        serializer.is_valid()
+        assert serializer.errors == {'password': ['exc_msg with %']}
         assert serializer.errors['password'][0].code == 'exc_code'
 
     @pytest.mark.parametrize('code', (None, 'exc_code',))

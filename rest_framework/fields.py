@@ -231,12 +231,12 @@ def get_error_detail(exc_info):
         error_dict = exc_info.error_dict
     except AttributeError:
         return [
-            ErrorDetail(error.message % (error.params or ()),
+            ErrorDetail((error.message % error.params) if error.params else error.message,
                         code=error.code if error.code else code)
             for error in exc_info.error_list]
     return {
         k: [
-            ErrorDetail(error.message % (error.params or ()),
+            ErrorDetail((error.message % error.params) if error.params else error.message,
                         code=error.code if error.code else code)
             for error in errors
         ] for k, errors in error_dict.items()
