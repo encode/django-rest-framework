@@ -1,4 +1,7 @@
-source: fields.py
+---
+source:
+    - fields.py
+---
 
 # Serializer fields
 
@@ -209,7 +212,7 @@ A field that ensures the input is a valid UUID string. The `to_internal_value` m
 **Signature:** `UUIDField(format='hex_verbose')`
 
 - `format`: Determines the representation format of the uuid value
-    - `'hex_verbose'` - The cannoncical hex representation, including hyphens: `"5ce0e9a5-5ffa-654b-cee0-1238041fb31a"`
+    - `'hex_verbose'` - The canonical hex representation, including hyphens: `"5ce0e9a5-5ffa-654b-cee0-1238041fb31a"`
     - `'hex'` - The compact hex representation of the UUID, not including hyphens: `"5ce0e9a55ffa654bcee01238041fb31a"`
     - `'int'` - A 128 bit integer representation of the UUID: `"123456789012312313134124512351145145114"`
     - `'urn'` - RFC 4122 URN representation of the UUID: `"urn:uuid:5ce0e9a5-5ffa-654b-cee0-1238041fb31a"`
@@ -448,9 +451,10 @@ Requires either the `Pillow` package or `PIL` package.  The `Pillow` package is 
 
 A field class that validates a list of objects.
 
-**Signature**: `ListField(child=<A_FIELD_INSTANCE>, min_length=None, max_length=None)`
+**Signature**: `ListField(child=<A_FIELD_INSTANCE>, allow_empty=True, min_length=None, max_length=None)`
 
 - `child` - A field instance that should be used for validating the objects in the list. If this argument is not provided then objects in the list will not be validated.
+- `allow_empty` - Designates if empty lists are allowed.
 - `min_length` - Validates that the list contains no fewer than this number of elements.
 - `max_length` - Validates that the list contains no more than this number of elements.
 
@@ -471,9 +475,10 @@ We can now reuse our custom `StringListField` class throughout our application, 
 
 A field class that validates a dictionary of objects. The keys in `DictField` are always assumed to be string values.
 
-**Signature**: `DictField(child=<A_FIELD_INSTANCE>)`
+**Signature**: `DictField(child=<A_FIELD_INSTANCE>, allow_empty=True)`
 
 - `child` - A field instance that should be used for validating the values in the dictionary. If this argument is not provided then values in the mapping will not be validated.
+- `allow_empty` - Designates if empty dictionaries are allowed.
 
 For example, to create a field that validates a mapping of strings to strings, you would write something like this:
 
@@ -488,9 +493,10 @@ You can also use the declarative style, as with `ListField`. For example:
 
 A preconfigured `DictField` that is compatible with Django's postgres `HStoreField`.
 
-**Signature**: `HStoreField(child=<A_FIELD_INSTANCE>)`
+**Signature**: `HStoreField(child=<A_FIELD_INSTANCE>, allow_empty=True)`
 
 - `child` - A field instance that is used for validating the values in the dictionary. The default child field accepts both empty strings and null values.
+- `allow_empty` - Designates if empty dictionaries are allowed.
 
 Note that the child field **must** be an instance of `CharField`, as the hstore extension stores values as strings.
 
@@ -498,9 +504,10 @@ Note that the child field **must** be an instance of `CharField`, as the hstore 
 
 A field class that validates that the incoming data structure consists of valid JSON primitives. In its alternate binary mode, it will represent and validate JSON-encoded binary strings.
 
-**Signature**: `JSONField(binary)`
+**Signature**: `JSONField(binary, encoder)`
 
 - `binary` - If set to `True` then the field will output and validate a JSON encoded string, rather than a primitive data structure. Defaults to `False`.
+- `encoder` - Use this JSON encoder to serialize input object. Defaults to `None`.
 
 ---
 
@@ -629,7 +636,7 @@ Our `ColorField` class above currently does not perform any data validation.
 To indicate invalid data, we should raise a `serializers.ValidationError`, like so:
 
     def to_internal_value(self, data):
-        if not isinstance(data, six.text_type):
+        if not isinstance(data, str):
             msg = 'Incorrect type. Expected a string, but got %s'
             raise ValidationError(msg % type(data).__name__)
 
@@ -653,7 +660,7 @@ The `.fail()` method is a shortcut for raising `ValidationError` that takes a me
     }
 
     def to_internal_value(self, data):
-        if not isinstance(data, six.text_type):
+        if not isinstance(data, str):
             self.fail('incorrect_type', input_type=type(data).__name__)
 
         if not re.match(r'^rgb\([0-9]+,[0-9]+,[0-9]+\)$', data):

@@ -1,4 +1,7 @@
-source: validators.py
+---
+source:
+    - validators.py
+---
 
 # Validators
 
@@ -100,7 +103,7 @@ The validator should be applied to *serializer classes*, like so:
 
 ---
 
-**Note**: The `UniqueTogetherValidation` class always imposes an implicit constraint that all the fields it applies to are always treated as required. Fields with `default` values are an exception to this as they always supply a value even when omitted from user input.
+**Note**: The `UniqueTogetherValidator` class always imposes an implicit constraint that all the fields it applies to are always treated as required. Fields with `default` values are an exception to this as they always supply a value even when omitted from user input.
 
 ---
 
@@ -159,7 +162,7 @@ If you want the date field to be entirely hidden from the user, then use `Hidden
 
 ---
 
-**Note**: The `UniqueFor<Range>Validation` classes impose an implicit constraint that the fields they are applied to are always treated as required. Fields with `default` values are an exception to this as they always supply a value even when omitted from user input.
+**Note**: The `UniqueFor<Range>Validator` classes impose an implicit constraint that the fields they are applied to are always treated as required. Fields with `default` values are an exception to this as they always supply a value even when omitted from user input.
 
 ---
 

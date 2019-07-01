@@ -1,4 +1,7 @@
-source: urlpatterns.py
+---
+source:
+    - urlpatterns.py
+---
 
 # Format suffixes
 

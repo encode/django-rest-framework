@@ -1,8 +1,6 @@
 """
 Provides an APIView class that is the base of all views in REST framework.
 """
-from __future__ import unicode_literals
-
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.db import connection, models, transaction
@@ -137,7 +135,7 @@ class APIView(View):
                 )
             cls.queryset._fetch_all = force_evaluation
 
-        view = super(APIView, cls).as_view(**initkwargs)
+        view = super().as_view(**initkwargs)
         view.cls = cls
         view.initkwargs = initkwargs
 
@@ -352,9 +350,13 @@ class APIView(View):
         Check if request should be throttled.
         Raises an appropriate exception if the request is throttled.
         """
+        throttle_durations = []
         for throttle in self.get_throttles():
             if not throttle.allow_request(request, self):
-                self.throttled(request, throttle.wait())
+                throttle_durations.append(throttle.wait())
+
+        if throttle_durations:
+            self.throttled(request, max(throttle_durations))
 
     def determine_version(self, request, *args, **kwargs):
         """

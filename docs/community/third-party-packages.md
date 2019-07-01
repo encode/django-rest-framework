@@ -20,7 +20,7 @@ If you have an idea for a new feature please consider how it may be packaged as 
 
 You can use [this cookiecutter template][cookiecutter] for creating reusable Django REST Framework packages quickly. Cookiecutter creates projects from project templates. While optional, this cookiecutter template includes best practices from Django REST framework and other packages, as well as a Travis CI configuration, Tox configuration, and a sane setup.py for easy PyPI registration/distribution.
 
-Note: Let us know if you have an alternate cookiecuter package so we can also link to it.
+Note: Let us know if you have an alternate cookiecutter package so we can also link to it.
 
 #### Running the initial cookiecutter command
 
@@ -197,6 +197,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [djangorestframework-composed-permissions][djangorestframework-composed-permissions] - Provides a simple way to define complex permissions.
 * [rest_condition][rest-condition] - Another extension for building complex permissions in a simple and convenient way.
 * [dry-rest-permissions][dry-rest-permissions] - Provides a simple way to define permissions for individual api actions.
+* [drf-access-policy][drf-access-policy] - Declarative and flexible permissions inspired by AWS' IAM policies.
 
 ### Serializers
 
@@ -208,6 +209,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [django-rest-framework-serializer-extensions][drf-serializer-extensions] -
   Enables black/whitelisting fields, and conditionally expanding child serializers on a per-view/request basis.
 * [djangorestframework-queryfields][djangorestframework-queryfields] - Serializer mixin allowing clients to control which fields will be sent in the API response.
+* [drf-flex-fields][drf-flex-fields] - Serializer providing dynamic field expansion and sparse field sets via URL parameters.
 
 ### Serializer fields
 
@@ -244,6 +246,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [djangorestframework-chain][djangorestframework-chain] - Allows arbitrary chaining of both relations and lookup filters.
 * [django-url-filter][django-url-filter] - Allows a safe way to filter data via human-friendly URLs. It is a generic library which is not tied to DRF but it provides easy integration with DRF.
 * [drf-url-filter][drf-url-filter] is a simple Django app to apply filters on drf `ModelViewSet`'s `Queryset` in a clean, simple and configurable way. It also supports validations on incoming query params and their values.
+* [django-rest-framework-guardian][django-rest-framework-guardian] - Provides integration with django-guardian, including the `DjangoObjectPermissionsFilter` previously found in DRF.
 
 ### Misc
 
@@ -264,6 +267,8 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [djangorest-alchemy][djangorest-alchemy] - SQLAlchemy support for REST framework.
 * [djangorestframework-datatables][djangorestframework-datatables] - Seamless integration between Django REST framework and [Datatables](https://datatables.net).
 * [django-rest-framework-condition][django-rest-framework-condition] - Decorators for managing HTTP cache headers for Django REST framework (ETag and Last-modified).
+* [django-rest-witchcraft][django-rest-witchcraft] - Provides DRF integration with SQLAlchemy with SQLAlchemy model serializers/viewsets and a bunch of other goodies
+* [djangorestframework-mvt][djangorestframework-mvt] - An extension for creating views that serve Postgres data as Map Box Vector Tiles.
 
 [cite]: http://www.software-ecosystems.com/Software_Ecosystems/Ecosystems.html
 [cookiecutter]: https://github.com/jpadilla/cookiecutter-django-rest-framework
@@ -338,3 +343,8 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [djangorest-alchemy]: https://github.com/dealertrack/djangorest-alchemy
 [djangorestframework-datatables]: https://github.com/izimobil/django-rest-framework-datatables
 [django-rest-framework-condition]: https://github.com/jozo/django-rest-framework-condition
+[django-rest-witchcraft]: https://github.com/shosca/django-rest-witchcraft
+[drf-access-policy]: https://github.com/rsinger86/drf-access-policy
+[drf-flex-fields]: https://github.com/rsinger86/drf-flex-fields
+[djangorestframework-mvt]: https://github.com/corteva/djangorestframework-mvt
+[django-rest-framework-guardian]: https://github.com/rpkilby/django-rest-framework-guardian

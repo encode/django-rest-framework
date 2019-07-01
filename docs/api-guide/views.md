@@ -1,5 +1,8 @@
-source: decorators.py
-        views.py
+---
+source:
+    - decorators.py
+    - views.py
+---
 
 # Class-based Views
 

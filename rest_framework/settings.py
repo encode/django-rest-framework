@@ -18,13 +18,9 @@ This module provides the `api_setting` object, that is used to access
 REST framework settings, checking for user settings first, then falling
 back to the defaults.
 """
-from __future__ import unicode_literals
-
-from importlib import import_module
-
 from django.conf import settings
 from django.test.signals import setting_changed
-from django.utils import six
+from django.utils.module_loading import import_string
 
 from rest_framework import ISO_8601
 
@@ -56,7 +52,7 @@ DEFAULTS = {
     'DEFAULT_FILTER_BACKENDS': (),
 
     # Schema
-    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema',
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.openapi.AutoSchema',
 
     # Throttling
     'DEFAULT_THROTTLE_RATES': {
@@ -166,7 +162,7 @@ def perform_import(val, setting_name):
     """
     if val is None:
         return None
-    elif isinstance(val, six.string_types):
+    elif isinstance(val, str):
         return import_from_string(val, setting_name)
     elif isinstance(val, (list, tuple)):
         return [import_from_string(item, setting_name) for item in val]
@@ -178,16 +174,13 @@ def import_from_string(val, setting_name):
     Attempt to import a class from a string representation.
     """
     try:
-        # Nod to tastypie's use of importlib.
-        module_path, class_name = val.rsplit('.', 1)
-        module = import_module(module_path)
-        return getattr(module, class_name)
-    except (ImportError, AttributeError) as e:
+        return import_string(val)
+    except ImportError as e:
         msg = "Could not import '%s' for API setting '%s'. %s: %s." % (val, setting_name, e.__class__.__name__, e)
         raise ImportError(msg)
 
 
-class APISettings(object):
+class APISettings:
     """
     A settings object, that allows API settings to be accessed as properties.
     For example:

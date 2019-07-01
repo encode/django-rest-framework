@@ -1,6 +1,6 @@
 # Caching
 
-> A certain woman had a very sharp conciousness but almost no
+> A certain woman had a very sharp consciousness but almost no
 > memory ... She remembered enough to work, and she worked hard.
 > - Lydia Davis
 

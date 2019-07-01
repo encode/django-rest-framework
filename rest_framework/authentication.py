@@ -1,15 +1,12 @@
 """
 Provides various authentication policies.
 """
-from __future__ import unicode_literals
-
 import base64
 import binascii
 
 from django.contrib.auth import authenticate, get_user_model
 from django.middleware.csrf import CsrfViewMiddleware
-from django.utils.six import text_type
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from rest_framework import HTTP_HEADER_ENCODING, exceptions
 
@@ -21,7 +18,7 @@ def get_authorization_header(request):
     Hide some test client ickyness where the header can be unicode.
     """
     auth = request.META.get('HTTP_AUTHORIZATION', b'')
-    if isinstance(auth, text_type):
+    if isinstance(auth, str):
         # Work around django test client oddness
         auth = auth.encode(HTTP_HEADER_ENCODING)
     return auth
@@ -33,7 +30,7 @@ class CSRFCheck(CsrfViewMiddleware):
         return reason
 
 
-class BaseAuthentication(object):
+class BaseAuthentication:
     """
     All authentication classes should extend BaseAuthentication.
     """

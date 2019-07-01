@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django.conf.urls import url
 from django.test import TestCase, override_settings
 from django.urls import NoReverseMatch
@@ -19,7 +17,7 @@ urlpatterns = [
 ]
 
 
-class MockVersioningScheme(object):
+class MockVersioningScheme:
 
     def __init__(self, raise_error=False):
         self.raise_error = raise_error

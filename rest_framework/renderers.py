@@ -6,10 +6,9 @@ on the response, such as JSON encoded data or HTML output.
 
 REST framework also provides an HTML renderer that renders the browsable API.
 """
-from __future__ import unicode_literals
-
 import base64
 from collections import OrderedDict
+from urllib import parse
 
 from django import forms
 from django.conf import settings
@@ -19,9 +18,7 @@ from django.http.multipartparser import parse_header
 from django.template import engines, loader
 from django.test.client import encode_multipart
 from django.urls import NoReverseMatch
-from django.utils import six
 from django.utils.html import mark_safe
-from django.utils.six.moves.urllib import parse as urlparse
 
 from rest_framework import VERSION, exceptions, serializers, status
 from rest_framework.compat import (
@@ -40,7 +37,7 @@ def zero_as_none(value):
     return None if value == 0 else value
 
 
-class BaseRenderer(object):
+class BaseRenderer:
     """
     All renderers should extend this class, setting the `media_type`
     and `format` attributes, and override the `.render()` method.
@@ -91,7 +88,7 @@ class JSONRenderer(BaseRenderer):
         Render `data` into JSON, returning a bytestring.
         """
         if data is None:
-            return bytes()
+            return b''
 
         renderer_context = renderer_context or {}
         indent = self.get_indent(accepted_media_type, renderer_context)
@@ -107,18 +104,11 @@ class JSONRenderer(BaseRenderer):
             allow_nan=not self.strict, separators=separators
         )
 
-        # On python 2.x json.dumps() returns bytestrings if ensure_ascii=True,
-        # but if ensure_ascii=False, the return type is underspecified,
-        # and may (or may not) be unicode.
-        # On python 3.x json.dumps() returns unicode strings.
-        if isinstance(ret, six.text_type):
-            # We always fully escape \u2028 and \u2029 to ensure we output JSON
-            # that is a strict javascript subset. If bytes were returned
-            # by json.dumps() then we don't have these characters in any case.
-            # See: http://timelessrepo.com/json-isnt-a-javascript-subset
-            ret = ret.replace('\u2028', '\\u2028').replace('\u2029', '\\u2029')
-            return bytes(ret.encode('utf-8'))
-        return ret
+        # We always fully escape \u2028 and \u2029 to ensure we output JSON
+        # that is a strict javascript subset.
+        # See: http://timelessrepo.com/json-isnt-a-javascript-subset
+        ret = ret.replace('\u2028', '\\u2028').replace('\u2029', '\\u2029')
+        return ret.encode()
 
 
 class TemplateHTMLRenderer(BaseRenderer):
@@ -349,7 +339,7 @@ class HTMLFormRenderer(BaseRenderer):
         # Get a clone of the field with text-only value representation.
         field = field.as_form_field()
 
-        if style.get('input_type') == 'datetime-local' and isinstance(field.value, six.text_type):
+        if style.get('input_type') == 'datetime-local' and isinstance(field.value, str):
             field.value = field.value.rstrip('Z')
 
         if 'template' in style:
@@ -577,7 +567,7 @@ class BrowsableAPIRenderer(BaseRenderer):
                         data.pop(name, None)
                 content = renderer.render(data, accepted, context)
                 # Renders returns bytes, but CharField expects a str.
-                content = content.decode('utf-8')
+                content = content.decode()
             else:
                 content = None
 
@@ -684,7 +674,7 @@ class BrowsableAPIRenderer(BaseRenderer):
             csrf_header_name = csrf_header_name[5:]
         csrf_header_name = csrf_header_name.replace('_', '-')
 
-        context = {
+        return {
             'content': self.get_content(renderer, data, accepted_media_type, renderer_context),
             'code_style': pygments_css(self.code_style),
             'view': view,
@@ -720,7 +710,6 @@ class BrowsableAPIRenderer(BaseRenderer):
             'csrf_cookie_name': csrf_cookie_name,
             'csrf_header_name': csrf_header_name
         }
-        return context
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
@@ -791,7 +780,7 @@ class AdminRenderer(BrowsableAPIRenderer):
         """
         Render the HTML for the browsable API representation.
         """
-        context = super(AdminRenderer, self).get_context(
+        context = super().get_context(
             data, accepted_media_type, renderer_context
         )
 
@@ -995,14 +984,14 @@ class _BaseOpenAPIRenderer:
 
         tag = None
         for name, link in document.links.items():
-            path = urlparse.urlparse(link.url).path
+            path = parse.urlparse(link.url).path
             method = link.action.lower()
             paths.setdefault(path, {})
             paths[path][method] = self.get_operation(link, name, tag=tag)
 
         for tag, section in document.data.items():
             for name, link in section.links.items():
-                path = urlparse.urlparse(link.url).path
+                path = parse.urlparse(link.url).path
                 method = link.action.lower()
                 paths.setdefault(path, {})
                 paths[path][method] = self.get_operation(link, name, tag=tag)
@@ -1024,28 +1013,49 @@ class _BaseOpenAPIRenderer:
         }
 
 
-class OpenAPIRenderer(_BaseOpenAPIRenderer):
+class CoreAPIOpenAPIRenderer(_BaseOpenAPIRenderer):
     media_type = 'application/vnd.oai.openapi'
     charset = None
     format = 'openapi'
 
     def __init__(self):
-        assert coreapi, 'Using OpenAPIRenderer, but `coreapi` is not installed.'
-        assert yaml, 'Using OpenAPIRenderer, but `pyyaml` is not installed.'
+        assert coreapi, 'Using CoreAPIOpenAPIRenderer, but `coreapi` is not installed.'
+        assert yaml, 'Using CoreAPIOpenAPIRenderer, but `pyyaml` is not installed.'
 
     def render(self, data, media_type=None, renderer_context=None):
         structure = self.get_structure(data)
-        return yaml.dump(structure, default_flow_style=False).encode('utf-8')
+        return yaml.dump(structure, default_flow_style=False).encode()
 
 
-class JSONOpenAPIRenderer(_BaseOpenAPIRenderer):
+class CoreAPIJSONOpenAPIRenderer(_BaseOpenAPIRenderer):
     media_type = 'application/vnd.oai.openapi+json'
     charset = None
     format = 'openapi-json'
 
     def __init__(self):
-        assert coreapi, 'Using JSONOpenAPIRenderer, but `coreapi` is not installed.'
+        assert coreapi, 'Using CoreAPIJSONOpenAPIRenderer, but `coreapi` is not installed.'
 
     def render(self, data, media_type=None, renderer_context=None):
         structure = self.get_structure(data)
         return json.dumps(structure, indent=4).encode('utf-8')
+
+
+class OpenAPIRenderer(BaseRenderer):
+    media_type = 'application/vnd.oai.openapi'
+    charset = None
+    format = 'openapi'
+
+    def __init__(self):
+        assert yaml, 'Using OpenAPIRenderer, but `pyyaml` is not installed.'
+
+    def render(self, data, media_type=None, renderer_context=None):
+        return yaml.dump(data, default_flow_style=False, sort_keys=False).encode('utf-8')
+
+
+class JSONOpenAPIRenderer(BaseRenderer):
+    media_type = 'application/vnd.oai.openapi+json'
+    charset = None
+    format = 'openapi-json'
+
+    def render(self, data, media_type=None, renderer_context=None):
+        return json.dumps(data, indent=2).encode('utf-8')

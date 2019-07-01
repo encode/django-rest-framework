@@ -1,22 +1,20 @@
-from __future__ import unicode_literals
-
 import base64
 import unittest
-import warnings
+from unittest import mock
 
 import django
 import pytest
+from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, Group, Permission, User
 from django.db import models
 from django.test import TestCase
 from django.urls import ResolverMatch
 
 from rest_framework import (
-    HTTP_HEADER_ENCODING, RemovedInDRF310Warning, authentication, generics,
-    permissions, serializers, status, views
+    HTTP_HEADER_ENCODING, authentication, generics, permissions, serializers,
+    status, views
 )
-from rest_framework.compat import PY36, is_guardian_installed, mock
-from rest_framework.filters import DjangoObjectPermissionsFilter
+from rest_framework.compat import PY36
 from rest_framework.routers import DefaultRouter
 from rest_framework.test import APIRequestFactory
 from tests.models import BasicModel
@@ -310,7 +308,7 @@ class GetQuerysetObjectPermissionInstanceView(generics.RetrieveUpdateDestroyAPIV
 get_queryset_object_permissions_view = GetQuerysetObjectPermissionInstanceView.as_view()
 
 
-@unittest.skipUnless(is_guardian_installed(), 'django-guardian not installed')
+@unittest.skipUnless('guardian' in settings.INSTALLED_APPS, 'django-guardian not installed')
 class ObjectPermissionsIntegrationTests(TestCase):
     """
     Integration tests for the object level permissions API.
@@ -331,14 +329,14 @@ class ObjectPermissionsIntegrationTests(TestCase):
         everyone = Group.objects.create(name='everyone')
         model_name = BasicPermModel._meta.model_name
         app_label = BasicPermModel._meta.app_label
-        f = '{0}_{1}'.format
+        f = '{}_{}'.format
         perms = {
             'view': f('view', model_name),
             'change': f('change', model_name),
             'delete': f('delete', model_name)
         }
         for perm in perms.values():
-            perm = '{0}.{1}'.format(app_label, perm)
+            perm = '{}.{}'.format(app_label, perm)
             assign_perm(perm, everyone)
         everyone.user_set.add(*users.values())
 
@@ -419,36 +417,13 @@ class ObjectPermissionsIntegrationTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     # Read list
-    def test_django_object_permissions_filter_deprecated(self):
-        with warnings.catch_warnings(record=True) as w:
-            warnings.simplefilter("always")
-            DjangoObjectPermissionsFilter()
-
-        message = ("`DjangoObjectPermissionsFilter` has been deprecated and moved "
-                   "to the 3rd-party django-rest-framework-guardian package.")
-        self.assertEqual(len(w), 1)
-        self.assertIs(w[-1].category, RemovedInDRF310Warning)
-        self.assertEqual(str(w[-1].message), message)
-
+    # Note: this previously tested `DjangoObjectPermissionsFilter`, which has
+    # since been moved to a separate package. These now act as sanity checks.
     def test_can_read_list_permissions(self):
         request = factory.get('/', HTTP_AUTHORIZATION=self.credentials['readonly'])
-        object_permissions_list_view.cls.filter_backends = (DjangoObjectPermissionsFilter,)
-        # TODO: remove in version 3.10
-        with warnings.catch_warnings(record=True):
-            warnings.simplefilter("always")
-            response = object_permissions_list_view(request)
+        response = object_permissions_list_view(request)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data[0].get('id'), 1)
-
-    def test_cannot_read_list_permissions(self):
-        request = factory.get('/', HTTP_AUTHORIZATION=self.credentials['writeonly'])
-        object_permissions_list_view.cls.filter_backends = (DjangoObjectPermissionsFilter,)
-        # TODO: remove in version 3.10
-        with warnings.catch_warnings(record=True):
-            warnings.simplefilter("always")
-            response = object_permissions_list_view(request)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertListEqual(response.data, [])
 
     def test_cannot_method_not_allowed(self):
         request = factory.generic('METHOD_NOT_ALLOWED', '/', HTTP_AUTHORIZATION=self.credentials['readonly'])

@@ -38,11 +38,38 @@ You can determine your currently installed version using `pip show`:
 
 ---
 
+## 3.10.x series
+
+### 3.10.0
+
+**Date**: [Unreleased][3.10.0-milestone]
+
+* Updated PyYaml dependency for OpenAPI schema generation to `pyyaml>=5.1` [#6680][gh6680]
+* Resolve DeprecationWarning with markdown. [#6317][gh6317]
+* Add `generateschema --generator_class` CLI option
+
+
 ## 3.9.x series
+
+### 3.9.4
+
+**Date**: 10th May 2019
+
+This is a maintenance release that fixes an error handling bug under Python 2.
+
+### 3.9.3
+
+**Date**: 29th April 2019
+
+This is the last Django REST Framework release that will support Python 2.
+Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.
+
+* Adjusted the compat check for django-guardian to allow the last guardian
+  version (v1.4.9) compatible with Python 2. [#6613][gh6613]
 
 ### 3.9.2
 
-**Date**: [3rd March 2019][3.9.1-milestone]
+**Date**: [3rd March 2019][3.9.2-milestone]
 
 * Routers: invalidate `_urls` cache on `register()` [#6407][gh6407]
 * Deferred schema renderer creation to avoid requiring pyyaml. [#6416][gh6416]
@@ -294,7 +321,7 @@ You can determine your currently installed version using `pip show`:
     Note: `AutoSchema.__init__` now ensures `manual_fields` is a list.
     Previously may have been stored internally as `None`.
 
-* Remove ulrparse compatability shim; use six instead [#5579][gh5579]
+* Remove ulrparse compatibility shim; use six instead [#5579][gh5579]
 * Drop compat wrapper for `TimeDelta.total_seconds()` [#5577][gh5577]
 * Clean up all whitespace throughout project [#5578][gh5578]
 * Compat cleanup [#5581][gh5581]
@@ -1165,7 +1192,8 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [3.8.2-milestone]: https://github.com/encode/django-rest-framework/milestone/68?closed=1
 [3.9.0-milestone]: https://github.com/encode/django-rest-framework/milestone/66?closed=1
 [3.9.1-milestone]: https://github.com/encode/django-rest-framework/milestone/70?closed=1
-[3.9.1-milestone]: https://github.com/encode/django-rest-framework/milestone/71?closed=1
+[3.9.2-milestone]: https://github.com/encode/django-rest-framework/milestone/71?closed=1
+[3.10.0-milestone]: https://github.com/encode/django-rest-framework/milestone/69?closed=1
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/encode/django-rest-framework/issues/2013
@@ -2106,3 +2134,10 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh6340]: https://github.com/encode/django-rest-framework/issues/6340
 [gh6416]: https://github.com/encode/django-rest-framework/issues/6416
 [gh6407]: https://github.com/encode/django-rest-framework/issues/6407
+
+<!-- 3.9.3 -->
+[gh6613]: https://github.com/encode/django-rest-framework/issues/6613
+
+<!-- 3.10.0 -->
+[gh6680]: https://github.com/encode/django-rest-framework/issues/6680
+[gh6317]: https://github.com/encode/django-rest-framework/issues/6317

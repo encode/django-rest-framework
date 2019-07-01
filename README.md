@@ -24,10 +24,10 @@ The initial aim is to provide a single full-time position on REST framework.
 [![][rollbar-img]][rollbar-url]
 [![][cadre-img]][cadre-url]
 [![][kloudless-img]][kloudless-url]
-[![][release-history-img]][release-history-url]
+[![][esg-img]][esg-url]
 [![][lightson-img]][lightson-url]
 
-Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Sentry][sentry-url], [Stream][stream-url], [Rollbar][rollbar-url], [Cadre][cadre-url], [Kloudless][kloudless-url], [Release History][release-history-url], and [Lights On Software][lightson-url].
+Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Sentry][sentry-url], [Stream][stream-url], [Rollbar][rollbar-url], [Cadre][cadre-url], [Kloudless][kloudless-url], [ESG][esg-url], and [Lights On Software][lightson-url].
 
 ---
 
@@ -53,7 +53,7 @@ There is a live example API for testing purposes, [available here][sandbox].
 
 # Requirements
 
-* Python (2.7, 3.4, 3.5, 3.6, 3.7)
+* Python (3.5, 3.6, 3.7)
 * Django (1.11, 2.0, 2.1, 2.2)
 
 We **highly recommend** and only officially support the latest patch release of
@@ -175,9 +175,7 @@ You may also want to [follow the author on Twitter][twitter].
 
 # Security
 
-If you believe you've found something in Django REST framework which has security implications, please **do not raise the issue in a public forum**.
-
-Send a description of the issue via email to [rest-framework-security@googlegroups.com][security-mail].  The project maintainers will then work with you to resolve any issues where required, prior to any public disclosure.
+Please see the [security policy][security-policy].
 
 [build-status-image]: https://secure.travis-ci.org/encode/django-rest-framework.svg?branch=master
 [travis]: https://travis-ci.org/encode/django-rest-framework?branch=master
@@ -199,17 +197,15 @@ Send a description of the issue via email to [rest-framework-security@googlegrou
 [cadre-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/cadre-readme.png
 [load-impact-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/load-impact-readme.png
 [kloudless-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/kloudless-readme.png
-[release-history-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/release-history.png
+[esg-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/esg-readme.png
 [lightson-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/lightson-readme.png
 
-[rover-url]: http://jobs.rover.com/
 [sentry-url]: https://getsentry.com/welcome/
 [stream-url]: https://getstream.io/try-the-api/?utm_source=drf&utm_medium=banner&utm_campaign=drf
 [rollbar-url]: https://rollbar.com/
 [cadre-url]: https://cadre.com/
-[load-impact-url]: https://loadimpact.com/?utm_campaign=Sponsorship%20links&utm_source=drf&utm_medium=drf
 [kloudless-url]: https://hubs.ly/H0f30Lf0
-[release-history-url]: https://releasehistory.io
+[esg-url]: https://software.esg-usa.com/
 [lightson-url]: https://lightsonsoftware.com
 
 [oauth1-section]: https://www.django-rest-framework.org/api-guide/authentication/#django-rest-framework-oauth
@@ -225,4 +221,4 @@ Send a description of the issue via email to [rest-framework-security@googlegrou
 [image]: https://www.django-rest-framework.org/img/quickstart.png
 
 [docs]: https://www.django-rest-framework.org/
-[security-mail]: mailto:rest-framework-security@googlegroups.com
+[security-policy]: https://github.com/encode/django-rest-framework/security/policy

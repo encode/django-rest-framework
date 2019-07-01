@@ -68,7 +68,7 @@ continued development by **[signing up for a paid plan][funding]**.
 <ul class="premium-promo promo">
     <li><a href="https://getsentry.com/welcome/" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/sentry130.png)">Sentry</a></li>
     <li><a href="https://getstream.io/try-the-api/?utm_source=drf&utm_medium=banner&utm_campaign=drf" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/stream-130.png)">Stream</a></li>
-    <li><a href="https://releasehistory.io" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/release-history.png)">Release History</a></li>
+    <li><a href="https://software.esg-usa.com" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/esg-new-logo.png)">ESG</a></li>
     <li><a href="https://rollbar.com" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/rollbar2.png)">Rollbar</a></li>
     <li><a href="https://cadre.com" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/cadre.png)">Cadre</a></li>
     <li><a href="https://hubs.ly/H0f30Lf0" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/kloudless-plus-text.png)">Kloudless</a></li>
@@ -76,7 +76,7 @@ continued development by **[signing up for a paid plan][funding]**.
 </ul>
 <div style="clear: both; padding-bottom: 20px;"></div>
 
-*Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Sentry](https://getsentry.com/welcome/), [Stream](https://getstream.io/?utm_source=drf&utm_medium=banner&utm_campaign=drf), [Release History](https://releasehistory.io), [Rollbar](https://rollbar.com), [Cadre](https://cadre.com), [Kloudless](https://hubs.ly/H0f30Lf0), and [Lights On Software](https://lightsonsoftware.com).*
+*Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Sentry](https://getsentry.com/welcome/), [Stream](https://getstream.io/?utm_source=drf&utm_medium=banner&utm_campaign=drf), [ESG](https://software.esg-usa.com/), [Rollbar](https://rollbar.com), [Cadre](https://cadre.com), [Kloudless](https://hubs.ly/H0f30Lf0), and [Lights On Software](https://lightsonsoftware.com).*
 
 ---
 
@@ -84,7 +84,7 @@ continued development by **[signing up for a paid plan][funding]**.
 
 REST framework requires the following:
 
-* Python (2.7, 3.4, 3.5, 3.6, 3.7)
+* Python (3.5, 3.6, 3.7)
 * Django (1.11, 2.0, 2.1, 2.2)
 
 We **highly recommend** and only officially support the latest patch release of
@@ -93,9 +93,9 @@ each Python and Django series.
 The following packages are optional:
 
 * [coreapi][coreapi] (1.32.0+) - Schema generation support.
-* [Markdown][markdown] (2.1.0+) - Markdown support for the browsable API.
+* [Markdown][markdown] (3.0.0+) - Markdown support for the browsable API.
+* [Pygments][pygments] (2.4.0+) - Add sytax highlighting to Markdown processing.
 * [django-filter][django-filter] (1.0.1+) - Filtering support.
-* [django-crispy-forms][django-crispy-forms] - Improved HTML display for filtering.
 * [django-guardian][django-guardian] (1.1.1+) - Object level permissions support.
 
 ## Installation
@@ -238,8 +238,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [eventbrite]: https://www.eventbrite.co.uk/about/
 [coreapi]: https://pypi.org/project/coreapi/
 [markdown]: https://pypi.org/project/Markdown/
+[pygments]: https://pypi.org/project/Pygments/
 [django-filter]: https://pypi.org/project/django-filter/
-[django-crispy-forms]: https://github.com/maraujop/django-crispy-forms
 [django-guardian]: https://github.com/django-guardian/django-guardian
 [index]: .
 [oauth1-section]: api-guide/authentication/#django-rest-framework-oauth

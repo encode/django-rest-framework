@@ -1,4 +1,7 @@
-source: schemas.py
+---
+source:
+    - schemas.py
+---
 
 # Schemas
 

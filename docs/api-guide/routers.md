@@ -1,4 +1,7 @@
-source: routers.py
+---
+source:
+    - routers.py
+---
 
 # Routers
 
