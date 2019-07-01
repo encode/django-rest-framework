@@ -1,5 +1,8 @@
-source: mixins.py
-        generics.py
+---
+source:
+    - mixins.py
+    - generics.py
+---
 
 # Generic views
 

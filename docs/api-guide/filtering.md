@@ -1,4 +1,7 @@
-source: filters.py
+---
+source:
+    - filters.py
+---
 
 # Filtering
 

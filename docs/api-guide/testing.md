@@ -1,4 +1,7 @@
-source: test.py
+---
+source:
+    - test.py
+---
 
 # Testing
 

@@ -1,4 +1,7 @@
-source: throttling.py
+---
+source:
+    - throttling.py
+---
 
 # Throttling
 

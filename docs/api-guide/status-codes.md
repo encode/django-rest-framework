@@ -1,4 +1,7 @@
-source: status.py
+---
+source:
+    - status.py
+---
 
 # Status Codes
 

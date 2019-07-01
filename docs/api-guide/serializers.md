@@ -1,4 +1,7 @@
-source: serializers.py
+---
+source:
+    - serializers.py
+---
 
 # Serializers
 

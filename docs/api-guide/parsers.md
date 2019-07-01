@@ -1,4 +1,7 @@
-source: parsers.py
+---
+source:
+    - parsers.py
+---
 
 # Parsers
 

@@ -1,4 +1,7 @@
-source: validators.py
+---
+source:
+    - validators.py
+---
 
 # Validators
 

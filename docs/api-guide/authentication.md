@@ -1,4 +1,7 @@
-source: authentication.py
+---
+source:
+    - authentication.py
+---
 
 # Authentication
 

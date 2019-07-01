@@ -4,13 +4,15 @@ site_description: Django REST framework - Web APIs for Django
 
 repo_url: https://github.com/encode/django-rest-framework
 
-theme_dir: docs_theme
+theme:
+    name: mkdocs
+    custom_dir: docs_theme
 
 markdown_extensions:
  - toc:
     anchorlink: True
 
-pages:
+nav:
  - Home: 'index.md'
  - Tutorial:
     - 'Quickstart': 'tutorial/quickstart.md'

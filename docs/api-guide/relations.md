@@ -1,4 +1,7 @@
-source: relations.py
+---
+source:
+    - relations.py
+---
 
 # Serializer relations
 

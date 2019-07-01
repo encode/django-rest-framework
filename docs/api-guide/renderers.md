@@ -1,4 +1,7 @@
-source: renderers.py
+---
+source:
+    - renderers.py
+---
 
 # Renderers
 
