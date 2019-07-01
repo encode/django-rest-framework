@@ -1835,12 +1835,6 @@ class SerializerMethodField(Field):
         # 'method_name' argument has been used. For example:
         # my_field = serializer.SerializerMethodField(method_name='get_my_field')
         default_method_name = 'get_{field_name}'.format(field_name=field_name)
-        assert self.method_name != default_method_name, (
-            "It is redundant to specify `%s` on SerializerMethodField '%s' in "
-            "serializer '%s', because it is the same as the default method name. "
-            "Remove the `method_name` argument." %
-            (self.method_name, field_name, parent.__class__.__name__)
-        )
 
         # The method name should default to `get_{field_name}`.
         if self.method_name is None:

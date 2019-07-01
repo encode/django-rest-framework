@@ -2212,17 +2212,13 @@ class TestSerializerMethodField:
         }
 
     def test_redundant_method_name(self):
+        # Prior to v3.10, redundant method names were not allowed.
+        # This restriction has since been removed.
         class ExampleSerializer(serializers.Serializer):
             example_field = serializers.SerializerMethodField('get_example_field')
 
-        with pytest.raises(AssertionError) as exc_info:
-            ExampleSerializer().fields
-        assert str(exc_info.value) == (
-            "It is redundant to specify `get_example_field` on "
-            "SerializerMethodField 'example_field' in serializer "
-            "'ExampleSerializer', because it is the same as the default "
-            "method name. Remove the `method_name` argument."
-        )
+        field = ExampleSerializer().fields['example_field']
+        assert field.method_name == 'get_example_field'
 
 
 class TestValidationErrorCode:
