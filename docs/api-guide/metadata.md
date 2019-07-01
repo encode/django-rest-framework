@@ -1,4 +1,7 @@
-source: metadata.py
+---
+source:
+    - metadata.py
+---
 
 # Metadata
 

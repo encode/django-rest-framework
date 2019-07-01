@@ -1,4 +1,7 @@
-source: settings.py
+---
+source:
+    - settings.py
+---
 
 # Settings
 

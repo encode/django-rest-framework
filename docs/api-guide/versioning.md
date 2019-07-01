@@ -1,4 +1,7 @@
-source: versioning.py
+---
+source:
+    - versioning.py
+---
 
 # Versioning
 

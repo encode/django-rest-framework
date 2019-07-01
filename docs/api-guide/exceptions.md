@@ -1,4 +1,7 @@
-source: exceptions.py
+---
+source:
+    - exceptions.py
+---
 
 # Exceptions
 

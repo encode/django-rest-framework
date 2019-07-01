@@ -1,4 +1,7 @@
-source: permissions.py
+---
+source:
+    - permissions.py
+---
 
 # Permissions
 

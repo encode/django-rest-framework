@@ -1,4 +1,7 @@
-source: negotiation.py
+---
+source:
+    - negotiation.py
+---
 
 # Content negotiation
 

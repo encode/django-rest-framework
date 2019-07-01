@@ -1,4 +1,7 @@
-source: fields.py
+---
+source:
+    - fields.py
+---
 
 # Serializer fields
 
