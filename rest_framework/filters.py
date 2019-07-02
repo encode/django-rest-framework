@@ -64,7 +64,9 @@ class SearchFilter(BaseFilterBackend):
         and may be comma and/or whitespace delimited.
         """
         params = request.query_params.get(self.search_param, '')
-        return params.replace(',', ' ').split()
+        params = params.replace('\x00', '')  # strip null characters
+        params = params.replace(',', ' ')
+        return params.split()
 
     def construct_search(self, field_name):
         lookup = self.lookup_prefixes.get(field_name[0])
