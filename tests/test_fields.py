@@ -2204,8 +2204,8 @@ class TestBinaryJSONField(FieldValues):
     field = serializers.JSONField(binary=True)
 
 
-# Tests for FieldField.
-# ---------------------
+# Tests for FileField.
+# --------------------
 
 class MockRequest:
     def build_absolute_uri(self, value):
