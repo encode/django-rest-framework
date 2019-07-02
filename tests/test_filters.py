@@ -180,6 +180,15 @@ class SearchFilterTests(TestCase):
             {'id': 3, 'title': 'zzz', 'text': 'cde'}
         ]
 
+    def test_search_field_with_null_characters(self):
+        view = generics.GenericAPIView()
+        request = factory.get('/?search=\0as%00d\x00f')
+        request = view.initialize_request(request)
+
+        terms = filters.SearchFilter().get_search_terms(request)
+
+        assert terms == ['asdf']
+
 
 class AttributeModel(models.Model):
     label = models.CharField(max_length=32)
