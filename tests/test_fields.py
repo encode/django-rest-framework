@@ -2247,6 +2247,21 @@ class TestSerializerMethodField:
         assert field.method_name == 'get_example_field'
 
 
+# Tests for ModelField.
+# ---------------------
+
+class TestModelField:
+    def test_max_length_init(self):
+        field = serializers.ModelField(None)
+        assert len(field.validators) == 0
+
+        field = serializers.ModelField(None, max_length=10)
+        assert len(field.validators) == 1
+
+
+# Tests for validation errors
+# ---------------------------
+
 class TestValidationErrorCode:
     @pytest.mark.parametrize('use_list', (False, True))
     def test_validationerror_code_with_msg(self, use_list):
