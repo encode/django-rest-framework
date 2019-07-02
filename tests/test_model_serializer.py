@@ -440,15 +440,17 @@ class TestPosgresFieldsMapping(TestCase):
     def test_array_field(self):
         class ArrayFieldModel(models.Model):
             array_field = postgres_fields.ArrayField(base_field=models.CharField())
+            array_field_with_blank = postgres_fields.ArrayField(blank=True, base_field=models.CharField())
 
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
                 model = ArrayFieldModel
-                fields = ['array_field']
+                fields = ['array_field', 'array_field_with_blank']
 
         expected = dedent("""
             TestSerializer():
-                array_field = ListField(child=CharField(label='Array field', validators=[<django.core.validators.MaxLengthValidator object>]))
+                array_field = ListField(allow_empty=False, child=CharField(label='Array field', validators=[<django.core.validators.MaxLengthValidator object>]))
+                array_field_with_blank = ListField(child=CharField(label='Array field with blank', validators=[<django.core.validators.MaxLengthValidator object>]), required=False)
         """)
         self.assertEqual(repr(TestSerializer()), expected)
 
