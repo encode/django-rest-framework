@@ -219,8 +219,8 @@ class UnsupportedMediaType(APIException):
 class Throttled(APIException):
     status_code = status.HTTP_429_TOO_MANY_REQUESTS
     default_detail = _('Request was throttled.')
-    extra_detail_singular = 'Expected available in {wait} second.'
-    extra_detail_plural = 'Expected available in {wait} seconds.'
+    extra_detail_singular = _('Expected available in {wait} second.')
+    extra_detail_plural = _('Expected available in {wait} seconds.')
     default_code = 'throttled'
 
     def __init__(self, wait=None, detail=None, code=None):
