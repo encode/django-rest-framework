@@ -1888,9 +1888,9 @@ class ModelField(Field):
         self.model_field = model_field
         # The `max_length` option is supported by Django's base `Field` class,
         # so we'd better support it here.
-        max_length = kwargs.pop('max_length', None)
+        self.max_length = kwargs.pop('max_length', None)
         super().__init__(**kwargs)
-        if max_length is not None:
+        if self.max_length is not None:
             message = lazy_format(self.error_messages['max_length'], max_length=self.max_length)
             self.validators.append(
                 MaxLengthValidator(self.max_length, message=message))

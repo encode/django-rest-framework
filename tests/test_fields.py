@@ -2204,8 +2204,8 @@ class TestBinaryJSONField(FieldValues):
     field = serializers.JSONField(binary=True)
 
 
-# Tests for FieldField.
-# ---------------------
+# Tests for FileField.
+# --------------------
 
 class MockRequest:
     def build_absolute_uri(self, value):
@@ -2246,6 +2246,21 @@ class TestSerializerMethodField:
         field = ExampleSerializer().fields['example_field']
         assert field.method_name == 'get_example_field'
 
+
+# Tests for ModelField.
+# ---------------------
+
+class TestModelField:
+    def test_max_length_init(self):
+        field = serializers.ModelField(None)
+        assert len(field.validators) == 0
+
+        field = serializers.ModelField(None, max_length=10)
+        assert len(field.validators) == 1
+
+
+# Tests for validation errors
+# ---------------------------
 
 class TestValidationErrorCode:
     @pytest.mark.parametrize('use_list', (False, True))
