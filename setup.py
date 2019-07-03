@@ -103,7 +103,11 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3 :: Only',
         'Topic :: Internet :: WWW/HTTP',
-    ]
+    ],
+    project_urls={
+        'Funding': 'https://fund.django-rest-framework.org/topics/funding/',
+        'Source': 'https://github.com/encode/django-rest-framework',
+    },
 )
 
 # (*) Please direct queries to the discussion group, rather than to me directly
