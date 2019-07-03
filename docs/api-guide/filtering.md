@@ -142,7 +142,7 @@ Note that you can use both an overridden `.get_queryset()` and generic filtering
 
 ## DjangoFilterBackend
 
-The `django-filter` library includes a `DjangoFilterBackend` class which
+The [`django-filter`][django-filter-docs] library includes a `DjangoFilterBackend` class which
 supports highly customizable field filtering for REST framework.
 
 To use `DjangoFilterBackend`, first install `django-filter`. Then add `django_filters` to Django's `INSTALLED_APPS`
