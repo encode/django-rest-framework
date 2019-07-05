@@ -94,7 +94,7 @@ The following packages are optional:
 
 * [coreapi][coreapi] (1.32.0+) - Schema generation support.
 * [Markdown][markdown] (3.0.0+) - Markdown support for the browsable API.
-* [Pygments][pygments] (2.4.0+) - Add sytax highlighting to Markdown processing.
+* [Pygments][pygments] (2.4.0+) - Add syntax highlighting to Markdown processing.
 * [django-filter][django-filter] (1.0.1+) - Filtering support.
 * [django-guardian][django-guardian] (1.1.1+) - Object level permissions support.
 
