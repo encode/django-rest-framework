@@ -725,7 +725,7 @@ to the desired output.
         >>> instance = DataPoint(label='Example', x_coordinate=1, y_coordinate=2)
         >>> out_serializer = DataPointSerializer(instance)
         >>> out_serializer.data
-        ReturnDict([('label', 'testing'), ('coordinates', {'x': 1, 'y': 2})])
+        ReturnDict([('label', 'Example'), ('coordinates', {'x': 1, 'y': 2})])
 
 * Unless our field is to be read-only, `to_internal_value` must map back to a dict
 suitable for updating our target object. With `source='*'`, the return from
