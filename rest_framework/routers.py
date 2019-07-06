@@ -17,7 +17,7 @@ import itertools
 from collections import OrderedDict, namedtuple
 
 from django.core.exceptions import ImproperlyConfigured
-from django.urls import NoReverseMatch, re_path
+from django.urls import NoReverseMatch, path, re_path
 
 from rest_framework import views
 from rest_framework.response import Response
@@ -123,8 +123,28 @@ class SimpleRouter(BaseRouter):
         ),
     ]
 
-    def __init__(self, trailing_slash=True):
+    def __init__(self, trailing_slash=True, use_regex_path=True):
         self.trailing_slash = '/' if trailing_slash else ''
+        if use_regex_path:
+            self._base_regex = '(?P<{lookup_prefix}{lookup_url_kwarg}>{lookup_value})'
+            self._default_regex = '[^/.]+'
+            self._url_conf = re_path
+        else:
+            self._base_regex = '<{lookup_value}:{lookup_prefix}{lookup_url_kwarg}>'
+            self._default_regex = 'path'
+            self._url_conf = path
+            # remove regex characters from routes
+            _routes = []
+            for route in self.routes:
+                url_param = route.url
+                if url_param[0] == '^':
+                    url_param = url_param[1:]
+                if url_param[-1] == '$':
+                    url_param = url_param[:-1]
+
+                _routes.append(route._replace(url=url_param))
+            self.routes = _routes
+
         super().__init__()
 
     def get_default_basename(self, viewset):
@@ -213,13 +233,12 @@ class SimpleRouter(BaseRouter):
 
         https://github.com/alanjds/drf-nested-routers
         """
-        base_regex = '(?P<{lookup_prefix}{lookup_url_kwarg}>{lookup_value})'
         # Use `pk` as default field, unset set.  Default regex should not
         # consume `.json` style suffixes and should break at '/' boundaries.
         lookup_field = getattr(viewset, 'lookup_field', 'pk')
         lookup_url_kwarg = getattr(viewset, 'lookup_url_kwarg', None) or lookup_field
-        lookup_value = getattr(viewset, 'lookup_value_regex', '[^/.]+')
-        return base_regex.format(
+        lookup_value = getattr(viewset, 'lookup_value_regex', self._default_regex)
+        return self._base_regex.format(
             lookup_prefix=lookup_prefix,
             lookup_url_kwarg=lookup_url_kwarg,
             lookup_value=lookup_value
@@ -253,8 +272,12 @@ class SimpleRouter(BaseRouter):
                 #   controlled by project's urls.py and the router is in an app,
                 #   so a slash in the beginning will (A) cause Django to give
                 #   warnings and (B) generate URLS that will require using '//'.
-                if not prefix and regex[:2] == '^/':
-                    regex = '^' + regex[2:]
+                if not prefix:
+                    if self._url_conf is path:
+                        if regex[0] == '/':
+                            regex = regex[1:]
+                    elif regex[:2] == '^/':
+                        regex = '^' + regex[2:]
 
                 initkwargs = route.initkwargs.copy()
                 initkwargs.update({
@@ -264,7 +287,7 @@ class SimpleRouter(BaseRouter):
 
                 view = viewset.as_view(mapping, **initkwargs)
                 name = route.name.format(basename=basename)
-                ret.append(re_path(regex, view, name=name))
+                ret.append(self._url_conf(regex, view, name=name))
 
         return ret
 

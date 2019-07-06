@@ -173,6 +173,12 @@ The router will match lookup values containing any characters except slashes and
         lookup_field = 'my_model_id'
         lookup_value_regex = '[0-9a-f]{32}'
 
+By default the URLs created by `SimpleRouter` uses _regexs_ to build urls. This behavior can be modified by setting the `use_regex_path` argument to `False` when instantiating the router, in this case [path converters][path-convertes-topic-reference] are used. For example:
+
+    router = SimpleRouter(use_regex_path=False)
+
+**Note**: `use_regex_path=False` only works with Django 2.x or above, since this feature was introduced in 2.0.0. See [release note][simplified-routing-release-note]
+
 ## DefaultRouter
 
 This router is similar to `SimpleRouter` as above, but additionally includes a default API root view, that returns a response containing hyperlinks to all the list views.  It also generates routes for optional `.json` style format suffixes.
@@ -340,3 +346,5 @@ The [`DRF-extensions` package][drf-extensions] provides [routers][drf-extensions
 [drf-extensions-customizable-endpoint-names]: https://chibisov.github.io/drf-extensions/docs/#controller-endpoint-name
 [url-namespace-docs]: https://docs.djangoproject.com/en/4.0/topics/http/urls/#url-namespaces
 [include-api-reference]: https://docs.djangoproject.com/en/4.0/ref/urls/#include
+[simplified-routing-release-note]: https://docs.djangoproject.com/en/2.0/releases/2.0/#simplified-url-routing-syntax
+[path-convertes-topic-reference]: https://docs.djangoproject.com/en/2.0/topics/http/urls/#path-converters
