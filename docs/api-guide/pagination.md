@@ -257,6 +257,10 @@ To have your custom pagination class be used by default, use the `DEFAULT_PAGINA
 
 API responses for list endpoints will now include a `Link` header, instead of including the pagination links as part of the body of the response, for example:
 
+![Link Header][link-header]
+
+*A custom pagination style, using the 'Link' header'*
+
 ## Pagination & schemas
 
 You can also make the pagination controls available to the schema autogeneration
@@ -265,12 +269,6 @@ that REST framework provides, by implementing a `get_schema_fields()` method. Th
 `get_schema_fields(self, view)`
 
 The method should return a list of `coreapi.Field` instances.
-
----
-
-![Link Header][link-header]
-
-*A custom pagination style, using the 'Link' header'*
 
 ---
 
