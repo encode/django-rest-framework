@@ -992,7 +992,7 @@ The following class is an example of a generic serializer that can handle coerci
                 else:
                     # Force anything else to its string representation.
                     output[attribute_name] = str(attribute)
-	    return outout
+	    return output
 
 ---
 
