@@ -22,7 +22,6 @@ nav:
     - '4 - Authentication and permissions': 'tutorial/4-authentication-and-permissions.md'
     - '5 - Relationships and hyperlinked APIs': 'tutorial/5-relationships-and-hyperlinked-apis.md'
     - '6 - Viewsets and routers': 'tutorial/6-viewsets-and-routers.md'
-    - '7 - Schemas and client libraries': 'tutorial/7-schemas-and-client-libraries.md'
  - API Guide:
     - 'Requests': 'api-guide/requests.md'
     - 'Responses': 'api-guide/responses.md'
@@ -67,6 +66,7 @@ nav:
      - 'Contributing to REST framework': 'community/contributing.md'
      - 'Project management': 'community/project-management.md'
      - 'Release Notes': 'community/release-notes.md'
+     - '3.10 Announcement': 'community/3.10-announcement.md'
      - '3.9 Announcement': 'community/3.9-announcement.md'
      - '3.8 Announcement': 'community/3.8-announcement.md'
      - '3.7 Announcement': 'community/3.7-announcement.md'
