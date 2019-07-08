@@ -42,7 +42,7 @@ You can determine your currently installed version using `pip show`:
 
 ### 3.10.0
 
-**Date**: [Unreleased][3.10.0-milestone]
+**Date**: [9th July 2019][3.10.0-milestone]
 
 * Updated PyYaml dependency for OpenAPI schema generation to `pyyaml>=5.1` [#6680][gh6680]
 * Resolve DeprecationWarning with markdown. [#6317][gh6317]
