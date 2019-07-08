@@ -57,8 +57,9 @@ class JSONEncoder(json.JSONEncoder):
                 'You should be using a schema renderer instead for this view.'
             )
         elif hasattr(obj, '__getitem__'):
+            cls = (list if isinstance(obj, (list, tuple)) else dict)
             try:
-                return dict(obj)
+                return cls(obj)
             except Exception:
                 pass
         elif hasattr(obj, '__iter__'):
