@@ -202,7 +202,7 @@ Please see the [security policy][security-policy].
 
 [sentry-url]: https://getsentry.com/welcome/
 [stream-url]: https://getstream.io/try-the-api/?utm_source=drf&utm_medium=banner&utm_campaign=drf
-[rollbar-url]: https://rollbar.com/
+[rollbar-url]: https://rollbar.com/?utm_source=django&utm_medium=sponsorship&utm_campaign=freetrial
 [cadre-url]: https://cadre.com/
 [kloudless-url]: https://hubs.ly/H0f30Lf0
 [esg-url]: https://software.esg-usa.com/
