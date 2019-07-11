@@ -526,7 +526,7 @@ For example, if `has_expired` was a property on the `Account` model, then the fo
     class AccountSerializer(serializers.ModelSerializer):
         class Meta:
             model = Account
-            fields = ('id', 'account_name', 'has_expired')
+            fields = ['id', 'account_name', 'has_expired']
 
 ## HiddenField
 

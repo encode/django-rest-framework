@@ -28,14 +28,14 @@ Typically when using the generic views, you'll override the view, and set severa
     class UserList(generics.ListCreateAPIView):
         queryset = User.objects.all()
         serializer_class = UserSerializer
-        permission_classes = (IsAdminUser,)
+        permission_classes = [IsAdminUser]
 
 For more complex cases you might also want to override various methods on the view class.  For example.
 
     class UserList(generics.ListCreateAPIView):
         queryset = User.objects.all()
         serializer_class = UserSerializer
-        permission_classes = (IsAdminUser,)
+        permission_classes = [IsAdminUser]
 
         def list(self, request):
             # Note the use of `get_queryset()` instead of `self.queryset`
@@ -123,12 +123,12 @@ Given a queryset, filter it with whichever filter backends are in use, returning
 For example:
 
     def filter_queryset(self, queryset):
-        filter_backends = (CategoryFilter,)
+        filter_backends = [CategoryFilter]
 
         if 'geo_route' in self.request.query_params:
-            filter_backends = (GeoRouteFilter, CategoryFilter)
+            filter_backends = [GeoRouteFilter, CategoryFilter]
         elif 'geo_point' in self.request.query_params:
-            filter_backends = (GeoPointFilter, CategoryFilter)
+            filter_backends = [GeoPointFilter, CategoryFilter]
 
         for backend in list(filter_backends):
             queryset = backend().filter_queryset(self.request, queryset, view=self)
@@ -342,7 +342,7 @@ You can then simply apply this mixin to a view or viewset anytime you need to ap
     class RetrieveUserView(MultipleFieldLookupMixin, generics.RetrieveAPIView):
         queryset = User.objects.all()
         serializer_class = UserSerializer
-        lookup_fields = ('account', 'username')
+        lookup_fields = ['account', 'username']
 
 Using custom mixins is a good option if you have custom behavior that needs to be used.
 

@@ -67,10 +67,10 @@ Install using `pip`...
 
 Add `'rest_framework'` to your `INSTALLED_APPS` setting.
 
-    INSTALLED_APPS = (
+    INSTALLED_APPS = [
         ...
         'rest_framework',
-    )
+    ]
 
 # Example
 
@@ -96,7 +96,7 @@ from rest_framework import serializers, viewsets, routers
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
-        fields = ('url', 'username', 'email', 'is_staff')
+        fields = ['url', 'username', 'email', 'is_staff']
 
 
 # ViewSets define the view behavior.
@@ -123,10 +123,10 @@ We'd also like to configure a couple of settings for our API.
 Add the following to your `settings.py` module:
 
 ```python
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     ...  # Make sure to include the default installed apps here.
     'rest_framework',
-)
+]
 
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,

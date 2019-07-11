@@ -35,8 +35,8 @@ For example:
         * Requires token authentication.
         * Only admin users are able to access this view.
         """
-        authentication_classes = (authentication.TokenAuthentication,)
-        permission_classes = (permissions.IsAdminUser,)
+        authentication_classes = [authentication.TokenAuthentication]
+        permission_classes = [permissions.IsAdminUser]
 
         def get(self, request, format=None):
             """

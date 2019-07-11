@@ -42,11 +42,11 @@ Once that's done we can create an app that we'll use to create a simple Web API.
 
 We'll need to add our new `snippets` app and the `rest_framework` app to `INSTALLED_APPS`. Let's edit the `tutorial/settings.py` file:
 
-    INSTALLED_APPS = (
+    INSTALLED_APPS = [
         ...
         'rest_framework',
         'snippets.apps.SnippetsConfig',
-    )
+    ]
 
 Okay, we're ready to roll.
 
@@ -72,7 +72,7 @@ For the purposes of this tutorial we're going to start by creating a simple `Sni
         style = models.CharField(choices=STYLE_CHOICES, default='friendly', max_length=100)
 
         class Meta:
-            ordering = ('created',)
+            ordering = ['created']
 
 We'll also need to create an initial migration for our snippet model, and sync the database for the first time.
 
@@ -189,7 +189,7 @@ Open the file `snippets/serializers.py` again, and replace the `SnippetSerialize
     class SnippetSerializer(serializers.ModelSerializer):
         class Meta:
             model = Snippet
-            fields = ('id', 'title', 'code', 'linenos', 'language', 'style')
+            fields = ['id', 'title', 'code', 'linenos', 'language', 'style']
 
 One nice property that serializers have is that you can inspect all the fields in a serializer instance, by printing its representation. Open the Django shell with `python manage.py shell`, then try the following:
 

@@ -75,16 +75,16 @@ Often when you're using object level permissions you'll also want to [filter the
 The default permission policy may be set globally, using the `DEFAULT_PERMISSION_CLASSES` setting.  For example.
 
     REST_FRAMEWORK = {
-        'DEFAULT_PERMISSION_CLASSES': (
+        'DEFAULT_PERMISSION_CLASSES': [
             'rest_framework.permissions.IsAuthenticated',
-        )
+        ]
     }
 
 If not specified, this setting defaults to allowing unrestricted access:
 
-    'DEFAULT_PERMISSION_CLASSES': (
+    'DEFAULT_PERMISSION_CLASSES': [
        'rest_framework.permissions.AllowAny',
-    )
+    ]
 
 You can also set the authentication policy on a per-view, or per-viewset basis,
 using the `APIView` class-based views.
@@ -94,7 +94,7 @@ using the `APIView` class-based views.
     from rest_framework.views import APIView
 
     class ExampleView(APIView):
-        permission_classes = (IsAuthenticated,)
+        permission_classes = [IsAuthenticated]
 
         def get(self, request, format=None):
             content = {
@@ -109,7 +109,7 @@ Or, if you're using the `@api_view` decorator with function based views.
     from rest_framework.response import Response
 
     @api_view(['GET'])
-    @permission_classes((IsAuthenticated, ))
+    @permission_classes([IsAuthenticated])
     def example_view(request, format=None):
         content = {
             'status': 'request was permitted'
@@ -129,7 +129,7 @@ Provided they inherit from `rest_framework.permissions.BasePermission`, permissi
             return request.method in SAFE_METHODS
 
     class ExampleView(APIView):
-        permission_classes = (IsAuthenticated|ReadOnly,)
+        permission_classes = [IsAuthenticated|ReadOnly]
 
         def get(self, request, format=None):
             content = {

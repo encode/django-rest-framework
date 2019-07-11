@@ -112,10 +112,10 @@ Install using `pip`, including any optional packages you want...
 
 Add `'rest_framework'` to your `INSTALLED_APPS` setting.
 
-    INSTALLED_APPS = (
+    INSTALLED_APPS = [
         ...
         'rest_framework',
-    )
+    ]
 
 If you're intending to use the browsable API you'll probably also want to add REST framework's login and logout views.  Add the following to your root `urls.py` file.
 
@@ -155,7 +155,7 @@ Here's our project's root `urls.py` module:
     class UserSerializer(serializers.HyperlinkedModelSerializer):
         class Meta:
             model = User
-            fields = ('url', 'username', 'email', 'is_staff')
+            fields = ['url', 'username', 'email', 'is_staff']
 
     # ViewSets define the view behavior.
     class UserViewSet(viewsets.ModelViewSet):
