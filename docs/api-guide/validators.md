@@ -152,8 +152,6 @@ If you want the date field to be visible, but not editable by the user, then set
 
     published = serializers.DateTimeField(read_only=True, default=timezone.now)
 
-The field will not be writable to the user, but the default value will still be passed through to the `validated_data`.
-
 #### Using with a hidden date field.
 
 If you want the date field to be entirely hidden from the user, then use `HiddenField`. This field type does not accept user input, but instead always returns its default value to the `validated_data` in the serializer.
