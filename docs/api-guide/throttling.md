@@ -31,10 +31,10 @@ If any throttle check fails an `exceptions.Throttled` exception will be raised, 
 The default throttling policy may be set globally, using the `DEFAULT_THROTTLE_CLASSES` and `DEFAULT_THROTTLE_RATES` settings.  For example.
 
     REST_FRAMEWORK = {
-        'DEFAULT_THROTTLE_CLASSES': (
+        'DEFAULT_THROTTLE_CLASSES': [
             'rest_framework.throttling.AnonRateThrottle',
             'rest_framework.throttling.UserRateThrottle'
-        ),
+        ],
         'DEFAULT_THROTTLE_RATES': {
             'anon': '100/day',
             'user': '1000/day'
@@ -51,7 +51,7 @@ using the `APIView` class-based views.
 	from rest_framework.views import APIView
 
     class ExampleView(APIView):
-        throttle_classes = (UserRateThrottle,)
+        throttle_classes = [UserRateThrottle]
 
         def get(self, request, format=None):
             content = {
@@ -129,10 +129,10 @@ For example, multiple user throttle rates could be implemented by using the foll
 ...and the following settings.
 
     REST_FRAMEWORK = {
-        'DEFAULT_THROTTLE_CLASSES': (
+        'DEFAULT_THROTTLE_CLASSES': [
             'example.throttles.BurstRateThrottle',
             'example.throttles.SustainedRateThrottle'
-        ),
+        ],
         'DEFAULT_THROTTLE_RATES': {
             'burst': '60/min',
             'sustained': '1000/day'
@@ -164,9 +164,9 @@ For example, given the following views...
 ...and the following settings.
 
     REST_FRAMEWORK = {
-        'DEFAULT_THROTTLE_CLASSES': (
+        'DEFAULT_THROTTLE_CLASSES': [
             'rest_framework.throttling.ScopedRateThrottle',
-        ),
+        ],
         'DEFAULT_THROTTLE_RATES': {
             'contacts': '1000/day',
             'uploads': '20/day'

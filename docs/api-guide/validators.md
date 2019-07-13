@@ -97,7 +97,7 @@ The validator should be applied to *serializer classes*, like so:
             validators = [
                 UniqueTogetherValidator(
                     queryset=ToDoItem.objects.all(),
-                    fields=('list', 'position')
+                    fields=['list', 'position']
                 )
             ]
 
@@ -224,7 +224,7 @@ For example:
             # Apply custom validation either here, or in the view.
 
         class Meta:
-            fields = ('client', 'date', 'amount')
+            fields = ['client', 'date', 'amount']
             extra_kwargs = {'client': {'required': False}}
             validators = []  # Remove a default "unique together" constraint.
 

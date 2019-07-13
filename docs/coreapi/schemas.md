@@ -499,7 +499,7 @@ A generic view with sections in the class docstring, using single-line style.
         """
         queryset = User.objects.all()
         serializer_class = UserSerializer
-        permission_classes = (IsAdminUser,)
+        permission_classes = [IsAdminUser]
 
 A generic viewset with sections in the class docstring, using multi-line style.
 

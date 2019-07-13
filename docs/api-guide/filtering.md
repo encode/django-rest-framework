@@ -95,7 +95,7 @@ Generic filters can also present themselves as HTML controls in the browsable AP
 The default filter backends may be set globally, using the `DEFAULT_FILTER_BACKENDS` setting. For example.
 
     REST_FRAMEWORK = {
-        'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
+        'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
     }
 
 You can also set the filter backends on a per-view, or per-viewset basis,
@@ -109,7 +109,7 @@ using the `GenericAPIView` class-based views.
     class UserListView(generics.ListAPIView):
         queryset = User.objects.all()
         serializer_class = UserSerializer
-        filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+        filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
 
 ## Filtering and object lookups
 
@@ -152,7 +152,7 @@ To use `DjangoFilterBackend`, first install `django-filter`. Then add `django_fi
 You should now either add the filter backend to your settings:
 
     REST_FRAMEWORK = {
-        'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
+        'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
     }
 
 Or add the filter backend to an individual View or ViewSet.
@@ -161,15 +161,15 @@ Or add the filter backend to an individual View or ViewSet.
 
     class UserListView(generics.ListAPIView):
         ...
-        filter_backends = (DjangoFilterBackend,)
+        filter_backends = [DjangoFilterBackend]
 
 If all you need is simple equality-based filtering, you can set a `filterset_fields` attribute on the view, or viewset, listing the set of fields you wish to filter against.
 
     class ProductList(generics.ListAPIView):
         queryset = Product.objects.all()
         serializer_class = ProductSerializer
-        filter_backends = (DjangoFilterBackend,)
-        filterset_fields = ('category', 'in_stock')
+        filter_backends = [DjangoFilterBackend]
+        filterset_fields = ['category', 'in_stock']
 
 This will automatically create a `FilterSet` class for the given fields, and will allow you to make requests such as:
 
@@ -195,8 +195,8 @@ The `SearchFilter` class will only be applied if the view has a `search_fields` 
     class UserListView(generics.ListAPIView):
         queryset = User.objects.all()
         serializer_class = UserSerializer
-        filter_backends = (filters.SearchFilter,)
-        search_fields = ('username', 'email')
+        filter_backends = [filters.SearchFilter]
+        search_fields = ['username', 'email']
 
 This will allow the client to filter the items in the list by making queries such as:
 
@@ -204,7 +204,7 @@ This will allow the client to filter the items in the list by making queries suc
 
 You can also perform a related lookup on a ForeignKey or ManyToManyField with the lookup API double-underscore notation:
 
-    search_fields = ('username', 'email', 'profile__profession')
+    search_fields = ['username', 'email', 'profile__profession']
 
 By default, searches will use case-insensitive partial matches.  The search parameter may contain multiple search terms, which should be whitespace and/or comma separated.  If multiple search terms are used then objects will be returned in the list only if all the provided terms are matched.
 
@@ -217,7 +217,7 @@ The search behavior may be restricted by prepending various characters to the `s
 
 For example:
 
-    search_fields = ('=username', '=email')
+    search_fields = ['=username', '=email']
 
 By default, the search parameter is named `'search`', but this may be overridden with the `SEARCH_PARAM` setting.
 
@@ -228,7 +228,7 @@ To dynamically change search fields based on request content, it's possible to s
     class CustomSearchFilter(filters.SearchFilter):
         def get_search_fields(self, view, request):
             if request.query_params.get('title_only'):
-                return ('title',)
+                return ['title']
             return super(CustomSearchFilter, self).get_search_fields(view, request)
 
 For more details, see the [Django documentation][search-django-admin].
@@ -262,8 +262,8 @@ It's recommended that you explicitly specify which fields the API should allowin
     class UserListView(generics.ListAPIView):
         queryset = User.objects.all()
         serializer_class = UserSerializer
-        filter_backends = (filters.OrderingFilter,)
-        ordering_fields = ('username', 'email')
+        filter_backends = [filters.OrderingFilter]
+        ordering_fields = ['username', 'email']
 
 This helps prevent unexpected data leakage, such as allowing users to order against a password hash field or other sensitive data.
 
@@ -274,7 +274,7 @@ If you are confident that the queryset being used by the view doesn't contain an
     class BookingsListView(generics.ListAPIView):
         queryset = Booking.objects.all()
         serializer_class = BookingSerializer
-        filter_backends = (filters.OrderingFilter,)
+        filter_backends = [filters.OrderingFilter]
         ordering_fields = '__all__'
 
 ### Specifying a default ordering
@@ -286,9 +286,9 @@ Typically you'd instead control this by setting `order_by` on the initial querys
     class UserListView(generics.ListAPIView):
         queryset = User.objects.all()
         serializer_class = UserSerializer
-        filter_backends = (filters.OrderingFilter,)
-        ordering_fields = ('username', 'email')
-        ordering = ('username',)
+        filter_backends = [filters.OrderingFilter]
+        ordering_fields = ['username', 'email']
+        ordering = ['username']
 
 The `ordering` attribute may be either a string or a list/tuple of strings.
 

@@ -311,7 +311,7 @@ The following example demonstrates how you might handle creating a user with a n
 
         class Meta:
             model = User
-            fields = ('username', 'email', 'profile')
+            fields = ['username', 'email', 'profile']
 
         def create(self, validated_data):
             profile_data = validated_data.pop('profile')
@@ -441,7 +441,7 @@ Declaring a `ModelSerializer` looks like this:
     class AccountSerializer(serializers.ModelSerializer):
         class Meta:
             model = Account
-            fields = ('id', 'account_name', 'users', 'created')
+            fields = ['id', 'account_name', 'users', 'created']
 
 By default, all the model fields on the class will be mapped to a corresponding serializer fields.
 
@@ -470,7 +470,7 @@ For example:
     class AccountSerializer(serializers.ModelSerializer):
         class Meta:
             model = Account
-            fields = ('id', 'account_name', 'users', 'created')
+            fields = ['id', 'account_name', 'users', 'created']
 
 You can also set the `fields` attribute to the special value `'__all__'` to indicate that all fields in the model should be used.
 
@@ -488,7 +488,7 @@ For example:
     class AccountSerializer(serializers.ModelSerializer):
         class Meta:
             model = Account
-            exclude = ('users',)
+            exclude = ['users']
 
 In the example above, if the `Account` model had 3 fields `account_name`, `users`, and `created`, this will result in the fields `account_name` and `created` to be serialized.
 
@@ -505,7 +505,7 @@ The default `ModelSerializer` uses primary keys for relationships, but you can a
     class AccountSerializer(serializers.ModelSerializer):
         class Meta:
             model = Account
-            fields = ('id', 'account_name', 'users', 'created')
+            fields = ['id', 'account_name', 'users', 'created']
             depth = 1
 
 The `depth` option should be set to an integer value that indicates the depth of relationships that should be traversed before reverting to a flat representation.
@@ -534,8 +534,8 @@ This option should be a list or tuple of field names, and is declared as follows
     class AccountSerializer(serializers.ModelSerializer):
         class Meta:
             model = Account
-            fields = ('id', 'account_name', 'users', 'created')
-            read_only_fields = ('account_name',)
+            fields = ['id', 'account_name', 'users', 'created']
+            read_only_fields = ['account_name']
 
 Model fields which have `editable=False` set, and `AutoField` fields will be set to read-only by default, and do not need to be added to the `read_only_fields` option.
 
@@ -563,7 +563,7 @@ This option is a dictionary, mapping field names to a dictionary of keyword argu
     class CreateUserSerializer(serializers.ModelSerializer):
         class Meta:
             model = User
-            fields = ('email', 'username', 'password')
+            fields = ['email', 'username', 'password']
             extra_kwargs = {'password': {'write_only': True}}
 
         def create(self, validated_data):
@@ -673,7 +673,7 @@ You can explicitly include the primary key by adding it to the `fields` option, 
     class AccountSerializer(serializers.HyperlinkedModelSerializer):
         class Meta:
             model = Account
-            fields = ('url', 'id', 'account_name', 'users', 'created')
+            fields = ['url', 'id', 'account_name', 'users', 'created']
 
 ## Absolute and relative URLs
 
@@ -705,7 +705,7 @@ You can override a URL field view name and lookup field by using either, or both
     class AccountSerializer(serializers.HyperlinkedModelSerializer):
         class Meta:
             model = Account
-            fields = ('account_url', 'account_name', 'users', 'created')
+            fields = ['account_url', 'account_name', 'users', 'created']
             extra_kwargs = {
                 'url': {'view_name': 'accounts', 'lookup_field': 'account_name'},
                 'users': {'lookup_field': 'username'}
@@ -727,7 +727,7 @@ Alternatively you can set the fields on the serializer explicitly. For example:
 
         class Meta:
             model = Account
-            fields = ('url', 'account_name', 'users', 'created')
+            fields = ['url', 'account_name', 'users', 'created']
 
 ---
 
@@ -1099,7 +1099,7 @@ This would then allow you to do the following:
     >>> class UserSerializer(DynamicFieldsModelSerializer):
     >>>     class Meta:
     >>>         model = User
-    >>>         fields = ('id', 'username', 'email')
+    >>>         fields = ['id', 'username', 'email']
     >>>
     >>> print(UserSerializer(user))
     {'id': 2, 'username': 'jonwatts', 'email': 'jon@example.com'}

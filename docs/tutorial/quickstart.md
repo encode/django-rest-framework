@@ -69,13 +69,13 @@ First up we're going to define some serializers. Let's create a new module named
     class UserSerializer(serializers.HyperlinkedModelSerializer):
         class Meta:
             model = User
-            fields = ('url', 'username', 'email', 'groups')
+            fields = ['url', 'username', 'email', 'groups']
 
 
     class GroupSerializer(serializers.HyperlinkedModelSerializer):
         class Meta:
             model = Group
-            fields = ('url', 'name')
+            fields = ['url', 'name']
 
 Notice that we're using hyperlinked relations in this case with `HyperlinkedModelSerializer`.  You can also use primary key and various other relationships, but hyperlinking is good RESTful design.
 
@@ -144,10 +144,10 @@ Pagination allows you to control how many objects per page are returned. To enab
 
 Add `'rest_framework'` to `INSTALLED_APPS`. The settings module will be in `tutorial/settings.py`
 
-    INSTALLED_APPS = (
+    INSTALLED_APPS = [
         ...
         'rest_framework',
-    )
+    ]
 
 Okay, we're done.
 

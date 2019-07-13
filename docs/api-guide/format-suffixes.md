@@ -41,7 +41,7 @@ Example:
 
 When using `format_suffix_patterns`, you must make sure to add the `'format'` keyword argument to the corresponding views.  For example:
 
-    @api_view(('GET', 'POST'))
+    @api_view(['GET', 'POST'])
     def comment_list(request, format=None):
         # do stuff...
 

@@ -35,7 +35,7 @@ Instead of using a concrete generic view, we'll use the base class for represent
 
     class SnippetHighlight(generics.GenericAPIView):
         queryset = Snippet.objects.all()
-        renderer_classes = (renderers.StaticHTMLRenderer,)
+        renderer_classes = [renderers.StaticHTMLRenderer]
 
         def get(self, request, *args, **kwargs):
             snippet = self.get_object()
@@ -80,8 +80,8 @@ We can easily re-write our existing serializers to use hyperlinking. In your `sn
 
         class Meta:
             model = Snippet
-            fields = ('url', 'id', 'highlight', 'owner',
-                      'title', 'code', 'linenos', 'language', 'style')
+            fields = ['url', 'id', 'highlight', 'owner',
+                      'title', 'code', 'linenos', 'language', 'style']
 
 
     class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -89,7 +89,7 @@ We can easily re-write our existing serializers to use hyperlinking. In your `sn
 
         class Meta:
             model = User
-            fields = ('url', 'id', 'username', 'snippets')
+            fields = ['url', 'id', 'username', 'snippets']
 
 Notice that we've also added a new `'highlight'` field.  This field is of the same type as the `url` field, except that it points to the `'snippet-highlight'` url pattern, instead of the `'snippet-detail'` url pattern.
 
