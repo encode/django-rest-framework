@@ -151,7 +151,7 @@ IMPORT_STRINGS = [
 
 # List of settings that have been removed
 REMOVED_SETTINGS = [
-    "PAGINATE_BY", "PAGINATE_BY_PARAM", "MAX_PAGINATE_BY",
+    'PAGINATE_BY', 'PAGINATE_BY_PARAM', 'MAX_PAGINATE_BY',
 ]
 
 
