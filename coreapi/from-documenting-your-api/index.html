@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <title>From documenting your api - Django REST framework</title>
+  <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
+  <link rel="canonical" href="https://www.django-rest-framework.org/coreapi/from-documenting-your-api/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Django, API, REST, From documenting your api">
+  <meta name="author" content="Tom Christie">
+
+  <!-- Le styles -->
+  <link href="../../css/prettify.css" rel="stylesheet">
+  <link href="../../css/bootstrap.css" rel="stylesheet">
+  <link href="../../css/bootstrap-responsive.css" rel="stylesheet">
+  <link href="../../css/default.css" rel="stylesheet">
+
+  <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-18852272-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script');
+      ga.type = 'text/javascript';
+      ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+  <style>
+  #sidebarInclude img {
+      margin-bottom: 10px;
+  }
+  #sidebarInclude a.promo {
+      color: black;
+  }
+    @media (max-width: 767px) {
+      div.promo {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body onload="prettyPrint()" class="-page">
+
+  <div class="wrapper">
+        <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="repo-link btn btn-primary btn-small" href="https://github.com/encode/django-rest-framework/tree/master">GitHub</a>
+          <a class="repo-link btn btn-inverse btn-small disabled" rel="next" >
+            Next <i class="icon-arrow-right icon-white"></i>
+          </a>
+          <a class="repo-link btn btn-inverse btn-small disabled" rel="prev" >
+            <i class="icon-arrow-left icon-white"></i> Previous
+          </a>
+          <a id="search_modal_show" class="repo-link btn btn-inverse btn-small" href="#mkdocs_search_modal" data-toggle="modal" data-target="#mkdocs_search_modal"><i class="icon-search icon-white"></i> Search</a>
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="https://www.django-rest-framework.org/">Django REST framework</a>
+          <div class="nav-collapse collapse">
+            
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+               
+              <li >
+                <a href="">Home</a>
+              </li>
+                
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorial <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="tutorial/quickstart/">Quickstart</a>
+                  </li>
+                  
+                  <li >
+                    <a href="tutorial/1-serialization/">1 - Serialization</a>
+                  </li>
+                  
+                  <li >
+                    <a href="tutorial/2-requests-and-responses/">2 - Requests and responses</a>
+                  </li>
+                  
+                  <li >
+                    <a href="tutorial/3-class-based-views/">3 - Class based views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="tutorial/4-authentication-and-permissions/">4 - Authentication and permissions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="tutorial/5-relationships-and-hyperlinked-apis/">5 - Relationships and hyperlinked APIs</a>
+                  </li>
+                  
+                  <li >
+                    <a href="tutorial/6-viewsets-and-routers/">6 - Viewsets and routers</a>
+                  </li>
+                  
+                </ul>
+              </li>
+                
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">API Guide <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="api-guide/requests/">Requests</a>
+                  </li>
+                  
+                  <li >
+                    <a href="api-guide/responses/">Responses</a>
+                  </li>
+                  
+                  <li >
+                    <a href="api-guide/views/">Views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="api-guide/generic-views/">Generic views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="api-guide/viewsets/">Viewsets</a>
+                  </li>
+                  
+                  <li >
+                    <a href="api-guide/routers/">Routers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="api-guide/parsers/">Parsers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="api-guide/renderers/">Renderers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="api-guide/serializers/">Serializers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="api-guide/fields/">Serializer fields</a>
+                  </li>
+                  
+                  <li >
+                    <a href="api-guide/relations/">Serializer relations</a>
+                  </li>
+                  
+                  <li >
+                    <a href="api-guide/validators/">Validators</a>
+                  </li>
+                  
+                  <li >
+                    <a href="api-guide/authentication/">Authentication</a>
+                  </li>
+                  
+                  <li >
+                    <a href="api-guide/permissions/">Permissions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="api-guide/caching/">Caching</a>
+                  </li>
+                  
+                  <li >
+                    <a href="api-guide/throttling/">Throttling</a>
+                  </li>
+                  
+                  <li >
+                    <a href="api-guide/filtering/">Filtering</a>
+                  </li>
+                  
+                  <li >
+                    <a href="api-guide/pagination/">Pagination</a>
+                  </li>
+                  
+                  <li >
+                    <a href="api-guide/versioning/">Versioning</a>
+                  </li>
+                  
+                  <li >
+                    <a href="api-guide/content-negotiation/">Content negotiation</a>
+                  </li>
+                  
+                  <li >
+                    <a href="api-guide/metadata/">Metadata</a>
+                  </li>
+                  
+                  <li >
+                    <a href="api-guide/schemas/">Schemas</a>
+                  </li>
+                  
+                  <li >
+                    <a href="api-guide/format-suffixes/">Format suffixes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="api-guide/reverse/">Returning URLs</a>
+                  </li>
+                  
+                  <li >
+                    <a href="api-guide/exceptions/">Exceptions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="api-guide/status-codes/">Status codes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="api-guide/testing/">Testing</a>
+                  </li>
+                  
+                  <li >
+                    <a href="api-guide/settings/">Settings</a>
+                  </li>
+                  
+                </ul>
+              </li>
+                
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Topics <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="topics/documenting-your-api/">Documenting your API</a>
+                  </li>
+                  
+                  <li >
+                    <a href="topics/api-clients/">API Clients</a>
+                  </li>
+                  
+                  <li >
+                    <a href="topics/internationalization/">Internationalization</a>
+                  </li>
+                  
+                  <li >
+                    <a href="topics/ajax-csrf-cors/">AJAX, CSRF & CORS</a>
+                  </li>
+                  
+                  <li >
+                    <a href="topics/html-and-forms/">HTML & Forms</a>
+                  </li>
+                  
+                  <li >
+                    <a href="topics/browser-enhancements/">Browser Enhancements</a>
+                  </li>
+                  
+                  <li >
+                    <a href="topics/browsable-api/">The Browsable API</a>
+                  </li>
+                  
+                  <li >
+                    <a href="topics/rest-hypermedia-hateoas/">REST, Hypermedia & HATEOAS</a>
+                  </li>
+                  
+                </ul>
+              </li>
+                
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Community <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="community/tutorials-and-resources/">Tutorials and Resources</a>
+                  </li>
+                  
+                  <li >
+                    <a href="community/third-party-packages/">Third Party Packages</a>
+                  </li>
+                  
+                  <li >
+                    <a href="community/contributing/">Contributing to REST framework</a>
+                  </li>
+                  
+                  <li >
+                    <a href="community/project-management/">Project management</a>
+                  </li>
+                  
+                  <li >
+                    <a href="community/release-notes/">Release Notes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="community/3.10-announcement/">3.10 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="community/3.9-announcement/">3.9 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="community/3.8-announcement/">3.8 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="community/3.7-announcement/">3.7 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="community/3.6-announcement/">3.6 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="community/3.5-announcement/">3.5 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="community/3.4-announcement/">3.4 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="community/3.3-announcement/">3.3 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="community/3.2-announcement/">3.2 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="community/3.1-announcement/">3.1 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="community/3.0-announcement/">3.0 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="community/kickstarter-announcement/">Kickstarter Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="community/mozilla-grant/">Mozilla Grant</a>
+                  </li>
+                  
+                  <li >
+                    <a href="community/funding/">Funding</a>
+                  </li>
+                  
+                  <li >
+                    <a href="community/jobs/">Jobs</a>
+                  </li>
+                  
+                </ul>
+              </li>
+               
+
+            </ul>
+            
+          </div>
+          <!--/.nav-collapse -->
+
+        </div>
+      </div>
+    </div>
+
+    <div class="body-content">
+      <div class="container-fluid">
+        <!-- Search Modal -->
+        <div id="mkdocs_search_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3 id="myModalLabel">Documentation search</h3>
+          </div>
+
+          <div class="modal-body">
+            <form role="form" autocomplete="off">
+              <div class="form-group">
+                <input type="text" name="q" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+              </div>
+            </form>
+            <div id="mkdocs-search-results"></div>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="span3">
+            <div id="table-of-contents">
+              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
+                
+
+                
+                  <li class="main">
+                    <a href="#built-in-api-documentation">Built-in API documentation</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#installation">Installation</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#documenting-your-views">Documenting your views</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#documentation-api-reference">documentation API Reference</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#customising-code-samples">Customising code samples</a>
+                    </li>
+                  
+                
+
+                  <div class="promo">
+                    <hr/>
+                    <div id="sidebarInclude">
+                  </div>
+              </ul>
+
+            </div>
+          </div>
+
+          <div id="main-content" class="span9">
+            
+              
+
+              <h2 id="built-in-api-documentation"><a class="toclink" href="#built-in-api-documentation">Built-in API documentation</a></h2>
+<p>The built-in API documentation includes:</p>
+<ul>
+<li>Documentation of API endpoints.</li>
+<li>Automatically generated code samples for each of the available API client libraries.</li>
+<li>Support for API interaction.</li>
+</ul>
+<h3 id="installation"><a class="toclink" href="#installation">Installation</a></h3>
+<p>The <code>coreapi</code> library is required as a dependency for the API docs. Make sure
+to install the latest version. The <code>Pygments</code> and <code>Markdown</code> libraries
+are optional but recommended.</p>
+<p>To install the API documentation, you'll need to include it in your project's URLconf:</p>
+<pre><code>from rest_framework.documentation import include_docs_urls
+
+urlpatterns = [
+    ...
+    url(r'^docs/', include_docs_urls(title='My API title'))
+]
+</code></pre>
+<p>This will include two different views:</p>
+<ul>
+<li><code>/docs/</code> - The documentation page itself.</li>
+<li><code>/docs/schema.js</code> - A JavaScript resource that exposes the API schema.</li>
+</ul>
+<hr />
+<p><strong>Note</strong>: By default <code>include_docs_urls</code> configures the underlying <code>SchemaView</code> to generate <em>public</em> schemas.
+This means that views will not be instantiated with a <code>request</code> instance. i.e. Inside the view <code>self.request</code> will be <code>None</code>.</p>
+<p>To be compatible with this behaviour, methods (such as <code>get_serializer</code> or <code>get_serializer_class</code> etc.) which inspect <code>self.request</code> or, particularly, <code>self.request.user</code> may need to be adjusted to handle this case.</p>
+<p>You may ensure views are given a <code>request</code> instance by calling <code>include_docs_urls</code> with <code>public=False</code>:</p>
+<pre><code>from rest_framework.documentation import include_docs_urls
+
+urlpatterns = [
+    ...
+    # Generate schema with valid `request` instance:
+    url(r'^docs/', include_docs_urls(title='My API title', public=False))
+]
+</code></pre>
+<hr />
+<h3 id="documenting-your-views"><a class="toclink" href="#documenting-your-views">Documenting your views</a></h3>
+<p>You can document your views by including docstrings that describe each of the available actions.
+For example:</p>
+<pre><code>class UserList(generics.ListAPIView):
+    """
+    Return a list of all the existing users.
+    """
+</code></pre>
+<p>If a view supports multiple methods, you should split your documentation using <code>method:</code> style delimiters.</p>
+<pre><code>class UserList(generics.ListCreateAPIView):
+    """
+    get:
+    Return a list of all the existing users.
+
+    post:
+    Create a new user instance.
+    """
+</code></pre>
+<p>When using viewsets, you should use the relevant action names as delimiters.</p>
+<pre><code>class UserViewSet(viewsets.ModelViewSet):
+    """
+    retrieve:
+    Return the given user.
+
+    list:
+    Return a list of all the existing users.
+
+    create:
+    Create a new user instance.
+    """
+</code></pre>
+<p>Custom actions on viewsets can also be documented in a similar way using the method names
+as delimiters or by attaching the documentation to action mapping methods.</p>
+<pre><code>class UserViewSet(viewsets.ModelViewset):
+    ...
+
+    @action(detail=False, methods=['get', 'post'])
+    def some_action(self, request, *args, **kwargs):
+        """
+        get:
+        A description of the get method on the custom action.
+
+        post:
+        A description of the post method on the custom action.
+        """
+
+    @some_action.mapping.put
+    def put_some_action():
+        """
+        A description of the put method on the custom action.
+        """
+</code></pre>
+<h3 id="documentation-api-reference"><a class="toclink" href="#documentation-api-reference"><code>documentation</code> API Reference</a></h3>
+<p>The <code>rest_framework.documentation</code> module provides three helper functions to help configure the interactive API documentation, <code>include_docs_urls</code> (usage shown above), <code>get_docs_view</code> and <code>get_schemajs_view</code>.</p>
+<p><code>include_docs_urls</code> employs <code>get_docs_view</code> and <code>get_schemajs_view</code> to generate the url patterns for the documentation page and JavaScript resource that exposes the API schema respectively. They expose the following options for customisation. (<code>get_docs_view</code> and <code>get_schemajs_view</code> ultimately call <code>rest_frameworks.schemas.get_schema_view()</code>, see the Schemas docs for more options there.)</p>
+<h4 id="include_docs_urls"><a class="toclink" href="#include_docs_urls"><code>include_docs_urls</code></a></h4>
+<ul>
+<li><code>title</code>: Default <code>None</code>. May be used to provide a descriptive title for the schema definition.</li>
+<li><code>description</code>: Default <code>None</code>. May be used to provide a description for the schema definition.</li>
+<li><code>schema_url</code>: Default <code>None</code>. May be used to pass a canonical base URL for the schema.</li>
+<li><code>public</code>: Default <code>True</code>. Should the schema be considered <em>public</em>? If <code>True</code> schema is generated without a <code>request</code> instance being passed to views.</li>
+<li><code>patterns</code>: Default <code>None</code>. A list of URLs to inspect when generating the schema. If <code>None</code> project's URL conf will be used.</li>
+<li><code>generator_class</code>: Default <code>rest_framework.schemas.SchemaGenerator</code>. May be used to specify a <code>SchemaGenerator</code> subclass to be passed to the <code>SchemaView</code>.</li>
+<li><code>authentication_classes</code>: Default <code>api_settings.DEFAULT_AUTHENTICATION_CLASSES</code>. May be used to pass custom authentication classes to the <code>SchemaView</code>.</li>
+<li><code>permission_classes</code>: Default <code>api_settings.DEFAULT_PERMISSION_CLASSES</code> May be used to pass custom permission classes to the <code>SchemaView</code>.</li>
+<li><code>renderer_classes</code>: Default <code>None</code>. May be used to pass custom renderer classes to the <code>SchemaView</code>.</li>
+</ul>
+<h4 id="get_docs_view"><a class="toclink" href="#get_docs_view"><code>get_docs_view</code></a></h4>
+<ul>
+<li><code>title</code>: Default <code>None</code>. May be used to provide a descriptive title for the schema definition.</li>
+<li><code>description</code>: Default <code>None</code>. May be used to provide a description for the schema definition.</li>
+<li><code>schema_url</code>: Default <code>None</code>. May be used to pass a canonical base URL for the schema.</li>
+<li><code>public</code>: Default <code>True</code>. If <code>True</code> schema is generated without a <code>request</code> instance being passed to views.</li>
+<li><code>patterns</code>: Default <code>None</code>. A list of URLs to inspect when generating the schema. If <code>None</code> project's URL conf will be used.</li>
+<li><code>generator_class</code>: Default <code>rest_framework.schemas.SchemaGenerator</code>. May be used to specify a <code>SchemaGenerator</code> subclass to be passed to the <code>SchemaView</code>.</li>
+<li><code>authentication_classes</code>: Default <code>api_settings.DEFAULT_AUTHENTICATION_CLASSES</code>. May be used to pass custom authentication classes to the <code>SchemaView</code>.</li>
+<li><code>permission_classes</code>: Default <code>api_settings.DEFAULT_PERMISSION_CLASSES</code>. May be used to pass custom permission classes to the <code>SchemaView</code>.</li>
+<li><code>renderer_classes</code>: Default <code>None</code>. May be used to pass custom renderer classes to the <code>SchemaView</code>. If <code>None</code> the <code>SchemaView</code> will be configured with <code>DocumentationRenderer</code> and <code>CoreJSONRenderer</code> renderers, corresponding to the (default) <code>html</code> and <code>corejson</code> formats.</li>
+</ul>
+<h4 id="get_schemajs_view"><a class="toclink" href="#get_schemajs_view"><code>get_schemajs_view</code></a></h4>
+<ul>
+<li><code>title</code>: Default <code>None</code>. May be used to provide a descriptive title for the schema definition.</li>
+<li><code>description</code>: Default <code>None</code>. May be used to provide a description for the schema definition.</li>
+<li><code>schema_url</code>: Default <code>None</code>. May be used to pass a canonical base URL for the schema.</li>
+<li><code>public</code>: Default <code>True</code>. If <code>True</code> schema is generated without a <code>request</code> instance being passed to views.</li>
+<li><code>patterns</code>: Default <code>None</code>. A list of URLs to inspect when generating the schema. If <code>None</code> project's URL conf will be used.</li>
+<li><code>generator_class</code>: Default <code>rest_framework.schemas.SchemaGenerator</code>. May be used to specify a <code>SchemaGenerator</code> subclass to be passed to the <code>SchemaView</code>.</li>
+<li><code>authentication_classes</code>: Default <code>api_settings.DEFAULT_AUTHENTICATION_CLASSES</code>. May be used to pass custom authentication classes to the <code>SchemaView</code>.</li>
+<li><code>permission_classes</code>: Default <code>api_settings.DEFAULT_PERMISSION_CLASSES</code> May be used to pass custom permission classes to the <code>SchemaView</code>.</li>
+</ul>
+<h3 id="customising-code-samples"><a class="toclink" href="#customising-code-samples">Customising code samples</a></h3>
+<p>The built-in API documentation includes automatically generated code samples for
+each of the available API client libraries.</p>
+<p>You may customise these samples by subclassing <code>DocumentationRenderer</code>, setting
+<code>languages</code> to the list of languages you wish to support:</p>
+<pre><code>from rest_framework.renderers import DocumentationRenderer
+
+
+class CustomRenderer(DocumentationRenderer):
+    languages = ['ruby', 'go']
+</code></pre>
+<p>For each language you need to provide an <code>intro</code> template, detailing installation instructions and such,
+plus a generic template for making API requests, that can be filled with individual request details.
+See the <a href="https://github.com/encode/django-rest-framework/tree/master/rest_framework/templates/rest_framework/docs/langs">templates for the bundled languages</a> for examples.</p>
+<hr />
+            
+
+          </div> <!--/span-->
+        </div> <!--/row-->
+      </div> <!--/.fluid-container-->
+    </div> <!--/.body content-->
+    <div id="push"></div>
+  </div> <!--/.wrapper -->
+
+  <footer class="span12">
+    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.
+    </p>
+  </footer>
+
+  <!-- Le javascript
+  ================================================== -->
+  <!-- Placed at the end of the document so the pages load faster -->
+  <script src="../../js/jquery-1.8.1-min.js"></script>
+  <script src="../../js/prettify-1.0.js"></script>
+  <script src="../../js/bootstrap-2.1.1-min.js"></script>
+  <script async src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
+  <script>var base_url = '../..';</script>
+  <script src="../../mkdocs/js/require.js"></script>
+  <script src="../../js/theme.js"></script>
+
+  <script>
+    var shiftWindow = function() {
+      scrollBy(0, -50)
+    };
+
+    if (location.hash) shiftWindow();
+    window.addEventListener("hashchange", shiftWindow);
+
+    $('.dropdown-menu').on('click touchstart', function(event) {
+      event.stopPropagation();
+    });
+
+    // Dynamically force sidenav/dropdown to no higher than browser window
+    $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
+
+    $(function() {
+      $(window).resize(function() {
+        $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
+      });
+    });
+  </script>
+</body>
+
+</html>

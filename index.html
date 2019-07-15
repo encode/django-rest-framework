@@ -58,10 +58,10 @@
       <div class="navbar-inner">
         <div class="container-fluid">
           <a class="repo-link btn btn-primary btn-small" href="https://github.com/encode/django-rest-framework/tree/master">GitHub</a>
-          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="tutorial/quickstart/">
+          <a class="repo-link btn btn-inverse btn-small " rel="next" href="tutorial/quickstart/">
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
-          <a class="repo-link btn btn-inverse btn-small disabled" rel="next" >
+          <a class="repo-link btn btn-inverse btn-small disabled" rel="prev" >
             <i class="icon-arrow-left icon-white"></i> Previous
           </a>
           <a id="search_modal_show" class="repo-link btn btn-inverse btn-small" href="#mkdocs_search_modal" data-toggle="modal" data-target="#mkdocs_search_modal"><i class="icon-search icon-white"></i> Search</a>
@@ -77,7 +77,7 @@
             <ul class="nav navbar-nav">
                
               <li class="active" >
-                <a href=".">Home</a>
+                <a href="">Home</a>
               </li>
                 
               <li class="dropdown">
@@ -110,10 +110,6 @@
                   
                   <li >
                     <a href="tutorial/6-viewsets-and-routers/">6 - Viewsets and routers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="tutorial/7-schemas-and-client-libraries/">7 - Schemas and client libraries</a>
                   </li>
                   
                 </ul>
@@ -299,6 +295,10 @@
                   
                   <li >
                     <a href="community/release-notes/">Release Notes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="community/3.10-announcement/">3.10 Announcement</a>
                   </li>
                   
                   <li >
@@ -521,10 +521,10 @@
 <p>Some reasons you might want to use REST framework:</p>
 <ul>
 <li>The <a href="https://restframework.herokuapp.com/">Web browsable API</a> is a huge usability win for your developers.</li>
-<li><a href="api-guide/authentication/">Authentication policies</a> including packages for <a href="./api-guide/authentication/#django-rest-framework-oauth">OAuth1a</a> and <a href="./api-guide/authentication/#django-oauth-toolkit">OAuth2</a>.</li>
-<li><a href="api-guide/serializers/">Serialization</a> that supports both <a href="./api-guide/serializers#modelserializer">ORM</a> and <a href="./api-guide/serializers#serializers">non-ORM</a> data sources.</li>
-<li>Customizable all the way down - just use <a href="./api-guide/views#function-based-views">regular function-based views</a> if you don't need the <a href="api-guide/generic-views/">more</a> <a href="api-guide/viewsets/">powerful</a> <a href="api-guide/routers/">features</a>.</li>
-<li><a href="./.">Extensive documentation</a>, and <a href="https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework">great community support</a>.</li>
+<li><a href="api-guide/authentication/">Authentication policies</a> including packages for <a href="api-guide/authentication/#django-rest-framework-oauth">OAuth1a</a> and <a href="api-guide/authentication/#django-oauth-toolkit">OAuth2</a>.</li>
+<li><a href="api-guide/serializers/">Serialization</a> that supports both <a href="api-guide/serializers#modelserializer">ORM</a> and <a href="api-guide/serializers#serializers">non-ORM</a> data sources.</li>
+<li>Customizable all the way down - just use <a href="api-guide/views#function-based-views">regular function-based views</a> if you don't need the <a href="api-guide/generic-views/">more</a> <a href="api-guide/viewsets/">powerful</a> <a href="api-guide/routers/">features</a>.</li>
+<li><a href=".">Extensive documentation</a>, and <a href="https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework">great community support</a>.</li>
 <li>Used and trusted by internationally recognised companies including <a href="https://www.mozilla.org/en-US/about/">Mozilla</a>, <a href="https://www.redhat.com/">Red Hat</a>, <a href="https://www.heroku.com/">Heroku</a>, and <a href="https://www.eventbrite.co.uk/about/">Eventbrite</a>.</li>
 </ul>
 <hr />
@@ -545,7 +545,7 @@ continued development by <strong><a href="community/funding/">signing up for a p
 
 <div style="clear: both; padding-bottom: 20px;"></div>
 
-<p><em>Many thanks to all our <a href="https://fund.django-rest-framework.org/topics/funding/#our-sponsors">wonderful sponsors</a>, and in particular to our premium backers, <a href="https://getsentry.com/welcome/">Sentry</a>, <a href="https://getstream.io/?utm_source=drf&amp;utm_medium=banner&amp;utm_campaign=drf">Stream</a>, <a href="https://software.esg-usa.com/">ESG</a>, <a href="https://rollbar.com">Rollbar</a>, <a href="https://cadre.com">Cadre</a>, <a href="https://hubs.ly/H0f30Lf0">Kloudless</a>, and <a href="https://lightsonsoftware.com">Lights On Software</a>.</em></p>
+<p><em>Many thanks to all our <a href="https://fund.django-rest-framework.org/topics/funding/#our-sponsors">wonderful sponsors</a>, and in particular to our premium backers, <a href="https://getsentry.com/welcome/">Sentry</a>, <a href="https://getstream.io/?utm_source=drf&amp;utm_medium=banner&amp;utm_campaign=drf">Stream</a>, <a href="https://software.esg-usa.com/">ESG</a>, <a href="https://rollbar.com/?utm_source=django&amp;utm_medium=sponsorship&amp;utm_campaign=freetrial">Rollbar</a>, <a href="https://cadre.com">Cadre</a>, <a href="https://hubs.ly/H0f30Lf0">Kloudless</a>, and <a href="https://lightsonsoftware.com">Lights On Software</a>.</em></p>
 <hr />
 <h2 id="requirements"><a class="toclink" href="#requirements">Requirements</a></h2>
 <p>REST framework requires the following:</p>
@@ -559,7 +559,7 @@ each Python and Django series.</p>
 <ul>
 <li><a href="https://pypi.org/project/coreapi/">coreapi</a> (1.32.0+) - Schema generation support.</li>
 <li><a href="https://pypi.org/project/Markdown/">Markdown</a> (3.0.0+) - Markdown support for the browsable API.</li>
-<li><a href="https://pypi.org/project/Pygments/">Pygments</a> (2.4.0+) - Add sytax highlighting to Markdown processing.</li>
+<li><a href="https://pypi.org/project/Pygments/">Pygments</a> (2.4.0+) - Add syntax highlighting to Markdown processing.</li>
 <li><a href="https://pypi.org/project/django-filter/">django-filter</a> (1.0.1+) - Filtering support.</li>
 <li><a href="https://github.com/django-guardian/django-guardian">django-guardian</a> (1.1.1+) - Object level permissions support.</li>
 </ul>
@@ -573,10 +573,10 @@ pip install django-filter  # Filtering support
 <pre><code>git clone https://github.com/encode/django-rest-framework
 </code></pre>
 <p>Add <code>'rest_framework'</code> to your <code>INSTALLED_APPS</code> setting.</p>
-<pre><code>INSTALLED_APPS = (
+<pre><code>INSTALLED_APPS = [
     ...
     'rest_framework',
-)
+]
 </code></pre>
 <p>If you're intending to use the browsable API you'll probably also want to add REST framework's login and logout views.  Add the following to your root <code>urls.py</code> file.</p>
 <pre><code>urlpatterns = [
@@ -608,7 +608,7 @@ from rest_framework import routers, serializers, viewsets
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
-        fields = ('url', 'username', 'email', 'is_staff')
+        fields = ['url', 'username', 'email', 'is_staff']
 
 # ViewSets define the view behavior.
 class UserViewSet(viewsets.ModelViewSet):
