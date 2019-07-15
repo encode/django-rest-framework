@@ -1,4 +1,7 @@
-source: pagination.py
+---
+source:
+    - pagination.py
+---
 
 # Pagination
 
