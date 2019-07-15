@@ -42,12 +42,21 @@ You can determine your currently installed version using `pip show`:
 
 ### 3.10.0
 
-**Date**: [Unreleased][3.10.0-milestone]
+**Date**: [15th July 2019][3.10.0-milestone]
 
+* Switch to OpenAPI schema generation.
+* Drop Python 2 support.
+* Add `generateschema --generator_class` CLI option
 * Updated PyYaml dependency for OpenAPI schema generation to `pyyaml>=5.1` [#6680][gh6680]
 * Resolve DeprecationWarning with markdown. [#6317][gh6317]
-* Add `generateschema --generator_class` CLI option
-
+* Use `user.get_username` in templates, in preference to `user.username`.
+* Fix for cursor pagination issue that could occur after object deletions.
+* Fix for nullable fields with `source="*"`
+* Always apply all throttle classes during throttling checks.
+* Updates to jQuery and Markdown dependencies.
+* Don't strict disallow redundant `SerializerMethodField` field name arguments.
+* Don't render extra actions in browable API if not authenticated.
+* Strip null characters from search parameters.
 
 ## 3.9.x series
 
