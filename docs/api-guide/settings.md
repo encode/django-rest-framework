@@ -47,10 +47,10 @@ A list or tuple of renderer classes, that determines the default set of renderer
 
 Default:
 
-    (
+    [
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
-    )
+    ]
 
 #### DEFAULT_PARSER_CLASSES
 
@@ -58,11 +58,11 @@ A list or tuple of parser classes, that determines the default set of parsers us
 
 Default:
 
-    (
+    [
         'rest_framework.parsers.JSONParser',
         'rest_framework.parsers.FormParser',
         'rest_framework.parsers.MultiPartParser'
-    )
+    ]
 
 #### DEFAULT_AUTHENTICATION_CLASSES
 
@@ -70,10 +70,10 @@ A list or tuple of authentication classes, that determines the default set of au
 
 Default:
 
-    (
+    [
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication'
-    )
+    ]
 
 #### DEFAULT_PERMISSION_CLASSES
 
@@ -81,15 +81,15 @@ A list or tuple of permission classes, that determines the default set of permis
 
 Default:
 
-    (
+    [
         'rest_framework.permissions.AllowAny',
-    )
+    ]
 
 #### DEFAULT_THROTTLE_CLASSES
 
 A list or tuple of throttle classes, that determines the default set of throttles checked at the start of a view.
 
-Default: `()`
+Default: `[]`
 
 #### DEFAULT_CONTENT_NEGOTIATION_CLASS
 
@@ -205,10 +205,10 @@ The format of any of these renderer classes may be used when constructing a test
 
 Default:
 
-    (
+    [
         'rest_framework.renderers.MultiPartRenderer',
         'rest_framework.renderers.JSONRenderer'
-    )
+    ]
 
 ---
 

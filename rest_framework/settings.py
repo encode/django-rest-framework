@@ -3,15 +3,15 @@ Settings for REST framework are all namespaced in the REST_FRAMEWORK setting.
 For example your project's `settings.py` file might look like this:
 
 REST_FRAMEWORK = {
-    'DEFAULT_RENDERER_CLASSES': (
+    'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.TemplateHTMLRenderer',
-    )
-    'DEFAULT_PARSER_CLASSES': (
+    ],
+    'DEFAULT_PARSER_CLASSES': [
         'rest_framework.parsers.JSONParser',
         'rest_framework.parsers.FormParser',
-        'rest_framework.parsers.MultiPartParser'
-    )
+        'rest_framework.parsers.MultiPartParser',
+    ],
 }
 
 This module provides the `api_setting` object, that is used to access
@@ -26,30 +26,30 @@ from rest_framework import ISO_8601
 
 DEFAULTS = {
     # Base API policies
-    'DEFAULT_RENDERER_CLASSES': (
+    'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
-    ),
-    'DEFAULT_PARSER_CLASSES': (
+    ],
+    'DEFAULT_PARSER_CLASSES': [
         'rest_framework.parsers.JSONParser',
         'rest_framework.parsers.FormParser',
         'rest_framework.parsers.MultiPartParser'
-    ),
-    'DEFAULT_AUTHENTICATION_CLASSES': (
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication'
-    ),
-    'DEFAULT_PERMISSION_CLASSES': (
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
-    ),
-    'DEFAULT_THROTTLE_CLASSES': (),
+    ],
+    'DEFAULT_THROTTLE_CLASSES': [],
     'DEFAULT_CONTENT_NEGOTIATION_CLASS': 'rest_framework.negotiation.DefaultContentNegotiation',
     'DEFAULT_METADATA_CLASS': 'rest_framework.metadata.SimpleMetadata',
     'DEFAULT_VERSIONING_CLASS': None,
 
     # Generic view behavior
     'DEFAULT_PAGINATION_CLASS': None,
-    'DEFAULT_FILTER_BACKENDS': (),
+    'DEFAULT_FILTER_BACKENDS': [],
 
     # Schema
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.openapi.AutoSchema',
@@ -86,10 +86,10 @@ DEFAULTS = {
     'NON_FIELD_ERRORS_KEY': 'non_field_errors',
 
     # Testing
-    'TEST_REQUEST_RENDERER_CLASSES': (
+    'TEST_REQUEST_RENDERER_CLASSES': [
         'rest_framework.renderers.MultiPartRenderer',
         'rest_framework.renderers.JSONRenderer'
-    ),
+    ],
     'TEST_REQUEST_DEFAULT_FORMAT': 'multipart',
 
     # Hyperlink settings
@@ -99,13 +99,13 @@ DEFAULTS = {
 
     # Input and output formats
     'DATE_FORMAT': ISO_8601,
-    'DATE_INPUT_FORMATS': (ISO_8601,),
+    'DATE_INPUT_FORMATS': [ISO_8601],
 
     'DATETIME_FORMAT': ISO_8601,
-    'DATETIME_INPUT_FORMATS': (ISO_8601,),
+    'DATETIME_INPUT_FORMATS': [ISO_8601],
 
     'TIME_FORMAT': ISO_8601,
-    'TIME_INPUT_FORMATS': (ISO_8601,),
+    'TIME_INPUT_FORMATS': [ISO_8601],
 
     # Encoding
     'UNICODE_JSON': True,
@@ -128,7 +128,7 @@ DEFAULTS = {
 
 
 # List of settings that may be in string import notation.
-IMPORT_STRINGS = (
+IMPORT_STRINGS = [
     'DEFAULT_RENDERER_CLASSES',
     'DEFAULT_PARSER_CLASSES',
     'DEFAULT_AUTHENTICATION_CLASSES',
@@ -146,13 +146,13 @@ IMPORT_STRINGS = (
     'UNAUTHENTICATED_TOKEN',
     'VIEW_NAME_FUNCTION',
     'VIEW_DESCRIPTION_FUNCTION'
-)
+]
 
 
 # List of settings that have been removed
-REMOVED_SETTINGS = (
-    "PAGINATE_BY", "PAGINATE_BY_PARAM", "MAX_PAGINATE_BY",
-)
+REMOVED_SETTINGS = [
+    'PAGINATE_BY', 'PAGINATE_BY_PARAM', 'MAX_PAGINATE_BY',
+]
 
 
 def perform_import(val, setting_name):
