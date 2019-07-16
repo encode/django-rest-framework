@@ -91,12 +91,12 @@
 
                 {% for toc_item in page.toc %}
                   <li class="{% if page and not page.is_homepage %}main{% endif %}">
-                    <a href="{{ toc_item.url|url }}">{{ toc_item.title }}</a>
+                    <a href="{{ toc_item.url }}">{{ toc_item.title }}</a>
                   </li>
 
                   {% for toc_item in toc_item.children %}
                     <li>
-                      <a href="{{ toc_item.url|url }}">{{ toc_item.title }}</a>
+                      <a href="{{ toc_item.url }}">{{ toc_item.title }}</a>
                     </li>
                   {% endfor %}
                 {% endfor %}
