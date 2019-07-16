@@ -57,6 +57,11 @@ You can determine your currently installed version using `pip show`:
 * Don't strict disallow redundant `SerializerMethodField` field name arguments.
 * Don't render extra actions in browable API if not authenticated.
 * Strip null characters from search parameters.
+* Allowed autocomplete for User lookup in the `TokenAdmin`.
+
+    **Note**: If you're using a custom user model, ensure your user admin
+    declared the `search_fields` property, in order to work with `TokenAdmin`
+    autocomplete fields.
 
 ## 3.9.x series
 
