@@ -51,7 +51,7 @@ To route a `SchemaView`, use the `get_schema_view()` helper.
 In `urls.py`:
 
 ```python
-from rest_framework.schemas import get_schema_view()
+from rest_framework.schemas import get_schema_view
 
 urlpatterns = [
     # ...
