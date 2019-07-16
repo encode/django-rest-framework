@@ -8,7 +8,7 @@ from django.db import models
 from django.utils.encoding import force_text
 
 from rest_framework import exceptions, serializers
-from rest_framework.compat import uritemplate
+from rest_framework.compat import coreapi, uritemplate
 from rest_framework.fields import empty
 
 from .generators import BaseSchemaGenerator
@@ -145,6 +145,7 @@ class AutoSchema(ViewInspector):
         """
         Return a list of parameters from templated path variables.
         """
+        assert coreapi, '`coreapi` must be installed for OpenAPI schema support.'
         assert uritemplate, '`uritemplate` must be installed for OpenAPI schema support.'
 
         model = getattr(getattr(self.view, 'queryset', None), 'model', None)
