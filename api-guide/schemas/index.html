@@ -466,7 +466,7 @@ values, for example, you can route a <code>SchemaView</code> that will generate 
 your schema on demand.</p>
 <p>To route a <code>SchemaView</code>, use the <code>get_schema_view()</code> helper.</p>
 <p>In <code>urls.py</code>:</p>
-<pre><code class="python">from rest_framework.schemas import get_schema_view()
+<pre><code class="python">from rest_framework.schemas import get_schema_view
 
 urlpatterns = [
     # ...
@@ -626,13 +626,16 @@ project you may adjust <code>settings.DEFAULT_SCHEMA_CLASS</code>  appropriately
   <!-- Le javascript
   ================================================== -->
   <!-- Placed at the end of the document so the pages load faster -->
+  <script async src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
   <script src="../../js/jquery-1.8.1-min.js"></script>
   <script src="../../js/prettify-1.0.js"></script>
   <script src="../../js/bootstrap-2.1.1-min.js"></script>
-  <script async src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
-  <script>var base_url = '../..';</script>
-  <script src="../../mkdocs/js/require.js"></script>
   <script src="../../js/theme.js"></script>
+
+  <script>var base_url = '../..';</script>
+  
+  <script src="../../search/main.js" defer></script>
+  
 
   <script>
     var shiftWindow = function() {
