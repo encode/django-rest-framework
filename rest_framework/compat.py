@@ -99,7 +99,7 @@ try:
 except ImportError:
     coreapi = None
 
-# uritemplate is required for OpenAPI schema generation
+# uritemplate is required for OpenAPI and CoreAPI schema generation
 try:
     import uritemplate
 except ImportError:
