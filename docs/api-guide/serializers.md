@@ -966,7 +966,7 @@ The following class is an example of a generic serializer that can handle coerci
         into primitive representations.
         """
         def to_representation(self, obj):
-	    output = {}
+            output = {}
             for attribute_name in dir(obj):
                 attribute = getattr(obj, attribute_name)
                 if attribute_name.startswith('_'):
@@ -992,7 +992,7 @@ The following class is an example of a generic serializer that can handle coerci
                 else:
                     # Force anything else to its string representation.
                     output[attribute_name] = str(attribute)
-	    return output
+            return output
 
 ---
 
