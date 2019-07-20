@@ -1,4 +1,5 @@
 import warnings
+from urllib.parse import urljoin
 
 from django.core.validators import (
     DecimalValidator, EmailValidator, MaxLengthValidator, MaxValueValidator,
@@ -39,17 +40,18 @@ class SchemaGenerator(BaseSchemaGenerator):
         # Only generate the path prefix for paths that will be included
         if not paths:
             return None
-        prefix = self.determine_path_prefix(paths)
-        if prefix == '/':  # no prefix
-            prefix = ''
 
         for path, method, view in view_endpoints:
             if not self.has_view_permissions(path, method, view):
                 continue
             operation = view.schema.get_operation(path, method)
-            subpath = path[len(prefix):]
-            result.setdefault(subpath, {})
-            result[subpath][method.lower()] = operation
+            # Normalise path for any provided mount url.
+            if path.startswith('/'):
+                path = path[1:]
+            path = urljoin(self.url or '/', path)
+
+            result.setdefault(path, {})
+            result[path][method.lower()] = operation
 
         return result
 

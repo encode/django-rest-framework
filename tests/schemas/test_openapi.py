@@ -247,7 +247,7 @@ class TestGenerator(TestCase):
             url(r'^example/?$', views.ExampleListView.as_view()),
             url(r'^example/{pk}/?$', views.ExampleDetailView.as_view()),
         ]
-        generator = SchemaGenerator(patterns=patterns, url='/api/')
+        generator = SchemaGenerator(patterns=patterns, url='/api')
         generator._initialise_endpoints()
 
         paths = generator.get_paths()
