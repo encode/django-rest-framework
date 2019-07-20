@@ -18,18 +18,6 @@ from rest_framework.settings import api_settings
 from rest_framework.utils.model_meta import _get_pk
 
 
-def common_path(paths):
-    split_paths = [path.strip('/').split('/') for path in paths]
-    s1 = min(split_paths)
-    s2 = max(split_paths)
-    common = s1
-    for i, c in enumerate(s1):
-        if c != s2[i]:
-            common = s1[:i]
-            break
-    return '/' + '/'.join(common)
-
-
 def get_pk_name(model):
     meta = model._meta.concrete_model._meta
     return _get_pk(meta).name
@@ -235,37 +223,6 @@ class BaseSchemaGenerator(object):
 
     def get_schema(self, request=None, public=False):
         raise NotImplementedError(".get_schema() must be implemented in subclasses.")
-
-    def determine_path_prefix(self, paths):
-        """
-        Given a list of all paths, return the common prefix which should be
-        discounted when generating a schema structure.
-
-        This will be the longest common string that does not include that last
-        component of the URL, or the last component before a path parameter.
-
-        For example:
-
-        /api/v1/users/
-        /api/v1/users/{pk}/
-
-        The path prefix is '/api/v1'
-        """
-        prefixes = []
-        for path in paths:
-            components = path.strip('/').split('/')
-            initial_components = []
-            for component in components:
-                if '{' in component:
-                    break
-                initial_components.append(component)
-            prefix = '/'.join(initial_components[:-1])
-            if not prefix:
-                # We can just break early in the case that there's at least
-                # one URL that doesn't have a path prefix.
-                return '/'
-            prefixes.append('/' + prefix + '/')
-        return common_path(prefixes)
 
     def has_view_permissions(self, path, method, view):
         """
