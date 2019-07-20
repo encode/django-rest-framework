@@ -96,7 +96,7 @@ class ExampleValidatedSerializer(serializers.Serializer):
     ip = serializers.IPAddressField()
 
 
-class ExampleValdidatedAPIView(generics.GenericAPIView):
+class ExampleValidatedAPIView(generics.GenericAPIView):
     serializer_class = ExampleValidatedSerializer
 
     def get(self, *args, **kwargs):
