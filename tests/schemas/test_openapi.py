@@ -242,6 +242,19 @@ class TestGenerator(TestCase):
         assert '/v1/example/' in paths
         assert '/v1/example/{id}/' in paths
 
+    def test_mount_url_prefixed_to_paths(self):
+        patterns = [
+            url(r'^example/?$', views.ExampleListView.as_view()),
+            url(r'^example/{pk}/?$', views.ExampleDetailView.as_view()),
+        ]
+        generator = SchemaGenerator(patterns=patterns, url='/api/')
+        generator._initialise_endpoints()
+
+        paths = generator.get_paths()
+
+        assert '/api/example/' in paths
+        assert '/api/example/{id}/' in paths
+
     def test_schema_construction(self):
         """Construction of the top level dictionary."""
         patterns = [
