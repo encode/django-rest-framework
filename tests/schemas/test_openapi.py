@@ -225,7 +225,7 @@ class TestOperationIntrospection(TestCase):
         path = '/'
         method = 'GET'
         view = create_view(
-            views.ExampleValdidatedAPIView,
+            views.ExampleValidatedAPIView,
             method,
             create_request(path),
         )
