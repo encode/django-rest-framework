@@ -39,6 +39,20 @@ class TestBasics(TestCase):
             assert f.get_schema_operation_parameters(self.dummy_view)
 
 
+class TestFieldMapping(TestCase):
+    def test_list_field_mapping(self):
+        inspector = AutoSchema()
+        cases = [
+            (serializers.ListField(), {'items': {}, 'type': 'array'}),
+            (serializers.ListField(child=serializers.BooleanField()), {'items': {'type': 'boolean'}, 'type': 'array'}),
+            (serializers.ListField(child=serializers.FloatField()), {'items': {'type': 'number'}, 'type': 'array'}),
+            (serializers.ListField(child=serializers.CharField()), {'items': {'type': 'string'}, 'type': 'array'}),
+        ]
+        for field, mapping in cases:
+            with self.subTest(field=field):
+                assert inspector._map_field(field) == mapping
+
+
 @pytest.mark.skipif(uritemplate is None, reason='uritemplate not installed.')
 class TestOperationIntrospection(TestCase):
 

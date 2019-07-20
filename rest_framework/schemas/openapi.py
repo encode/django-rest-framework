@@ -9,7 +9,7 @@ from django.utils.encoding import force_text
 
 from rest_framework import exceptions, serializers
 from rest_framework.compat import uritemplate
-from rest_framework.fields import empty
+from rest_framework.fields import _UnvalidatedField, empty
 
 from .generators import BaseSchemaGenerator
 from .inspectors import ViewInspector
@@ -256,9 +256,15 @@ class AutoSchema(ViewInspector):
 
         # ListField.
         if isinstance(field, serializers.ListField):
-            return {
+            mapping = {
                 'type': 'array',
+                'items': {},
             }
+            if not isinstance(field.child, _UnvalidatedField):
+                mapping['items'] = {
+                    "type": self._map_field(field.child).get('type')
+                }
+            return mapping
 
         # DateField and DateTimeField type is string
         if isinstance(field, serializers.DateField):
