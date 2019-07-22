@@ -219,7 +219,7 @@ For example:
 
     search_fields = ['=username', '=email']
 
-By default, the search parameter is named `'search`', but this may be overridden with the `SEARCH_PARAM` setting.
+By default, the search parameter is named `'search'`, but this may be overridden with the `SEARCH_PARAM` setting.
 
 To dynamically change search fields based on request content, it's possible to subclass the `SearchFilter` and override the `get_search_fields()` function. For example, the following subclass will only search on `title` if the query parameter `title_only` is in the request:
 
