@@ -53,6 +53,15 @@ class TestFieldMapping(TestCase):
             with self.subTest(field=field):
                 assert inspector._map_field(field) == mapping
 
+    def test_lazy_string_field(self):
+        class Serializer(serializers.Serializer):
+            text = serializers.CharField(help_text=_('lazy string'))
+
+        inspector = AutoSchema()
+
+        data = inspector._map_serializer(Serializer())
+        assert isinstance(data['properties']['text']['description'], str), "description must be str"
+
 
 @pytest.mark.skipif(uritemplate is None, reason='uritemplate not installed.')
 class TestOperationIntrospection(TestCase):
@@ -273,15 +282,6 @@ class TestOperationIntrospection(TestCase):
 
         assert response_schema['ip']['type'] == 'string'
         assert 'format' not in response_schema['ip']
-
-    def test_lazy_string_field(self):
-        class Serializer(serializers.Serializer):
-            text = serializers.CharField(help_text=_('lazy string'))
-
-        inspector = AutoSchema()
-
-        data = inspector._map_serializer(Serializer())
-        assert isinstance(data['properties']['text']['description'], str), "description must be str"
 
 
 @pytest.mark.skipif(uritemplate is None, reason='uritemplate not installed.')
