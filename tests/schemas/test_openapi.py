@@ -1,7 +1,7 @@
 import pytest
 from django.conf.urls import url
 from django.test import RequestFactory, TestCase, override_settings
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from rest_framework import filters, generics, pagination, routers, serializers
 from rest_framework.compat import uritemplate
