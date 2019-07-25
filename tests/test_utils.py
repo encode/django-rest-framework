@@ -174,7 +174,7 @@ class BreadcrumbTests(TestCase):
 
 class JsonFloatTests(TestCase):
     """
-    Internaly, wrapped json functions should adhere to strict float handling
+    Internally, wrapped json functions should adhere to strict float handling
     """
 
     def test_dumps(self):

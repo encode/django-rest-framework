@@ -12,7 +12,7 @@ There are also a number of great third-party documentation packages available.
 ## Generating documentation from OpenAPI schemas
 
 There are a number of packages available that allow you to generate HTML
-documenation pages from OpenAPI schemas.
+documentation pages from OpenAPI schemas.
 
 Two popular options are [Swagger UI][swagger-ui] and [ReDoc][redoc].
 

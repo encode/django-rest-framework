@@ -53,7 +53,7 @@ class ViewSetMixin:
         and slightly modify the view function that is created and returned.
         """
         # The name and description initkwargs may be explicitly overridden for
-        # certain route confiugurations. eg, names of extra actions.
+        # certain route configurations. eg, names of extra actions.
         cls.name = None
         cls.description = None
 

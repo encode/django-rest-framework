@@ -233,7 +233,7 @@ def format_value(value):
 def items(value):
     """
     Simple filter to return the items of the dict. Useful when the dict may
-    have a key 'items' which is resolved first in Django tempalte dot-notation
+    have a key 'items' which is resolved first in Django template dot-notation
     lookup.  See issue #4931
     Also see: https://stackoverflow.com/questions/15416662/django-template-loop-over-dictionary-items-with-items-as-key
     """
