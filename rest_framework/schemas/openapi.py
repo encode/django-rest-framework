@@ -377,7 +377,7 @@ class AutoSchema(ViewInspector):
             if field.default and field.default != empty:  # why don't they use None?!
                 schema['default'] = field.default
             if field.help_text:
-                schema['description'] = field.help_text
+                schema['description'] = str(field.help_text)
             self._map_field_validators(field.validators, schema)
 
             properties[field.field_name] = schema

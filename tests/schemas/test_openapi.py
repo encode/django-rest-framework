@@ -1,6 +1,7 @@
 import pytest
 from django.conf.urls import url
 from django.test import RequestFactory, TestCase, override_settings
+from django.utils.translation import gettext_lazy as _
 
 from rest_framework import filters, generics, pagination, routers, serializers
 from rest_framework.compat import uritemplate
@@ -51,6 +52,15 @@ class TestFieldMapping(TestCase):
         for field, mapping in cases:
             with self.subTest(field=field):
                 assert inspector._map_field(field) == mapping
+
+    def test_lazy_string_field(self):
+        class Serializer(serializers.Serializer):
+            text = serializers.CharField(help_text=_('lazy string'))
+
+        inspector = AutoSchema()
+
+        data = inspector._map_serializer(Serializer())
+        assert isinstance(data['properties']['text']['description'], str), "description must be str"
 
 
 @pytest.mark.skipif(uritemplate is None, reason='uritemplate not installed.')
