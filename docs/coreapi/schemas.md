@@ -480,7 +480,7 @@ An `APIView`, with an explicit method docstring.
             usernames = [user.username for user in User.objects.all()]
             return Response(usernames)
 
-A `ViewSet`, with an explict action docstring.
+A `ViewSet`, with an explicit action docstring.
 
     class ListUsernames(ViewSet):
         def list(self, request):

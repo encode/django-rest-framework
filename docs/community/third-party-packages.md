@@ -55,7 +55,7 @@ We recommend using [Travis CI][travis-ci], a hosted continuous integration servi
 
 To get started with Travis CI, [sign in][travis-ci] with your GitHub account. Once you're signed in, go to your [profile page][travis-profile] and enable the service hook for the repository you want.
 
-If you use the cookiecutter template, your project will already contain a `.travis.yml` file which Travis CI will use to build your project and run tests.  By default, builds are triggered everytime you push to your repository or create Pull Request.
+If you use the cookiecutter template, your project will already contain a `.travis.yml` file which Travis CI will use to build your project and run tests.  By default, builds are triggered every time you push to your repository or create Pull Request.
 
 #### Uploading to PyPI
 

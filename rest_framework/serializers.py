@@ -976,7 +976,7 @@ class ModelSerializer(Serializer):
         instance.save()
 
         # Note that many-to-many fields are set after updating instance.
-        # Setting m2m fields triggers signals which could potentialy change
+        # Setting m2m fields triggers signals which could potentially change
         # updated instance and we do not want it to collide with .update()
         for attr, value in m2m_fields:
             field = getattr(instance, attr)

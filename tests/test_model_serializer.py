@@ -303,7 +303,7 @@ class TestRegularFieldMappings(TestCase):
     def test_invalid_field(self):
         """
         Field names that do not map to a model field or relationship should
-        raise a configuration errror.
+        raise a configuration error.
         """
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
