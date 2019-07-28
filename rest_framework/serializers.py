@@ -1062,15 +1062,34 @@ class ModelSerializer(Serializer):
 
     # Methods for determining the set of field names to include...
 
+    def get_action_config(self):
+        """
+        Return the configuration dictionary in the `Meta.action_fields`
+        dictionary for this view's action. That dictionary can include entries
+        for `fields`, `exclude`, and `extra_kwargs` that are specific to the
+        current action.
+        """
+        view = getattr(self, 'context', {}).get('view', None)
+        action = getattr(view, 'action', None)
+        action_fields = getattr(self.Meta, 'action_fields', {})
+        return action_fields.get(action, None)
+
     def get_field_names(self, declared_fields, info):
         """
         Returns the list of all field names that should be created when
         instantiating this serializer class. This is based on the default
         set of fields, but also takes into account the `Meta.fields` or
-        `Meta.exclude` options if they have been specified.
+        `Meta.exclude` options if they have been specified, and also the
+        `fields` and `exclude` properties for the action in `Meta.action_fields`
+        dictionary.
         """
-        fields = getattr(self.Meta, 'fields', None)
-        exclude = getattr(self.Meta, 'exclude', None)
+        action_config = self.get_action_config()
+        if action_config:
+            fields = action_config.get('fields', None)
+            exclude = action_config.get('exclude', None)
+        else:
+            fields = getattr(self.Meta, 'fields', None)
+            exclude = getattr(self.Meta, 'exclude', None)
 
         if fields and fields != ALL_FIELDS and not isinstance(fields, (list, tuple)):
             raise TypeError(
@@ -1339,7 +1358,11 @@ class ModelSerializer(Serializer):
         Return a dictionary mapping field names to a dictionary of
         additional keyword arguments.
         """
-        extra_kwargs = copy.deepcopy(getattr(self.Meta, 'extra_kwargs', {}))
+        action_config = self.get_action_config()
+        if action_config:
+            extra_kwargs = copy.deepcopy(action_config.get('extra_kwargs', {}))
+        else:
+            extra_kwargs = copy.deepcopy(getattr(self.Meta, 'extra_kwargs', {}))
 
         read_only_fields = getattr(self.Meta, 'read_only_fields', None)
         if read_only_fields is not None:
