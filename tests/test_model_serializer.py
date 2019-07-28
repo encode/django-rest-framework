@@ -283,6 +283,46 @@ class TestRegularFieldMappings(TestCase):
         """)
         self.assertEqual(repr(TestSerializer()), expected)
 
+    def test_action_fields(self):
+        """
+        Ensure `action_fields` are used if the context declares a list view.
+        """
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = RegularFieldsModel
+                fields = ('char_field')
+                action_fields = {
+                    'list': {'fields': ('auto_field', 'char_field')}
+                }
+
+        expected = dedent("""
+            TestSerializer(context={'view': <class 'tests.test_model_serializer.ActionView'>}):
+                auto_field = IntegerField(read_only=True)
+                char_field = CharField(max_length=100)
+        """)
+        context = {'view': type('ActionView', (object,), {'action': 'list'})}
+        self.assertEqual(repr(TestSerializer(context=context)), expected)
+
+    def test_action_fields_different_action(self):
+        """
+        Ensure normal `fields` are used if the context view action is different
+        than what is defined in the `action_fields`
+        """
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = RegularFieldsModel
+                fields = ('char_field',)
+                action_fields = {
+                    'list': {'fields': ('auto_field', 'char_field')}
+                }
+
+        expected = dedent("""
+            TestSerializer(context={'view': <class 'tests.test_model_serializer.ActionView'>}):
+                char_field = CharField(max_length=100)
+        """)
+        context = {'view': type('ActionView', (object,), {'action': 'create'})}
+        self.assertEqual(repr(TestSerializer(context=context)), expected)
+
     def test_extra_field_kwargs_required(self):
         """
         Ensure `extra_kwargs` are passed to generated fields.
@@ -299,6 +339,67 @@ class TestRegularFieldMappings(TestCase):
                 char_field = CharField(max_length=100)
         """)
         self.assertEqual(repr(TestSerializer()), expected)
+
+    def test_action_extra_kwargs(self):
+        """
+        Ensure `action_fields` `extra_kwargs` are used if they are defined and
+        the context view action matches.
+        """
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = RegularFieldsModel
+                fields = ('char_field')
+                action_fields = {
+                    'list': {
+                        'fields': ('auto_field', 'char_field'),
+                        'extra_kwargs': {
+                            'auto_field': {
+                                'required': False,
+                                'read_only': False,
+                            },
+                        }
+                    }
+                }
+
+        expected = dedent("""
+            TestSerializer(context={'view': <class 'tests.test_model_serializer.ActionView'>}):
+                auto_field = IntegerField(read_only=False, required=False)
+                char_field = CharField(max_length=100)
+        """)
+        context = {'view': type('ActionView', (object,), {'action': 'list'})}
+        self.assertEqual(repr(TestSerializer(context=context)), expected)
+
+    def test_action_exclude(self):
+        """
+        Ensure `action_fields` `exclude` is used if it is defined and the
+        context view action matches.
+        """
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = RegularFieldsModel
+                fields = ('char_field')
+                action_fields = {
+                    'list': {
+                        'exclude': ('big_integer_field', 'boolean_field',
+                            'comma_separated_integer_field', 'date_field',
+                            'datetime_field', 'email_field', 'float_field',
+                            'integer_field', 'null_boolean_field',
+                            'positive_small_integer_field', 'slug_field',
+                            'small_integer_field', 'text_field', 'file_field',
+                            'time_field', 'url_field', 'custom_field',
+                            'file_path_field')
+                    }
+                }
+
+        expected = dedent("""
+            TestSerializer(context={'view': <class 'tests.test_model_serializer.ActionView'>}):
+                auto_field = IntegerField(read_only=True)
+                char_field = CharField(max_length=100)
+                decimal_field = DecimalField(decimal_places=1, max_digits=3)
+                positive_integer_field = IntegerField()
+        """)
+        context = {'view': type('ActionView', (object,), {'action': 'list'})}
+        self.assertEqual(repr(TestSerializer(context=context)), expected)
 
     def test_invalid_field(self):
         """
