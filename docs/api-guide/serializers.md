@@ -498,6 +498,26 @@ Alternatively names in the `fields` options can map to properties or methods whi
 
 Since version 3.3.0, it is **mandatory** to provide one of the attributes `fields` or `exclude`.
 
+## Per-action fields
+
+For `ModelSerializer` instances that will be used with ViewSets, you can define per-action fields.
+
+For example:
+
+    class AccountSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Account
+            fields = ['id', 'account_name', 'users', 'created']
+            action_fields = {
+                'list': {
+                    'fields': ['id', 'account_name']
+                }
+            }
+
+In the above example, for the `list` action, only the `id` and `account_name` will be serialized, however with any other action (such as `detail`), all of the fields in `Meta.fields` attribute will be serialized.
+
+The `action_fields` configuration works with custom actions, too. Additionally, you may use the `exclude` and `extra_kwargs` keys in the same way that `Meta.exclude` and `Meta.extra_kwargs` attributes are used.
+
 ## Specifying nested serialization
 
 The default `ModelSerializer` uses primary keys for relationships, but you can also easily generate nested representations using the `depth` option:
