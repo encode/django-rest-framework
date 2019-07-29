@@ -27,6 +27,7 @@ Next we're going to replace the `SnippetList`, `SnippetDetail` and `SnippetHighl
 
     from rest_framework.decorators import action
     from rest_framework.response import Response
+    from rest_framework import permissions
 
     class SnippetViewSet(viewsets.ModelViewSet):
         """
