@@ -380,14 +380,16 @@ class TestRegularFieldMappings(TestCase):
                 fields = ('char_field')
                 action_fields = {
                     'list': {
-                        'exclude': ('big_integer_field', 'boolean_field',
+                        'exclude': (
+                            'big_integer_field', 'boolean_field',
                             'comma_separated_integer_field', 'date_field',
                             'datetime_field', 'email_field', 'float_field',
                             'integer_field', 'null_boolean_field',
                             'positive_small_integer_field', 'slug_field',
                             'small_integer_field', 'text_field', 'file_field',
                             'time_field', 'url_field', 'custom_field',
-                            'file_path_field')
+                            'file_path_field',
+                        )
                     }
                 }
 
