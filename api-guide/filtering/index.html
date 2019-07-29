@@ -681,7 +681,7 @@ class UserListView(generics.ListAPIView):
 <p>For example:</p>
 <pre><code>search_fields = ['=username', '=email']
 </code></pre>
-<p>By default, the search parameter is named <code>'search</code>', but this may be overridden with the <code>SEARCH_PARAM</code> setting.</p>
+<p>By default, the search parameter is named <code>'search'</code>, but this may be overridden with the <code>SEARCH_PARAM</code> setting.</p>
 <p>To dynamically change search fields based on request content, it's possible to subclass the <code>SearchFilter</code> and override the <code>get_search_fields()</code> function. For example, the following subclass will only search on <code>title</code> if the query parameter <code>title_only</code> is in the request:</p>
 <pre><code>from rest_framework import filters
 

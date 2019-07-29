@@ -952,7 +952,7 @@ populate descriptions in the schema document.</p>
         usernames = [user.username for user in User.objects.all()]
         return Response(usernames)
 </code></pre>
-<p>A <code>ViewSet</code>, with an explict action docstring.</p>
+<p>A <code>ViewSet</code>, with an explicit action docstring.</p>
 <pre><code>class ListUsernames(ViewSet):
     def list(self, request):
         """
