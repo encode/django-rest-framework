@@ -210,6 +210,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
   Enables black/whitelisting fields, and conditionally expanding child serializers on a per-view/request basis.
 * [djangorestframework-queryfields][djangorestframework-queryfields] - Serializer mixin allowing clients to control which fields will be sent in the API response.
 * [drf-flex-fields][drf-flex-fields] - Serializer providing dynamic field expansion and sparse field sets via URL parameters.
+* [drf-action-serializer][drf-action-serializer] - Serializer providing per-action fields config for use with ViewSets to prevent having to write multiple serializers.
 
 ### Serializer fields
 
@@ -346,5 +347,6 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [django-rest-witchcraft]: https://github.com/shosca/django-rest-witchcraft
 [drf-access-policy]: https://github.com/rsinger86/drf-access-policy
 [drf-flex-fields]: https://github.com/rsinger86/drf-flex-fields
+[drf-action-serializer]: https://github.com/gregschmit/drf-action-serializer
 [djangorestframework-mvt]: https://github.com/corteva/djangorestframework-mvt
 [django-rest-framework-guardian]: https://github.com/rpkilby/django-rest-framework-guardian
