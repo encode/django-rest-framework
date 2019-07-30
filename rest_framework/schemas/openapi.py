@@ -6,7 +6,7 @@ from django.core.validators import (
     MinLengthValidator, MinValueValidator, RegexValidator, URLValidator
 )
 from django.db import models
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 
 from rest_framework import exceptions, serializers
 from rest_framework.compat import uritemplate
@@ -162,7 +162,7 @@ class AutoSchema(ViewInspector):
                     model_field = None
 
                 if model_field is not None and model_field.help_text:
-                    description = force_text(model_field.help_text)
+                    description = force_str(model_field.help_text)
                 elif model_field is not None and model_field.primary_key:
                     description = get_pk_description(model, model_field)
 

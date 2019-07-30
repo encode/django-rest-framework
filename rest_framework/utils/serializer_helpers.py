@@ -1,7 +1,7 @@
 from collections import OrderedDict
 from collections.abc import MutableMapping
 
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 
 from rest_framework.utils import json
 
@@ -123,7 +123,7 @@ class NestedBoundField(BoundField):
             if isinstance(value, (list, dict)):
                 values[key] = value
             else:
-                values[key] = '' if (value is None or value is False) else force_text(value)
+                values[key] = '' if (value is None or value is False) else force_str(value)
         return self.__class__(self._field, values, self.errors, self._prefix)
 
 

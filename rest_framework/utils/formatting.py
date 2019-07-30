@@ -3,7 +3,7 @@ Utility functions to return a formatted name and description for a given view.
 """
 import re
 
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 
@@ -29,7 +29,7 @@ def dedent(content):
     as it fails to dedent multiline docstrings that include
     unindented text on the initial line.
     """
-    content = force_text(content)
+    content = force_str(content)
     lines = [line for line in content.splitlines()[1:] if line.lstrip()]
 
     # unindent the content if needed
