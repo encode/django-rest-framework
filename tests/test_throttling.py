@@ -168,16 +168,17 @@ class ThrottlingTests(TestCase):
         assert int(response['retry-after']) == 60
 
         previous_rate = User3SecRateThrottle.rate
-        User3SecRateThrottle.rate = '1/sec'
+        try:
+            User3SecRateThrottle.rate = '1/sec'
 
-        for dummy in range(24):
-            response = MockView_DoubleThrottling.as_view()(request)
+            for dummy in range(24):
+                response = MockView_DoubleThrottling.as_view()(request)
 
-        assert response.status_code == 429
-        assert int(response['retry-after']) == 60
-
-        # reset
-        User3SecRateThrottle.rate = previous_rate
+            assert response.status_code == 429
+            assert int(response['retry-after']) == 60
+        finally:
+            # reset
+            User3SecRateThrottle.rate = previous_rate
 
     def ensure_response_header_contains_proper_throttle_field(self, view, expected_headers):
         """
