@@ -419,23 +419,26 @@ class AutoSchema(ViewInspector):
                     schema['maximum'] = int(digits * '9') + 1
                     schema['minimum'] = -schema['maximum']
 
-    def _get_request_body(self, path, method):
+    def _get_serializer(self, method, path):
         view = self.view
 
-        if method not in ('PUT', 'PATCH', 'POST'):
-            return {}
-
         if not hasattr(view, 'get_serializer'):
-            return {}
+            return None
 
         try:
-            serializer = view.get_serializer()
+            return view.get_serializer()
         except exceptions.APIException:
-            serializer = None
             warnings.warn('{}.get_serializer() raised an exception during '
                           'schema generation. Serializer fields will not be '
                           'generated for {} {}.'
                           .format(view.__class__.__name__, method, path))
+            return None
+
+    def _get_request_body(self, path, method):
+        if method not in ('PUT', 'PATCH', 'POST'):
+            return {}
+
+        serializer = self._get_serializer(path, method)
 
         if not isinstance(serializer, serializers.Serializer):
             return {}
@@ -459,24 +462,15 @@ class AutoSchema(ViewInspector):
     def _get_responses(self, path, method):
         # TODO: Handle multiple codes.
         content = {}
-        view = self.view
-        if hasattr(view, 'get_serializer'):
-            try:
-                serializer = view.get_serializer()
-            except exceptions.APIException:
-                serializer = None
-                warnings.warn('{}.get_serializer() raised an exception during '
-                              'schema generation. Serializer fields will not be '
-                              'generated for {} {}.'
-                              .format(view.__class__.__name__, method, path))
+        serializer = self._get_serializer(path, method)
 
-            if isinstance(serializer, serializers.Serializer):
-                content = self._map_serializer(serializer)
-                # No write_only fields for response.
-                for name, schema in content['properties'].copy().items():
-                    if 'writeOnly' in schema:
-                        del content['properties'][name]
-                        content['required'] = [f for f in content['required'] if f != name]
+        if isinstance(serializer, serializers.Serializer):
+            content = self._map_serializer(serializer)
+            # No write_only fields for response.
+            for name, schema in content['properties'].copy().items():
+                if 'writeOnly' in schema:
+                    del content['properties'][name]
+                    content['required'] = [f for f in content['required'] if f != name]
 
         return {
             '200': {
