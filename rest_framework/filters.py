@@ -10,7 +10,7 @@ from django.db import models
 from django.db.models.constants import LOOKUP_SEP
 from django.db.models.sql.constants import ORDER_PATTERN
 from django.template import loader
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework.compat import coreapi, coreschema, distinct
@@ -151,8 +151,8 @@ class SearchFilter(BaseFilterBackend):
                 required=False,
                 location='query',
                 schema=coreschema.String(
-                    title=force_text(self.search_title),
-                    description=force_text(self.search_description)
+                    title=force_str(self.search_title),
+                    description=force_str(self.search_description)
                 )
             )
         ]
@@ -163,7 +163,7 @@ class SearchFilter(BaseFilterBackend):
                 'name': self.search_param,
                 'required': False,
                 'in': 'query',
-                'description': force_text(self.search_description),
+                'description': force_str(self.search_description),
                 'schema': {
                     'type': 'string',
                 },
@@ -295,8 +295,8 @@ class OrderingFilter(BaseFilterBackend):
                 required=False,
                 location='query',
                 schema=coreschema.String(
-                    title=force_text(self.ordering_title),
-                    description=force_text(self.ordering_description)
+                    title=force_str(self.ordering_title),
+                    description=force_str(self.ordering_description)
                 )
             )
         ]
@@ -307,7 +307,7 @@ class OrderingFilter(BaseFilterBackend):
                 'name': self.ordering_param,
                 'required': False,
                 'in': 'query',
-                'description': force_text(self.ordering_description),
+                'description': force_str(self.ordering_description),
                 'schema': {
                     'type': 'string',
                 },

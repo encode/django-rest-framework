@@ -4,7 +4,7 @@ from collections import Counter, OrderedDict
 from urllib import parse
 
 from django.db import models
-from django.utils.encoding import force_text, smart_text
+from django.utils.encoding import force_str, smart_text
 
 from rest_framework import exceptions, serializers
 from rest_framework.compat import coreapi, coreschema, uritemplate
@@ -255,8 +255,8 @@ class SchemaGenerator(BaseSchemaGenerator):
 
 
 def field_to_schema(field):
-    title = force_text(field.label) if field.label else ''
-    description = force_text(field.help_text) if field.help_text else ''
+    title = force_str(field.label) if field.label else ''
+    description = force_str(field.help_text) if field.help_text else ''
 
     if isinstance(field, (serializers.ListSerializer, serializers.ListField)):
         child_schema = field_to_schema(field.child)
@@ -457,10 +457,10 @@ class AutoSchema(ViewInspector):
                     model_field = None
 
                 if model_field is not None and model_field.verbose_name:
-                    title = force_text(model_field.verbose_name)
+                    title = force_str(model_field.verbose_name)
 
                 if model_field is not None and model_field.help_text:
-                    description = force_text(model_field.help_text)
+                    description = force_str(model_field.help_text)
                 elif model_field is not None and model_field.primary_key:
                     description = get_pk_description(model, model_field)
 

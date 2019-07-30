@@ -9,7 +9,7 @@ from urllib import parse
 from django.core.paginator import InvalidPage
 from django.core.paginator import Paginator as DjangoPaginator
 from django.template import loader
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework.compat import coreapi, coreschema
@@ -286,7 +286,7 @@ class PageNumberPagination(BasePagination):
                 location='query',
                 schema=coreschema.Integer(
                     title='Page',
-                    description=force_text(self.page_query_description)
+                    description=force_str(self.page_query_description)
                 )
             )
         ]
@@ -298,7 +298,7 @@ class PageNumberPagination(BasePagination):
                     location='query',
                     schema=coreschema.Integer(
                         title='Page size',
-                        description=force_text(self.page_size_query_description)
+                        description=force_str(self.page_size_query_description)
                     )
                 )
             )
@@ -310,7 +310,7 @@ class PageNumberPagination(BasePagination):
                 'name': self.page_query_param,
                 'required': False,
                 'in': 'query',
-                'description': force_text(self.page_query_description),
+                'description': force_str(self.page_query_description),
                 'schema': {
                     'type': 'integer',
                 },
@@ -322,7 +322,7 @@ class PageNumberPagination(BasePagination):
                     'name': self.page_size_query_param,
                     'required': False,
                     'in': 'query',
-                    'description': force_text(self.page_size_query_description),
+                    'description': force_str(self.page_size_query_description),
                     'schema': {
                         'type': 'integer',
                     },
@@ -478,7 +478,7 @@ class LimitOffsetPagination(BasePagination):
                 location='query',
                 schema=coreschema.Integer(
                     title='Limit',
-                    description=force_text(self.limit_query_description)
+                    description=force_str(self.limit_query_description)
                 )
             ),
             coreapi.Field(
@@ -487,7 +487,7 @@ class LimitOffsetPagination(BasePagination):
                 location='query',
                 schema=coreschema.Integer(
                     title='Offset',
-                    description=force_text(self.offset_query_description)
+                    description=force_str(self.offset_query_description)
                 )
             )
         ]
@@ -498,7 +498,7 @@ class LimitOffsetPagination(BasePagination):
                 'name': self.limit_query_param,
                 'required': False,
                 'in': 'query',
-                'description': force_text(self.limit_query_description),
+                'description': force_str(self.limit_query_description),
                 'schema': {
                     'type': 'integer',
                 },
@@ -507,7 +507,7 @@ class LimitOffsetPagination(BasePagination):
                 'name': self.offset_query_param,
                 'required': False,
                 'in': 'query',
-                'description': force_text(self.offset_query_description),
+                'description': force_str(self.offset_query_description),
                 'schema': {
                     'type': 'integer',
                 },
@@ -861,7 +861,7 @@ class CursorPagination(BasePagination):
                 location='query',
                 schema=coreschema.String(
                     title='Cursor',
-                    description=force_text(self.cursor_query_description)
+                    description=force_str(self.cursor_query_description)
                 )
             )
         ]
@@ -873,7 +873,7 @@ class CursorPagination(BasePagination):
                     location='query',
                     schema=coreschema.Integer(
                         title='Page size',
-                        description=force_text(self.page_size_query_description)
+                        description=force_str(self.page_size_query_description)
                     )
                 )
             )
@@ -885,7 +885,7 @@ class CursorPagination(BasePagination):
                 'name': self.cursor_query_param,
                 'required': False,
                 'in': 'query',
-                'description': force_text(self.cursor_query_description),
+                'description': force_str(self.cursor_query_description),
                 'schema': {
                     'type': 'integer',
                 },
@@ -897,7 +897,7 @@ class CursorPagination(BasePagination):
                     'name': self.page_size_query_param,
                     'required': False,
                     'in': 'query',
-                    'description': force_text(self.page_size_query_description),
+                    'description': force_str(self.page_size_query_description),
                     'schema': {
                         'type': 'integer',
                     },
