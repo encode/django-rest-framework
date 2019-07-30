@@ -82,7 +82,18 @@ class TestOperationIntrospection(TestCase):
         assert operation == {
             'operationId': 'ListExamples',
             'parameters': [],
-            'responses': {'200': {'content': {'application/json': {'schema': {}}}}},
+            'responses': {
+                '200': {
+                    'content': {
+                        'application/json': {
+                            'schema': {
+                                'type': 'array',
+                                'items': {},
+                            },
+                        },
+                    },
+                },
+            },
         }
 
     def test_path_with_id_parameter(self):
@@ -184,6 +195,83 @@ class TestOperationIntrospection(TestCase):
         assert list(schema['properties']['nested']['properties'].keys()) == ['number']
         assert schema['properties']['nested']['required'] == ['number']
 
+    def test_list_response_body_generation(self):
+        """Test that an array schema is returned for list views."""
+        path = '/'
+        method = 'GET'
+
+        class ItemSerializer(serializers.Serializer):
+            text = serializers.CharField()
+
+        class View(generics.GenericAPIView):
+            serializer_class = ItemSerializer
+
+        view = create_view(
+            View,
+            method,
+            create_request(path),
+        )
+        inspector = AutoSchema()
+        inspector.view = view
+
+        responses = inspector._get_responses(path, method)
+        assert responses == {
+            '200': {
+                'content': {
+                    'application/json': {
+                        'schema': {
+                            'type': 'array',
+                            'items': {
+                                'properties': {
+                                    'text': {
+                                        'type': 'string',
+                                    },
+                                },
+                                'required': ['text'],
+                            },
+                        },
+                    },
+                },
+            },
+        }
+
+    def test_retrieve_response_body_generation(self):
+        """Test that a list of properties is returned for retrieve item views."""
+        path = '/{id}/'
+        method = 'GET'
+
+        class ItemSerializer(serializers.Serializer):
+            text = serializers.CharField()
+
+        class View(generics.GenericAPIView):
+            serializer_class = ItemSerializer
+
+        view = create_view(
+            View,
+            method,
+            create_request(path),
+        )
+        inspector = AutoSchema()
+        inspector.view = view
+
+        responses = inspector._get_responses(path, method)
+        assert responses == {
+            '200': {
+                'content': {
+                    'application/json': {
+                        'schema': {
+                            'properties': {
+                                'text': {
+                                    'type': 'string',
+                                },
+                            },
+                            'required': ['text'],
+                        },
+                    },
+                },
+            },
+        }
+
     def test_operation_id_generation(self):
         path = '/'
         method = 'GET'
@@ -226,10 +314,11 @@ class TestOperationIntrospection(TestCase):
         inspector.view = view
 
         responses = inspector._get_responses(path, method)
-        response_schema = responses['200']['content']['application/json']['schema']['properties']
-        assert response_schema['date']['type'] == response_schema['datetime']['type'] == 'string'
-        assert response_schema['date']['format'] == 'date'
-        assert response_schema['datetime']['format'] == 'date-time'
+        response_schema = responses['200']['content']['application/json']['schema']
+        properties = response_schema['items']['properties']
+        assert properties['date']['type'] == properties['datetime']['type'] == 'string'
+        assert properties['date']['format'] == 'date'
+        assert properties['datetime']['format'] == 'date-time'
 
     def test_serializer_validators(self):
         path = '/'
@@ -243,45 +332,46 @@ class TestOperationIntrospection(TestCase):
         inspector.view = view
 
         responses = inspector._get_responses(path, method)
-        response_schema = responses['200']['content']['application/json']['schema']['properties']
+        response_schema = responses['200']['content']['application/json']['schema']
+        properties = response_schema['items']['properties']
 
-        assert response_schema['integer']['type'] == 'integer'
-        assert response_schema['integer']['maximum'] == 99
-        assert response_schema['integer']['minimum'] == -11
+        assert properties['integer']['type'] == 'integer'
+        assert properties['integer']['maximum'] == 99
+        assert properties['integer']['minimum'] == -11
 
-        assert response_schema['string']['minLength'] == 2
-        assert response_schema['string']['maxLength'] == 10
+        assert properties['string']['minLength'] == 2
+        assert properties['string']['maxLength'] == 10
 
-        assert response_schema['regex']['pattern'] == r'[ABC]12{3}'
-        assert response_schema['regex']['description'] == 'must have an A, B, or C followed by 1222'
+        assert properties['regex']['pattern'] == r'[ABC]12{3}'
+        assert properties['regex']['description'] == 'must have an A, B, or C followed by 1222'
 
-        assert response_schema['decimal1']['type'] == 'number'
-        assert response_schema['decimal1']['multipleOf'] == .01
-        assert response_schema['decimal1']['maximum'] == 10000
-        assert response_schema['decimal1']['minimum'] == -10000
+        assert properties['decimal1']['type'] == 'number'
+        assert properties['decimal1']['multipleOf'] == .01
+        assert properties['decimal1']['maximum'] == 10000
+        assert properties['decimal1']['minimum'] == -10000
 
-        assert response_schema['decimal2']['type'] == 'number'
-        assert response_schema['decimal2']['multipleOf'] == .0001
+        assert properties['decimal2']['type'] == 'number'
+        assert properties['decimal2']['multipleOf'] == .0001
 
-        assert response_schema['email']['type'] == 'string'
-        assert response_schema['email']['format'] == 'email'
-        assert response_schema['email']['default'] == 'foo@bar.com'
+        assert properties['email']['type'] == 'string'
+        assert properties['email']['format'] == 'email'
+        assert properties['email']['default'] == 'foo@bar.com'
 
-        assert response_schema['url']['type'] == 'string'
-        assert response_schema['url']['nullable'] is True
-        assert response_schema['url']['default'] == 'http://www.example.com'
+        assert properties['url']['type'] == 'string'
+        assert properties['url']['nullable'] is True
+        assert properties['url']['default'] == 'http://www.example.com'
 
-        assert response_schema['uuid']['type'] == 'string'
-        assert response_schema['uuid']['format'] == 'uuid'
+        assert properties['uuid']['type'] == 'string'
+        assert properties['uuid']['format'] == 'uuid'
 
-        assert response_schema['ip4']['type'] == 'string'
-        assert response_schema['ip4']['format'] == 'ipv4'
+        assert properties['ip4']['type'] == 'string'
+        assert properties['ip4']['format'] == 'ipv4'
 
-        assert response_schema['ip6']['type'] == 'string'
-        assert response_schema['ip6']['format'] == 'ipv6'
+        assert properties['ip6']['type'] == 'string'
+        assert properties['ip6']['format'] == 'ipv6'
 
-        assert response_schema['ip']['type'] == 'string'
-        assert 'format' not in response_schema['ip']
+        assert properties['ip']['type'] == 'string'
+        assert 'format' not in properties['ip']
 
 
 @pytest.mark.skipif(uritemplate is None, reason='uritemplate not installed.')

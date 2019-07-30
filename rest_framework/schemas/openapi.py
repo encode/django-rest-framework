@@ -460,22 +460,30 @@ class AutoSchema(ViewInspector):
         }
 
     def _get_responses(self, path, method):
-        # TODO: Handle multiple codes.
-        content = {}
+        # TODO: Handle multiple codes and pagination classes.
+        item_schema = {}
         serializer = self._get_serializer(path, method)
 
         if isinstance(serializer, serializers.Serializer):
-            content = self._map_serializer(serializer)
+            item_schema = self._map_serializer(serializer)
             # No write_only fields for response.
-            for name, schema in content['properties'].copy().items():
+            for name, schema in item_schema['properties'].copy().items():
                 if 'writeOnly' in schema:
-                    del content['properties'][name]
-                    content['required'] = [f for f in content['required'] if f != name]
+                    del item_schema['properties'][name]
+                    item_schema['required'] = [f for f in item_schema['required'] if f != name]
+
+        if is_list_view(path, method, self.view):
+            response_schema = {
+                'type': 'array',
+                'items': item_schema,
+            }
+        else:
+            response_schema = item_schema
 
         return {
             '200': {
                 'content': {
-                    ct: {'schema': content}
+                    ct: {'schema': response_schema}
                     for ct in self.content_types
                 }
             }
