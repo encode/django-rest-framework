@@ -1549,12 +1549,13 @@ class FileField(Field):
         if use_url:
             try:
                 url = value.url
-                request = self.context.get('request', None)
-                if request is not None:
-                    return request.build_absolute_uri(url)
-                return url
             except AttributeError:
                 return None
+            request = self.context.get('request', None)
+            if request is not None:
+                return request.build_absolute_uri(url)
+            return url
+
         return value.name
 
 
