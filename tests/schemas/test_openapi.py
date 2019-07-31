@@ -84,6 +84,7 @@ class TestOperationIntrospection(TestCase):
             'parameters': [],
             'responses': {
                 '200': {
+                    'description': '',
                     'content': {
                         'application/json': {
                             'schema': {
@@ -190,6 +191,7 @@ class TestOperationIntrospection(TestCase):
         responses = inspector._get_responses(path, method)
         assert responses['200']['content']['application/json']['schema']['required'] == ['text']
         assert list(responses['200']['content']['application/json']['schema']['properties'].keys()) == ['text']
+        assert 'description' in responses['200']
 
     def test_response_body_nested_serializer(self):
         path = '/'
@@ -243,6 +245,7 @@ class TestOperationIntrospection(TestCase):
         responses = inspector._get_responses(path, method)
         assert responses == {
             '200': {
+                'description': '',
                 'content': {
                     'application/json': {
                         'schema': {
@@ -283,6 +286,7 @@ class TestOperationIntrospection(TestCase):
         responses = inspector._get_responses(path, method)
         assert responses == {
             '200': {
+                'description': '',
                 'content': {
                     'application/json': {
                         'schema': {

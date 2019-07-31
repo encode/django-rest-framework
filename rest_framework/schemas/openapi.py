@@ -490,6 +490,10 @@ class AutoSchema(ViewInspector):
                 'content': {
                     ct: {'schema': response_schema}
                     for ct in self.content_types
-                }
+                },
+                # description is a mandatory property,
+                # https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#responseObject
+                # TODO: put something meaningful into it
+                'description': ""
             }
         }
