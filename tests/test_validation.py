@@ -196,7 +196,7 @@ class TestChoiceFieldChoicesValidate(TestCase):
         Make sure a value for choices works as expected.
         """
         f = serializers.ChoiceField(choices=self.CHOICES)
-        value = self.CHOICES[0][0]
+        value = self.CHOICES[0][1]
         try:
             f.to_internal_value(value)
         except serializers.ValidationError:
@@ -218,7 +218,7 @@ class TestChoiceFieldChoicesValidate(TestCase):
         Make sure a nested value for choices works as expected.
         """
         f = serializers.ChoiceField(choices=self.CHOICES_NESTED)
-        value = self.CHOICES_NESTED[0][1][0][0]
+        value = self.CHOICES_NESTED[0][1][0][1]
         try:
             f.to_internal_value(value)
         except serializers.ValidationError:

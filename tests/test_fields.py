@@ -953,12 +953,13 @@ class TestFilePathField(FieldValues):
     """
 
     valid_inputs = {
-        __file__: __file__,
+        os.path.basename(__file__): os.path.abspath(__file__),
     }
     invalid_inputs = {
         'wrong_path': ['"wrong_path" is not a valid path choice.']
     }
     outputs = {
+        os.path.abspath(__file__): os.path.basename(__file__),
     }
     field = serializers.FilePathField(
         path=os.path.abspath(os.path.dirname(__file__))
@@ -1559,15 +1560,15 @@ class TestChoiceField(FieldValues):
     Valid and invalid values for `ChoiceField`.
     """
     valid_inputs = {
-        'poor': 'poor',
-        'medium': 'medium',
-        'good': 'good',
+        'Poor quality': 'poor',
+        'Medium quality': 'medium',
+        'Good quality': 'good',
     }
     invalid_inputs = {
         'amazing': ['"amazing" is not a valid choice.']
     }
     outputs = {
-        'good': 'good',
+        'good': 'Good quality',
         '': '',
         'amazing': 'amazing',
     }
@@ -1658,16 +1659,16 @@ class TestChoiceFieldWithType(FieldValues):
     instead of a char type.
     """
     valid_inputs = {
-        '1': 1,
-        3: 3,
+        'Poor quality': 1,
+        'Good quality': 3,
     }
     invalid_inputs = {
         5: ['"5" is not a valid choice.'],
         'abc': ['"abc" is not a valid choice.']
     }
     outputs = {
-        '1': 1,
-        1: 1
+        '1': '1',
+        1: 'Poor quality',
     }
     field = serializers.ChoiceField(
         choices=[
@@ -1703,15 +1704,15 @@ class TestChoiceFieldWithGroupedChoices(FieldValues):
     choices, rather than a list of pairs of (`value`, `description`).
     """
     valid_inputs = {
-        'poor': 'poor',
-        'medium': 'medium',
-        'good': 'good',
+        'Poor quality': 'poor',
+        'Medium quality': 'medium',
+        'Good quality': 'good',
     }
     invalid_inputs = {
         'awful': ['"awful" is not a valid choice.']
     }
     outputs = {
-        'good': 'good'
+        'good': 'Good quality'
     }
     field = serializers.ChoiceField(
         choices=[
@@ -1733,15 +1734,15 @@ class TestChoiceFieldWithMixedChoices(FieldValues):
     grouped.
     """
     valid_inputs = {
-        'poor': 'poor',
+        'Poor quality': 'poor',
         'medium': 'medium',
-        'good': 'good',
+        'Good quality': 'good',
     }
     invalid_inputs = {
         'awful': ['"awful" is not a valid choice.']
     }
     outputs = {
-        'good': 'good'
+        'good': 'Good quality'
     }
     field = serializers.ChoiceField(
         choices=[
@@ -1763,12 +1764,12 @@ class TestMultipleChoiceField(FieldValues):
     """
     valid_inputs = {
         (): set(),
-        ('aircon',): {'aircon'},
-        ('aircon', 'manual'): {'aircon', 'manual'},
+        ('AirCon',): {'aircon'},
+        ('AirCon', 'Manual drive'): {'aircon', 'manual'},
     }
     invalid_inputs = {
         'abc': ['Expected a list of items but got type "str".'],
-        ('aircon', 'incorrect'): ['"incorrect" is not a valid choice.']
+        ('AirCon', 'incorrect'): ['"incorrect" is not a valid choice.']
     }
     outputs = [
         (['aircon', 'manual', 'incorrect'], {'aircon', 'manual', 'incorrect'})

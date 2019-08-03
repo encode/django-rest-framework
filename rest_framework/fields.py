@@ -130,7 +130,7 @@ def to_choices_dict(choices):
     """
     Convert choices into key/value dicts.
 
-    to_choices_dict([1]) -> {1: 1}
+    to_choices_dict([1]) -> {1: '1'}
     to_choices_dict([(1, '1st'), (2, '2nd')]) -> {1: '1st', 2: '2nd'}
     to_choices_dict([('Group', ((1, '1st'), 2))]) -> {'Group': {1: '1st', 2: '2'}}
     """
@@ -142,7 +142,7 @@ def to_choices_dict(choices):
     for choice in choices:
         if not isinstance(choice, (list, tuple)):
             # single choice
-            ret[choice] = choice
+            ret[choice] = str(choice)
         else:
             key, value = choice
             if isinstance(value, (list, tuple)):
@@ -150,7 +150,7 @@ def to_choices_dict(choices):
                 ret[key] = to_choices_dict(value)
             else:
                 # paired choice (key, display value)
-                ret[key] = value
+                ret[key] = str(value)
     return ret
 
 
@@ -1421,7 +1421,7 @@ class ChoiceField(Field):
     def to_representation(self, value):
         if value in ('', None):
             return value
-        return self.choice_strings_to_values.get(str(value), value)
+        return self._choices.get(value, str(value))
 
     def iter_options(self):
         """
@@ -1440,11 +1440,15 @@ class ChoiceField(Field):
         self.grouped_choices = to_choices_dict(choices)
         self._choices = flatten_choices_dict(self.grouped_choices)
 
-        # Map the string representation of choices to the underlying value.
-        # Allows us to deal with eg. integer choices while supporting either
-        # integer or string input, but still get the correct datatype out.
+        # `self._choices` is a dictionary that maps the data value of a
+        # particular choice to its display representation. Here, we want to
+        # reverse that dictionary so that when a user supplies a choice's
+        # display value as input, we can look up the underlying data value to
+        # which we should deserialize it. All of the values in the `OrderedDict`
+        # returned by `to_choices_dict` should be strings, so `display` should
+        # always be a string.
         self.choice_strings_to_values = {
-            str(key): key for key in self.choices
+            display_name: key for key, display_name in self.choices.items()
         }
 
     choices = property(_get_choices, _set_choices)

@@ -107,7 +107,7 @@ class Issue3674ChildModel(models.Model):
 class UniqueChoiceModel(models.Model):
     CHOICES = (
         ('choice1', 'choice 1'),
-        ('choice2', 'choice 1'),
+        ('choice2', 'choice 2'),
     )
 
     name = models.CharField(max_length=254, unique=True, choices=CHOICES)
@@ -1196,7 +1196,7 @@ class Test5004UniqueChoiceField(TestCase):
                 fields = '__all__'
 
         UniqueChoiceModel.objects.create(name='choice1')
-        serializer = TestUniqueChoiceSerializer(data={'name': 'choice1'})
+        serializer = TestUniqueChoiceSerializer(data={'name': 'choice 1'})
         assert not serializer.is_valid()
         assert serializer.errors == {'name': ['unique choice model with this name already exists.']}
 
