@@ -363,7 +363,7 @@ class APIView(View):
                 if duration is not None
             ]
 
-            duration = max(durations) if durations else None
+            duration = max(durations, default=None)
             self.throttled(request, duration)
 
     def determine_version(self, request, *args, **kwargs):

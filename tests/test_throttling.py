@@ -159,7 +159,7 @@ class ThrottlingTests(TestCase):
         assert response.status_code == 429
         assert int(response['retry-after']) == 58
 
-    def test_handle_negative_throttle_value(self):
+    def test_throttle_rate_change_negative(self):
         self.set_throttle_timer(MockView_DoubleThrottling, 0)
         request = self.factory.get('/')
         for dummy in range(24):
