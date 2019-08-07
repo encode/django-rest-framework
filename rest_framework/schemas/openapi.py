@@ -381,10 +381,14 @@ class AutoSchema(ViewInspector):
             self._map_field_validators(field.validators, schema)
 
             properties[field.field_name] = schema
-        return {
-            'required': required,
-            'properties': properties,
+
+        result = {
+            'properties': properties
         }
+        if len(required) > 0:
+            result['required'] = required
+
+        return result
 
     def _map_field_validators(self, validators, schema):
         """
@@ -470,7 +474,8 @@ class AutoSchema(ViewInspector):
             for name, schema in item_schema['properties'].copy().items():
                 if 'writeOnly' in schema:
                     del item_schema['properties'][name]
-                    item_schema['required'] = [f for f in item_schema['required'] if f != name]
+                    if 'required' in item_schema:
+                        item_schema['required'] = [f for f in item_schema['required'] if f != name]
 
         if is_list_view(path, method, self.view):
             response_schema = {
