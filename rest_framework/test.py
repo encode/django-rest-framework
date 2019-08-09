@@ -11,6 +11,7 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.handlers.wsgi import WSGIHandler
 from django.test import override_settings, testcases
+from django.test.client import JSON_CONTENT_TYPE_RE
 from django.test.client import Client as DjangoClient
 from django.test.client import ClientHandler
 from django.test.client import RequestFactory as DjangoRequestFactory
@@ -20,6 +21,7 @@ from django.utils.http import urlencode
 
 from rest_framework.compat import coreapi, requests
 from rest_framework.settings import api_settings
+from rest_framework.utils import json
 
 
 def force_authenticate(request, user=None, token=None):
@@ -266,6 +268,16 @@ class APIClient(APIRequestFactory, DjangoClient):
         super(APIClient, self).__init__(**defaults)
         self.handler = ForceAuthClientHandler(enforce_csrf_checks)
         self._credentials = {}
+
+    def _parse_json(self, response, **extra):
+        if not hasattr(response, '_json'):
+            if not JSON_CONTENT_TYPE_RE.match(response.get('Content-Type')):
+                raise ValueError(
+                    'Content-Type header is "{0}", not "application/json"'
+                    .format(response.get('Content-Type'))
+                )
+            response._json = json.loads(response.content.decode(response.charset), **extra)
+        return response._json
 
     def credentials(self, **kwargs):
         """
