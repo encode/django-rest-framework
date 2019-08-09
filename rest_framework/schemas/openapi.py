@@ -485,6 +485,13 @@ class AutoSchema(ViewInspector):
         else:
             response_schema = item_schema
 
+        if method == 'DELETE':
+            return {
+                '204': {
+                    'description': ''
+                }
+            }
+
         return {
             '200': {
                 'content': {
