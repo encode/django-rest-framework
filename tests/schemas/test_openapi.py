@@ -264,6 +264,29 @@ class TestOperationIntrospection(TestCase):
             },
         }
 
+    def test_delete_response_body_generation(self):
+        """Test that a view's delete method generates a proper response body schema."""
+        path = '/{id}/'
+        method = 'DELETE'
+
+        class View(generics.DestroyAPIView):
+            serializer_class = views.ExampleSerializer
+
+        view = create_view(
+            View,
+            method,
+            create_request(path),
+        )
+        inspector = AutoSchema()
+        inspector.view = view
+
+        responses = inspector._get_responses(path, method)
+        assert responses == {
+            '204': {
+                'description': '',
+            },
+        }
+
     def test_retrieve_response_body_generation(self):
         """Test that a list of properties is returned for retrieve item views."""
         path = '/{id}/'

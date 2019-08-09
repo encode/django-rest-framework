@@ -465,6 +465,13 @@ class AutoSchema(ViewInspector):
 
     def _get_responses(self, path, method):
         # TODO: Handle multiple codes and pagination classes.
+        if method == 'DELETE':
+            return {
+                '204': {
+                    'description': ''
+                }
+            }
+
         item_schema = {}
         serializer = self._get_serializer(path, method)
 
