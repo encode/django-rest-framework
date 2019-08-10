@@ -264,6 +264,58 @@ class TestOperationIntrospection(TestCase):
             },
         }
 
+    def test_paginated_list_response_body_generation(self):
+        """Test that pagination properties are added for a paginated list view."""
+        path = '/'
+        method = 'GET'
+
+        class Pagination(pagination.BasePagination):
+            def get_paginated_response_schema(self, schema):
+                return {
+                    'type': 'object',
+                    'item': schema,
+                }
+
+        class ItemSerializer(serializers.Serializer):
+            text = serializers.CharField()
+
+        class View(generics.GenericAPIView):
+            serializer_class = ItemSerializer
+            pagination_class = Pagination
+
+        view = create_view(
+            View,
+            method,
+            create_request(path),
+        )
+        inspector = AutoSchema()
+        inspector.view = view
+
+        responses = inspector._get_responses(path, method)
+        assert responses == {
+            '200': {
+                'description': '',
+                'content': {
+                    'application/json': {
+                        'schema': {
+                            'type': 'object',
+                            'item': {
+                                'type': 'array',
+                                'items': {
+                                    'properties': {
+                                        'text': {
+                                            'type': 'string',
+                                        },
+                                    },
+                                    'required': ['text'],
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        }
+
     def test_delete_response_body_generation(self):
         """Test that a view's delete method generates a proper response body schema."""
         path = '/{id}/'
@@ -288,15 +340,27 @@ class TestOperationIntrospection(TestCase):
         }
 
     def test_retrieve_response_body_generation(self):
-        """Test that a list of properties is returned for retrieve item views."""
+        """
+        Test that a list of properties is returned for retrieve item views.
+
+        Pagination properties should not be added as the view represents a single item.
+        """
         path = '/{id}/'
         method = 'GET'
+
+        class Pagination(pagination.BasePagination):
+            def get_paginated_response_schema(self, schema):
+                return {
+                    'type': 'object',
+                    'item': schema,
+                }
 
         class ItemSerializer(serializers.Serializer):
             text = serializers.CharField()
 
         class View(generics.GenericAPIView):
             serializer_class = ItemSerializer
+            pagination_class = Pagination
 
         view = create_view(
             View,
