@@ -339,6 +339,30 @@ class TestOperationIntrospection(TestCase):
             },
         }
 
+    def test_multipart_request_body_generation(self):
+        """Test that a view's delete method generates a proper response body schema."""
+        path = '/{id}/'
+        method = 'POST'
+
+        class ItemSerializer(serializers.Serializer):
+            attachment = serializers.FileField()
+
+        class View(generics.CreateAPIView):
+            serializer_class = ItemSerializer
+
+        view = create_view(
+            View,
+            method,
+            create_request(path),
+        )
+        inspector = AutoSchema()
+        inspector.view = view
+
+        request_body = inspector._get_request_body(path, method)
+        assert 'multipart/form-data' in request_body['content']
+        attachment = request_body['content']['multipart/form-data']['schema']['properties']['attachment']
+        assert attachment['format'] == 'binary'
+
     def test_retrieve_response_body_generation(self):
         """
         Test that a list of properties is returned for retrieve item views.
