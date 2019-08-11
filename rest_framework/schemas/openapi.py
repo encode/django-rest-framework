@@ -93,7 +93,6 @@ class AutoSchema(ViewInspector):
     def get_operation(self, path, method):
         operation = {}
 
-
         operation['operationId'] = self._get_operation_id(path, method)
 
         parameters = []
