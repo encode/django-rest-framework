@@ -378,7 +378,7 @@ class AutoSchema(ViewInspector):
                 schema['default'] = field.default
             if field.help_text:
                 schema['description'] = str(field.help_text)
-            self._map_field_validators(field, field.validators, schema)
+            self._map_field_validators(field, schema)
 
             properties[field.field_name] = schema
 
@@ -390,13 +390,11 @@ class AutoSchema(ViewInspector):
 
         return result
 
-    def _map_field_validators(self, field, validators, schema):
+    def _map_field_validators(self, field, schema):
         """
         map field validators
-        :param list:validators: list of field validators
-        :param dict:schema: schema that the validators get added to
         """
-        for v in validators:
+        for v in field.validators:
             # "Formats such as "email", "uuid", and so on, MAY be used even though undefined by this specification."
             # https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#data-types
             if isinstance(v, EmailValidator):
