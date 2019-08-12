@@ -9,7 +9,7 @@ from django.core.validators import (
 from django.db import models
 from django.utils.encoding import force_str
 
-from rest_framework import exceptions, serializers, renderers
+from rest_framework import exceptions, renderers, serializers
 from rest_framework.compat import uritemplate
 from rest_framework.fields import _UnvalidatedField, empty
 
