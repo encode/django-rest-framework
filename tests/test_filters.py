@@ -689,21 +689,18 @@ class SensitiveOrderingFilterTests(TestCase):
                 {'id': 3, username_field: 'userC'},  # PassA
             ]
 
-
-if postgres_fields:
-    class JSONOrderingFilterModel(models.Model):
-        data = postgres_fields.JSONField()
-
-
-    class JSONOrderingFilterSerializer(serializers.ModelSerializer):
-        class Meta:
-            model = JSONOrderingFilterModel
-            fields = '__all__'
-
-
-@pytest.mark.skipif(postgres_fields is None, reason='not a postgresql database')
+            
+@pytest.mark.skipif('not postgres_fields')
 class JSONOrderingFilterTests(TestCase):
     def test_order_by_json_field(self):
+        class JSONOrderingFilterModel(models.Model):
+            data = postgres_fields.JSONField()
+
+
+        class JSONOrderingFilterSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = JSONOrderingFilterModel
+                fields = '__all__'
 
         class OrderingListView(generics.ListAPIView):
             queryset = JSONOrderingFilterModel.objects.all()
