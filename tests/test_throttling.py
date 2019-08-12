@@ -159,6 +159,27 @@ class ThrottlingTests(TestCase):
         assert response.status_code == 429
         assert int(response['retry-after']) == 58
 
+    def test_throttle_rate_change_negative(self):
+        self.set_throttle_timer(MockView_DoubleThrottling, 0)
+        request = self.factory.get('/')
+        for dummy in range(24):
+            response = MockView_DoubleThrottling.as_view()(request)
+        assert response.status_code == 429
+        assert int(response['retry-after']) == 60
+
+        previous_rate = User3SecRateThrottle.rate
+        try:
+            User3SecRateThrottle.rate = '1/sec'
+
+            for dummy in range(24):
+                response = MockView_DoubleThrottling.as_view()(request)
+
+            assert response.status_code == 429
+            assert int(response['retry-after']) == 60
+        finally:
+            # reset
+            User3SecRateThrottle.rate = previous_rate
+
     def ensure_response_header_contains_proper_throttle_field(self, view, expected_headers):
         """
         Ensure the response returns an Retry-After field with status and next attributes
