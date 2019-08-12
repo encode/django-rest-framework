@@ -701,7 +701,7 @@ if postgres_fields:
             fields = '__all__'
 
 
-@pytest.mark.skipif('not postgres_fields')
+@pytest.mark.skipif(postgres_fields is None)
 class JSONOrderingFilterTests(TestCase):
     def test_order_by_json_field(self):
 
