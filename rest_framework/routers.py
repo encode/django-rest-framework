@@ -38,8 +38,12 @@ def escape_curly_brackets(url_path):
     """
     Double brackets in regex of url_path for escape string formatting
     """
-    if ('{' and '}') in url_path:
-        url_path = url_path.replace('{', '{{').replace('}', '}}')
+    if '{' in url_path:
+        url_path = url_path.replace('{', '{{')
+
+    if '}' in url_path:
+        url_path = url_path.replace('}', '}}')
+
     return url_path
 
 
