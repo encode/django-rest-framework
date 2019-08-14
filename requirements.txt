@@ -2,8 +2,8 @@
 # just Django, but for the purposes of development and testing
 # there are a number of packages that are useful to install.
 
-# Laying these out as seperate requirements files, allows us to
-# only included the relevent sets when running tox, and ensures
+# Laying these out as separate requirements files, allows us to
+# only included the relevant sets when running tox, and ensures
 # we are only ever declaring our dependencies in one place.
 
 -r requirements/requirements-optionals.txt
