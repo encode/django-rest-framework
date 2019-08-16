@@ -146,7 +146,7 @@ msgstr "Запрос был проигнорирован."
 #: fields.py:269 relations.py:206 relations.py:239 validators.py:98
 #: validators.py:181
 msgid "This field is required."
-msgstr "Это поле обязательно."
+msgstr "Обязательное поле."
 
 #: fields.py:270
 msgid "This field may not be null."
