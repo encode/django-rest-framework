@@ -183,6 +183,13 @@ class ActionDecoratorTestCase(TestCase):
             'description': 'Description',
         }
 
+    def test_underscore2dash(self):
+        @action(detail=True, underscore2dash=True)
+        def test_action(request):
+            """Description"""
+
+        assert test_action.url_path == 'test-action'
+
     def test_detail_required(self):
         with pytest.raises(AssertionError) as excinfo:
             @action()
