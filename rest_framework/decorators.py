@@ -147,7 +147,6 @@ def action(methods=None, detail=None, url_path=None, url_name=None, underscore2d
         else:
             func.url_path = func.__name__.replace('_', '-') if underscore2dash else func.__name__
 
-        func.url_path = url_path if url_path else func.__name__
         func.url_name = url_name if url_name else func.__name__.replace('_', '-')
         func.kwargs = kwargs
 
