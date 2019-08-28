@@ -183,8 +183,8 @@ class ActionDecoratorTestCase(TestCase):
             'description': 'Description',
         }
 
-    def test_underscore2dash(self):
-        @action(detail=True, underscore2dash=True)
+    def test_dasherize_url(self):
+        @action(detail=True, dasherize_url=True)
         def test_action(request):
             """Description"""
 
