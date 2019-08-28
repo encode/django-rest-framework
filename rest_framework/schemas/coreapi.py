@@ -421,7 +421,7 @@ class AutoSchema(ViewInspector):
 
         for line in lines:
             if header_regex.match(line):
-                current_section, seperator, lead = line.partition(':')
+                current_section, _, lead = line.partition(':')
                 sections[current_section] = lead.strip()
             else:
                 sections[current_section] += '\n' + line
