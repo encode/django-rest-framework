@@ -151,7 +151,7 @@ class BaseSchemaGenerator(object):
     # Set by 'SCHEMA_COERCE_PATH_PK'.
     coerce_path_pk = None
 
-    def __init__(self, title=None, url=None, description=None, patterns=None, urlconf=None):
+    def __init__(self, title=None, url=None, description=None, patterns=None, urlconf=None, version='0.1.0'):
         if url and not url.endswith('/'):
             url += '/'
 
@@ -161,6 +161,7 @@ class BaseSchemaGenerator(object):
         self.urlconf = urlconf
         self.title = title
         self.description = description
+        self.version = version
         self.url = url
         self.endpoints = None
 
