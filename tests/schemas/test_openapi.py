@@ -71,7 +71,7 @@ class TestOperationIntrospection(TestCase):
         method = 'GET'
 
         view = create_view(
-            views.ExampleListView,
+            views.DocStringExampleListView,
             method,
             create_request(path)
         )
@@ -80,7 +80,8 @@ class TestOperationIntrospection(TestCase):
 
         operation = inspector.get_operation(path, method)
         assert operation == {
-            'operationId': 'ListExamples',
+            'operationId': 'ListDocStringExamples',
+            'description': 'A description of my GET operation.',
             'parameters': [],
             'responses': {
                 '200': {
@@ -102,23 +103,38 @@ class TestOperationIntrospection(TestCase):
         method = 'GET'
 
         view = create_view(
-            views.ExampleDetailView,
+            views.DocStringExampleDetailView,
             method,
             create_request(path)
         )
         inspector = AutoSchema()
         inspector.view = view
 
-        parameters = inspector._get_path_parameters(path, method)
-        assert parameters == [{
-            'description': '',
-            'in': 'path',
-            'name': 'id',
-            'required': True,
-            'schema': {
-                'type': 'string',
+        operation = inspector.get_operation(path, method)
+        assert operation == {
+            'operationId': 'RetrieveDocStringExampleDetail',
+            'description': 'A description of my GET operation.',
+            'parameters': [{
+                'description': '',
+                'in': 'path',
+                'name': 'id',
+                'required': True,
+                'schema': {
+                    'type': 'string',
+                },
+            }],
+            'responses': {
+                '200': {
+                    'description': '',
+                    'content': {
+                        'application/json': {
+                            'schema': {
+                            },
+                        },
+                    },
+                },
             },
-        }]
+        }
 
     def test_request_body(self):
         path = '/'
