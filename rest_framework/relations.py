@@ -526,7 +526,7 @@ class ManyRelatedField(Field):
         if hasattr(instance, 'pk') and instance.pk is None:
             return []
 
-        relationship = get_attribute(instance, self.source_attrs)
+        relationship = self.child_relation.get_attribute(instance)
         return relationship.all() if hasattr(relationship, 'all') else relationship
 
     def to_representation(self, iterable):
