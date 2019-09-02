@@ -741,6 +741,13 @@ class TestCharField(FieldValues):
         field = serializers.CharField(trim_whitespace=False)
         assert field.to_internal_value(' abc ') == ' abc '
 
+    def test_trim_whitespace_setting(self):
+        with override_settings(REST_FRAMEWORK={"TRIM_WHITESPACE": True}):
+            assert serializers.CharField().trim_whitespace is True
+
+        with override_settings(REST_FRAMEWORK={"TRIM_WHITESPACE": False}):
+            assert serializers.CharField().trim_whitespace is False
+
     def test_disallow_blank_with_trim_whitespace(self):
         field = serializers.CharField(allow_blank=False, trim_whitespace=True)
 
