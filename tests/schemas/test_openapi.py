@@ -80,7 +80,7 @@ class TestOperationIntrospection(TestCase):
 
         operation = inspector.get_operation(path, method)
         assert operation == {
-            'operationId': 'ListExamples',
+            'operationId': 'listExamples',
             'parameters': [],
             'responses': {
                 '200': {
@@ -402,7 +402,7 @@ class TestOperationIntrospection(TestCase):
         inspector.view = view
 
         operationId = inspector._get_operation_id(path, method)
-        assert operationId == 'ListExamples'
+        assert operationId == 'listExamples'
 
     def test_repeat_operation_ids(self):
         router = routers.SimpleRouter()
