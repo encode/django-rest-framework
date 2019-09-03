@@ -85,6 +85,12 @@ class ExampleValidatedSerializer(serializers.Serializer):
         ),
         help_text='must have an A, B, or C followed by 1222'
     )
+    lst = serializers.ListField(
+        validators=(
+            MaxLengthValidator(limit_value=10),
+            MinLengthValidator(limit_value=2),
+        )
+    )
     decimal1 = serializers.DecimalField(max_digits=6, decimal_places=2)
     decimal2 = serializers.DecimalField(max_digits=5, decimal_places=0,
                                         validators=(DecimalValidator(max_digits=17, decimal_places=4),))

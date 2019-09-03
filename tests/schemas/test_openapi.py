@@ -459,6 +459,9 @@ class TestOperationIntrospection(TestCase):
         assert properties['string']['minLength'] == 2
         assert properties['string']['maxLength'] == 10
 
+        assert properties['lst']['minItems'] == 2
+        assert properties['lst']['maxItems'] == 10
+
         assert properties['regex']['pattern'] == r'[ABC]12{3}'
         assert properties['regex']['description'] == 'must have an A, B, or C followed by 1222'
 

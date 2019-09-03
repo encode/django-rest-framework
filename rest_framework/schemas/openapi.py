@@ -377,7 +377,7 @@ class AutoSchema(ViewInspector):
                 schema['default'] = field.default
             if field.help_text:
                 schema['description'] = str(field.help_text)
-            self._map_field_validators(field.validators, schema)
+            self._map_field_validators(field, schema)
 
             properties[field.field_name] = schema
 
@@ -389,13 +389,11 @@ class AutoSchema(ViewInspector):
 
         return result
 
-    def _map_field_validators(self, validators, schema):
+    def _map_field_validators(self, field, schema):
         """
         map field validators
-        :param list:validators: list of field validators
-        :param dict:schema: schema that the validators get added to
         """
-        for v in validators:
+        for v in field.validators:
             # "Formats such as "email", "uuid", and so on, MAY be used even though undefined by this specification."
             # https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#data-types
             if isinstance(v, EmailValidator):
@@ -405,9 +403,15 @@ class AutoSchema(ViewInspector):
             if isinstance(v, RegexValidator):
                 schema['pattern'] = v.regex.pattern
             elif isinstance(v, MaxLengthValidator):
-                schema['maxLength'] = v.limit_value
+                attr_name = 'maxLength'
+                if isinstance(field, serializers.ListField):
+                    attr_name = 'maxItems'
+                schema[attr_name] = v.limit_value
             elif isinstance(v, MinLengthValidator):
-                schema['minLength'] = v.limit_value
+                attr_name = 'minLength'
+                if isinstance(field, serializers.ListField):
+                    attr_name = 'minItems'
+                schema[attr_name] = v.limit_value
             elif isinstance(v, MaxValueValidator):
                 schema['maximum'] = v.limit_value
             elif isinstance(v, MinValueValidator):
