@@ -24,7 +24,7 @@ class SchemaGenerator(BaseSchemaGenerator):
     def get_info(self):
         info = {
             'title': self.title,
-            'version': 'TODO',
+            'version': self.version,
         }
 
         if self.description is not None:

@@ -556,3 +556,17 @@ class TestGenerator(TestCase):
 
         assert 'openapi' in schema
         assert 'paths' in schema
+
+    def test_schema_information(self):
+        """Construction of the top level dictionary."""
+        patterns = [
+            url(r'^example/?$', views.ExampleListView.as_view()),
+        ]
+        generator = SchemaGenerator(patterns=patterns, title='My title', version='1.2.3', description='My description')
+
+        request = create_request('/')
+        schema = generator.get_schema(request=request)
+
+        assert schema['info']['title'] == 'My title'
+        assert schema['info']['version'] == '1.2.3'
+        assert schema['info']['description'] == 'My description'

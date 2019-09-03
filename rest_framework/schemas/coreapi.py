@@ -124,7 +124,7 @@ class SchemaGenerator(BaseSchemaGenerator):
     # Set by 'SCHEMA_COERCE_METHOD_NAMES'.
     coerce_method_names = None
 
-    def __init__(self, title=None, url=None, description=None, patterns=None, urlconf=None):
+    def __init__(self, title=None, url=None, description=None, patterns=None, urlconf=None, version=None):
         assert coreapi, '`coreapi` must be installed for schema support.'
         assert coreschema, '`coreschema` must be installed for schema support.'
 
