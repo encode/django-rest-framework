@@ -206,11 +206,10 @@ class AutoSchema(ViewInspector):
         if not is_list_view(path, method, view):
             return []
 
-        pagination = getattr(view, 'pagination_class', None)
-        if not pagination:
+        paginator = self._get_pagninator()
+        if not paginator:
             return []
 
-        paginator = view.pagination_class()
         return paginator.get_schema_operation_parameters(view)
 
     def _map_field(self, field):
@@ -423,6 +422,13 @@ class AutoSchema(ViewInspector):
                     schema['maximum'] = int(digits * '9') + 1
                     schema['minimum'] = -schema['maximum']
 
+    def _get_pagninator(self):
+        pagination_class = getattr(self.view, 'pagination_class', None)
+        if pagination_class:
+            return pagination_class()
+
+        return None
+
     def _get_serializer(self, method, path):
         view = self.view
 
@@ -489,6 +495,9 @@ class AutoSchema(ViewInspector):
                 'type': 'array',
                 'items': item_schema,
             }
+            paginator = self._get_pagninator()
+            if paginator:
+                response_schema = paginator.get_paginated_response_schema(response_schema)
         else:
             response_schema = item_schema
 
