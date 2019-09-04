@@ -40,6 +40,26 @@ You can determine your currently installed version using `pip show`:
 
 ## 3.10.x series
 
+### 3.10.3
+
+**Date**: 4th September 2019
+
+* TODO
+
+### 3.10.2
+
+**Date**: 29th July 2019
+
+* Various `OpenAPI` schema fixes.
+* Ability to specify urlconf in include_docs_urls.
+
+### 3.10.1
+
+**Date**: 17th July 2019
+
+* Don't include autocomplete fields on TokenAuth admin, since it forces constraints on custom user models & admin.
+* Require `uritemplate` for OpenAPI schema generation, but not `coreapi`.
+
 ### 3.10.0
 
 **Date**: [15th July 2019][3.10.0-milestone]
