@@ -42,7 +42,16 @@ You can determine your currently installed version using `pip show`:
 
 ### 3.10.3
 
-**Date**: 4th September 2019
+* Include API version in OpenAPI schema generation, defaulting to empty string.
+* Add pagination properties to OpenAPI response schemas.
+* Add missing "description" property to OpenAPI response schemas.
+* Only include "required" for non-empty cases in OpenAPI schemas.
+* Fix response schemas for "DELETE" case in OpenAPI schemas.
+* Use an array type for list view response schemas.
+* Use consistent `lowerInitialCamelCase` style in OpenAPI operation IDs.
+* Fix `minLength`/`maxLength`/`minItems`/`maxItems` properties in OpenAPI schemas.
+* Only call `FileField.url` once in serialization, for improved performance.
+* Fix an edge case where throttling calcualtions could error after a configuration change.
 
 * TODO
 
