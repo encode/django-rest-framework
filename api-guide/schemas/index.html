@@ -475,7 +475,8 @@ urlpatterns = [
     #   * Provide view name for use with `reverse()`.
     path('openapi', get_schema_view(
         title=&quot;Your Project&quot;,
-        description=&quot;API for all things …&quot;
+        description=&quot;API for all things …&quot;,
+        version=&quot;1.0.0&quot;
     ), name='openapi-schema'),
     # ...
 ]
@@ -486,6 +487,7 @@ urlpatterns = [
 <ul>
 <li><code>title</code>: May be used to provide a descriptive title for the schema definition.</li>
 <li><code>description</code>: Longer descriptive text.</li>
+<li><code>version</code>: The version of the API. Defaults to <code>0.1.0</code>.</li>
 <li>
 <p><code>url</code>: May be used to pass a canonical base URL for the schema.</p>
 <pre><code>schema_view = get_schema_view(
@@ -549,6 +551,7 @@ view and collates the resulting OpenAPI schema.</p>
 <ul>
 <li><code>title</code> <strong>required</strong>: The name of the API.</li>
 <li><code>description</code>: Longer descriptive text.</li>
+<li><code>version</code>: The version of the API. Defaults to <code>0.1.0</code>.</li>
 <li><code>url</code>: The root URL of the API schema. This option is not required unless the schema is included under path prefix.</li>
 <li><code>patterns</code>: A list of URLs to inspect when generating the schema. Defaults to the project's URL conf.</li>
 <li><code>urlconf</code>: A URL conf module name to use when generating the schema. Defaults to <code>settings.ROOT_URLCONF</code>.</li>

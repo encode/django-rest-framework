@@ -615,7 +615,6 @@ class ExampleSerializer(serializers.Serializer):
 <p>If you want the date field to be visible, but not editable by the user, then set <code>read_only=True</code> and additionally set a <code>default=...</code> argument.</p>
 <pre><code>published = serializers.DateTimeField(read_only=True, default=timezone.now)
 </code></pre>
-<p>The field will not be writable to the user, but the default value will still be passed through to the <code>validated_data</code>.</p>
 <h4 id="using-with-a-hidden-date-field"><a class="toclink" href="#using-with-a-hidden-date-field">Using with a hidden date field.</a></h4>
 <p>If you want the date field to be entirely hidden from the user, then use <code>HiddenField</code>. This field type does not accept user input, but instead always returns its default value to the <code>validated_data</code> in the serializer.</p>
 <pre><code>published = serializers.HiddenField(default=timezone.now)
