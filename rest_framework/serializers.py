@@ -819,9 +819,21 @@ def raise_errors_on_nested_writes(method_name, serializer, validated_data, model
     # class UserSerializer(ModelSerializer):
     #     ...
     #     address = serializer.CharField('profile.address')
+    #
+    # Though, we can have a dotted field if it is not expressing a model relation.
+    #
+    # For example:
+    #
+    # class NonRelationalPersonModel(models.Model):
+    #     profile = JSONField()
+    #
+    # class UserSerializer(ModelSerializer):
+    #     ...
+    #     address = serializer.CharField('profile.address')
     assert not any(
         len(field.source_attrs) > 1 and
         (field.source_attrs[0] in validated_data) and
+        (field.source_attrs[0] in model_field_info.relations) and
         isinstance(validated_data[field.source_attrs[0]], (list, dict))
         for field in serializer._writable_fields
     ), (
