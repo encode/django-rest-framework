@@ -1,4 +1,3 @@
-import re
 import warnings
 from urllib.parse import urljoin
 
@@ -7,23 +6,15 @@ from django.core.validators import (
     MinLengthValidator, MinValueValidator, RegexValidator, URLValidator
 )
 from django.db import models
-from django.utils.encoding import force_str, smart_text
+from django.utils.encoding import force_str
 
 from rest_framework import exceptions, serializers
 from rest_framework.compat import uritemplate
 from rest_framework.fields import _UnvalidatedField, empty
-from rest_framework.settings import api_settings
-from rest_framework.utils import formatting
 
 from .generators import BaseSchemaGenerator
 from .inspectors import ViewInspector
 from .utils import get_pk_description, is_list_view
-
-# Used in _get_description_section()
-# TODO: ???: move up to base.
-header_regex = re.compile('^[a-zA-Z][0-9A-Za-z_]*:')
-
-# Generator
 
 
 class SchemaGenerator(BaseSchemaGenerator):
@@ -93,44 +84,6 @@ class AutoSchema(ViewInspector):
         'patch': 'PartialUpdate',
         'delete': 'Destroy',
     }
-
-    def get_description(self, path, method):
-        """
-        Determine a link description.
-
-        This will be based on the method docstring if one exists,
-        or else the class docstring.
-        """
-        view = self.view
-
-        method_name = getattr(view, 'action', method.lower())
-        method_docstring = getattr(view, method_name, None).__doc__
-        if method_docstring:
-            # An explicit docstring on the method or action.
-            return self._get_description_section(view, method.lower(), formatting.dedent(smart_text(method_docstring)))
-        else:
-            return self._get_description_section(view, getattr(view, 'action', method.lower()), view.get_view_description())
-
-    def _get_description_section(self, view, header, description):
-        lines = [line for line in description.splitlines()]
-        current_section = ''
-        sections = {'': ''}
-
-        for line in lines:
-            if header_regex.match(line):
-                current_section, seperator, lead = line.partition(':')
-                sections[current_section] = lead.strip()
-            else:
-                sections[current_section] += '\n' + line
-
-        # TODO: SCHEMA_COERCE_METHOD_NAMES appears here and in `SchemaGenerator.get_keys`
-        coerce_method_names = api_settings.SCHEMA_COERCE_METHOD_NAMES
-        if header in sections:
-            return sections[header].strip()
-        if header in coerce_method_names:
-            if coerce_method_names[header] in sections:
-                return sections[coerce_method_names[header]].strip()
-        return sections[''].strip()
 
     def get_operation(self, path, method):
         operation = {}
