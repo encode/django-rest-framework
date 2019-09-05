@@ -95,6 +95,7 @@ class TestOperationIntrospection(TestCase):
                     },
                 },
             },
+            'security': [{'BasicAuth': []}],
         }
 
     def test_path_with_id_parameter(self):

@@ -9,6 +9,9 @@ from django.db import models
 from django.utils.encoding import force_str
 
 from rest_framework import exceptions, serializers
+from rest_framework.authentication import (
+    BasicAuthentication, BearerAuthentication
+)
 from rest_framework.compat import uritemplate
 from rest_framework.fields import _UnvalidatedField, empty
 
@@ -42,8 +45,8 @@ class SchemaGenerator(BaseSchemaGenerator):
             return None
 
         for path, method, view in view_endpoints:
-            if not self.has_view_permissions(path, method, view):
-                continue
+            # if not self.has_view_permissions(path, method, view):
+            #     continue
             operation = view.schema.get_operation(path, method)
             # Normalise path for any provided mount url.
             if path.startswith('/'):
@@ -54,6 +57,31 @@ class SchemaGenerator(BaseSchemaGenerator):
             result[path][method.lower()] = operation
 
         return result
+
+    def get_security_schemes(self, paths):
+        security_schemes = {}
+        for path, method in paths.items():
+            for _, operation in method.items():
+                for security in operation['security']:
+                    name = next(iter(security))
+                    if name == 'BasicAuth':
+                        security_schemes[name] = {
+                            'type': 'http',
+                            'scheme': 'basic'
+                        }
+                    elif name == 'BearerAuth':
+                        security_schemes[name] = {
+                            'type': 'http',
+                            'scheme': 'bearer'
+                        }
+        return security_schemes
+
+    def get_components(self, paths):
+        components = {
+            'securitySchemes': self.get_security_schemes(paths)
+        }
+
+        return components
 
     def get_schema(self, request=None, public=False):
         """
@@ -69,6 +97,7 @@ class SchemaGenerator(BaseSchemaGenerator):
             'openapi': '3.0.2',
             'info': self.get_info(),
             'paths': paths,
+            'components': self.get_components(paths)
         }
 
         return schema
@@ -102,6 +131,7 @@ class AutoSchema(ViewInspector):
         if request_body:
             operation['requestBody'] = request_body
         operation['responses'] = self._get_responses(path, method)
+        operation['security'] = self._get_security(path, method)
 
         return operation
 
@@ -520,3 +550,12 @@ class AutoSchema(ViewInspector):
                 'description': ""
             }
         }
+
+    def _get_security(self, path, method):
+        security = []
+        for auth_class in self.view.authentication_classes:
+            if issubclass(auth_class, BasicAuthentication):
+                security.append({'BasicAuth': []})
+            elif issubclass(auth_class, BearerAuthentication):
+                security.append({'BearerAuth': []})
+        return security

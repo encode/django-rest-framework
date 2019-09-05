@@ -9,6 +9,7 @@ from django.middleware.csrf import CsrfViewMiddleware
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import HTTP_HEADER_ENCODING, exceptions
+from rest_framework.exceptions import AuthenticationFailed
 
 
 def get_authorization_header(request):
@@ -202,6 +203,56 @@ class TokenAuthentication(BaseAuthentication):
 
     def authenticate_header(self, request):
         return self.keyword
+
+
+class BearerAuthentication(BaseAuthentication):
+    """
+    Base class for bearer authentications.
+
+    Clients should authenticate by passing the key in the "Authorization"
+    HTTP header, prepended with the string "Bearer ".  For example:
+
+        Authorization: Bearer 401f7ac837da42b97f613d789819ff93537bee6a
+    """
+
+    keyword = 'Bearer'
+
+    def authenticate_header(self, request):
+        return self.keyword
+
+    def get_header(self, request):
+        """
+        Extracts the header containing the JSON web token from the given request.
+        """
+        header = request.META.get('HTTP_AUTHORIZATION')
+
+        if isinstance(header, str):
+            # Work around django test client oddness
+            header = header.encode(HTTP_HEADER_ENCODING)
+
+        return header
+
+    def get_raw_token(self, request):
+        """
+        Extracts an unvalidated JSON web token from the given "Authorization" header value.
+        """
+        header = self.get_header(request)
+        if header is None:
+            return None
+
+        parts = header.split()
+
+        if parts[0] not in self.keyword.encode():
+            # Assume the header does not contain a JSON web token
+            return None
+
+        if len(parts) != 2:
+            raise AuthenticationFailed(
+                _('Authorization header must contain two space-delimited values'),
+                code='bad_authorization_header',
+            )
+
+        return parts[1]
 
 
 class RemoteUserAuthentication(BaseAuthentication):
