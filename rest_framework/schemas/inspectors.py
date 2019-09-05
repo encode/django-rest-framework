@@ -71,7 +71,7 @@ class ViewInspector:
 
     def get_description(self, path, method):
         """
-        Determine a link description.
+        Determine a path description.
 
         This will be based on the method docstring if one exists,
         or else the class docstring.
