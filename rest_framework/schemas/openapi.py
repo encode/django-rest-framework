@@ -111,7 +111,7 @@ class AutoSchema(ViewInspector):
         """
         method_name = getattr(self.view, 'action', method.lower())
         if is_list_view(path, method, self.view):
-            action = 'list'
+            action = 'List'
         elif method_name not in self.method_mapping:
             action = method_name
         else:
@@ -141,7 +141,7 @@ class AutoSchema(ViewInspector):
             if name.endswith(action.title()):  # ListView, UpdateAPIView, ThingDelete ...
                 name = name[:-len(action)]
 
-        if action == 'list' and not name.endswith('s'):  # listThings instead of listThing
+        if action == 'List' and not name.endswith('s'):  # ListThings instead of ListThing
             name += 's'
 
         return action + name
