@@ -928,14 +928,14 @@ class ModelSerializer(Serializer):
         If you want to support writable nested relationships you'll need
         to write an explicit `.create()` method.
         """
-        ModelClass = self.Meta.model
-        info = model_meta.get_field_info(ModelClass)
-
         raise_errors_on_nested_writes('create', self, validated_data)
+
+        ModelClass = self.Meta.model
 
         # Remove many-to-many relationships from validated_data.
         # They are not valid arguments to the default `.create()` method,
         # as they require that the instance has already been saved.
+        info = model_meta.get_field_info(ModelClass)
         many_to_many = {}
         for field_name, relation_info in info.relations.items():
             if relation_info.to_many and (field_name in validated_data):
@@ -972,8 +972,8 @@ class ModelSerializer(Serializer):
         return instance
 
     def update(self, instance, validated_data):
-        info = model_meta.get_field_info(instance)
         raise_errors_on_nested_writes('update', self, validated_data)
+        info = model_meta.get_field_info(instance)
 
         # Simply set each attribute on the instance, and then save it.
         # Note that unlike `.create()` we don't need to treat many-to-many
