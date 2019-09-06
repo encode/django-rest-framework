@@ -773,7 +773,7 @@ class ListSerializer(BaseSerializer):
 # ModelSerializer & HyperlinkedModelSerializer
 # --------------------------------------------
 
-def raise_errors_on_nested_writes(method_name, serializer, validated_data, model_field_info):
+def raise_errors_on_nested_writes(method_name, serializer, validated_data):
     """
     Give explicit errors when users attempt to pass writable nested data.
 
@@ -791,6 +791,8 @@ def raise_errors_on_nested_writes(method_name, serializer, validated_data, model
     * Silently ignore the nested part of the update.
     * Automatically create a profile instance.
     """
+    ModelClass = serializer.Meta.model
+    model_field_info = model_meta.get_field_info(ModelClass)
 
     # Ensure we don't have a writable nested field. For example:
     #
@@ -820,9 +822,7 @@ def raise_errors_on_nested_writes(method_name, serializer, validated_data, model
     #     ...
     #     address = serializer.CharField('profile.address')
     #
-    # Though, we can have a dotted field if it is not expressing a model relation.
-    #
-    # For example:
+    # Though, non-relational fields (e.g., JSONField) are acceptable. For example:
     #
     # class NonRelationalPersonModel(models.Model):
     #     profile = JSONField()
@@ -931,7 +931,7 @@ class ModelSerializer(Serializer):
         ModelClass = self.Meta.model
         info = model_meta.get_field_info(ModelClass)
 
-        raise_errors_on_nested_writes('create', self, validated_data, info)
+        raise_errors_on_nested_writes('create', self, validated_data)
 
         # Remove many-to-many relationships from validated_data.
         # They are not valid arguments to the default `.create()` method,
@@ -973,7 +973,7 @@ class ModelSerializer(Serializer):
 
     def update(self, instance, validated_data):
         info = model_meta.get_field_info(instance)
-        raise_errors_on_nested_writes('update', self, validated_data, info)
+        raise_errors_on_nested_writes('update', self, validated_data)
 
         # Simply set each attribute on the instance, and then save it.
         # Note that unlike `.create()` we don't need to treat many-to-many

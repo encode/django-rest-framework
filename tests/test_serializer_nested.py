@@ -6,7 +6,6 @@ from django.test import TestCase
 from rest_framework import serializers
 from rest_framework.compat import postgres_fields
 from rest_framework.serializers import raise_errors_on_nested_writes
-from rest_framework.utils import model_meta
 
 
 class TestNestedSerializer:
@@ -307,7 +306,13 @@ class TestNestedWriteErrors(TestCase):
         )
 
 
-@pytest.mark.skipif('not postgres_fields')
+if postgres_fields:
+    class NonRelationalPersonModel(models.Model):
+        """Model declaring a postgres JSONField"""
+        data = postgres_fields.JSONField()
+
+
+@pytest.mark.skipif(not postgres_fields, reason='psycopg2 is not installed')
 class TestNestedNonRelationalFieldWrite:
     """
     Test that raise_errors_on_nested_writes does not raise `AssertionError` when the
@@ -315,9 +320,6 @@ class TestNestedNonRelationalFieldWrite:
     """
 
     def test_nested_serializer_create_and_update(self):
-        class NonRelationalPersonModel(models.Model):
-            """Model declaring a postgres JSONField"""
-            data = postgres_fields.JSONField()
 
         class NonRelationalPersonDataSerializer(serializers.Serializer):
             occupation = serializers.CharField()
@@ -332,15 +334,10 @@ class TestNestedNonRelationalFieldWrite:
         serializer = NonRelationalPersonSerializer(data={'data': {'occupation': 'developer'}})
         assert serializer.is_valid()
         assert serializer.validated_data == {'data': {'occupation': 'developer'}}
-        ModelClass = serializer.Meta.model
-        info = model_meta.get_field_info(ModelClass)
-        raise_errors_on_nested_writes('create', serializer, serializer.validated_data, info)
-        raise_errors_on_nested_writes('update', serializer, serializer.validated_data, info)
+        raise_errors_on_nested_writes('create', serializer, serializer.validated_data)
+        raise_errors_on_nested_writes('update', serializer, serializer.validated_data)
 
     def test_dotted_source_field_create_and_update(self):
-        class NonRelationalPersonModel(models.Model):
-            """Model declaring a postgres JSONField"""
-            data = postgres_fields.JSONField()
 
         class DottedNonRelationalPersonSerializer(serializers.ModelSerializer):
             occupation = serializers.CharField(source='data.occupation')
@@ -352,8 +349,5 @@ class TestNestedNonRelationalFieldWrite:
         serializer = DottedNonRelationalPersonSerializer(data={'occupation': 'developer'})
         assert serializer.is_valid()
         assert serializer.validated_data == {'data': {'occupation': 'developer'}}
-        ModelClass = serializer.Meta.model
-        info = model_meta.get_field_info(ModelClass)
-        raise_errors_on_nested_writes('create', serializer, serializer.validated_data, info)
-        raise_errors_on_nested_writes('update', serializer, serializer.validated_data, info)
-        assert serializer.data == {'occupation': 'developer'}
+        raise_errors_on_nested_writes('create', serializer, serializer.validated_data)
+        raise_errors_on_nested_writes('update', serializer, serializer.validated_data)
