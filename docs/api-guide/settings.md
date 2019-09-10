@@ -1,4 +1,7 @@
-source: settings.py
+---
+source:
+    - settings.py
+---
 
 # Settings
 
@@ -11,12 +14,12 @@ Configuration for REST framework is all namespaced inside a single Django settin
 For example your project's `settings.py` file might include something like this:
 
     REST_FRAMEWORK = {
-        'DEFAULT_RENDERER_CLASSES': (
+        'DEFAULT_RENDERER_CLASSES': [
             'rest_framework.renderers.JSONRenderer',
-        ),
-        'DEFAULT_PARSER_CLASSES': (
+        ],
+        'DEFAULT_PARSER_CLASSES': [
             'rest_framework.parsers.JSONParser',
-        )
+        ]
     }
 
 ## Accessing settings
@@ -44,10 +47,10 @@ A list or tuple of renderer classes, that determines the default set of renderer
 
 Default:
 
-    (
+    [
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
-    )
+    ]
 
 #### DEFAULT_PARSER_CLASSES
 
@@ -55,11 +58,11 @@ A list or tuple of parser classes, that determines the default set of parsers us
 
 Default:
 
-    (
+    [
         'rest_framework.parsers.JSONParser',
         'rest_framework.parsers.FormParser',
         'rest_framework.parsers.MultiPartParser'
-    )
+    ]
 
 #### DEFAULT_AUTHENTICATION_CLASSES
 
@@ -67,10 +70,10 @@ A list or tuple of authentication classes, that determines the default set of au
 
 Default:
 
-    (
+    [
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication'
-    )
+    ]
 
 #### DEFAULT_PERMISSION_CLASSES
 
@@ -78,15 +81,15 @@ A list or tuple of permission classes, that determines the default set of permis
 
 Default:
 
-    (
+    [
         'rest_framework.permissions.AllowAny',
-    )
+    ]
 
 #### DEFAULT_THROTTLE_CLASSES
 
 A list or tuple of throttle classes, that determines the default set of throttles checked at the start of a view.
 
-Default: `()`
+Default: `[]`
 
 #### DEFAULT_CONTENT_NEGOTIATION_CLASS
 
@@ -106,58 +109,25 @@ Default: `'rest_framework.schemas.AutoSchema'`
 
 *The following settings control the behavior of the generic class-based views.*
 
-#### DEFAULT_PAGINATION_SERIALIZER_CLASS
-
----
-
-**This setting has been removed.**
-
-The pagination API does not use serializers to determine the output format, and
-you'll need to instead override the `get_paginated_response method on a
-pagination class in order to specify how the output format is controlled.
-
----
-
 #### DEFAULT_FILTER_BACKENDS
 
 A list of filter backend classes that should be used for generic filtering.
 If set to `None` then generic filtering is disabled.
 
-#### PAGINATE_BY
+#### DEFAULT_PAGINATION_CLASS
 
----
+The default class to use for queryset pagination. If set to `None`, pagination
+is disabled by default. See the pagination documentation for further guidance on
+[setting](pagination.md#setting-the-pagination-style) and
+[modifying](pagination.md#modifying-the-pagination-style) the pagination style.
 
-**This setting has been removed.**
-
-See the pagination documentation for further guidance on [setting the pagination style](pagination.md#modifying-the-pagination-style).
-
----
+Default: `None`
 
 #### PAGE_SIZE
 
 The default page size to use for pagination.  If set to `None`, pagination is disabled by default.
 
 Default: `None`
-
-#### PAGINATE_BY_PARAM
-
----
-
-**This setting has been removed.**
-
-See the pagination documentation for further guidance on [setting the pagination style](pagination.md#modifying-the-pagination-style).
-
----
-
-#### MAX_PAGINATE_BY
-
----
-
-**This setting has been removed.**
-
-See the pagination documentation for further guidance on [setting the pagination style](pagination.md#modifying-the-pagination-style).
-
----
 
 ### SEARCH_PARAM
 
@@ -235,10 +205,10 @@ The format of any of these renderer classes may be used when constructing a test
 
 Default:
 
-    (
+    [
         'rest_framework.renderers.MultiPartRenderer',
         'rest_framework.renderers.JSONRenderer'
-    )
+    ]
 
 ---
 
@@ -404,7 +374,7 @@ This should be a function with the following signature:
 
 If the view instance inherits `ViewSet`, it may have been initialized with several optional arguments:
 
-* `name`: A name expliticly provided to a view in the viewset. Typically, this value should be used as-is when provided.
+* `name`: A name explicitly provided to a view in the viewset. Typically, this value should be used as-is when provided.
 * `suffix`: Text used when differentiating individual views in a viewset. This argument is mutually exclusive to `name`.
 * `detail`: Boolean that differentiates an individual view in a viewset as either being a 'list' or 'detail' view.
 

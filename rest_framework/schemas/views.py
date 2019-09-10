@@ -5,6 +5,7 @@ See schemas.__init__.py for package overview.
 """
 from rest_framework import exceptions, renderers
 from rest_framework.response import Response
+from rest_framework.schemas import coreapi
 from rest_framework.settings import api_settings
 from rest_framework.views import APIView
 
@@ -19,10 +20,16 @@ class SchemaView(APIView):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.renderer_classes is None:
-            self.renderer_classes = [
-                renderers.OpenAPIRenderer,
-                renderers.CoreJSONRenderer
-            ]
+            if coreapi.is_enabled():
+                self.renderer_classes = [
+                    renderers.CoreAPIOpenAPIRenderer,
+                    renderers.CoreJSONRenderer
+                ]
+            else:
+                self.renderer_classes = [
+                    renderers.OpenAPIRenderer,
+                    renderers.JSONOpenAPIRenderer,
+                ]
             if renderers.BrowsableAPIRenderer in api_settings.DEFAULT_RENDERER_CLASSES:
                 self.renderer_classes += [renderers.BrowsableAPIRenderer]
 

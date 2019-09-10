@@ -38,11 +38,66 @@ You can determine your currently installed version using `pip show`:
 
 ---
 
+## 3.10.x series
+
+### 3.10.3
+
+* Include API version in OpenAPI schema generation, defaulting to empty string.
+* Add pagination properties to OpenAPI response schemas.
+* Add missing "description" property to OpenAPI response schemas.
+* Only include "required" for non-empty cases in OpenAPI schemas.
+* Fix response schemas for "DELETE" case in OpenAPI schemas.
+* Use an array type for list view response schemas.
+* Use consistent `lowerInitialCamelCase` style in OpenAPI operation IDs.
+* Fix `minLength`/`maxLength`/`minItems`/`maxItems` properties in OpenAPI schemas.
+* Only call `FileField.url` once in serialization, for improved performance.
+* Fix an edge case where throttling calcualtions could error after a configuration change.
+
+* TODO
+
+### 3.10.2
+
+**Date**: 29th July 2019
+
+* Various `OpenAPI` schema fixes.
+* Ability to specify urlconf in include_docs_urls.
+
+### 3.10.1
+
+**Date**: 17th July 2019
+
+* Don't include autocomplete fields on TokenAuth admin, since it forces constraints on custom user models & admin.
+* Require `uritemplate` for OpenAPI schema generation, but not `coreapi`.
+
+### 3.10.0
+
+**Date**: [15th July 2019][3.10.0-milestone]
+
+* Switch to OpenAPI schema generation.
+* Drop Python 2 support.
+* Add `generateschema --generator_class` CLI option
+* Updated PyYaml dependency for OpenAPI schema generation to `pyyaml>=5.1` [#6680][gh6680]
+* Resolve DeprecationWarning with markdown. [#6317][gh6317]
+* Use `user.get_username` in templates, in preference to `user.username`.
+* Fix for cursor pagination issue that could occur after object deletions.
+* Fix for nullable fields with `source="*"`
+* Always apply all throttle classes during throttling checks.
+* Updates to jQuery and Markdown dependencies.
+* Don't strict disallow redundant `SerializerMethodField` field name arguments.
+* Don't render extra actions in browable API if not authenticated.
+* Strip null characters from search parameters.
+
 ## 3.9.x series
+
+### 3.9.4
+
+**Date**: 10th May 2019
+
+This is a maintenance release that fixes an error handling bug under Python 2.
 
 ### 3.9.3
 
-**Date**: [29th April 2019]
+**Date**: 29th April 2019
 
 This is the last Django REST Framework release that will support Python 2.
 Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.
@@ -52,7 +107,7 @@ Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.
 
 ### 3.9.2
 
-**Date**: [3rd March 2019][3.9.1-milestone]
+**Date**: [3rd March 2019][3.9.2-milestone]
 
 * Routers: invalidate `_urls` cache on `register()` [#6407][gh6407]
 * Deferred schema renderer creation to avoid requiring pyyaml. [#6416][gh6416]
@@ -304,7 +359,7 @@ Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.
     Note: `AutoSchema.__init__` now ensures `manual_fields` is a list.
     Previously may have been stored internally as `None`.
 
-* Remove ulrparse compatability shim; use six instead [#5579][gh5579]
+* Remove ulrparse compatibility shim; use six instead [#5579][gh5579]
 * Drop compat wrapper for `TimeDelta.total_seconds()` [#5577][gh5577]
 * Clean up all whitespace throughout project [#5578][gh5578]
 * Compat cleanup [#5581][gh5581]
@@ -1175,7 +1230,8 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [3.8.2-milestone]: https://github.com/encode/django-rest-framework/milestone/68?closed=1
 [3.9.0-milestone]: https://github.com/encode/django-rest-framework/milestone/66?closed=1
 [3.9.1-milestone]: https://github.com/encode/django-rest-framework/milestone/70?closed=1
-[3.9.1-milestone]: https://github.com/encode/django-rest-framework/milestone/71?closed=1
+[3.9.2-milestone]: https://github.com/encode/django-rest-framework/milestone/71?closed=1
+[3.10.0-milestone]: https://github.com/encode/django-rest-framework/milestone/69?closed=1
 
 <!-- 3.0.1 -->
 [gh2013]: https://github.com/encode/django-rest-framework/issues/2013
@@ -2119,3 +2175,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 
 <!-- 3.9.3 -->
 [gh6613]: https://github.com/encode/django-rest-framework/issues/6613
+
+<!-- 3.10.0 -->
+[gh6680]: https://github.com/encode/django-rest-framework/issues/6680
+[gh6317]: https://github.com/encode/django-rest-framework/issues/6317

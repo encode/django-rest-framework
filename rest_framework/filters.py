@@ -3,7 +3,6 @@ Provides generic filtering backends that can be used to filter the results
 returned by list views.
 """
 import operator
-import warnings
 from functools import reduce
 
 from django.core.exceptions import ImproperlyConfigured
@@ -11,13 +10,10 @@ from django.db import models
 from django.db.models.constants import LOOKUP_SEP
 from django.db.models.sql.constants import ORDER_PATTERN
 from django.template import loader
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
 
-from rest_framework import RemovedInDRF310Warning
-from rest_framework.compat import (
-    coreapi, coreschema, distinct, is_guardian_installed
-)
+from rest_framework.compat import coreapi, coreschema, distinct
 from rest_framework.settings import api_settings
 
 
@@ -35,6 +31,9 @@ class BaseFilterBackend:
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
         assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
+        return []
+
+    def get_schema_operation_parameters(self, view):
         return []
 
 
@@ -65,7 +64,9 @@ class SearchFilter(BaseFilterBackend):
         and may be comma and/or whitespace delimited.
         """
         params = request.query_params.get(self.search_param, '')
-        return params.replace(',', ' ').split()
+        params = params.replace('\x00', '')  # strip null characters
+        params = params.replace(',', ' ')
+        return params.split()
 
     def construct_search(self, field_name):
         lookup = self.lookup_prefixes.get(field_name[0])
@@ -150,10 +151,23 @@ class SearchFilter(BaseFilterBackend):
                 required=False,
                 location='query',
                 schema=coreschema.String(
-                    title=force_text(self.search_title),
-                    description=force_text(self.search_description)
+                    title=force_str(self.search_title),
+                    description=force_str(self.search_description)
                 )
             )
+        ]
+
+    def get_schema_operation_parameters(self, view):
+        return [
+            {
+                'name': self.search_param,
+                'required': False,
+                'in': 'query',
+                'description': force_str(self.search_description),
+                'schema': {
+                    'type': 'string',
+                },
+            },
         ]
 
 
@@ -281,46 +295,21 @@ class OrderingFilter(BaseFilterBackend):
                 required=False,
                 location='query',
                 schema=coreschema.String(
-                    title=force_text(self.ordering_title),
-                    description=force_text(self.ordering_description)
+                    title=force_str(self.ordering_title),
+                    description=force_str(self.ordering_description)
                 )
             )
         ]
 
-
-class DjangoObjectPermissionsFilter(BaseFilterBackend):
-    """
-    A filter backend that limits results to those where the requesting user
-    has read object level permissions.
-    """
-    def __init__(self):
-        warnings.warn(
-            "`DjangoObjectPermissionsFilter` has been deprecated and moved to "
-            "the 3rd-party django-rest-framework-guardian package.",
-            RemovedInDRF310Warning, stacklevel=2
-        )
-        assert is_guardian_installed(), 'Using DjangoObjectPermissionsFilter, but django-guardian is not installed'
-
-    perm_format = '%(app_label)s.view_%(model_name)s'
-
-    def filter_queryset(self, request, queryset, view):
-        # We want to defer this import until run-time, rather than import-time.
-        # See https://github.com/encode/django-rest-framework/issues/4608
-        # (Also see #1624 for why we need to make this import explicitly)
-        from guardian import VERSION as guardian_version
-        from guardian.shortcuts import get_objects_for_user
-
-        extra = {}
-        user = request.user
-        model_cls = queryset.model
-        kwargs = {
-            'app_label': model_cls._meta.app_label,
-            'model_name': model_cls._meta.model_name
-        }
-        permission = self.perm_format % kwargs
-        if tuple(guardian_version) >= (1, 3):
-            # Maintain behavior compatibility with versions prior to 1.3
-            extra = {'accept_global_perms': False}
-        else:
-            extra = {}
-        return get_objects_for_user(user, permission, queryset, **extra)
+    def get_schema_operation_parameters(self, view):
+        return [
+            {
+                'name': self.ordering_param,
+                'required': False,
+                'in': 'query',
+                'description': force_str(self.ordering_description),
+                'schema': {
+                    'type': 'string',
+                },
+            },
+        ]

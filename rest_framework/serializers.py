@@ -348,7 +348,7 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
         'invalid': _('Invalid data. Expected a dictionary, but got {datatype}.')
     }
 
-    @property
+    @cached_property
     def fields(self):
         """
         A dictionary of {field_name: field_instance}.
@@ -356,24 +356,22 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
         # `fields` is evaluated lazily. We do this to ensure that we don't
         # have issues importing modules that use ModelSerializers as fields,
         # even if Django's app-loading stage has not yet run.
-        if not hasattr(self, '_fields'):
-            self._fields = BindingDict(self)
-            for key, value in self.get_fields().items():
-                self._fields[key] = value
-        return self._fields
+        fields = BindingDict(self)
+        for key, value in self.get_fields().items():
+            fields[key] = value
+        return fields
 
-    @cached_property
+    @property
     def _writable_fields(self):
-        return [
-            field for field in self.fields.values() if not field.read_only
-        ]
+        for field in self.fields.values():
+            if not field.read_only:
+                yield field
 
-    @cached_property
+    @property
     def _readable_fields(self):
-        return [
-            field for field in self.fields.values()
-            if not field.write_only
-        ]
+        for field in self.fields.values():
+            if not field.write_only:
+                yield field
 
     def get_fields(self):
         """
@@ -592,10 +590,6 @@ class ListSerializer(BaseSerializer):
         super().__init__(*args, **kwargs)
         self.child.bind(field_name='', parent=self)
 
-    def bind(self, field_name, parent):
-        super().bind(field_name, parent)
-        self.partial = self.parent.partial
-
     def get_initial(self):
         if hasattr(self, 'initial_data'):
             return self.to_representation(self.initial_data)
@@ -647,9 +641,6 @@ class ListSerializer(BaseSerializer):
             }, code='not_a_list')
 
         if not self.allow_empty and len(data) == 0:
-            if self.parent and self.partial:
-                raise SkipField()
-
             message = self.error_messages['empty']
             raise ValidationError({
                 api_settings.NON_FIELD_ERRORS_KEY: [message]
@@ -828,10 +819,10 @@ def raise_errors_on_nested_writes(method_name, serializer, validated_data):
     #     ...
     #     address = serializer.CharField('profile.address')
     assert not any(
-        '.' in field.source and
-        (key in validated_data) and
-        isinstance(validated_data[key], (list, dict))
-        for key, field in serializer.fields.items()
+        len(field.source_attrs) > 1 and
+        (field.source_attrs[0] in validated_data) and
+        isinstance(validated_data[field.source_attrs[0]], (list, dict))
+        for field in serializer._writable_fields
     ), (
         'The `.{method_name}()` method does not support writable dotted-source '
         'fields by default.\nWrite an explicit `.{method_name}()` method for '
@@ -975,13 +966,21 @@ class ModelSerializer(Serializer):
         # Note that unlike `.create()` we don't need to treat many-to-many
         # relationships as being a special case. During updates we already
         # have an instance pk for the relationships to be associated with.
+        m2m_fields = []
         for attr, value in validated_data.items():
             if attr in info.relations and info.relations[attr].to_many:
-                field = getattr(instance, attr)
-                field.set(value)
+                m2m_fields.append((attr, value))
             else:
                 setattr(instance, attr, value)
+
         instance.save()
+
+        # Note that many-to-many fields are set after updating instance.
+        # Setting m2m fields triggers signals which could potentially change
+        # updated instance and we do not want it to collide with .update()
+        for attr, value in m2m_fields:
+            field = getattr(instance, attr)
+            field.set(value)
 
         return instance
 
@@ -1233,6 +1232,11 @@ class ModelSerializer(Serializer):
         if not issubclass(field_class, CharField) and not issubclass(field_class, ChoiceField):
             # `allow_blank` is only valid for textual fields.
             field_kwargs.pop('allow_blank', None)
+
+        if postgres_fields and isinstance(model_field, postgres_fields.JSONField):
+            # Populate the `encoder` argument of `JSONField` instances generated
+            # for the PostgreSQL specific `JSONField`.
+            field_kwargs['encoder'] = getattr(model_field, 'encoder', None)
 
         if postgres_fields and isinstance(model_field, postgres_fields.ArrayField):
             # Populate the `child` argument on `ListField` instances generated

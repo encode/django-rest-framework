@@ -88,7 +88,7 @@ class JSONRenderer(BaseRenderer):
         Render `data` into JSON, returning a bytestring.
         """
         if data is None:
-            return bytes()
+            return b''
 
         renderer_context = renderer_context or {}
         indent = self.get_indent(accepted_media_type, renderer_context)
@@ -604,10 +604,13 @@ class BrowsableAPIRenderer(BaseRenderer):
     def get_breadcrumbs(self, request):
         return get_breadcrumbs(request.path, request)
 
-    def get_extra_actions(self, view):
-        if hasattr(view, 'get_extra_action_url_map'):
-            return view.get_extra_action_url_map()
-        return None
+    def get_extra_actions(self, view, status_code):
+        if (status_code in (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN)):
+            return None
+        elif not hasattr(view, 'get_extra_action_url_map'):
+            return None
+
+        return view.get_extra_action_url_map()
 
     def get_filter_form(self, data, view, request):
         if not hasattr(view, 'get_queryset') or not hasattr(view, 'filter_backends'):
@@ -695,7 +698,7 @@ class BrowsableAPIRenderer(BaseRenderer):
             'delete_form': self.get_rendered_html_form(data, view, 'DELETE', request),
             'options_form': self.get_rendered_html_form(data, view, 'OPTIONS', request),
 
-            'extra_actions': self.get_extra_actions(view),
+            'extra_actions': self.get_extra_actions(view, response.status_code),
 
             'filter_form': self.get_filter_form(data, view, request),
 
@@ -1013,28 +1016,49 @@ class _BaseOpenAPIRenderer:
         }
 
 
-class OpenAPIRenderer(_BaseOpenAPIRenderer):
+class CoreAPIOpenAPIRenderer(_BaseOpenAPIRenderer):
     media_type = 'application/vnd.oai.openapi'
     charset = None
     format = 'openapi'
 
     def __init__(self):
-        assert coreapi, 'Using OpenAPIRenderer, but `coreapi` is not installed.'
-        assert yaml, 'Using OpenAPIRenderer, but `pyyaml` is not installed.'
+        assert coreapi, 'Using CoreAPIOpenAPIRenderer, but `coreapi` is not installed.'
+        assert yaml, 'Using CoreAPIOpenAPIRenderer, but `pyyaml` is not installed.'
 
     def render(self, data, media_type=None, renderer_context=None):
         structure = self.get_structure(data)
         return yaml.dump(structure, default_flow_style=False).encode()
 
 
-class JSONOpenAPIRenderer(_BaseOpenAPIRenderer):
+class CoreAPIJSONOpenAPIRenderer(_BaseOpenAPIRenderer):
     media_type = 'application/vnd.oai.openapi+json'
     charset = None
     format = 'openapi-json'
 
     def __init__(self):
-        assert coreapi, 'Using JSONOpenAPIRenderer, but `coreapi` is not installed.'
+        assert coreapi, 'Using CoreAPIJSONOpenAPIRenderer, but `coreapi` is not installed.'
 
     def render(self, data, media_type=None, renderer_context=None):
         structure = self.get_structure(data)
-        return json.dumps(structure, indent=4).encode()
+        return json.dumps(structure, indent=4).encode('utf-8')
+
+
+class OpenAPIRenderer(BaseRenderer):
+    media_type = 'application/vnd.oai.openapi'
+    charset = None
+    format = 'openapi'
+
+    def __init__(self):
+        assert yaml, 'Using OpenAPIRenderer, but `pyyaml` is not installed.'
+
+    def render(self, data, media_type=None, renderer_context=None):
+        return yaml.dump(data, default_flow_style=False, sort_keys=False).encode('utf-8')
+
+
+class JSONOpenAPIRenderer(BaseRenderer):
+    media_type = 'application/vnd.oai.openapi+json'
+    charset = None
+    format = 'openapi-json'
+
+    def render(self, data, media_type=None, renderer_context=None):
+        return json.dumps(data, indent=2).encode('utf-8')

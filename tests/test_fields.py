@@ -1,7 +1,6 @@
 import datetime
 import os
 import re
-import unittest
 import uuid
 from decimal import ROUND_DOWN, ROUND_UP, Decimal
 
@@ -15,16 +14,13 @@ from django.utils.timezone import activate, deactivate, override, utc
 import rest_framework
 from rest_framework import exceptions, serializers
 from rest_framework.compat import ProhibitNullCharactersValidator
-from rest_framework.fields import DjangoImageField, is_simple_callable
-
-try:
-    import typing
-except ImportError:
-    typing = False
-
+from rest_framework.fields import (
+    BuiltinSignatureError, DjangoImageField, is_simple_callable
+)
 
 # Tests for helper functions.
 # ---------------------------
+
 
 class TestIsSimpleCallable:
 
@@ -92,7 +88,18 @@ class TestIsSimpleCallable:
 
         assert is_simple_callable(ChoiceModel().get_choice_field_display)
 
-    @unittest.skipUnless(typing, 'requires python 3.5')
+    def test_builtin_function(self):
+        # Built-in function signatures are not easily inspectable, so the
+        # current expectation is to just raise a helpful error message.
+        timestamp = datetime.datetime.now()
+
+        with pytest.raises(BuiltinSignatureError) as exc_info:
+            is_simple_callable(timestamp.date)
+
+        assert str(exc_info.value) == (
+            'Built-in function signatures are not inspectable. Wrap the '
+            'function call in a simple, pure Python function.')
+
     def test_type_annotation(self):
         # The annotation will otherwise raise a syntax error in python < 3.5
         locals = {}
@@ -213,6 +220,18 @@ class TestSource:
 
         assert 'method call failed' in str(exc_info.value)
 
+    def test_builtin_callable_source_raises(self):
+        class BuiltinSerializer(serializers.Serializer):
+            date = serializers.ReadOnlyField(source='timestamp.date')
+
+        with pytest.raises(BuiltinSignatureError) as exc_info:
+            BuiltinSerializer({'timestamp': datetime.datetime.now()}).data
+
+        assert str(exc_info.value) == (
+            'Field source for `BuiltinSerializer.date` maps to a built-in '
+            'function type and is invalid. Define a property or method on '
+            'the `dict` instance that wraps the call to the built-in function.')
+
 
 class TestReadOnly:
     def setup(self):
@@ -226,7 +245,7 @@ class TestReadOnly:
         Read-only fields should not be writable, even with default ()
         """
         serializer = self.Serializer()
-        assert len(serializer._writable_fields) == 1
+        assert len(list(serializer._writable_fields)) == 1
 
     def test_validate_read_only(self):
         """
@@ -1989,6 +2008,7 @@ class TestDictField(FieldValues):
     """
     valid_inputs = [
         ({'a': 1, 'b': '2', 3: 3}, {'a': '1', 'b': '2', '3': '3'}),
+        ({}, {}),
     ]
     invalid_inputs = [
         ({'a': 1, 'b': None, 'c': None}, {'b': ['This field may not be null.'], 'c': ['This field may not be null.']}),
@@ -2015,6 +2035,16 @@ class TestDictField(FieldValues):
         field = serializers.DictField(allow_null=True)
         output = field.run_validation(None)
         assert output is None
+
+    def test_allow_empty_disallowed(self):
+        """
+        If allow_empty is False then an empty dict is not a valid input.
+        """
+        field = serializers.DictField(allow_empty=False)
+        with pytest.raises(serializers.ValidationError) as exc_info:
+            field.run_validation({})
+
+        assert exc_info.value.detail == ['This dictionary may not be empty.']
 
 
 class TestNestedDictField(FieldValues):
@@ -2174,8 +2204,8 @@ class TestBinaryJSONField(FieldValues):
     field = serializers.JSONField(binary=True)
 
 
-# Tests for FieldField.
-# ---------------------
+# Tests for FileField.
+# --------------------
 
 class MockRequest:
     def build_absolute_uri(self, value):
@@ -2208,18 +2238,29 @@ class TestSerializerMethodField:
         }
 
     def test_redundant_method_name(self):
+        # Prior to v3.10, redundant method names were not allowed.
+        # This restriction has since been removed.
         class ExampleSerializer(serializers.Serializer):
             example_field = serializers.SerializerMethodField('get_example_field')
 
-        with pytest.raises(AssertionError) as exc_info:
-            ExampleSerializer().fields
-        assert str(exc_info.value) == (
-            "It is redundant to specify `get_example_field` on "
-            "SerializerMethodField 'example_field' in serializer "
-            "'ExampleSerializer', because it is the same as the default "
-            "method name. Remove the `method_name` argument."
-        )
+        field = ExampleSerializer().fields['example_field']
+        assert field.method_name == 'get_example_field'
 
+
+# Tests for ModelField.
+# ---------------------
+
+class TestModelField:
+    def test_max_length_init(self):
+        field = serializers.ModelField(None)
+        assert len(field.validators) == 0
+
+        field = serializers.ModelField(None, max_length=10)
+        assert len(field.validators) == 1
+
+
+# Tests for validation errors
+# ---------------------------
 
 class TestValidationErrorCode:
     @pytest.mark.parametrize('use_list', (False, True))
@@ -2229,14 +2270,33 @@ class TestValidationErrorCode:
             password = serializers.CharField()
 
             def validate_password(self, obj):
-                err = DjangoValidationError('exc_msg', code='exc_code')
+                err = DjangoValidationError(
+                    'exc_msg %s', code='exc_code', params=('exc_param',),
+                )
                 if use_list:
                     err = DjangoValidationError([err])
                 raise err
 
         serializer = ExampleSerializer(data={'password': 123})
         serializer.is_valid()
-        assert serializer.errors == {'password': ['exc_msg']}
+        assert serializer.errors == {'password': ['exc_msg exc_param']}
+        assert serializer.errors['password'][0].code == 'exc_code'
+
+    @pytest.mark.parametrize('use_list', (False, True))
+    def test_validationerror_code_with_msg_including_percent(self, use_list):
+
+        class ExampleSerializer(serializers.Serializer):
+            password = serializers.CharField()
+
+            def validate_password(self, obj):
+                err = DjangoValidationError('exc_msg with %', code='exc_code')
+                if use_list:
+                    err = DjangoValidationError([err])
+                raise err
+
+        serializer = ExampleSerializer(data={'password': 123})
+        serializer.is_valid()
+        assert serializer.errors == {'password': ['exc_msg with %']}
         assert serializer.errors['password'][0].code == 'exc_code'
 
     @pytest.mark.parametrize('code', (None, 'exc_code',))

@@ -540,7 +540,7 @@ class SchemaLinksTests(TestCase):
                             ]
                         ),
                         'create': coreapi.Link(
-                            url='/aniamls/cat',
+                            url='/animals/cat',
                             action='post',
                             fields=[]
                         )
@@ -589,7 +589,7 @@ class SchemaLinksTests(TestCase):
                             ]
                         ),
                         'create': coreapi.Link(
-                            url='/aniamls/cat',
+                            url='/animals/cat',
                             action='post',
                             fields=[]
                         )

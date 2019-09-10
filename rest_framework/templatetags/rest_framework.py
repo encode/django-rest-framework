@@ -4,7 +4,7 @@ from collections import OrderedDict
 from django import template
 from django.template import loader
 from django.urls import NoReverseMatch, reverse
-from django.utils.encoding import force_text, iri_to_uri
+from django.utils.encoding import force_str, iri_to_uri
 from django.utils.html import escape, format_html, smart_urlquote
 from django.utils.safestring import SafeData, mark_safe
 
@@ -233,7 +233,7 @@ def format_value(value):
 def items(value):
     """
     Simple filter to return the items of the dict. Useful when the dict may
-    have a key 'items' which is resolved first in Django tempalte dot-notation
+    have a key 'items' which is resolved first in Django template dot-notation
     lookup.  See issue #4931
     Also see: https://stackoverflow.com/questions/15416662/django-template-loop-over-dictionary-items-with-items-as-key
     """
@@ -339,7 +339,7 @@ def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=Tru
     def conditional_escape(text):
         return escape(text) if autoescape and not safe_input else text
 
-    words = word_split_re.split(force_text(text))
+    words = word_split_re.split(force_str(text))
     for i, word in enumerate(words):
         if '.' in word or '@' in word or ':' in word:
             # Deal with punctuation.

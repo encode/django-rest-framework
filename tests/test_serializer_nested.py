@@ -1,4 +1,7 @@
+import pytest
+from django.db import models
 from django.http import QueryDict
+from django.test import TestCase
 
 from rest_framework import serializers
 
@@ -241,3 +244,61 @@ class TestNotRequiredNestedSerializerWithMany:
         serializer = self.Serializer(data=input_data)
         assert serializer.is_valid()
         assert 'nested' in serializer.validated_data
+
+
+class NestedWriteProfile(models.Model):
+    address = models.CharField(max_length=100)
+
+
+class NestedWritePerson(models.Model):
+    profile = models.ForeignKey(NestedWriteProfile, on_delete=models.CASCADE)
+
+
+class TestNestedWriteErrors(TestCase):
+    # tests for rests_framework.serializers.raise_errors_on_nested_writes
+    def test_nested_serializer_error(self):
+        class ProfileSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = NestedWriteProfile
+                fields = ['address']
+
+        class NestedProfileSerializer(serializers.ModelSerializer):
+            profile = ProfileSerializer()
+
+            class Meta:
+                model = NestedWritePerson
+                fields = ['profile']
+
+        serializer = NestedProfileSerializer(data={'profile': {'address': '52 festive road'}})
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'profile': {'address': '52 festive road'}}
+        with pytest.raises(AssertionError) as exc_info:
+            serializer.save()
+
+        assert str(exc_info.value) == (
+            'The `.create()` method does not support writable nested fields by '
+            'default.\nWrite an explicit `.create()` method for serializer '
+            '`tests.test_serializer_nested.NestedProfileSerializer`, or set '
+            '`read_only=True` on nested serializer fields.'
+        )
+
+    def test_dotted_source_field_error(self):
+        class DottedAddressSerializer(serializers.ModelSerializer):
+            address = serializers.CharField(source='profile.address')
+
+            class Meta:
+                model = NestedWritePerson
+                fields = ['address']
+
+        serializer = DottedAddressSerializer(data={'address': '52 festive road'})
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'profile': {'address': '52 festive road'}}
+        with pytest.raises(AssertionError) as exc_info:
+            serializer.save()
+
+        assert str(exc_info.value) == (
+            'The `.create()` method does not support writable dotted-source '
+            'fields by default.\nWrite an explicit `.create()` method for '
+            'serializer `tests.test_serializer_nested.DottedAddressSerializer`, '
+            'or set `read_only=True` on dotted-source serializer fields.'
+        )

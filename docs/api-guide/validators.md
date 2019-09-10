@@ -1,4 +1,7 @@
-source: validators.py
+---
+source:
+    - validators.py
+---
 
 # Validators
 
@@ -94,7 +97,7 @@ The validator should be applied to *serializer classes*, like so:
             validators = [
                 UniqueTogetherValidator(
                     queryset=ToDoItem.objects.all(),
-                    fields=('list', 'position')
+                    fields=['list', 'position']
                 )
             ]
 
@@ -148,8 +151,6 @@ If you want the date field to be writable the only thing worth noting is that yo
 If you want the date field to be visible, but not editable by the user, then set `read_only=True` and additionally set a `default=...` argument.
 
     published = serializers.DateTimeField(read_only=True, default=timezone.now)
-
-The field will not be writable to the user, but the default value will still be passed through to the `validated_data`.
 
 #### Using with a hidden date field.
 
@@ -221,7 +222,7 @@ For example:
             # Apply custom validation either here, or in the view.
 
         class Meta:
-            fields = ('client', 'date', 'amount')
+            fields = ['client', 'date', 'amount']
             extra_kwargs = {'client': {'required': False}}
             validators = []  # Remove a default "unique together" constraint.
 

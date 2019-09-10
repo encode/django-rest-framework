@@ -1,4 +1,7 @@
-source: test.py
+---
+source:
+    - test.py
+---
 
 # Testing
 
@@ -399,11 +402,11 @@ For example, to add support for using `format='html'` in test requests, you migh
 
     REST_FRAMEWORK = {
         ...
-        'TEST_REQUEST_RENDERER_CLASSES': (
+        'TEST_REQUEST_RENDERER_CLASSES': [
             'rest_framework.renderers.MultiPartRenderer',
             'rest_framework.renderers.JSONRenderer',
             'rest_framework.renderers.TemplateHTMLRenderer'
-        )
+        ]
     }
 
 [cite]: https://jacobian.org/writing/django-apps-with-buildout/#s-create-a-test-wrapper

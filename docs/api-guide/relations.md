@@ -1,4 +1,7 @@
-source: relations.py
+---
+source:
+    - relations.py
+---
 
 # Serializer relations
 
@@ -43,7 +46,7 @@ In order to explain the various types of relational fields, we'll use a couple o
         duration = models.IntegerField()
 
         class Meta:
-            unique_together = ('album', 'order')
+            unique_together = ['album', 'order']
             ordering = ['order']
 
         def __str__(self):
@@ -60,7 +63,7 @@ For example, the following serializer.
 
         class Meta:
             model = Album
-            fields = ('album_name', 'artist', 'tracks')
+            fields = ['album_name', 'artist', 'tracks']
 
 Would serialize to the following representation.
 
@@ -92,7 +95,7 @@ For example, the following serializer:
 
         class Meta:
             model = Album
-            fields = ('album_name', 'artist', 'tracks')
+            fields = ['album_name', 'artist', 'tracks']
 
 Would serialize to a representation like this:
 
@@ -132,7 +135,7 @@ For example, the following serializer:
 
         class Meta:
             model = Album
-            fields = ('album_name', 'artist', 'tracks')
+            fields = ['album_name', 'artist', 'tracks']
 
 Would serialize to a representation like this:
 
@@ -184,7 +187,7 @@ For example, the following serializer:
 
         class Meta:
             model = Album
-            fields = ('album_name', 'artist', 'tracks')
+            fields = ['album_name', 'artist', 'tracks']
 
 Would serialize to a representation like this:
 
@@ -219,7 +222,7 @@ This field can be applied as an identity relationship, such as the `'url'` field
 
         class Meta:
             model = Album
-            fields = ('album_name', 'artist', 'track_listing')
+            fields = ['album_name', 'artist', 'track_listing']
 
 Would serialize to a representation like this:
 
@@ -253,14 +256,14 @@ For example, the following serializer:
     class TrackSerializer(serializers.ModelSerializer):
         class Meta:
             model = Track
-            fields = ('order', 'title', 'duration')
+            fields = ['order', 'title', 'duration']
 
     class AlbumSerializer(serializers.ModelSerializer):
         tracks = TrackSerializer(many=True, read_only=True)
 
         class Meta:
             model = Album
-            fields = ('album_name', 'artist', 'tracks')
+            fields = ['album_name', 'artist', 'tracks']
 
 Would serialize to a nested representation like this:
 
@@ -291,14 +294,14 @@ By default nested serializers are read-only. If you want to support write-operat
     class TrackSerializer(serializers.ModelSerializer):
         class Meta:
             model = Track
-            fields = ('order', 'title', 'duration')
+            fields = ['order', 'title', 'duration']
 
     class AlbumSerializer(serializers.ModelSerializer):
         tracks = TrackSerializer(many=True)
 
         class Meta:
             model = Album
-            fields = ('album_name', 'artist', 'tracks')
+            fields = ['album_name', 'artist', 'tracks']
 
         def create(self, validated_data):
             tracks_data = validated_data.pop('tracks')
@@ -352,7 +355,7 @@ For example, we could define a relational field to serialize a track to a custom
 
         class Meta:
             model = Album
-            fields = ('album_name', 'artist', 'tracks')
+            fields = ['album_name', 'artist', 'tracks']
 
 This custom field would then serialize to the following representation.
 
@@ -477,7 +480,7 @@ Note that reverse relationships are not automatically included by the `ModelSeri
 
     class AlbumSerializer(serializers.ModelSerializer):
         class Meta:
-            fields = ('tracks', ...)
+            fields = ['tracks', ...]
 
 You'll normally want to ensure that you've set an appropriate `related_name` argument on the relationship, that you can use as the field name.  For example:
 
@@ -489,7 +492,7 @@ If you have not set a related name for the reverse relationship, you'll need to 
 
     class AlbumSerializer(serializers.ModelSerializer):
         class Meta:
-            fields = ('track_set', ...)
+            fields = ['track_set', ...]
 
 See the Django documentation on [reverse relationships][reverse-relationships] for more details.
 
@@ -576,6 +579,8 @@ If you explicitly specify a relational field pointing to a
 ``ManyToManyField`` with a through model, be sure to set ``read_only``
 to ``True``.
 
+If you wish to represent [extra fields on a through model][django-intermediary-manytomany] then you may serialize the through model as [a nested object][dealing-with-nested-objects].
+
 ---
 
 # Third Party Packages
@@ -596,3 +601,5 @@ The [rest-framework-generic-relations][drf-nested-relations] library provides re
 [generic-relations]: https://docs.djangoproject.com/en/stable/ref/contrib/contenttypes/#id1
 [drf-nested-routers]: https://github.com/alanjds/drf-nested-routers
 [drf-nested-relations]: https://github.com/Ian-Foote/rest-framework-generic-relations
+[django-intermediary-manytomany]: https://docs.djangoproject.com/en/2.2/topics/db/models/#intermediary-manytomany
+[dealing-with-nested-objects]: https://www.django-rest-framework.org/api-guide/serializers/#dealing-with-nested-objects

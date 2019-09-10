@@ -13,10 +13,13 @@ from collections import OrderedDict
 import django
 import pytest
 from django.core.exceptions import ImproperlyConfigured
+from django.core.serializers.json import DjangoJSONEncoder
 from django.core.validators import (
     MaxValueValidator, MinLengthValidator, MinValueValidator
 )
 from django.db import models
+from django.db.models.signals import m2m_changed
+from django.dispatch import receiver
 from django.test import TestCase
 
 from rest_framework import serializers
@@ -300,7 +303,7 @@ class TestRegularFieldMappings(TestCase):
     def test_invalid_field(self):
         """
         Field names that do not map to a model field or relationship should
-        raise a configuration errror.
+        raise a configuration error.
         """
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
@@ -437,30 +440,34 @@ class TestPosgresFieldsMapping(TestCase):
     def test_array_field(self):
         class ArrayFieldModel(models.Model):
             array_field = postgres_fields.ArrayField(base_field=models.CharField())
+            array_field_with_blank = postgres_fields.ArrayField(blank=True, base_field=models.CharField())
 
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
                 model = ArrayFieldModel
-                fields = ['array_field']
+                fields = ['array_field', 'array_field_with_blank']
 
         expected = dedent("""
             TestSerializer():
-                array_field = ListField(child=CharField(label='Array field', validators=[<django.core.validators.MaxLengthValidator object>]))
+                array_field = ListField(allow_empty=False, child=CharField(label='Array field', validators=[<django.core.validators.MaxLengthValidator object>]))
+                array_field_with_blank = ListField(child=CharField(label='Array field with blank', validators=[<django.core.validators.MaxLengthValidator object>]), required=False)
         """)
         self.assertEqual(repr(TestSerializer()), expected)
 
     def test_json_field(self):
         class JSONFieldModel(models.Model):
             json_field = postgres_fields.JSONField()
+            json_field_with_encoder = postgres_fields.JSONField(encoder=DjangoJSONEncoder)
 
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
                 model = JSONFieldModel
-                fields = ['json_field']
+                fields = ['json_field', 'json_field_with_encoder']
 
         expected = dedent("""
             TestSerializer():
-                json_field = JSONField(style={'base_template': 'textarea.html'})
+                json_field = JSONField(encoder=None, style={'base_template': 'textarea.html'})
+                json_field_with_encoder = JSONField(encoder=<class 'django.core.serializers.json.DjangoJSONEncoder'>, style={'base_template': 'textarea.html'})
         """)
         self.assertEqual(repr(TestSerializer()), expected)
 
@@ -1248,7 +1255,6 @@ class Issue6110ModelSerializer(serializers.ModelSerializer):
 
 
 class Issue6110Test(TestCase):
-
     def test_model_serializer_custom_manager(self):
         instance = Issue6110ModelSerializer().create({'name': 'test_name'})
         self.assertEqual(instance.name, 'test_name')
@@ -1257,3 +1263,43 @@ class Issue6110Test(TestCase):
         msginitial = ('Got a `TypeError` when calling `Issue6110TestModel.all_objects.create()`.')
         with self.assertRaisesMessage(TypeError, msginitial):
             Issue6110ModelSerializer().create({'wrong_param': 'wrong_param'})
+
+
+class Issue6751Model(models.Model):
+    many_to_many = models.ManyToManyField(ManyToManyTargetModel, related_name='+')
+    char_field = models.CharField(max_length=100)
+    char_field2 = models.CharField(max_length=100)
+
+
+@receiver(m2m_changed, sender=Issue6751Model.many_to_many.through)
+def process_issue6751model_m2m_changed(action, instance, **_):
+    if action == 'post_add':
+        instance.char_field = 'value changed by signal'
+        instance.save()
+
+
+class Issue6751Test(TestCase):
+    def test_model_serializer_save_m2m_after_instance(self):
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Issue6751Model
+                fields = (
+                    'many_to_many',
+                    'char_field',
+                )
+
+        instance = Issue6751Model.objects.create(char_field='initial value')
+        m2m_target = ManyToManyTargetModel.objects.create(name='target')
+
+        serializer = TestSerializer(
+            instance=instance,
+            data={
+                'many_to_many': (m2m_target.id,),
+                'char_field': 'will be changed by signal',
+            }
+        )
+
+        serializer.is_valid()
+        serializer.save()
+
+        self.assertEqual(instance.char_field, 'value changed by signal')

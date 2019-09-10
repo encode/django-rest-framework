@@ -533,11 +533,13 @@ class BasicAuthenticationUnitTests(TestCase):
             is_active = False
         old_authenticate = authentication.authenticate
         authentication.authenticate = lambda **kwargs: MockUser()
-        auth = authentication.BasicAuthentication()
-        with pytest.raises(exceptions.AuthenticationFailed) as error:
-            auth.authenticate_credentials('foo', 'bar')
-        assert 'User inactive or deleted.' in str(error)
-        authentication.authenticate = old_authenticate
+        try:
+            auth = authentication.BasicAuthentication()
+            with pytest.raises(exceptions.AuthenticationFailed) as exc_info:
+                auth.authenticate_credentials('foo', 'bar')
+            assert 'User inactive or deleted.' in str(exc_info.value)
+        finally:
+            authentication.authenticate = old_authenticate
 
 
 @override_settings(ROOT_URLCONF=__name__,

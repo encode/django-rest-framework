@@ -85,11 +85,11 @@ Want your Django REST Framework talk/tutorial/article to be added to our website
 
 
 [beginners-guide-to-the-django-rest-framework]: https://code.tutsplus.com/tutorials/beginners-guide-to-the-django-rest-framework--cms-19786
-[getting-started-with-django-rest-framework-and-angularjs]: https://blog.kevinastone.com/getting-started-with-django-rest-framework-and-angularjs.html
+[getting-started-with-django-rest-framework-and-angularjs]: https://blog.kevinastone.com/django-rest-framework-and-angular-js
 [end-to-end-web-app-with-django-rest-framework-angularjs]: https://mourafiq.com/2013/07/01/end-to-end-web-app-with-django-angular-1.html
-[start-your-api-django-rest-framework-part-1]: https://godjango.com/41-start-your-api-django-rest-framework-part-1/
-[permissions-authentication-django-rest-framework-part-2]: https://godjango.com/43-permissions-authentication-django-rest-framework-part-2/
-[viewsets-and-routers-django-rest-framework-part-3]: https://godjango.com/45-viewsets-and-routers-django-rest-framework-part-3/
+[start-your-api-django-rest-framework-part-1]: https://www.youtube.com/watch?v=hqo2kk91WpE
+[permissions-authentication-django-rest-framework-part-2]: https://www.youtube.com/watch?v=R3xvUDUZxGU
+[viewsets-and-routers-django-rest-framework-part-3]: https://www.youtube.com/watch?v=2d6w4DGQ4OU
 [django-rest-framework-user-endpoint]: https://richardtier.com/2014/02/25/django-rest-framework-user-endpoint/
 [check-credentials-using-django-rest-framework]: https://richardtier.com/2014/03/06/110/
 [ember-and-django-part 1-video]: http://www.neckbeardrepublic.com/screencasts/ember-and-django-part-1

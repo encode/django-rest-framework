@@ -12,7 +12,8 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.validators import (
-    EmailValidator, RegexValidator, URLValidator, ip_address_validators
+    EmailValidator, MaxLengthValidator, MaxValueValidator, MinLengthValidator,
+    MinValueValidator, RegexValidator, URLValidator, ip_address_validators
 )
 from django.forms import FilePathField as DjangoFilePathField
 from django.forms import ImageField as DjangoImageField
@@ -23,20 +24,17 @@ from django.utils.dateparse import (
 from django.utils.duration import duration_string
 from django.utils.encoding import is_protected_type, smart_text
 from django.utils.formats import localize_input, sanitize_separators
-from django.utils.functional import lazy
 from django.utils.ipv6 import clean_ipv6_address
 from django.utils.timezone import utc
 from django.utils.translation import gettext_lazy as _
 from pytz.exceptions import InvalidTimeError
 
 from rest_framework import ISO_8601
-from rest_framework.compat import (
-    MaxLengthValidator, MaxValueValidator, MinLengthValidator,
-    MinValueValidator, ProhibitNullCharactersValidator
-)
+from rest_framework.compat import ProhibitNullCharactersValidator
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, humanize_datetime, json, representation
+from rest_framework.utils.formatting import lazy_format
 
 
 class empty:
@@ -49,10 +47,24 @@ class empty:
     pass
 
 
+class BuiltinSignatureError(Exception):
+    """
+    Built-in function signatures are not inspectable. This exception is raised
+    so the serializer can raise a helpful error message.
+    """
+    pass
+
+
 def is_simple_callable(obj):
     """
     True if the object is a callable that takes no arguments.
     """
+    # Bail early since we cannot inspect built-in function signatures.
+    if inspect.isbuiltin(obj):
+        raise BuiltinSignatureError(
+            'Built-in function signatures are not inspectable. '
+            'Wrap the function call in a simple, pure Python function.')
+
     if not (inspect.isfunction(obj) or inspect.ismethod(obj) or isinstance(obj, functools.partial)):
         return False
 
@@ -219,12 +231,12 @@ def get_error_detail(exc_info):
         error_dict = exc_info.error_dict
     except AttributeError:
         return [
-            ErrorDetail(error.message % (error.params or ()),
+            ErrorDetail((error.message % error.params) if error.params else error.message,
                         code=error.code if error.code else code)
             for error in exc_info.error_list]
     return {
         k: [
-            ErrorDetail(error.message % (error.params or ()),
+            ErrorDetail((error.message % error.params) if error.params else error.message,
                         code=error.code if error.code else code)
             for error in errors
         ] for k, errors in error_dict.items()
@@ -429,6 +441,18 @@ class Field:
         """
         try:
             return get_attribute(instance, self.source_attrs)
+        except BuiltinSignatureError as exc:
+            msg = (
+                'Field source for `{serializer}.{field}` maps to a built-in '
+                'function type and is invalid. Define a property or method on '
+                'the `{instance}` instance that wraps the call to the built-in '
+                'function.'.format(
+                    serializer=self.parent.__class__.__name__,
+                    field=self.field_name,
+                    instance=instance.__class__.__name__,
+                )
+            )
+            raise type(exc)(msg)
         except (KeyError, AttributeError) as exc:
             if self.default is not empty:
                 return self.get_default()
@@ -493,6 +517,11 @@ class Field:
         if data is None:
             if not self.allow_null:
                 self.fail('null')
+            # Nullable `source='*'` fields should not be skipped when its named
+            # field is given a null value. This is because `source='*'` means
+            # the field is passed the entire object, which is not null.
+            elif self.source == '*':
+                return (False, None)
             return (True, None)
 
         return (False, data)
@@ -614,7 +643,7 @@ class Field:
             for item in self._args
         ]
         kwargs = {
-            key: (copy.deepcopy(value) if (key not in ('validators', 'regex')) else value)
+            key: (copy.deepcopy(value, memo) if (key not in ('validators', 'regex')) else value)
             for key, value in self._kwargs.items()
         }
         return self.__class__(*args, **kwargs)
@@ -744,12 +773,11 @@ class CharField(Field):
         self.min_length = kwargs.pop('min_length', None)
         super().__init__(**kwargs)
         if self.max_length is not None:
-            message = lazy(self.error_messages['max_length'].format, str)(max_length=self.max_length)
+            message = lazy_format(self.error_messages['max_length'], max_length=self.max_length)
             self.validators.append(
                 MaxLengthValidator(self.max_length, message=message))
         if self.min_length is not None:
-            message = lazy(
-                self.error_messages['min_length'].format, str)(min_length=self.min_length)
+            message = lazy_format(self.error_messages['min_length'], min_length=self.min_length)
             self.validators.append(
                 MinLengthValidator(self.min_length, message=message))
 
@@ -910,13 +938,11 @@ class IntegerField(Field):
         self.min_value = kwargs.pop('min_value', None)
         super().__init__(**kwargs)
         if self.max_value is not None:
-            message = lazy(
-                self.error_messages['max_value'].format, str)(max_value=self.max_value)
+            message = lazy_format(self.error_messages['max_value'], max_value=self.max_value)
             self.validators.append(
                 MaxValueValidator(self.max_value, message=message))
         if self.min_value is not None:
-            message = lazy(
-                self.error_messages['min_value'].format, str)(min_value=self.min_value)
+            message = lazy_format(self.error_messages['min_value'], min_value=self.min_value)
             self.validators.append(
                 MinValueValidator(self.min_value, message=message))
 
@@ -948,15 +974,11 @@ class FloatField(Field):
         self.min_value = kwargs.pop('min_value', None)
         super().__init__(**kwargs)
         if self.max_value is not None:
-            message = lazy(
-                self.error_messages['max_value'].format,
-                str)(max_value=self.max_value)
+            message = lazy_format(self.error_messages['max_value'], max_value=self.max_value)
             self.validators.append(
                 MaxValueValidator(self.max_value, message=message))
         if self.min_value is not None:
-            message = lazy(
-                self.error_messages['min_value'].format,
-                str)(min_value=self.min_value)
+            message = lazy_format(self.error_messages['min_value'], min_value=self.min_value)
             self.validators.append(
                 MinValueValidator(self.min_value, message=message))
 
@@ -1007,14 +1029,11 @@ class DecimalField(Field):
         super().__init__(**kwargs)
 
         if self.max_value is not None:
-            message = lazy(
-                self.error_messages['max_value'].format,
-                str)(max_value=self.max_value)
+            message = lazy_format(self.error_messages['max_value'], max_value=self.max_value)
             self.validators.append(
                 MaxValueValidator(self.max_value, message=message))
         if self.min_value is not None:
-            message = lazy(
-                self.error_messages['min_value'].format, str)(min_value=self.min_value)
+            message = lazy_format(self.error_messages['min_value'], min_value=self.min_value)
             self.validators.append(
                 MinValueValidator(self.min_value, message=message))
 
@@ -1352,15 +1371,11 @@ class DurationField(Field):
         self.min_value = kwargs.pop('min_value', None)
         super().__init__(**kwargs)
         if self.max_value is not None:
-            message = lazy(
-                self.error_messages['max_value'].format,
-                str)(max_value=self.max_value)
+            message = lazy_format(self.error_messages['max_value'], max_value=self.max_value)
             self.validators.append(
                 MaxValueValidator(self.max_value, message=message))
         if self.min_value is not None:
-            message = lazy(
-                self.error_messages['min_value'].format,
-                str)(min_value=self.min_value)
+            message = lazy_format(self.error_messages['min_value'], min_value=self.min_value)
             self.validators.append(
                 MinValueValidator(self.min_value, message=message))
 
@@ -1531,16 +1546,16 @@ class FileField(Field):
             return None
 
         use_url = getattr(self, 'use_url', api_settings.UPLOADED_FILES_USE_URL)
-
         if use_url:
-            if not getattr(value, 'url', None):
-                # If the file has not been saved it may not have a URL.
+            try:
+                url = value.url
+            except AttributeError:
                 return None
-            url = value.url
             request = self.context.get('request', None)
             if request is not None:
                 return request.build_absolute_uri(url)
             return url
+
         return value.name
 
 
@@ -1605,10 +1620,10 @@ class ListField(Field):
         super().__init__(*args, **kwargs)
         self.child.bind(field_name='', parent=self)
         if self.max_length is not None:
-            message = self.error_messages['max_length'].format(max_length=self.max_length)
+            message = lazy_format(self.error_messages['max_length'], max_length=self.max_length)
             self.validators.append(MaxLengthValidator(self.max_length, message=message))
         if self.min_length is not None:
-            message = self.error_messages['min_length'].format(min_length=self.min_length)
+            message = lazy_format(self.error_messages['min_length'], min_length=self.min_length)
             self.validators.append(MinLengthValidator(self.min_length, message=message))
 
     def get_value(self, dictionary):
@@ -1663,11 +1678,13 @@ class DictField(Field):
     child = _UnvalidatedField()
     initial = {}
     default_error_messages = {
-        'not_a_dict': _('Expected a dictionary of items but got type "{input_type}".')
+        'not_a_dict': _('Expected a dictionary of items but got type "{input_type}".'),
+        'empty': _('This dictionary may not be empty.'),
     }
 
     def __init__(self, *args, **kwargs):
         self.child = kwargs.pop('child', copy.deepcopy(self.child))
+        self.allow_empty = kwargs.pop('allow_empty', True)
 
         assert not inspect.isclass(self.child), '`child` has not been instantiated.'
         assert self.child.source is None, (
@@ -1693,6 +1710,9 @@ class DictField(Field):
             data = html.parse_html_dict(data)
         if not isinstance(data, dict):
             self.fail('not_a_dict', input_type=type(data).__name__)
+        if not self.allow_empty and len(data) == 0:
+            self.fail('empty')
+
         return self.run_child_validation(data)
 
     def to_representation(self, value):
@@ -1736,6 +1756,7 @@ class JSONField(Field):
 
     def __init__(self, *args, **kwargs):
         self.binary = kwargs.pop('binary', False)
+        self.encoder = kwargs.pop('encoder', None)
         super().__init__(*args, **kwargs)
 
     def get_value(self, dictionary):
@@ -1757,14 +1778,14 @@ class JSONField(Field):
                     data = data.decode()
                 return json.loads(data)
             else:
-                json.dumps(data)
+                json.dumps(data, cls=self.encoder)
         except (TypeError, ValueError):
             self.fail('invalid')
         return data
 
     def to_representation(self, value):
         if self.binary:
-            value = json.dumps(value)
+            value = json.dumps(value, cls=self.encoder)
             value = value.encode()
         return value
 
@@ -1840,12 +1861,6 @@ class SerializerMethodField(Field):
         # 'method_name' argument has been used. For example:
         # my_field = serializer.SerializerMethodField(method_name='get_my_field')
         default_method_name = 'get_{field_name}'.format(field_name=field_name)
-        assert self.method_name != default_method_name, (
-            "It is redundant to specify `%s` on SerializerMethodField '%s' in "
-            "serializer '%s', because it is the same as the default method name. "
-            "Remove the `method_name` argument." %
-            (self.method_name, field_name, parent.__class__.__name__)
-        )
 
         # The method name should default to `get_{field_name}`.
         if self.method_name is None:
@@ -1873,11 +1888,10 @@ class ModelField(Field):
         self.model_field = model_field
         # The `max_length` option is supported by Django's base `Field` class,
         # so we'd better support it here.
-        max_length = kwargs.pop('max_length', None)
+        self.max_length = kwargs.pop('max_length', None)
         super().__init__(**kwargs)
-        if max_length is not None:
-            message = lazy(
-                self.error_messages['max_length'].format, str)(max_length=self.max_length)
+        if self.max_length is not None:
+            message = lazy_format(self.error_messages['max_length'], max_length=self.max_length)
             self.validators.append(
                 MaxLengthValidator(self.max_length, message=message))
 

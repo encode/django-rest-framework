@@ -5,7 +5,6 @@ versions of Django/Python, and compatibility wrappers around optional packages.
 import sys
 
 from django.conf import settings
-from django.core import validators
 from django.views.generic import View
 
 try:
@@ -94,12 +93,16 @@ except ImportError:
     postgres_fields = None
 
 
-# coreapi is optional (Note that uritemplate is a dependency of coreapi)
+# coreapi is required for CoreAPI schema generation
 try:
     import coreapi
-    import uritemplate
 except ImportError:
     coreapi = None
+
+# uritemplate is required for OpenAPI and CoreAPI schema generation
+try:
+    import uritemplate
+except ImportError:
     uritemplate = None
 
 
@@ -117,13 +120,6 @@ except ImportError:
     yaml = None
 
 
-# django-crispy-forms is optional
-try:
-    import crispy_forms
-except ImportError:
-    crispy_forms = None
-
-
 # requests is optional
 try:
     import requests
@@ -131,31 +127,17 @@ except ImportError:
     requests = None
 
 
-def is_guardian_installed():
-    """
-    django-guardian is optional and only imported if in INSTALLED_APPS.
-    """
-    return 'guardian' in settings.INSTALLED_APPS
-
-
 # PATCH method is not implemented by Django
 if 'patch' not in View.http_method_names:
     View.http_method_names = View.http_method_names + ['patch']
 
 
-# Markdown is optional
+# Markdown is optional (version 3.0+ required)
 try:
     import markdown
 
-    if markdown.version <= '2.2':
-        HEADERID_EXT_PATH = 'headerid'
-        LEVEL_PARAM = 'level'
-    elif markdown.version < '2.6':
-        HEADERID_EXT_PATH = 'markdown.extensions.headerid'
-        LEVEL_PARAM = 'level'
-    else:
-        HEADERID_EXT_PATH = 'markdown.extensions.toc'
-        LEVEL_PARAM = 'baselevel'
+    HEADERID_EXT_PATH = 'markdown.extensions.toc'
+    LEVEL_PARAM = 'baselevel'
 
     def apply_markdown(text):
         """
@@ -228,7 +210,7 @@ if markdown is not None and pygments is not None:
             return ret.split("\n")
 
     def md_filter_add_syntax_highlight(md):
-        md.preprocessors.add('highlight', CodeBlockPreprocessor(), "_begin")
+        md.preprocessors.register(CodeBlockPreprocessor(), 'highlight', 40)
         return True
 else:
     def md_filter_add_syntax_highlight(md):
@@ -250,35 +232,6 @@ except ImportError:
 SHORT_SEPARATORS = (',', ':')
 LONG_SEPARATORS = (', ', ': ')
 INDENT_SEPARATORS = (',', ': ')
-
-
-class CustomValidatorMessage:
-    """
-    We need to avoid evaluation of `lazy` translated `message` in `django.core.validators.BaseValidator.__init__`.
-    https://github.com/django/django/blob/75ed5900321d170debef4ac452b8b3cf8a1c2384/django/core/validators.py#L297
-
-    Ref: https://github.com/encode/django-rest-framework/pull/5452
-    """
-
-    def __init__(self, *args, **kwargs):
-        self.message = kwargs.pop('message', self.message)
-        super().__init__(*args, **kwargs)
-
-
-class MinValueValidator(CustomValidatorMessage, validators.MinValueValidator):
-    pass
-
-
-class MaxValueValidator(CustomValidatorMessage, validators.MaxValueValidator):
-    pass
-
-
-class MinLengthValidator(CustomValidatorMessage, validators.MinLengthValidator):
-    pass
-
-
-class MaxLengthValidator(CustomValidatorMessage, validators.MaxLengthValidator):
-    pass
 
 
 # Version Constants.

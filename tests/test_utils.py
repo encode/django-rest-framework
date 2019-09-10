@@ -1,3 +1,5 @@
+from unittest import mock
+
 from django.conf.urls import url
 from django.test import TestCase, override_settings
 
@@ -6,6 +8,7 @@ from rest_framework.routers import SimpleRouter
 from rest_framework.serializers import ModelSerializer
 from rest_framework.utils import json
 from rest_framework.utils.breadcrumbs import get_breadcrumbs
+from rest_framework.utils.formatting import lazy_format
 from rest_framework.utils.urls import remove_query_param, replace_query_param
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
@@ -171,7 +174,7 @@ class BreadcrumbTests(TestCase):
 
 class JsonFloatTests(TestCase):
     """
-    Internaly, wrapped json functions should adhere to strict float handling
+    Internally, wrapped json functions should adhere to strict float handling
     """
 
     def test_dumps(self):
@@ -189,7 +192,7 @@ class JsonFloatTests(TestCase):
             json.loads("NaN")
 
 
-@override_settings(STRICT_JSON=False)
+@override_settings(REST_FRAMEWORK={'STRICT_JSON': False})
 class NonStrictJsonFloatTests(JsonFloatTests):
     """
     'STRICT_JSON = False' should not somehow affect internal json behavior
@@ -232,15 +235,6 @@ class UrlsRemoveQueryParamTests(TestCase):
     """
     Tests the remove_query_param functionality.
     """
-    def test_valid_unicode_preserved(self):
-        q = '/?q=%E6%9F%A5%E8%AF%A2'
-        new_key = 'page'
-        new_value = 2
-        value = '%E6%9F%A5%E8%AF%A2'
-
-        assert new_key in replace_query_param(q, new_key, new_value)
-        assert value in replace_query_param(q, new_key, new_value)
-
     def test_valid_unicode_removed(self):
         q = '/?page=2345&q=%E6%9F%A5%E8%AF%A2'
         key = 'page'
@@ -257,3 +251,19 @@ class UrlsRemoveQueryParamTests(TestCase):
         removed_key = 'page'
 
         assert key in remove_query_param(q, removed_key)
+
+
+class LazyFormatTests(TestCase):
+    def test_it_formats_correctly(self):
+        formatted = lazy_format('Does {} work? {answer}: %s', 'it', answer='Yes')
+        assert str(formatted) == 'Does it work? Yes: %s'
+        assert formatted % 'it does' == 'Does it work? Yes: it does'
+
+    def test_it_formats_lazily(self):
+        message = mock.Mock(wraps='message')
+        formatted = lazy_format(message)
+        assert message.format.call_count == 0
+        str(formatted)
+        assert message.format.call_count == 1
+        str(formatted)
+        assert message.format.call_count == 1

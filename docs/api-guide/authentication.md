@@ -1,4 +1,7 @@
-source: authentication.py
+---
+source:
+    - authentication.py
+---
 
 # Authentication
 
@@ -37,10 +40,10 @@ The value of `request.user` and `request.auth` for unauthenticated requests can 
 The default authentication schemes may be set globally, using the `DEFAULT_AUTHENTICATION_CLASSES` setting.  For example.
 
     REST_FRAMEWORK = {
-        'DEFAULT_AUTHENTICATION_CLASSES': (
+        'DEFAULT_AUTHENTICATION_CLASSES': [
             'rest_framework.authentication.BasicAuthentication',
             'rest_framework.authentication.SessionAuthentication',
-        )
+        ]
     }
 
 You can also set the authentication scheme on a per-view or per-viewset basis,
@@ -52,8 +55,8 @@ using the `APIView` class-based views.
     from rest_framework.views import APIView
 
     class ExampleView(APIView):
-        authentication_classes = (SessionAuthentication, BasicAuthentication)
-        permission_classes = (IsAuthenticated,)
+        authentication_classes = [SessionAuthentication, BasicAuthentication]
+        permission_classes = [IsAuthenticated]
 
         def get(self, request, format=None):
             content = {
@@ -65,8 +68,8 @@ using the `APIView` class-based views.
 Or, if you're using the `@api_view` decorator with function based views.
 
     @api_view(['GET'])
-    @authentication_classes((SessionAuthentication, BasicAuthentication))
-    @permission_classes((IsAuthenticated,))
+    @authentication_classes([SessionAuthentication, BasicAuthentication])
+    @permission_classes([IsAuthenticated])
     def example_view(request, format=None):
         content = {
             'user': unicode(request.user),  # `django.contrib.auth.User` instance.
@@ -121,10 +124,10 @@ This authentication scheme uses a simple token-based HTTP Authentication scheme.
 
 To use the `TokenAuthentication` scheme you'll need to [configure the authentication classes](#setting-the-authentication-scheme) to include `TokenAuthentication`, and additionally include `rest_framework.authtoken` in your `INSTALLED_APPS` setting:
 
-    INSTALLED_APPS = (
+    INSTALLED_APPS = [
         ...
         'rest_framework.authtoken'
-    )
+    ]
 
 ---
 
@@ -247,7 +250,7 @@ It is also possible to create Tokens manually through admin interface. In case y
 
     from rest_framework.authtoken.admin import TokenAdmin
 
-    TokenAdmin.raw_id_fields = ('user',)
+    TokenAdmin.raw_id_fields = ['user']
 
 
 #### Using Django manage.py command
@@ -321,13 +324,13 @@ If the `.authenticate_header()` method is not overridden, the authentication sch
 
 ---
 
-**Note:** When your custom authenticator is invoked by the request object's `.user` or `.auth` properties, you may see an `AttributeError` re-raised as a `WrappedAttributeError`. This is necessary to prevent the original exception from being suppressed by the outer property access. Python will not recognize that the `AttributeError` orginates from your custom authenticator and will instead assume that the request object does not have a `.user` or `.auth` property. These errors should be fixed or otherwise handled by your authenticator.
+**Note:** When your custom authenticator is invoked by the request object's `.user` or `.auth` properties, you may see an `AttributeError` re-raised as a `WrappedAttributeError`. This is necessary to prevent the original exception from being suppressed by the outer property access. Python will not recognize that the `AttributeError` originates from your custom authenticator and will instead assume that the request object does not have a `.user` or `.auth` property. These errors should be fixed or otherwise handled by your authenticator.
 
 ---
 
 ## Example
 
-The following example will authenticate any incoming request as the user given by the username in a custom request header named 'X_USERNAME'.
+The following example will authenticate any incoming request as the user given by the username in a custom request header named 'X-USERNAME'.
 
 	from django.contrib.auth.models import User
     from rest_framework import authentication
@@ -335,7 +338,7 @@ The following example will authenticate any incoming request as the user given b
 
     class ExampleAuthentication(authentication.BaseAuthentication):
         def authenticate(self, request):
-            username = request.META.get('X_USERNAME')
+            username = request.META.get('HTTP_X_USERNAME')
             if not username:
                 return None
 
@@ -364,15 +367,15 @@ Install using `pip`.
 
 Add the package to your `INSTALLED_APPS` and modify your REST framework settings.
 
-    INSTALLED_APPS = (
+    INSTALLED_APPS = [
         ...
         'oauth2_provider',
-    )
+    ]
 
     REST_FRAMEWORK = {
-        'DEFAULT_AUTHENTICATION_CLASSES': (
+        'DEFAULT_AUTHENTICATION_CLASSES': [
             'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
-        )
+        ]
     }
 
 For more details see the [Django REST framework - Getting started][django-oauth-toolkit-getting-started] documentation.

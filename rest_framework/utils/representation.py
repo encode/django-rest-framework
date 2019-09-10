@@ -5,7 +5,7 @@ of serializer classes and serializer fields.
 import re
 
 from django.db import models
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.functional import Promise
 
 
@@ -28,7 +28,7 @@ def smart_repr(value):
         return manager_repr(value)
 
     if isinstance(value, Promise) and value._delegate_text:
-        value = force_text(value)
+        value = force_str(value)
 
     value = repr(value)
 

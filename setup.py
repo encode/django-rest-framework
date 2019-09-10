@@ -8,7 +8,7 @@ from io import open
 from setuptools import find_packages, setup
 
 CURRENT_PYTHON = sys.version_info[:2]
-REQUIRED_PYTHON = (3, 4)
+REQUIRED_PYTHON = (3, 5)
 
 # This check and everything above must remain compatible with Python 2.7.
 if CURRENT_PYTHON < REQUIRED_PYTHON:
@@ -56,6 +56,10 @@ if sys.argv[-1] == 'publish':
         print("twine not installed.\nUse `pip install twine`.\nExiting.")
         sys.exit()
     os.system("python setup.py sdist bdist_wheel")
+    if os.system("twine check dist/*"):
+        print("twine check failed. Packages might be outdated.")
+        print("Try using `pip install -U twine wheel`.\nExiting.")
+        sys.exit()
     os.system("twine upload dist/*")
     print("You probably want to also tag the version now:")
     print("  git tag -a %s -m 'version %s'" % (version, version))
@@ -79,7 +83,7 @@ setup(
     packages=find_packages(exclude=['tests*']),
     include_package_data=True,
     install_requires=[],
-    python_requires=">=3.4",
+    python_requires=">=3.5",
     zip_safe=False,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
@@ -94,13 +98,16 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3 :: Only',
         'Topic :: Internet :: WWW/HTTP',
-    ]
+    ],
+    project_urls={
+        'Funding': 'https://fund.django-rest-framework.org/topics/funding/',
+        'Source': 'https://github.com/encode/django-rest-framework',
+    },
 )
 
 # (*) Please direct queries to the discussion group, rather than to me directly

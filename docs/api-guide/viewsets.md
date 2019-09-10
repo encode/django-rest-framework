@@ -1,4 +1,7 @@
-source: viewsets.py
+---
+source:
+    - viewsets.py
+---
 
 # ViewSets
 

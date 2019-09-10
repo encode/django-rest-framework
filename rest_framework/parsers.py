@@ -14,7 +14,7 @@ from django.http.multipartparser import ChunkIter
 from django.http.multipartparser import \
     MultiPartParser as DjangoMultiPartParser
 from django.http.multipartparser import MultiPartParserError, parse_header
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 
 from rest_framework import renderers
 from rest_framework.exceptions import ParseError
@@ -205,7 +205,7 @@ class FileUploadParser(BaseParser):
             filename_parm = disposition[1]
             if 'filename*' in filename_parm:
                 return self.get_encoded_filename(filename_parm)
-            return force_text(filename_parm['filename'])
+            return force_str(filename_parm['filename'])
         except (AttributeError, KeyError, ValueError):
             pass
 
@@ -214,10 +214,10 @@ class FileUploadParser(BaseParser):
         Handle encoded filenames per RFC6266. See also:
         https://tools.ietf.org/html/rfc2231#section-4
         """
-        encoded_filename = force_text(filename_parm['filename*'])
+        encoded_filename = force_str(filename_parm['filename*'])
         try:
             charset, lang, filename = encoded_filename.split('\'', 2)
             filename = parse.unquote(filename)
         except (ValueError, LookupError):
-            filename = force_text(filename_parm['filename'])
+            filename = force_str(filename_parm['filename'])
         return filename

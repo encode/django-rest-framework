@@ -1,4 +1,7 @@
-source: renderers.py
+---
+source:
+    - renderers.py
+---
 
 # Renderers
 
@@ -21,10 +24,10 @@ For more information see the documentation on [content negotiation][conneg].
 The default set of renderers may be set globally, using the `DEFAULT_RENDERER_CLASSES` setting.  For example, the following settings would use `JSON` as the main media type and also include the self describing API.
 
     REST_FRAMEWORK = {
-        'DEFAULT_RENDERER_CLASSES': (
+        'DEFAULT_RENDERER_CLASSES': [
             'rest_framework.renderers.JSONRenderer',
             'rest_framework.renderers.BrowsableAPIRenderer',
-        )
+        ]
     }
 
 You can also set the renderers used for an individual view, or viewset,
@@ -39,7 +42,7 @@ using the `APIView` class-based views.
         """
         A view that returns the count of active users in JSON.
         """
-        renderer_classes = (JSONRenderer, )
+        renderer_classes = [JSONRenderer]
 
         def get(self, request, format=None):
             user_count = User.objects.filter(active=True).count()
@@ -49,7 +52,7 @@ using the `APIView` class-based views.
 Or, if you're using the `@api_view` decorator with function based views.
 
     @api_view(['GET'])
-    @renderer_classes((JSONRenderer,))
+    @renderer_classes([JSONRenderer])
     def user_count_view(request, format=None):
         """
         A view that returns the count of active users in JSON.
@@ -113,7 +116,7 @@ An example of a view that uses `TemplateHTMLRenderer`:
         A view that returns a templated HTML representation of a given user.
         """
         queryset = User.objects.all()
-        renderer_classes = (TemplateHTMLRenderer,)
+        renderer_classes = [TemplateHTMLRenderer]
 
         def get(self, request, *args, **kwargs):
             self.object = self.get_object()
@@ -139,8 +142,8 @@ A simple renderer that simply returns pre-rendered HTML.  Unlike other renderers
 
 An example of a view that uses `StaticHTMLRenderer`:
 
-    @api_view(('GET',))
-    @renderer_classes((StaticHTMLRenderer,))
+    @api_view(['GET'])
+    @renderer_classes([StaticHTMLRenderer])
     def simple_html_view(request):
         data = '<html><body><h1>Hello, world</h1></body></html>'
         return Response(data)
@@ -325,8 +328,8 @@ In some cases you might want your view to use different serialization styles dep
 
 For example:
 
-    @api_view(('GET',))
-    @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
+    @api_view(['GET'])
+    @renderer_classes([TemplateHTMLRenderer, JSONRenderer])
     def list_users(request):
         """
         A view that can return JSON or HTML representations
@@ -398,12 +401,12 @@ Install using pip.
 Modify your REST framework settings.
 
     REST_FRAMEWORK = {
-        'DEFAULT_PARSER_CLASSES': (
+        'DEFAULT_PARSER_CLASSES': [
             'rest_framework_yaml.parsers.YAMLParser',
-        ),
-        'DEFAULT_RENDERER_CLASSES': (
+        ],
+        'DEFAULT_RENDERER_CLASSES': [
             'rest_framework_yaml.renderers.YAMLRenderer',
-        ),
+        ],
     }
 
 ## XML
@@ -419,12 +422,12 @@ Install using pip.
 Modify your REST framework settings.
 
     REST_FRAMEWORK = {
-        'DEFAULT_PARSER_CLASSES': (
+        'DEFAULT_PARSER_CLASSES': [
             'rest_framework_xml.parsers.XMLParser',
-        ),
-        'DEFAULT_RENDERER_CLASSES': (
+        ],
+        'DEFAULT_RENDERER_CLASSES': [
             'rest_framework_xml.renderers.XMLRenderer',
-        ),
+        ],
     }
 
 ## JSONP
@@ -448,9 +451,9 @@ Install using pip.
 Modify your REST framework settings.
 
     REST_FRAMEWORK = {
-        'DEFAULT_RENDERER_CLASSES': (
+        'DEFAULT_RENDERER_CLASSES': [
             'rest_framework_jsonp.renderers.JSONPRenderer',
-        ),
+        ],
     }
 
 ## MessagePack
@@ -472,11 +475,11 @@ Modify your REST framework settings.
     REST_FRAMEWORK = {
         ...
 
-        'DEFAULT_RENDERER_CLASSES': (
+        'DEFAULT_RENDERER_CLASSES': [
             'rest_framework.renderers.JSONRenderer',
             'rest_framework.renderers.BrowsableAPIRenderer',
             'drf_renderer_xlsx.renderers.XLSXRenderer',
-        ),
+        ],
     }
 
 To avoid having a file streamed without a filename (which the browser will often default to the filename "download", with no extension), we need to use a mixin to override the `Content-Disposition` header. If no filename is provided, it will default to `export.xlsx`. For example:
@@ -491,7 +494,7 @@ To avoid having a file streamed without a filename (which the browser will often
     class MyExampleViewSet(XLSXFileMixin, ReadOnlyModelViewSet):
         queryset = MyExampleModel.objects.all()
         serializer_class = MyExampleSerializer
-        renderer_classes = (XLSXRenderer,)
+        renderer_classes = [XLSXRenderer]
         filename = 'my_export.xlsx'
 
 ## CSV
@@ -534,7 +537,7 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 [messagepack]: https://msgpack.org/
 [juanriaza]: https://github.com/juanriaza
 [mjumbewu]: https://github.com/mjumbewu
-[flipperpa]: https://githuc.com/flipperpa
+[flipperpa]: https://github.com/flipperpa
 [wharton]: https://github.com/wharton
 [drf-renderer-xlsx]: https://github.com/wharton/drf-renderer-xlsx
 [vbabiy]: https://github.com/vbabiy

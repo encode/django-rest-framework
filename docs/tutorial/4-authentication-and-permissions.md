@@ -63,7 +63,7 @@ Now that we've got some users to work with, we'd better add representations of t
 
         class Meta:
             model = User
-            fields = ('id', 'username', 'snippets')
+            fields = ['id', 'username', 'snippets']
 
 Because `'snippets'` is a *reverse* relationship on the User model, it will not be included by default when using the `ModelSerializer` class, so we needed to add an explicit field for it.
 
@@ -127,7 +127,7 @@ First add the following import in the views module
 
 Then, add the following property to **both** the `SnippetList` and `SnippetDetail` view classes.
 
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 ## Adding login to the Browsable API
 
@@ -178,8 +178,8 @@ In the snippets app, create a new file, `permissions.py`
 
 Now we can add that custom permission to our snippet instance endpoint, by editing the `permission_classes` property on the `SnippetDetail` view class:
 
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
-                          IsOwnerOrReadOnly,)
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,
+                          IsOwnerOrReadOnly]
 
 Make sure to also import the `IsOwnerOrReadOnly` class.
 

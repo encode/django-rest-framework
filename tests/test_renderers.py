@@ -631,8 +631,12 @@ class BrowsableAPIRendererTests(URLPatternsTestCase):
         def list_action(self, request):
             raise NotImplementedError
 
+    class AuthExampleViewSet(ExampleViewSet):
+        permission_classes = [permissions.IsAuthenticated]
+
     router = SimpleRouter()
     router.register('examples', ExampleViewSet, basename='example')
+    router.register('auth-examples', AuthExampleViewSet, basename='auth-example')
     urlpatterns = [url(r'^api/', include(router.urls))]
 
     def setUp(self):
@@ -656,6 +660,12 @@ class BrowsableAPIRendererTests(URLPatternsTestCase):
         assert 'id="extra-actions-menu"' in resp.content.decode()
         assert '/api/examples/list_action/' in resp.content.decode()
         assert '>Extra list action<' in resp.content.decode()
+
+    def test_extra_actions_dropdown_not_authed(self):
+        resp = self.client.get('/api/unauth-examples/', HTTP_ACCEPT='text/html')
+        assert 'id="extra-actions-menu"' not in resp.content.decode()
+        assert '/api/examples/list_action/' not in resp.content.decode()
+        assert '>Extra list action<' not in resp.content.decode()
 
 
 class AdminRendererTests(TestCase):
