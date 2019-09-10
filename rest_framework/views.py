@@ -3,7 +3,7 @@ Provides an APIView class that is the base of all views in REST framework.
 """
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
-from django.db import connection, models, transaction
+from django.db import connections, models, transaction
 from django.http import Http404
 from django.http.response import HttpResponseBase
 from django.utils.cache import cc_delim_re, patch_vary_headers
@@ -62,10 +62,19 @@ def get_view_description(view, html=False):
     return description
 
 
-def set_rollback():
-    atomic_requests = connection.settings_dict.get('ATOMIC_REQUESTS', False)
-    if atomic_requests and connection.in_atomic_block:
-        transaction.set_rollback(True)
+def set_rollback(request):
+    # We need the actual view func returned by the URL resolver which gets used
+    # by Django's BaseHandler to determine `non_atomic_requests`. Be cautious
+    # when fetching it though as it won't be set when views are tested with
+    # requessts from a RequestFactory.
+    try:
+        non_atomic_requests = request.resolver_match.func._non_atomic_requests
+    except AttributeError:
+        non_atomic_requests = set()
+
+    for db in connections.all():
+        if db.settings_dict['ATOMIC_REQUESTS'] and db.alias not in non_atomic_requests:
+            transaction.set_rollback(True, using=db.alias)
 
 
 def exception_handler(exc, context):
@@ -95,7 +104,7 @@ def exception_handler(exc, context):
         else:
             data = {'detail': exc.detail}
 
-        set_rollback()
+        set_rollback(context['request'])
         return Response(data, status=exc.status_code, headers=headers)
 
     return None
@@ -223,9 +232,9 @@ class APIView(View):
         """
         return {
             'view': self,
-            'args': getattr(self, 'args', ()),
-            'kwargs': getattr(self, 'kwargs', {}),
-            'request': getattr(self, 'request', None)
+            'args': self.args,
+            'kwargs': self.kwargs,
+            'request': self.request,
         }
 
     def get_view_name(self):
