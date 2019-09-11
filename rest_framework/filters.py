@@ -90,6 +90,9 @@ class SearchFilter(BaseFilterBackend):
             parts = search_field.split(LOOKUP_SEP)
             for part in parts:
                 field = opts.get_field(part)
+                if field.get_internal_type() in ('JSONField', 'HStoreField'):
+                    # These fields support arbitrary key lookups
+                    break
                 if hasattr(field, 'get_path_info'):
                     # This field is a relation, update opts to follow the relation
                     path_info = field.get_path_info()
