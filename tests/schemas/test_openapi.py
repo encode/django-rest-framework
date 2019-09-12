@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import filters, generics, pagination, routers, serializers
 from rest_framework.compat import uritemplate
 from rest_framework.request import Request
-from rest_framework.schemas.openapi import AutoSchema, SchemaGenerator
+from rest_framework.schemas.openapi import AutoSchema, SchemaGenerator, generate_schema
 
 from . import views
 
@@ -570,3 +570,37 @@ class TestGenerator(TestCase):
         assert schema['info']['title'] == 'My title'
         assert schema['info']['version'] == '1.2.3'
         assert schema['info']['description'] == 'My description'
+
+    def test_generate_schema_with_decorator(self):
+        class MySerializer(serializers.Serializer):
+            username = serializers.CharField()
+
+        class MyView(views.APIView):
+            @generate_schema(label='My Label',
+                             description='My Description',
+                             data=MySerializer())
+            def post(self, request):
+                pass
+
+        patterns = [
+            url(r'^example/?$', MyView.as_view()),
+        ]
+        generator = SchemaGenerator(patterns=patterns)
+
+        request = create_request('/')
+        schema = generator.get_schema(request=request)
+
+        assert schema['paths']['/example/']['post']['operationId'] == 'My Label'
+        assert schema['paths']['/example/']['post']['description'] == 'My Description'
+        assert schema['paths']['/example/']['post']['requestBody'] == {
+            'content': {
+                'application/json': {
+                    'schema': {
+                        'properties': {
+                            'username': {'type': 'string'}
+                        },
+                        'required': ['username']
+                    }
+                }
+            }
+        }
