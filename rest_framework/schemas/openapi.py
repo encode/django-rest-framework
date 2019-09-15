@@ -209,11 +209,10 @@ class AutoSchema(ViewInspector):
         if not is_list_view(path, method, view):
             return []
 
-        pagination = getattr(view, 'pagination_class', None)
-        if not pagination:
+        paginator = self._get_pagninator()
+        if not paginator:
             return []
 
-        paginator = view.pagination_class()
         return paginator.get_schema_operation_parameters(view)
 
     def _map_field(self, field):
@@ -387,7 +386,7 @@ class AutoSchema(ViewInspector):
                 schema['default'] = field.default
             if field.help_text:
                 schema['description'] = str(field.help_text)
-            self._map_field_validators(field.validators, schema)
+            self._map_field_validators(field, schema)
 
             properties[field.field_name] = schema
 
@@ -399,13 +398,11 @@ class AutoSchema(ViewInspector):
 
         return result
 
-    def _map_field_validators(self, validators, schema):
+    def _map_field_validators(self, field, schema):
         """
         map field validators
-        :param list:validators: list of field validators
-        :param dict:schema: schema that the validators get added to
         """
-        for v in validators:
+        for v in field.validators:
             # "Formats such as "email", "uuid", and so on, MAY be used even though undefined by this specification."
             # https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#data-types
             if isinstance(v, EmailValidator):
@@ -415,9 +412,15 @@ class AutoSchema(ViewInspector):
             if isinstance(v, RegexValidator):
                 schema['pattern'] = v.regex.pattern
             elif isinstance(v, MaxLengthValidator):
-                schema['maxLength'] = v.limit_value
+                attr_name = 'maxLength'
+                if isinstance(field, serializers.ListField):
+                    attr_name = 'maxItems'
+                schema[attr_name] = v.limit_value
             elif isinstance(v, MinLengthValidator):
-                schema['minLength'] = v.limit_value
+                attr_name = 'minLength'
+                if isinstance(field, serializers.ListField):
+                    attr_name = 'minItems'
+                schema[attr_name] = v.limit_value
             elif isinstance(v, MaxValueValidator):
                 schema['maximum'] = v.limit_value
             elif isinstance(v, MinValueValidator):
@@ -432,15 +435,22 @@ class AutoSchema(ViewInspector):
                     schema['maximum'] = int(digits * '9') + 1
                     schema['minimum'] = -schema['maximum']
 
+    def _get_pagninator(self):
+        pagination_class = getattr(self.view, 'pagination_class', None)
+        if pagination_class:
+            return pagination_class()
+        return None
+
     def map_parsers(self, path, method):
         return list(map(attrgetter('media_type'), self.view.parser_classes))
 
     def map_renderers(self, path, method):
         media_types = []
         for renderer in self.view.renderer_classes:
-            # I assume this is not relevant to OpenAPI spec
-            if renderer != renderers.BrowsableAPIRenderer:
-                media_types.append(renderer.media_type)
+            # BrowsableAPIRenderer not relevant to OpenAPI spec
+            if renderer == renderers.BrowsableAPIRenderer:
+                continue
+            media_types.append(renderer.media_type)
         return media_types
 
     def _get_serializer(self, method, path):
@@ -513,6 +523,9 @@ class AutoSchema(ViewInspector):
                 'type': 'array',
                 'items': item_schema,
             }
+            paginator = self._get_pagninator()
+            if paginator:
+                response_schema = paginator.get_paginated_response_schema(response_schema)
         else:
             response_schema = item_schema
 

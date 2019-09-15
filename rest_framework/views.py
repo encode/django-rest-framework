@@ -356,7 +356,15 @@ class APIView(View):
                 throttle_durations.append(throttle.wait())
 
         if throttle_durations:
-            self.throttled(request, max(throttle_durations))
+            # Filter out `None` values which may happen in case of config / rate
+            # changes, see #1438
+            durations = [
+                duration for duration in throttle_durations
+                if duration is not None
+            ]
+
+            duration = max(durations, default=None)
+            self.throttled(request, duration)
 
     def determine_version(self, request, *args, **kwargs):
         """
