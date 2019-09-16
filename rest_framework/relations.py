@@ -117,7 +117,7 @@ class RelatedField(Field):
         super().__init__(**kwargs)
 
     def __new__(cls, *args, **kwargs):
-        # We override this method in order to automagically create
+        # We override this method in order to automatically create
         # `ManyRelatedField` classes instead when `many=True` is set.
         if kwargs.pop('many', False):
             return cls.many_init(*args, **kwargs)
