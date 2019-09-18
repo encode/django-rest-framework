@@ -451,6 +451,9 @@ class SimpleRateThrottleTests(TestCase):
     def setUp(self):
         SimpleRateThrottle.scope = 'anon'
 
+    def tearDown(self):
+        SimpleRateThrottle.rate = None
+
     def test_get_rate_raises_error_if_scope_is_missing(self):
         throttle = SimpleRateThrottle()
         with pytest.raises(ImproperlyConfigured):
@@ -461,6 +464,48 @@ class SimpleRateThrottleTests(TestCase):
         SimpleRateThrottle.scope = 'invalid scope'
         with pytest.raises(ImproperlyConfigured):
             SimpleRateThrottle()
+
+    def test_throttle_raises_error_if_rate_is_incorrect(self):
+        SimpleRateThrottle.rate = 'rate'
+        with pytest.raises(ImproperlyConfigured):
+            SimpleRateThrottle()
+
+        SimpleRateThrottle.rate = 'rate/hour'
+        with pytest.raises(ImproperlyConfigured):
+            SimpleRateThrottle()
+
+        SimpleRateThrottle.rate = '100/century'
+        with pytest.raises(ImproperlyConfigured):
+            SimpleRateThrottle()
+
+        SimpleRateThrottle.rate = '100/10century'
+        with pytest.raises(ImproperlyConfigured):
+            SimpleRateThrottle()
+
+    def test_parse_rate_returns_correct_rate(self):
+        rate_str = '10/h'
+        SimpleRateThrottle.rate = rate_str
+        rate = SimpleRateThrottle().parse_rate(rate_str)
+        assert rate == (10, 3600)
+
+        rate_str = '30/hour'
+        SimpleRateThrottle.rate = rate_str
+        rate = SimpleRateThrottle().parse_rate(rate_str)
+        assert rate == (30, 3600)
+
+        rate_str = '30/10min'
+        SimpleRateThrottle.rate = rate_str
+        rate = SimpleRateThrottle().parse_rate(rate_str)
+        assert rate == (30, 10 * 60)
+
+        rate_str = '100/30seconds'
+        SimpleRateThrottle.rate = rate_str
+        rate = SimpleRateThrottle().parse_rate(rate_str)
+        assert rate == (100, 30)
+
+        SimpleRateThrottle.rate = '100/10d'
+        rate = SimpleRateThrottle().parse_rate('100/10d')
+        assert rate == (100, 10 * 86400)
 
     def test_parse_rate_returns_tuple_with_none_if_rate_not_provided(self):
         rate = SimpleRateThrottle().parse_rate(None)

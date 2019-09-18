@@ -1,6 +1,7 @@
 """
 Provides various throttling policies.
 """
+import re
 import time
 
 from django.core.cache import cache as default_cache
@@ -101,9 +102,26 @@ class SimpleRateThrottle(BaseThrottle):
         """
         if rate is None:
             return (None, None)
-        num, period = rate.split('/')
-        num_requests = int(num)
-        duration = {'s': 1, 'm': 60, 'h': 3600, 'd': 86400}[period[0]]
+
+        try:
+            num, period = rate.split('/')
+            num_requests = int(num)
+            # Get rate multiplier value if available
+            period_mult, _ = re.split('[s|m|h|d]', period, maxsplit=1)
+            period_char = re.findall('[s|m|h|d]', period)[0]
+        except ValueError:
+            msg = "Incorrect throttle rate set for '%s' scope" % self.scope
+            raise ImproperlyConfigured(msg)
+
+        try:
+            period_mult = int(period_mult)
+        except ValueError:
+            period_mult = 1
+
+        duration = {'s': 1 * period_mult,
+                    'm': 60 * period_mult,
+                    'h': 3600 * period_mult,
+                    'd': 86400 * period_mult}[period_char]
         return (num_requests, duration)
 
     def allow_request(self, request, view):
