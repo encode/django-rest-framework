@@ -1,6 +1,6 @@
 ---
 source:
-    - schemas.py
+    - schemas
 ---
 
 # Schema
