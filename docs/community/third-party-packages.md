@@ -212,6 +212,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [drf-flex-fields][drf-flex-fields] - Serializer providing dynamic field expansion and sparse field sets via URL parameters.
 * [drf-action-serializer][drf-action-serializer] - Serializer providing per-action fields config for use with ViewSets to prevent having to write multiple serializers.
 * [django-restql][django-restql] - Turn your REST API into a GraphQL like API(It allows clients to control which fields will be sent in a response, supports both flat and nested fields, uses GraphQL like syntax).
+* [djangorestframework-dataclasses][djangorestframework-dataclasses] - Serializer providing automatic field generation for Python dataclasses, like the built-in ModelSerializer does for models.
 
 ### Serializer fields
 
@@ -350,5 +351,6 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [django-restql]: https://github.com/yezyilomo/django-restql
 [drf-flex-fields]: https://github.com/rsinger86/drf-flex-fields
 [drf-action-serializer]: https://github.com/gregschmit/drf-action-serializer
+[djangorestframework-dataclasses]: https://github.com/oxan/djangorestframework-dataclasses
 [djangorestframework-mvt]: https://github.com/corteva/djangorestframework-mvt
 [django-rest-framework-guardian]: https://github.com/rpkilby/django-rest-framework-guardian

@@ -40,6 +40,35 @@ You can determine your currently installed version using `pip show`:
 
 ## 3.10.x series
 
+### 3.10.3
+
+* Include API version in OpenAPI schema generation, defaulting to empty string.
+* Add pagination properties to OpenAPI response schemas.
+* Add missing "description" property to OpenAPI response schemas.
+* Only include "required" for non-empty cases in OpenAPI schemas.
+* Fix response schemas for "DELETE" case in OpenAPI schemas.
+* Use an array type for list view response schemas.
+* Use consistent `lowerInitialCamelCase` style in OpenAPI operation IDs.
+* Fix `minLength`/`maxLength`/`minItems`/`maxItems` properties in OpenAPI schemas.
+* Only call `FileField.url` once in serialization, for improved performance.
+* Fix an edge case where throttling calcualtions could error after a configuration change.
+
+* TODO
+
+### 3.10.2
+
+**Date**: 29th July 2019
+
+* Various `OpenAPI` schema fixes.
+* Ability to specify urlconf in include_docs_urls.
+
+### 3.10.1
+
+**Date**: 17th July 2019
+
+* Don't include autocomplete fields on TokenAuth admin, since it forces constraints on custom user models & admin.
+* Require `uritemplate` for OpenAPI schema generation, but not `coreapi`.
+
 ### 3.10.0
 
 **Date**: [15th July 2019][3.10.0-milestone]

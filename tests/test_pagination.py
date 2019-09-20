@@ -259,6 +259,37 @@ class TestPageNumberPagination:
         with pytest.raises(exceptions.NotFound):
             self.paginate_queryset(request)
 
+    def test_get_paginated_response_schema(self):
+        unpaginated_schema = {
+            'type': 'object',
+            'item': {
+                'properties': {
+                    'test-property': {
+                        'type': 'integer',
+                    },
+                },
+            },
+        }
+
+        assert self.pagination.get_paginated_response_schema(unpaginated_schema) == {
+            'type': 'object',
+            'properties': {
+                'count': {
+                    'type': 'integer',
+                    'example': 123,
+                },
+                'next': {
+                    'type': 'string',
+                    'nullable': True,
+                },
+                'previous': {
+                    'type': 'string',
+                    'nullable': True,
+                },
+                'results': unpaginated_schema,
+            },
+        }
+
 
 class TestPageNumberPaginationOverride:
     """
@@ -534,6 +565,37 @@ class TestLimitOffset:
         assert queryset == list(range(51, 66))
         assert content.get('next') == next_url
         assert content.get('previous') == prev_url
+
+    def test_get_paginated_response_schema(self):
+        unpaginated_schema = {
+            'type': 'object',
+            'item': {
+                'properties': {
+                    'test-property': {
+                        'type': 'integer',
+                    },
+                },
+            },
+        }
+
+        assert self.pagination.get_paginated_response_schema(unpaginated_schema) == {
+            'type': 'object',
+            'properties': {
+                'count': {
+                    'type': 'integer',
+                    'example': 123,
+                },
+                'next': {
+                    'type': 'string',
+                    'nullable': True,
+                },
+                'previous': {
+                    'type': 'string',
+                    'nullable': True,
+                },
+                'results': unpaginated_schema,
+            },
+        }
 
 
 class CursorPaginationTestsMixin:
@@ -833,6 +895,33 @@ class CursorPaginationTestsMixin:
         assert previous is None
         assert current == [1, 1, 1, 1, 1]
         assert next == [1, 2, 3, 4, 4]
+
+    def test_get_paginated_response_schema(self):
+        unpaginated_schema = {
+            'type': 'object',
+            'item': {
+                'properties': {
+                    'test-property': {
+                        'type': 'integer',
+                    },
+                },
+            },
+        }
+
+        assert self.pagination.get_paginated_response_schema(unpaginated_schema) == {
+            'type': 'object',
+            'properties': {
+                'next': {
+                    'type': 'string',
+                    'nullable': True,
+                },
+                'previous': {
+                    'type': 'string',
+                    'nullable': True,
+                },
+                'results': unpaginated_schema,
+            },
+        }
 
 
 class TestCursorPagination(CursorPaginationTestsMixin):
