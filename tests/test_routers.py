@@ -2,11 +2,10 @@ import warnings
 from collections import namedtuple
 
 import pytest
-from django.conf.urls import include, url
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.test import TestCase, override_settings
-from django.urls import resolve, reverse
+from django.urls import resolve, reverse, include, path
 
 from rest_framework import (
     RemovedInDRF311Warning, permissions, serializers, viewsets
@@ -122,7 +121,7 @@ class TestSimpleRouter(URLPatternsTestCase, TestCase):
     router.register('basics', BasicViewSet, basename='basic')
 
     urlpatterns = [
-        url(r'^api/', include(router.urls)),
+        path('api/', include(router.urls)),
     ]
 
     def setUp(self):
@@ -167,8 +166,13 @@ class TestSimpleRouter(URLPatternsTestCase, TestCase):
 
 class TestRootView(URLPatternsTestCase, TestCase):
     urlpatterns = [
-        url(r'^non-namespaced/', include(namespaced_router.urls)),
-        url(r'^namespaced/', include((namespaced_router.urls, 'namespaced'), namespace='namespaced')),
+        path('non-namespaced/', include(namespaced_router.urls)),
+        path(
+            'namespaced/',
+            include(
+                (namespaced_router.urls, 'namespaced'),
+                namespace='namespaced')
+        ),
     ]
 
     def test_retrieve_namespaced_root(self):
@@ -185,8 +189,8 @@ class TestCustomLookupFields(URLPatternsTestCase, TestCase):
     Ensure that custom lookup fields are correctly routed.
     """
     urlpatterns = [
-        url(r'^example/', include(notes_router.urls)),
-        url(r'^example2/', include(kwarged_notes_router.urls)),
+        path('example/', include(notes_router.urls)),
+        path('example2/', include(kwarged_notes_router.urls)),
     ]
 
     def setUp(self):
@@ -243,8 +247,8 @@ class TestLookupUrlKwargs(URLPatternsTestCase, TestCase):
     Setup a deep lookup_field, but map it to a simple URL kwarg.
     """
     urlpatterns = [
-        url(r'^example/', include(notes_router.urls)),
-        url(r'^example2/', include(kwarged_notes_router.urls)),
+        path('example/', include(notes_router.urls)),
+        path('example2/', include(kwarged_notes_router.urls)),
     ]
 
     def setUp(self):

@@ -1,7 +1,7 @@
 from collections import OrderedDict
 
 import pytest
-from django.conf.urls import include, url
+from django.urls import include, path, re_path
 from django.db import models
 from django.test import TestCase, override_settings
 
@@ -88,7 +88,7 @@ router.register(r'names', ActionNamesViewSet, basename='names')
 
 
 urlpatterns = [
-    url(r'^api/', include(router.urls)),
+    path('api/', include(router.urls)),
 ]
 
 
