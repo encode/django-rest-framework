@@ -2,7 +2,7 @@ https://github.com/bazh/jquery.json-view/
 
 The MIT License (MIT)
 
-Copyright (c) 2014 bazh. (http://github.com/bazh)
+Copyright (c) 2014 bazh. (https://github.com/bazh)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in

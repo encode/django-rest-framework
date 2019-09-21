@@ -1,7 +1,7 @@
 {% load rest_framework %}
 
 <!-- Modal -->
-<div class="modal fade api-modal" id="{{ section_key }}_{{ link_key }}_modal" tabindex="-1" role="dialog" aria-labelledby="api explorer modal">
+<div class="modal fade api-modal" id="{{ section_key }}_{{ link_key|slugify }}_modal" tabindex="-1" role="dialog" aria-labelledby="api explorer modal">
 <div class="modal-dialog modal-lg" role="document">
   <div class="modal-content">
     <div class="modal-header">

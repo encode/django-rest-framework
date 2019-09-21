@@ -1,4 +1,7 @@
-source: versioning.py
+---
+source:
+    - versioning.py
+---
 
 # Versioning
 
@@ -37,7 +40,7 @@ The `reverse` function included by REST framework ties in with the versioning sc
 
 The above function will apply any URL transformations appropriate to the request version. For example:
 
-* If `NamespacedVersioning` was being used, and the API version was 'v1', then the URL lookup used would be `'v1:bookings-list'`, which might resolve to a URL like `http://example.org/v1/bookings/`.
+* If `NamespaceVersioning` was being used, and the API version was 'v1', then the URL lookup used would be `'v1:bookings-list'`, which might resolve to a URL like `http://example.org/v1/bookings/`.
 * If `QueryParameterVersioning` was being used, and the API version was `1.0`, then the returned URL might be something like `http://example.org/bookings/?version=1.0`
 
 #### Versioned APIs and hyperlinked serializers
@@ -183,7 +186,7 @@ By default this implementation expects the hostname to match this simple regular
 
 Note that the first group is enclosed in brackets, indicating that this is the matched portion of the hostname.
 
-The `HostNameVersioning` scheme can be awkward to use in debug mode as you will typically be accessing a raw IP address such as `127.0.0.1`. There are various online services which you to [access localhost with a custom subdomain][lvh] which you may find helpful in this case.
+The `HostNameVersioning` scheme can be awkward to use in debug mode as you will typically be accessing a raw IP address such as `127.0.0.1`. There are various online tutorials on how to [access localhost with a custom subdomain][lvh] which you may find helpful in this case.
 
 Hostname based versioning can be particularly useful if you have requirements to route incoming requests to different servers based on the version, as you can configure different DNS records for different API versions.
 
@@ -211,10 +214,10 @@ The following example uses a custom `X-API-Version` header to determine the requ
 
 If your versioning scheme is based on the request URL, you will also want to alter how versioned URLs are determined. In order to do so you should override the `.reverse()` method on the class. See the source code for examples.
 
-[cite]: http://www.slideshare.net/evolve_conference/201308-fielding-evolve/31
-[roy-fielding-on-versioning]: http://www.infoq.com/articles/roy-fielding-on-versioning
+[cite]: https://www.slideshare.net/evolve_conference/201308-fielding-evolve/31
+[roy-fielding-on-versioning]: https://www.infoq.com/articles/roy-fielding-on-versioning
 [klabnik-guidelines]: http://blog.steveklabnik.com/posts/2011-07-03-nobody-understands-rest-or-http#i_want_my_api_to_be_versioned
 [heroku-guidelines]: https://github.com/interagent/http-api-design/blob/master/en/foundations/require-versioning-in-the-accepts-header.md
-[json-parameters]: http://tools.ietf.org/html/rfc4627#section-6
-[vendor-media-type]: http://en.wikipedia.org/wiki/Internet_media_type#Vendor_tree
+[json-parameters]: https://tools.ietf.org/html/rfc4627#section-6
+[vendor-media-type]: https://en.wikipedia.org/wiki/Internet_media_type#Vendor_tree
 [lvh]: https://reinteractive.net/posts/199-developing-and-testing-rails-applications-with-subdomains

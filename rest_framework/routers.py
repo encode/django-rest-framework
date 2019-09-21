@@ -13,38 +13,34 @@ For example, you might have a `urls.py` that looks something like this:
 
     urlpatterns = router.urls
 """
-from __future__ import unicode_literals
-
 import itertools
 import warnings
 from collections import OrderedDict, namedtuple
 
 from django.conf.urls import url
 from django.core.exceptions import ImproperlyConfigured
+from django.urls import NoReverseMatch
+from django.utils.deprecation import RenameMethodsBase
 
-from rest_framework import views
-from rest_framework.compat import NoReverseMatch
+from rest_framework import RemovedInDRF311Warning, views
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from rest_framework.schemas import SchemaGenerator, SchemaView
+from rest_framework.schemas import SchemaGenerator
+from rest_framework.schemas.views import SchemaView
 from rest_framework.settings import api_settings
 from rest_framework.urlpatterns import format_suffix_patterns
 
-Route = namedtuple('Route', ['url', 'mapping', 'name', 'initkwargs'])
-DynamicDetailRoute = namedtuple('DynamicDetailRoute', ['url', 'name', 'initkwargs'])
-DynamicListRoute = namedtuple('DynamicListRoute', ['url', 'name', 'initkwargs'])
+Route = namedtuple('Route', ['url', 'mapping', 'name', 'detail', 'initkwargs'])
+DynamicRoute = namedtuple('DynamicRoute', ['url', 'name', 'detail', 'initkwargs'])
 
 
-def replace_methodname(format_string, methodname):
+def escape_curly_brackets(url_path):
     """
-    Partially format a format_string, swapping out any
-    '{methodname}' or '{methodnamehyphen}' components.
+    Double brackets in regex of url_path for escape string formatting
     """
-    methodnamehyphen = methodname.replace('_', '-')
-    ret = format_string
-    ret = ret.replace('{methodname}', methodname)
-    ret = ret.replace('{methodnamehyphen}', methodnamehyphen)
-    return ret
+    if ('{' and '}') in url_path:
+        url_path = url_path.replace('{', '{{').replace('}', '}}')
+    return url_path
 
 
 def flatten(list_of_lists):
@@ -54,21 +50,41 @@ def flatten(list_of_lists):
     return itertools.chain(*list_of_lists)
 
 
-class BaseRouter(object):
+class RenameRouterMethods(RenameMethodsBase):
+    renamed_methods = (
+        ('get_default_base_name', 'get_default_basename', RemovedInDRF311Warning),
+    )
+
+
+class BaseRouter(metaclass=RenameRouterMethods):
     def __init__(self):
         self.registry = []
 
-    def register(self, prefix, viewset, base_name=None):
-        if base_name is None:
-            base_name = self.get_default_base_name(viewset)
-        self.registry.append((prefix, viewset, base_name))
+    def register(self, prefix, viewset, basename=None, base_name=None):
+        if base_name is not None:
+            msg = "The `base_name` argument is pending deprecation in favor of `basename`."
+            warnings.warn(msg, RemovedInDRF311Warning, 2)
 
-    def get_default_base_name(self, viewset):
+        assert not (basename and base_name), (
+            "Do not provide both the `basename` and `base_name` arguments.")
+
+        if basename is None:
+            basename = base_name
+
+        if basename is None:
+            basename = self.get_default_basename(viewset)
+        self.registry.append((prefix, viewset, basename))
+
+        # invalidate the urls cache
+        if hasattr(self, '_urls'):
+            del self._urls
+
+    def get_default_basename(self, viewset):
         """
-        If `base_name` is not specified, attempt to automatically determine
+        If `basename` is not specified, attempt to automatically determine
         it from the viewset.
         """
-        raise NotImplementedError('get_default_base_name must be overridden')
+        raise NotImplementedError('get_default_basename must be overridden')
 
     def get_urls(self):
         """
@@ -94,14 +110,15 @@ class SimpleRouter(BaseRouter):
                 'post': 'create'
             },
             name='{basename}-list',
+            detail=False,
             initkwargs={'suffix': 'List'}
         ),
-        # Dynamically generated list routes.
-        # Generated using @list_route decorator
-        # on methods of the viewset.
-        DynamicListRoute(
-            url=r'^{prefix}/{methodname}{trailing_slash}$',
-            name='{basename}-{methodnamehyphen}',
+        # Dynamically generated list routes. Generated using
+        # @action(detail=False) decorator on methods of the viewset.
+        DynamicRoute(
+            url=r'^{prefix}/{url_path}{trailing_slash}$',
+            name='{basename}-{url_name}',
+            detail=False,
             initkwargs={}
         ),
         # Detail route.
@@ -114,29 +131,31 @@ class SimpleRouter(BaseRouter):
                 'delete': 'destroy'
             },
             name='{basename}-detail',
+            detail=True,
             initkwargs={'suffix': 'Instance'}
         ),
-        # Dynamically generated detail routes.
-        # Generated using @detail_route decorator on methods of the viewset.
-        DynamicDetailRoute(
-            url=r'^{prefix}/{lookup}/{methodname}{trailing_slash}$',
-            name='{basename}-{methodnamehyphen}',
+        # Dynamically generated detail routes. Generated using
+        # @action(detail=True) decorator on methods of the viewset.
+        DynamicRoute(
+            url=r'^{prefix}/{lookup}/{url_path}{trailing_slash}$',
+            name='{basename}-{url_name}',
+            detail=True,
             initkwargs={}
         ),
     ]
 
     def __init__(self, trailing_slash=True):
-        self.trailing_slash = trailing_slash and '/' or ''
-        super(SimpleRouter, self).__init__()
+        self.trailing_slash = '/' if trailing_slash else ''
+        super().__init__()
 
-    def get_default_base_name(self, viewset):
+    def get_default_basename(self, viewset):
         """
-        If `base_name` is not specified, attempt to automatically determine
+        If `basename` is not specified, attempt to automatically determine
         it from the viewset.
         """
         queryset = getattr(viewset, 'queryset', None)
 
-        assert queryset is not None, '`base_name` argument not specified, and could ' \
+        assert queryset is not None, '`basename` argument not specified, and could ' \
             'not automatically determine the name from the viewset, as ' \
             'it does not have a `.queryset` attribute.'
 
@@ -151,56 +170,46 @@ class SimpleRouter(BaseRouter):
         # converting to list as iterables are good for one pass, known host needs to be checked again and again for
         # different functions.
         known_actions = list(flatten([route.mapping.values() for route in self.routes if isinstance(route, Route)]))
+        extra_actions = viewset.get_extra_actions()
 
-        # Determine any `@detail_route` or `@list_route` decorated methods on the viewset
-        detail_routes = []
-        list_routes = []
-        for methodname in dir(viewset):
-            attr = getattr(viewset, methodname)
-            httpmethods = getattr(attr, 'bind_to_methods', None)
-            detail = getattr(attr, 'detail', True)
-            if httpmethods:
-                # checking method names against the known actions list
-                if methodname in known_actions:
-                    raise ImproperlyConfigured('Cannot use @detail_route or @list_route '
-                                               'decorators on method "%s" '
-                                               'as it is an existing route' % methodname)
-                httpmethods = [method.lower() for method in httpmethods]
-                if detail:
-                    detail_routes.append((httpmethods, methodname))
-                else:
-                    list_routes.append((httpmethods, methodname))
+        # checking action names against the known actions list
+        not_allowed = [
+            action.__name__ for action in extra_actions
+            if action.__name__ in known_actions
+        ]
+        if not_allowed:
+            msg = ('Cannot use the @action decorator on the following '
+                   'methods, as they are existing routes: %s')
+            raise ImproperlyConfigured(msg % ', '.join(not_allowed))
 
-        def _get_dynamic_routes(route, dynamic_routes):
-            ret = []
-            for httpmethods, methodname in dynamic_routes:
-                method_kwargs = getattr(viewset, methodname).kwargs
-                initkwargs = route.initkwargs.copy()
-                initkwargs.update(method_kwargs)
-                url_path = initkwargs.pop("url_path", None) or methodname
-                url_name = initkwargs.pop("url_name", None) or url_path
-                ret.append(Route(
-                    url=replace_methodname(route.url, url_path),
-                    mapping={httpmethod: methodname for httpmethod in httpmethods},
-                    name=replace_methodname(route.name, url_name),
-                    initkwargs=initkwargs,
-                ))
+        # partition detail and list actions
+        detail_actions = [action for action in extra_actions if action.detail]
+        list_actions = [action for action in extra_actions if not action.detail]
 
-            return ret
-
-        ret = []
+        routes = []
         for route in self.routes:
-            if isinstance(route, DynamicDetailRoute):
-                # Dynamic detail routes (@detail_route decorator)
-                ret += _get_dynamic_routes(route, detail_routes)
-            elif isinstance(route, DynamicListRoute):
-                # Dynamic list routes (@list_route decorator)
-                ret += _get_dynamic_routes(route, list_routes)
+            if isinstance(route, DynamicRoute) and route.detail:
+                routes += [self._get_dynamic_route(route, action) for action in detail_actions]
+            elif isinstance(route, DynamicRoute) and not route.detail:
+                routes += [self._get_dynamic_route(route, action) for action in list_actions]
             else:
-                # Standard route
-                ret.append(route)
+                routes.append(route)
 
-        return ret
+        return routes
+
+    def _get_dynamic_route(self, route, action):
+        initkwargs = route.initkwargs.copy()
+        initkwargs.update(action.kwargs)
+
+        url_path = escape_curly_brackets(action.url_path)
+
+        return Route(
+            url=route.url.replace('{url_path}', url_path),
+            mapping=action.mapping,
+            name=route.name.replace('{url_name}', action.url_name),
+            detail=route.detail,
+            initkwargs=initkwargs,
+        )
 
     def get_method_map(self, viewset, method_map):
         """
@@ -268,7 +277,13 @@ class SimpleRouter(BaseRouter):
                 if not prefix and regex[:2] == '^/':
                     regex = '^' + regex[2:]
 
-                view = viewset.as_view(mapping, **route.initkwargs)
+                initkwargs = route.initkwargs.copy()
+                initkwargs.update({
+                    'basename': basename,
+                    'detail': route.detail,
+                })
+
+                view = viewset.as_view(mapping, **initkwargs)
                 name = route.name.format(basename=basename)
                 ret.append(url(regex, view, name=name))
 
@@ -280,7 +295,7 @@ class APIRootView(views.APIView):
     The default basic root view for DefaultRouter
     """
     _ignore_model_permissions = True
-    exclude_from_schema = True
+    schema = None  # exclude from schema
     api_root_dict = None
 
     def get(self, request, *args, **kwargs):
@@ -319,40 +334,11 @@ class DefaultRouter(SimpleRouter):
     SchemaGenerator = SchemaGenerator
 
     def __init__(self, *args, **kwargs):
-        if 'schema_title' in kwargs:
-            warnings.warn(
-                "Including a schema directly via a router is now deprecated. "
-                "Use `get_schema_view()` instead.",
-                DeprecationWarning
-            )
-        if 'schema_renderers' in kwargs:
-            assert 'schema_title' in kwargs, 'Missing "schema_title" argument.'
-        if 'schema_url' in kwargs:
-            assert 'schema_title' in kwargs, 'Missing "schema_title" argument.'
-        self.schema_title = kwargs.pop('schema_title', None)
-        self.schema_url = kwargs.pop('schema_url', None)
-        self.schema_renderers = kwargs.pop('schema_renderers', self.default_schema_renderers)
-
         if 'root_renderers' in kwargs:
             self.root_renderers = kwargs.pop('root_renderers')
         else:
             self.root_renderers = list(api_settings.DEFAULT_RENDERER_CLASSES)
-        super(DefaultRouter, self).__init__(*args, **kwargs)
-
-    def get_schema_root_view(self, api_urls=None):
-        """
-        Return a schema root view.
-        """
-        schema_generator = self.SchemaGenerator(
-            title=self.schema_title,
-            url=self.schema_url,
-            patterns=api_urls
-        )
-
-        return self.APISchemaView.as_view(
-            renderer_classes=self.schema_renderers,
-            schema_generator=schema_generator,
-        )
+        super().__init__(*args, **kwargs)
 
     def get_api_root_view(self, api_urls=None):
         """
@@ -370,13 +356,10 @@ class DefaultRouter(SimpleRouter):
         Generate the list of URL patterns, including a default root view
         for the API, and appending `.json` style format suffixes.
         """
-        urls = super(DefaultRouter, self).get_urls()
+        urls = super().get_urls()
 
         if self.include_root_view:
-            if self.schema_title:
-                view = self.get_schema_root_view(api_urls=urls)
-            else:
-                view = self.get_api_root_view(api_urls=urls)
+            view = self.get_api_root_view(api_urls=urls)
             root_url = url(r'^$', view, name=self.root_view_name)
             urls.append(root_url)
 

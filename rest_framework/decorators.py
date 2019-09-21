@@ -3,19 +3,17 @@ The most important decorator in this module is `@api_view`, which is used
 for writing function-based views with REST framework.
 
 There are also various decorators for setting the API policies on function
-based views, as well as the `@detail_route` and `@list_route` decorators, which are
-used to annotate methods on viewsets that should be included by routers.
+based views, as well as the `@action` decorator, which is used to annotate
+methods on viewsets that should be included by routers.
 """
-from __future__ import unicode_literals
-
 import types
 
-from django.utils import six
+from django.forms.utils import pretty_name
 
 from rest_framework.views import APIView
 
 
-def api_view(http_method_names=None, exclude_from_schema=False):
+def api_view(http_method_names=None):
     """
     Decorator that converts a function-based view into an APIView subclass.
     Takes a list of allowed methods for the view as an argument.
@@ -25,7 +23,7 @@ def api_view(http_method_names=None, exclude_from_schema=False):
     def decorator(func):
 
         WrappedAPIView = type(
-            six.PY3 and 'WrappedAPIView' or b'WrappedAPIView',
+            'WrappedAPIView',
             (APIView,),
             {'__doc__': func.__doc__}
         )
@@ -45,7 +43,7 @@ def api_view(http_method_names=None, exclude_from_schema=False):
         assert isinstance(http_method_names, (list, tuple)), \
             '@api_view expected a list of strings, received %s' % type(http_method_names).__name__
 
-        allowed_methods = set(http_method_names) | set(('options',))
+        allowed_methods = set(http_method_names) | {'options'}
         WrappedAPIView.http_method_names = [method.lower() for method in allowed_methods]
 
         def handler(self, *args, **kwargs):
@@ -72,8 +70,11 @@ def api_view(http_method_names=None, exclude_from_schema=False):
         WrappedAPIView.permission_classes = getattr(func, 'permission_classes',
                                                     APIView.permission_classes)
 
-        WrappedAPIView.exclude_from_schema = exclude_from_schema
+        WrappedAPIView.schema = getattr(func, 'schema',
+                                        APIView.schema)
+
         return WrappedAPIView.as_view()
+
     return decorator
 
 
@@ -112,29 +113,102 @@ def permission_classes(permission_classes):
     return decorator
 
 
-def detail_route(methods=None, **kwargs):
-    """
-    Used to mark a method on a ViewSet that should be routed for detail requests.
-    """
-    methods = ['get'] if (methods is None) else methods
-
+def schema(view_inspector):
     def decorator(func):
-        func.bind_to_methods = methods
-        func.detail = True
-        func.kwargs = kwargs
+        func.schema = view_inspector
         return func
     return decorator
 
 
-def list_route(methods=None, **kwargs):
+def action(methods=None, detail=None, url_path=None, url_name=None, **kwargs):
     """
-    Used to mark a method on a ViewSet that should be routed for list requests.
+    Mark a ViewSet method as a routable action.
+
+    Set the `detail` boolean to determine if this action should apply to
+    instance/detail requests or collection/list requests.
     """
     methods = ['get'] if (methods is None) else methods
+    methods = [method.lower() for method in methods]
+
+    assert detail is not None, (
+        "@action() missing required argument: 'detail'"
+    )
+
+    # name and suffix are mutually exclusive
+    if 'name' in kwargs and 'suffix' in kwargs:
+        raise TypeError("`name` and `suffix` are mutually exclusive arguments.")
 
     def decorator(func):
-        func.bind_to_methods = methods
-        func.detail = False
+        func.mapping = MethodMapper(func, methods)
+
+        func.detail = detail
+        func.url_path = url_path if url_path else func.__name__
+        func.url_name = url_name if url_name else func.__name__.replace('_', '-')
         func.kwargs = kwargs
+
+        # Set descriptive arguments for viewsets
+        if 'name' not in kwargs and 'suffix' not in kwargs:
+            func.kwargs['name'] = pretty_name(func.__name__)
+        func.kwargs['description'] = func.__doc__ or None
+
         return func
     return decorator
+
+
+class MethodMapper(dict):
+    """
+    Enables mapping HTTP methods to different ViewSet methods for a single,
+    logical action.
+
+    Example usage:
+
+        class MyViewSet(ViewSet):
+
+            @action(detail=False)
+            def example(self, request, **kwargs):
+                ...
+
+            @example.mapping.post
+            def create_example(self, request, **kwargs):
+                ...
+    """
+
+    def __init__(self, action, methods):
+        self.action = action
+        for method in methods:
+            self[method] = self.action.__name__
+
+    def _map(self, method, func):
+        assert method not in self, (
+            "Method '%s' has already been mapped to '.%s'." % (method, self[method]))
+        assert func.__name__ != self.action.__name__, (
+            "Method mapping does not behave like the property decorator. You "
+            "cannot use the same method name for each mapping declaration.")
+
+        self[method] = func.__name__
+
+        return func
+
+    def get(self, func):
+        return self._map('get', func)
+
+    def post(self, func):
+        return self._map('post', func)
+
+    def put(self, func):
+        return self._map('put', func)
+
+    def patch(self, func):
+        return self._map('patch', func)
+
+    def delete(self, func):
+        return self._map('delete', func)
+
+    def head(self, func):
+        return self._map('head', func)
+
+    def options(self, func):
+        return self._map('options', func)
+
+    def trace(self, func):
+        return self._map('trace', func)

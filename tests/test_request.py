@@ -1,26 +1,40 @@
 """
 Tests for content parsing, and form-overloaded content parsing.
 """
-from __future__ import unicode_literals
+import os.path
+import tempfile
 
+import pytest
 from django.conf.urls import url
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.middleware import AuthenticationMiddleware
 from django.contrib.auth.models import User
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.http.request import RawPostDataException
 from django.test import TestCase, override_settings
-from django.utils import six
 
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
-from rest_framework.compat import is_anonymous
 from rest_framework.parsers import BaseParser, FormParser, MultiPartParser
-from rest_framework.request import Request
+from rest_framework.request import Request, WrappedAttributeError
 from rest_framework.response import Response
 from rest_framework.test import APIClient, APIRequestFactory
 from rest_framework.views import APIView
 
 factory = APIRequestFactory()
+
+
+class TestInitializer(TestCase):
+    def test_request_type(self):
+        request = Request(factory.get('/'))
+
+        message = (
+            'The `request` argument must be an instance of '
+            '`django.http.HttpRequest`, not `rest_framework.request.Request`.'
+        )
+        with self.assertRaisesMessage(AssertionError, message):
+            Request(request)
 
 
 class PlainTextParser(BaseParser):
@@ -65,7 +79,7 @@ class TestContentParsing(TestCase):
         Ensure request.data returns content for POST request with
         non-form content.
         """
-        content = six.b('qwerty')
+        content = b'qwerty'
         content_type = 'text/plain'
         request = Request(factory.post('/', content, content_type=content_type))
         request.parsers = (PlainTextParser(),)
@@ -87,8 +101,8 @@ class TestContentParsing(TestCase):
         upload = SimpleUploadedFile("file.txt", b"file_content")
         request = Request(factory.post('/', {'upload': upload}))
         request.parsers = (FormParser(), MultiPartParser())
-        assert list(request.POST.keys()) == []
-        assert list(request.FILES.keys()) == ['upload']
+        assert list(request.POST) == []
+        assert list(request.FILES) == ['upload']
 
     def test_standard_behaviour_determines_form_content_PUT(self):
         """
@@ -104,7 +118,7 @@ class TestContentParsing(TestCase):
         Ensure request.data returns content for PUT request with
         non-form content.
         """
-        content = six.b('qwerty')
+        content = b'qwerty'
         content_type = 'text/plain'
         request = Request(factory.put('/', content, content_type=content_type))
         request.parsers = (PlainTextParser(), )
@@ -120,9 +134,43 @@ class MockView(APIView):
 
         return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
+class EchoView(APIView):
+    def post(self, request):
+        return Response(status=status.HTTP_200_OK, data=request.data)
+
+
+class FileUploadView(APIView):
+    def post(self, request):
+        filenames = [file.temporary_file_path() for file in request.FILES.values()]
+
+        for filename in filenames:
+            assert os.path.exists(filename)
+
+        return Response(status=status.HTTP_200_OK, data=filenames)
+
+
 urlpatterns = [
     url(r'^$', MockView.as_view()),
+    url(r'^echo/$', EchoView.as_view()),
+    url(r'^upload/$', FileUploadView.as_view())
 ]
+
+
+@override_settings(
+    ROOT_URLCONF='tests.test_request',
+    FILE_UPLOAD_HANDLERS=['django.core.files.uploadhandler.TemporaryFileUploadHandler'])
+class FileUploadTests(TestCase):
+
+    def test_fileuploads_closed_at_request_end(self):
+        with tempfile.NamedTemporaryFile() as f:
+            response = self.client.post('/upload/', {'file': f})
+
+        # sanity check that file was processed
+        assert len(response.data) == 1
+
+        for file in response.data:
+            assert not os.path.exists(file)
 
 
 @override_settings(ROOT_URLCONF='tests.test_request')
@@ -155,7 +203,8 @@ class TestUserSetter(TestCase):
         # available to login and logout functions
         self.wrapped_request = factory.get('/')
         self.request = Request(self.wrapped_request)
-        SessionMiddleware().process_request(self.request)
+        SessionMiddleware().process_request(self.wrapped_request)
+        AuthenticationMiddleware().process_request(self.wrapped_request)
 
         User.objects.create_user('ringo', 'starr@thebeatles.com', 'yellow')
         self.user = authenticate(username='ringo', password='yellow')
@@ -170,9 +219,9 @@ class TestUserSetter(TestCase):
 
     def test_user_can_logout(self):
         self.request.user = self.user
-        self.assertFalse(is_anonymous(self.request.user))
+        assert not self.request.user.is_anonymous
         logout(self.request)
-        self.assertTrue(is_anonymous(self.request.user))
+        assert self.request.user.is_anonymous
 
     def test_logged_in_user_is_set_on_wrapped_request(self):
         login(self.request, self.user)
@@ -183,24 +232,25 @@ class TestUserSetter(TestCase):
         This proves that when an AttributeError is raised inside of the request.user
         property, that we can handle this and report the true, underlying error.
         """
-        class AuthRaisesAttributeError(object):
+        class AuthRaisesAttributeError:
             def authenticate(self, request):
-                import rest_framework
-                rest_framework.MISSPELLED_NAME_THAT_DOESNT_EXIST
+                self.MISSPELLED_NAME_THAT_DOESNT_EXIST
 
-        self.request = Request(factory.get('/'), authenticators=(AuthRaisesAttributeError(),))
-        SessionMiddleware().process_request(self.request)
+        request = Request(self.wrapped_request, authenticators=(AuthRaisesAttributeError(),))
 
-        login(self.request, self.user)
-        try:
-            self.request.user
-        except AttributeError as error:
-            assert str(error) in (
-                "'module' object has no attribute 'MISSPELLED_NAME_THAT_DOESNT_EXIST'",  # Python < 3.5
-                "module 'rest_framework' has no attribute 'MISSPELLED_NAME_THAT_DOESNT_EXIST'",  # Python >= 3.5
-            )
-        else:
-            assert False, 'AttributeError not raised'
+        # The middleware processes the underlying Django request, sets anonymous user
+        assert self.wrapped_request.user.is_anonymous
+
+        # The DRF request object does not have a user and should run authenticators
+        expected = r"no attribute 'MISSPELLED_NAME_THAT_DOESNT_EXIST'"
+        with pytest.raises(WrappedAttributeError, match=expected):
+            request.user
+
+        with pytest.raises(WrappedAttributeError, match=expected):
+            hasattr(request, 'user')
+
+        with pytest.raises(WrappedAttributeError, match=expected):
+            login(request, self.user)
 
 
 class TestAuthSetter(TestCase):
@@ -219,3 +269,66 @@ class TestSecure(TestCase):
     def test_default_secure_true(self):
         request = Request(factory.get('/', secure=True))
         assert request.scheme == 'https'
+
+
+class TestHttpRequest(TestCase):
+    def test_attribute_access_proxy(self):
+        http_request = factory.get('/')
+        request = Request(http_request)
+
+        inner_sentinel = object()
+        http_request.inner_property = inner_sentinel
+        assert request.inner_property is inner_sentinel
+
+        outer_sentinel = object()
+        request.inner_property = outer_sentinel
+        assert request.inner_property is outer_sentinel
+
+    def test_exception_proxy(self):
+        # ensure the exception message is not for the underlying WSGIRequest
+        http_request = factory.get('/')
+        request = Request(http_request)
+
+        message = "'Request' object has no attribute 'inner_property'"
+        with self.assertRaisesMessage(AttributeError, message):
+            request.inner_property
+
+    @override_settings(ROOT_URLCONF='tests.test_request')
+    def test_duplicate_request_stream_parsing_exception(self):
+        """
+        Check assumption that duplicate stream parsing will result in a
+        `RawPostDataException` being raised.
+        """
+        response = APIClient().post('/echo/', data={'a': 'b'}, format='json')
+        request = response.renderer_context['request']
+
+        # ensure that request stream was consumed by json parser
+        assert request.content_type.startswith('application/json')
+        assert response.data == {'a': 'b'}
+
+        # pass same HttpRequest to view, stream already consumed
+        with pytest.raises(RawPostDataException):
+            EchoView.as_view()(request._request)
+
+    @override_settings(ROOT_URLCONF='tests.test_request')
+    def test_duplicate_request_form_data_access(self):
+        """
+        Form data is copied to the underlying django request for middleware
+        and file closing reasons. Duplicate processing of a request with form
+        data is 'safe' in so far as accessing `request.POST` does not trigger
+        the duplicate stream parse exception.
+        """
+        response = APIClient().post('/echo/', data={'a': 'b'})
+        request = response.renderer_context['request']
+
+        # ensure that request stream was consumed by form parser
+        assert request.content_type.startswith('multipart/form-data')
+        assert response.data == {'a': ['b']}
+
+        # pass same HttpRequest to view, form data set on underlying request
+        response = EchoView.as_view()(request._request)
+        request = response.renderer_context['request']
+
+        # ensure that request stream was consumed by form parser
+        assert request.content_type.startswith('multipart/form-data')
+        assert response.data == {'a': ['b']}

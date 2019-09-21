@@ -1,9 +1,7 @@
-from __future__ import unicode_literals
-
 import uuid
 
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 
 class RESTFrameworkModel(models.Model):
@@ -22,15 +20,6 @@ class BasicModel(RESTFrameworkModel):
         verbose_name=_("Text comes here"),
         help_text=_("Text description.")
     )
-
-
-class BaseFilterableItem(RESTFrameworkModel):
-    text = models.CharField(max_length=100)
-
-
-class FilterableItem(BaseFilterableItem):
-    decimal = models.DecimalField(max_digits=4, decimal_places=2)
-    date = models.DateField()
 
 
 # Models for relations tests
@@ -61,6 +50,20 @@ class ForeignKeySource(RESTFrameworkModel):
                                on_delete=models.CASCADE)
 
 
+class ForeignKeySourceWithLimitedChoices(RESTFrameworkModel):
+    target = models.ForeignKey(ForeignKeyTarget, help_text='Target',
+                               verbose_name='Target',
+                               limit_choices_to={"name__startswith": "limited-"},
+                               on_delete=models.CASCADE)
+
+
+class ForeignKeySourceWithQLimitedChoices(RESTFrameworkModel):
+    target = models.ForeignKey(ForeignKeyTarget, help_text='Target',
+                               verbose_name='Target',
+                               limit_choices_to=models.Q(name__startswith="limited-"),
+                               on_delete=models.CASCADE)
+
+
 # Nullable ForeignKey
 class NullableForeignKeySource(RESTFrameworkModel):
     name = models.CharField(max_length=100)
@@ -78,6 +81,17 @@ class NullableUUIDForeignKeySource(RESTFrameworkModel):
                                on_delete=models.CASCADE)
 
 
+class NestedForeignKeySource(RESTFrameworkModel):
+    """
+    Used for testing FK chain. A -> B -> C.
+    """
+    name = models.CharField(max_length=100)
+    target = models.ForeignKey(NullableForeignKeySource, null=True, blank=True,
+                               related_name='nested_sources',
+                               verbose_name='Intermediate target object',
+                               on_delete=models.CASCADE)
+
+
 # OneToOne
 class OneToOneTarget(RESTFrameworkModel):
     name = models.CharField(max_length=100)
@@ -88,3 +102,11 @@ class NullableOneToOneSource(RESTFrameworkModel):
     target = models.OneToOneField(
         OneToOneTarget, null=True, blank=True,
         related_name='nullable_source', on_delete=models.CASCADE)
+
+
+class OneToOnePKSource(RESTFrameworkModel):
+    """ Test model where the primary key is a OneToOneField with another model. """
+    name = models.CharField(max_length=100)
+    target = models.OneToOneField(
+        OneToOneTarget, primary_key=True,
+        related_name='required_source', on_delete=models.CASCADE)

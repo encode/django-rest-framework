@@ -1,14 +1,8 @@
-# -- coding: utf-8 --
-
-from __future__ import unicode_literals
-
 from django.test import TestCase
-from django.utils.encoding import python_2_unicode_compatible
 
 from rest_framework.compat import apply_markdown
 from rest_framework.utils.formatting import dedent
 from rest_framework.views import APIView
-
 
 # We check that docstrings get nicely un-indented.
 DESCRIPTION = """an example docstring
@@ -24,10 +18,34 @@ another header
 
 indented
 
-# hash style header #"""
+# hash style header #
+
+``` json
+[{
+    "alpha": 1,
+    "beta: "this is a string"
+}]
+```"""
+
 
 # If markdown is installed we also test it's working
 # (and that our wrapped forces '=' to h2 and '-' to h3)
+MARKED_DOWN_HILITE = """
+<div class="highlight"><pre><span></span><span \
+class="p">[{</span><br />    <span class="nt">&quot;alpha&quot;</span><span\
+ class="p">:</span> <span class="mi">1</span><span class="p">,</span><br />\
+    <span class="nt">&quot;beta: &quot;</span><span class="err">this</span>\
+ <span class="err">is</span> <span class="err">a</span> <span class="err">\
+string&quot;</span><br /><span class="p">}]</span><br /></pre></div>
+
+<p><br /></p>"""
+
+MARKED_DOWN_NOT_HILITE = """
+<p><code>json
+[{
+    "alpha": 1,
+    "beta: "this is a string"
+}]</code></p>"""
 
 # We support markdown < 2.1 and markdown >= 2.1
 MARKED_DOWN_lt_21 = """<h2>an example docstring</h2>
@@ -39,7 +57,7 @@ MARKED_DOWN_lt_21 = """<h2>an example docstring</h2>
 <pre><code>code block
 </code></pre>
 <p>indented</p>
-<h2 id="hash_style_header">hash style header</h2>"""
+<h2 id="hash_style_header">hash style header</h2>%s"""
 
 MARKED_DOWN_gte_21 = """<h2 id="an-example-docstring">an example docstring</h2>
 <ul>
@@ -50,7 +68,7 @@ MARKED_DOWN_gte_21 = """<h2 id="an-example-docstring">an example docstring</h2>
 <pre><code>code block
 </code></pre>
 <p>indented</p>
-<h2 id="hash-style-header">hash style header</h2>"""
+<h2 id="hash-style-header">hash style header</h2>%s"""
 
 
 class TestViewNamesAndDescriptions(TestCase):
@@ -61,6 +79,22 @@ class TestViewNamesAndDescriptions(TestCase):
         class MockView(APIView):
             pass
         assert MockView().get_view_name() == 'Mock'
+
+    def test_view_name_uses_name_attribute(self):
+        class MockView(APIView):
+            name = 'Foo'
+        assert MockView().get_view_name() == 'Foo'
+
+    def test_view_name_uses_suffix_attribute(self):
+        class MockView(APIView):
+            suffix = 'List'
+        assert MockView().get_view_name() == 'Mock List'
+
+    def test_view_name_preferences_name_over_suffix(self):
+        class MockView(APIView):
+            name = 'Foo'
+            suffix = 'List'
+        assert MockView().get_view_name() == 'Foo'
 
     def test_view_description_uses_docstring(self):
         """Ensure view descriptions are based on the docstring."""
@@ -78,9 +112,27 @@ class TestViewNamesAndDescriptions(TestCase):
 
             indented
 
-            # hash style header #"""
+            # hash style header #
+
+            ``` json
+            [{
+                "alpha": 1,
+                "beta: "this is a string"
+            }]
+            ```"""
 
         assert MockView().get_view_description() == DESCRIPTION
+
+    def test_view_description_uses_description_attribute(self):
+        class MockView(APIView):
+            description = 'Foo'
+        assert MockView().get_view_description() == 'Foo'
+
+    def test_view_description_allows_empty_description(self):
+        class MockView(APIView):
+            """Description."""
+            description = ''
+        assert MockView().get_view_description() == ''
 
     def test_view_description_can_be_empty(self):
         """
@@ -100,8 +152,8 @@ class TestViewNamesAndDescriptions(TestCase):
         """
         # use a mock object instead of gettext_lazy to ensure that we can't end
         # up with a test case string in our l10n catalog
-        @python_2_unicode_compatible
-        class MockLazyStr(object):
+
+        class MockLazyStr:
             def __init__(self, string):
                 self.s = string
 
@@ -118,8 +170,17 @@ class TestViewNamesAndDescriptions(TestCase):
         Ensure markdown to HTML works as expected.
         """
         if apply_markdown:
-            gte_21_match = apply_markdown(DESCRIPTION) == MARKED_DOWN_gte_21
-            lt_21_match = apply_markdown(DESCRIPTION) == MARKED_DOWN_lt_21
+            md_applied = apply_markdown(DESCRIPTION)
+            gte_21_match = (
+                md_applied == (
+                    MARKED_DOWN_gte_21 % MARKED_DOWN_HILITE) or
+                md_applied == (
+                    MARKED_DOWN_gte_21 % MARKED_DOWN_NOT_HILITE))
+            lt_21_match = (
+                md_applied == (
+                    MARKED_DOWN_lt_21 % MARKED_DOWN_HILITE) or
+                md_applied == (
+                    MARKED_DOWN_lt_21 % MARKED_DOWN_NOT_HILITE))
             assert gte_21_match or lt_21_match
 
 

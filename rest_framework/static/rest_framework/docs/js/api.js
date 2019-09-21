@@ -2,6 +2,14 @@ var responseDisplay = 'data'
 var coreapi = window.coreapi
 var schema = window.schema
 
+function normalizeKeys (arr) {
+  var _normarr = [];
+  for (var i = 0; i < arr.length; i++) {
+    _normarr = _normarr.concat(arr[i].split(' > '));
+  }
+  return _normarr;
+}
+
 function normalizeHTTPHeader (str) {
   // Capitalize HTTP headers for display.
   return (str.charAt(0).toUpperCase() + str.substring(1))
@@ -94,7 +102,7 @@ $(function () {
     var $requestAwaiting = $form.find('.request-awaiting')
     var $responseRaw = $form.find('.response-raw')
     var $responseData = $form.find('.response-data')
-    var key = $form.data('key')
+    var key = normalizeKeys($form.data('key'))
     var params = {}
     var entries = formEntries($form.get()[0])
 
@@ -102,7 +110,7 @@ $(function () {
       var entry = entries[i]
       var paramKey = entry[0]
       var paramValue = entry[1]
-      var $elem = $form.find('[name=' + paramKey + ']')
+      var $elem = $form.find('[name="' + paramKey + '"]')
       var dataType = $elem.data('type') || 'string'
 
       if (dataType === 'integer' && paramValue) {
@@ -121,7 +129,7 @@ $(function () {
           'false': false
         }[paramValue.toLowerCase()]
         if (value !== undefined) {
-          params[paramKey]
+          params[paramKey] = value
         }
       } else if (dataType === 'array' && paramValue) {
         try {
@@ -212,7 +220,6 @@ $(function () {
     }
 
     var client = new coreapi.Client(options)
-
     client.action(schema, key, params).then(function (data) {
       var response = JSON.stringify(data, null, 2)
       $requestAwaiting.addClass('hide')

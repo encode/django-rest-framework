@@ -1,38 +1,16 @@
 import pytest
-from django.conf.urls import url
+from django.conf.urls import include, url
 from django.test import override_settings
 
 from rest_framework import serializers, status, versioning
-from rest_framework.compat import include
 from rest_framework.decorators import APIView
 from rest_framework.relations import PKOnlyObject
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from rest_framework.test import APIRequestFactory, APITestCase
+from rest_framework.test import (
+    APIRequestFactory, APITestCase, URLPatternsTestCase
+)
 from rest_framework.versioning import NamespaceVersioning
-
-
-@override_settings(ROOT_URLCONF='tests.test_versioning')
-class URLPatternsTestCase(APITestCase):
-    """
-    Isolates URL patterns used during testing on the test class itself.
-    For example:
-
-    class MyTestCase(URLPatternsTestCase):
-        urlpatterns = [
-            ...
-        ]
-
-        def test_something(self):
-            ...
-    """
-    def setUp(self):
-        global urlpatterns
-        urlpatterns = self.urlpatterns
-
-    def tearDown(self):
-        global urlpatterns
-        urlpatterns = []
 
 
 class RequestVersionView(APIView):
@@ -164,14 +142,14 @@ class TestRequestVersion:
         assert response.data == {'version': None}
 
 
-class TestURLReversing(URLPatternsTestCase):
+class TestURLReversing(URLPatternsTestCase, APITestCase):
     included = [
         url(r'^namespaced/$', dummy_view, name='another'),
         url(r'^example/(?P<pk>\d+)/$', dummy_pk_view, name='example-detail')
     ]
 
     urlpatterns = [
-        url(r'^v1/', include(included, namespace='v1', app_name='v1')),
+        url(r'^v1/', include((included, 'v1'), namespace='v1')),
         url(r'^another/$', dummy_view, name='another'),
         url(r'^(?P<version>[v1|v2]+)/another/$', dummy_view, name='another'),
     ]
@@ -330,20 +308,20 @@ class TestAllowedAndDefaultVersion:
         assert response.data == {'version': 'v2'}
 
 
-class TestHyperlinkedRelatedField(URLPatternsTestCase):
+class TestHyperlinkedRelatedField(URLPatternsTestCase, APITestCase):
     included = [
         url(r'^namespaced/(?P<pk>\d+)/$', dummy_pk_view, name='namespaced'),
     ]
 
     urlpatterns = [
-        url(r'^v1/', include(included, namespace='v1', app_name='v1')),
-        url(r'^v2/', include(included, namespace='v2', app_name='v2'))
+        url(r'^v1/', include((included, 'v1'), namespace='v1')),
+        url(r'^v2/', include((included, 'v2'), namespace='v2'))
     ]
 
     def setUp(self):
-        super(TestHyperlinkedRelatedField, self).setUp()
+        super().setUp()
 
-        class MockQueryset(object):
+        class MockQueryset:
             def get(self, pk):
                 return 'object %s' % pk
 
@@ -362,18 +340,18 @@ class TestHyperlinkedRelatedField(URLPatternsTestCase):
             self.field.to_internal_value('/v2/namespaced/3/')
 
 
-class TestNamespaceVersioningHyperlinkedRelatedFieldScheme(URLPatternsTestCase):
+class TestNamespaceVersioningHyperlinkedRelatedFieldScheme(URLPatternsTestCase, APITestCase):
     nested = [
         url(r'^namespaced/(?P<pk>\d+)/$', dummy_pk_view, name='nested'),
     ]
     included = [
         url(r'^namespaced/(?P<pk>\d+)/$', dummy_pk_view, name='namespaced'),
-        url(r'^nested/', include(nested, namespace='nested-namespace', app_name='nested-namespace'))
+        url(r'^nested/', include((nested, 'nested-namespace'), namespace='nested-namespace'))
     ]
 
     urlpatterns = [
-        url(r'^v1/', include(included, namespace='v1', app_name='restframeworkv1')),
-        url(r'^v2/', include(included, namespace='v2', app_name='restframeworkv2')),
+        url(r'^v1/', include((included, 'restframeworkv1'), namespace='v1')),
+        url(r'^v2/', include((included, 'restframeworkv2'), namespace='v2')),
         url(r'^non-api/(?P<pk>\d+)/$', dummy_pk_view, name='non-api-view')
     ]
 

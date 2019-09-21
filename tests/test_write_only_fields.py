@@ -9,12 +9,9 @@ class WriteOnlyFieldTests(TestCase):
             email = serializers.EmailField()
             password = serializers.CharField(write_only=True)
 
-            def create(self, attrs):
-                return attrs
-
         self.Serializer = ExampleSerializer
 
-    def write_only_fields_are_present_on_input(self):
+    def test_write_only_fields_are_present_on_input(self):
         data = {
             'email': 'foo@example.com',
             'password': '123'
@@ -23,7 +20,7 @@ class WriteOnlyFieldTests(TestCase):
         assert serializer.is_valid()
         assert serializer.validated_data == data
 
-    def write_only_fields_are_not_present_on_output(self):
+    def test_write_only_fields_are_not_present_on_output(self):
         instance = {
             'email': 'foo@example.com',
             'password': '123'

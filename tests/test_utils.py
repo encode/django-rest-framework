@@ -1,15 +1,15 @@
-from __future__ import unicode_literals
+from unittest import mock
 
 from django.conf.urls import url
-from django.core.exceptions import ImproperlyConfigured
 from django.test import TestCase, override_settings
-from django.utils import six
 
-import rest_framework.utils.model_meta
-from rest_framework.compat import _resolve_model
+from rest_framework.decorators import action
 from rest_framework.routers import SimpleRouter
 from rest_framework.serializers import ModelSerializer
+from rest_framework.utils import json
 from rest_framework.utils.breadcrumbs import get_breadcrumbs
+from rest_framework.utils.formatting import lazy_format
+from rest_framework.utils.urls import remove_query_param, replace_query_param
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from tests.models import BasicModel
@@ -43,6 +43,22 @@ class CustomNameResourceInstance(APIView):
 class ResourceViewSet(ModelViewSet):
     serializer_class = ModelSerializer
     queryset = BasicModel.objects.all()
+
+    @action(detail=False)
+    def list_action(self, request, *args, **kwargs):
+        raise NotImplementedError
+
+    @action(detail=True)
+    def detail_action(self, request, *args, **kwargs):
+        raise NotImplementedError
+
+    @action(detail=True, name='Custom Name')
+    def named_action(self, request, *args, **kwargs):
+        raise NotImplementedError
+
+    @action(detail=True, suffix='Custom Suffix')
+    def suffixed_action(self, request, *args, **kwargs):
+        raise NotImplementedError
 
 
 router = SimpleRouter()
@@ -120,60 +136,134 @@ class BreadcrumbTests(TestCase):
             ('Resource Instance', '/resources/1/')
         ]
 
+    def test_modelviewset_list_action_breadcrumbs(self):
+        url = '/resources/list_action/'
+        assert get_breadcrumbs(url) == [
+            ('Root', '/'),
+            ('Resource List', '/resources/'),
+            ('List action', '/resources/list_action/'),
+        ]
 
-class ResolveModelTests(TestCase):
+    def test_modelviewset_detail_action_breadcrumbs(self):
+        url = '/resources/1/detail_action/'
+        assert get_breadcrumbs(url) == [
+            ('Root', '/'),
+            ('Resource List', '/resources/'),
+            ('Resource Instance', '/resources/1/'),
+            ('Detail action', '/resources/1/detail_action/'),
+        ]
+
+    def test_modelviewset_action_name_kwarg(self):
+        url = '/resources/1/named_action/'
+        assert get_breadcrumbs(url) == [
+            ('Root', '/'),
+            ('Resource List', '/resources/'),
+            ('Resource Instance', '/resources/1/'),
+            ('Custom Name', '/resources/1/named_action/'),
+        ]
+
+    def test_modelviewset_action_suffix_kwarg(self):
+        url = '/resources/1/suffixed_action/'
+        assert get_breadcrumbs(url) == [
+            ('Root', '/'),
+            ('Resource List', '/resources/'),
+            ('Resource Instance', '/resources/1/'),
+            ('Resource Custom Suffix', '/resources/1/suffixed_action/'),
+        ]
+
+
+class JsonFloatTests(TestCase):
     """
-    `_resolve_model` should return a Django model class given the
-    provided argument is a Django model class itself, or a properly
-    formatted string representation of one.
+    Internally, wrapped json functions should adhere to strict float handling
     """
-    def test_resolve_django_model(self):
-        resolved_model = _resolve_model(BasicModel)
-        assert resolved_model == BasicModel
 
-    def test_resolve_string_representation(self):
-        resolved_model = _resolve_model('tests.BasicModel')
-        assert resolved_model == BasicModel
-
-    def test_resolve_unicode_representation(self):
-        resolved_model = _resolve_model(six.text_type('tests.BasicModel'))
-        assert resolved_model == BasicModel
-
-    def test_resolve_non_django_model(self):
+    def test_dumps(self):
         with self.assertRaises(ValueError):
-            _resolve_model(TestCase)
+            json.dumps(float('inf'))
 
-    def test_resolve_improper_string_representation(self):
         with self.assertRaises(ValueError):
-            _resolve_model('BasicModel')
+            json.dumps(float('nan'))
+
+    def test_loads(self):
+        with self.assertRaises(ValueError):
+            json.loads("Infinity")
+
+        with self.assertRaises(ValueError):
+            json.loads("NaN")
 
 
-class ResolveModelWithPatchedDjangoTests(TestCase):
+@override_settings(REST_FRAMEWORK={'STRICT_JSON': False})
+class NonStrictJsonFloatTests(JsonFloatTests):
     """
-    Test coverage for when Django's `get_model` returns `None`.
-
-    Under certain circumstances Django may return `None` with `get_model`:
-    http://git.io/get-model-source
-
-    It usually happens with circular imports so it is important that DRF
-    excepts early, otherwise fault happens downstream and is much more
-    difficult to debug.
-
+    'STRICT_JSON = False' should not somehow affect internal json behavior
     """
 
-    def setUp(self):
-        """Monkeypatch get_model."""
-        self.get_model = rest_framework.compat.apps.get_model
 
-        def get_model(app_label, model_name):
-            return None
+class UrlsReplaceQueryParamTests(TestCase):
+    """
+    Tests the replace_query_param functionality.
+    """
+    def test_valid_unicode_preserved(self):
+        # Encoded string: '查询'
+        q = '/?q=%E6%9F%A5%E8%AF%A2'
+        new_key = 'page'
+        new_value = 2
+        value = '%E6%9F%A5%E8%AF%A2'
 
-        rest_framework.compat.apps.get_model = get_model
+        assert new_key in replace_query_param(q, new_key, new_value)
+        assert value in replace_query_param(q, new_key, new_value)
 
-    def tearDown(self):
-        """Revert monkeypatching."""
-        rest_framework.compat.apps.get_model = self.get_model
+    def test_valid_unicode_replaced(self):
+        q = '/?page=1'
+        value = '1'
+        new_key = 'q'
+        new_value = '%E6%9F%A5%E8%AF%A2'
 
-    def test_blows_up_if_model_does_not_resolve(self):
-        with self.assertRaises(ImproperlyConfigured):
-            _resolve_model('tests.BasicModel')
+        assert new_key in replace_query_param(q, new_key, new_value)
+        assert value in replace_query_param(q, new_key, new_value)
+
+    def test_invalid_unicode(self):
+        # Encoded string: '��<script>alert(313)</script>=1'
+        q = '/e/?%FF%FE%3C%73%63%72%69%70%74%3E%61%6C%65%72%74%28%33%31%33%29%3C%2F%73%63%72%69%70%74%3E=1'
+        key = 'from'
+        value = 'login'
+
+        assert key in replace_query_param(q, key, value)
+
+
+class UrlsRemoveQueryParamTests(TestCase):
+    """
+    Tests the remove_query_param functionality.
+    """
+    def test_valid_unicode_removed(self):
+        q = '/?page=2345&q=%E6%9F%A5%E8%AF%A2'
+        key = 'page'
+        value = '2345'
+        removed_key = 'q'
+
+        assert key in remove_query_param(q, removed_key)
+        assert value in remove_query_param(q, removed_key)
+        assert '%' not in remove_query_param(q, removed_key)
+
+    def test_invalid_unicode(self):
+        q = '/?from=login&page=2&%FF%FE%3C%73%63%72%69%70%74%3E%61%6C%65%72%74%28%33%31%33%29%3C%2F%73%63%72%69%70%74%3E=1'
+        key = 'from'
+        removed_key = 'page'
+
+        assert key in remove_query_param(q, removed_key)
+
+
+class LazyFormatTests(TestCase):
+    def test_it_formats_correctly(self):
+        formatted = lazy_format('Does {} work? {answer}: %s', 'it', answer='Yes')
+        assert str(formatted) == 'Does it work? Yes: %s'
+        assert formatted % 'it does' == 'Does it work? Yes: it does'
+
+    def test_it_formats_lazily(self):
+        message = mock.Mock(wraps='message')
+        formatted = lazy_format(message)
+        assert message.format.call_count == 0
+        str(formatted)
+        assert message.format.call_count == 1
+        str(formatted)
+        assert message.format.call_count == 1

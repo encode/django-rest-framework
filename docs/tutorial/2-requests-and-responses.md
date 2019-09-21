@@ -35,7 +35,7 @@ The wrappers also provide behaviour such as returning `405 Method Not Allowed` r
 
 Okay, let's go ahead and start using these new components to write a few views.
 
-We don't need our `JSONResponse` class in `views.py` anymore, so go ahead and delete that.  Once that's done we can start refactoring our views slightly.
+We don't need our `JSONResponse` class in `views.py` any more, so go ahead and delete that.  Once that's done we can start refactoring our views slightly.
 
     from rest_framework import status
     from rest_framework.decorators import api_view
@@ -47,7 +47,7 @@ We don't need our `JSONResponse` class in `views.py` anymore, so go ahead and de
     @api_view(['GET', 'POST'])
     def snippet_list(request):
         """
-        List all snippets, or create a new snippet.
+        List all code snippets, or create a new snippet.
         """
         if request.method == 'GET':
             snippets = Snippet.objects.all()
@@ -68,7 +68,7 @@ Here is the view for an individual snippet, in the `views.py` module.
     @api_view(['GET', 'PUT', 'DELETE'])
     def snippet_detail(request, pk):
         """
-        Retrieve, update or delete a snippet instance.
+        Retrieve, update or delete a code snippet.
         """
         try:
             snippet = Snippet.objects.get(pk=pk)
@@ -106,15 +106,15 @@ and
 
     def snippet_detail(request, pk, format=None):
 
-Now update the `urls.py` file slightly, to append a set of `format_suffix_patterns` in addition to the existing URLs.
+Now update the `snippets/urls.py` file slightly, to append a set of `format_suffix_patterns` in addition to the existing URLs.
 
-    from django.conf.urls import url
+    from django.urls import path
     from rest_framework.urlpatterns import format_suffix_patterns
     from snippets import views
 
     urlpatterns = [
-        url(r'^snippets/$', views.snippet_list),
-        url(r'^snippets/(?P<pk>[0-9]+)$', views.snippet_detail),
+        path('snippets/', views.snippet_list),
+        path('snippets/<int:pk>', views.snippet_detail),
     ]
 
     urlpatterns = format_suffix_patterns(urlpatterns)
@@ -143,7 +143,7 @@ We can get a list of all of the snippets, as before.
       {
         "id": 2,
         "title": "",
-        "code": "print \"hello, world\"\n",
+        "code": "print(\"hello, world\")\n",
         "linenos": false,
         "language": "python",
         "style": "friendly"
@@ -163,24 +163,24 @@ Or by appending a format suffix:
 Similarly, we can control the format of the request that we send, using the `Content-Type` header.
 
     # POST using form data
-    http --form POST http://127.0.0.1:8000/snippets/ code="print 123"
+    http --form POST http://127.0.0.1:8000/snippets/ code="print(123)"
 
     {
       "id": 3,
       "title": "",
-      "code": "print 123",
+      "code": "print(123)",
       "linenos": false,
       "language": "python",
       "style": "friendly"
     }
 
     # POST using JSON
-    http --json POST http://127.0.0.1:8000/snippets/ code="print 456"
+    http --json POST http://127.0.0.1:8000/snippets/ code="print(456)"
 
     {
         "id": 4,
         "title": "",
-        "code": "print 456",
+        "code": "print(456)",
         "linenos": false,
         "language": "python",
         "style": "friendly"

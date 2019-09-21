@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import unicode_literals
+import io
+import math
 
 import pytest
 from django import forms
@@ -9,7 +8,6 @@ from django.core.files.uploadhandler import (
 )
 from django.http.request import RawPostDataException
 from django.test import TestCase
-from django.utils.six.moves import StringIO
 
 from rest_framework.exceptions import ParseError
 from rest_framework.parsers import (
@@ -32,7 +30,7 @@ class TestFormParser(TestCase):
         """ Make sure the `QueryDict` works OK """
         parser = FormParser()
 
-        stream = StringIO(self.string)
+        stream = io.StringIO(self.string)
         data = parser.parse(stream)
 
         assert Form(data).is_valid() is True
@@ -40,12 +38,9 @@ class TestFormParser(TestCase):
 
 class TestFileUploadParser(TestCase):
     def setUp(self):
-        class MockRequest(object):
+        class MockRequest:
             pass
-        from io import BytesIO
-        self.stream = BytesIO(
-            "Test text file".encode('utf-8')
-        )
+        self.stream = io.BytesIO(b"Test text file")
         request = MockRequest()
         request.upload_handlers = (MemoryFileUploadHandler(),)
         request.META = {
@@ -62,7 +57,7 @@ class TestFileUploadParser(TestCase):
         self.stream.seek(0)
         data_and_files = parser.parse(self.stream, None, self.parser_context)
         file_obj = data_and_files.files['file']
-        assert file_obj._size == 14
+        assert file_obj.size == 14
 
     def test_parse_missing_filename(self):
         """
@@ -127,6 +122,24 @@ class TestFileUploadParser(TestCase):
 
     def __replace_content_disposition(self, disposition):
         self.parser_context['request'].META['HTTP_CONTENT_DISPOSITION'] = disposition
+
+
+class TestJSONParser(TestCase):
+    def bytes(self, value):
+        return io.BytesIO(value.encode())
+
+    def test_float_strictness(self):
+        parser = JSONParser()
+
+        # Default to strict
+        for value in ['Infinity', '-Infinity', 'NaN']:
+            with pytest.raises(ParseError):
+                parser.parse(self.bytes(value))
+
+        parser.strict = False
+        assert parser.parse(self.bytes('Infinity')) == float('inf')
+        assert parser.parse(self.bytes('-Infinity')) == float('-inf')
+        assert math.isnan(parser.parse(self.bytes('NaN')))
 
 
 class TestPOSTAccessed(TestCase):

@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django.conf.urls import url
 from django.test import TestCase
 from django.test.utils import override_settings
@@ -36,7 +34,7 @@ class DropdownWithAuthTests(TestCase):
     def test_login(self):
         response = self.client.get('/api/')
         assert 200 == response.status_code
-        content = response.content.decode('utf-8')
+        content = response.content.decode()
         assert 'form action="/api/"' in content
         assert 'input name="nested.one"' in content
         assert 'input name="nested.two"' in content

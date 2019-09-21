@@ -1,4 +1,7 @@
-source: request.py
+---
+source:
+    - request.py
+---
 
 # Requests
 
@@ -50,7 +53,7 @@ The request exposes some properties that allow you to determine the result of th
 
 ## .accepted_renderer
 
-The renderer instance what was selected by the content negotiation stage.
+The renderer instance that was selected by the content negotiation stage.
 
 ## .accepted_media_type
 
@@ -87,6 +90,10 @@ For more details see the [authentication documentation].
 The `APIView` class or `@api_view` decorator will ensure that this property is automatically set to a list of `Authentication` instances, based on the `authentication_classes` set on the view or based on the `DEFAULT_AUTHENTICATORS` setting.
 
 You won't typically need to access this property.
+
+---
+
+**Note:** You may see a `WrappedAttributeError` raised when calling the `.user` or `.auth` properties. These errors originate from an authenticator as a standard `AttributeError`, however it's necessary that they be re-raised as a different exception type in order to prevent them from being suppressed by the outer property access. Python will not recognize that the `AttributeError` originates from the authenticator and will instead assume that the request object does not have a `.user` or `.auth` property. The authenticator will need to be fixed.
 
 ---
 

@@ -8,19 +8,19 @@
     {% endif %}
 </div>
 <div class="col-md-6 intro-code">
-    {% if 'shell' in langs %}{% include "rest_framework/docs/langs/shell-intro.html" %}{% endif %}
-    {% if 'python' in langs %}{% include "rest_framework/docs/langs/python-intro.html" %}{% endif %}
-    {% if 'javascript' in langs %}{% include "rest_framework/docs/langs/javascript-intro.html" %}{% endif %}
+    {% for html in lang_intro_htmls %}
+        {% include html %}
+    {% endfor %}
 </div>
 </div>
-
-{% for section_key, section in document.data|items %}
+{% if document|data %}
+{% for section_key, section in document|data|items %}
 {% if section_key %}
     <h2 id="{{ section_key }}" class="coredocs-section-title">{{ section_key }} <a href="#{{ section_key }}"><i class="fa fa-link" aria-hidden="true"></i>
 </a></h2>
 {% endif %}
 
-    {% for link_key, link in section.links|items %}
+    {% for link_key, link in section|schema_links|items %}
         {% include "rest_framework/docs/link.html" %}
     {% endfor %}
 {% endfor %}
@@ -28,3 +28,4 @@
 {% for link_key, link in document.links|items %}
     {% include "rest_framework/docs/link.html" %}
 {% endfor %}
+{% endif %}

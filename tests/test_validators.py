@@ -277,6 +277,30 @@ class TestUniquenessTogetherValidation(TestCase):
         """)
         assert repr(serializer) == expected
 
+    def test_read_only_fields_with_default(self):
+        """
+        Special case of read_only + default DOES validate unique_together.
+        """
+        class ReadOnlyFieldWithDefaultSerializer(serializers.ModelSerializer):
+            race_name = serializers.CharField(max_length=100, read_only=True, default='example')
+
+            class Meta:
+                model = UniquenessTogetherModel
+                fields = ('id', 'race_name', 'position')
+
+        data = {'position': 2}
+        serializer = ReadOnlyFieldWithDefaultSerializer(data=data)
+
+        assert len(serializer.validators) == 1
+        assert isinstance(serializer.validators[0], UniqueTogetherValidator)
+        assert serializer.validators[0].fields == ('race_name', 'position')
+        assert not serializer.is_valid()
+        assert serializer.errors == {
+            'non_field_errors': [
+                'The fields race_name, position must make a unique set.'
+            ]
+        }
+
     def test_allow_explict_override(self):
         """
         Ensure validators can be explicitly removed..
@@ -329,7 +353,7 @@ class TestUniquenessTogetherValidation(TestCase):
         filter_queryset should add value from existing instance attribute
         if it is not provided in attributes dict
         """
-        class MockQueryset(object):
+        class MockQueryset:
             def filter(self, **kwargs):
                 self.called_with = kwargs
 
@@ -534,19 +558,19 @@ class TestHiddenFieldUniquenessForDateValidation(TestCase):
 class ValidatorsTests(TestCase):
 
     def test_qs_exists_handles_type_error(self):
-        class TypeErrorQueryset(object):
+        class TypeErrorQueryset:
             def exists(self):
                 raise TypeError
         assert qs_exists(TypeErrorQueryset()) is False
 
     def test_qs_exists_handles_value_error(self):
-        class ValueErrorQueryset(object):
+        class ValueErrorQueryset:
             def exists(self):
                 raise ValueError
         assert qs_exists(ValueErrorQueryset()) is False
 
     def test_qs_exists_handles_data_error(self):
-        class DataErrorQueryset(object):
+        class DataErrorQueryset:
             def exists(self):
                 raise DataError
         assert qs_exists(DataErrorQueryset()) is False

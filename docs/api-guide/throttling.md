@@ -1,4 +1,7 @@
-source: throttling.py
+---
+source:
+    - throttling.py
+---
 
 # Throttling
 
@@ -28,10 +31,10 @@ If any throttle check fails an `exceptions.Throttled` exception will be raised, 
 The default throttling policy may be set globally, using the `DEFAULT_THROTTLE_CLASSES` and `DEFAULT_THROTTLE_RATES` settings.  For example.
 
     REST_FRAMEWORK = {
-        'DEFAULT_THROTTLE_CLASSES': (
+        'DEFAULT_THROTTLE_CLASSES': [
             'rest_framework.throttling.AnonRateThrottle',
             'rest_framework.throttling.UserRateThrottle'
-        ),
+        ],
         'DEFAULT_THROTTLE_RATES': {
             'anon': '100/day',
             'user': '1000/day'
@@ -48,7 +51,7 @@ using the `APIView` class-based views.
 	from rest_framework.views import APIView
 
     class ExampleView(APIView):
-        throttle_classes = (UserRateThrottle,)
+        throttle_classes = [UserRateThrottle]
 
         def get(self, request, format=None):
             content = {
@@ -68,13 +71,13 @@ Or, if you're using the `@api_view` decorator with function based views.
 
 ## How clients are identified
 
-The `X-Forwarded-For` and `Remote-Addr` HTTP headers are used to uniquely identify client IP addresses for throttling.  If the `X-Forwarded-For` header is present then it will be used, otherwise the value of the `Remote-Addr` header will be used.
+The `X-Forwarded-For` HTTP header and `REMOTE_ADDR` WSGI variable are used to uniquely identify client IP addresses for throttling.  If the `X-Forwarded-For` header is present then it will be used, otherwise the value of the `REMOTE_ADDR` variable from the WSGI environment will be used.
 
-If you need to strictly identify unique client IP addresses, you'll need to first configure the number of application proxies that the API runs behind by setting the `NUM_PROXIES` setting.  This setting should be an integer of zero or more.  If set to non-zero then the client IP will be identified as being the last IP address in the `X-Forwarded-For` header, once any application proxy IP addresses have first been excluded.  If set to zero, then the `Remote-Addr` header will always be used as the identifying IP address.
+If you need to strictly identify unique client IP addresses, you'll need to first configure the number of application proxies that the API runs behind by setting the `NUM_PROXIES` setting.  This setting should be an integer of zero or more.  If set to non-zero then the client IP will be identified as being the last IP address in the `X-Forwarded-For` header, once any application proxy IP addresses have first been excluded.  If set to zero, then the `REMOTE_ADDR` value will always be used as the identifying IP address.
 
-It is important to understand that if you configure the `NUM_PROXIES` setting, then all clients behind a unique [NAT'd](http://en.wikipedia.org/wiki/Network_address_translation) gateway will be treated as a single client.
+It is important to understand that if you configure the `NUM_PROXIES` setting, then all clients behind a unique [NAT'd](https://en.wikipedia.org/wiki/Network_address_translation) gateway will be treated as a single client.
 
-Further context on how the `X-Forwarded-For` header works, and identifying a remote client IP can be [found here][identifing-clients].
+Further context on how the `X-Forwarded-For` header works, and identifying a remote client IP can be [found here][identifying-clients].
 
 ## Setting up the cache
 
@@ -82,8 +85,10 @@ The throttle classes provided by REST framework use Django's cache backend.  You
 
 If you need to use a cache other than `'default'`, you can do so by creating a custom throttle class and setting the `cache` attribute.  For example:
 
+    from django.core.cache import caches
+
     class CustomAnonRateThrottle(AnonRateThrottle):
-        cache = get_cache('alternate')
+        cache = caches['alternate']
 
 You'll need to remember to also set your custom throttle class in the `'DEFAULT_THROTTLE_CLASSES'` settings key, or using the `throttle_classes` view attribute.
 
@@ -124,10 +129,10 @@ For example, multiple user throttle rates could be implemented by using the foll
 ...and the following settings.
 
     REST_FRAMEWORK = {
-        'DEFAULT_THROTTLE_CLASSES': (
+        'DEFAULT_THROTTLE_CLASSES': [
             'example.throttles.BurstRateThrottle',
             'example.throttles.SustainedRateThrottle'
-        ),
+        ],
         'DEFAULT_THROTTLE_RATES': {
             'burst': '60/min',
             'sustained': '1000/day'
@@ -159,9 +164,9 @@ For example, given the following views...
 ...and the following settings.
 
     REST_FRAMEWORK = {
-        'DEFAULT_THROTTLE_CLASSES': (
+        'DEFAULT_THROTTLE_CLASSES': [
             'rest_framework.throttling.ScopedRateThrottle',
-        ),
+        ],
         'DEFAULT_THROTTLE_RATES': {
             'contacts': '1000/day',
             'uploads': '20/day'
@@ -190,8 +195,8 @@ The following is an example of a rate throttle, that will randomly throttle 1 in
         def allow_request(self, request, view):
             return random.randint(1, 10) != 1
 
-[cite]: https://dev.twitter.com/docs/error-codes-responses
+[cite]: https://developer.twitter.com/en/docs/basics/rate-limiting
 [permissions]: permissions.md
-[identifing-clients]: http://oxpedia.org/wiki/index.php?title=AppSuite:Grizzly#Multiple_Proxies_in_front_of_the_cluster
+[identifying-clients]: http://oxpedia.org/wiki/index.php?title=AppSuite:Grizzly#Multiple_Proxies_in_front_of_the_cluster
 [cache-setting]: https://docs.djangoproject.com/en/stable/ref/settings/#caches
 [cache-docs]: https://docs.djangoproject.com/en/stable/topics/cache/#setting-up-the-cache

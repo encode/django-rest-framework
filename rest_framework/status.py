@@ -1,31 +1,30 @@
 """
 Descriptive HTTP status codes, for code readability.
 
-See RFC 2616 - http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
-And RFC 6585 - http://tools.ietf.org/html/rfc6585
+See RFC 2616 - https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
+And RFC 6585 - https://tools.ietf.org/html/rfc6585
 And RFC 4918 - https://tools.ietf.org/html/rfc4918
 """
-from __future__ import unicode_literals
 
 
 def is_informational(code):
-    return code >= 100 and code <= 199
+    return 100 <= code <= 199
 
 
 def is_success(code):
-    return code >= 200 and code <= 299
+    return 200 <= code <= 299
 
 
 def is_redirect(code):
-    return code >= 300 and code <= 399
+    return 300 <= code <= 399
 
 
 def is_client_error(code):
-    return code >= 400 and code <= 499
+    return 400 <= code <= 499
 
 
 def is_server_error(code):
-    return code >= 500 and code <= 599
+    return 500 <= code <= 599
 
 
 HTTP_100_CONTINUE = 100
@@ -38,6 +37,8 @@ HTTP_204_NO_CONTENT = 204
 HTTP_205_RESET_CONTENT = 205
 HTTP_206_PARTIAL_CONTENT = 206
 HTTP_207_MULTI_STATUS = 207
+HTTP_208_ALREADY_REPORTED = 208
+HTTP_226_IM_USED = 226
 HTTP_300_MULTIPLE_CHOICES = 300
 HTTP_301_MOVED_PERMANENTLY = 301
 HTTP_302_FOUND = 302
@@ -46,6 +47,7 @@ HTTP_304_NOT_MODIFIED = 304
 HTTP_305_USE_PROXY = 305
 HTTP_306_RESERVED = 306
 HTTP_307_TEMPORARY_REDIRECT = 307
+HTTP_308_PERMANENT_REDIRECT = 308
 HTTP_400_BAD_REQUEST = 400
 HTTP_401_UNAUTHORIZED = 401
 HTTP_402_PAYMENT_REQUIRED = 402
@@ -67,6 +69,7 @@ HTTP_417_EXPECTATION_FAILED = 417
 HTTP_422_UNPROCESSABLE_ENTITY = 422
 HTTP_423_LOCKED = 423
 HTTP_424_FAILED_DEPENDENCY = 424
+HTTP_426_UPGRADE_REQUIRED = 426
 HTTP_428_PRECONDITION_REQUIRED = 428
 HTTP_429_TOO_MANY_REQUESTS = 429
 HTTP_431_REQUEST_HEADER_FIELDS_TOO_LARGE = 431
@@ -77,5 +80,9 @@ HTTP_502_BAD_GATEWAY = 502
 HTTP_503_SERVICE_UNAVAILABLE = 503
 HTTP_504_GATEWAY_TIMEOUT = 504
 HTTP_505_HTTP_VERSION_NOT_SUPPORTED = 505
+HTTP_506_VARIANT_ALSO_NEGOTIATES = 506
 HTTP_507_INSUFFICIENT_STORAGE = 507
+HTTP_508_LOOP_DETECTED = 508
+HTTP_509_BANDWIDTH_LIMIT_EXCEEDED = 509
+HTTP_510_NOT_EXTENDED = 510
 HTTP_511_NETWORK_AUTHENTICATION_REQUIRED = 511

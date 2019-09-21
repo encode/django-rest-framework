@@ -1,19 +1,15 @@
-# -- coding: utf-8 --
-
 # Note that we import as `DjangoRequestFactory` and `DjangoClient` in order
 # to make it harder for the user to import the wrong thing without realizing.
-from __future__ import unicode_literals
-
 import io
+from importlib import import_module
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.handlers.wsgi import WSGIHandler
-from django.test import testcases
+from django.test import override_settings, testcases
 from django.test.client import Client as DjangoClient
-from django.test.client import RequestFactory as DjangoRequestFactory
 from django.test.client import ClientHandler
-from django.utils import six
+from django.test.client import RequestFactory as DjangoRequestFactory
 from django.utils.encoding import force_bytes
 from django.utils.http import urlencode
 
@@ -31,7 +27,7 @@ if requests is not None:
         def get_all(self, key, default):
             return self.getheaders(key)
 
-    class MockOriginalResponse(object):
+    class MockOriginalResponse:
         def __init__(self, headers):
             self.msg = HeaderDict(headers)
             self.closed = False
@@ -108,7 +104,7 @@ if requests is not None:
 
     class RequestsClient(requests.Session):
         def __init__(self, *args, **kwargs):
-            super(RequestsClient, self).__init__(*args, **kwargs)
+            super().__init__(*args, **kwargs)
             adapter = DjangoTestAdapter()
             self.mount('http://', adapter)
             self.mount('https://', adapter)
@@ -116,7 +112,7 @@ if requests is not None:
         def request(self, method, url, *args, **kwargs):
             if not url.startswith('http'):
                 raise ValueError('Missing "http:" or "https:". Use a fully qualified URL, eg "http://testserver%s"' % url)
-            return super(RequestsClient, self).request(method, url, *args, **kwargs)
+            return super().request(method, url, *args, **kwargs)
 
 else:
     def RequestsClient(*args, **kwargs):
@@ -128,7 +124,7 @@ if coreapi is not None:
         def __init__(self, *args, **kwargs):
             self._session = RequestsClient()
             kwargs['transports'] = [coreapi.transports.HTTPTransport(session=self.session)]
-            return super(CoreAPIClient, self).__init__(*args, **kwargs)
+            return super().__init__(*args, **kwargs)
 
         @property
         def session(self):
@@ -148,7 +144,7 @@ class APIRequestFactory(DjangoRequestFactory):
         self.renderer_classes = {}
         for cls in self.renderer_classes_list:
             self.renderer_classes[cls.format] = cls
-        super(APIRequestFactory, self).__init__(**defaults)
+        super().__init__(**defaults)
 
     def _encode_data(self, data, format=None, content_type=None):
         """
@@ -170,11 +166,11 @@ class APIRequestFactory(DjangoRequestFactory):
             format = format or self.default_format
 
             assert format in self.renderer_classes, (
-                "Invalid format '{0}'. Available formats are {1}. "
+                "Invalid format '{}'. Available formats are {}. "
                 "Set TEST_REQUEST_RENDERER_CLASSES to enable "
                 "extra request formats.".format(
                     format,
-                    ', '.join(["'" + fmt + "'" for fmt in self.renderer_classes.keys()])
+                    ', '.join(["'" + fmt + "'" for fmt in self.renderer_classes])
                 )
             )
 
@@ -183,13 +179,13 @@ class APIRequestFactory(DjangoRequestFactory):
             ret = renderer.render(data)
 
             # Determine the content-type header from the renderer
-            content_type = "{0}; charset={1}".format(
+            content_type = "{}; charset={}".format(
                 renderer.media_type, renderer.charset
             )
 
             # Coerce text to bytes if required.
-            if isinstance(ret, six.text_type):
-                ret = bytes(ret.encode(renderer.charset))
+            if isinstance(ret, str):
+                ret = ret.encode(renderer.charset)
 
         return ret, content_type
 
@@ -201,8 +197,7 @@ class APIRequestFactory(DjangoRequestFactory):
             # Fix to support old behavior where you have the arguments in the
             # url. See #1461.
             query_string = force_bytes(path.split('?')[1])
-            if six.PY3:
-                query_string = query_string.decode('iso-8859-1')
+            query_string = query_string.decode('iso-8859-1')
             r['QUERY_STRING'] = query_string
         r.update(extra)
         return self.generic('GET', path, **r)
@@ -227,8 +222,17 @@ class APIRequestFactory(DjangoRequestFactory):
         data, content_type = self._encode_data(data, format, content_type)
         return self.generic('OPTIONS', path, data, content_type, **extra)
 
+    def generic(self, method, path, data='',
+                content_type='application/octet-stream', secure=False, **extra):
+        # Include the CONTENT_TYPE, regardless of whether or not data is empty.
+        if content_type is not None:
+            extra['CONTENT_TYPE'] = str(content_type)
+
+        return super().generic(
+            method, path, data, content_type, secure, **extra)
+
     def request(self, **kwargs):
-        request = super(APIRequestFactory, self).request(**kwargs)
+        request = super().request(**kwargs)
         request._dont_enforce_csrf_checks = not self.enforce_csrf_checks
         return request
 
@@ -242,18 +246,18 @@ class ForceAuthClientHandler(ClientHandler):
     def __init__(self, *args, **kwargs):
         self._force_user = None
         self._force_token = None
-        super(ForceAuthClientHandler, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_response(self, request):
         # This is the simplest place we can hook into to patch the
         # request object.
         force_authenticate(request, self._force_user, self._force_token)
-        return super(ForceAuthClientHandler, self).get_response(request)
+        return super().get_response(request)
 
 
 class APIClient(APIRequestFactory, DjangoClient):
     def __init__(self, enforce_csrf_checks=False, **defaults):
-        super(APIClient, self).__init__(**defaults)
+        super().__init__(**defaults)
         self.handler = ForceAuthClientHandler(enforce_csrf_checks)
         self._credentials = {}
 
@@ -276,17 +280,17 @@ class APIClient(APIRequestFactory, DjangoClient):
     def request(self, **kwargs):
         # Ensure that any credentials set get added to every request.
         kwargs.update(self._credentials)
-        return super(APIClient, self).request(**kwargs)
+        return super().request(**kwargs)
 
     def get(self, path, data=None, follow=False, **extra):
-        response = super(APIClient, self).get(path, data=data, **extra)
+        response = super().get(path, data=data, **extra)
         if follow:
             response = self._handle_redirects(response, **extra)
         return response
 
     def post(self, path, data=None, format=None, content_type=None,
              follow=False, **extra):
-        response = super(APIClient, self).post(
+        response = super().post(
             path, data=data, format=format, content_type=content_type, **extra)
         if follow:
             response = self._handle_redirects(response, **extra)
@@ -294,7 +298,7 @@ class APIClient(APIRequestFactory, DjangoClient):
 
     def put(self, path, data=None, format=None, content_type=None,
             follow=False, **extra):
-        response = super(APIClient, self).put(
+        response = super().put(
             path, data=data, format=format, content_type=content_type, **extra)
         if follow:
             response = self._handle_redirects(response, **extra)
@@ -302,7 +306,7 @@ class APIClient(APIRequestFactory, DjangoClient):
 
     def patch(self, path, data=None, format=None, content_type=None,
               follow=False, **extra):
-        response = super(APIClient, self).patch(
+        response = super().patch(
             path, data=data, format=format, content_type=content_type, **extra)
         if follow:
             response = self._handle_redirects(response, **extra)
@@ -310,7 +314,7 @@ class APIClient(APIRequestFactory, DjangoClient):
 
     def delete(self, path, data=None, format=None, content_type=None,
                follow=False, **extra):
-        response = super(APIClient, self).delete(
+        response = super().delete(
             path, data=data, format=format, content_type=content_type, **extra)
         if follow:
             response = self._handle_redirects(response, **extra)
@@ -318,7 +322,7 @@ class APIClient(APIRequestFactory, DjangoClient):
 
     def options(self, path, data=None, format=None, content_type=None,
                 follow=False, **extra):
-        response = super(APIClient, self).options(
+        response = super().options(
             path, data=data, format=format, content_type=content_type, **extra)
         if follow:
             response = self._handle_redirects(response, **extra)
@@ -332,7 +336,7 @@ class APIClient(APIRequestFactory, DjangoClient):
         self.handler._force_token = None
 
         if self.session:
-            super(APIClient, self).logout()
+            super().logout()
 
 
 class APITransactionTestCase(testcases.TransactionTestCase):
@@ -349,3 +353,44 @@ class APISimpleTestCase(testcases.SimpleTestCase):
 
 class APILiveServerTestCase(testcases.LiveServerTestCase):
     client_class = APIClient
+
+
+class URLPatternsTestCase(testcases.SimpleTestCase):
+    """
+    Isolate URL patterns on a per-TestCase basis. For example,
+
+    class ATestCase(URLPatternsTestCase):
+        urlpatterns = [...]
+
+        def test_something(self):
+            ...
+
+    class AnotherTestCase(URLPatternsTestCase):
+        urlpatterns = [...]
+
+        def test_something_else(self):
+            ...
+    """
+    @classmethod
+    def setUpClass(cls):
+        # Get the module of the TestCase subclass
+        cls._module = import_module(cls.__module__)
+        cls._override = override_settings(ROOT_URLCONF=cls.__module__)
+
+        if hasattr(cls._module, 'urlpatterns'):
+            cls._module_urlpatterns = cls._module.urlpatterns
+
+        cls._module.urlpatterns = cls.urlpatterns
+
+        cls._override.enable()
+        super().setUpClass()
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        cls._override.disable()
+
+        if hasattr(cls, '_module_urlpatterns'):
+            cls._module.urlpatterns = cls._module_urlpatterns
+        else:
+            del cls._module.urlpatterns

@@ -5,16 +5,18 @@
     <i class="fa fa-bars fa-2x toggle-btn" data-toggle="collapse" data-target="#menu-content"></i>
     <div class="menu-list">
         <ul id="menu-content" class="menu-content collapse out">
-            {% for section_key, section in document.data|items %}
+            {% if document|data %}
+            {% for section_key, section in document|data|items %}
             <li data-toggle="collapse" data-target="#{{ section_key }}-dropdown" class="collapsed">
                 <a><i class="fa fa-dot-circle-o fa-lg"></i> {% if section_key %}{{ section_key }}{% else %}API Endpoints{% endif %} <span class="arrow"></span></a>
-            </li>
-            <ul class="sub-menu {% if section_key %}collapse{% endif %}" id="{{ section_key }}-dropdown">
-                {% for link_key, link in section.links|items %}
-                    <li><a href="#{{ section_key }}-{{ link_key }}">{{ link.title|default:link_key }}</a></li>
+                <ul class="sub-menu {% if section_key %}collapse{% endif %}" id="{{ section_key }}-dropdown">
+                {% for link_key, link in section|schema_links|items %}
+                    <li><a href="#{{ section_key }}-{{ link_key|slugify }}">{{ link.title|default:link_key }}</a></li>
                 {% endfor %}
-            </ul>
+                </ul>
+            </li>
             {% endfor %}
+            {% endif %}
         </ul>
 
         <ul class="menu-list menu-list-bottom">
@@ -29,12 +31,12 @@
             </ul>
 
             <li data-toggle="collapse" data-target="#language-control" class="collapsed">
-                <a><i class="fa fa-code fa-lg"></i> Source Code</a> <span id="selected-language">shell</span>
+                <a><i class="fa fa-code fa-lg"></i> Source Code</a> <span id="selected-language">{{ langs | first }}</span>
             </li>
             <ul class="sub-menu collapse out" id="language-control">
-                <li class="active"><a href="#" data-language="shell">shell</a></li>
-                <li><a href="#" data-language="javascript">javascript</a></li>
-                <li><a href="#" data-language="python">python</a></li>
+            {% for lang in langs %}
+                <li{% if loop.first %} class="active"{% endif %}><a href="#" data-language="{{ lang }}">{{ lang }}</a></li>
+	    {% endfor %}
             </ul>
         </ul>
 

@@ -6,13 +6,14 @@
 # cokky <cokkywu@gmail.com>, 2015
 # hunter007 <wentao79@gmail.com>, 2015
 # nypisces <loliandny@icloud.com>, 2015
+# ppppfly <mpang@gizwits.com>, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-07-12 16:13+0100\n"
-"PO-Revision-Date: 2016-07-12 15:14+0000\n"
-"Last-Translator: Thomas Christie <tom@tomchristie.com>\n"
+"PO-Revision-Date: 2017-08-03 14:58+0000\n"
+"Last-Translator: ppppfly <mpang@gizwits.com>\n"
 "Language-Team: Chinese Simplified (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/zh-Hans/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -59,35 +60,35 @@ msgstr "认证令牌无效。"
 
 #: authtoken/apps.py:7
 msgid "Auth Token"
-msgstr ""
+msgstr "认证令牌"
 
 #: authtoken/models.py:15
 msgid "Key"
-msgstr ""
+msgstr "键"
 
 #: authtoken/models.py:18
 msgid "User"
-msgstr ""
+msgstr "用户"
 
 #: authtoken/models.py:20
 msgid "Created"
-msgstr ""
+msgstr "已创建"
 
 #: authtoken/models.py:29
 msgid "Token"
-msgstr ""
+msgstr "令牌"
 
 #: authtoken/models.py:30
 msgid "Tokens"
-msgstr ""
+msgstr "令牌"
 
 #: authtoken/serializers.py:8
 msgid "Username"
-msgstr ""
+msgstr "用户名"
 
 #: authtoken/serializers.py:9
 msgid "Password"
-msgstr ""
+msgstr "密码"
 
 #: authtoken/serializers.py:20
 msgid "User account is disabled."
@@ -317,15 +318,15 @@ msgstr "提交"
 
 #: filters.py:336
 msgid "ascending"
-msgstr ""
+msgstr "正排序"
 
 #: filters.py:337
 msgid "descending"
-msgstr ""
+msgstr "倒排序"
 
 #: pagination.py:193
 msgid "Invalid page."
-msgstr ""
+msgstr "无效页面。"
 
 #: pagination.py:427
 msgid "Invalid cursor"
@@ -427,7 +428,7 @@ msgstr "URL路径包含无效版本。"
 
 #: versioning.py:115
 msgid "Invalid version in URL path. Does not match any version namespace."
-msgstr ""
+msgstr "在URL路径中发现无效的版本。无法匹配任何的版本命名空间。"
 
 #: versioning.py:147
 msgid "Invalid version in hostname."

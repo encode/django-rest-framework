@@ -1,18 +1,14 @@
-from __future__ import absolute_import, unicode_literals
-
 import re
 from collections import OrderedDict
 
 from django import template
 from django.template import loader
-from django.utils import six
-from django.utils.encoding import force_text, iri_to_uri
+from django.urls import NoReverseMatch, reverse
+from django.utils.encoding import force_str, iri_to_uri
 from django.utils.html import escape, format_html, smart_urlquote
 from django.utils.safestring import SafeData, mark_safe
 
-from rest_framework.compat import (
-    NoReverseMatch, markdown, pygments_highlight, reverse, template_render
-)
+from rest_framework.compat import apply_markdown, pygments_highlight
 from rest_framework.renderers import HTMLFormRenderer
 from rest_framework.utils.urls import replace_query_param
 
@@ -68,9 +64,9 @@ def form_for_link(link):
 
 @register.simple_tag
 def render_markdown(markdown_text):
-    if not markdown:
+    if apply_markdown is None:
         return markdown_text
-    return mark_safe(markdown.markdown(markdown_text))
+    return mark_safe(apply_markdown(markdown_text))
 
 
 @register.simple_tag
@@ -176,7 +172,7 @@ def as_list_of_strings(value):
 @register.filter
 def add_class(value, css_class):
     """
-    http://stackoverflow.com/questions/4124220/django-adding-css-classes-when-rendering-form-fields-in-a-template
+    https://stackoverflow.com/questions/4124220/django-adding-css-classes-when-rendering-form-fields-in-a-template
 
     Inserts classes into template variables that contain HTML tags,
     useful for modifying forms without needing to change the Form objects.
@@ -188,7 +184,7 @@ def add_class(value, css_class):
     In the case of REST Framework, the filter is used to add Bootstrap-specific
     classes to the forms.
     """
-    html = six.text_type(value)
+    html = str(value)
     match = class_re.search(html)
     if match:
         m = re.search(r'^%s$|^%s\s|\s%s\s|\s%s$' % (css_class, css_class,
@@ -205,7 +201,7 @@ def add_class(value, css_class):
 @register.filter
 def format_value(value):
     if getattr(value, 'is_hyperlink', False):
-        name = six.text_type(value.obj)
+        name = str(value.obj)
         return mark_safe('<a href=%s>%s</a>' % (value, escape(name)))
     if value is None or isinstance(value, bool):
         return mark_safe('<code>%s</code>' % {True: 'true', False: 'false', None: 'null'}[value])
@@ -215,12 +211,12 @@ def format_value(value):
         else:
             template = loader.get_template('rest_framework/admin/simple_list_value.html')
         context = {'value': value}
-        return template_render(template, context)
+        return template.render(context)
     elif isinstance(value, dict):
         template = loader.get_template('rest_framework/admin/dict_value.html')
         context = {'value': value}
-        return template_render(template, context)
-    elif isinstance(value, six.string_types):
+        return template.render(context)
+    elif isinstance(value, str):
         if (
             (value.startswith('http:') or value.startswith('https:')) and not
             re.search(r'\s', value)
@@ -230,18 +226,59 @@ def format_value(value):
             return mark_safe('<a href="mailto:{value}">{value}</a>'.format(value=escape(value)))
         elif '\n' in value:
             return mark_safe('<pre>%s</pre>' % escape(value))
-    return six.text_type(value)
+    return str(value)
 
 
 @register.filter
 def items(value):
     """
     Simple filter to return the items of the dict. Useful when the dict may
-    have a key 'items' which is resolved first in Django tempalte dot-notation
+    have a key 'items' which is resolved first in Django template dot-notation
     lookup.  See issue #4931
     Also see: https://stackoverflow.com/questions/15416662/django-template-loop-over-dictionary-items-with-items-as-key
     """
+    if value is None:
+        # `{% for k, v in value.items %}` doesn't raise when value is None or
+        # not in the context, so neither should `{% for k, v in value|items %}`
+        return []
     return value.items()
+
+
+@register.filter
+def data(value):
+    """
+    Simple filter to access `data` attribute of object,
+    specifically coreapi.Document.
+
+    As per `items` filter above, allows accessing `document.data` when
+    Document contains Link keyed-at "data".
+
+    See issue #5395
+    """
+    return value.data
+
+
+@register.filter
+def schema_links(section, sec_key=None):
+    """
+    Recursively find every link in a schema, even nested.
+    """
+    NESTED_FORMAT = '%s > %s'  # this format is used in docs/js/api.js:normalizeKeys
+    links = section.links
+    if section.data:
+        data = section.data.items()
+        for sub_section_key, sub_section in data:
+            new_links = schema_links(sub_section, sec_key=sub_section_key)
+            links.update(new_links)
+
+    if sec_key is not None:
+        new_links = OrderedDict()
+        for link_key, link in links.items():
+            new_key = NESTED_FORMAT % (sec_key, link_key)
+            new_links.update({new_key: link})
+        return new_links
+
+    return links
 
 
 @register.filter
@@ -274,7 +311,7 @@ def smart_urlquote_wrapper(matched_url):
         return None
 
 
-@register.filter
+@register.filter(needs_autoescape=True)
 def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=True):
     """
     Converts any URLs in text into clickable links.
@@ -296,7 +333,13 @@ def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=Tru
         return limit is not None and (len(x) > limit and ('%s...' % x[:max(0, limit - 3)])) or x
 
     safe_input = isinstance(text, SafeData)
-    words = word_split_re.split(force_text(text))
+
+    # Unfortunately, Django built-in cannot be used here, because escaping
+    # is to be performed on words, which have been forcibly coerced to text
+    def conditional_escape(text):
+        return escape(text) if autoescape and not safe_input else text
+
+    words = word_split_re.split(force_str(text))
     for i, word in enumerate(words):
         if '.' in word or '@' in word or ':' in word:
             # Deal with punctuation.
@@ -336,21 +379,15 @@ def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=Tru
             # Make link.
             if url:
                 trimmed = trim_url(middle)
-                if autoescape and not safe_input:
-                    lead, trail = escape(lead), escape(trail)
-                    url, trimmed = escape(url), escape(trimmed)
+                lead, trail = conditional_escape(lead), conditional_escape(trail)
+                url, trimmed = conditional_escape(url), conditional_escape(trimmed)
                 middle = '<a href="%s"%s>%s</a>' % (url, nofollow_attr, trimmed)
-                words[i] = mark_safe('%s%s%s' % (lead, middle, trail))
+                words[i] = '%s%s%s' % (lead, middle, trail)
             else:
-                if safe_input:
-                    words[i] = mark_safe(word)
-                elif autoescape:
-                    words[i] = escape(word)
-        elif safe_input:
-            words[i] = mark_safe(word)
-        elif autoescape:
-            words[i] = escape(word)
-    return ''.join(words)
+                words[i] = conditional_escape(word)
+        else:
+            words[i] = conditional_escape(word)
+    return mark_safe(''.join(words))
 
 
 @register.filter

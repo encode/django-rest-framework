@@ -1,18 +1,15 @@
 """
 Provides various throttling policies.
 """
-from __future__ import unicode_literals
-
 import time
 
 from django.core.cache import cache as default_cache
 from django.core.exceptions import ImproperlyConfigured
 
-from rest_framework.compat import is_authenticated
 from rest_framework.settings import api_settings
 
 
-class BaseThrottle(object):
+class BaseThrottle:
     """
     Rate throttling of requests.
     """
@@ -55,7 +52,7 @@ class SimpleRateThrottle(BaseThrottle):
     A simple cache implementation, that only requires `.get_cache_key()`
     to be overridden.
 
-    The rate (requests / seconds) is set by a `throttle` attribute on the View
+    The rate (requests / seconds) is set by a `rate` attribute on the View
     class.  The attribute is a string of the form 'number_of_requests/period'.
 
     Period should be one of: ('s', 'sec', 'm', 'min', 'h', 'hour', 'd', 'day')
@@ -174,7 +171,7 @@ class AnonRateThrottle(SimpleRateThrottle):
     scope = 'anon'
 
     def get_cache_key(self, request, view):
-        if is_authenticated(request.user):
+        if request.user.is_authenticated:
             return None  # Only throttle unauthenticated requests.
 
         return self.cache_format % {
@@ -194,7 +191,7 @@ class UserRateThrottle(SimpleRateThrottle):
     scope = 'user'
 
     def get_cache_key(self, request, view):
-        if is_authenticated(request.user):
+        if request.user.is_authenticated:
             ident = request.user.pk
         else:
             ident = self.get_ident(request)
@@ -233,7 +230,7 @@ class ScopedRateThrottle(SimpleRateThrottle):
         self.num_requests, self.duration = self.parse_rate(self.rate)
 
         # We can now proceed as normal.
-        return super(ScopedRateThrottle, self).allow_request(request, view)
+        return super().allow_request(request, view)
 
     def get_cache_key(self, request, view):
         """
@@ -242,7 +239,7 @@ class ScopedRateThrottle(SimpleRateThrottle):
         Otherwise generate the unique cache key by concatenating the user id
         with the '.throttle_scope` property of the view.
         """
-        if is_authenticated(request.user):
+        if request.user.is_authenticated:
             ident = request.user.pk
         else:
             ident = self.get_ident(request)

@@ -8,24 +8,24 @@ The tutorial is fairly in-depth, so you should probably get a cookie and a cup o
 
 ---
 
-**Note**: The code for this tutorial is available in the [tomchristie/rest-framework-tutorial][repo] repository on GitHub.  The completed implementation is also online as a sandbox version for testing, [available here][sandbox].
+**Note**: The code for this tutorial is available in the [encode/rest-framework-tutorial][repo] repository on GitHub.  The completed implementation is also online as a sandbox version for testing, [available here][sandbox].
 
 ---
 
 ## Setting up a new environment
 
-Before we do anything else we'll create a new virtual environment, using [virtualenv].  This will make sure our package configuration is kept nicely isolated from any other projects we're working on.
+Before we do anything else we'll create a new virtual environment, using [venv]. This will make sure our package configuration is kept nicely isolated from any other projects we're working on.
 
-    virtualenv env
+    python3 -m venv env
     source env/bin/activate
 
-Now that we're inside a virtualenv environment, we can install our package requirements.
+Now that we're inside a virtual environment, we can install our package requirements.
 
     pip install django
     pip install djangorestframework
     pip install pygments  # We'll be using this for the code highlighting
 
-**Note:** To exit the virtualenv environment at any time, just type `deactivate`.  For more information see the [virtualenv documentation][virtualenv].
+**Note:** To exit the virtual environment at any time, just type `deactivate`.  For more information see the [venv documentation][venv].
 
 ## Getting started
 
@@ -33,7 +33,7 @@ Okay, we're ready to get coding.
 To get started, let's create a new project to work with.
 
     cd ~
-    django-admin.py startproject tutorial
+    django-admin startproject tutorial
     cd tutorial
 
 Once that's done we can create an app that we'll use to create a simple Web API.
@@ -42,13 +42,11 @@ Once that's done we can create an app that we'll use to create a simple Web API.
 
 We'll need to add our new `snippets` app and the `rest_framework` app to `INSTALLED_APPS`. Let's edit the `tutorial/settings.py` file:
 
-    INSTALLED_APPS = (
+    INSTALLED_APPS = [
         ...
         'rest_framework',
         'snippets.apps.SnippetsConfig',
-    )
-
-Please note that if you're using Django <1.9, you need to replace `snippets.apps.SnippetsConfig` with `snippets`.
+    ]
 
 Okay, we're ready to roll.
 
@@ -62,7 +60,7 @@ For the purposes of this tutorial we're going to start by creating a simple `Sni
 
     LEXERS = [item for item in get_all_lexers() if item[1]]
     LANGUAGE_CHOICES = sorted([(item[1][0], item[0]) for item in LEXERS])
-    STYLE_CHOICES = sorted((item, item) for item in get_all_styles())
+    STYLE_CHOICES = sorted([(item, item) for item in get_all_styles()])
 
 
     class Snippet(models.Model):
@@ -74,7 +72,7 @@ For the purposes of this tutorial we're going to start by creating a simple `Sni
         style = models.CharField(choices=STYLE_CHOICES, default='friendly', max_length=100)
 
         class Meta:
-            ordering = ('created',)
+            ordering = ['created']
 
 We'll also need to create an initial migration for our snippet model, and sync the database for the first time.
 
@@ -139,26 +137,26 @@ Okay, once we've got a few imports out of the way, let's create a couple of code
     snippet = Snippet(code='foo = "bar"\n')
     snippet.save()
 
-    snippet = Snippet(code='print "hello, world"\n')
+    snippet = Snippet(code='print("hello, world")\n')
     snippet.save()
 
 We've now got a few snippet instances to play with.  Let's take a look at serializing one of those instances.
 
     serializer = SnippetSerializer(snippet)
     serializer.data
-    # {'id': 2, 'title': u'', 'code': u'print "hello, world"\n', 'linenos': False, 'language': u'python', 'style': u'friendly'}
+    # {'id': 2, 'title': '', 'code': 'print("hello, world")\n', 'linenos': False, 'language': 'python', 'style': 'friendly'}
 
 At this point we've translated the model instance into Python native datatypes.  To finalize the serialization process we render the data into `json`.
 
     content = JSONRenderer().render(serializer.data)
     content
-    # '{"id": 2, "title": "", "code": "print \\"hello, world\\"\\n", "linenos": false, "language": "python", "style": "friendly"}'
+    # b'{"id": 2, "title": "", "code": "print(\\"hello, world\\")\\n", "linenos": false, "language": "python", "style": "friendly"}'
 
 Deserialization is similar.  First we parse a stream into Python native datatypes...
 
-    from django.utils.six import BytesIO
+    import io
 
-    stream = BytesIO(content)
+    stream = io.BytesIO(content)
     data = JSONParser().parse(stream)
 
 ...then we restore those native datatypes into a fully populated object instance.
@@ -167,7 +165,7 @@ Deserialization is similar.  First we parse a stream into Python native datatype
     serializer.is_valid()
     # True
     serializer.validated_data
-    # OrderedDict([('title', ''), ('code', 'print "hello, world"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])
+    # OrderedDict([('title', ''), ('code', 'print("hello, world")\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])
     serializer.save()
     # <Snippet: Snippet object>
 
@@ -177,7 +175,7 @@ We can also serialize querysets instead of model instances.  To do so we simply 
 
     serializer = SnippetSerializer(Snippet.objects.all(), many=True)
     serializer.data
-    # [OrderedDict([('id', 1), ('title', u''), ('code', u'foo = "bar"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('id', 2), ('title', u''), ('code', u'print "hello, world"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('id', 3), ('title', u''), ('code', u'print "hello, world"'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])]
+    # [OrderedDict([('id', 1), ('title', ''), ('code', 'foo = "bar"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('id', 2), ('title', ''), ('code', 'print("hello, world")\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('id', 3), ('title', ''), ('code', 'print("hello, world")'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])]
 
 ## Using ModelSerializers
 
@@ -191,7 +189,7 @@ Open the file `snippets/serializers.py` again, and replace the `SnippetSerialize
     class SnippetSerializer(serializers.ModelSerializer):
         class Meta:
             model = Snippet
-            fields = ('id', 'title', 'code', 'linenos', 'language', 'style')
+            fields = ['id', 'title', 'code', 'linenos', 'language', 'style']
 
 One nice property that serializers have is that you can inspect all the fields in a serializer instance, by printing its representation. Open the Django shell with `python manage.py shell`, then try the following:
 
@@ -220,7 +218,6 @@ Edit the `snippets/views.py` file, and add the following.
 
     from django.http import HttpResponse, JsonResponse
     from django.views.decorators.csrf import csrf_exempt
-    from rest_framework.renderers import JSONRenderer
     from rest_framework.parsers import JSONParser
     from snippets.models import Snippet
     from snippets.serializers import SnippetSerializer
@@ -277,20 +274,20 @@ We'll also need a view which corresponds to an individual snippet, and can be us
 
 Finally we need to wire these views up.  Create the `snippets/urls.py` file:
 
-    from django.conf.urls import url
+    from django.urls import path
     from snippets import views
 
     urlpatterns = [
-        url(r'^snippets/$', views.snippet_list),
-        url(r'^snippets/(?P<pk>[0-9]+)/$', views.snippet_detail),
+        path('snippets/', views.snippet_list),
+        path('snippets/<int:pk>/', views.snippet_detail),
     ]
 
 We also need to wire up the root urlconf, in the `tutorial/urls.py` file, to include our snippet app's URLs.
 
-    from django.conf.urls import url, include
+    from django.urls import path, include
 
     urlpatterns = [
-        url(r'^', include('snippets.urls')),
+        path('', include('snippets.urls')),
     ]
 
 It's worth noting that there are a couple of edge cases we're not dealing with properly at the moment.  If we send malformed `json`, or if a request is made with a method that the view doesn't handle, then we'll end up with a 500 "server error" response.  Still, this'll do for now.
@@ -301,18 +298,18 @@ Now we can start up a sample server that serves our snippets.
 
 Quit out of the shell...
 
-	quit()
+    quit()
 
 ...and start up Django's development server.
 
-	python manage.py runserver
+    python manage.py runserver
 
-	Validating models...
+    Validating models...
 
-	0 errors found
-	Django version 1.11, using settings 'tutorial.settings'
-	Development server is running at http://127.0.0.1:8000/
-	Quit the server with CONTROL-C.
+    0 errors found
+    Django version 1.11, using settings 'tutorial.settings'
+    Development server is running at http://127.0.0.1:8000/
+    Quit the server with CONTROL-C.
 
 In another terminal window, we can test the server.
 
@@ -340,7 +337,7 @@ Finally, we can get a list of all of the snippets:
       {
         "id": 2,
         "title": "",
-        "code": "print \"hello, world\"\n",
+        "code": "print(\"hello, world\")\n",
         "linenos": false,
         "language": "python",
         "style": "friendly"
@@ -356,7 +353,7 @@ Or we can get a particular snippet by referencing its id:
     {
       "id": 2,
       "title": "",
-      "code": "print \"hello, world\"\n",
+      "code": "print(\"hello, world\")\n",
       "linenos": false,
       "language": "python",
       "style": "friendly"
@@ -374,8 +371,8 @@ We'll see how we can start to improve things in [part 2 of the tutorial][tut-2].
 
 [quickstart]: quickstart.md
 [repo]: https://github.com/encode/rest-framework-tutorial
-[sandbox]: http://restframework.herokuapp.com/
-[virtualenv]: http://www.virtualenv.org/en/latest/index.html
+[sandbox]: https://restframework.herokuapp.com/
+[venv]: https://docs.python.org/3/library/venv.html
 [tut-2]: 2-requests-and-responses.md
 [httpie]: https://github.com/jakubroztocil/httpie#installation
-[curl]: http://curl.haxx.se
+[curl]: https://curl.haxx.se/

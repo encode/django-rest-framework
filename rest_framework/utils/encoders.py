@@ -1,19 +1,17 @@
 """
 Helper classes for parsers.
 """
-from __future__ import unicode_literals
-
 import datetime
 import decimal
-import json
+import json  # noqa
 import uuid
 
 from django.db.models.query import QuerySet
-from django.utils import six, timezone
-from django.utils.encoding import force_text
+from django.utils import timezone
+from django.utils.encoding import force_str
 from django.utils.functional import Promise
 
-from rest_framework.compat import coreapi, total_seconds
+from rest_framework.compat import coreapi
 
 
 class JSONEncoder(json.JSONEncoder):
@@ -23,9 +21,9 @@ class JSONEncoder(json.JSONEncoder):
     """
     def default(self, obj):
         # For Date Time string spec, see ECMA 262
-        # http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.15
+        # https://ecma-international.org/ecma-262/5.1/#sec-15.9.1.15
         if isinstance(obj, Promise):
-            return force_text(obj)
+            return force_str(obj)
         elif isinstance(obj, datetime.datetime):
             representation = obj.isoformat()
             if representation.endswith('+00:00'):
@@ -37,21 +35,19 @@ class JSONEncoder(json.JSONEncoder):
             if timezone and timezone.is_aware(obj):
                 raise ValueError("JSON can't represent timezone-aware times.")
             representation = obj.isoformat()
-            if obj.microsecond:
-                representation = representation[:12]
             return representation
         elif isinstance(obj, datetime.timedelta):
-            return six.text_type(total_seconds(obj))
+            return str(obj.total_seconds())
         elif isinstance(obj, decimal.Decimal):
             # Serializers will coerce decimals to strings by default.
             return float(obj)
         elif isinstance(obj, uuid.UUID):
-            return six.text_type(obj)
+            return str(obj)
         elif isinstance(obj, QuerySet):
             return tuple(obj)
-        elif isinstance(obj, six.binary_type):
+        elif isinstance(obj, bytes):
             # Best-effort for binary blobs. See #4187.
-            return obj.decode('utf-8')
+            return obj.decode()
         elif hasattr(obj, 'tolist'):
             # Numpy arrays and array scalars.
             return obj.tolist()
@@ -61,10 +57,11 @@ class JSONEncoder(json.JSONEncoder):
                 'You should be using a schema renderer instead for this view.'
             )
         elif hasattr(obj, '__getitem__'):
+            cls = (list if isinstance(obj, (list, tuple)) else dict)
             try:
-                return dict(obj)
-            except:
+                return cls(obj)
+            except Exception:
                 pass
         elif hasattr(obj, '__iter__'):
             return tuple(item for item in obj)
-        return super(JSONEncoder, self).default(obj)
+        return super().default(obj)

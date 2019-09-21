@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import unittest
 
 from django.conf.urls import url
@@ -10,7 +8,7 @@ from django.test import override_settings
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
 
-from rest_framework.compat import is_authenticated, requests
+from rest_framework.compat import requests
 from rest_framework.response import Response
 from rest_framework.test import APITestCase, RequestsClient
 from rest_framework.views import APIView
@@ -72,7 +70,7 @@ class SessionView(APIView):
 class AuthView(APIView):
     @method_decorator(ensure_csrf_cookie)
     def get(self, request):
-        if is_authenticated(request.user):
+        if request.user.is_authenticated:
             username = request.user.username
         else:
             username = None

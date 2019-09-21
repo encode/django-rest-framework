@@ -25,7 +25,8 @@ Here we've used the `ReadOnlyModelViewSet` class to automatically provide the de
 
 Next we're going to replace the `SnippetList`, `SnippetDetail` and `SnippetHighlight` view classes.  We can remove the three views, and again replace them with a single class.
 
-    from rest_framework.decorators import detail_route
+    from rest_framework.decorators import action
+    from rest_framework.response import Response
 
     class SnippetViewSet(viewsets.ModelViewSet):
         """
@@ -36,10 +37,10 @@ Next we're going to replace the `SnippetList`, `SnippetDetail` and `SnippetHighl
         """
         queryset = Snippet.objects.all()
         serializer_class = SnippetSerializer
-        permission_classes = (permissions.IsAuthenticatedOrReadOnly,
-                              IsOwnerOrReadOnly,)
+        permission_classes = [permissions.IsAuthenticatedOrReadOnly,
+                              IsOwnerOrReadOnly]
 
-        @detail_route(renderer_classes=[renderers.StaticHTMLRenderer])
+        @action(detail=True, renderer_classes=[renderers.StaticHTMLRenderer])
         def highlight(self, request, *args, **kwargs):
             snippet = self.get_object()
             return Response(snippet.highlighted)
@@ -49,18 +50,18 @@ Next we're going to replace the `SnippetList`, `SnippetDetail` and `SnippetHighl
 
 This time we've used the `ModelViewSet` class in order to get the complete set of default read and write operations.
 
-Notice that we've also used the `@detail_route` decorator to create a custom action, named `highlight`.  This decorator can be used to add any custom endpoints that don't fit into the standard `create`/`update`/`delete` style.
+Notice that we've also used the `@action` decorator to create a custom action, named `highlight`.  This decorator can be used to add any custom endpoints that don't fit into the standard `create`/`update`/`delete` style.
 
-Custom actions which use the `@detail_route` decorator will respond to `GET` requests by default.  We can use the `methods` argument if we wanted an action that responded to `POST` requests.
+Custom actions which use the `@action` decorator will respond to `GET` requests by default.  We can use the `methods` argument if we wanted an action that responded to `POST` requests.
 
-The URLs for custom actions by default depend on the method name itself. If you want to change the way url should be constructed, you can include url_path as a decorator keyword argument.
+The URLs for custom actions by default depend on the method name itself. If you want to change the way url should be constructed, you can include `url_path` as a decorator keyword argument.
 
 ## Binding ViewSets to URLs explicitly
 
 The handler methods only get bound to the actions when we define the URLConf.
 To see what's going on under the hood let's first explicitly create a set of views from our ViewSets.
 
-In the `urls.py` file we bind our `ViewSet` classes into a set of concrete views.
+In the `snippets/urls.py` file we bind our `ViewSet` classes into a set of concrete views.
 
     from snippets.views import SnippetViewSet, UserViewSet, api_root
     from rest_framework import renderers
@@ -90,23 +91,23 @@ Notice how we're creating multiple views from each `ViewSet` class, by binding t
 Now that we've bound our resources into concrete views, we can register the views with the URL conf as usual.
 
     urlpatterns = format_suffix_patterns([
-        url(r'^$', api_root),
-        url(r'^snippets/$', snippet_list, name='snippet-list'),
-        url(r'^snippets/(?P<pk>[0-9]+)/$', snippet_detail, name='snippet-detail'),
-        url(r'^snippets/(?P<pk>[0-9]+)/highlight/$', snippet_highlight, name='snippet-highlight'),
-        url(r'^users/$', user_list, name='user-list'),
-        url(r'^users/(?P<pk>[0-9]+)/$', user_detail, name='user-detail')
+        path('', api_root),
+        path('snippets/', snippet_list, name='snippet-list'),
+        path('snippets/<int:pk>/', snippet_detail, name='snippet-detail'),
+        path('snippets/<int:pk>/highlight/', snippet_highlight, name='snippet-highlight'),
+        path('users/', user_list, name='user-list'),
+        path('users/<int:pk>/', user_detail, name='user-detail')
     ])
 
 ## Using Routers
 
 Because we're using `ViewSet` classes rather than `View` classes, we actually don't need to design the URL conf ourselves.  The conventions for wiring up resources into views and urls can be handled automatically, using a `Router` class.  All we need to do is register the appropriate view sets with a router, and let it do the rest.
 
-Here's our re-wired `urls.py` file.
+Here's our re-wired `snippets/urls.py` file.
 
-    from django.conf.urls import url, include
-    from snippets import views
+    from django.urls import path, include
     from rest_framework.routers import DefaultRouter
+    from snippets import views
 
     # Create a router and register our viewsets with it.
     router = DefaultRouter()
@@ -114,10 +115,8 @@ Here's our re-wired `urls.py` file.
     router.register(r'users', views.UserViewSet)
 
     # The API URLs are now determined automatically by the router.
-    # Additionally, we include the login URLs for the browsable API.
     urlpatterns = [
-        url(r'^', include(router.urls)),
-        url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+        path('', include(router.urls)),
     ]
 
 Registering the viewsets with the router is similar to providing a urlpattern.  We include two arguments - the URL prefix for the views, and the viewset itself.
@@ -129,8 +128,3 @@ The `DefaultRouter` class we're using also automatically creates the API root vi
 Using viewsets can be a really useful abstraction.  It helps ensure that URL conventions will be consistent across your API, minimizes the amount of code you need to write, and allows you to concentrate on the interactions and representations your API provides rather than the specifics of the URL conf.
 
 That doesn't mean it's always the right approach to take.  There's a similar set of trade-offs to consider as when using class-based views instead of function based views.  Using viewsets is less explicit than building your views individually.
-
-In [part 7][tut-7] of the tutorial we'll look at how we can add an API schema,
-and interact with our API using a client library or command line tool.
-
-[tut-7]: 7-schemas-and-client-libraries.md

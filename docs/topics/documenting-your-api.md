@@ -4,86 +4,139 @@
 >
 > &mdash; Roy Fielding, [REST APIs must be hypertext driven][cite]
 
-REST framework provides built-in support for API documentation. There are also a number of great third-party documentation tools available.
+REST framework provides built-in support for generating OpenAPI schemas, which
+can be used with tools that allow you to build API documentation.
 
-## Built-in API documentation
+There are also a number of great third-party documentation packages available.
 
-The built-in API documentation includes:
+## Generating documentation from OpenAPI schemas
 
-* Documentation of API endpoints.
-* Automatically generated code samples for each of the available API client libraries.
-* Support for API interaction.
+There are a number of packages available that allow you to generate HTML
+documentation pages from OpenAPI schemas.
 
-### Installation
+Two popular options are [Swagger UI][swagger-ui] and [ReDoc][redoc].
 
-The `coreapi` library is required as a dependancy for the API docs. Make sure
-to install the latest version. The `pygments` and `markdown` libraries
-are optional but recommended.
+Both require little more than the location of your static schema file or
+dynamic `SchemaView` endpoint.
 
-To install the API documentation, you'll need to include it in your projects URLconf:
+### A minimal example with Swagger UI
 
-    from rest_framework.documentation import include_docs_urls
+Assuming you've followed the example from the schemas documentation for routing
+a dynamic `SchemaView`, a minimal Django template for using Swagger UI might be
+this:
 
-    urlpatterns = [
-        ...
-        url(r'^docs/', include_docs_urls(title='My API title'))
-    ]
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Swagger</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="//unpkg.com/swagger-ui-dist@3/swagger-ui.css" />
+  </head>
+  <body>
+    <div id="swagger-ui"></div>
+    <script src="//unpkg.com/swagger-ui-dist@3/swagger-ui-bundle.js"></script>
+    <script>
+    const ui = SwaggerUIBundle({
+        url: "{% url schema_url %}",
+        dom_id: '#swagger-ui',
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIBundle.SwaggerUIStandalonePreset
+        ],
+        layout: "BaseLayout"
+      })
+    </script>
+  </body>
+</html>
+```
 
-This will include two different views:
+Save this in your templates folder as `swagger-ui.html`. Then route a
+`TemplateView` in your project's URL conf:
 
-  * `/docs/` - The documentation page itself.
-  * `/docs/schema.js` - A JavaScript resource that exposes the API schema.
+```python
+from django.views.generic import TemplateView
 
-### Documenting your views
+urlpatterns = [
+    # ...
+    # Route TemplateView to serve Swagger UI template.
+    #   * Provide `extra_context` with view name of `SchemaView`.
+    path('swagger-ui/', TemplateView.as_view(
+        template_name='swagger-ui.html',
+        extra_context={'schema_url':'openapi-schema'}
+    ), name='swagger-ui'),
+]
+```
 
-You can document your views by including docstrings that describe each of the available actions.
-For example:
+See the [Swagger UI documentation][swagger-ui] for advanced usage.
 
-    class UserList(generics.ListAPIView):
-        """
-        Return a list of all the existing users.
-        """"
+### A minimal example with ReDoc.
 
-If a view supports multiple methods, you should split your documentation using `method:` style delimiters.
+Assuming you've followed the example from the schemas documentation for routing
+a dynamic `SchemaView`, a minimal Django template for using Swagger UI might be
+this:
 
-    class UserList(generics.ListCreateAPIView):
-        """
-        get:
-        Return a list of all the existing users.
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ReDoc</title>
+    <!-- needed for adaptive design -->
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">
+    <!-- ReDoc doesn't change outer page styles -->
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <redoc spec-url='{% url schema_url %}'></redoc>
+    <script src="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"> </script>
+  </body>
+</html>
+```
 
-        post:
-        Create a new user instance.
-        """
+Save this in your templates folder as `redoc.html`. Then route a `TemplateView`
+in your project's URL conf:
 
-When using viewsets, you should use the relevant action names as delimiters.
+```python
+from django.views.generic import TemplateView
 
-    class UserViewSet(viewsets.ModelViewSet):
-        """
-        retrieve:
-        Return the given user.
+urlpatterns = [
+    # ...
+    # Route TemplateView to serve the ReDoc template.
+    #   * Provide `extra_context` with view name of `SchemaView`.
+    path('redoc/', TemplateView.as_view(
+        template_name='redoc.html',
+        extra_context={'schema_url':'openapi-schema'}
+    ), name='redoc'),
+]
+```
 
-        list:
-        Return a list of all the existing users.
-
-        create:
-        Create a new user instance.
-        """
-
----
+See the [ReDoc documentation][redoc] for advanced usage.
 
 ## Third party packages
 
 There are a number of mature third-party packages for providing API documentation.
 
-#### DRF Docs
+#### drf-yasg - Yet Another Swagger Generator
 
-[DRF Docs][drfdocs-repo] allows you to document Web APIs made with Django REST Framework and it is authored by Emmanouil Konstantinidis. It's made to work out of the box and its setup should not take more than a couple of minutes. Complete documentation can be found on the [website][drfdocs-website] while there is also a [demo][drfdocs-demo] available for people to see what it looks like. **Live API Endpoints** allow you to utilize the endpoints from within the documentation in a neat way.
+[drf-yasg][drf-yasg] is a [Swagger][swagger] generation tool implemented without using the schema generation provided
+by Django Rest Framework.
 
-Features include customizing the template with your branding, settings for hiding the docs depending on the environment and more.
+It aims to implement as much of the [OpenAPI][open-api] specification as possible - nested schemas, named models,
+response bodies, enum/pattern/min/max validators, form parameters, etc. - and to generate documents usable with code
+generation tools like `swagger-codegen`.
 
-Both this package and Django REST Swagger are fully documented, well supported, and come highly recommended.
+This also translates into a very useful interactive documentation viewer in the form of `swagger-ui`:
 
-![Screenshot - DRF docs][image-drf-docs]
+
+![Screenshot - drf-yasg][image-drf-yasg]
 
 ---
 
@@ -95,7 +148,7 @@ Django REST Swagger supports REST framework versions 2.3 and above.
 
 Mark is also the author of the [REST Framework Docs][rest-framework-docs] package which offers clean, simple autogenerated documentation for your API but is deprecated and has moved to Django REST Swagger.
 
-Both this package and DRF docs are fully documented, well supported, and come highly recommended.
+This package is fully documented, well supported, and comes highly recommended.
 
 ![Screenshot - Django REST Swagger][image-django-rest-swagger]
 
@@ -157,7 +210,7 @@ When working with viewsets, an appropriate suffix is appended to each generated 
 
 The description in the browsable API is generated from the docstring of the view or viewset.
 
-If the python `markdown` library is installed, then [markdown syntax][markdown] may be used in the docstring, and will be converted to HTML in the browsable API.  For example:
+If the python `Markdown` library is installed, then [markdown syntax][markdown] may be used in the docstring, and will be converted to HTML in the browsable API.  For example:
 
     class AccountListView(views.APIView):
         """
@@ -176,15 +229,18 @@ REST framework APIs also support programmatically accessible descriptions, using
 
 When using the generic views, any `OPTIONS` requests will additionally respond with metadata regarding any `POST` or `PUT` actions available, describing which fields are on the serializer.
 
-You can modify the response behavior to `OPTIONS` requests by overriding the `metadata` view method.  For example:
+You can modify the response behavior to `OPTIONS` requests by overriding the `options` view method and/or by providing a custom Metadata class.  For example:
 
-    def metadata(self, request):
+    def options(self, request, *args, **kwargs):
         """
         Don't include the view description in OPTIONS responses.
         """
-        data = super(ExampleView, self).metadata(request)
+        meta = self.metadata_class()
+        data = meta.determine_metadata(request, self)
         data.pop('description')
         return data
+
+See [the Metadata docs][metadata-docs] for more details.
 
 ---
 
@@ -196,19 +252,23 @@ In this approach, rather than documenting the available API endpoints up front, 
 
 To implement a hypermedia API you'll need to decide on an appropriate media type for the API, and implement a custom renderer and parser for that media type.  The [REST, Hypermedia & HATEOAS][hypermedia-docs] section of the documentation includes pointers to background reading, as well as links to various hypermedia formats.
 
-[cite]: http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
-[drfdocs-repo]: https://github.com/ekonstantinidis/django-rest-framework-docs
-[drfdocs-website]: http://www.drfdocs.com/
-[drfdocs-demo]: http://demo.drfdocs.com/
+[cite]: https://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
+[drf-yasg]: https://github.com/axnsan12/drf-yasg/
+[image-drf-yasg]: ../img/drf-yasg.png
 [drfautodocs-repo]: https://github.com/iMakedonsky/drf-autodocs
 [django-rest-swagger]: https://github.com/marcgibbons/django-rest-swagger
-[swagger]: https://developers.helloreverb.com/swagger/
+[swagger]: https://swagger.io/
+[open-api]: https://openapis.org/
 [rest-framework-docs]: https://github.com/marcgibbons/django-rest-framework-docs
-[apiary]: http://apiary.io/
-[markdown]: http://daringfireball.net/projects/markdown/
+[apiary]: https://apiary.io/
+[markdown]: https://daringfireball.net/projects/markdown/syntax
 [hypermedia-docs]: rest-hypermedia-hateoas.md
-[image-drf-docs]: ../img/drfdocs.png
 [image-django-rest-swagger]: ../img/django-rest-swagger.png
 [image-apiary]: ../img/apiary.png
 [image-self-describing-api]: ../img/self-describing.png
+[metadata-docs]: ../api-guide/metadata/
+
 [schemas-examples]: ../api-guide/schemas/#examples
+[swagger-ui]: https://swagger.io/tools/swagger-ui/
+[redoc]: https://github.com/Rebilly/ReDoc
+

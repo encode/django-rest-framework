@@ -1,4 +1,7 @@
-source: serializers.py
+---
+source:
+    - serializers.py
+---
 
 # Serializers
 
@@ -57,10 +60,10 @@ At this point we've translated the model instance into Python native datatypes. 
 
 Deserialization is similar. First we parse a stream into Python native datatypes...
 
-    from django.utils.six import BytesIO
+    import io
     from rest_framework.parsers import JSONParser
 
-    stream = BytesIO(json)
+    stream = io.BytesIO(json)
     data = JSONParser().parse(stream)
 
 ...then we restore those native datatypes into a dictionary of validated data.
@@ -73,7 +76,7 @@ Deserialization is similar. First we parse a stream into Python native datatypes
 
 ## Saving instances
 
-If we want to be able to return complete object instances based on the validated data we need to implement one or both of the `.create()` and `update()` methods. For example:
+If we want to be able to return complete object instances based on the validated data we need to implement one or both of the `.create()` and `.update()` methods. For example:
 
     class CommentSerializer(serializers.Serializer):
         email = serializers.EmailField()
@@ -152,7 +155,7 @@ When deserializing data, you always need to call `is_valid()` before attempting 
     serializer.is_valid()
     # False
     serializer.errors
-    # {'email': [u'Enter a valid e-mail address.'], 'created': [u'This field is required.']}
+    # {'email': ['Enter a valid e-mail address.'], 'created': ['This field is required.']}
 
 Each key in the dictionary will be the field name, and the values will be lists of strings of any error messages corresponding to that field.  The `non_field_errors` key may also be present, and will list any general validation errors. The name of the `non_field_errors` key may be customized using the `NON_FIELD_ERRORS_KEY` REST framework setting.
 
@@ -197,7 +200,7 @@ Your `validate_<field_name>` methods should return the validated value or raise 
 
 #### Object-level validation
 
-To do any other validation that requires access to multiple fields, add a method called `.validate()` to your `Serializer` subclass.  This method takes a single argument, which is a dictionary of field values.  It should raise a `ValidationError` if necessary, or just return the validated values.  For example:
+To do any other validation that requires access to multiple fields, add a method called `.validate()` to your `Serializer` subclass.  This method takes a single argument, which is a dictionary of field values.  It should raise a `serializers.ValidationError` if necessary, or just return the validated values.  For example:
 
     from rest_framework import serializers
 
@@ -208,7 +211,7 @@ To do any other validation that requires access to multiple fields, add a method
 
         def validate(self, data):
             """
-            Check that the start is before the stop.
+            Check that start is before finish.
             """
             if data['start'] > data['finish']:
                 raise serializers.ValidationError("finish must occur after start")
@@ -253,7 +256,7 @@ When passing data to a serializer instance, the unmodified data will be made ava
 By default, serializers must be passed values for all required fields or they will raise validation errors. You can use the `partial` argument in order to allow partial updates.
 
     # Update `comment` with partial data
-    serializer = CommentSerializer(comment, data={'content': u'foo bar'}, partial=True)
+    serializer = CommentSerializer(comment, data={'content': 'foo bar'}, partial=True)
 
 ## Dealing with nested objects
 
@@ -293,7 +296,7 @@ When dealing with nested representations that support deserializing the data, an
     serializer.is_valid()
     # False
     serializer.errors
-    # {'user': {'email': [u'Enter a valid e-mail address.']}, 'created': [u'This field is required.']}
+    # {'user': {'email': ['Enter a valid e-mail address.']}, 'created': ['This field is required.']}
 
 Similarly, the `.validated_data` property will include nested data structures.
 
@@ -308,7 +311,7 @@ The following example demonstrates how you might handle creating a user with a n
 
         class Meta:
             model = User
-            fields = ('username', 'email', 'profile')
+            fields = ['username', 'email', 'profile']
 
         def create(self, validated_data):
             profile_data = validated_data.pop('profile')
@@ -325,7 +328,7 @@ For updates you'll want to think carefully about how to handle updates to relati
 * Ignore the data and leave the instance as it is.
 * Raise a validation error.
 
-Here's an example for an `update()` method on our previous `UserSerializer` class.
+Here's an example for an `.update()` method on our previous `UserSerializer` class.
 
         def update(self, instance, validated_data):
             profile_data = validated_data.pop('profile')
@@ -352,7 +355,7 @@ Here's an example for an `update()` method on our previous `UserSerializer` clas
 
 Because the behavior of nested creates and updates can be ambiguous, and may require complex dependencies between related models, REST framework 3 requires you to always write these methods explicitly. The default `ModelSerializer` `.create()` and `.update()` methods do not include support for writable nested representations.
 
-It is possible that a third party package, providing automatic support some kinds of automatic writable nested representations may be released alongside the 3.1 release.
+There are however, third-party packages available such as [DRF Writable Nested][thirdparty-writable-nested] that support automatic writable nested representations.
 
 #### Handling saving related instances in model manager classes
 
@@ -415,7 +418,7 @@ You can provide arbitrary additional context by passing a `context` argument whe
 
     serializer = AccountSerializer(account, context={'request': request})
     serializer.data
-    # {'id': 6, 'owner': u'denvercoder9', 'created': datetime.datetime(2013, 2, 12, 09, 44, 56, 678870), 'details': 'http://example.com/accounts/6/details'}
+    # {'id': 6, 'owner': 'denvercoder9', 'created': datetime.datetime(2013, 2, 12, 09, 44, 56, 678870), 'details': 'http://example.com/accounts/6/details'}
 
 The context dictionary can be used within any serializer field logic, such as a custom `.to_representation()` method, by accessing the `self.context` attribute.
 
@@ -438,7 +441,7 @@ Declaring a `ModelSerializer` looks like this:
     class AccountSerializer(serializers.ModelSerializer):
         class Meta:
             model = Account
-            fields = ('id', 'account_name', 'users', 'created')
+            fields = ['id', 'account_name', 'users', 'created']
 
 By default, all the model fields on the class will be mapped to a corresponding serializer fields.
 
@@ -467,7 +470,7 @@ For example:
     class AccountSerializer(serializers.ModelSerializer):
         class Meta:
             model = Account
-            fields = ('id', 'account_name', 'users', 'created')
+            fields = ['id', 'account_name', 'users', 'created']
 
 You can also set the `fields` attribute to the special value `'__all__'` to indicate that all fields in the model should be used.
 
@@ -485,13 +488,15 @@ For example:
     class AccountSerializer(serializers.ModelSerializer):
         class Meta:
             model = Account
-            exclude = ('users',)
+            exclude = ['users']
 
 In the example above, if the `Account` model had 3 fields `account_name`, `users`, and `created`, this will result in the fields `account_name` and `created` to be serialized.
 
 The names in the `fields` and `exclude` attributes will normally map to model fields on the model class.
 
 Alternatively names in the `fields` options can map to properties or methods which take no arguments that exist on the model class.
+
+Since version 3.3.0, it is **mandatory** to provide one of the attributes `fields` or `exclude`.
 
 ## Specifying nested serialization
 
@@ -500,7 +505,7 @@ The default `ModelSerializer` uses primary keys for relationships, but you can a
     class AccountSerializer(serializers.ModelSerializer):
         class Meta:
             model = Account
-            fields = ('id', 'account_name', 'users', 'created')
+            fields = ['id', 'account_name', 'users', 'created']
             depth = 1
 
 The `depth` option should be set to an integer value that indicates the depth of relationships that should be traversed before reverting to a flat representation.
@@ -529,8 +534,8 @@ This option should be a list or tuple of field names, and is declared as follows
     class AccountSerializer(serializers.ModelSerializer):
         class Meta:
             model = Account
-            fields = ('id', 'account_name', 'users', 'created')
-            read_only_fields = ('account_name',)
+            fields = ['id', 'account_name', 'users', 'created']
+            read_only_fields = ['account_name']
 
 Model fields which have `editable=False` set, and `AutoField` fields will be set to read-only by default, and do not need to be added to the `read_only_fields` option.
 
@@ -558,7 +563,7 @@ This option is a dictionary, mapping field names to a dictionary of keyword argu
     class CreateUserSerializer(serializers.ModelSerializer):
         class Meta:
             model = User
-            fields = ('email', 'username', 'password')
+            fields = ['email', 'username', 'password']
             extra_kwargs = {'password': {'write_only': True}}
 
         def create(self, validated_data):
@@ -569,6 +574,8 @@ This option is a dictionary, mapping field names to a dictionary of keyword argu
             user.set_password(validated_data['password'])
             user.save()
             return user
+
+Please keep in mind that, if the field has already been explicitly declared on the serializer class, then the `extra_kwargs` option will be ignored.
 
 ## Relational fields
 
@@ -622,7 +629,7 @@ The default implementation returns a serializer class based on the `serializer_f
 
 Called to generate a serializer field that maps to a relational model field.
 
-The default implementation returns a serializer class based on the `serializer_relational_field` attribute.
+The default implementation returns a serializer class based on the `serializer_related_field` attribute.
 
 The `relation_info` argument is a named tuple, that contains `model_field`, `related_model`, `to_many` and `has_through_model` properties.
 
@@ -666,7 +673,7 @@ You can explicitly include the primary key by adding it to the `fields` option, 
     class AccountSerializer(serializers.HyperlinkedModelSerializer):
         class Meta:
             model = Account
-            fields = ('url', 'id', 'account_name', 'users', 'created')
+            fields = ['url', 'id', 'account_name', 'users', 'created']
 
 ## Absolute and relative URLs
 
@@ -698,7 +705,7 @@ You can override a URL field view name and lookup field by using either, or both
     class AccountSerializer(serializers.HyperlinkedModelSerializer):
         class Meta:
             model = Account
-            fields = ('account_url', 'account_name', 'users', 'created')
+            fields = ['account_url', 'account_name', 'users', 'created']
             extra_kwargs = {
                 'url': {'view_name': 'accounts', 'lookup_field': 'account_name'},
                 'users': {'lookup_field': 'username'}
@@ -720,7 +727,7 @@ Alternatively you can set the fields on the serializer explicitly. For example:
 
         class Meta:
             model = Account
-            fields = ('url', 'account_name', 'users', 'created')
+            fields = ['url', 'account_name', 'users', 'created']
 
 ---
 
@@ -822,9 +829,7 @@ Here's an example of how you might choose to implement multiple updates:
         # We need to identify elements in the list using their primary key,
         # so use a writable field here, rather than the default which would be read-only.
         id = serializers.IntegerField()
-
         ...
-        id = serializers.IntegerField(required=False)
 
         class Meta:
             list_serializer_class = BookListSerializer
@@ -906,7 +911,7 @@ Or use it to serialize multiple instances:
 
 ##### Read-write `BaseSerializer` classes
 
-To create a read-write serializer we first need to implement a `.to_internal_value()` method. This method returns the validated values that will be used to construct the object instance, and may raise a `ValidationError` if the supplied data is in an incorrect format.
+To create a read-write serializer we first need to implement a `.to_internal_value()` method. This method returns the validated values that will be used to construct the object instance, and may raise a `serializers.ValidationError` if the supplied data is in an incorrect format.
 
 Once you've implemented `.to_internal_value()`, the basic validation API will be available on the serializer, and you will be able to use `.is_valid()`, `.validated_data` and `.errors`.
 
@@ -921,15 +926,15 @@ Here's a complete example of our previous `HighScoreSerializer`, that's been upd
 
             # Perform the data validation.
             if not score:
-                raise ValidationError({
+                raise serializers.ValidationError({
                     'score': 'This field is required.'
                 })
             if not player_name:
-                raise ValidationError({
+                raise serializers.ValidationError({
                     'player_name': 'This field is required.'
                 })
             if len(player_name) > 10:
-                raise ValidationError({
+                raise serializers.ValidationError({
                     'player_name': 'May not be more than 10 characters.'
                 })
 
@@ -961,9 +966,10 @@ The following class is an example of a generic serializer that can handle coerci
         into primitive representations.
         """
         def to_representation(self, obj):
+            output = {}
             for attribute_name in dir(obj):
                 attribute = getattr(obj, attribute_name)
-                if attribute_name('_'):
+                if attribute_name.startswith('_'):
                     # Ignore private attributes.
                     pass
                 elif hasattr(attribute, '__call__'):
@@ -986,6 +992,7 @@ The following class is an example of a generic serializer that can handle coerci
                 else:
                     # Force anything else to its string representation.
                     output[attribute_name] = str(attribute)
+            return output
 
 ---
 
@@ -993,7 +1000,7 @@ The following class is an example of a generic serializer that can handle coerci
 
 ## Overriding serialization and deserialization behavior
 
-If you need to alter the serialization, deserialization or validation of a serializer class you can do so by overriding the `.to_representation()` or `.to_internal_value()` methods.
+If you need to alter the serialization or deserialization behavior of a serializer class, you can do so by overriding the `.to_representation()` or `.to_internal_value()` methods.
 
 Some reasons this might be useful include...
 
@@ -1007,11 +1014,19 @@ The signatures for these methods are as follows:
 
 Takes the object instance that requires serialization, and should return a primitive representation. Typically this means returning a structure of built-in Python datatypes. The exact types that can be handled will depend on the render classes you have configured for your API.
 
+May be overridden in order modify the representation style. For example:
+
+    def to_representation(self, instance):
+        """Convert `username` to lowercase."""
+        ret = super().to_representation(instance)
+        ret['username'] = ret['username'].lower()
+        return ret
+
 #### ``.to_internal_value(self, data)``
 
 Takes the unvalidated incoming data as input and should return the validated data that will be made available as `serializer.validated_data`. The return value will also be passed to the `.create()` or `.update()` methods if `.save()` is called on the serializer class.
 
-If any of the validation fails, then the method should raise a `serializers.ValidationError(errors)`. Typically the `errors` argument here will be a dictionary mapping field names to error messages.
+If any of the validation fails, then the method should raise a `serializers.ValidationError(errors)`. The `errors` argument should be a dictionary mapping field names (or `settings.NON_FIELD_ERRORS_KEY`) to a list of error messages. If you don't need to alter deserialization behavior and instead want to provide object-level validation, it's recommended that you instead override the [`.validate()`](#object-level-validation) method.
 
 The `data` argument passed to this method will normally be the value of `request.data`, so the datatype it provides will depend on the parser classes you have configured for your API.
 
@@ -1022,7 +1037,7 @@ Similar to Django forms, you can extend and reuse serializers through inheritanc
     class MyBaseSerializer(Serializer):
         my_field = serializers.CharField()
 
-        def validate_my_field(self):
+        def validate_my_field(self, value):
             ...
 
     class MySerializer(MyBaseSerializer):
@@ -1075,7 +1090,7 @@ For example, if you wanted to be able to set which fields should be used by a se
             if fields is not None:
                 # Drop any fields that are not specified in the `fields` argument.
                 allowed = set(fields)
-                existing = set(self.fields.keys())
+                existing = set(self.fields)
                 for field_name in existing - allowed:
                     self.fields.pop(field_name)
 
@@ -1084,12 +1099,12 @@ This would then allow you to do the following:
     >>> class UserSerializer(DynamicFieldsModelSerializer):
     >>>     class Meta:
     >>>         model = User
-    >>>         fields = ('id', 'username', 'email')
+    >>>         fields = ['id', 'username', 'email']
     >>>
-    >>> print UserSerializer(user)
+    >>> print(UserSerializer(user))
     {'id': 2, 'username': 'jonwatts', 'email': 'jon@example.com'}
     >>>
-    >>> print UserSerializer(user, fields=('id', 'email'))
+    >>> print(UserSerializer(user, fields=('id', 'email')))
     {'id': 2, 'email': 'jon@example.com'}
 
 ## Customizing the default fields
@@ -1155,7 +1170,7 @@ The [html-json-forms][html-json-forms] package provides an algorithm and seriali
 
 ## QueryFields
 
-[djangorestframework-queryfields][djangorestframework-queryfields] allows API clients to specify which fields will be sent in the response via inclusion/exclusion query parameters.  
+[djangorestframework-queryfields][djangorestframework-queryfields] allows API clients to specify which fields will be sent in the response via inclusion/exclusion query parameters.
 
 ## DRF Writable Nested
 
@@ -1164,8 +1179,9 @@ The [drf-writable-nested][drf-writable-nested] package provides writable nested 
 [cite]: https://groups.google.com/d/topic/django-users/sVFaOfQi4wY/discussion
 [relations]: relations.md
 [model-managers]: https://docs.djangoproject.com/en/stable/topics/db/managers/
-[encapsulation-blogpost]: http://www.dabapps.com/blog/django-models-and-encapsulation/
-[django-rest-marshmallow]: http://tomchristie.github.io/django-rest-marshmallow/
+[encapsulation-blogpost]: https://www.dabapps.com/blog/django-models-and-encapsulation/
+[thirdparty-writable-nested]: serializers.md#drf-writable-nested
+[django-rest-marshmallow]: https://marshmallow-code.github.io/django-rest-marshmallow/
 [marshmallow]: https://marshmallow.readthedocs.io/en/latest/
 [serpy]: https://github.com/clarkduvall/serpy
 [mongoengine]: https://github.com/umutbozkurt/django-rest-framework-mongoengine
@@ -1179,5 +1195,5 @@ The [drf-writable-nested][drf-writable-nested] package provides writable nested 
 [drf-dynamic-fields]: https://github.com/dbrgn/drf-dynamic-fields
 [drf-base64]: https://bitbucket.org/levit_scs/drf_base64
 [drf-serializer-extensions]: https://github.com/evenicoulddoit/django-rest-framework-serializer-extensions
-[djangorestframework-queryfields]: http://djangorestframework-queryfields.readthedocs.io/
-[drf-writable-nested]: http://github.com/Brogency/drf-writable-nested
+[djangorestframework-queryfields]: https://djangorestframework-queryfields.readthedocs.io/
+[drf-writable-nested]: https://github.com/beda-software/drf-writable-nested

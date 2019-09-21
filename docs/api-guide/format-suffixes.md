@@ -1,4 +1,7 @@
-source: urlpatterns.py
+---
+source:
+    - urlpatterns.py
+---
 
 # Format suffixes
 
@@ -38,7 +41,7 @@ Example:
 
 When using `format_suffix_patterns`, you must make sure to add the `'format'` keyword argument to the corresponding views.  For example:
 
-    @api_view(('GET', 'POST'))
+    @api_view(['GET', 'POST'])
     def comment_list(request, format=None):
         # do stuff...
 
@@ -90,4 +93,4 @@ It is actually a misconception.  For example, take the following quote from Roy 
 The quote does not mention Accept headers, but it does make it clear that format suffixes should be considered an acceptable pattern.
 
 [cite]: http://tech.groups.yahoo.com/group/rest-discuss/message/5857
-[cite2]: http://tech.groups.yahoo.com/group/rest-discuss/message/14844
+[cite2]: https://groups.yahoo.com/neo/groups/rest-discuss/conversations/topics/14844

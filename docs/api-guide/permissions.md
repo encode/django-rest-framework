@@ -1,4 +1,7 @@
-source: permissions.py
+---
+source:
+    - permissions.py
+---
 
 # Permissions
 
@@ -10,9 +13,9 @@ Together with [authentication] and [throttling], permissions determine whether a
 
 Permission checks are always run at the very start of the view, before any other code is allowed to proceed.  Permission checks will typically use the authentication information in the `request.user` and `request.auth` properties to determine if the incoming request should be permitted.
 
-Permissions are used to grant or deny access different classes of users to different parts of the API.
+Permissions are used to grant or deny access for different classes of users to different parts of the API.
 
-The simplest style of permission would be to allow access to any authenticated user, and deny access to any unauthenticated user. This corresponds the `IsAuthenticated` class in REST framework.
+The simplest style of permission would be to allow access to any authenticated user, and deny access to any unauthenticated user. This corresponds to the `IsAuthenticated` class in REST framework.
 
 A slightly less strict style of permission would be to allow full access to authenticated users, but allow read-only access to unauthenticated users. This corresponds to the `IsAuthenticatedOrReadOnly` class in REST framework.
 
@@ -44,9 +47,22 @@ This will either raise a `PermissionDenied` or `NotAuthenticated` exception, or 
 For example:
 
     def get_object(self):
-        obj = get_object_or_404(self.get_queryset())
+        obj = get_object_or_404(self.get_queryset(), pk=self.kwargs["pk"])
         self.check_object_permissions(self.request, obj)
         return obj
+
+---
+
+**Note**: With the exception of `DjangoObjectPermissions`, the provided
+permission classes in `rest_framework.permissions` **do not** implement the
+methods necessary to check object permissions.
+
+If you wish to use the provided permission classes in order to check object
+permissions, **you must** subclass them and implement the
+`has_object_permission()` method described in the [_Custom
+permissions_](#custom-permissions) section (below).
+
+---
 
 #### Limitations of object level permissions
 
@@ -59,16 +75,16 @@ Often when you're using object level permissions you'll also want to [filter the
 The default permission policy may be set globally, using the `DEFAULT_PERMISSION_CLASSES` setting.  For example.
 
     REST_FRAMEWORK = {
-        'DEFAULT_PERMISSION_CLASSES': (
+        'DEFAULT_PERMISSION_CLASSES': [
             'rest_framework.permissions.IsAuthenticated',
-        )
+        ]
     }
 
 If not specified, this setting defaults to allowing unrestricted access:
 
-    'DEFAULT_PERMISSION_CLASSES': (
+    'DEFAULT_PERMISSION_CLASSES': [
        'rest_framework.permissions.AllowAny',
-    )
+    ]
 
 You can also set the authentication policy on a per-view, or per-viewset basis,
 using the `APIView` class-based views.
@@ -78,7 +94,7 @@ using the `APIView` class-based views.
     from rest_framework.views import APIView
 
     class ExampleView(APIView):
-        permission_classes = (IsAuthenticated,)
+        permission_classes = [IsAuthenticated]
 
         def get(self, request, format=None):
             content = {
@@ -93,7 +109,7 @@ Or, if you're using the `@api_view` decorator with function based views.
     from rest_framework.response import Response
 
     @api_view(['GET'])
-    @permission_classes((IsAuthenticated, ))
+    @permission_classes([IsAuthenticated])
     def example_view(request, format=None):
         content = {
             'status': 'request was permitted'
@@ -101,6 +117,27 @@ Or, if you're using the `@api_view` decorator with function based views.
         return Response(content)
 
 __Note:__ when you set new permission classes through class attribute or decorators you're telling the view to ignore the default list set over the __settings.py__ file.
+
+Provided they inherit from `rest_framework.permissions.BasePermission`, permissions can be composed using standard Python bitwise operators. For example, `IsAuthenticatedOrReadOnly` could be written:
+
+    from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS
+    from rest_framework.response import Response
+    from rest_framework.views import APIView
+
+    class ReadOnly(BasePermission):
+        def has_permission(self, request, view):
+            return request.method in SAFE_METHODS
+
+    class ExampleView(APIView):
+        permission_classes = [IsAuthenticated|ReadOnly]
+
+        def get(self, request, format=None):
+            content = {
+                'status': 'request was permitted'
+            }
+            return Response(content)
+
+__Note:__ it supports & (and), | (or) and ~ (not).
 
 ---
 
@@ -168,9 +205,7 @@ As with `DjangoModelPermissions` you can use custom model permissions by overrid
 
 ---
 
-**Note**: If you need object level `view` permissions for `GET`, `HEAD` and `OPTIONS` requests, you'll want to consider also adding the `DjangoObjectPermissionsFilter` class to ensure that list endpoints only return results including objects for which the user has appropriate view permissions.
-
----
+**Note**: If you need object level `view` permissions for `GET`, `HEAD` and `OPTIONS` requests and are using django-guardian for your object-level permissions backend, you'll want to consider using the `DjangoObjectPermissionsFilter` class provided by the [`djangorestframework-guardian` package][django-rest-framework-guardian]. It ensures that list endpoints only return results including objects for which the user has appropriate view permissions.
 
 ---
 
@@ -192,20 +227,20 @@ If you need to test if a request is a read operation or a write operation, you s
 
 ---
 
-**Note**: The instance-level `has_object_permission` method will only be called if the view-level `has_permission` checks have already passed. Also note that in order for the instance-level checks to run, the view code should explicitly call `.check_object_permissions(request, obj)`. If you are using the generic views then this will be handled for you by default.
+**Note**: The instance-level `has_object_permission` method will only be called if the view-level `has_permission` checks have already passed. Also note that in order for the instance-level checks to run, the view code should explicitly call `.check_object_permissions(request, obj)`. If you are using the generic views then this will be handled for you by default. (Function-based views will need to check object permissions explicitly, raising `PermissionDenied` on failure.)
 
 ---
 
 Custom permissions will raise a `PermissionDenied` exception if the test fails. To change the error message associated with the exception, implement a `message` attribute directly on your custom permission. Otherwise the `default_detail` attribute from `PermissionDenied` will be used.
-    
+
     from rest_framework import permissions
 
     class CustomerAccessPermission(permissions.BasePermission):
         message = 'Adding customers not allowed.'
-        
+
         def has_permission(self, request, view):
              ...
-        
+
 ## Examples
 
 The following is an example of a permission class that checks the incoming request's IP address against a blacklist, and denies the request if the IP has been blacklisted.
@@ -249,13 +284,17 @@ Also note that the generic views will only check the object-level permissions fo
 
 The following third party packages are also available.
 
+## DRF - Access Policy
+
+The [Django REST - Access Policy][drf-access-policy] package provides a way to define complex access rules in declarative policy classes that are attached to view sets or function-based views. The policies are defined in JSON in a format similar to AWS' Identity & Access Management policies. 
+
 ## Composed Permissions
 
 The [Composed Permissions][composed-permissions] package provides a simple way to define complex and multi-depth (with logic operators) permission objects, using small and reusable components.
 
 ## REST Condition
 
-The [REST Condition][rest-condition] package is another extension for building complex permissions in a simple and convenient way.  The extension allows you to combine permissions with logical operators.
+The [REST Condition][rest-condition] package is another extension for building complex permissions in a simple and convenient way. The extension allows you to combine permissions with logical operators.
 
 ## DRY Rest Permissions
 
@@ -265,9 +304,13 @@ The [DRY Rest Permissions][dry-rest-permissions] package provides the ability to
 
 The [Django Rest Framework Roles][django-rest-framework-roles] package makes it easier to parameterize your API over multiple types of users.
 
-## Django Rest Framework API Key
+## Django REST Framework API Key
 
-The [Django Rest Framework API Key][django-rest-framework-api-key] package allows you to ensure that every request made to the server requires an API key header. You can generate one from the django admin interface.
+The [Django REST Framework API Key][djangorestframework-api-key] package provides permissions classes, models and helpers to add API key authorization to your API. It can be used to authorize internal or third-party backends and services (i.e. _machines_) which do not have a user account. API keys are stored securely using Django's password hashing infrastructure, and they can be viewed, edited and revoked at anytime in the Django admin.
+
+## Django Rest Framework Role Filters
+
+The [Django Rest Framework Role Filters][django-rest-framework-role-filters] package provides simple filtering over multiple types of roles.
 
 [cite]: https://developer.apple.com/library/mac/#documentation/security/Conceptual/AuthenticationAndAuthorizationGuide/Authorization/Authorization.html
 [authentication]: authentication.md
@@ -276,12 +319,12 @@ The [Django Rest Framework API Key][django-rest-framework-api-key] package allow
 [contribauth]: https://docs.djangoproject.com/en/stable/topics/auth/customizing/#custom-permissions
 [objectpermissions]: https://docs.djangoproject.com/en/stable/topics/auth/customizing/#handling-object-permissions
 [guardian]: https://github.com/lukaszb/django-guardian
-[get_objects_for_user]: http://pythonhosted.org/django-guardian/api/guardian.shortcuts.html#get-objects-for-user
-[2.2-announcement]: ../topics/2.2-announcement.md
 [filtering]: filtering.md
-[drf-any-permissions]: https://github.com/kevin-brown/drf-any-permissions
 [composed-permissions]: https://github.com/niwibe/djangorestframework-composed-permissions
 [rest-condition]: https://github.com/caxap/rest_condition
 [dry-rest-permissions]: https://github.com/Helioscene/dry-rest-permissions
 [django-rest-framework-roles]: https://github.com/computer-lab/django-rest-framework-roles
-[django-rest-framework-api-key]: https://github.com/manosim/django-rest-framework-api-key
+[djangorestframework-api-key]: https://florimondmanca.github.io/djangorestframework-api-key/
+[django-rest-framework-role-filters]: https://github.com/allisson/django-rest-framework-role-filters
+[django-rest-framework-guardian]: https://github.com/rpkilby/django-rest-framework-guardian
+[drf-access-policy]: https://github.com/rsinger86/drf-access-policy

@@ -253,7 +253,7 @@ The `TokenAuthentication` class can be used to support REST framework's built-in
 `TokenAuthentication`, as well as OAuth and JWT schemes.
 
     auth = coreapi.auth.TokenAuthentication(
-        scheme='JWT'
+        scheme='JWT',
         token='<token>'
     )
     client = coreapi.Client(auth=auth)
@@ -269,8 +269,8 @@ For example, using the "Django REST framework JWT" package
     client = coreapi.Client()
     schema = client.get('https://api.example.org/')
 
-    action = ['api-token-auth', 'obtain-token']
-    params = {username: "example", email: "example@example.com"}
+    action = ['api-token-auth', 'create']
+    params = {"username": "example", "password": "secret"}
     result = client.action(schema, action, params)
 
     auth = coreapi.auth.TokenAuthentication(
@@ -392,11 +392,11 @@ Once the API documentation URLs are installed, you'll be able to include both th
     <!--
         Load the CoreAPI library and the API schema.
 
-        /static/rest_framework/js/coreapi-0.1.0.js
+        /static/rest_framework/js/coreapi-0.1.1.js
         /docs/schema.js
     -->
-    {% load staticfiles %}
-    <script src="{% static 'rest_framework/js/coreapi-0.1.0.js' %}"></script>
+    {% load static %}
+    <script src="{% static 'rest_framework/js/coreapi-0.1.1.js' %}"></script>
     <script src="{% url 'api-docs:schema-js' %}"></script>
 
 The `coreapi` library, and the `schema` object will now both be available on the `window` instance.
@@ -408,7 +408,7 @@ The `coreapi` library, and the `schema` object will now both be available on the
 
 In order to interact with the API you'll need a client instance.
 
-    var client = coreapi.Client()
+    var client = new coreapi.Client()
 
 Typically you'll also want to provide some authentication credentials when
 instantiating the client.
@@ -419,11 +419,11 @@ The `SessionAuthentication` class allows session cookies to provide the user
 authentication. You'll want to provide a standard HTML login flow, to allow
 the user to login, and then instantiate a client using session authentication:
 
-    let auth = coreapi.auth.SessionAuthentication({
+    let auth = new coreapi.auth.SessionAuthentication({
         csrfCookieName: 'csrftoken',
         csrfHeaderName: 'X-CSRFToken'
     })
-    let client = coreapi.Client({auth: auth})
+    let client = new coreapi.Client({auth: auth})
 
 The authentication scheme will handle including a CSRF header in any outgoing
 requests for unsafe HTTP methods.
@@ -433,11 +433,11 @@ requests for unsafe HTTP methods.
 The `TokenAuthentication` class can be used to support REST framework's built-in
 `TokenAuthentication`, as well as OAuth and JWT schemes.
 
-    let auth = coreapi.auth.TokenAuthentication({
+    let auth = new coreapi.auth.TokenAuthentication({
         scheme: 'JWT'
         token: '<token>'
     })
-    let client = coreapi.Client({auth: auth})
+    let client = new coreapi.Client({auth: auth})
 
 When using TokenAuthentication you'll probably need to implement a login flow
 using the CoreAPI client.
@@ -448,7 +448,7 @@ request to an "obtain token" endpoint
 For example, using the "Django REST framework JWT" package
 
     // Setup some globally accessible state
-    window.client = coreapi.Client()
+    window.client = new coreapi.Client()
     window.loggedIn = false
 
     function loginUser(username, password) {
@@ -471,11 +471,11 @@ For example, using the "Django REST framework JWT" package
 
 The `BasicAuthentication` class can be used to support HTTP Basic Authentication.
 
-    let auth = coreapi.auth.BasicAuthentication({
+    let auth = new coreapi.auth.BasicAuthentication({
         username: '<username>',
         password: '<password>'
     })
-    let client = coreapi.Client({auth: auth})
+    let client = new coreapi.Client({auth: auth})
 
 ## Using the client
 
@@ -521,7 +521,7 @@ You'll either want to include the API schema in your codebase directly, by copyi
     })
 
 [heroku-api]: https://devcenter.heroku.com/categories/platform-api
-[heroku-example]: http://www.coreapi.org/tools-and-resources/example-services/#heroku-json-hyper-schema
-[core-api]: http://www.coreapi.org/
+[heroku-example]: https://www.coreapi.org/tools-and-resources/example-services/#heroku-json-hyper-schema
+[core-api]: https://www.coreapi.org/
 [schema-generation]: ../api-guide/schemas.md
 [transport-adaptors]: http://docs.python-requests.org/en/master/user/advanced/#transport-adapters

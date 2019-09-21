@@ -62,15 +62,15 @@ So far, so good.  It looks pretty similar to the previous case, but we've got be
 
 That's looking good.  Again, it's still pretty similar to the function based view right now.
 
-We'll also need to refactor our `urls.py` slightly now that we're using class-based views.
+We'll also need to refactor our `snippets/urls.py` slightly now that we're using class-based views.
 
-    from django.conf.urls import url
+    from django.urls import path
     from rest_framework.urlpatterns import format_suffix_patterns
     from snippets import views
 
     urlpatterns = [
-        url(r'^snippets/$', views.SnippetList.as_view()),
-        url(r'^snippets/(?P<pk>[0-9]+)/$', views.SnippetDetail.as_view()),
+        path('snippets/', views.SnippetList.as_view()),
+        path('snippets/<int:pk>/', views.SnippetDetail.as_view()),
     ]
 
     urlpatterns = format_suffix_patterns(urlpatterns)
@@ -146,5 +146,5 @@ Wow, that's pretty concise.  We've gotten a huge amount for free, and our code l
 
 Next we'll move onto [part 4 of the tutorial][tut-4], where we'll take a look at how we can deal with authentication and permissions for our API.
 
-[dry]: http://en.wikipedia.org/wiki/Don't_repeat_yourself
+[dry]: https://en.wikipedia.org/wiki/Don't_repeat_yourself
 [tut-4]: 4-authentication-and-permissions.md
