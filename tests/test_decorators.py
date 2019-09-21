@@ -50,6 +50,7 @@ class DecoratorTestCase(TestCase):
                 return Response()
 
     def test_calling_method(self):
+        
         @api_view(['GET'])
         def view(request):
             return Response({})
@@ -63,6 +64,7 @@ class DecoratorTestCase(TestCase):
         assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
 
     def test_calling_put_method(self):
+
         @api_view(['GET', 'PUT'])
         def view(request):
             return Response({})
@@ -76,6 +78,7 @@ class DecoratorTestCase(TestCase):
         assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
 
     def test_calling_patch_method(self):
+
         @api_view(['GET', 'PATCH'])
         def view(request):
             return Response({})
@@ -89,6 +92,7 @@ class DecoratorTestCase(TestCase):
         assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
 
     def test_renderer_classes(self):
+
         @api_view(['GET'])
         @renderer_classes([JSONRenderer])
         def view(request):
@@ -99,6 +103,7 @@ class DecoratorTestCase(TestCase):
         assert isinstance(response.accepted_renderer, JSONRenderer)
 
     def test_parser_classes(self):
+
         @api_view(['GET'])
         @parser_classes([JSONParser])
         def view(request):
@@ -110,6 +115,7 @@ class DecoratorTestCase(TestCase):
         view(request)
 
     def test_authentication_classes(self):
+
         @api_view(['GET'])
         @authentication_classes([BasicAuthentication])
         def view(request):
@@ -121,6 +127,7 @@ class DecoratorTestCase(TestCase):
         view(request)
 
     def test_permission_classes(self):
+
         @api_view(['GET'])
         @permission_classes([IsAuthenticated])
         def view(request):
