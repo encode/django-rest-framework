@@ -50,7 +50,7 @@ class DecoratorTestCase(TestCase):
                 return Response()
 
     def test_calling_method(self):
-        
+
         @api_view(['GET'])
         def view(request):
             return Response({})
