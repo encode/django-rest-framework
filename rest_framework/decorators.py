@@ -234,7 +234,6 @@ def paginate(pagination_class=None, **kwargs):
     class _Pagination(pagination_class):
         def __init__(self):
             self.__dict__.update(kwargs)
-            super(_Pagination, self).__init__()
 
     def decorator(_class):
         _class.pagination_class = _Pagination
