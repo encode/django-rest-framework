@@ -873,7 +873,9 @@ class CursorPagination(BasePagination):
         if isinstance(instance, dict):
             attr = instance[field_name]
         else:
-            attr = getattr(instance, field_name)
+            attr = instance
+            for field in field_name.split('__'):
+                attr = getattr(attr, field)
         return str(attr)
 
     def get_paginated_response(self, data):
