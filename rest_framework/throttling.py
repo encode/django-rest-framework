@@ -202,7 +202,7 @@ class UserRateThrottle(SimpleRateThrottle):
         }
 
 
-class ScopedRateThrottle(SimpleRateThrottle):
+class ScopedRateThrottle(UserRateThrottle):
     """
     Limits the rate of API calls by different amounts for various parts of
     the API.  Any view that has the `throttle_scope` property set will be
@@ -210,6 +210,7 @@ class ScopedRateThrottle(SimpleRateThrottle):
     user id of the request, and the scope of the view being accessed.
     """
     scope_attr = 'throttle_scope'
+    scope = None  # Dynamically determined; override UserRateThrottle
 
     def __init__(self):
         # Override the usual SimpleRateThrottle, because we can't determine
@@ -231,20 +232,3 @@ class ScopedRateThrottle(SimpleRateThrottle):
 
         # We can now proceed as normal.
         return super().allow_request(request, view)
-
-    def get_cache_key(self, request, view):
-        """
-        If `view.throttle_scope` is not set, don't apply this throttle.
-
-        Otherwise generate the unique cache key by concatenating the user id
-        with the '.throttle_scope` property of the view.
-        """
-        if request.user.is_authenticated:
-            ident = request.user.pk
-        else:
-            ident = self.get_ident(request)
-
-        return self.cache_format % {
-            'scope': self.scope,
-            'ident': ident
-        }
