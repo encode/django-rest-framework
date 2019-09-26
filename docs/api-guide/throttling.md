@@ -222,6 +222,8 @@ Using `get_debounce_interval()`, one can e.g. ensure superusers can always invok
                 return 0
             return 5
 
+Note that due to the current implementation, debouncing _requires_ a throttling rate to be set as well.
+
 [cite]: https://developer.twitter.com/en/docs/basics/rate-limiting
 [permissions]: permissions.md
 [identifying-clients]: http://oxpedia.org/wiki/index.php?title=AppSuite:Grizzly#Multiple_Proxies_in_front_of_the_cluster

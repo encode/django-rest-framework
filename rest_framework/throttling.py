@@ -67,6 +67,9 @@ class SimpleRateThrottle(BaseThrottle):
     debounce_interval = None
 
     def __init__(self):
+        # TODO: this should probably be deferred to `allow_request`,
+        #       to simplify `ScopedRateThrottle` as well as to allow debouncing
+        #       without rate limiting.
         if not getattr(self, 'rate', None):
             self.rate = self.get_rate()
         self.num_requests, self.duration = self.parse_rate(self.rate)
