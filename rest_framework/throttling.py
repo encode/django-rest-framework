@@ -64,6 +64,7 @@ class SimpleRateThrottle(BaseThrottle):
     cache_format = 'throttle_%(scope)s_%(ident)s'
     scope = None
     THROTTLE_RATES = api_settings.DEFAULT_THROTTLE_RATES
+    debounce_interval = None
 
     def __init__(self):
         if not getattr(self, 'rate', None):
@@ -106,6 +107,18 @@ class SimpleRateThrottle(BaseThrottle):
         duration = {'s': 1, 'm': 60, 'h': 3600, 'd': 86400}[period[0]]
         return (num_requests, duration)
 
+    def get_debounce_interval(self, request, view):
+        """
+        Get the debounce interval for a request and view, in units returned
+        by the throttle's `timer` (usually seconds).
+
+        At least this much time must pass between successful (non-throttled)
+        invocations of the action.
+
+        If a falsy value is returned, debounce is disabled.
+        """
+        return self.debounce_interval
+
     def allow_request(self, request, view):
         """
         Implement the check to see if the request should be throttled.
@@ -113,7 +126,9 @@ class SimpleRateThrottle(BaseThrottle):
         On success calls `throttle_success`.
         On failure calls `throttle_failure`.
         """
-        if self.rate is None:
+        debounce_interval = self.get_debounce_interval(request, view)
+
+        if self.rate is None and not debounce_interval:
             return True
 
         self.key = self.get_cache_key(request, view)
@@ -122,6 +137,12 @@ class SimpleRateThrottle(BaseThrottle):
 
         self.history = self.cache.get(self.key, [])
         self.now = self.timer()
+
+        # Perform debounce, i.e. limiting of subsequent (rapid) invocations.
+        # Basically, if there is history of requests and the latest (first)
+        # entry has taken place less than `debounce_interval` seconds ago, fail.
+        if debounce_interval and self.history and self.now - self.history[0] < debounce_interval:
+            return self.debounce_failure()
 
         # Drop any requests from the history which have now passed the
         # throttle duration
@@ -146,9 +167,17 @@ class SimpleRateThrottle(BaseThrottle):
         """
         return False
 
+    def debounce_failure(self):
+        """
+        Called when a request to the API has failed due to debouncing.
+        """
+        return False
+
     def wait(self):
         """
         Returns the recommended next request time in seconds.
+
+        Does not take debounce time into account.
         """
         if self.history:
             remaining_duration = self.duration - (self.now - self.history[-1])

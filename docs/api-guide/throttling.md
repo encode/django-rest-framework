@@ -195,8 +195,36 @@ The following is an example of a rate throttle, that will randomly throttle 1 in
         def allow_request(self, request, view):
             return random.randint(1, 10) != 1
 
+
+# Debouncing
+
+[Debouncing][debounce] refers to disallowing rapid invocations of the throttled view regardless of its actual throttling rate.
+
+When deriving a custom throttle from `throttling.SimpleRateThrottle` (or one of its concrete subclasses described above), you may override the `get_debounce_interval()` function, or set the
+class-level `debounce_interval` to a value in seconds.
+
+For instance,
+
+    class FiveSecondDebounce(throttling.UserRateThrottle):
+        debounce_interval = 5
+        rate = '10/min'
+
+would allow each user/IP address (as described above) to invoke the view 10 times in a minute, but only after 5 seconds have
+passed from the previous successful invocation.
+
+Using `get_debounce_interval()`, one can e.g. ensure superusers can always invoke the view regardless of debouncing.
+
+    class FiveSecondDebounce(throttling.UserRateThrottle):
+        rate = '10/min'
+
+        def get_debounce_interval(self, request, view):
+            if request.user.is_superuser:
+                return 0
+            return 5
+
 [cite]: https://developer.twitter.com/en/docs/basics/rate-limiting
 [permissions]: permissions.md
 [identifying-clients]: http://oxpedia.org/wiki/index.php?title=AppSuite:Grizzly#Multiple_Proxies_in_front_of_the_cluster
 [cache-setting]: https://docs.djangoproject.com/en/stable/ref/settings/#caches
 [cache-docs]: https://docs.djangoproject.com/en/stable/topics/cache/#setting-up-the-cache
+[debounce]: https://en.wikipedia.org/wiki/Switch#Contact_bounce

@@ -512,3 +512,42 @@ class AnonRateThrottleTests(TestCase):
         request = Request(HttpRequest())
         cache_key = self.throttle.get_cache_key(request, view={})
         assert cache_key == 'throttle_anon_None'
+
+
+def test_debounce_throttle():
+    class DebounceThrottle(ThrottleTestTimerMixin, AnonRateThrottle):
+        debounce_interval = 1
+        rate = '1000/min'  # More often than the debounce would allow
+        scope = 'debounce'
+
+        def get_debounce_interval(self, request, view):
+            # This is here to test that requests can affect the debounce interval
+            if request.query_params.get('secret'):
+                return 0
+            return super().get_debounce_interval(request, view)
+
+    class DebouncedAPIView(APIView):
+        throttle_classes = (DebounceThrottle,)
+
+        def get(self, request):
+            return Response('foo')
+
+    factory = APIRequestFactory()
+    request = factory.get('/')
+    view = DebouncedAPIView().as_view()
+    DebounceThrottle.TIMER_SECONDS = 0
+    assert view(request).status_code == 200  # first request works fine
+
+    DebounceThrottle.TIMER_SECONDS = 0.1
+    assert view(request).status_code == 429  # 0.1 seconds after the last one should not
+    assert view(factory.get('/', {'secret': '1'})).status_code == 200  # (unless we pass the secret parameter)
+
+    DebounceThrottle.TIMER_SECONDS = 1.1
+    assert view(request).status_code == 200  # after 1.1 seconds (since the secret reset the throttle), things work
+    assert view(request).status_code == 429  # but a second request at the same instant shouldn't work
+
+    DebounceThrottle.TIMER_SECONDS = 1.6
+    assert view(request).status_code == 429  # nor 0.5 seconds after that.
+
+    DebounceThrottle.debounce_interval = 0.2  # However after changing the interval...
+    assert view(request).status_code == 200  # ... things should be fine again
