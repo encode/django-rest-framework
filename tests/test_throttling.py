@@ -20,6 +20,16 @@ from rest_framework.throttling import (
 from rest_framework.views import APIView
 
 
+class ThrottleTestTimerMixin:
+    """
+    Mixin to make throttle timers programmable with `TIMER_SECONDS` for tests.
+    """
+    TIMER_SECONDS = 0
+
+    def timer(self):
+        return self.TIMER_SECONDS
+
+
 class User3SecRateThrottle(UserRateThrottle):
     rate = '3/sec'
     scope = 'seconds'
@@ -192,7 +202,7 @@ class ThrottlingTests(TestCase):
             if expect is not None:
                 assert response['Retry-After'] == expect
             else:
-                assert not'Retry-After' in response
+                assert 'Retry-After' not in response
 
     def test_seconds_fields(self):
         """
@@ -236,9 +246,6 @@ class ThrottlingTests(TestCase):
         )
 
     def test_non_time_throttle(self):
-        """
-        Ensure for second based throttles.
-        """
         request = self.factory.get('/')
 
         self.assertFalse(hasattr(MockView_NonTimeThrottling.throttle_classes[0], 'called'))
@@ -260,12 +267,8 @@ class ScopedRateThrottleTests(TestCase):
     def setUp(self):
         self.throttle = ScopedRateThrottle()
 
-        class XYScopedRateThrottle(ScopedRateThrottle):
-            TIMER_SECONDS = 0
+        class XYScopedRateThrottle(ThrottleTestTimerMixin, ScopedRateThrottle):
             THROTTLE_RATES = {'x': '3/min', 'y': '1/min'}
-
-            def timer(self):
-                return self.TIMER_SECONDS
 
         class XView(APIView):
             throttle_classes = (XYScopedRateThrottle,)
@@ -375,12 +378,8 @@ class ScopedRateThrottleTests(TestCase):
 class XffTestingBase(TestCase):
     def setUp(self):
 
-        class Throttle(ScopedRateThrottle):
+        class Throttle(ThrottleTestTimerMixin, ScopedRateThrottle):
             THROTTLE_RATES = {'test_limit': '1/day'}
-            TIMER_SECONDS = 0
-
-            def timer(self):
-                return self.TIMER_SECONDS
 
         class View(APIView):
             throttle_classes = (Throttle,)
