@@ -92,6 +92,12 @@ If you need to use a cache other than `'default'`, you can do so by creating a c
 
 You'll need to remember to also set your custom throttle class in the `'DEFAULT_THROTTLE_CLASSES'` settings key, or using the `throttle_classes` view attribute.
 
+## A note on concurrency
+
+Since the default implementations of throttles are based on the Django cache system, concurrent requests may be able to bypass throttling due to [race conditions][race].
+
+If your project requires more rock-solid throttles even in concurrent situations, you may need to implement such a throttle by hand. See [this issue][gh5181] for details.
+
 ---
 
 # API Reference
@@ -200,3 +206,5 @@ The following is an example of a rate throttle, that will randomly throttle 1 in
 [identifying-clients]: http://oxpedia.org/wiki/index.php?title=AppSuite:Grizzly#Multiple_Proxies_in_front_of_the_cluster
 [cache-setting]: https://docs.djangoproject.com/en/stable/ref/settings/#caches
 [cache-docs]: https://docs.djangoproject.com/en/stable/topics/cache/#setting-up-the-cache
+[gh5181]: https://github.com/encode/django-rest-framework/issues/5181
+[race]: https://en.wikipedia.org/wiki/Race_condition#Data_race
