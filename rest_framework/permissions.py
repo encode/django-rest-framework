@@ -146,6 +146,15 @@ class IsAdminUser(BasePermission):
         return bool(request.user and request.user.is_staff)
 
 
+class IsSuperUser(BasePermission):
+    """
+    Allows access only to super users.
+    """
+
+    def has_permission(self, request, view):
+        return bool(request.user and request.user.is_superuser)
+
+
 class IsAuthenticatedOrReadOnly(BasePermission):
     """
     The request is authenticated as a user, or is a read-only request.
