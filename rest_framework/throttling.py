@@ -106,15 +106,15 @@ class SimpleRateThrottle(BaseThrottle):
         try:
             num, period = rate.split('/')
             num_requests = int(num)
-            # Get rate multiplier value if available
-            period_mult, _ = re.split('[s|m|h|d]', period, maxsplit=1)
-            period_char = re.findall('[s|m|h|d]', period)[0]
-        except ValueError:
+            period_timescale = re.findall(r'^\d*[s|m|h|d]', period)[0]
+            period_char = period_timescale[-1]
+        except (ValueError, IndexError):
             msg = "Incorrect throttle rate set for '%s' scope" % self.scope
             raise ImproperlyConfigured(msg)
 
         try:
-            period_mult = int(period_mult)
+            # Get rate multiplier value if available
+            period_mult = int(period_timescale[:-1])
         except ValueError:
             period_mult = 1
 

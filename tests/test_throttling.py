@@ -474,11 +474,11 @@ class SimpleRateThrottleTests(TestCase):
         with pytest.raises(ImproperlyConfigured):
             SimpleRateThrottle()
 
-        SimpleRateThrottle.rate = '100/century'
+        SimpleRateThrottle.rate = '100/foos'
         with pytest.raises(ImproperlyConfigured):
             SimpleRateThrottle()
 
-        SimpleRateThrottle.rate = '100/10century'
+        SimpleRateThrottle.rate = '100/10foos'
         with pytest.raises(ImproperlyConfigured):
             SimpleRateThrottle()
 
