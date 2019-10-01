@@ -168,6 +168,20 @@ class IsAuthenticatedOrReadOnly(BasePermission):
         )
 
 
+class IsAdminUserOrReadOnly(BasePermission):
+    """
+    The request is authenticated as a admin user, or is a read-only request.
+    """
+
+    def has_permission(self, request, view):
+        return bool(
+            request.method in SAFE_METHODS or
+            request.user and
+            request.user.is_staff
+        )
+
+
+
 class DjangoModelPermissions(BasePermission):
     """
     The request is authenticated using `django.contrib.auth` permissions.
