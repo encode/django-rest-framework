@@ -15,6 +15,16 @@
 .promo li {
     list-style: none;
 }
+@media screen and (max-width: 1080px) and (min-width: 980px) {
+    .container-nav-buttons {
+        width: 200px;
+        float:right;
+        padding: 5px 5px 10px 5px;
+    }
+    .nav-btn{
+        width: 35%;
+    }
+}
 </style>
 
 <p class="badges" height=20px>
