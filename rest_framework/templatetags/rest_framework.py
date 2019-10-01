@@ -283,6 +283,12 @@ def schema_links(section, sec_key=None):
 
 @register.filter
 def add_nested_class(value):
+    """
+    Check if value is instance of `dict` or `list` of `dict` objects return the `nested` class
+    Othervise return '' (blank string)
+    Usage
+        {{ value|add_nested_class }}
+    """
     if isinstance(value, dict):
         return 'class=nested'
     if isinstance(value, list) and any([isinstance(item, (list, dict)) for item in value]):
