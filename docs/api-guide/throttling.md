@@ -41,7 +41,7 @@ The default throttling policy may be set globally, using the `DEFAULT_THROTTLE_C
         }
     }
 
-The rate descriptions used in `DEFAULT_THROTTLE_RATES` may include `second`, `minute`, `hour` or `day` as the throttle period. To set the rate to a fraction of a period, simply prepend the desired timespan. For example, a rate of `'100/30s'` will mean "limit requests to a maximum of 100 per every 30 seconds".
+The rate descriptions used in `DEFAULT_THROTTLE_RATES` may include `second`, `minute`, `hour` or `day` as the throttle period. The throttle period can optionally include a number, too. For example, a rate of `100 / 30 seconds` will mean "limit requests to a maximum of 100 per every 30 seconds".
 
 You can also set the throttling policy on a per-view or per-viewset basis,
 using the `APIView` class-based views.

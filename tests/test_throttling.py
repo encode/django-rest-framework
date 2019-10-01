@@ -503,9 +503,15 @@ class SimpleRateThrottleTests(TestCase):
         rate = SimpleRateThrottle().parse_rate(rate_str)
         assert rate == (100, 30)
 
-        SimpleRateThrottle.rate = '100/10d'
-        rate = SimpleRateThrottle().parse_rate('100/10d')
+        rate_str = '100/10d'
+        SimpleRateThrottle.rate = rate_str
+        rate = SimpleRateThrottle().parse_rate(rate_str)
         assert rate == (100, 10 * 86400)
+
+        rate_str = '100 / 36 hours'
+        SimpleRateThrottle.rate = rate_str
+        rate = SimpleRateThrottle().parse_rate(rate_str)
+        assert rate == (100, 36 * 3600)
 
     def test_parse_rate_returns_tuple_with_none_if_rate_not_provided(self):
         rate = SimpleRateThrottle().parse_rate(None)
