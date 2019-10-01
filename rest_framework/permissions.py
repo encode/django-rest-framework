@@ -181,7 +181,6 @@ class IsAdminUserOrReadOnly(BasePermission):
         )
 
 
-
 class DjangoModelPermissions(BasePermission):
     """
     The request is authenticated using `django.contrib.auth` permissions.
