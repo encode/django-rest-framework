@@ -4,6 +4,8 @@ from django.http import QueryDict
 from django.test import TestCase
 
 from rest_framework import serializers
+from rest_framework.compat import postgres_fields
+from rest_framework.serializers import raise_errors_on_nested_writes
 
 
 class TestNestedSerializer:
@@ -302,3 +304,50 @@ class TestNestedWriteErrors(TestCase):
             'serializer `tests.test_serializer_nested.DottedAddressSerializer`, '
             'or set `read_only=True` on dotted-source serializer fields.'
         )
+
+
+if postgres_fields:
+    class NonRelationalPersonModel(models.Model):
+        """Model declaring a postgres JSONField"""
+        data = postgres_fields.JSONField()
+
+
+@pytest.mark.skipif(not postgres_fields, reason='psycopg2 is not installed')
+class TestNestedNonRelationalFieldWrite:
+    """
+    Test that raise_errors_on_nested_writes does not raise `AssertionError` when the
+    model field is not a relation.
+    """
+
+    def test_nested_serializer_create_and_update(self):
+
+        class NonRelationalPersonDataSerializer(serializers.Serializer):
+            occupation = serializers.CharField()
+
+        class NonRelationalPersonSerializer(serializers.ModelSerializer):
+            data = NonRelationalPersonDataSerializer()
+
+            class Meta:
+                model = NonRelationalPersonModel
+                fields = ['data']
+
+        serializer = NonRelationalPersonSerializer(data={'data': {'occupation': 'developer'}})
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'data': {'occupation': 'developer'}}
+        raise_errors_on_nested_writes('create', serializer, serializer.validated_data)
+        raise_errors_on_nested_writes('update', serializer, serializer.validated_data)
+
+    def test_dotted_source_field_create_and_update(self):
+
+        class DottedNonRelationalPersonSerializer(serializers.ModelSerializer):
+            occupation = serializers.CharField(source='data.occupation')
+
+            class Meta:
+                model = NonRelationalPersonModel
+                fields = ['occupation']
+
+        serializer = DottedNonRelationalPersonSerializer(data={'occupation': 'developer'})
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'data': {'occupation': 'developer'}}
+        raise_errors_on_nested_writes('create', serializer, serializer.validated_data)
+        raise_errors_on_nested_writes('update', serializer, serializer.validated_data)

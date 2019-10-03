@@ -790,6 +790,8 @@ def raise_errors_on_nested_writes(method_name, serializer, validated_data):
     * Silently ignore the nested part of the update.
     * Automatically create a profile instance.
     """
+    ModelClass = serializer.Meta.model
+    model_field_info = model_meta.get_field_info(ModelClass)
 
     # Ensure we don't have a writable nested field. For example:
     #
@@ -799,6 +801,7 @@ def raise_errors_on_nested_writes(method_name, serializer, validated_data):
     assert not any(
         isinstance(field, BaseSerializer) and
         (field.source in validated_data) and
+        (field.source in model_field_info.relations) and
         isinstance(validated_data[field.source], (list, dict))
         for field in serializer._writable_fields
     ), (
@@ -817,9 +820,19 @@ def raise_errors_on_nested_writes(method_name, serializer, validated_data):
     # class UserSerializer(ModelSerializer):
     #     ...
     #     address = serializer.CharField('profile.address')
+    #
+    # Though, non-relational fields (e.g., JSONField) are acceptable. For example:
+    #
+    # class NonRelationalPersonModel(models.Model):
+    #     profile = JSONField()
+    #
+    # class UserSerializer(ModelSerializer):
+    #     ...
+    #     address = serializer.CharField('profile.address')
     assert not any(
         len(field.source_attrs) > 1 and
         (field.source_attrs[0] in validated_data) and
+        (field.source_attrs[0] in model_field_info.relations) and
         isinstance(validated_data[field.source_attrs[0]], (list, dict))
         for field in serializer._writable_fields
     ), (
