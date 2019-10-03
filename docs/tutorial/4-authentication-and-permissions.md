@@ -121,7 +121,7 @@ Now that code snippets are associated with users, we want to make sure that only
 
 REST framework includes a number of permission classes that we can use to restrict who can access a given view.  In this case the one we're looking for is `IsAuthenticatedOrReadOnly`, which will ensure that authenticated requests get read-write access, and unauthenticated requests get read-only access.
 
-First add the following import in the views module
+First add the following import in the `views.py` file
 
     from rest_framework import permissions
 
