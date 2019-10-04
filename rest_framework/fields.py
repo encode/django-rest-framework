@@ -1764,8 +1764,8 @@ class JSONField(Field):
             # When HTML form input is used, mark up the input
             # as being a JSON string, rather than a JSON primitive.
             class JSONString(str):
-                def __new__(self, value):
-                    ret = str.__new__(self, value)
+                def __new__(cls, value):
+                    ret = str.__new__(cls, value)
                     ret.is_json_string = True
                     return ret
             return JSONString(dictionary[self.field_name])
