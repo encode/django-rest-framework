@@ -193,11 +193,11 @@ class PageNumberPagination(BasePagination):
         Paginate a queryset if required, either returning a
         page object, or `None` if pagination is not configured for this view.
         """
-        page_size = self.get_page_size(request)
-        if not page_size:
+        self.page_size = self.get_page_size(request)
+        if not self.page_size:
             return None
 
-        paginator = self.django_paginator_class(queryset, page_size)
+        paginator = self.django_paginator_class(queryset, self.page_size)
         page_number = request.query_params.get(self.page_query_param, 1)
         if page_number in self.last_page_strings:
             page_number = paginator.num_pages
