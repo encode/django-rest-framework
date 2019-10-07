@@ -26,8 +26,9 @@ The initial aim is to provide a single full-time position on REST framework.
 [![][kloudless-img]][kloudless-url]
 [![][esg-img]][esg-url]
 [![][lightson-img]][lightson-url]
+[![][retool-img]][retool-url]
 
-Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Sentry][sentry-url], [Stream][stream-url], [Rollbar][rollbar-url], [Cadre][cadre-url], [Kloudless][kloudless-url], [ESG][esg-url], and [Lights On Software][lightson-url].
+Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Sentry][sentry-url], [Stream][stream-url], [Rollbar][rollbar-url], [Cadre][cadre-url], [Kloudless][kloudless-url], [ESG][esg-url], [Lights On Software][lightson-url], and [Retool][retool-url].
 
 ---
 
@@ -199,6 +200,7 @@ Please see the [security policy][security-policy].
 [kloudless-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/kloudless-readme.png
 [esg-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/esg-readme.png
 [lightson-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/lightson-readme.png
+[retool-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/retool-readme.png
 
 [sentry-url]: https://getsentry.com/welcome/
 [stream-url]: https://getstream.io/try-the-api/?utm_source=drf&utm_medium=banner&utm_campaign=drf
@@ -207,6 +209,7 @@ Please see the [security policy][security-policy].
 [kloudless-url]: https://hubs.ly/H0f30Lf0
 [esg-url]: https://software.esg-usa.com/
 [lightson-url]: https://lightsonsoftware.com
+[lightson-url]: https://retool.com/?utm_source=djangorest&utm_medium=sponsorship
 
 [oauth1-section]: https://www.django-rest-framework.org/api-guide/authentication/#django-rest-framework-oauth
 [oauth2-section]: https://www.django-rest-framework.org/api-guide/authentication/#django-oauth-toolkit
