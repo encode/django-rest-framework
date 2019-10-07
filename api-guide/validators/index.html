@@ -660,7 +660,7 @@ serializer class, and instead write any validation logic explicitly, either
 in the <code>.validate()</code> method, or else in the view.</p>
 <p>For example:</p>
 <pre><code>class BillingRecordSerializer(serializers.ModelSerializer):
-    def validate(self, data):
+    def validate(self, attrs):
         # Apply custom validation either here, or in the view.
 
     class Meta:
