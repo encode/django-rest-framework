@@ -209,7 +209,7 @@ Please see the [security policy][security-policy].
 [kloudless-url]: https://hubs.ly/H0f30Lf0
 [esg-url]: https://software.esg-usa.com/
 [lightson-url]: https://lightsonsoftware.com
-[lightson-url]: https://retool.com/?utm_source=djangorest&utm_medium=sponsorship
+[retool-url]: https://retool.com/?utm_source=djangorest&utm_medium=sponsorship
 
 [oauth1-section]: https://www.django-rest-framework.org/api-guide/authentication/#django-rest-framework-oauth
 [oauth2-section]: https://www.django-rest-framework.org/api-guide/authentication/#django-oauth-toolkit
