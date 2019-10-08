@@ -1014,7 +1014,7 @@ The signatures for these methods are as follows:
 
 Takes the object instance that requires serialization, and should return a primitive representation. Typically this means returning a structure of built-in Python datatypes. The exact types that can be handled will depend on the render classes you have configured for your API.
 
-May be overridden in order modify the representation style. For example:
+May be overridden in order to modify the representation style. For example:
 
     def to_representation(self, instance):
         """Convert `username` to lowercase."""
