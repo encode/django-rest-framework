@@ -133,9 +133,9 @@ class EndpointEnumerator:
         """
         Return a list of the valid HTTP methods for this endpoint.
         """
+        http_method_names = set(callback.cls.http_method_names)
         if hasattr(callback, 'actions'):
             actions = set(callback.actions)
-            http_method_names = set(callback.cls.http_method_names)
             methods = [method.upper() for method in actions & http_method_names]
         else:
             methods = [method.upper() for method in callback.cls().allowed_methods & http_method_names]
