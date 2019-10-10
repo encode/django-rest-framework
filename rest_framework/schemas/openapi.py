@@ -452,7 +452,7 @@ class AutoSchema(ViewInspector):
             return None
 
     def _get_request_body(self, path, method):
-        if method not in ('PUT', 'PATCH', 'POST'):
+        if method.upper() not in ('PUT', 'PATCH', 'POST'):
             return {}
 
         serializer = self._get_serializer(path, method)

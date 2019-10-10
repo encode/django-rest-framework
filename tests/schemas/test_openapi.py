@@ -143,6 +143,29 @@ class TestOperationIntrospection(TestCase):
         assert request_body['content']['application/json']['schema']['required'] == ['text']
         assert list(request_body['content']['application/json']['schema']['properties'].keys()) == ['text']
 
+    def test_request_body_lower_cased_method(self):
+        path = '/'
+        method = 'post'
+
+        class Serializer(serializers.Serializer):
+            text = serializers.CharField()
+            read_only = serializers.CharField(read_only=True)
+
+        class View(generics.GenericAPIView):
+            serializer_class = Serializer
+
+        view = create_view(
+            View,
+            method,
+            create_request(path)
+        )
+        inspector = AutoSchema()
+        inspector.view = view
+
+        request_body = inspector._get_request_body(path, method)
+        assert request_body['content']['application/json']['schema']['required'] == ['text']
+        assert list(request_body['content']['application/json']['schema']['properties'].keys()) == ['text']
+
     def test_empty_required(self):
         path = '/'
         method = 'POST'
