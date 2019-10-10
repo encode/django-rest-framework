@@ -387,7 +387,7 @@ class AutoSchema(ViewInspector):
         result = {
             'properties': properties
         }
-        if len(required) > 0:
+        if required:
             result['required'] = required
 
         return result
@@ -463,7 +463,7 @@ class AutoSchema(ViewInspector):
         content = self._map_serializer(serializer)
         # No required fields for PATCH
         if method == 'PATCH':
-            del content['required']
+            content.pop('required', None)
         # No read_only fields for request.
         for name, schema in content['properties'].copy().items():
             if 'readOnly' in schema:

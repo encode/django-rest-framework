@@ -169,6 +169,31 @@ class TestOperationIntrospection(TestCase):
         for response in inspector._get_responses(path, method).values():
             assert 'required' not in response['content']['application/json']['schema']
 
+    def test_empty_required_with_patch_method(self):
+        path = '/'
+        method = 'PATCH'
+
+        class Serializer(serializers.Serializer):
+            read_only = serializers.CharField(read_only=True)
+            write_only = serializers.CharField(write_only=True, required=False)
+
+        class View(generics.GenericAPIView):
+            serializer_class = Serializer
+
+        view = create_view(
+            View,
+            method,
+            create_request(path)
+        )
+        inspector = AutoSchema()
+        inspector.view = view
+
+        request_body = inspector._get_request_body(path, method)
+        # there should be no empty 'required' property, see #6834
+        assert 'required' not in request_body['content']['application/json']['schema']
+        for response in inspector._get_responses(path, method).values():
+            assert 'required' not in response['content']['application/json']['schema']
+
     def test_response_body_generation(self):
         path = '/'
         method = 'POST'
