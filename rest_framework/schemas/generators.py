@@ -138,7 +138,8 @@ class EndpointEnumerator:
             actions = set(callback.actions)
             methods = [method.upper() for method in actions & http_method_names]
         else:
-            methods = [method.upper() for method in callback.cls().allowed_methods & http_method_names]
+            allowed_methods = set(callback.cls().allowed_methods)
+            methods = [method.upper() for method in allowed_methods & http_method_names]
 
         return [method for method in methods if method not in ('OPTIONS', 'HEAD')]
 
