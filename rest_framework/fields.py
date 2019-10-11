@@ -7,6 +7,7 @@ import re
 import uuid
 from collections import OrderedDict
 from collections.abc import Mapping
+from typing import Callable, List, Any, Optional, Dict
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -302,9 +303,9 @@ class Field:
         'required': _('This field is required.'),
         'null': _('This field may not be null.')
     }
-    default_validators = []
-    default_empty_html = empty
-    initial = None
+    default_validators = []  # type: List[Callable[[Any], None]]
+    default_empty_html = empty  # type: Optional[Any]
+    initial = None  # type: Optional[Any]
 
     def __init__(self, read_only=False, write_only=False,
                  required=None, default=empty, initial=empty, source=None,
@@ -1456,7 +1457,7 @@ class MultipleChoiceField(ChoiceField):
         'not_a_list': _('Expected a list of items but got type "{input_type}".'),
         'empty': _('This selection may not be empty.')
     }
-    default_empty_html = []
+    default_empty_html = []  # type: List[Any]
 
     def __init__(self, *args, **kwargs):
         self.allow_empty = kwargs.pop('allow_empty', True)
@@ -1597,7 +1598,7 @@ class _UnvalidatedField(Field):
 
 class ListField(Field):
     child = _UnvalidatedField()
-    initial = []
+    initial = []  # type: List[Any]
     default_error_messages = {
         'not_a_list': _('Expected a list of items but got type "{input_type}".'),
         'empty': _('This list may not be empty.'),
@@ -1675,8 +1676,8 @@ class ListField(Field):
 
 
 class DictField(Field):
-    child = _UnvalidatedField()
-    initial = {}
+    child = _UnvalidatedField()  # type: Field
+    initial = {}  # type: Dict[str, Any]
     default_error_messages = {
         'not_a_dict': _('Expected a dictionary of items but got type "{input_type}".'),
         'empty': _('This dictionary may not be empty.'),

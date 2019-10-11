@@ -1,5 +1,6 @@
 import sys
 from collections import OrderedDict
+from typing import List, Any
 from urllib import parse
 
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
@@ -472,8 +473,8 @@ class ManyRelatedField(Field):
     You shouldn't generally need to be using this class directly yourself,
     and should instead simply set 'many=True' on the relationship.
     """
-    initial = []
-    default_empty_html = []
+    initial = []  # type: List[Any]
+    default_empty_html = []  # type: List[Any]
     default_error_messages = {
         'not_a_list': _('Expected a list of items but got type "{input_type}".'),
         'empty': _('This list may not be empty.')

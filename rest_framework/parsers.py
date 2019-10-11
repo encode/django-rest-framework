@@ -5,6 +5,7 @@ They give us a generic way of being able to handle various media types
 on the request, such as form content or json encoded data.
 """
 import codecs
+from typing import Optional
 from urllib import parse
 
 from django.conf import settings
@@ -33,7 +34,7 @@ class BaseParser:
     All parsers should extend `BaseParser`, specifying a `media_type`
     attribute, and overriding the `.parse()` method.
     """
-    media_type = None
+    media_type = None  # type: Optional[str]
 
     def parse(self, stream, media_type=None, parser_context=None):
         """

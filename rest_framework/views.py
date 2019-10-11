@@ -1,6 +1,8 @@
 """
 Provides an APIView class that is the base of all views in REST framework.
 """
+from typing import Optional
+
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.db import connection, models, transaction
@@ -15,6 +17,7 @@ from rest_framework import exceptions, status
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.schemas import DefaultSchema
+from rest_framework.schemas.inspectors import ViewInspector
 from rest_framework.settings import api_settings
 from rest_framework.utils import formatting
 
@@ -116,7 +119,7 @@ class APIView(View):
     # Allow dependency injection of other settings to make testing easier.
     settings = api_settings
 
-    schema = DefaultSchema()
+    schema = DefaultSchema()  # type: Optional[ViewInspector]
 
     @classmethod
     def as_view(cls, **initkwargs):

@@ -117,14 +117,14 @@ except ImportError:
 try:
     import yaml
 except ImportError:
-    yaml = None
+    yaml = None  # type: ignore
 
 
 # requests is optional
 try:
     import requests
 except ImportError:
-    requests = None
+    requests = None  # type: ignore
 
 
 # PATCH method is not implemented by Django
@@ -156,7 +156,7 @@ try:
         md_filter_add_syntax_highlight(md)
         return md.convert(text)
 except ImportError:
-    apply_markdown = None
+    apply_markdown = None  # type: ignore
     markdown = None
 
 

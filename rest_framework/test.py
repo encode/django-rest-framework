@@ -115,7 +115,7 @@ if requests is not None:
             return super().request(method, url, *args, **kwargs)
 
 else:
-    def RequestsClient(*args, **kwargs):
+    def RequestsClient(*args, **kwargs):  # type: ignore
         raise ImproperlyConfigured('requests must be installed in order to use RequestsClient.')
 
 
@@ -131,7 +131,7 @@ if coreapi is not None:
             return self._session
 
 else:
-    def CoreAPIClient(*args, **kwargs):
+    def CoreAPIClient(*args, **kwargs):  # type: ignore
         raise ImproperlyConfigured('coreapi must be installed in order to use CoreAPIClient.')
 
 

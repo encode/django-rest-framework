@@ -8,6 +8,7 @@ REST framework also provides an HTML renderer that renders the browsable API.
 """
 import base64
 from collections import OrderedDict
+from typing import Optional
 from urllib import parse
 
 from django import forms
@@ -42,9 +43,9 @@ class BaseRenderer:
     All renderers should extend this class, setting the `media_type`
     and `format` attributes, and override the `.render()` method.
     """
-    media_type = None
-    format = None
-    charset = 'utf-8'
+    media_type = None  # type: Optional[str]
+    format = None  # type: Optional[str]
+    charset = 'utf-8'  # type: Optional[str]
     render_style = 'text'
 
     def render(self, data, accepted_media_type=None, renderer_context=None):

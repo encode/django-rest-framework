@@ -15,6 +15,7 @@ import inspect
 import traceback
 from collections import OrderedDict
 from collections.abc import Mapping
+from typing import Type
 
 from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured
 from django.core.exceptions import ValidationError as DjangoValidationError
@@ -891,7 +892,7 @@ class ModelSerializer(Serializer):
     }
     if ModelDurationField is not None:
         serializer_field_mapping[ModelDurationField] = DurationField
-    serializer_related_field = PrimaryKeyRelatedField
+    serializer_related_field = PrimaryKeyRelatedField  # type: Type[RelatedField]
     serializer_related_to_field = SlugRelatedField
     serializer_url_field = HyperlinkedIdentityField
     serializer_choice_field = ChoiceField

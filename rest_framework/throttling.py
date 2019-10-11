@@ -2,6 +2,7 @@
 Provides various throttling policies.
 """
 import time
+from typing import Optional
 
 from django.core.cache import cache as default_cache
 from django.core.exceptions import ImproperlyConfigured
@@ -62,7 +63,7 @@ class SimpleRateThrottle(BaseThrottle):
     cache = default_cache
     timer = time.time
     cache_format = 'throttle_%(scope)s_%(ident)s'
-    scope = None
+    scope = None  # type: Optional[str]
     THROTTLE_RATES = api_settings.DEFAULT_THROTTLE_RATES
 
     def __init__(self):
