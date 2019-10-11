@@ -682,3 +682,39 @@ class TestDeclaredFieldInheritance:
         assert len(Parent().get_fields()) == 2
         assert len(Child().get_fields()) == 2
         assert len(Grandchild().get_fields()) == 2
+
+    def test_multiple_inheritance(self):
+        class A(serializers.Serializer):
+            field = serializers.CharField()
+
+        class B(serializers.Serializer):
+            field = serializers.IntegerField()
+
+        class TestSerializer(A, B):
+            pass
+
+        fields = {
+            name: type(f) for name, f
+            in TestSerializer()._declared_fields.items()
+        }
+        assert fields == {
+            'field': serializers.CharField
+        }
+
+    def test_field_ordering(self):
+        class Base(serializers.Serializer):
+            f1 = serializers.CharField()
+            f2 = serializers.CharField()
+
+        class A(Base):
+            f3 = serializers.CharField()
+
+        class B(serializers.Serializer):
+            f4 = serializers.CharField()
+
+        class TestSerializer(A, B):
+            f2 = serializers.CharField()
+            f5 = serializers.CharField()
+
+        field_names = list(TestSerializer()._declared_fields)
+        assert field_names == ['f1', 'f2', 'f3', 'f4', 'f5']
