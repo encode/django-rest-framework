@@ -253,22 +253,23 @@ In this approach, rather than documenting the available API endpoints up front, 
 To implement a hypermedia API you'll need to decide on an appropriate media type for the API, and implement a custom renderer and parser for that media type.  The [REST, Hypermedia & HATEOAS][hypermedia-docs] section of the documentation includes pointers to background reading, as well as links to various hypermedia formats.
 
 [cite]: https://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
-[drf-yasg]: https://github.com/axnsan12/drf-yasg/
-[image-drf-yasg]: ../img/drf-yasg.png
-[drfautodocs-repo]: https://github.com/iMakedonsky/drf-autodocs
-[django-rest-swagger]: https://github.com/marcgibbons/django-rest-swagger
-[swagger]: https://swagger.io/
-[open-api]: https://openapis.org/
-[rest-framework-docs]: https://github.com/marcgibbons/django-rest-framework-docs
-[apiary]: https://apiary.io/
-[markdown]: https://daringfireball.net/projects/markdown/syntax
+
 [hypermedia-docs]: rest-hypermedia-hateoas.md
-[image-django-rest-swagger]: ../img/django-rest-swagger.png
-[image-apiary]: ../img/apiary.png
-[image-self-describing-api]: ../img/self-describing.png
 [metadata-docs]: ../api-guide/metadata.md
-
 [schemas-examples]: ../api-guide/schemas.md#examples
-[swagger-ui]: https://swagger.io/tools/swagger-ui/
-[redoc]: https://github.com/Rebilly/ReDoc
 
+[image-apiary]: ../img/apiary.png
+[image-django-rest-swagger]: ../img/django-rest-swagger.png
+[image-drf-yasg]: ../img/drf-yasg.png
+[image-self-describing-api]: ../img/self-describing.png
+
+[apiary]: https://apiary.io/
+[django-rest-swagger]: https://github.com/marcgibbons/django-rest-swagger
+[drfautodocs-repo]: https://github.com/iMakedonsky/drf-autodocs
+[drf-yasg]: https://github.com/axnsan12/drf-yasg/
+[markdown]: https://daringfireball.net/projects/markdown/syntax
+[open-api]: https://openapis.org/
+[redoc]: https://github.com/Rebilly/ReDoc
+[rest-framework-docs]: https://github.com/marcgibbons/django-rest-framework-docs
+[swagger]: https://swagger.io/
+[swagger-ui]: https://swagger.io/tools/swagger-ui/
