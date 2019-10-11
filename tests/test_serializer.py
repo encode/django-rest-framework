@@ -698,7 +698,7 @@ class TestDeclaredFieldInheritance:
             in TestSerializer()._declared_fields.items()
         }
         assert fields == {
-            'field': serializers.CharField
+            'field': serializers.CharField,
         }
 
     def test_field_ordering(self):
@@ -707,14 +707,28 @@ class TestDeclaredFieldInheritance:
             f2 = serializers.CharField()
 
         class A(Base):
-            f3 = serializers.CharField()
+            f3 = serializers.IntegerField()
 
         class B(serializers.Serializer):
+            f3 = serializers.CharField()
             f4 = serializers.CharField()
 
         class TestSerializer(A, B):
-            f2 = serializers.CharField()
+            f2 = serializers.IntegerField()
             f5 = serializers.CharField()
 
-        field_names = list(TestSerializer()._declared_fields)
-        assert field_names == ['f1', 'f2', 'f3', 'f4', 'f5']
+        fields = {
+            name: type(f) for name, f
+            in TestSerializer()._declared_fields.items()
+        }
+
+        # `IntegerField`s should be the 'winners' in field name conflicts
+        # - `TestSerializer.f2` should override `Base.F2`
+        # - `A.f3` should override `B.f3`
+        assert fields == {
+            'f1': serializers.CharField,
+            'f2': serializers.IntegerField,
+            'f3': serializers.IntegerField,
+            'f4': serializers.CharField,
+            'f5': serializers.CharField,
+        }
