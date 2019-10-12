@@ -266,9 +266,9 @@ To implement a hypermedia API you'll need to decide on an appropriate media type
 [image-django-rest-swagger]: ../img/django-rest-swagger.png
 [image-apiary]: ../img/apiary.png
 [image-self-describing-api]: ../img/self-describing.png
-[metadata-docs]: ../api-guide/metadata/
+[metadata-docs]: ../api-guide/metadata.md
 
-[schemas-examples]: ../api-guide/schemas/#examples
+[schemas-examples]: ../coreapi/schemas.md#examples
 [swagger-ui]: https://swagger.io/tools/swagger-ui/
 [redoc]: https://github.com/Rebilly/ReDoc
 
