@@ -887,10 +887,10 @@ To implement a read-only serializer using the `BaseSerializer` class, we just ne
 It's simple to create a read-only serializer for converting `HighScore` instances into primitive data types.
 
     class HighScoreSerializer(serializers.BaseSerializer):
-        def to_representation(self, obj):
+        def to_representation(self, instance):
             return {
-                'score': obj.score,
-                'player_name': obj.player_name
+                'score': instance.score,
+                'player_name': instance.player_name
             }
 
 We can now use this class to serialize single `HighScore` instances:
@@ -945,10 +945,10 @@ Here's a complete example of our previous `HighScoreSerializer`, that's been upd
                 'player_name': player_name
             }
 
-        def to_representation(self, obj):
+        def to_representation(self, instance):
             return {
-                'score': obj.score,
-                'player_name': obj.player_name
+                'score': instance.score,
+                'player_name': instance.player_name
             }
 
         def create(self, validated_data):
@@ -965,10 +965,10 @@ The following class is an example of a generic serializer that can handle coerci
         A read-only serializer that coerces arbitrary complex objects
         into primitive representations.
         """
-        def to_representation(self, obj):
+        def to_representation(self, instance):
             output = {}
-            for attribute_name in dir(obj):
-                attribute = getattr(obj, attribute_name)
+            for attribute_name in dir(instance):
+                attribute = getattr(instance, attribute_name)
                 if attribute_name.startswith('_'):
                     # Ignore private attributes.
                     pass
@@ -1010,7 +1010,7 @@ Some reasons this might be useful include...
 
 The signatures for these methods are as follows:
 
-#### `.to_representation(self, obj)`
+#### `.to_representation(self, instance)`
 
 Takes the object instance that requires serialization, and should return a primitive representation. Typically this means returning a structure of built-in Python datatypes. The exact types that can be handled will depend on the render classes you have configured for your API.
 
