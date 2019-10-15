@@ -272,6 +272,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [django-rest-framework-condition][django-rest-framework-condition] - Decorators for managing HTTP cache headers for Django REST framework (ETag and Last-modified).
 * [django-rest-witchcraft][django-rest-witchcraft] - Provides DRF integration with SQLAlchemy with SQLAlchemy model serializers/viewsets and a bunch of other goodies
 * [djangorestframework-mvt][djangorestframework-mvt] - An extension for creating views that serve Postgres data as Map Box Vector Tiles.
+* [drf-viewset-profiler][drf-viewset-profiler] - Lib to profile all methods from a viewset line by line.
 
 [cite]: http://www.software-ecosystems.com/Software_Ecosystems/Ecosystems.html
 [cookiecutter]: https://github.com/jpadilla/cookiecutter-django-rest-framework
@@ -354,3 +355,4 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [django-restql]: https://github.com/yezyilomo/django-restql
 [djangorestframework-mvt]: https://github.com/corteva/djangorestframework-mvt
 [django-rest-framework-guardian]: https://github.com/rpkilby/django-rest-framework-guardian
+[drf-viewset-profiler]: https://github.com/fvlima/drf-viewset-profiler
