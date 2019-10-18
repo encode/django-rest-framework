@@ -251,7 +251,7 @@ class TestHyperlinkedIdentityField(APISimpleTestCase):
     def test_improperly_configured(self):
         """
         If a matching view cannot be reversed with the given instance,
-        the the user has misconfigured something, as the URL conf and the
+        the user has misconfigured something, as the URL conf and the
         hyperlinked field do not match.
         """
         self.field.reverse = fail_reverse

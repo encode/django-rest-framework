@@ -221,7 +221,7 @@ If the python `Markdown` library is installed, then [markdown syntax][markdown] 
         [ref]: http://example.com/activating-accounts
         """
 
-Note that when using viewsets the basic docstring is used for all generated views.  To provide descriptions for each view, such as for the the list and retrieve views, use docstring sections as described in [Schemas as documentation: Examples][schemas-examples].
+Note that when using viewsets the basic docstring is used for all generated views.  To provide descriptions for each view, such as for the list and retrieve views, use docstring sections as described in [Schemas as documentation: Examples][schemas-examples].
 
 #### The `OPTIONS` method
 
