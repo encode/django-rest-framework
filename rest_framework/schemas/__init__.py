@@ -23,8 +23,8 @@ Other access should target the submodules directly
 from rest_framework.settings import api_settings
 
 from . import coreapi, openapi
-from .inspectors import DefaultSchema  # noqa
 from .coreapi import AutoSchema, ManualSchema, SchemaGenerator  # noqa
+from .inspectors import DefaultSchema  # noqa
 
 
 def get_schema_view(
