@@ -21,11 +21,13 @@ matrix:
       - { python: "3.7", env: DJANGO=2.2 }
       - { python: "3.7", env: DJANGO=master }
 
-      - { python: "3.7", env: TOXENV=base }
-      - { python: "3.7", env: TOXENV=lint }
-      - { python: "3.7", env: TOXENV=docs }
+      - { python: "3.8", env: DJANGO=master }
 
-      - python: "3.7"
+      - { python: "3.8", env: TOXENV=base }
+      - { python: "3.8", env: TOXENV=lint }
+      - { python: "3.8", env: TOXENV=docs }
+
+      - python: "3.8"
         env: TOXENV=dist
         script:
           - python setup.py bdist_wheel
