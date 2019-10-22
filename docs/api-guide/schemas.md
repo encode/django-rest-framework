@@ -90,6 +90,7 @@ The `get_schema_view()` helper takes the following keyword arguments:
             url='https://www.example.org/api/',
             urlconf='myproject.urls'
         )
+
 * `patterns`: List of url patterns to limit the schema introspection to. If you
   only want the `myproject.api` urls to be exposed in the schema:
 
