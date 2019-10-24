@@ -448,10 +448,7 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
                 default = field.get_default()
             except SkipField:
                 continue
-            if field.source == None:
-                defaults[field.field_name] = default
-            else:
-                defaults[field.source] = default
+            defaults[field.field_name] = default
 
         return defaults
 

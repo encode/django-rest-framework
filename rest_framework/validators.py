@@ -107,6 +107,7 @@ class UniqueTogetherValidator:
         """
         # Determine the existing instance, if this is an update operation.
         self.instance = getattr(serializer, 'instance', None)
+        self.serializer = serializer
 
     def enforce_required_fields(self, attrs):
         """
@@ -137,7 +138,11 @@ class UniqueTogetherValidator:
 
         # Determine the filter keyword arguments and filter the queryset.
         filter_kwargs = {
-            field_name: attrs[field_name]
+            (
+                field_name
+                if field_name == self.serializer.fields[field_name].source
+                else self.serializer.fields[field_name].source
+            ): attrs[field_name]
             for field_name in self.fields
         }
         return qs_filter(queryset, **filter_kwargs)
