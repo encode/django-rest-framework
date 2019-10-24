@@ -115,7 +115,6 @@ The `get_schema_view()` helper takes the following keyword arguments:
 * `renderer_classes`: May be used to pass the set of renderer classes that can
   be used to render the API root endpoint.
 
-
 ## Customizing Schema Generation
 
 You may customize schema generation at the level of the schema as a whole, or
@@ -155,7 +154,7 @@ Returns a dictionary that represents the OpenAPI schema:
 The `request` argument is optional, and may be used if you want to apply
 per-user permissions to the resulting schema generation.
 
-This is a good point to override if you want to customise the generated
+This is a good point to override if you want to customize the generated
 dictionary,  for example to add custom
 [specification extensions][openapi-specification-extensions].
 
@@ -184,14 +183,13 @@ provide richer path field descriptions. (The key hooks here are the relevant
 
 ---
 
-In order to customise the operation generation, you should provide an `AutoSchema` subclass, overriding `get_operation()` as you need:
-
+In order to customize the operation generation, you should provide an `AutoSchema` subclass, overriding `get_operation()` as you need:
 
         from rest_framework.views import APIView
         from rest_framework.schemas.openapi import AutoSchema
 
         class CustomSchema(AutoSchema):
-            def get_link(...):
+            def get_operation(...):
                 # Implement custom introspection here (or in other sub-methods)
 
         class CustomView(APIView):
