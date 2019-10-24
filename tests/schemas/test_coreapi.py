@@ -24,8 +24,8 @@ from rest_framework.utils import formatting
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
-from . import views
 from ..models import BasicModel, ForeignKeySource, ManyToManySource
+from . import views
 
 factory = APIRequestFactory()
 

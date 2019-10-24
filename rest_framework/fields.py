@@ -1062,9 +1062,7 @@ class DecimalField(Field):
         except decimal.DecimalException:
             self.fail('invalid')
 
-        # Check for NaN. It is the only value that isn't equal to itself,
-        # so we can use this to identify NaN values.
-        if value != value:
+        if value.is_nan():
             self.fail('invalid')
 
         # Check for infinity and negative infinity.
@@ -1764,8 +1762,8 @@ class JSONField(Field):
             # When HTML form input is used, mark up the input
             # as being a JSON string, rather than a JSON primitive.
             class JSONString(str):
-                def __new__(self, value):
-                    ret = str.__new__(self, value)
+                def __new__(cls, value):
+                    ret = str.__new__(cls, value)
                     ret.is_json_string = True
                     return ret
             return JSONString(dictionary[self.field_name])

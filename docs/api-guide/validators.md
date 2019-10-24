@@ -218,7 +218,7 @@ in the `.validate()` method, or else in the view.
 For example:
 
     class BillingRecordSerializer(serializers.ModelSerializer):
-        def validate(self, data):
+        def validate(self, attrs):
             # Apply custom validation either here, or in the view.
 
         class Meta:
