@@ -555,7 +555,7 @@ class TestDefaultOutput:
             bar = serializers.CharField(source='foo.bar', allow_null=True)
             optional = serializers.CharField(required=False, allow_null=True)
 
-        # allow_null=True should imply default=None when serialising:
+        # allow_null=True should imply default=None when serializing:
         assert Serializer({'foo': None}).data == {'foo': None, 'bar': None, 'optional': None, }
 
 
