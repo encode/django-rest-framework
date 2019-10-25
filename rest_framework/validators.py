@@ -148,7 +148,7 @@ class UniqueTogetherValidator:
                 else self.serializer.fields[field_name].source
                 ): (
                     attrs[field_name]
-                    if self.instance is None
+                    if self.instance is None or not self.serializer.partial
                     else attrs[self.serializer.fields[field_name].source]
                 )
                 for field_name in self.fields
