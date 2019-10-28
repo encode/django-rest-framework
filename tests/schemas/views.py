@@ -33,6 +33,7 @@ class ExampleDetailView(APIView):
 class ExampleSerializer(serializers.Serializer):
     date = serializers.DateField()
     datetime = serializers.DateTimeField()
+    hstore = serializers.HStoreField()
 
 
 class ExampleGenericAPIView(generics.GenericAPIView):

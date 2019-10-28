@@ -344,6 +344,7 @@ class AutoSchema(ViewInspector):
             serializers.BooleanField: 'boolean',
             serializers.JSONField: 'object',
             serializers.DictField: 'object',
+            serializers.HStoreField: 'object',
         }
         return {'type': FIELD_CLASS_SCHEMA_TYPE.get(field.__class__, 'string')}
 
