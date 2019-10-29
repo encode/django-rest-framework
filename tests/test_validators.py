@@ -365,6 +365,40 @@ class TestUniquenessTogetherValidation(TestCase):
         validator.filter_queryset(attrs=data, queryset=queryset)
         assert queryset.called_with == {'race_name': 'bar', 'position': 1}
 
+class WritableFieldsWithSourceSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(source='race_name')
+
+    class Meta:
+        model = UniquenessTogetherModel
+        fields = ['name', 'position']
+        validators = [
+            UniqueTogetherValidator(
+                queryset=UniquenessTogetherModel.objects.all(),
+                fields=['name', 'position']
+            )
+        ]
+
+class ReadOnlyFieldsWithSourceSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(source='race_name', read_only=True, default='test')
+
+    class Meta:
+        model = UniquenessTogetherModel
+        fields = ['name', 'position']
+        validators = [
+            UniqueTogetherValidator(
+                queryset=UniquenessTogetherModel.objects.all(),
+                fields=['name', 'position']
+            )
+        ]
+
+class TestFieldsWithFieldSource(TestCase):
+    def test_writeable(self):
+        serializer = WritableFieldsWithSourceSerializer(data={'name': 'formula1', 'position': '1'})
+        serializer.is_valid(raise_exception=True)
+
+    def test_read_only(self):
+        serializer = ReadOnlyFieldsWithSourceSerializer(data={'position': '1'})
+        serializer.is_valid(raise_exception=True)
 
 # Tests for `UniqueForDateValidator`
 # ----------------------------------
