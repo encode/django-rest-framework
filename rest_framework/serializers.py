@@ -493,7 +493,7 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
             except SkipField:
                 pass
             else:
-                set_value(ret, field.source_attrs, validated_value)
+                set_value(ret, field.field_name.split(), validated_value)
 
         if errors:
             raise ValidationError(errors)
