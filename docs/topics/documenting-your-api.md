@@ -268,7 +268,7 @@ To implement a hypermedia API you'll need to decide on an appropriate media type
 [image-self-describing-api]: ../img/self-describing.png
 [metadata-docs]: ../api-guide/metadata/
 
-[schemas-examples]: ../api-guide/schemas/#examples
+[schemas-examples]: ../coreapi/schemas/#examples
 [swagger-ui]: https://swagger.io/tools/swagger-ui/
 [redoc]: https://github.com/Rebilly/ReDoc
 
