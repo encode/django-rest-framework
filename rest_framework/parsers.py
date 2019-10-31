@@ -61,8 +61,8 @@ class JSONParser(BaseParser):
         encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
 
         try:
-            decoded_stream = codecs.getreader(encoding)(stream)
-            return json.load(decoded_stream, parse_constant=parse_constant)
+            decoded_string = codecs.getreader(encoding)(stream).read()
+            return json.loads(decoded_string, parse_constant=parse_constant)
         except ValueError as exc:
             raise ParseError('JSON parse error - %s' % str(exc))
 
