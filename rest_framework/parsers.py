@@ -5,6 +5,7 @@ They give us a generic way of being able to handle various media types
 on the request, such as form content or json encoded data.
 """
 import codecs
+import re
 from urllib import parse
 
 from django.conf import settings
@@ -52,6 +53,12 @@ class JSONParser(BaseParser):
     renderer_class = renderers.JSONRenderer
     strict = api_settings.STRICT_JSON
 
+    @staticmethod
+    def _protect_against_surrogate_code_points(decoded_string):
+        m = re.search(r'[^\\](?:\\\\)*(\\u[dD][89a-fA-F][0-9a-fA-F]{2})', decoded_string)
+        if m is not None:
+            raise ValueError('JSON input contains surrogates (code points 0xD800 to 0xDFFF): {}'.format(m.group(1)))
+
     def parse(self, stream, media_type=None, parser_context=None):
         """
         Parses the incoming bytestream as JSON and returns the resulting data.
@@ -62,6 +69,7 @@ class JSONParser(BaseParser):
 
         try:
             decoded_string = codecs.getreader(encoding)(stream).read()
+            self._protect_against_surrogate_code_points(decoded_string)
             return json.loads(decoded_string, parse_constant=parse_constant)
         except ValueError as exc:
             raise ParseError('JSON parse error - %s' % str(exc))
