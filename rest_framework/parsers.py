@@ -56,12 +56,12 @@ class JSONParser(BaseParser):
         """
         Parses the incoming bytestream as JSON and returns the resulting data.
         """
+        parse_constant = json.strict_constant if self.strict else None
         parser_context = parser_context or {}
         encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
 
         try:
             decoded_stream = codecs.getreader(encoding)(stream)
-            parse_constant = json.strict_constant if self.strict else None
             return json.load(decoded_stream, parse_constant=parse_constant)
         except ValueError as exc:
             raise ParseError('JSON parse error - %s' % str(exc))
