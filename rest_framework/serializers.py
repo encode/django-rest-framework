@@ -979,13 +979,16 @@ class ModelSerializer(Serializer):
         # relationships as being a special case. During updates we already
         # have an instance pk for the relationships to be associated with.
         m2m_fields = []
+        changed_fields = []
         for attr, value in validated_data.items():
             if attr in info.relations and info.relations[attr].to_many:
                 m2m_fields.append((attr, value))
             else:
-                setattr(instance, attr, value)
+                if getattr(instance, attr, None) != value:
+                    setattr(instance, attr, value)
+                    changed_fields.append(attr)
 
-        instance.save()
+        instance.save(update_fields=changed_fields)
 
         # Note that many-to-many fields are set after updating instance.
         # Setting m2m fields triggers signals which could potentially change
