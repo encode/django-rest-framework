@@ -266,7 +266,7 @@ class Request:
 
     def _load_data_and_files(self):
         """
-        Parses the request content into `self.data`.
+        Parses the request content into `self._data`.
         """
         if not _hasattr(self, '_data'):
             self._data, self._files = self._parse()
