@@ -123,8 +123,8 @@ class ViewSetMixin:
         # We need to set these on the view function, so that breadcrumb
         # generation can pick out these bits of information from a
         # resolved URL.
-        view.cls = cls
-        view.initkwargs = initkwargs
+        view.view_class = cls
+        view.view_initkwargs = initkwargs
         view.actions = actions
         return csrf_exempt(view)
 

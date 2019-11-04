@@ -164,7 +164,7 @@ class DecoratorTestCase(TestCase):
         def view(request):
             return Response({})
 
-        assert isinstance(view.cls.schema, CustomSchema)
+        assert isinstance(view.view_class.schema, CustomSchema)
 
 
 class ActionDecoratorTestCase(TestCase):

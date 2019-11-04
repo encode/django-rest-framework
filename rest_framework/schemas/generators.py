@@ -29,8 +29,8 @@ def is_api_view(callback):
     """
     # Avoid import cycle on APIView
     from rest_framework.views import APIView
-    cls = getattr(callback, 'cls', None)
-    return (cls is not None) and issubclass(cls, APIView)
+    view_class = getattr(callback, 'view_class', None)
+    return (view_class is not None) and issubclass(view_class, APIView)
 
 
 def endpoint_ordering(endpoint):
@@ -117,11 +117,11 @@ class EndpointEnumerator:
         if not is_api_view(callback):
             return False  # Ignore anything except REST framework views.
 
-        if callback.cls.schema is None:
+        if callback.view_class.schema is None:
             return False
 
-        if 'schema' in callback.initkwargs:
-            if callback.initkwargs['schema'] is None:
+        if 'schema' in callback.view_initkwargs:
+            if callback.view_initkwargs['schema'] is None:
                 return False
 
         if path.endswith('.{format}') or path.endswith('.{format}/'):
@@ -135,10 +135,10 @@ class EndpointEnumerator:
         """
         if hasattr(callback, 'actions'):
             actions = set(callback.actions)
-            http_method_names = set(callback.cls.http_method_names)
+            http_method_names = set(callback.view_class.http_method_names)
             methods = [method.upper() for method in actions & http_method_names]
         else:
-            methods = callback.cls().allowed_methods
+            methods = callback.view_class().allowed_methods
 
         return [method for method in methods if method not in ('OPTIONS', 'HEAD')]
 
@@ -188,7 +188,7 @@ class BaseSchemaGenerator(object):
         """
         Given a callback, return an actual view instance.
         """
-        view = callback.cls(**getattr(callback, 'initkwargs', {}))
+        view = callback.view_class(**getattr(callback, 'view_initkwargs', {}))
         view.args = ()
         view.kwargs = {}
         view.format_kwarg = None

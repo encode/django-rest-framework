@@ -136,8 +136,8 @@ class APIView(View):
             cls.queryset._fetch_all = force_evaluation
 
         view = super().as_view(**initkwargs)
-        view.cls = cls
-        view.initkwargs = initkwargs
+        view.view_class = cls
+        view.view_initkwargs = initkwargs
 
         # Note: session based authentication is explicitly CSRF validated,
         # all other authentication is CSRF exempt.

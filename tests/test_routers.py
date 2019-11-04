@@ -470,18 +470,18 @@ class TestViewInitkwargs(URLPatternsTestCase, TestCase):
 
     def test_suffix(self):
         match = resolve('/example/notes/')
-        initkwargs = match.func.initkwargs
+        initkwargs = match.func.view_initkwargs
 
         assert initkwargs['suffix'] == 'List'
 
     def test_detail(self):
         match = resolve('/example/notes/')
-        initkwargs = match.func.initkwargs
+        initkwargs = match.func.view_initkwargs
 
         assert not initkwargs['detail']
 
     def test_basename(self):
         match = resolve('/example/notes/')
-        initkwargs = match.func.initkwargs
+        initkwargs = match.func.view_initkwargs
 
         assert initkwargs['basename'] == 'routertestmodel'
