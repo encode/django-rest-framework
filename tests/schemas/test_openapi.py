@@ -5,6 +5,8 @@ from django.utils.translation import gettext_lazy as _
 
 from rest_framework import filters, generics, pagination, routers, serializers
 from rest_framework.compat import uritemplate
+from rest_framework.parsers import JSONParser, MultiPartParser
+from rest_framework.renderers import JSONRenderer
 from rest_framework.request import Request
 from rest_framework.schemas.openapi import AutoSchema, SchemaGenerator
 
@@ -363,6 +365,77 @@ class TestOperationIntrospection(TestCase):
                 'description': '',
             },
         }
+
+    def test_parser_mapping(self):
+        """Test that view's parsers are mapped to OA media types"""
+        path = '/{id}/'
+        method = 'POST'
+
+        class View(generics.CreateAPIView):
+            serializer_class = views.ExampleSerializer
+            parser_classes = [JSONParser, MultiPartParser]
+
+        view = create_view(
+            View,
+            method,
+            create_request(path),
+        )
+        inspector = AutoSchema()
+        inspector.view = view
+
+        request_body = inspector._get_request_body(path, method)
+
+        assert len(request_body['content'].keys()) == 2
+        assert 'multipart/form-data' in request_body['content']
+        assert 'application/json' in request_body['content']
+
+    def test_renderer_mapping(self):
+        """Test that view's renderers are mapped to OA media types"""
+        path = '/{id}/'
+        method = 'GET'
+
+        class View(generics.CreateAPIView):
+            serializer_class = views.ExampleSerializer
+            renderer_classes = [JSONRenderer]
+
+        view = create_view(
+            View,
+            method,
+            create_request(path),
+        )
+        inspector = AutoSchema()
+        inspector.view = view
+
+        responses = inspector._get_responses(path, method)
+        # TODO this should be changed once the multiple response
+        # schema support is there
+        success_response = responses['200']
+
+        assert len(success_response['content'].keys()) == 1
+        assert 'application/json' in success_response['content']
+
+    def test_serializer_filefield(self):
+        path = '/{id}/'
+        method = 'POST'
+
+        class ItemSerializer(serializers.Serializer):
+            attachment = serializers.FileField()
+
+        class View(generics.CreateAPIView):
+            serializer_class = ItemSerializer
+
+        view = create_view(
+            View,
+            method,
+            create_request(path),
+        )
+        inspector = AutoSchema()
+        inspector.view = view
+
+        request_body = inspector._get_request_body(path, method)
+        mp_media = request_body['content']['multipart/form-data']
+        attachment = mp_media['schema']['properties']['attachment']
+        assert attachment['format'] == 'binary'
 
     def test_retrieve_response_body_generation(self):
         """

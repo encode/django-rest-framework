@@ -1,4 +1,5 @@
 import warnings
+from operator import attrgetter
 from urllib.parse import urljoin
 
 from django.core.validators import (
@@ -8,7 +9,7 @@ from django.core.validators import (
 from django.db import models
 from django.utils.encoding import force_str
 
-from rest_framework import exceptions, serializers
+from rest_framework import exceptions, renderers, serializers
 from rest_framework.compat import uritemplate
 from rest_framework.fields import _UnvalidatedField, empty
 
@@ -78,7 +79,9 @@ class SchemaGenerator(BaseSchemaGenerator):
 
 class AutoSchema(ViewInspector):
 
-    content_types = ['application/json']
+    request_media_types = []
+    response_media_types = []
+
     method_mapping = {
         'get': 'Retrieve',
         'post': 'Create',
@@ -339,6 +342,12 @@ class AutoSchema(ViewInspector):
             self._map_min_max(field, content)
             return content
 
+        if isinstance(field, serializers.FileField):
+            return {
+                'type': 'string',
+                'format': 'binary'
+            }
+
         # Simplest cases, default to 'string' type:
         FIELD_CLASS_SCHEMA_TYPE = {
             serializers.BooleanField: 'boolean',
@@ -434,8 +443,19 @@ class AutoSchema(ViewInspector):
         pagination_class = getattr(self.view, 'pagination_class', None)
         if pagination_class:
             return pagination_class()
-
         return None
+
+    def map_parsers(self, path, method):
+        return list(map(attrgetter('media_type'), self.view.parser_classes))
+
+    def map_renderers(self, path, method):
+        media_types = []
+        for renderer in self.view.renderer_classes:
+            # BrowsableAPIRenderer not relevant to OpenAPI spec
+            if renderer == renderers.BrowsableAPIRenderer:
+                continue
+            media_types.append(renderer.media_type)
+        return media_types
 
     def _get_serializer(self, method, path):
         view = self.view
@@ -456,6 +476,8 @@ class AutoSchema(ViewInspector):
         if method not in ('PUT', 'PATCH', 'POST'):
             return {}
 
+        self.request_media_types = self.map_parsers(path, method)
+
         serializer = self._get_serializer(path, method)
 
         if not isinstance(serializer, serializers.Serializer):
@@ -473,7 +495,7 @@ class AutoSchema(ViewInspector):
         return {
             'content': {
                 ct: {'schema': content}
-                for ct in self.content_types
+                for ct in self.request_media_types
             }
         }
 
@@ -485,6 +507,8 @@ class AutoSchema(ViewInspector):
                     'description': ''
                 }
             }
+
+        self.response_media_types = self.map_renderers(path, method)
 
         item_schema = {}
         serializer = self._get_serializer(path, method)
@@ -513,7 +537,7 @@ class AutoSchema(ViewInspector):
             '200': {
                 'content': {
                     ct: {'schema': response_schema}
-                    for ct in self.content_types
+                    for ct in self.response_media_types
                 },
                 # description is a mandatory property,
                 # https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#responseObject
