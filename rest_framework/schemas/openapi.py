@@ -209,7 +209,7 @@ class AutoSchema(ViewInspector):
         if not is_list_view(path, method, view):
             return []
 
-        paginator = self._get_pagninator()
+        paginator = self._get_paginator()
         if not paginator:
             return []
 
@@ -344,6 +344,7 @@ class AutoSchema(ViewInspector):
             serializers.BooleanField: 'boolean',
             serializers.JSONField: 'object',
             serializers.DictField: 'object',
+            serializers.HStoreField: 'object',
         }
         return {'type': FIELD_CLASS_SCHEMA_TYPE.get(field.__class__, 'string')}
 
@@ -429,7 +430,7 @@ class AutoSchema(ViewInspector):
                     schema['maximum'] = int(digits * '9') + 1
                     schema['minimum'] = -schema['maximum']
 
-    def _get_pagninator(self):
+    def _get_paginator(self):
         pagination_class = getattr(self.view, 'pagination_class', None)
         if pagination_class:
             return pagination_class()
@@ -502,7 +503,7 @@ class AutoSchema(ViewInspector):
                 'type': 'array',
                 'items': item_schema,
             }
-            paginator = self._get_pagninator()
+            paginator = self._get_paginator()
             if paginator:
                 response_schema = paginator.get_paginated_response_schema(response_schema)
         else:

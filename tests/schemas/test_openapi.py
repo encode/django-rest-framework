@@ -462,6 +462,22 @@ class TestOperationIntrospection(TestCase):
         assert properties['date']['format'] == 'date'
         assert properties['datetime']['format'] == 'date-time'
 
+    def test_serializer_hstorefield(self):
+        path = '/'
+        method = 'GET'
+        view = create_view(
+            views.ExampleGenericAPIView,
+            method,
+            create_request(path),
+        )
+        inspector = AutoSchema()
+        inspector.view = view
+
+        responses = inspector._get_responses(path, method)
+        response_schema = responses['200']['content']['application/json']['schema']
+        properties = response_schema['items']['properties']
+        assert properties['hstore']['type'] == 'object'
+
     def test_serializer_validators(self):
         path = '/'
         method = 'GET'
