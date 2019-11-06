@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # Etienne Desgagné <etienne.desgagne@evimbec.ca>, 2015
 # Martin Maillard <martin.maillard@gmail.com>, 2015
@@ -100,7 +100,7 @@ msgstr "Impossible de se connecter avec les informations d'identification fourni
 
 #: authtoken/serializers.py:26
 msgid "Must include \"username\" and \"password\"."
-msgstr "\"username\" et \"password\" doivent être inclus."
+msgstr "« username » et « password » doivent être inclus."
 
 #: exceptions.py:49
 msgid "A server error occurred."
@@ -128,7 +128,7 @@ msgstr "Pas trouvé."
 
 #: exceptions.py:109
 msgid "Method \"{method}\" not allowed."
-msgstr "Méthode \"{method}\" non autorisée."
+msgstr "Méthode « {method} » non autorisée."
 
 #: exceptions.py:120
 msgid "Could not satisfy the request Accept header."
@@ -136,7 +136,7 @@ msgstr "L'en-tête « Accept » n'a pas pu être satisfaite."
 
 #: exceptions.py:132
 msgid "Unsupported media type \"{media_type}\" in request."
-msgstr "Type de média \"{media_type}\" non supporté."
+msgstr "Type de média « {media_type} » non supporté."
 
 #: exceptions.py:145
 msgid "Request was throttled."
@@ -153,7 +153,7 @@ msgstr "Ce champ ne peut être nul."
 
 #: fields.py:608 fields.py:639
 msgid "\"{input}\" is not a valid boolean."
-msgstr "\"{input}\" n'est pas un booléen valide."
+msgstr "« {input} » n'est pas un booléen valide."
 
 #: fields.py:674
 msgid "This field may not be blank."
@@ -161,15 +161,15 @@ msgstr "Ce champ ne peut être vide."
 
 #: fields.py:675 fields.py:1675
 msgid "Ensure this field has no more than {max_length} characters."
-msgstr "Assurez-vous que ce champ comporte au plus {max_length} caractères."
+msgstr "Assurez-vous que ce champ comporte au plus {max_length} caractères."
 
 #: fields.py:676
 msgid "Ensure this field has at least {min_length} characters."
-msgstr "Assurez-vous que ce champ comporte au moins {min_length} caractères."
+msgstr "Assurez-vous que ce champ comporte au moins {min_length} caractères."
 
 #: fields.py:713
 msgid "Enter a valid email address."
-msgstr "Saisissez une adresse email valable."
+msgstr "Saisissez une adresse e-mail valide."
 
 #: fields.py:724
 msgid "This value does not match the required pattern."
@@ -187,7 +187,7 @@ msgstr "Saisissez une URL valide."
 
 #: fields.py:760
 msgid "\"{value}\" is not a valid UUID."
-msgstr "\"{value}\" n'est pas un UUID valide."
+msgstr "« {value} » n'est pas un UUID valide."
 
 #: fields.py:796
 msgid "Enter a valid IPv4 or IPv6 address."
@@ -199,11 +199,11 @@ msgstr "Un nombre entier valide est requis."
 
 #: fields.py:822 fields.py:857 fields.py:891
 msgid "Ensure this value is less than or equal to {max_value}."
-msgstr "Assurez-vous que cette valeur est inférieure ou égale à {max_value}."
+msgstr "Assurez-vous que cette valeur est inférieure ou égale à {max_value}."
 
 #: fields.py:823 fields.py:858 fields.py:892
 msgid "Ensure this value is greater than or equal to {min_value}."
-msgstr "Assurez-vous que cette valeur est supérieure ou égale à {min_value}."
+msgstr "Assurez-vous que cette valeur est supérieure ou égale à {min_value}."
 
 #: fields.py:824 fields.py:859 fields.py:896
 msgid "String value too large."
@@ -215,12 +215,12 @@ msgstr "Un nombre valide est requis."
 
 #: fields.py:893
 msgid "Ensure that there are no more than {max_digits} digits in total."
-msgstr "Assurez-vous qu'il n'y a pas plus de {max_digits} chiffres au total."
+msgstr "Assurez-vous qu'il n'y a pas plus de {max_digits} chiffres au total."
 
 #: fields.py:894
 msgid ""
 "Ensure that there are no more than {max_decimal_places} decimal places."
-msgstr "Assurez-vous qu'il n'y a pas plus de {max_decimal_places} chiffres après la virgule."
+msgstr "Assurez-vous qu'il n'y a pas plus de {max_decimal_places} chiffres après la virgule."
 
 #: fields.py:895
 msgid ""
@@ -230,7 +230,7 @@ msgstr "Assurez-vous qu'il n'y a pas plus de {max_whole_digits} chiffres avant l
 
 #: fields.py:1025
 msgid "Datetime has wrong format. Use one of these formats instead: {format}."
-msgstr "La date + heure n'a pas le bon format. Utilisez un des formats suivants : {format}."
+msgstr "La date + heure n'a pas le bon format. Utilisez un des formats suivants : {format}."
 
 #: fields.py:1026
 msgid "Expected a datetime but got a date."
@@ -238,7 +238,7 @@ msgstr "Attendait une date + heure mais a reçu une date."
 
 #: fields.py:1103
 msgid "Date has wrong format. Use one of these formats instead: {format}."
-msgstr "La date n'a pas le bon format. Utilisez un des formats suivants : {format}."
+msgstr "La date n'a pas le bon format. Utilisez un des formats suivants : {format}."
 
 #: fields.py:1104
 msgid "Expected a date but got a datetime."
@@ -246,15 +246,15 @@ msgstr "Attendait une date mais a reçu une date + heure."
 
 #: fields.py:1170
 msgid "Time has wrong format. Use one of these formats instead: {format}."
-msgstr "L'heure n'a pas le bon format. Utilisez un des formats suivants : {format}."
+msgstr "L'heure n'a pas le bon format. Utilisez un des formats suivants : {format}."
 
 #: fields.py:1232
 msgid "Duration has wrong format. Use one of these formats instead: {format}."
-msgstr "La durée n'a pas le bon format. Utilisez l'un des formats suivants: {format}."
+msgstr "La durée n'a pas le bon format. Utilisez l'un des formats suivants : {format}."
 
 #: fields.py:1251 fields.py:1300
 msgid "\"{input}\" is not a valid choice."
-msgstr "\"{input}\" n'est pas un choix valide."
+msgstr "« {input} » n'est pas un choix valide."
 
 #: fields.py:1254 relations.py:71 relations.py:441
 msgid "More than {count} items..."
@@ -262,7 +262,7 @@ msgstr "Plus de {count} éléments..."
 
 #: fields.py:1301 fields.py:1448 relations.py:437 serializers.py:524
 msgid "Expected a list of items but got type \"{input_type}\"."
-msgstr "Attendait une liste d'éléments mais a reçu \"{input_type}\"."
+msgstr "Attendait une liste d'éléments mais a reçu « {input_type} »."
 
 #: fields.py:1302
 msgid "This selection may not be empty."
@@ -270,7 +270,7 @@ msgstr "Cette sélection ne peut être vide."
 
 #: fields.py:1339
 msgid "\"{input}\" is not a valid path choice."
-msgstr "\"{input}\" n'est pas un choix de chemin valide."
+msgstr "« {input} » n'est pas un choix de chemin valide."
 
 #: fields.py:1358
 msgid "No file was submitted."
@@ -292,7 +292,7 @@ msgstr "Le fichier soumis est vide."
 #: fields.py:1362
 msgid ""
 "Ensure this filename has at most {max_length} characters (it has {length})."
-msgstr "Assurez-vous que le nom de fichier comporte au plus {max_length} caractères (il en comporte {length})."
+msgstr "Assurez-vous que le nom de fichier comporte au plus {max_length} caractères (il en comporte {length})."
 
 #: fields.py:1410
 msgid ""
@@ -306,7 +306,7 @@ msgstr "Cette liste ne peut pas être vide."
 
 #: fields.py:1502
 msgid "Expected a dictionary of items but got type \"{input_type}\"."
-msgstr "Attendait un dictionnaire d'éléments mais a reçu \"{input_type}\"."
+msgstr "Attendait un dictionnaire d'éléments mais a reçu « {input_type} »."
 
 #: fields.py:1549
 msgid "Value must be valid JSON."
@@ -334,7 +334,7 @@ msgstr "Curseur non valide"
 
 #: relations.py:207
 msgid "Invalid pk \"{pk_value}\" - object does not exist."
-msgstr "Clé primaire \"{pk_value}\" non valide - l'objet n'existe pas."
+msgstr "Clé primaire « {pk_value} » non valide - l'objet n'existe pas."
 
 #: relations.py:208
 msgid "Incorrect type. Expected pk value, received {data_type}."
@@ -342,15 +342,15 @@ msgstr "Type incorrect. Attendait une clé primaire, a reçu {data_type}."
 
 #: relations.py:240
 msgid "Invalid hyperlink - No URL match."
-msgstr "Lien non valide : pas d'URL correspondante."
+msgstr "Lien non valide : pas d'URL correspondante."
 
 #: relations.py:241
 msgid "Invalid hyperlink - Incorrect URL match."
-msgstr "Lien non valide : URL correspondante incorrecte."
+msgstr "Lien non valide : URL correspondante incorrecte."
 
 #: relations.py:242
 msgid "Invalid hyperlink - Object does not exist."
-msgstr "Lien non valide : l'objet n'existe pas."
+msgstr "Lien non valide : l'objet n'existe pas."
 
 #: relations.py:243
 msgid "Incorrect type. Expected URL string, received {data_type}."
@@ -408,15 +408,15 @@ msgstr "Les champs {field_names} doivent former un ensemble unique."
 
 #: validators.py:245
 msgid "This field must be unique for the \"{date_field}\" date."
-msgstr "Ce champ doit être unique pour la date \"{date_field}\"."
+msgstr "Ce champ doit être unique pour la date « {date_field} »."
 
 #: validators.py:260
 msgid "This field must be unique for the \"{date_field}\" month."
-msgstr "Ce champ doit être unique pour le mois \"{date_field}\"."
+msgstr "Ce champ doit être unique pour le mois « {date_field} »."
 
 #: validators.py:273
 msgid "This field must be unique for the \"{date_field}\" year."
-msgstr "Ce champ doit être unique pour l'année \"{date_field}\"."
+msgstr "Ce champ doit être unique pour l'année « {date_field} »."
 
 #: versioning.py:42
 msgid "Invalid version in \"Accept\" header."
