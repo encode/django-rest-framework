@@ -17,8 +17,6 @@ from .generators import BaseSchemaGenerator
 from .inspectors import ViewInspector
 from .utils import get_pk_description, is_list_view
 
-# Generator
-
 
 class SchemaGenerator(BaseSchemaGenerator):
 
@@ -94,6 +92,7 @@ class AutoSchema(ViewInspector):
         operation = {}
 
         operation['operationId'] = self._get_operation_id(path, method)
+        operation['description'] = self.get_description(path, method)
 
         parameters = []
         parameters += self._get_path_parameters(path, method)
