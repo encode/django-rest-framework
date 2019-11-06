@@ -704,3 +704,16 @@ class TestGenerator(TestCase):
         assert schema['info']['title'] == 'My title'
         assert schema['info']['version'] == '1.2.3'
         assert schema['info']['description'] == 'My description'
+
+    def test_schema_information_empty(self):
+        """Construction of the top level dictionary."""
+        patterns = [
+            url(r'^example/?$', views.ExampleListView.as_view()),
+        ]
+        generator = SchemaGenerator(patterns=patterns)
+
+        request = create_request('/')
+        schema = generator.get_schema(request=request)
+
+        assert schema['info']['title'] == ''
+        assert schema['info']['version'] == ''

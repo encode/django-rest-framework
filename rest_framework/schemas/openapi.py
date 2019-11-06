@@ -21,9 +21,10 @@ from .utils import get_pk_description, is_list_view
 class SchemaGenerator(BaseSchemaGenerator):
 
     def get_info(self):
+        # Title and version are required by openapi specification 3.x
         info = {
-            'title': self.title,
-            'version': self.version,
+            'title': self.title or '',
+            'version': self.version or ''
         }
 
         if self.description is not None:
