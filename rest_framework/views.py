@@ -93,7 +93,7 @@ def exception_handler(exc, context):
         if isinstance(exc.detail, (list, dict)):
             data = exc.detail
         else:
-            data = {'detail': exc.detail}
+            data = {'detail': exc.detail, 'code': exc.detail.code}
 
         set_rollback()
         return Response(data, status=exc.status_code, headers=headers)
