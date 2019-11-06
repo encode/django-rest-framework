@@ -101,10 +101,8 @@ class APIException(Exception):
     default_code = 'error'
 
     def __init__(self, detail=None, code=None):
-        if detail is None:
-            detail = self.default_detail
-        if code is None:
-            code = self.default_code
+        detail = detail or self.default_detail
+        code = code or self.default_code
 
         self.detail = _get_error_details(detail, code)
 
@@ -141,10 +139,8 @@ class ValidationError(APIException):
     default_code = 'invalid'
 
     def __init__(self, detail=None, code=None):
-        if detail is None:
-            detail = self.default_detail
-        if code is None:
-            code = self.default_code
+        detail = detail or self.default_detail
+        code = code or self.default_code
 
         # For validation failures, we may collect many errors together,
         # so the details should always be coerced to a list if not already.
