@@ -268,9 +268,13 @@ class AutoSchema(ViewInspector):
                 'items': {},
             }
             if not isinstance(field.child, _UnvalidatedField):
-                mapping['items'] = {
-                    "type": self._map_field(field.child).get('type')
+                map_field = self._map_field(field.child)
+                items = {
+                    "type": map_field.get('type')
                 }
+                if 'format' in map_field:
+                    items['format'] = map_field.get('format')
+                mapping['items'] = items
             return mapping
 
         # DateField and DateTimeField type is string
@@ -340,6 +344,9 @@ class AutoSchema(ViewInspector):
                 'type': 'integer'
             }
             self._map_min_max(field, content)
+            # 2147483647 is max for int32_size, so we use int64 for format
+            if int(content.get('maximum', 0)) > 2147483647 or int(content.get('minimum', 0)) > 2147483647:
+                content['format'] = 'int64'
             return content
 
         if isinstance(field, serializers.FileField):

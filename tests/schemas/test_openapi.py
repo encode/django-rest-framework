@@ -50,6 +50,10 @@ class TestFieldMapping(TestCase):
             (serializers.ListField(child=serializers.BooleanField()), {'items': {'type': 'boolean'}, 'type': 'array'}),
             (serializers.ListField(child=serializers.FloatField()), {'items': {'type': 'number'}, 'type': 'array'}),
             (serializers.ListField(child=serializers.CharField()), {'items': {'type': 'string'}, 'type': 'array'}),
+            (serializers.ListField(child=serializers.IntegerField(max_value=4294967295)),
+             {'items': {'type': 'integer', 'format': 'int64'}, 'type': 'array'}),
+            (serializers.IntegerField(min_value=2147483648),
+             {'type': 'integer', 'minimum': 2147483648, 'format': 'int64'}),
         ]
         for field, mapping in cases:
             with self.subTest(field=field):
