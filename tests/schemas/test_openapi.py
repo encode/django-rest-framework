@@ -5,6 +5,8 @@ from django.utils.translation import gettext_lazy as _
 
 from rest_framework import filters, generics, pagination, routers, serializers
 from rest_framework.compat import uritemplate
+from rest_framework.parsers import JSONParser, MultiPartParser
+from rest_framework.renderers import JSONRenderer
 from rest_framework.request import Request
 from rest_framework.schemas.openapi import AutoSchema, SchemaGenerator
 
@@ -48,6 +50,10 @@ class TestFieldMapping(TestCase):
             (serializers.ListField(child=serializers.BooleanField()), {'items': {'type': 'boolean'}, 'type': 'array'}),
             (serializers.ListField(child=serializers.FloatField()), {'items': {'type': 'number'}, 'type': 'array'}),
             (serializers.ListField(child=serializers.CharField()), {'items': {'type': 'string'}, 'type': 'array'}),
+            (serializers.ListField(child=serializers.IntegerField(max_value=4294967295)),
+             {'items': {'type': 'integer', 'format': 'int64'}, 'type': 'array'}),
+            (serializers.IntegerField(min_value=2147483648),
+             {'type': 'integer', 'minimum': 2147483648, 'format': 'int64'}),
         ]
         for field, mapping in cases:
             with self.subTest(field=field):
@@ -71,7 +77,7 @@ class TestOperationIntrospection(TestCase):
         method = 'GET'
 
         view = create_view(
-            views.ExampleListView,
+            views.DocStringExampleListView,
             method,
             create_request(path)
         )
@@ -80,7 +86,8 @@ class TestOperationIntrospection(TestCase):
 
         operation = inspector.get_operation(path, method)
         assert operation == {
-            'operationId': 'listExamples',
+            'operationId': 'listDocStringExamples',
+            'description': 'A description of my GET operation.',
             'parameters': [],
             'responses': {
                 '200': {
@@ -102,23 +109,38 @@ class TestOperationIntrospection(TestCase):
         method = 'GET'
 
         view = create_view(
-            views.ExampleDetailView,
+            views.DocStringExampleDetailView,
             method,
             create_request(path)
         )
         inspector = AutoSchema()
         inspector.view = view
 
-        parameters = inspector._get_path_parameters(path, method)
-        assert parameters == [{
-            'description': '',
-            'in': 'path',
-            'name': 'id',
-            'required': True,
-            'schema': {
-                'type': 'string',
+        operation = inspector.get_operation(path, method)
+        assert operation == {
+            'operationId': 'RetrieveDocStringExampleDetail',
+            'description': 'A description of my GET operation.',
+            'parameters': [{
+                'description': '',
+                'in': 'path',
+                'name': 'id',
+                'required': True,
+                'schema': {
+                    'type': 'string',
+                },
+            }],
+            'responses': {
+                '200': {
+                    'description': '',
+                    'content': {
+                        'application/json': {
+                            'schema': {
+                            },
+                        },
+                    },
+                },
             },
-        }]
+        }
 
     def test_request_body(self):
         path = '/'
@@ -363,6 +385,77 @@ class TestOperationIntrospection(TestCase):
                 'description': '',
             },
         }
+
+    def test_parser_mapping(self):
+        """Test that view's parsers are mapped to OA media types"""
+        path = '/{id}/'
+        method = 'POST'
+
+        class View(generics.CreateAPIView):
+            serializer_class = views.ExampleSerializer
+            parser_classes = [JSONParser, MultiPartParser]
+
+        view = create_view(
+            View,
+            method,
+            create_request(path),
+        )
+        inspector = AutoSchema()
+        inspector.view = view
+
+        request_body = inspector._get_request_body(path, method)
+
+        assert len(request_body['content'].keys()) == 2
+        assert 'multipart/form-data' in request_body['content']
+        assert 'application/json' in request_body['content']
+
+    def test_renderer_mapping(self):
+        """Test that view's renderers are mapped to OA media types"""
+        path = '/{id}/'
+        method = 'GET'
+
+        class View(generics.CreateAPIView):
+            serializer_class = views.ExampleSerializer
+            renderer_classes = [JSONRenderer]
+
+        view = create_view(
+            View,
+            method,
+            create_request(path),
+        )
+        inspector = AutoSchema()
+        inspector.view = view
+
+        responses = inspector._get_responses(path, method)
+        # TODO this should be changed once the multiple response
+        # schema support is there
+        success_response = responses['200']
+
+        assert len(success_response['content'].keys()) == 1
+        assert 'application/json' in success_response['content']
+
+    def test_serializer_filefield(self):
+        path = '/{id}/'
+        method = 'POST'
+
+        class ItemSerializer(serializers.Serializer):
+            attachment = serializers.FileField()
+
+        class View(generics.CreateAPIView):
+            serializer_class = ItemSerializer
+
+        view = create_view(
+            View,
+            method,
+            create_request(path),
+        )
+        inspector = AutoSchema()
+        inspector.view = view
+
+        request_body = inspector._get_request_body(path, method)
+        mp_media = request_body['content']['multipart/form-data']
+        attachment = mp_media['schema']['properties']['attachment']
+        assert attachment['format'] == 'binary'
 
     def test_retrieve_response_body_generation(self):
         """
@@ -611,3 +704,16 @@ class TestGenerator(TestCase):
         assert schema['info']['title'] == 'My title'
         assert schema['info']['version'] == '1.2.3'
         assert schema['info']['description'] == 'My description'
+
+    def test_schema_information_empty(self):
+        """Construction of the top level dictionary."""
+        patterns = [
+            url(r'^example/?$', views.ExampleListView.as_view()),
+        ]
+        generator = SchemaGenerator(patterns=patterns)
+
+        request = create_request('/')
+        schema = generator.get_schema(request=request)
+
+        assert schema['info']['title'] == ''
+        assert schema['info']['version'] == ''

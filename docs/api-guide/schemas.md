@@ -73,7 +73,7 @@ The `get_schema_view()` helper takes the following keyword arguments:
 
 * `title`: May be used to provide a descriptive title for the schema definition.
 * `description`: Longer descriptive text.
-* `version`: The version of the API. Defaults to `0.1.0`.
+* `version`: The version of the API.
 * `url`: May be used to pass a canonical base URL for the schema.
 
         schema_view = get_schema_view(
