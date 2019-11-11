@@ -3,19 +3,14 @@ from django.utils import translation
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework.exceptions import (
-<<<<<<< HEAD
-    ErrorDetail, Throttled, _get_error_details, ValidationError
-=======
     APIException, ErrorDetail, Throttled, _get_error_details, bad_request,
-    server_error
->>>>>>> 0d6589cf45940bb67ace74a06b2c5b053f1c31ef
+    server_error, ValidationError
 )
 
 
 class ExceptionTestCase(TestCase):
 
     def test_get_error_details(self):
-
         example = "string"
         lazy_example = _(example)
 
@@ -79,9 +74,9 @@ class ErrorDetailTests(TestCase):
 
     def test_repr(self):
         assert repr(ErrorDetail('msg1')) == \
-            'ErrorDetail(string={!r}, code=None)'.format('msg1')
+               'ErrorDetail(string={!r}, code=None)'.format('msg1')
         assert repr(ErrorDetail('msg1', 'code')) == \
-            'ErrorDetail(string={!r}, code={!r})'.format('msg1', 'code')
+               'ErrorDetail(string={!r}, code={!r})'.format('msg1', 'code')
 
     def test_str(self):
         assert str(ErrorDetail('msg1')) == 'msg1'
