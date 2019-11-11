@@ -184,6 +184,54 @@ class NotFound(APIException):
     default_code = 'not_found'
 
 
+class PreconditionFailed(APIException):
+    status_code = status.HTTP_412_PRECONDITION_FAILED
+    default_detail = _('Precondition Failed.')
+    default_code = 'precondition_failed'
+
+
+class Conflict(APIException):
+    status_code = status.HTTP_409_CONFLICT
+    default_detail = _('conflict with resource.')
+    default_code = 'conflict'
+
+
+class ProxyAuthenticationRequired(APIException):
+    status_code = status.HTTP_407_PROXY_AUTHENTICATION_REQUIRED
+    default_detail = _('proxy authentication required')
+    default_code = 'proxy_authentication_required'
+
+
+class Gone(APIException):
+    status_code = status.HTTP_410_GONE
+    default_detail = _('this resource is no longer available.')
+    default_code = 'gone'
+
+
+class UpgradeRequired(APIException):
+    status_code = status.HTTP_426_UPGRADE_REQUIRED
+    default_detail = _('Upgrade Required.')
+    default_code = 'upgrade_required'
+
+
+class PreconditionRequired(APIException):
+    status_code = status.HTTP_428_PRECONDITION_REQUIRED
+    default_detail = _('Precondition Required.')
+    default_code = 'precondition_required'
+
+
+class RequestHeaderFieldTooLarge(APIException):
+    status_code = status.HTTP_431_REQUEST_HEADER_FIELDS_TOO_LARGE
+    default_detail = _('Request Header Field Too Large.')
+    default_code = 'request_header_field_too_large'
+
+
+class UnavailableForLegalReason(APIException):
+    status_code = status.HTTP_431_REQUEST_HEADER_FIELDS_TOO_LARGE
+    default_detail = _('Access Is Denied for legal reasons.')
+    default_code = 'request_header_field_too_large'
+
+
 class MethodNotAllowed(APIException):
     status_code = status.HTTP_405_METHOD_NOT_ALLOWED
     default_detail = _('Method "{method}" not allowed.')
