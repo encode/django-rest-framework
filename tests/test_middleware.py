@@ -22,7 +22,7 @@ urlpatterns = [
 ]
 
 
-class RequestUserMiddleware(object):
+class RequestUserMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
 
@@ -34,7 +34,7 @@ class RequestUserMiddleware(object):
         return response
 
 
-class RequestPOSTMiddleware(object):
+class RequestPOSTMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
 

@@ -1,4 +1,7 @@
-source: versioning.py
+---
+source:
+    - versioning.py
+---
 
 # Versioning
 
@@ -37,7 +40,7 @@ The `reverse` function included by REST framework ties in with the versioning sc
 
 The above function will apply any URL transformations appropriate to the request version. For example:
 
-* If `NamespacedVersioning` was being used, and the API version was 'v1', then the URL lookup used would be `'v1:bookings-list'`, which might resolve to a URL like `http://example.org/v1/bookings/`.
+* If `NamespaceVersioning` was being used, and the API version was 'v1', then the URL lookup used would be `'v1:bookings-list'`, which might resolve to a URL like `http://example.org/v1/bookings/`.
 * If `QueryParameterVersioning` was being used, and the API version was `1.0`, then the returned URL might be something like `http://example.org/bookings/?version=1.0`
 
 #### Versioned APIs and hyperlinked serializers
@@ -129,12 +132,12 @@ This scheme requires the client to specify the version as part of the URL path.
 Your URL conf must include a pattern that matches the version with a `'version'` keyword argument, so that this information is available to the versioning scheme.
 
     urlpatterns = [
-        url(
+        re_path(
             r'^(?P<version>(v1|v2))/bookings/$',
             bookings_list,
             name='bookings-list'
         ),
-        url(
+        re_path(
             r'^(?P<version>(v1|v2))/bookings/(?P<pk>[0-9]+)/$',
             bookings_detail,
             name='bookings-detail'
@@ -155,14 +158,14 @@ In the following example we're giving a set of views two different possible URL 
 
     # bookings/urls.py
     urlpatterns = [
-        url(r'^$', bookings_list, name='bookings-list'),
-        url(r'^(?P<pk>[0-9]+)/$', bookings_detail, name='bookings-detail')
+        re_path(r'^$', bookings_list, name='bookings-list'),
+        re_path(r'^(?P<pk>[0-9]+)/$', bookings_detail, name='bookings-detail')
     ]
 
     # urls.py
     urlpatterns = [
-        url(r'^v1/bookings/', include('bookings.urls', namespace='v1')),
-        url(r'^v2/bookings/', include('bookings.urls', namespace='v2'))
+        re_path(r'^v1/bookings/', include('bookings.urls', namespace='v1')),
+        re_path(r'^v2/bookings/', include('bookings.urls', namespace='v2'))
     ]
 
 Both `URLPathVersioning` and `NamespaceVersioning` are reasonable if you just need a simple versioning scheme. The `URLPathVersioning` approach might be better suitable for small ad-hoc projects, and the `NamespaceVersioning` is probably easier to manage for larger projects.
@@ -183,7 +186,7 @@ By default this implementation expects the hostname to match this simple regular
 
 Note that the first group is enclosed in brackets, indicating that this is the matched portion of the hostname.
 
-The `HostNameVersioning` scheme can be awkward to use in debug mode as you will typically be accessing a raw IP address such as `127.0.0.1`. There are various online services which you to [access localhost with a custom subdomain][lvh] which you may find helpful in this case.
+The `HostNameVersioning` scheme can be awkward to use in debug mode as you will typically be accessing a raw IP address such as `127.0.0.1`. There are various online tutorials on how to [access localhost with a custom subdomain][lvh] which you may find helpful in this case.
 
 Hostname based versioning can be particularly useful if you have requirements to route incoming requests to different servers based on the version, as you can configure different DNS records for different API versions.
 
@@ -211,10 +214,10 @@ The following example uses a custom `X-API-Version` header to determine the requ
 
 If your versioning scheme is based on the request URL, you will also want to alter how versioned URLs are determined. In order to do so you should override the `.reverse()` method on the class. See the source code for examples.
 
-[cite]: http://www.slideshare.net/evolve_conference/201308-fielding-evolve/31
-[roy-fielding-on-versioning]: http://www.infoq.com/articles/roy-fielding-on-versioning
+[cite]: https://www.slideshare.net/evolve_conference/201308-fielding-evolve/31
+[roy-fielding-on-versioning]: https://www.infoq.com/articles/roy-fielding-on-versioning
 [klabnik-guidelines]: http://blog.steveklabnik.com/posts/2011-07-03-nobody-understands-rest-or-http#i_want_my_api_to_be_versioned
 [heroku-guidelines]: https://github.com/interagent/http-api-design/blob/master/en/foundations/require-versioning-in-the-accepts-header.md
-[json-parameters]: http://tools.ietf.org/html/rfc4627#section-6
-[vendor-media-type]: http://en.wikipedia.org/wiki/Internet_media_type#Vendor_tree
+[json-parameters]: https://tools.ietf.org/html/rfc4627#section-6
+[vendor-media-type]: https://en.wikipedia.org/wiki/Internet_media_type#Vendor_tree
 [lvh]: https://reinteractive.net/posts/199-developing-and-testing-rails-applications-with-subdomains

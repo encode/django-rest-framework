@@ -1,6 +1,3 @@
-# encoding: utf-8
-from __future__ import unicode_literals
-
 from io import BytesIO
 
 from django.conf.urls import url
@@ -12,7 +9,7 @@ from rest_framework import fields, serializers
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.test import (
-    APIClient, APIRequestFactory, force_authenticate
+    APIClient, APIRequestFactory, URLPatternsTestCase, force_authenticate
 )
 
 
@@ -283,3 +280,30 @@ class TestAPIRequestFactory(TestCase):
             content_type='application/json',
         )
         assert request.META['CONTENT_TYPE'] == 'application/json'
+
+
+class TestUrlPatternTestCase(URLPatternsTestCase):
+    urlpatterns = [
+        url(r'^$', view),
+    ]
+
+    @classmethod
+    def setUpClass(cls):
+        assert urlpatterns is not cls.urlpatterns
+        super().setUpClass()
+        assert urlpatterns is cls.urlpatterns
+
+    @classmethod
+    def tearDownClass(cls):
+        assert urlpatterns is cls.urlpatterns
+        super().tearDownClass()
+        assert urlpatterns is not cls.urlpatterns
+
+    def test_urlpatterns(self):
+        assert self.client.get('/').status_code == 200
+
+
+class TestExistingPatterns(TestCase):
+    def test_urlpatterns(self):
+        # sanity test to ensure that this test module does not have a '/' route
+        assert self.client.get('/').status_code == 404

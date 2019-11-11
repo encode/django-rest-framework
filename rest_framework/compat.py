@@ -2,18 +2,9 @@
 The `compat` module provides support for backwards compatibility with older
 versions of Django/Python, and compatibility wrappers around optional packages.
 """
+import sys
 
-from __future__ import unicode_literals
-
-import inspect
-
-import django
-from django.apps import apps
 from django.conf import settings
-from django.core import validators
-from django.core.exceptions import ImproperlyConfigured
-from django.db import models
-from django.utils import six
 from django.views.generic import View
 
 try:
@@ -28,14 +19,46 @@ except ImportError:
         RegexURLResolver as URLResolver,
     )
 
+try:
+    from django.core.validators import ProhibitNullCharactersValidator  # noqa
+except ImportError:
+    ProhibitNullCharactersValidator = None
+
+
+def get_original_route(urlpattern):
+    """
+    Get the original route/regex that was typed in by the user into the path(), re_path() or url() directive. This
+    is in contrast with get_regex_pattern below, which for RoutePattern returns the raw regex generated from the path().
+    """
+    if hasattr(urlpattern, 'pattern'):
+        # Django 2.0
+        return str(urlpattern.pattern)
+    else:
+        # Django < 2.0
+        return urlpattern.regex.pattern
+
 
 def get_regex_pattern(urlpattern):
+    """
+    Get the raw regex out of the urlpattern's RegexPattern or RoutePattern. This is always a regular expression,
+    unlike get_original_route above.
+    """
     if hasattr(urlpattern, 'pattern'):
         # Django 2.0
         return urlpattern.pattern.regex.pattern
     else:
         # Django < 2.0
         return urlpattern.regex.pattern
+
+
+def is_route_pattern(urlpattern):
+    if hasattr(urlpattern, 'pattern'):
+        # Django 2.0
+        from django.urls.resolvers import RoutePattern
+        return isinstance(urlpattern.pattern, RoutePattern)
+    else:
+        # Django < 2.0
+        return False
 
 
 def make_url_resolver(regex, urlpatterns):
@@ -49,26 +72,9 @@ def make_url_resolver(regex, urlpatterns):
         return URLResolver(regex, urlpatterns)
 
 
-def unicode_repr(instance):
-    # Get the repr of an instance, but ensure it is a unicode string
-    # on both python 3 (already the case) and 2 (not the case).
-    if six.PY2:
-        return repr(instance).decode('utf-8')
-    return repr(instance)
-
-
-def unicode_to_repr(value):
-    # Coerce a unicode string to the correct repr return type, depending on
-    # the Python version. We wrap all our `__repr__` implementations with
-    # this and then use unicode throughout internally.
-    if six.PY2:
-        return value.encode('utf-8')
-    return value
-
-
 def unicode_http_header(value):
     # Coerce HTTP header value to unicode.
-    if isinstance(value, six.binary_type):
+    if isinstance(value, bytes):
         return value.decode('iso-8859-1')
     return value
 
@@ -80,30 +86,6 @@ def distinct(queryset, base):
     return queryset.distinct()
 
 
-def _resolve_model(obj):
-    """
-    Resolve supplied `obj` to a Django model class.
-
-    `obj` must be a Django model class itself, or a string
-    representation of one.  Useful in situations like GH #1225 where
-    Django may not have resolved a string-based reference to a model in
-    another model's foreign key definition.
-
-    String representations should have the format:
-        'appname.ModelName'
-    """
-    if isinstance(obj, six.string_types) and len(obj.split('.')) == 2:
-        app_name, model_name = obj.split('.')
-        resolved_model = apps.get_model(app_name, model_name)
-        if resolved_model is None:
-            msg = "Django did not return a model for {0}.{1}"
-            raise ImproperlyConfigured(msg.format(app_name, model_name))
-        return resolved_model
-    elif inspect.isclass(obj) and issubclass(obj, models.Model):
-        return obj
-    raise ValueError("{0} is not a Django model".format(obj))
-
-
 # django.contrib.postgres requires psycopg2
 try:
     from django.contrib.postgres import fields as postgres_fields
@@ -111,13 +93,16 @@ except ImportError:
     postgres_fields = None
 
 
-# coreapi is optional (Note that uritemplate is a dependency of coreapi)
+# coreapi is required for CoreAPI schema generation
 try:
     import coreapi
-    import uritemplate
-except (ImportError, SyntaxError):
-    # SyntaxError is possible under python 3.2
+except ImportError:
     coreapi = None
+
+# uritemplate is required for OpenAPI and CoreAPI schema generation
+try:
+    import uritemplate
+except ImportError:
     uritemplate = None
 
 
@@ -128,11 +113,11 @@ except ImportError:
     coreschema = None
 
 
-# django-crispy-forms is optional
+# pyyaml is optional
 try:
-    import crispy_forms
+    import yaml
 except ImportError:
-    crispy_forms = None
+    yaml = None
 
 
 # requests is optional
@@ -142,34 +127,17 @@ except ImportError:
     requests = None
 
 
-# Django-guardian is optional. Import only if guardian is in INSTALLED_APPS
-# Fixes (#1712). We keep the try/except for the test suite.
-guardian = None
-try:
-    if 'guardian' in settings.INSTALLED_APPS:
-        import guardian  # noqa
-except ImportError:
-    pass
-
-
 # PATCH method is not implemented by Django
 if 'patch' not in View.http_method_names:
     View.http_method_names = View.http_method_names + ['patch']
 
 
-# Markdown is optional
+# Markdown is optional (version 3.0+ required)
 try:
     import markdown
 
-    if markdown.version <= '2.2':
-        HEADERID_EXT_PATH = 'headerid'
-        LEVEL_PARAM = 'level'
-    elif markdown.version < '2.6':
-        HEADERID_EXT_PATH = 'markdown.extensions.headerid'
-        LEVEL_PARAM = 'level'
-    else:
-        HEADERID_EXT_PATH = 'markdown.extensions.toc'
-        LEVEL_PARAM = 'baselevel'
+    HEADERID_EXT_PATH = 'markdown.extensions.toc'
+    LEVEL_PARAM = 'baselevel'
 
     def apply_markdown(text):
         """
@@ -242,64 +210,29 @@ if markdown is not None and pygments is not None:
             return ret.split("\n")
 
     def md_filter_add_syntax_highlight(md):
-        md.preprocessors.add('highlight', CodeBlockPreprocessor(), "_begin")
+        md.preprocessors.register(CodeBlockPreprocessor(), 'highlight', 40)
         return True
 else:
     def md_filter_add_syntax_highlight(md):
         return False
 
-# pytz is required from Django 1.11. Remove when dropping Django 1.10 support.
+
+# Django 1.x url routing syntax. Remove when dropping Django 1.11 support.
 try:
-    import pytz  # noqa
-    from pytz.exceptions import InvalidTimeError
+    from django.urls import include, path, re_path, register_converter  # noqa
 except ImportError:
-    InvalidTimeError = Exception
+    from django.conf.urls import include, url # noqa
+    path = None
+    register_converter = None
+    re_path = url
 
 
 # `separators` argument to `json.dumps()` differs between 2.x and 3.x
-# See: http://bugs.python.org/issue22767
-if six.PY3:
-    SHORT_SEPARATORS = (',', ':')
-    LONG_SEPARATORS = (', ', ': ')
-    INDENT_SEPARATORS = (',', ': ')
-else:
-    SHORT_SEPARATORS = (b',', b':')
-    LONG_SEPARATORS = (b', ', b': ')
-    INDENT_SEPARATORS = (b',', b': ')
+# See: https://bugs.python.org/issue22767
+SHORT_SEPARATORS = (',', ':')
+LONG_SEPARATORS = (', ', ': ')
+INDENT_SEPARATORS = (',', ': ')
 
 
-class CustomValidatorMessage(object):
-    """
-    We need to avoid evaluation of `lazy` translated `message` in `django.core.validators.BaseValidator.__init__`.
-    https://github.com/django/django/blob/75ed5900321d170debef4ac452b8b3cf8a1c2384/django/core/validators.py#L297
-
-    Ref: https://github.com/encode/django-rest-framework/pull/5452
-    """
-
-    def __init__(self, *args, **kwargs):
-        self.message = kwargs.pop('message', self.message)
-        super(CustomValidatorMessage, self).__init__(*args, **kwargs)
-
-
-class MinValueValidator(CustomValidatorMessage, validators.MinValueValidator):
-    pass
-
-
-class MaxValueValidator(CustomValidatorMessage, validators.MaxValueValidator):
-    pass
-
-
-class MinLengthValidator(CustomValidatorMessage, validators.MinLengthValidator):
-    pass
-
-
-class MaxLengthValidator(CustomValidatorMessage, validators.MaxLengthValidator):
-    pass
-
-
-def authenticate(request=None, **credentials):
-    from django.contrib.auth import authenticate
-    if django.VERSION < (1, 11):
-        return authenticate(**credentials)
-    else:
-        return authenticate(request=request, **credentials)
+# Version Constants.
+PY36 = sys.version_info >= (3, 6)

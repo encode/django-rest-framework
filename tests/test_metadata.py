@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import pytest
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
@@ -84,6 +82,7 @@ class TestMetadata:
                 )
             )
             nested_field = NestedField()
+            uuid_field = serializers.UUIDField(label="UUID field")
 
         class ExampleView(views.APIView):
             """Example view."""
@@ -172,7 +171,13 @@ class TestMetadata:
                                 'label': 'B'
                             }
                         }
-                    }
+                    },
+                    'uuid_field': {
+                        "type": "string",
+                        "required": True,
+                        "read_only": False,
+                        "label": "UUID field",
+                    },
                 }
             }
         }
@@ -207,7 +212,7 @@ class TestMetadata:
         view = ExampleView.as_view()
         response = view(request=request)
         assert response.status_code == status.HTTP_200_OK
-        assert list(response.data['actions'].keys()) == ['PUT']
+        assert list(response.data['actions']) == ['PUT']
 
     def test_object_permissions(self):
         """
@@ -267,6 +272,27 @@ class TestMetadata:
         scheme = versioning.QueryParameterVersioning
         view = ExampleView.as_view(versioning_class=scheme)
         view(request=request)
+
+    def test_dont_show_hidden_fields(self):
+        """
+        HiddenField shouldn't show up in SimpleMetadata at all.
+        """
+        class ExampleSerializer(serializers.Serializer):
+            integer_field = serializers.IntegerField(max_value=10)
+            hidden_field = serializers.HiddenField(default=1)
+
+        class ExampleView(views.APIView):
+            """Example view."""
+            def post(self, request):
+                pass
+
+            def get_serializer(self):
+                return ExampleSerializer()
+
+        view = ExampleView.as_view()
+        response = view(request=request)
+        assert response.status_code == status.HTTP_200_OK
+        assert set(response.data['actions']['POST'].keys()) == {'integer_field'}
 
     def test_list_serializer_metadata_returns_info_about_fields_of_child_serializer(self):
         class ExampleSerializer(serializers.Serializer):

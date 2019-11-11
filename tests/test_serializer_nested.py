@@ -1,6 +1,11 @@
+import pytest
+from django.db import models
 from django.http import QueryDict
+from django.test import TestCase
 
 from rest_framework import serializers
+from rest_framework.compat import postgres_fields
+from rest_framework.serializers import raise_errors_on_nested_writes
 
 
 class TestNestedSerializer:
@@ -202,3 +207,147 @@ class TestNestedSerializerWithList:
 
         assert serializer.is_valid()
         assert serializer.validated_data['nested']['example'] == {1, 2}
+
+
+class TestNotRequiredNestedSerializerWithMany:
+    def setup(self):
+        class NestedSerializer(serializers.Serializer):
+            one = serializers.IntegerField(max_value=10)
+
+        class TestSerializer(serializers.Serializer):
+            nested = NestedSerializer(required=False, many=True)
+
+        self.Serializer = TestSerializer
+
+    def test_json_validate(self):
+        input_data = {}
+        serializer = self.Serializer(data=input_data)
+
+        # request is empty, therefor 'nested' should not be in serializer.data
+        assert serializer.is_valid()
+        assert 'nested' not in serializer.validated_data
+
+        input_data = {'nested': [{'one': '1'}, {'one': 2}]}
+        serializer = self.Serializer(data=input_data)
+        assert serializer.is_valid()
+        assert 'nested' in serializer.validated_data
+
+    def test_multipart_validate(self):
+        # leave querydict empty
+        input_data = QueryDict('')
+        serializer = self.Serializer(data=input_data)
+
+        # the querydict is empty, therefor 'nested' should not be in serializer.data
+        assert serializer.is_valid()
+        assert 'nested' not in serializer.validated_data
+
+        input_data = QueryDict('nested[0]one=1&nested[1]one=2')
+
+        serializer = self.Serializer(data=input_data)
+        assert serializer.is_valid()
+        assert 'nested' in serializer.validated_data
+
+
+class NestedWriteProfile(models.Model):
+    address = models.CharField(max_length=100)
+
+
+class NestedWritePerson(models.Model):
+    profile = models.ForeignKey(NestedWriteProfile, on_delete=models.CASCADE)
+
+
+class TestNestedWriteErrors(TestCase):
+    # tests for rests_framework.serializers.raise_errors_on_nested_writes
+    def test_nested_serializer_error(self):
+        class ProfileSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = NestedWriteProfile
+                fields = ['address']
+
+        class NestedProfileSerializer(serializers.ModelSerializer):
+            profile = ProfileSerializer()
+
+            class Meta:
+                model = NestedWritePerson
+                fields = ['profile']
+
+        serializer = NestedProfileSerializer(data={'profile': {'address': '52 festive road'}})
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'profile': {'address': '52 festive road'}}
+        with pytest.raises(AssertionError) as exc_info:
+            serializer.save()
+
+        assert str(exc_info.value) == (
+            'The `.create()` method does not support writable nested fields by '
+            'default.\nWrite an explicit `.create()` method for serializer '
+            '`tests.test_serializer_nested.NestedProfileSerializer`, or set '
+            '`read_only=True` on nested serializer fields.'
+        )
+
+    def test_dotted_source_field_error(self):
+        class DottedAddressSerializer(serializers.ModelSerializer):
+            address = serializers.CharField(source='profile.address')
+
+            class Meta:
+                model = NestedWritePerson
+                fields = ['address']
+
+        serializer = DottedAddressSerializer(data={'address': '52 festive road'})
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'profile': {'address': '52 festive road'}}
+        with pytest.raises(AssertionError) as exc_info:
+            serializer.save()
+
+        assert str(exc_info.value) == (
+            'The `.create()` method does not support writable dotted-source '
+            'fields by default.\nWrite an explicit `.create()` method for '
+            'serializer `tests.test_serializer_nested.DottedAddressSerializer`, '
+            'or set `read_only=True` on dotted-source serializer fields.'
+        )
+
+
+if postgres_fields:
+    class NonRelationalPersonModel(models.Model):
+        """Model declaring a postgres JSONField"""
+        data = postgres_fields.JSONField()
+
+
+@pytest.mark.skipif(not postgres_fields, reason='psycopg2 is not installed')
+class TestNestedNonRelationalFieldWrite:
+    """
+    Test that raise_errors_on_nested_writes does not raise `AssertionError` when the
+    model field is not a relation.
+    """
+
+    def test_nested_serializer_create_and_update(self):
+
+        class NonRelationalPersonDataSerializer(serializers.Serializer):
+            occupation = serializers.CharField()
+
+        class NonRelationalPersonSerializer(serializers.ModelSerializer):
+            data = NonRelationalPersonDataSerializer()
+
+            class Meta:
+                model = NonRelationalPersonModel
+                fields = ['data']
+
+        serializer = NonRelationalPersonSerializer(data={'data': {'occupation': 'developer'}})
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'data': {'occupation': 'developer'}}
+        raise_errors_on_nested_writes('create', serializer, serializer.validated_data)
+        raise_errors_on_nested_writes('update', serializer, serializer.validated_data)
+
+    def test_dotted_source_field_create_and_update(self):
+
+        class DottedNonRelationalPersonSerializer(serializers.ModelSerializer):
+            occupation = serializers.CharField(source='data.occupation')
+
+            class Meta:
+                model = NonRelationalPersonModel
+                fields = ['occupation']
+
+        serializer = DottedNonRelationalPersonSerializer(data={'occupation': 'developer'})
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'data': {'occupation': 'developer'}}
+        raise_errors_on_nested_writes('create', serializer, serializer.validated_data)
+        raise_errors_on_nested_writes('update', serializer, serializer.validated_data)

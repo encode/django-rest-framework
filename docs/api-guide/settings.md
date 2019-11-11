@@ -1,4 +1,7 @@
-source: settings.py
+---
+source:
+    - settings.py
+---
 
 # Settings
 
@@ -11,12 +14,12 @@ Configuration for REST framework is all namespaced inside a single Django settin
 For example your project's `settings.py` file might include something like this:
 
     REST_FRAMEWORK = {
-        'DEFAULT_RENDERER_CLASSES': (
+        'DEFAULT_RENDERER_CLASSES': [
             'rest_framework.renderers.JSONRenderer',
-        ),
-        'DEFAULT_PARSER_CLASSES': (
+        ],
+        'DEFAULT_PARSER_CLASSES': [
             'rest_framework.parsers.JSONParser',
-        )
+        ]
     }
 
 ## Accessing settings
@@ -26,7 +29,7 @@ you should use the `api_settings` object.  For example.
 
     from rest_framework.settings import api_settings
 
-    print api_settings.DEFAULT_AUTHENTICATION_CLASSES
+    print(api_settings.DEFAULT_AUTHENTICATION_CLASSES)
 
 The `api_settings` object will check for any user-defined settings, and otherwise fall back to the default values.  Any setting that uses string import paths to refer to a class will automatically import and return the referenced class, instead of the string literal.
 
@@ -44,10 +47,10 @@ A list or tuple of renderer classes, that determines the default set of renderer
 
 Default:
 
-    (
+    [
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
-    )
+    ]
 
 #### DEFAULT_PARSER_CLASSES
 
@@ -55,11 +58,11 @@ A list or tuple of parser classes, that determines the default set of parsers us
 
 Default:
 
-    (
+    [
         'rest_framework.parsers.JSONParser',
         'rest_framework.parsers.FormParser',
         'rest_framework.parsers.MultiPartParser'
-    )
+    ]
 
 #### DEFAULT_AUTHENTICATION_CLASSES
 
@@ -67,10 +70,10 @@ A list or tuple of authentication classes, that determines the default set of au
 
 Default:
 
-    (
+    [
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication'
-    )
+    ]
 
 #### DEFAULT_PERMISSION_CLASSES
 
@@ -78,15 +81,15 @@ A list or tuple of permission classes, that determines the default set of permis
 
 Default:
 
-    (
+    [
         'rest_framework.permissions.AllowAny',
-    )
+    ]
 
 #### DEFAULT_THROTTLE_CLASSES
 
 A list or tuple of throttle classes, that determines the default set of throttles checked at the start of a view.
 
-Default: `()`
+Default: `[]`
 
 #### DEFAULT_CONTENT_NEGOTIATION_CLASS
 
@@ -94,64 +97,37 @@ A content negotiation class, that determines how a renderer is selected for the 
 
 Default: `'rest_framework.negotiation.DefaultContentNegotiation'`
 
+#### DEFAULT_SCHEMA_CLASS
+
+A view inspector class that will be used for schema generation.
+
+Default: `'rest_framework.schemas.openapi.AutoSchema'`
+
 ---
 
 ## Generic view settings
 
 *The following settings control the behavior of the generic class-based views.*
 
-#### DEFAULT_PAGINATION_SERIALIZER_CLASS
-
----
-
-**This setting has been removed.**
-
-The pagination API does not use serializers to determine the output format, and
-you'll need to instead override the `get_paginated_response method on a
-pagination class in order to specify how the output format is controlled.
-
----
-
 #### DEFAULT_FILTER_BACKENDS
 
 A list of filter backend classes that should be used for generic filtering.
 If set to `None` then generic filtering is disabled.
 
-#### PAGINATE_BY
+#### DEFAULT_PAGINATION_CLASS
 
----
+The default class to use for queryset pagination. If set to `None`, pagination
+is disabled by default. See the pagination documentation for further guidance on
+[setting](pagination.md#setting-the-pagination-style) and
+[modifying](pagination.md#modifying-the-pagination-style) the pagination style.
 
-**This setting has been removed.**
-
-See the pagination documentation for further guidance on [setting the pagination style](pagination.md#modifying-the-pagination-style).
-
----
+Default: `None`
 
 #### PAGE_SIZE
 
 The default page size to use for pagination.  If set to `None`, pagination is disabled by default.
 
 Default: `None`
-
-#### PAGINATE_BY_PARAM
-
----
-
-**This setting has been removed.**
-
-See the pagination documentation for further guidance on [setting the pagination style](pagination.md#modifying-the-pagination-style).
-
----
-
-#### MAX_PAGINATE_BY
-
----
-
-**This setting is pending deprecation.**
-
-See the pagination documentation for further guidance on [setting the pagination style](pagination.md#modifying-the-pagination-style).
-
----
 
 ### SEARCH_PARAM
 
@@ -196,6 +172,8 @@ Default: `'version'`
 #### UNAUTHENTICATED_USER
 
 The class that should be used to initialize `request.user` for unauthenticated requests.
+(If removing authentication entirely, e.g. by removing `django.contrib.auth` from
+`INSTALLED_APPS`, set `UNAUTHENTICATED_USER` to `None`.)
 
 Default: `django.contrib.auth.models.AnonymousUser`
 
@@ -227,10 +205,10 @@ The format of any of these renderer classes may be used when constructing a test
 
 Default:
 
-    (
+    [
         'rest_framework.renderers.MultiPartRenderer',
         'rest_framework.renderers.JSONRenderer'
-    )
+    ]
 
 ---
 
@@ -390,10 +368,15 @@ A string representing the function that should be used when generating view name
 
 This should be a function with the following signature:
 
-    view_name(cls, suffix=None)
+    view_name(self)
 
-* `cls`: The view class.  Typically the name function would inspect the name of the class when generating a descriptive name, by accessing `cls.__name__`.
-* `suffix`: The optional suffix used when differentiating individual views in a viewset.
+* `self`: The view instance.  Typically the name function would inspect the name of the class when generating a descriptive name, by accessing `self.__class__.__name__`.
+
+If the view instance inherits `ViewSet`, it may have been initialized with several optional arguments:
+
+* `name`: A name explicitly provided to a view in the viewset. Typically, this value should be used as-is when provided.
+* `suffix`: Text used when differentiating individual views in a viewset. This argument is mutually exclusive to `name`.
+* `detail`: Boolean that differentiates an individual view in a viewset as either being a 'list' or 'detail' view.
 
 Default: `'rest_framework.views.get_view_name'`
 
@@ -405,10 +388,14 @@ This setting can be changed to support markup styles other than the default mark
 
 This should be a function with the following signature:
 
-    view_description(cls, html=False)
+    view_description(self, html=False)
 
-* `cls`: The view class.  Typically the description function would inspect the docstring of the class when generating a description, by accessing `cls.__doc__`
+* `self`: The view instance.  Typically the description function would inspect the docstring of the class when generating a description, by accessing `self.__class__.__doc__`
 * `html`: A boolean indicating if HTML output is required.  `True` when used in the browsable API, and `False` when used in generating `OPTIONS` responses.
+
+If the view instance inherits `ViewSet`, it may have been initialized with several optional arguments:
+
+* `description`: A description explicitly provided to the view in the viewset. Typically, this is set by extra viewset `action`s, and should be used as-is.
 
 Default: `'rest_framework.views.get_view_description'`
 
@@ -465,6 +452,6 @@ An integer of 0 or more, that may be used to specify the number of application p
 Default: `None`
 
 [cite]: https://www.python.org/dev/peps/pep-0020/
-[rfc4627]: http://www.ietf.org/rfc/rfc4627.txt
+[rfc4627]: https://www.ietf.org/rfc/rfc4627.txt
 [heroku-minified-json]: https://github.com/interagent/http-api-design#keep-json-minified-in-all-responses
 [strftime]: https://docs.python.org/3/library/time.html#time.strftime

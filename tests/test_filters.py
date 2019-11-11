@@ -1,15 +1,15 @@
-from __future__ import unicode_literals
-
 import datetime
+from importlib import reload as reload_module
 
 import pytest
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
+from django.db.models.functions import Concat, Upper
 from django.test import TestCase
 from django.test.utils import override_settings
-from django.utils.six.moves import reload_module
 
 from rest_framework import filters, generics, serializers
+from rest_framework.compat import coreschema
 from rest_framework.test import APIRequestFactory
 
 factory = APIRequestFactory()
@@ -28,6 +28,7 @@ class BaseFilterTests(TestCase):
         with pytest.raises(NotImplementedError):
             self.filter_backend.filter_queryset(None, None, None)
 
+    @pytest.mark.skipif(not coreschema, reason='coreschema is not installed')
     def test_get_schema_fields_checks_for_coreapi(self):
         filters.coreapi = None
         with pytest.raises(AssertionError):
@@ -154,6 +155,40 @@ class SearchFilterTests(TestCase):
 
         reload_module(filters)
 
+    def test_search_with_filter_subclass(self):
+        class CustomSearchFilter(filters.SearchFilter):
+            # Filter that dynamically changes search fields
+            def get_search_fields(self, view, request):
+                if request.query_params.get('title_only'):
+                    return ('$title',)
+                return super().get_search_fields(view, request)
+
+        class SearchListView(generics.ListAPIView):
+            queryset = SearchFilterModel.objects.all()
+            serializer_class = SearchFilterSerializer
+            filter_backends = (CustomSearchFilter,)
+            search_fields = ('$title', '$text')
+
+        view = SearchListView.as_view()
+        request = factory.get('/', {'search': r'^\w{3}$'})
+        response = view(request)
+        assert len(response.data) == 10
+
+        request = factory.get('/', {'search': r'^\w{3}$', 'title_only': 'true'})
+        response = view(request)
+        assert response.data == [
+            {'id': 3, 'title': 'zzz', 'text': 'cde'}
+        ]
+
+    def test_search_field_with_null_characters(self):
+        view = generics.GenericAPIView()
+        request = factory.get('/?search=\0as%00d\x00f')
+        request = view.initialize_request(request)
+
+        terms = filters.SearchFilter().get_search_terms(request)
+
+        assert terms == ['asdf']
+
 
 class AttributeModel(models.Model):
     label = models.CharField(max_length=32)
@@ -219,7 +254,7 @@ class SearchFilterM2MTests(TestCase):
         # ...
         for idx in range(3):
             label = 'w' * (idx + 1)
-            AttributeModel(label=label)
+            AttributeModel.objects.create(label=label)
 
         for idx in range(10):
             title = 'z' * (idx + 1)
@@ -300,6 +335,38 @@ class SearchFilterToManyTests(TestCase):
         request = factory.get('/', {'search': 'Lennon,1979'})
         response = view(request)
         assert len(response.data) == 1
+
+
+class SearchFilterAnnotatedSerializer(serializers.ModelSerializer):
+    title_text = serializers.CharField()
+
+    class Meta:
+        model = SearchFilterModel
+        fields = ('title', 'text', 'title_text')
+
+
+class SearchFilterAnnotatedFieldTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        SearchFilterModel.objects.create(title='abc', text='def')
+        SearchFilterModel.objects.create(title='ghi', text='jkl')
+
+    def test_search_in_annotated_field(self):
+        class SearchListView(generics.ListAPIView):
+            queryset = SearchFilterModel.objects.annotate(
+                title_text=Upper(
+                    Concat(models.F('title'), models.F('text'))
+                )
+            ).all()
+            serializer_class = SearchFilterAnnotatedSerializer
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('title_text',)
+
+        view = SearchListView.as_view()
+        request = factory.get('/', {'search': 'ABCDEF'})
+        response = view(request)
+        assert len(response.data) == 1
+        assert response.data[0]['title_text'] == 'ABCDEF'
 
 
 class OrderingFilterModel(models.Model):

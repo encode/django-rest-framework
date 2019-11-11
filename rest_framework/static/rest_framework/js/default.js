@@ -41,7 +41,7 @@ $(document).ready(function() {
     $('.form-switcher a:first').tab('show');
   }
 
-  $(window).load(function() {
+  $(window).on('load', function() {
     $('#errorModal').modal('show');
   });
 });

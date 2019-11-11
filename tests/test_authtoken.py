@@ -1,9 +1,10 @@
+from io import StringIO
+
 import pytest
 from django.contrib.admin import site
 from django.contrib.auth.models import User
 from django.core.management import CommandError, call_command
 from django.test import TestCase
-from django.utils.six import StringIO
 
 from rest_framework.authtoken.admin import TokenAdmin
 from rest_framework.authtoken.management.commands.drf_create_token import \

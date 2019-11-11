@@ -160,9 +160,19 @@ body, .navbar .navbar-inner .container-fluid{
   margin: 0 auto;
 }
 
-body{
-  background: url("../img/grid.png") repeat-x;
-  background-attachment: fixed;
+/* Replacement for `body { background-attachment: fixed; }`, which
+   has performance issues when scrolling on large displays. */
+body::before {
+    content: ' ';
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: #f8f8f8;
+    background: url(../img/grid.png) repeat-x;
+    will-change: transform;
+    z-index: -1;
 }
 
 

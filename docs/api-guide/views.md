@@ -1,5 +1,8 @@
-source: decorators.py
-        views.py
+---
+source:
+    - decorators.py
+    - views.py
+---
 
 # Class-based Views
 
@@ -32,8 +35,8 @@ For example:
         * Requires token authentication.
         * Only admin users are able to access this view.
         """
-        authentication_classes = (authentication.TokenAuthentication,)
-        permission_classes = (permissions.IsAdminUser,)
+        authentication_classes = [authentication.TokenAuthentication]
+        permission_classes = [permissions.IsAdminUser]
 
         def get(self, request, format=None):
             """
@@ -41,6 +44,13 @@ For example:
             """
             usernames = [user.username for user in User.objects.all()]
             return Response(usernames)
+
+---
+
+**Note**: The full methods, attributes on, and relations between Django REST Framework's `APIView`, `GenericAPIView`, various `Mixins`, and `Viewsets` can be initially complex. In addition to the documentation here, the [Classy Django REST Framework][classy-drf] resource provides a browsable reference, with full methods and attributes, for each of Django REST Framework's class-based views.
+
+---
+
 
 ## API policy attributes
 
@@ -207,8 +217,10 @@ You may pass `None` in order to exclude the view from schema generation.
         return Response({"message": "Will not appear in schema!"})
 
 
-[cite]: http://reinout.vanrees.org/weblog/2011/08/24/class-based-views-usage.html
+[cite]: https://reinout.vanrees.org/weblog/2011/08/24/class-based-views-usage.html
 [cite2]: http://www.boredomandlaziness.org/2012/05/djangos-cbvs-are-not-mistake-but.html
 [settings]: settings.md
 [throttling]: throttling.md
 [schemas]: schemas.md
+[classy-drf]: http://www.cdrf.co
+

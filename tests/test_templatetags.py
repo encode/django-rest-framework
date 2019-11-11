@@ -1,8 +1,6 @@
-# encoding: utf-8
-from __future__ import unicode_literals
-
 import unittest
 
+from django.template import Context, Template
 from django.test import TestCase
 
 from rest_framework.compat import coreapi, coreschema
@@ -224,7 +222,7 @@ class TemplateTagTests(TestCase):
         assert result == ''
 
     def test_get_pagination_html(self):
-        class MockPager(object):
+        class MockPager:
             def __init__(self):
                 self.called = False
 
@@ -304,6 +302,25 @@ class URLizerTests(TestCase):
             '&quot;foo_set&quot;: [\n    &quot;<a href="http://api/foos/1/">http://api/foos/1/</a>&quot;\n], '
         self._urlize_dict_check(data)
 
+    def test_template_render_with_autoescape(self):
+        """
+        Test that HTML is correctly escaped in Browsable API views.
+        """
+        template = Template("{% load rest_framework %}{{ content|urlize_quoted_links }}")
+        rendered = template.render(Context({'content': '<script>alert()</script> http://example.com'}))
+        assert rendered == '&lt;script&gt;alert()&lt;/script&gt;' \
+                           ' <a href="http://example.com" rel="nofollow">http://example.com</a>'
+
+    def test_template_render_with_noautoescape(self):
+        """
+        Test if the autoescape value is getting passed to urlize_quoted_links filter.
+        """
+        template = Template("{% load rest_framework %}"
+                            "{% autoescape off %}{{ content|urlize_quoted_links }}"
+                            "{% endautoescape %}")
+        rendered = template.render(Context({'content': '<b> "http://example.com" </b>'}))
+        assert rendered == '<b> "<a href="http://example.com" rel="nofollow">http://example.com</a>" </b>'
+
 
 @unittest.skipUnless(coreapi, 'coreapi is not installed')
 class SchemaLinksTests(TestCase):
@@ -320,7 +337,7 @@ class SchemaLinksTests(TestCase):
         )
         section = schema['users']
         flat_links = schema_links(section)
-        assert len(flat_links) is 0
+        assert len(flat_links) == 0
 
     def test_single_action(self):
         schema = coreapi.Document(
@@ -338,7 +355,7 @@ class SchemaLinksTests(TestCase):
         )
         section = schema['users']
         flat_links = schema_links(section)
-        assert len(flat_links) is 1
+        assert len(flat_links) == 1
         assert 'list' in flat_links
 
     def test_default_actions(self):
@@ -376,7 +393,7 @@ class SchemaLinksTests(TestCase):
         )
         section = schema['users']
         flat_links = schema_links(section)
-        assert len(flat_links) is 4
+        assert len(flat_links) == 4
         assert 'list' in flat_links
         assert 'create' in flat_links
         assert 'read' in flat_links
@@ -424,7 +441,7 @@ class SchemaLinksTests(TestCase):
         )
         section = schema['users']
         flat_links = schema_links(section)
-        assert len(flat_links) is 5
+        assert len(flat_links) == 5
         assert 'list' in flat_links
         assert 'create' in flat_links
         assert 'read' in flat_links
@@ -482,7 +499,7 @@ class SchemaLinksTests(TestCase):
         )
         section = schema['users']
         flat_links = schema_links(section)
-        assert len(flat_links) is 6
+        assert len(flat_links) == 6
         assert 'list' in flat_links
         assert 'create' in flat_links
         assert 'read' in flat_links
@@ -523,7 +540,7 @@ class SchemaLinksTests(TestCase):
                             ]
                         ),
                         'create': coreapi.Link(
-                            url='/aniamls/cat',
+                            url='/animals/cat',
                             action='post',
                             fields=[]
                         )
@@ -533,7 +550,7 @@ class SchemaLinksTests(TestCase):
         )
         section = schema['animals']
         flat_links = schema_links(section)
-        assert len(flat_links) is 4
+        assert len(flat_links) == 4
         assert 'cat > create' in flat_links
         assert 'cat > list' in flat_links
         assert 'dog > read' in flat_links
@@ -572,7 +589,7 @@ class SchemaLinksTests(TestCase):
                             ]
                         ),
                         'create': coreapi.Link(
-                            url='/aniamls/cat',
+                            url='/animals/cat',
                             action='post',
                             fields=[]
                         )
@@ -602,7 +619,7 @@ class SchemaLinksTests(TestCase):
         )
         section = schema['animals']
         flat_links = schema_links(section)
-        assert len(flat_links) is 4
+        assert len(flat_links) == 4
         assert 'cat > create' in flat_links
         assert 'cat > list' in flat_links
         assert 'dog > read' in flat_links
@@ -610,6 +627,6 @@ class SchemaLinksTests(TestCase):
 
         section = schema['farmers']
         flat_links = schema_links(section)
-        assert len(flat_links) is 2
+        assert len(flat_links) == 2
         assert 'silo > list' in flat_links
         assert 'silo > soy > list' in flat_links

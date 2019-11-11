@@ -1,14 +1,8 @@
-# -- coding: utf-8 --
-
-from __future__ import unicode_literals
-
 from django.test import TestCase
-from django.utils.encoding import python_2_unicode_compatible
 
 from rest_framework.compat import apply_markdown
 from rest_framework.utils.formatting import dedent
 from rest_framework.views import APIView
-
 
 # We check that docstrings get nicely un-indented.
 DESCRIPTION = """an example docstring
@@ -86,6 +80,22 @@ class TestViewNamesAndDescriptions(TestCase):
             pass
         assert MockView().get_view_name() == 'Mock'
 
+    def test_view_name_uses_name_attribute(self):
+        class MockView(APIView):
+            name = 'Foo'
+        assert MockView().get_view_name() == 'Foo'
+
+    def test_view_name_uses_suffix_attribute(self):
+        class MockView(APIView):
+            suffix = 'List'
+        assert MockView().get_view_name() == 'Mock List'
+
+    def test_view_name_preferences_name_over_suffix(self):
+        class MockView(APIView):
+            name = 'Foo'
+            suffix = 'List'
+        assert MockView().get_view_name() == 'Foo'
+
     def test_view_description_uses_docstring(self):
         """Ensure view descriptions are based on the docstring."""
         class MockView(APIView):
@@ -113,6 +123,17 @@ class TestViewNamesAndDescriptions(TestCase):
 
         assert MockView().get_view_description() == DESCRIPTION
 
+    def test_view_description_uses_description_attribute(self):
+        class MockView(APIView):
+            description = 'Foo'
+        assert MockView().get_view_description() == 'Foo'
+
+    def test_view_description_allows_empty_description(self):
+        class MockView(APIView):
+            """Description."""
+            description = ''
+        assert MockView().get_view_description() == ''
+
     def test_view_description_can_be_empty(self):
         """
         Ensure that if a view has no docstring,
@@ -131,8 +152,8 @@ class TestViewNamesAndDescriptions(TestCase):
         """
         # use a mock object instead of gettext_lazy to ensure that we can't end
         # up with a test case string in our l10n catalog
-        @python_2_unicode_compatible
-        class MockLazyStr(object):
+
+        class MockLazyStr:
             def __init__(self, string):
                 self.s = string
 

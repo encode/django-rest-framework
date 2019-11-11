@@ -1,2 +1,2 @@
 # MkDocs to build our documentation.
-mkdocs==0.16.3
+mkdocs==1.0.4

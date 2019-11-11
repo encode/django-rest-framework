@@ -253,7 +253,7 @@ The `TokenAuthentication` class can be used to support REST framework's built-in
 `TokenAuthentication`, as well as OAuth and JWT schemes.
 
     auth = coreapi.auth.TokenAuthentication(
-        scheme='JWT'
+        scheme='JWT',
         token='<token>'
     )
     client = coreapi.Client(auth=auth)
@@ -269,8 +269,8 @@ For example, using the "Django REST framework JWT" package
     client = coreapi.Client()
     schema = client.get('https://api.example.org/')
 
-    action = ['api-token-auth', 'obtain-token']
-    params = {username: "example", email: "example@example.com"}
+    action = ['api-token-auth', 'create']
+    params = {"username": "example", "password": "secret"}
     result = client.action(schema, action, params)
 
     auth = coreapi.auth.TokenAuthentication(
@@ -395,7 +395,7 @@ Once the API documentation URLs are installed, you'll be able to include both th
         /static/rest_framework/js/coreapi-0.1.1.js
         /docs/schema.js
     -->
-    {% load staticfiles %}
+    {% load static %}
     <script src="{% static 'rest_framework/js/coreapi-0.1.1.js' %}"></script>
     <script src="{% url 'api-docs:schema-js' %}"></script>
 
@@ -521,7 +521,7 @@ You'll either want to include the API schema in your codebase directly, by copyi
     })
 
 [heroku-api]: https://devcenter.heroku.com/categories/platform-api
-[heroku-example]: http://www.coreapi.org/tools-and-resources/example-services/#heroku-json-hyper-schema
-[core-api]: http://www.coreapi.org/
+[heroku-example]: https://www.coreapi.org/tools-and-resources/example-services/#heroku-json-hyper-schema
+[core-api]: https://www.coreapi.org/
 [schema-generation]: ../api-guide/schemas.md
 [transport-adaptors]: http://docs.python-requests.org/en/master/user/advanced/#transport-adapters

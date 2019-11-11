@@ -1,41 +1,45 @@
 language: python
 cache: pip
-
-python:
-    - "2.7"
-    - "3.4"
-    - "3.5"
-
-sudo: false
-
-env:
-    - DJANGO=1.10
-    - DJANGO=1.11
-    - DJANGO=2.0
-    - DJANGO=master
-
+dist: xenial
 matrix:
     fast_finish: true
     include:
-      - { python: "3.6", env: DJANGO=master }
+
+      - { python: "3.5", env: DJANGO=1.11 }
+      - { python: "3.5", env: DJANGO=2.0 }
+      - { python: "3.5", env: DJANGO=2.1 }
+      - { python: "3.5", env: DJANGO=2.2 }
+
       - { python: "3.6", env: DJANGO=1.11 }
       - { python: "3.6", env: DJANGO=2.0 }
-      - { python: "2.7", env: TOXENV=lint }
-      - { python: "2.7", env: TOXENV=docs }
-      - python: "2.7"
-        env: TOXENV=readme
-        addons:
-          apt_packages: pandoc
-    exclude:
-      - { python: "2.7", env: DJANGO=master }
-      - { python: "2.7", env: DJANGO=2.0 }
-      - { python: "3.4", env: DJANGO=master }
+      - { python: "3.6", env: DJANGO=2.1 }
+      - { python: "3.6", env: DJANGO=2.2 }
+      - { python: "3.6", env: DJANGO=master }
+
+      - { python: "3.7", env: DJANGO=2.0 }
+      - { python: "3.7", env: DJANGO=2.1 }
+      - { python: "3.7", env: DJANGO=2.2 }
+      - { python: "3.7", env: DJANGO=master }
+
+      - { python: "3.8", env: DJANGO=master }
+
+      - { python: "3.8", env: TOXENV=base }
+      - { python: "3.8", env: TOXENV=lint }
+      - { python: "3.8", env: TOXENV=docs }
+
+      - python: "3.8"
+        env: TOXENV=dist
+        script:
+          - python setup.py bdist_wheel
+          - rm -r djangorestframework.egg-info  # see #6139
+          - tox --installpkg ./dist/djangorestframework-*.whl
+          - tox  # test sdist
 
     allow_failures:
       - env: DJANGO=master
 
 install:
-    - pip install tox tox-travis
+    - pip install tox tox-venv tox-travis
 
 script:
     - tox

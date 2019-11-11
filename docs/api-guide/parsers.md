@@ -1,4 +1,7 @@
-source: parsers.py
+---
+source:
+    - parsers.py
+---
 
 # Parsers
 
@@ -29,9 +32,9 @@ As an example, if you are sending `json` encoded data using jQuery with the [.aj
 The default set of parsers may be set globally, using the `DEFAULT_PARSER_CLASSES` setting. For example, the following settings would allow only requests with `JSON` content, instead of the default of JSON or form data.
 
     REST_FRAMEWORK = {
-        'DEFAULT_PARSER_CLASSES': (
+        'DEFAULT_PARSER_CLASSES': [
             'rest_framework.parsers.JSONParser',
-        )
+        ]
     }
 
 You can also set the parsers used for an individual view, or viewset,
@@ -45,7 +48,7 @@ using the `APIView` class-based views.
         """
         A view that can accept POST requests with JSON content.
         """
-        parser_classes = (JSONParser,)
+        parser_classes = [JSONParser]
 
         def post(self, request, format=None):
             return Response({'received data': request.data})
@@ -57,7 +60,7 @@ Or, if you're using the `@api_view` decorator with function based views.
     from rest_framework.parsers import JSONParser
 
     @api_view(['POST'])
-    @parser_classes((JSONParser,))
+    @parser_classes([JSONParser])
     def example_view(request, format=None):
         """
         A view that can accept POST requests with JSON content.
@@ -102,7 +105,7 @@ If it is called without a `filename` URL keyword argument, then the client must 
 
 ##### Notes:
 
-* The `FileUploadParser` is for usage with native clients that can upload the file as a raw data request.  For web-based uploads, or for native clients with multipart upload support, you should use the `MultiPartParser` parser instead.
+* The `FileUploadParser` is for usage with native clients that can upload the file as a raw data request.  For web-based uploads, or for native clients with multipart upload support, you should use the `MultiPartParser` instead.
 * Since this parser's `media_type` matches any content type, `FileUploadParser` should generally be the only parser set on an API view.
 * `FileUploadParser` respects Django's standard `FILE_UPLOAD_HANDLERS` setting, and the `request.upload_handlers` attribute.  See the [Django documentation][upload-handlers] for more details.
 
@@ -110,7 +113,7 @@ If it is called without a `filename` URL keyword argument, then the client must 
 
     # views.py
     class FileUploadView(views.APIView):
-        parser_classes = (FileUploadParser,)
+        parser_classes = [FileUploadParser]
 
         def put(self, request, filename, format=None):
             file_obj = request.data['file']
@@ -186,12 +189,12 @@ Install using pip.
 Modify your REST framework settings.
 
     REST_FRAMEWORK = {
-        'DEFAULT_PARSER_CLASSES': (
+        'DEFAULT_PARSER_CLASSES': [
             'rest_framework_yaml.parsers.YAMLParser',
-        ),
-        'DEFAULT_RENDERER_CLASSES': (
+        ],
+        'DEFAULT_RENDERER_CLASSES': [
             'rest_framework_yaml.renderers.YAMLRenderer',
-        ),
+        ],
     }
 
 ## XML
@@ -207,12 +210,12 @@ Install using pip.
 Modify your REST framework settings.
 
     REST_FRAMEWORK = {
-        'DEFAULT_PARSER_CLASSES': (
+        'DEFAULT_PARSER_CLASSES': [
             'rest_framework_xml.parsers.XMLParser',
-        ),
-        'DEFAULT_RENDERER_CLASSES': (
+        ],
+        'DEFAULT_RENDERER_CLASSES': [
             'rest_framework_xml.renderers.XMLRenderer',
-        ),
+        ],
     }
 
 ## MessagePack
@@ -223,11 +226,11 @@ Modify your REST framework settings.
 
 [djangorestframework-camel-case] provides camel case JSON renderers and parsers for REST framework.  This allows serializers to use Python-style underscored field names, but be exposed in the API as Javascript-style camel case field names.  It is maintained by [Vitaly Babiy][vbabiy].
 
-[jquery-ajax]: http://api.jquery.com/jQuery.ajax/
+[jquery-ajax]: https://api.jquery.com/jQuery.ajax/
 [cite]: https://groups.google.com/d/topic/django-developers/dxI4qVzrBY4/discussion
 [upload-handlers]: https://docs.djangoproject.com/en/stable/topics/http/file-uploads/#upload-handlers
-[rest-framework-yaml]: http://jpadilla.github.io/django-rest-framework-yaml/
-[rest-framework-xml]: http://jpadilla.github.io/django-rest-framework-xml/
+[rest-framework-yaml]: https://jpadilla.github.io/django-rest-framework-yaml/
+[rest-framework-xml]: https://jpadilla.github.io/django-rest-framework-xml/
 [yaml]: http://www.yaml.org/
 [messagepack]: https://github.com/juanriaza/django-rest-framework-msgpack
 [juanriaza]: https://github.com/juanriaza

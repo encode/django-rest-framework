@@ -1,18 +1,13 @@
-# coding: utf-8
-from __future__ import unicode_literals
-
+import sys
 from collections import OrderedDict
+from urllib import parse
 
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.db.models import Manager
 from django.db.models.query import QuerySet
 from django.urls import NoReverseMatch, Resolver404, get_script_prefix, resolve
-from django.utils import six
-from django.utils.encoding import (
-    python_2_unicode_compatible, smart_text, uri_to_iri
-)
-from django.utils.six.moves.urllib import parse as urlparse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.encoding import smart_text, uri_to_iri
+from django.utils.translation import gettext_lazy as _
 
 from rest_framework.fields import (
     Field, empty, get_attribute, is_simple_callable, iter_options
@@ -31,14 +26,28 @@ def method_overridden(method_name, klass, instance):
     return default_method is not getattr(instance, method_name).__func__
 
 
-class Hyperlink(six.text_type):
+class ObjectValueError(ValueError):
+    """
+    Raised when `queryset.get()` failed due to an underlying `ValueError`.
+    Wrapping prevents calling code conflating this with unrelated errors.
+    """
+
+
+class ObjectTypeError(TypeError):
+    """
+    Raised when `queryset.get()` failed due to an underlying `TypeError`.
+    Wrapping prevents calling code conflating this with unrelated errors.
+    """
+
+
+class Hyperlink(str):
     """
     A string like object that additionally has an associated name.
     We use this for hyperlinked URLs that may render as a named link
     in some contexts, or render as a plain URL in others.
     """
-    def __new__(self, url, obj):
-        ret = six.text_type.__new__(self, url)
+    def __new__(cls, url, obj):
+        ret = str.__new__(cls, url)
         ret.obj = obj
         return ret
 
@@ -50,13 +59,12 @@ class Hyperlink(six.text_type):
         # This ensures that we only called `__str__` lazily,
         # as in some cases calling __str__ on a model instances *might*
         # involve a database lookup.
-        return six.text_type(self.obj)
+        return str(self.obj)
 
     is_hyperlink = True
 
 
-@python_2_unicode_compatible
-class PKOnlyObject(object):
+class PKOnlyObject:
     """
     This is a mock object, used for when we only need the pk of the object
     instance, but still want to return an object with a .pk attribute,
@@ -106,14 +114,14 @@ class RelatedField(Field):
         )
         kwargs.pop('many', None)
         kwargs.pop('allow_empty', None)
-        super(RelatedField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def __new__(cls, *args, **kwargs):
         # We override this method in order to automagically create
         # `ManyRelatedField` classes instead when `many=True` is set.
         if kwargs.pop('many', False):
             return cls.many_init(*args, **kwargs)
-        return super(RelatedField, cls).__new__(cls, *args, **kwargs)
+        return super().__new__(cls, *args, **kwargs)
 
     @classmethod
     def many_init(cls, *args, **kwargs):
@@ -133,7 +141,7 @@ class RelatedField(Field):
             return CustomManyRelatedField(*args, **kwargs)
         """
         list_kwargs = {'child_relation': cls(*args, **kwargs)}
-        for key in kwargs.keys():
+        for key in kwargs:
             if key in MANY_RELATION_KWARGS:
                 list_kwargs[key] = kwargs[key]
         return ManyRelatedField(**list_kwargs)
@@ -142,7 +150,7 @@ class RelatedField(Field):
         # We force empty strings to None values for relational fields.
         if data == '':
             data = None
-        return super(RelatedField, self).run_validation(data)
+        return super().run_validation(data)
 
     def get_queryset(self):
         queryset = self.queryset
@@ -163,8 +171,8 @@ class RelatedField(Field):
         if self.use_pk_only_optimization() and self.source_attrs:
             # Optimized case, return a mock object only containing the pk attribute.
             try:
-                instance = get_attribute(instance, self.source_attrs[:-1])
-                value = instance.serializable_value(self.source_attrs[-1])
+                attribute_instance = get_attribute(instance, self.source_attrs[:-1])
+                value = attribute_instance.serializable_value(self.source_attrs[-1])
                 if is_simple_callable(value):
                     # Handle edge case where the relationship `source` argument
                     # points to a `get_relationship()` method on the model
@@ -174,7 +182,7 @@ class RelatedField(Field):
                 pass
 
         # Standard case, return the object instance.
-        return get_attribute(instance, self.source_attrs)
+        return super().get_attribute(instance)
 
     def get_choices(self, cutoff=None):
         queryset = self.get_queryset()
@@ -210,7 +218,7 @@ class RelatedField(Field):
         )
 
     def display_value(self, instance):
-        return six.text_type(instance)
+        return str(instance)
 
 
 class StringRelatedField(RelatedField):
@@ -221,10 +229,10 @@ class StringRelatedField(RelatedField):
 
     def __init__(self, **kwargs):
         kwargs['read_only'] = True
-        super(StringRelatedField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def to_representation(self, value):
-        return six.text_type(value)
+        return str(value)
 
 
 class PrimaryKeyRelatedField(RelatedField):
@@ -236,7 +244,7 @@ class PrimaryKeyRelatedField(RelatedField):
 
     def __init__(self, **kwargs):
         self.pk_field = kwargs.pop('pk_field', None)
-        super(PrimaryKeyRelatedField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def use_pk_only_optimization(self):
         return True
@@ -282,7 +290,7 @@ class HyperlinkedRelatedField(RelatedField):
         # implicit `self` argument to be passed.
         self.reverse = reverse
 
-        super(HyperlinkedRelatedField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def use_pk_only_optimization(self):
         return self.lookup_field == 'pk'
@@ -296,7 +304,16 @@ class HyperlinkedRelatedField(RelatedField):
         """
         lookup_value = view_kwargs[self.lookup_url_kwarg]
         lookup_kwargs = {self.lookup_field: lookup_value}
-        return self.get_queryset().get(**lookup_kwargs)
+        queryset = self.get_queryset()
+
+        try:
+            return queryset.get(**lookup_kwargs)
+        except ValueError:
+            exc = ObjectValueError(str(sys.exc_info()[1]))
+            raise exc.with_traceback(sys.exc_info()[2])
+        except TypeError:
+            exc = ObjectTypeError(str(sys.exc_info()[1]))
+            raise exc.with_traceback(sys.exc_info()[2])
 
     def get_url(self, obj, view_name, request, format):
         """
@@ -322,7 +339,7 @@ class HyperlinkedRelatedField(RelatedField):
 
         if http_prefix:
             # If needed convert absolute URLs to relative path
-            data = urlparse.urlparse(data).path
+            data = parse.urlparse(data).path
             prefix = get_script_prefix()
             if data.startswith(prefix):
                 data = '/' + data[len(prefix):]
@@ -346,7 +363,7 @@ class HyperlinkedRelatedField(RelatedField):
 
         try:
             return self.get_object(match.view_name, match.args, match.kwargs)
-        except (ObjectDoesNotExist, TypeError, ValueError):
+        except (ObjectDoesNotExist, ObjectValueError, ObjectTypeError):
             self.fail('does_not_exist')
 
     def to_representation(self, value):
@@ -408,7 +425,7 @@ class HyperlinkedIdentityField(HyperlinkedRelatedField):
         assert view_name is not None, 'The `view_name` argument is required.'
         kwargs['read_only'] = True
         kwargs['source'] = '*'
-        super(HyperlinkedIdentityField, self).__init__(view_name, **kwargs)
+        super().__init__(view_name, **kwargs)
 
     def use_pk_only_optimization(self):
         # We have the complete object instance already. We don't need
@@ -429,7 +446,7 @@ class SlugRelatedField(RelatedField):
     def __init__(self, slug_field=None, **kwargs):
         assert slug_field is not None, 'The `slug_field` argument is required.'
         self.slug_field = slug_field
-        super(SlugRelatedField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def to_internal_value(self, data):
         try:
@@ -478,7 +495,7 @@ class ManyRelatedField(Field):
             self.html_cutoff_text or _(api_settings.HTML_SELECT_CUTOFF_TEXT)
         )
         assert child_relation is not None, '`child_relation` is a required argument.'
-        super(ManyRelatedField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.child_relation.bind(field_name='', parent=self)
 
     def get_value(self, dictionary):
@@ -494,7 +511,7 @@ class ManyRelatedField(Field):
         return dictionary.get(self.field_name, empty)
 
     def to_internal_value(self, data):
-        if isinstance(data, type('')) or not hasattr(data, '__iter__'):
+        if isinstance(data, str) or not hasattr(data, '__iter__'):
             self.fail('not_a_list', input_type=type(data).__name__)
         if not self.allow_empty and len(data) == 0:
             self.fail('empty')

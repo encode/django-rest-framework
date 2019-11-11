@@ -1,9 +1,7 @@
-from __future__ import unicode_literals
-
 import uuid
 
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 
 class RESTFrameworkModel(models.Model):
@@ -52,6 +50,20 @@ class ForeignKeySource(RESTFrameworkModel):
                                on_delete=models.CASCADE)
 
 
+class ForeignKeySourceWithLimitedChoices(RESTFrameworkModel):
+    target = models.ForeignKey(ForeignKeyTarget, help_text='Target',
+                               verbose_name='Target',
+                               limit_choices_to={"name__startswith": "limited-"},
+                               on_delete=models.CASCADE)
+
+
+class ForeignKeySourceWithQLimitedChoices(RESTFrameworkModel):
+    target = models.ForeignKey(ForeignKeyTarget, help_text='Target',
+                               verbose_name='Target',
+                               limit_choices_to=models.Q(name__startswith="limited-"),
+                               on_delete=models.CASCADE)
+
+
 # Nullable ForeignKey
 class NullableForeignKeySource(RESTFrameworkModel):
     name = models.CharField(max_length=100)
@@ -66,6 +78,17 @@ class NullableUUIDForeignKeySource(RESTFrameworkModel):
     target = models.ForeignKey(ForeignKeyTarget, null=True, blank=True,
                                related_name='nullable_sources',
                                verbose_name='Optional target object',
+                               on_delete=models.CASCADE)
+
+
+class NestedForeignKeySource(RESTFrameworkModel):
+    """
+    Used for testing FK chain. A -> B -> C.
+    """
+    name = models.CharField(max_length=100)
+    target = models.ForeignKey(NullableForeignKeySource, null=True, blank=True,
+                               related_name='nested_sources',
+                               verbose_name='Intermediate target object',
                                on_delete=models.CASCADE)
 
 

@@ -6,10 +6,9 @@ on the response, such as JSON encoded data or HTML output.
 
 REST framework also provides an HTML renderer that renders the browsable API.
 """
-from __future__ import unicode_literals
-
 import base64
 from collections import OrderedDict
+from urllib import parse
 
 from django import forms
 from django.conf import settings
@@ -18,13 +17,13 @@ from django.core.paginator import Page
 from django.http.multipartparser import parse_header
 from django.template import engines, loader
 from django.test.client import encode_multipart
-from django.utils import six
+from django.urls import NoReverseMatch
 from django.utils.html import mark_safe
 
 from rest_framework import VERSION, exceptions, serializers, status
 from rest_framework.compat import (
-    INDENT_SEPARATORS, LONG_SEPARATORS, SHORT_SEPARATORS, coreapi,
-    pygments_css
+    INDENT_SEPARATORS, LONG_SEPARATORS, SHORT_SEPARATORS, coreapi, coreschema,
+    pygments_css, yaml
 )
 from rest_framework.exceptions import ParseError
 from rest_framework.request import is_form_media_type, override_method
@@ -38,7 +37,7 @@ def zero_as_none(value):
     return None if value == 0 else value
 
 
-class BaseRenderer(object):
+class BaseRenderer:
     """
     All renderers should extend this class, setting the `media_type`
     and `format` attributes, and override the `.render()` method.
@@ -65,7 +64,7 @@ class JSONRenderer(BaseRenderer):
 
     # We don't set a charset because JSON is a binary encoding,
     # that can be encoded as utf-8, utf-16 or utf-32.
-    # See: http://www.ietf.org/rfc/rfc4627.txt
+    # See: https://www.ietf.org/rfc/rfc4627.txt
     # Also: http://lucumr.pocoo.org/2013/7/19/application-mimetypes-and-encodings/
     charset = None
 
@@ -89,7 +88,7 @@ class JSONRenderer(BaseRenderer):
         Render `data` into JSON, returning a bytestring.
         """
         if data is None:
-            return bytes()
+            return b''
 
         renderer_context = renderer_context or {}
         indent = self.get_indent(accepted_media_type, renderer_context)
@@ -105,18 +104,11 @@ class JSONRenderer(BaseRenderer):
             allow_nan=not self.strict, separators=separators
         )
 
-        # On python 2.x json.dumps() returns bytestrings if ensure_ascii=True,
-        # but if ensure_ascii=False, the return type is underspecified,
-        # and may (or may not) be unicode.
-        # On python 3.x json.dumps() returns unicode strings.
-        if isinstance(ret, six.text_type):
-            # We always fully escape \u2028 and \u2029 to ensure we output JSON
-            # that is a strict javascript subset. If bytes were returned
-            # by json.dumps() then we don't have these characters in any case.
-            # See: http://timelessrepo.com/json-isnt-a-javascript-subset
-            ret = ret.replace('\u2028', '\\u2028').replace('\u2029', '\\u2029')
-            return bytes(ret.encode('utf-8'))
-        return ret
+        # We always fully escape \u2028 and \u2029 to ensure we output JSON
+        # that is a strict javascript subset.
+        # See: http://timelessrepo.com/json-isnt-a-javascript-subset
+        ret = ret.replace('\u2028', '\\u2028').replace('\u2029', '\\u2029')
+        return ret.encode()
 
 
 class TemplateHTMLRenderer(BaseRenderer):
@@ -320,6 +312,12 @@ class HTMLFormRenderer(BaseRenderer):
         serializers.ListSerializer: {
             'base_template': 'list_fieldset.html'
         },
+        serializers.ListField: {
+            'base_template': 'list_field.html'
+        },
+        serializers.DictField: {
+            'base_template': 'dict_field.html'
+        },
         serializers.FilePathField: {
             'base_template': 'select.html',
         },
@@ -341,7 +339,7 @@ class HTMLFormRenderer(BaseRenderer):
         # Get a clone of the field with text-only value representation.
         field = field.as_form_field()
 
-        if style.get('input_type') == 'datetime-local' and isinstance(field.value, six.text_type):
+        if style.get('input_type') == 'datetime-local' and isinstance(field.value, str):
             field.value = field.value.rstrip('Z')
 
         if 'template' in style:
@@ -569,7 +567,7 @@ class BrowsableAPIRenderer(BaseRenderer):
                         data.pop(name, None)
                 content = renderer.render(data, accepted, context)
                 # Renders returns bytes, but CharField expects a str.
-                content = content.decode('utf-8')
+                content = content.decode()
             else:
                 content = None
 
@@ -605,6 +603,14 @@ class BrowsableAPIRenderer(BaseRenderer):
 
     def get_breadcrumbs(self, request):
         return get_breadcrumbs(request.path, request)
+
+    def get_extra_actions(self, view, status_code):
+        if (status_code in (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN)):
+            return None
+        elif not hasattr(view, 'get_extra_action_url_map'):
+            return None
+
+        return view.get_extra_action_url_map()
 
     def get_filter_form(self, data, view, request):
         if not hasattr(view, 'get_queryset') or not hasattr(view, 'filter_backends'):
@@ -671,7 +677,7 @@ class BrowsableAPIRenderer(BaseRenderer):
             csrf_header_name = csrf_header_name[5:]
         csrf_header_name = csrf_header_name.replace('_', '-')
 
-        context = {
+        return {
             'content': self.get_content(renderer, data, accepted_media_type, renderer_context),
             'code_style': pygments_css(self.code_style),
             'view': view,
@@ -692,6 +698,8 @@ class BrowsableAPIRenderer(BaseRenderer):
             'delete_form': self.get_rendered_html_form(data, view, 'DELETE', request),
             'options_form': self.get_rendered_html_form(data, view, 'OPTIONS', request),
 
+            'extra_actions': self.get_extra_actions(view, response.status_code),
+
             'filter_form': self.get_filter_form(data, view, request),
 
             'raw_data_put_form': raw_data_put_form,
@@ -705,7 +713,6 @@ class BrowsableAPIRenderer(BaseRenderer):
             'csrf_cookie_name': csrf_cookie_name,
             'csrf_header_name': csrf_header_name
         }
-        return context
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
@@ -776,7 +783,7 @@ class AdminRenderer(BrowsableAPIRenderer):
         """
         Render the HTML for the browsable API representation.
         """
-        context = super(AdminRenderer, self).get_context(
+        context = super().get_context(
             data, accepted_media_type, renderer_context
         )
 
@@ -799,8 +806,14 @@ class AdminRenderer(BrowsableAPIRenderer):
             header = results
             style = 'detail'
 
-        columns = [key for key in header.keys() if key != 'url']
-        details = [key for key in header.keys() if key != 'url']
+        columns = [key for key in header if key != 'url']
+        details = [key for key in header if key != 'url']
+
+        if isinstance(results, list) and 'view' in renderer_context:
+            for result in results:
+                url = self.get_result_url(result, context['view'])
+                if url is not None:
+                    result.setdefault('url', url)
 
         context['style'] = style
         context['columns'] = columns
@@ -809,6 +822,26 @@ class AdminRenderer(BrowsableAPIRenderer):
         context['error_form'] = getattr(self, 'error_form', None)
         context['error_title'] = getattr(self, 'error_title', None)
         return context
+
+    def get_result_url(self, result, view):
+        """
+        Attempt to reverse the result's detail view URL.
+
+        This only works with views that are generic-like (has `.lookup_field`)
+        and viewset-like (has `.basename` / `.reverse_action()`).
+        """
+        if not hasattr(view, 'reverse_action') or \
+           not hasattr(view, 'lookup_field'):
+            return
+
+        lookup_field = view.lookup_field
+        lookup_url_kwarg = getattr(view, 'lookup_url_kwarg', None) or lookup_field
+
+        try:
+            kwargs = {lookup_url_kwarg: result[lookup_field]}
+            return view.reverse_action('detail', kwargs=kwargs)
+        except (KeyError, NoReverseMatch):
+            return
 
 
 class DocumentationRenderer(BaseRenderer):
@@ -824,6 +857,8 @@ class DocumentationRenderer(BaseRenderer):
         return {
             'document': data,
             'langs': self.languages,
+            'lang_htmls': ["rest_framework/docs/langs/%s.html" % l for l in self.languages],
+            'lang_intro_htmls': ["rest_framework/docs/langs/%s-intro.html" % l for l in self.languages],
             'code_style': pygments_css(self.code_style),
             'request': request
         }
@@ -890,3 +925,140 @@ class CoreJSONRenderer(BaseRenderer):
         indent = bool(renderer_context.get('indent', 0))
         codec = coreapi.codecs.CoreJSONCodec()
         return codec.dump(data, indent=indent)
+
+
+class _BaseOpenAPIRenderer:
+    def get_schema(self, instance):
+        CLASS_TO_TYPENAME = {
+            coreschema.Object: 'object',
+            coreschema.Array: 'array',
+            coreschema.Number: 'number',
+            coreschema.Integer: 'integer',
+            coreschema.String: 'string',
+            coreschema.Boolean: 'boolean',
+        }
+
+        schema = {}
+        if instance.__class__ in CLASS_TO_TYPENAME:
+            schema['type'] = CLASS_TO_TYPENAME[instance.__class__]
+        schema['title'] = instance.title
+        schema['description'] = instance.description
+        if hasattr(instance, 'enum'):
+            schema['enum'] = instance.enum
+        return schema
+
+    def get_parameters(self, link):
+        parameters = []
+        for field in link.fields:
+            if field.location not in ['path', 'query']:
+                continue
+            parameter = {
+                'name': field.name,
+                'in': field.location,
+            }
+            if field.required:
+                parameter['required'] = True
+            if field.description:
+                parameter['description'] = field.description
+            if field.schema:
+                parameter['schema'] = self.get_schema(field.schema)
+            parameters.append(parameter)
+        return parameters
+
+    def get_operation(self, link, name, tag):
+        operation_id = "%s_%s" % (tag, name) if tag else name
+        parameters = self.get_parameters(link)
+
+        operation = {
+            'operationId': operation_id,
+        }
+        if link.title:
+            operation['summary'] = link.title
+        if link.description:
+            operation['description'] = link.description
+        if parameters:
+            operation['parameters'] = parameters
+        if tag:
+            operation['tags'] = [tag]
+        return operation
+
+    def get_paths(self, document):
+        paths = {}
+
+        tag = None
+        for name, link in document.links.items():
+            path = parse.urlparse(link.url).path
+            method = link.action.lower()
+            paths.setdefault(path, {})
+            paths[path][method] = self.get_operation(link, name, tag=tag)
+
+        for tag, section in document.data.items():
+            for name, link in section.links.items():
+                path = parse.urlparse(link.url).path
+                method = link.action.lower()
+                paths.setdefault(path, {})
+                paths[path][method] = self.get_operation(link, name, tag=tag)
+
+        return paths
+
+    def get_structure(self, data):
+        return {
+            'openapi': '3.0.0',
+            'info': {
+                'version': '',
+                'title': data.title,
+                'description': data.description
+            },
+            'servers': [{
+                'url': data.url
+            }],
+            'paths': self.get_paths(data)
+        }
+
+
+class CoreAPIOpenAPIRenderer(_BaseOpenAPIRenderer):
+    media_type = 'application/vnd.oai.openapi'
+    charset = None
+    format = 'openapi'
+
+    def __init__(self):
+        assert coreapi, 'Using CoreAPIOpenAPIRenderer, but `coreapi` is not installed.'
+        assert yaml, 'Using CoreAPIOpenAPIRenderer, but `pyyaml` is not installed.'
+
+    def render(self, data, media_type=None, renderer_context=None):
+        structure = self.get_structure(data)
+        return yaml.dump(structure, default_flow_style=False).encode()
+
+
+class CoreAPIJSONOpenAPIRenderer(_BaseOpenAPIRenderer):
+    media_type = 'application/vnd.oai.openapi+json'
+    charset = None
+    format = 'openapi-json'
+
+    def __init__(self):
+        assert coreapi, 'Using CoreAPIJSONOpenAPIRenderer, but `coreapi` is not installed.'
+
+    def render(self, data, media_type=None, renderer_context=None):
+        structure = self.get_structure(data)
+        return json.dumps(structure, indent=4).encode('utf-8')
+
+
+class OpenAPIRenderer(BaseRenderer):
+    media_type = 'application/vnd.oai.openapi'
+    charset = None
+    format = 'openapi'
+
+    def __init__(self):
+        assert yaml, 'Using OpenAPIRenderer, but `pyyaml` is not installed.'
+
+    def render(self, data, media_type=None, renderer_context=None):
+        return yaml.dump(data, default_flow_style=False, sort_keys=False).encode('utf-8')
+
+
+class JSONOpenAPIRenderer(BaseRenderer):
+    media_type = 'application/vnd.oai.openapi+json'
+    charset = None
+    format = 'openapi-json'
+
+    def render(self, data, media_type=None, renderer_context=None):
+        return json.dumps(data, indent=2).encode('utf-8')

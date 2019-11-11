@@ -1,12 +1,10 @@
-from __future__ import unicode_literals
-
 from django.test import TestCase
-from django.utils import six
 
 from rest_framework import serializers
 from tests.models import (
-    ForeignKeySource, ForeignKeyTarget, ManyToManySource, ManyToManyTarget,
-    NullableForeignKeySource, NullableOneToOneSource,
+    ForeignKeySource, ForeignKeySourceWithLimitedChoices,
+    ForeignKeySourceWithQLimitedChoices, ForeignKeyTarget, ManyToManySource,
+    ManyToManyTarget, NullableForeignKeySource, NullableOneToOneSource,
     NullableUUIDForeignKeySource, OneToOnePKSource, OneToOneTarget,
     UUIDForeignKeyTarget
 )
@@ -36,6 +34,12 @@ class ForeignKeySourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = ForeignKeySource
         fields = ('id', 'name', 'target')
+
+
+class ForeignKeySourceWithLimitedChoicesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ForeignKeySourceWithLimitedChoices
+        fields = ("id", "target")
 
 
 # Nullable ForeignKey
@@ -256,7 +260,7 @@ class PKForeignKeyTests(TestCase):
         instance = ForeignKeySource.objects.get(pk=1)
         serializer = ForeignKeySourceSerializer(instance, data=data)
         assert not serializer.is_valid()
-        assert serializer.errors == {'target': ['Incorrect type. Expected pk value, received %s.' % six.text_type.__name__]}
+        assert serializer.errors == {'target': ['Incorrect type. Expected pk value, received str.']}
 
     def test_reverse_foreign_key_update(self):
         data = {'id': 2, 'name': 'target-2', 'sources': [1, 3]}
@@ -359,6 +363,30 @@ class PKForeignKeyTests(TestCase):
         serializer = ModelSerializer(data={'name': 'test'})
         serializer.is_valid(raise_exception=True)
         assert 'target' not in serializer.validated_data
+
+    def test_queryset_size_without_limited_choices(self):
+        limited_target = ForeignKeyTarget(name="limited-target")
+        limited_target.save()
+        queryset = ForeignKeySourceSerializer().fields["target"].get_queryset()
+        assert len(queryset) == 3
+
+    def test_queryset_size_with_limited_choices(self):
+        limited_target = ForeignKeyTarget(name="limited-target")
+        limited_target.save()
+        queryset = ForeignKeySourceWithLimitedChoicesSerializer().fields["target"].get_queryset()
+        assert len(queryset) == 1
+
+    def test_queryset_size_with_Q_limited_choices(self):
+        limited_target = ForeignKeyTarget(name="limited-target")
+        limited_target.save()
+
+        class QLimitedChoicesSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = ForeignKeySourceWithQLimitedChoices
+                fields = ("id", "target")
+
+        queryset = QLimitedChoicesSerializer().fields["target"].get_queryset()
+        assert len(queryset) == 1
 
 
 class PKNullableForeignKeyTests(TestCase):
@@ -531,7 +559,7 @@ class OneToOnePrimaryKeyTests(TestCase):
         # When: Trying to create a second object
         second_source = OneToOnePKSourceSerializer(data=data)
         self.assertFalse(second_source.is_valid())
-        expected = {'target': [u'one to one pk source with this target already exists.']}
+        expected = {'target': ['one to one pk source with this target already exists.']}
         self.assertDictEqual(second_source.errors, expected)
 
     def test_one_to_one_when_primary_key_does_not_exist(self):

@@ -1,53 +1,61 @@
 """
 Provides an APIView class that is the base of all views in REST framework.
 """
-from __future__ import unicode_literals
-
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.db import connection, models, transaction
 from django.http import Http404
 from django.http.response import HttpResponseBase
-from django.utils import six
 from django.utils.cache import cc_delim_re, patch_vary_headers
 from django.utils.encoding import smart_text
-from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
 from rest_framework import exceptions, status
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework.schemas import AutoSchema
+from rest_framework.schemas import DefaultSchema
 from rest_framework.settings import api_settings
 from rest_framework.utils import formatting
 
 
-def get_view_name(view_cls, suffix=None):
+def get_view_name(view):
     """
-    Given a view class, return a textual name to represent the view.
+    Given a view instance, return a textual name to represent the view.
     This name is used in the browsable API, and in OPTIONS responses.
 
     This function is the default for the `VIEW_NAME_FUNCTION` setting.
     """
-    name = view_cls.__name__
+    # Name may be set by some Views, such as a ViewSet.
+    name = getattr(view, 'name', None)
+    if name is not None:
+        return name
+
+    name = view.__class__.__name__
     name = formatting.remove_trailing_string(name, 'View')
     name = formatting.remove_trailing_string(name, 'ViewSet')
     name = formatting.camelcase_to_spaces(name)
+
+    # Suffix may be set by some Views, such as a ViewSet.
+    suffix = getattr(view, 'suffix', None)
     if suffix:
         name += ' ' + suffix
 
     return name
 
 
-def get_view_description(view_cls, html=False):
+def get_view_description(view, html=False):
     """
-    Given a view class, return a textual description to represent the view.
+    Given a view instance, return a textual description to represent the view.
     This name is used in the browsable API, and in OPTIONS responses.
 
     This function is the default for the `VIEW_DESCRIPTION_FUNCTION` setting.
     """
-    description = view_cls.__doc__ or ''
+    # Description may be set by some Views, such as a ViewSet.
+    description = getattr(view, 'description', None)
+    if description is None:
+        description = view.__class__.__doc__ or ''
+
     description = formatting.dedent(smart_text(description))
     if html:
         return formatting.markup_description(description)
@@ -70,6 +78,11 @@ def exception_handler(exc, context):
     Any unhandled exceptions may return `None`, which will cause a 500 error
     to be raised.
     """
+    if isinstance(exc, Http404):
+        exc = exceptions.NotFound()
+    elif isinstance(exc, PermissionDenied):
+        exc = exceptions.PermissionDenied()
+
     if isinstance(exc, exceptions.APIException):
         headers = {}
         if getattr(exc, 'auth_header', None):
@@ -84,20 +97,6 @@ def exception_handler(exc, context):
 
         set_rollback()
         return Response(data, status=exc.status_code, headers=headers)
-
-    elif isinstance(exc, Http404):
-        msg = _('Not found.')
-        data = {'detail': six.text_type(msg)}
-
-        set_rollback()
-        return Response(data, status=status.HTTP_404_NOT_FOUND)
-
-    elif isinstance(exc, PermissionDenied):
-        msg = _('Permission denied.')
-        data = {'detail': six.text_type(msg)}
-
-        set_rollback()
-        return Response(data, status=status.HTTP_403_FORBIDDEN)
 
     return None
 
@@ -117,7 +116,7 @@ class APIView(View):
     # Allow dependency injection of other settings to make testing easier.
     settings = api_settings
 
-    schema = AutoSchema()
+    schema = DefaultSchema()
 
     @classmethod
     def as_view(cls, **initkwargs):
@@ -136,7 +135,7 @@ class APIView(View):
                 )
             cls.queryset._fetch_all = force_evaluation
 
-        view = super(APIView, cls).as_view(**initkwargs)
+        view = super().as_view(**initkwargs)
         view.cls = cls
         view.initkwargs = initkwargs
 
@@ -235,7 +234,7 @@ class APIView(View):
         browsable API.
         """
         func = self.settings.VIEW_NAME_FUNCTION
-        return func(self.__class__, getattr(self, 'suffix', None))
+        return func(self)
 
     def get_view_description(self, html=False):
         """
@@ -243,7 +242,7 @@ class APIView(View):
         and in the browsable API.
         """
         func = self.settings.VIEW_DESCRIPTION_FUNCTION
-        return func(self.__class__, html)
+        return func(self, html)
 
     # API policy instantiation methods
 
@@ -351,9 +350,21 @@ class APIView(View):
         Check if request should be throttled.
         Raises an appropriate exception if the request is throttled.
         """
+        throttle_durations = []
         for throttle in self.get_throttles():
             if not throttle.allow_request(request, self):
-                self.throttled(request, throttle.wait())
+                throttle_durations.append(throttle.wait())
+
+        if throttle_durations:
+            # Filter out `None` values which may happen in case of config / rate
+            # changes, see #1438
+            durations = [
+                duration for duration in throttle_durations
+                if duration is not None
+            ]
+
+            duration = max(durations, default=None)
+            self.throttled(request, duration)
 
     def determine_version(self, request, *args, **kwargs):
         """
@@ -462,7 +473,7 @@ class APIView(View):
             renderer_format = getattr(request.accepted_renderer, 'format')
             use_plaintext_traceback = renderer_format not in ('html', 'api', 'admin')
             request.force_plaintext_errors(use_plaintext_traceback)
-        raise
+        raise exc
 
     # Note: Views are made CSRF exempt from within `as_view` as to prevent
     # accidental removal of this exemption in cases where `dispatch` needs to

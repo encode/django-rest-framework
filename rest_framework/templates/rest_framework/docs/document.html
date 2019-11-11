@@ -8,9 +8,9 @@
     {% endif %}
 </div>
 <div class="col-md-6 intro-code">
-    {% if 'shell' in langs %}{% include "rest_framework/docs/langs/shell-intro.html" %}{% endif %}
-    {% if 'python' in langs %}{% include "rest_framework/docs/langs/python-intro.html" %}{% endif %}
-    {% if 'javascript' in langs %}{% include "rest_framework/docs/langs/javascript-intro.html" %}{% endif %}
+    {% for html in lang_intro_htmls %}
+        {% include html %}
+    {% endfor %}
 </div>
 </div>
 {% if document|data %}

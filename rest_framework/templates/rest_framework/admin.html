@@ -1,4 +1,4 @@
-{% load staticfiles %}
+{% load static %}
 {% load i18n %}
 {% load rest_framework %}
 
@@ -34,7 +34,7 @@
               <div class="container">
                 <span>
                   {% block branding %}
-                    <a class='navbar-brand' rel="nofollow" href='http://www.django-rest-framework.org'>
+                    <a class='navbar-brand' rel="nofollow" href='https://www.django-rest-framework.org/'>
                       Django REST framework
                     </a>
                   {% endblock %}
@@ -108,6 +108,20 @@
                   <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete
                 </button>
               </form>
+            {% endif %}
+
+            {% if extra_actions %}
+              <div class="dropdown" style="float: right; margin-right: 10px">
+                <button class="btn btn-default" id="extra-actions-menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                  {% trans "Extra Actions" %}
+                  <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="extra-actions-menu">
+                  {% for action_name, url in extra_actions|items %}
+                  <li><a href="{{ url }}">{{ action_name }}</a></li>
+                  {% endfor %}
+                </ul>
+              </div>
             {% endif %}
 
             {% if filter_form %}
@@ -233,10 +247,10 @@
         <script>
           window.drf = {
             csrfHeaderName: "{{ csrf_header_name|default:'X-CSRFToken' }}",
-            csrfCookieName: "{{ csrf_cookie_name|default:'csrftoken' }}"
+            csrfToken: "{{ csrf_token }}"
           };
         </script>
-        <script src="{% static "rest_framework/js/jquery-1.12.4.min.js" %}"></script>
+        <script src="{% static "rest_framework/js/jquery-3.4.1.min.js" %}"></script>
         <script src="{% static "rest_framework/js/ajax-form.js" %}"></script>
         <script src="{% static "rest_framework/js/csrf.js" %}"></script>
         <script src="{% static "rest_framework/js/bootstrap.min.js" %}"></script>

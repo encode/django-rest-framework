@@ -29,7 +29,7 @@
         </thead>
         <tbody>
             {% for field in link.fields|with_location:'path' %}
-            <tr><td class="parameter-name"><code>{{ field.name }}</code>{% if field.required %} <span class="label label-warning">required</span>{% endif %}</td><td>{% if field.schema.description %}{{ field.schema.description }}{% endif %}</td></tr>
+            <tr><td class="parameter-name"><code>{{ field.name }}</code>{% if field.required %} <span class="label label-warning">required</span>{% endif %}</td><td>{% if field.schema.description %}{{ field.schema.description|safe }}{% endif %}</td></tr>
             {% endfor %}
         </tbody>
     </table>
@@ -43,7 +43,7 @@
         </thead>
         <tbody>
             {% for field in link.fields|with_location:'query' %}
-            <tr><td class="parameter-name"><code>{{ field.name }}</code>{% if field.required %} <span class="label label-warning">required</span>{% endif %}</td><td>{% if field.schema.description %}{{ field.schema.description }}{% endif %}</td></tr>
+            <tr><td class="parameter-name"><code>{{ field.name }}</code>{% if field.required %} <span class="label label-warning">required</span>{% endif %}</td><td>{% if field.schema.description %}{{ field.schema.description|safe }}{% endif %}</td></tr>
             {% endfor %}
         </tbody>
     </table>
@@ -57,7 +57,7 @@
         </thead>
         <tbody>
             {% for field in link.fields|with_location:'header' %}
-            <tr><td class="parameter-name"><code>{{ field.name }}</code>{% if field.required %} <span class="label label-warning">required</span>{% endif %}</td><td>{% if field.schema.description %}{{ field.schema.description }}{% endif %}</td></tr>
+            <tr><td class="parameter-name"><code>{{ field.name }}</code>{% if field.required %} <span class="label label-warning">required</span>{% endif %}</td><td>{% if field.schema.description %}{{ field.schema.description|safe }}{% endif %}</td></tr>
             {% endfor %}
         </tbody>
     </table>
@@ -71,7 +71,7 @@
         </thead>
         <tbody>
             {% for field in link.fields|with_location:'body' %}
-            <tr><td class="parameter-name"><code>{{ field.name }}</code>{% if field.required %} <span class="label label-warning">required</span>{% endif %}</td><td>{% if field.schema.description %}{{ field.schema.description }}{% endif %}</td></tr>
+            <tr><td class="parameter-name"><code>{{ field.name }}</code>{% if field.required %} <span class="label label-warning">required</span>{% endif %}</td><td>{% if field.schema.description %}{{ field.schema.description|safe }}{% endif %}</td></tr>
             {% endfor %}
         </tbody>
     </table>
@@ -84,7 +84,7 @@
         </thead>
         <tbody>
             {% for field in link.fields|with_location:'form' %}
-            <tr><td class="parameter-name"><code>{{ field.name }}</code>{% if field.required %} <span class="label label-warning">required</span>{% endif %}</td><td>{% if field.schema.description %}{{ field.schema.description }}{% endif %}</td></tr>
+            <tr><td class="parameter-name"><code>{{ field.name }}</code>{% if field.required %} <span class="label label-warning">required</span>{% endif %}</td><td>{% if field.schema.description %}{{ field.schema.description|safe }}{% endif %}</td></tr>
             {% endfor %}
         </tbody>
     </table>
@@ -93,9 +93,9 @@
 </div>
 
     <div class="col-md-6 code-samples">
-        {% if 'shell' in langs %}{% include "rest_framework/docs/langs/shell.html" %}{% endif %}
-        {% if 'python' in langs %}{% include "rest_framework/docs/langs/python.html" %}{% endif %}
-        {% if 'javascript' in langs %}{% include "rest_framework/docs/langs/javascript.html" %}{% endif %}
+        {% for html in lang_htmls %}
+            {% include html %}
+        {% endfor %}
     </div>
 </div>
 

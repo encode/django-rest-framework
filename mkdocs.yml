@@ -1,16 +1,18 @@
 site_name: Django REST framework
-site_url: http://www.django-rest-framework.org/
+site_url: https://www.django-rest-framework.org/
 site_description: Django REST framework - Web APIs for Django
 
 repo_url: https://github.com/encode/django-rest-framework
 
-theme_dir: docs_theme
+theme:
+    name: mkdocs
+    custom_dir: docs_theme
 
 markdown_extensions:
  - toc:
     anchorlink: True
 
-pages:
+nav:
  - Home: 'index.md'
  - Tutorial:
     - 'Quickstart': 'tutorial/quickstart.md'
@@ -20,7 +22,6 @@ pages:
     - '4 - Authentication and permissions': 'tutorial/4-authentication-and-permissions.md'
     - '5 - Relationships and hyperlinked APIs': 'tutorial/5-relationships-and-hyperlinked-apis.md'
     - '6 - Viewsets and routers': 'tutorial/6-viewsets-and-routers.md'
-    - '7 - Schemas and client libraries': 'tutorial/7-schemas-and-client-libraries.md'
  - API Guide:
     - 'Requests': 'api-guide/requests.md'
     - 'Responses': 'api-guide/responses.md'
@@ -36,6 +37,7 @@ pages:
     - 'Validators': 'api-guide/validators.md'
     - 'Authentication': 'api-guide/authentication.md'
     - 'Permissions': 'api-guide/permissions.md'
+    - 'Caching': 'api-guide/caching.md'
     - 'Throttling': 'api-guide/throttling.md'
     - 'Filtering': 'api-guide/filtering.md'
     - 'Pagination': 'api-guide/pagination.md'
@@ -58,20 +60,24 @@ pages:
      - 'Browser Enhancements': 'topics/browser-enhancements.md'
      - 'The Browsable API': 'topics/browsable-api.md'
      - 'REST, Hypermedia & HATEOAS': 'topics/rest-hypermedia-hateoas.md'
-     - 'Third Party Packages': 'topics/third-party-packages.md'
-     - 'Tutorials and Resources': 'topics/tutorials-and-resources.md'
-     - 'Contributing to REST framework': 'topics/contributing.md'
-     - 'Project management': 'topics/project-management.md'
-     - 'Jobs': 'topics/jobs.md'
-     - '3.0 Announcement': 'topics/3.0-announcement.md'
-     - '3.1 Announcement': 'topics/3.1-announcement.md'
-     - '3.2 Announcement': 'topics/3.2-announcement.md'
-     - '3.3 Announcement': 'topics/3.3-announcement.md'
-     - '3.4 Announcement': 'topics/3.4-announcement.md'
-     - '3.5 Announcement': 'topics/3.5-announcement.md'
-     - '3.6 Announcement': 'topics/3.6-announcement.md'
-     - '3.7 Announcement': 'topics/3.7-announcement.md'
-     - 'Kickstarter Announcement': 'topics/kickstarter-announcement.md'
-     - 'Mozilla Grant': 'topics/mozilla-grant.md'
-     - 'Funding': 'topics/funding.md'
-     - 'Release Notes': 'topics/release-notes.md'
+ - Community:
+     - 'Tutorials and Resources': 'community/tutorials-and-resources.md'
+     - 'Third Party Packages': 'community/third-party-packages.md'
+     - 'Contributing to REST framework': 'community/contributing.md'
+     - 'Project management': 'community/project-management.md'
+     - 'Release Notes': 'community/release-notes.md'
+     - '3.10 Announcement': 'community/3.10-announcement.md'
+     - '3.9 Announcement': 'community/3.9-announcement.md'
+     - '3.8 Announcement': 'community/3.8-announcement.md'
+     - '3.7 Announcement': 'community/3.7-announcement.md'
+     - '3.6 Announcement': 'community/3.6-announcement.md'
+     - '3.5 Announcement': 'community/3.5-announcement.md'
+     - '3.4 Announcement': 'community/3.4-announcement.md'
+     - '3.3 Announcement': 'community/3.3-announcement.md'
+     - '3.2 Announcement': 'community/3.2-announcement.md'
+     - '3.1 Announcement': 'community/3.1-announcement.md'
+     - '3.0 Announcement': 'community/3.0-announcement.md'
+     - 'Kickstarter Announcement': 'community/kickstarter-announcement.md'
+     - 'Mozilla Grant': 'community/mozilla-grant.md'
+     - 'Funding': 'community/funding.md'
+     - 'Jobs': 'community/jobs.md'

@@ -1,4 +1,7 @@
-source: pagination.py
+---
+source:
+    - pagination.py
+---
 
 # Pagination
 
@@ -46,7 +49,7 @@ If you want to modify particular aspects of the pagination style, you'll want to
         page_size_query_param = 'page_size'
         max_page_size = 1000
 
-You can then apply your new style to a view using the `.pagination_class` attribute:
+You can then apply your new style to a view using the `pagination_class` attribute:
 
     class BillingRecordsView(generics.ListAPIView):
         queryset = Billing.objects.all()
@@ -257,6 +260,10 @@ To have your custom pagination class be used by default, use the `DEFAULT_PAGINA
 
 API responses for list endpoints will now include a `Link` header, instead of including the pagination links as part of the body of the response, for example:
 
+![Link Header][link-header]
+
+*A custom pagination style, using the 'Link' header'*
+
 ## Pagination & schemas
 
 You can also make the pagination controls available to the schema autogeneration
@@ -265,12 +272,6 @@ that REST framework provides, by implementing a `get_schema_fields()` method. Th
 `get_schema_fields(self, view)`
 
 The method should return a list of `coreapi.Field` instances.
-
----
-
-![Link Header][link-header]
-
-*A custom pagination style, using the 'Link' header'*
 
 ---
 
@@ -311,14 +312,13 @@ The [`drf-proxy-pagination` package][drf-proxy-pagination] includes a `ProxyPagi
 
 ## link-header-pagination
 
-The [`django-rest-framework-link-header-pagination` package][drf-link-header-pagination] includes a `LinkHeaderPagination` class which provides pagination via an HTTP `Link` header as desribed in [Github's developer documentation](github-link-pagination).
+The [`django-rest-framework-link-header-pagination` package][drf-link-header-pagination] includes a `LinkHeaderPagination` class which provides pagination via an HTTP `Link` header as described in [Github's developer documentation](github-link-pagination).
 
 [cite]: https://docs.djangoproject.com/en/stable/topics/pagination/
-[github-link-pagination]: https://developer.github.com/guides/traversing-with-pagination/
 [link-header]: ../img/link-header-pagination.png
-[drf-extensions]: http://chibisov.github.io/drf-extensions/docs/
-[paginate-by-max-mixin]: http://chibisov.github.io/drf-extensions/docs/#paginatebymaxmixin
+[drf-extensions]: https://chibisov.github.io/drf-extensions/docs/
+[paginate-by-max-mixin]: https://chibisov.github.io/drf-extensions/docs/#paginatebymaxmixin
 [drf-proxy-pagination]: https://github.com/tuffnatty/drf-proxy-pagination
 [drf-link-header-pagination]: https://github.com/tbeadle/django-rest-framework-link-header-pagination
-[disqus-cursor-api]: http://cramer.io/2011/03/08/building-cursors-for-the-disqus-api
+[disqus-cursor-api]: https://cra.mr/2011/03/08/building-cursors-for-the-disqus-api
 [float_cursor_pagination_example]: https://gist.github.com/keturn/8bc88525a183fd41c73ffb729b8865be#file-fpcursorpagination-py

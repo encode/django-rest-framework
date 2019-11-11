@@ -1,4 +1,4 @@
-{% load staticfiles %}
+{% load static %}
 {% load i18n %}
 {% load rest_framework %}
 
@@ -38,7 +38,7 @@
           <div class="container">
             <span>
               {% block branding %}
-                <a class='navbar-brand' rel="nofollow" href='http://www.django-rest-framework.org'>
+                <a class='navbar-brand' rel="nofollow" href='https://www.django-rest-framework.org/'>
                     Django REST framework
                 </a>
               {% endblock %}
@@ -76,6 +76,8 @@
           {% block content %}
 
           <div class="region"  aria-label="{% trans "request form" %}">
+          {% block request_forms %}
+          
           {% if 'GET' in allowed_methods %}
             <form id="get-form" class="pull-right">
               <fieldset>
@@ -128,12 +130,28 @@
             </div>
           {% endif %}
 
+          {% if extra_actions %}
+            <div class="dropdown" style="float: right; margin-right: 10px">
+              <button class="btn btn-default" id="extra-actions-menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                {% trans "Extra Actions" %}
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu" aria-labelledby="extra-actions-menu">
+                {% for action_name, url in extra_actions|items %}
+                <li><a href="{{ url }}">{{ action_name }}</a></li>
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+
           {% if filter_form %}
             <button style="float: right; margin-right: 10px" data-toggle="modal" data-target="#filtersModal" class="btn btn-default">
               <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
               {% trans "Filters" %}
             </button>
           {% endif %}
+
+          {% endblock request_forms %}
           </div>
 
             <div class="content-main" role="main"  aria-label="{% trans "main content" %}">
@@ -157,10 +175,10 @@
               </div>
 
               <div class="response-info" aria-label="{% trans "response info" %}">
-                <pre class="prettyprint"><span class="meta nocode"><b>HTTP {{ response.status_code }} {{ response.status_text }}</b>{% autoescape off %}{% for key, val in response_headers|items %}
+                <pre class="prettyprint"><span class="meta nocode"><b>HTTP {{ response.status_code }} {{ response.status_text }}</b>{% for key, val in response_headers|items %}
 <b>{{ key }}:</b> <span class="lit">{{ val|break_long_headers|urlize_quoted_links }}</span>{% endfor %}
 
-</span>{{ content|urlize_quoted_links }}</pre>{% endautoescape %}
+</span>{{ content|urlize_quoted_links }}</pre>
               </div>
             </div>
 
@@ -187,7 +205,7 @@
                               {% csrf_token %}
                               {{ post_form }}
                               <div class="form-actions">
-                                <button class="btn btn-primary" title="Make a POST request on the {{ name }} resource">POST</button>
+                                <button class="btn btn-primary js-tooltip" title="Make a POST request on the {{ name }} resource">POST</button>
                               </div>
                             </fieldset>
                           </form>
@@ -201,7 +219,7 @@
                           <fieldset>
                             {% include "rest_framework/raw_data_form.html" %}
                             <div class="form-actions">
-                              <button class="btn btn-primary" title="Make a POST request on the {{ name }} resource">POST</button>
+                              <button class="btn btn-primary js-tooltip" title="Make a POST request on the {{ name }} resource">POST</button>
                             </div>
                           </fieldset>
                         </form>
@@ -272,10 +290,10 @@
       <script>
         window.drf = {
           csrfHeaderName: "{{ csrf_header_name|default:'X-CSRFToken' }}",
-          csrfCookieName: "{{ csrf_cookie_name|default:'csrftoken' }}"
+          csrfToken: "{% if request %}{{ csrf_token }}{% endif %}"
         };
       </script>
-      <script src="{% static "rest_framework/js/jquery-1.12.4.min.js" %}"></script>
+      <script src="{% static "rest_framework/js/jquery-3.4.1.min.js" %}"></script>
       <script src="{% static "rest_framework/js/ajax-form.js" %}"></script>
       <script src="{% static "rest_framework/js/csrf.js" %}"></script>
       <script src="{% static "rest_framework/js/bootstrap.min.js" %}"></script>

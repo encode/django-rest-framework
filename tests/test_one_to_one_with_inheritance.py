@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django.db import models
 from django.test import TestCase
 
@@ -39,5 +37,5 @@ class InheritedModelSerializationTests(TestCase):
         """
         child = ChildModel(name1='parent name', name2='child name')
         serializer = DerivedModelSerializer(child)
-        self.assertEqual(set(serializer.data.keys()),
+        self.assertEqual(set(serializer.data),
                          {'name1', 'name2', 'id', 'childassociatedmodel'})

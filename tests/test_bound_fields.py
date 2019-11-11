@@ -28,7 +28,7 @@ class TestSimpleBoundField:
         assert serializer['text'].value == 'abc'
         assert serializer['text'].errors is None
         assert serializer['text'].name == 'text'
-        assert serializer['amount'].value is 123
+        assert serializer['amount'].value == 123
         assert serializer['amount'].errors is None
         assert serializer['amount'].name == 'amount'
 
@@ -43,7 +43,7 @@ class TestSimpleBoundField:
         assert serializer['text'].value == 'x' * 1000
         assert serializer['text'].errors == ['Ensure this field has no more than 100 characters.']
         assert serializer['text'].name == 'text'
-        assert serializer['amount'].value is 123
+        assert serializer['amount'].value == 123
         assert serializer['amount'].errors is None
         assert serializer['amount'].name == 'amount'
 
@@ -54,7 +54,7 @@ class TestSimpleBoundField:
 
         serializer = ExampleSerializer()
         del serializer.fields['text']
-        assert 'text' not in serializer.fields.keys()
+        assert 'text' not in serializer.fields
 
     def test_as_form_fields(self):
         class ExampleSerializer(serializers.Serializer):
@@ -151,7 +151,7 @@ class TestNestedBoundField:
                 '<legend>Nested1</legend>'
                 '<divclass="form-group">'
                 '<label>Textfield</label>'
-                '<inputname="nested2.nested1.text_field"class="form-control"type="text">'
+                '<inputname="nested2.nested1.text_field"class="form-control"type="text"value="">'
                 '</div>'
                 '</fieldset>'
                 '<divclass="form-group">'

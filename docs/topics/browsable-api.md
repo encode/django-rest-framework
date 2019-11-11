@@ -44,7 +44,7 @@ Full example:
     {% extends "rest_framework/base.html" %}
 
     {% block bootstrap_theme %}
-        <link rel="stylesheet" href="http://bootswatch.com/flatly/bootstrap.min.css" type="text/css">
+        <link rel="stylesheet" href="https://bootswatch.com/flatly/bootstrap.min.css" type="text/css">
     {% endblock %}
 
     {% block bootstrap_navbar_variant %}{% endblock %}
@@ -93,6 +93,8 @@ The browsable API makes use of the Bootstrap tooltips component.  Any element wi
 To add branding and customize the look-and-feel of the login template, create a template called `login.html` and add it to your project, eg: `templates/rest_framework/login.html`.  The template should extend from `rest_framework/login_base.html`.
 
 You can add your site name or branding by including the branding block:
+
+    {% extends "rest_framework/login_base.html" %}
 
     {% block branding %}
         <h3 style="margin: 0 0 20px;">My Site Name</h3>
@@ -148,17 +150,15 @@ There are [a variety of packages for autocomplete widgets][autocomplete-packages
 
 ---
 
-[cite]: http://en.wikiquote.org/wiki/Alfred_North_Whitehead
+[cite]: https://en.wikiquote.org/wiki/Alfred_North_Whitehead
 [drfreverse]: ../api-guide/reverse.md
 [ffjsonview]: https://addons.mozilla.org/en-US/firefox/addon/jsonview/
 [chromejsonview]: https://chrome.google.com/webstore/detail/chklaanhfefbnpoihckbnefhakgolnmc
-[bootstrap]: http://getbootstrap.com
+[bootstrap]: https://getbootstrap.com/
 [cerulean]: ../img/cerulean.png
 [slate]: ../img/slate.png
-[bcustomize]: http://getbootstrap.com/2.3.2/customize.html
-[bswatch]: http://bootswatch.com/
-[bcomponents]: http://getbootstrap.com/2.3.2/components.html
-[bcomponentsnav]: http://getbootstrap.com/2.3.2/components.html#navbar
+[bswatch]: https://bootswatch.com/
+[bcomponents]: https://getbootstrap.com/2.3.2/components.html
+[bcomponentsnav]: https://getbootstrap.com/2.3.2/components.html#navbar
 [autocomplete-packages]: https://www.djangopackages.com/grids/g/auto-complete/
 [django-autocomplete-light]: https://github.com/yourlabs/django-autocomplete-light
-[django-autocomplete-light-install]: https://django-autocomplete-light.readthedocs.io/en/master/install.html
