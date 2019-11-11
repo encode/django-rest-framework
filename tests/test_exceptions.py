@@ -3,8 +3,8 @@ from django.utils import translation
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework.exceptions import (
-    APIException, ErrorDetail, Throttled, _get_error_details, bad_request,
-    server_error, ValidationError
+    APIException, ErrorDetail, Throttled, ValidationError, _get_error_details,
+    bad_request, server_error
 )
 
 
@@ -73,10 +73,8 @@ class ErrorDetailTests(TestCase):
         assert ErrorDetail('msg1', 'code') != 'msg2'
 
     def test_repr(self):
-        assert repr(ErrorDetail('msg1')) == \
-               'ErrorDetail(string={!r}, code=None)'.format('msg1')
-        assert repr(ErrorDetail('msg1', 'code')) == \
-               'ErrorDetail(string={!r}, code={!r})'.format('msg1', 'code')
+        assert repr(ErrorDetail('msg1')) == 'ErrorDetail(string={!r}, code=None)'.format('msg1')
+        assert repr(ErrorDetail('msg1', 'code')) == 'ErrorDetail(string={!r}, code={!r})'.format('msg1', 'code')
 
     def test_str(self):
         assert str(ErrorDetail('msg1')) == 'msg1'
