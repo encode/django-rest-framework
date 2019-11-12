@@ -47,7 +47,7 @@ class Hyperlink(str):
     in some contexts, or render as a plain URL in others.
     """
     def __new__(cls, url, obj):
-        ret = str.__new__(cls, url)
+        ret = super().__new__(cls, url)
         ret.obj = obj
         return ret
 
