@@ -52,7 +52,7 @@ class Hyperlink(str):
         return ret
 
     def __getnewargs__(self):
-        return(str(self), self.name,)
+        return str(self), self.name
 
     @property
     def name(self):
