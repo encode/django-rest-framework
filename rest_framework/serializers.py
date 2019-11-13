@@ -363,7 +363,7 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
     @property
     def _writable_fields(self):
         for field in self.fields.values():
-            if not field.read_only:
+            if (not field.read_only) or (field.default is not empty):
                 yield field
 
     @property
