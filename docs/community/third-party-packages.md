@@ -254,7 +254,6 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 
 * [cookiecutter-django-rest][cookiecutter-django-rest] - A cookiecutter template that takes care of the setup and configuration so you can focus on making your REST apis awesome.
 * [djangorestrelationalhyperlink][djangorestrelationalhyperlink] - A hyperlinked serializer that can can be used to alter relationships via hyperlinks, but otherwise like a hyperlink model serializer.
-* [django-rest-swagger][django-rest-swagger] - An API documentation generator for Swagger UI.
 * [django-rest-framework-proxy][django-rest-framework-proxy] - Proxy to redirect incoming request to another API server.
 * [gaiarestframework][gaiarestframework] - Utils for django-rest-framework
 * [drf-extensions][drf-extensions] - A collection of custom extensions
@@ -315,7 +314,6 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [djangorestframework-rapidjson]: https://github.com/allisson/django-rest-framework-rapidjson
 [djangorestframework-chain]: https://github.com/philipn/django-rest-framework-chain
 [djangorestrelationalhyperlink]: https://github.com/fredkingham/django_rest_model_hyperlink_serializers_project
-[django-rest-swagger]: https://github.com/marcgibbons/django-rest-swagger
 [django-rest-framework-proxy]: https://github.com/eofs/django-rest-framework-proxy
 [gaiarestframework]: https://github.com/AppsFuel/gaiarestframework
 [drf-extensions]: https://github.com/chibisov/drf-extensions

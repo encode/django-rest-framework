@@ -140,42 +140,6 @@ This also translates into a very useful interactive documentation viewer in the 
 
 ---
 
-### DRF AutoDocs
-
-Oleksander Mashianovs' [DRF Auto Docs][drfautodocs-repo] automated api renderer.
-
-Collects almost all the code you written into documentation effortlessly.
-
-Supports:
-
- * functional view docs
- * tree-like structure
- * Docstrings:
-  * markdown
-  * preserve space & newlines
-  * formatting with nice syntax
- * Fields:
-  * choices rendering
-  * help_text (to specify SerializerMethodField output, etc)
-  * smart read_only/required rendering
- * Endpoint properties:
-  * filter_backends
-  * authentication_classes
-  * permission_classes
-  * extra url params(GET params)
-
-![whole structure](http://joxi.ru/52aBGNI4k3oyA0.jpg)
-
----
-
-#### Apiary
-
-There are various other online tools and services for providing API documentation.  One notable service is [Apiary][apiary].  With Apiary, you describe your API using a simple markdown-like syntax.  The generated documentation includes API interaction, a mock server for testing & prototyping, and various other tools.
-
-![Screenshot - Apiary][image-apiary]
-
----
-
 ## Self describing APIs
 
 The browsable API that REST framework provides makes it possible for your API to be entirely self describing.  The documentation for each API endpoint can be provided simply by visiting the URL in your browser.
@@ -241,16 +205,10 @@ To implement a hypermedia API you'll need to decide on an appropriate media type
 [cite]: https://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
 [drf-yasg]: https://github.com/axnsan12/drf-yasg/
 [image-drf-yasg]: ../img/drf-yasg.png
-[drfautodocs-repo]: https://github.com/iMakedonsky/drf-autodocs
-[django-rest-swagger]: https://github.com/marcgibbons/django-rest-swagger
 [swagger]: https://swagger.io/
 [open-api]: https://openapis.org/
-[rest-framework-docs]: https://github.com/marcgibbons/django-rest-framework-docs
-[apiary]: https://apiary.io/
 [markdown]: https://daringfireball.net/projects/markdown/syntax
 [hypermedia-docs]: rest-hypermedia-hateoas.md
-[image-django-rest-swagger]: ../img/django-rest-swagger.png
-[image-apiary]: ../img/apiary.png
 [image-self-describing-api]: ../img/self-describing.png
 [metadata-docs]: ../api-guide/metadata/
 
