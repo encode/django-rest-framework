@@ -203,16 +203,17 @@ In this approach, rather than documenting the available API endpoints up front, 
 To implement a hypermedia API you'll need to decide on an appropriate media type for the API, and implement a custom renderer and parser for that media type.  The [REST, Hypermedia & HATEOAS][hypermedia-docs] section of the documentation includes pointers to background reading, as well as links to various hypermedia formats.
 
 [cite]: https://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
-[drf-yasg]: https://github.com/axnsan12/drf-yasg/
-[image-drf-yasg]: ../img/drf-yasg.png
-[swagger]: https://swagger.io/
-[open-api]: https://openapis.org/
-[markdown]: https://daringfireball.net/projects/markdown/syntax
+
 [hypermedia-docs]: rest-hypermedia-hateoas.md
-[image-self-describing-api]: ../img/self-describing.png
 [metadata-docs]: ../api-guide/metadata/
-
 [schemas-examples]: ../api-guide/schemas/#examples
-[swagger-ui]: https://swagger.io/tools/swagger-ui/
-[redoc]: https://github.com/Rebilly/ReDoc
 
+[image-drf-yasg]: ../img/drf-yasg.png
+[image-self-describing-api]: ../img/self-describing.png
+
+[drf-yasg]: https://github.com/axnsan12/drf-yasg/
+[markdown]: https://daringfireball.net/projects/markdown/syntax
+[open-api]: https://openapis.org/
+[redoc]: https://github.com/Rebilly/ReDoc
+[swagger]: https://swagger.io/
+[swagger-ui]: https://swagger.io/tools/swagger-ui/
