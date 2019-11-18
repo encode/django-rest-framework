@@ -1,6 +1,6 @@
 language: python
 cache: pip
-dist: xenial
+dist: bionic
 matrix:
     fast_finish: true
     include:
