@@ -245,7 +245,9 @@ This field is always read-only.
 
 # Nested relationships
 
-Nested relationships can be expressed by using serializers as fields.
+As opposed to previously discussed _references_ to another entity, the referred entity can instead also be embedded or _nested_
+in the representation of the object that refers to it.
+Such nested relationships can be expressed by using serializers as fields. 
 
 If the field is used to represent a to-many relationship, you should add the `many=True` flag to the serializer field.
 
