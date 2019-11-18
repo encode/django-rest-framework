@@ -713,7 +713,7 @@ the coordinate pair:
             fields = ['label', 'coordinates']
 
 Note that this example doesn't handle validation. Partly for that reason, in a
-real project, the coordinate nesting might be better handled with a nested serialiser
+real project, the coordinate nesting might be better handled with a nested serializer
 using `source='*'`, with two `IntegerField` instances, each with their own `source`
 pointing to the relevant field.
 
@@ -746,7 +746,7 @@ suitable for updating our target object. With `source='*'`, the return from
                      ('y_coordinate', 4),
                      ('x_coordinate', 3)])
 
-For completeness lets do the same thing again but with the nested serialiser
+For completeness lets do the same thing again but with the nested serializer
 approach suggested above:
 
     class NestedCoordinateSerializer(serializers.Serializer):
@@ -768,14 +768,14 @@ declarations. It's our `NestedCoordinateSerializer` that takes `source='*'`.
 Our new `DataPointSerializer` exhibits the same behaviour as the custom field
 approach.
 
-Serialising:
+Serializing:
 
     >>> out_serializer = DataPointSerializer(instance)
     >>> out_serializer.data
     ReturnDict([('label', 'testing'),
                 ('coordinates', OrderedDict([('x', 1), ('y', 2)]))])
 
-Deserialising:
+Deserializing:
 
     >>> in_serializer = DataPointSerializer(data=data)
     >>> in_serializer.is_valid()
@@ -802,8 +802,8 @@ But we also get the built-in validation for free:
                  {'x': ['A valid integer is required.'],
                   'y': ['A valid integer is required.']})])
 
-For this reason, the nested serialiser approach would be the first to try. You
-would use the custom field approach when the nested serialiser becomes infeasible
+For this reason, the nested serializer approach would be the first to try. You
+would use the custom field approach when the nested serializer becomes infeasible
 or overly complex.
 
 
