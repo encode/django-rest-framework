@@ -145,9 +145,9 @@ class TestProxiedPrimaryKeyRelatedField(APISimpleTestCase):
         assert representation == self.instance.pk.int
 
 
-@override_settings(ROOT_URLCONF=[
+@override_settings(ROOT_URLCONF=(
     url(r'^example/(?P<name>.+)/$', lambda: None, name='example'),
-])
+))
 class TestHyperlinkedRelatedField(APISimpleTestCase):
     def setUp(self):
         self.queryset = MockQueryset([
