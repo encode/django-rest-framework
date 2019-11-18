@@ -132,12 +132,12 @@ This scheme requires the client to specify the version as part of the URL path.
 Your URL conf must include a pattern that matches the version with a `'version'` keyword argument, so that this information is available to the versioning scheme.
 
     urlpatterns = [
-        url(
+        re_path(
             r'^(?P<version>(v1|v2))/bookings/$',
             bookings_list,
             name='bookings-list'
         ),
-        url(
+        re_path(
             r'^(?P<version>(v1|v2))/bookings/(?P<pk>[0-9]+)/$',
             bookings_detail,
             name='bookings-detail'
@@ -158,14 +158,14 @@ In the following example we're giving a set of views two different possible URL 
 
     # bookings/urls.py
     urlpatterns = [
-        url(r'^$', bookings_list, name='bookings-list'),
-        url(r'^(?P<pk>[0-9]+)/$', bookings_detail, name='bookings-detail')
+        re_path(r'^$', bookings_list, name='bookings-list'),
+        re_path(r'^(?P<pk>[0-9]+)/$', bookings_detail, name='bookings-detail')
     ]
 
     # urls.py
     urlpatterns = [
-        url(r'^v1/bookings/', include('bookings.urls', namespace='v1')),
-        url(r'^v2/bookings/', include('bookings.urls', namespace='v2'))
+        re_path(r'^v1/bookings/', include('bookings.urls', namespace='v1')),
+        re_path(r'^v2/bookings/', include('bookings.urls', namespace='v2'))
     ]
 
 Both `URLPathVersioning` and `NamespaceVersioning` are reasonable if you just need a simple versioning scheme. The `URLPathVersioning` approach might be better suitable for small ad-hoc projects, and the `NamespaceVersioning` is probably easier to manage for larger projects.
