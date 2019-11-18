@@ -192,7 +192,7 @@ class TestHyperlinkedRelatedField(APISimpleTestCase):
         instance = self.field.to_internal_value('http://example.org/example/baz%41%42%43qux/')
         assert instance is self.queryset.items[1]
 
-    def test_hyperlinked_related_lookup_url_encoded_exists(self):
+    def test_hyperlinked_related_lookup_url_space_encoded_exists(self):
         instance = self.field.to_internal_value('http://example.org/example/bazABC%20qux/')
         assert instance is self.queryset.items[2]
 
