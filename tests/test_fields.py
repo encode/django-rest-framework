@@ -1080,6 +1080,7 @@ class TestDecimalField(FieldValues):
     invalid_inputs = (
         ('abc', ["A valid number is required."]),
         (Decimal('Nan'), ["A valid number is required."]),
+        (Decimal('Snan'), ["A valid number is required."]),
         (Decimal('Inf'), ["A valid number is required."]),
         ('12.345', ["Ensure that there are no more than 3 digits in total."]),
         (200000000000.0, ["Ensure that there are no more than 3 digits in total."]),

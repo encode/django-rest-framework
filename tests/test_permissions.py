@@ -494,28 +494,28 @@ class CustomPermissionsTests(TestCase):
         self.custom_message = 'Custom: You cannot access this resource'
 
     def test_permission_denied(self):
-            response = denied_view(self.request, pk=1)
-            detail = response.data.get('detail')
-            self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-            self.assertNotEqual(detail, self.custom_message)
+        response = denied_view(self.request, pk=1)
+        detail = response.data.get('detail')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertNotEqual(detail, self.custom_message)
 
     def test_permission_denied_with_custom_detail(self):
-            response = denied_view_with_detail(self.request, pk=1)
-            detail = response.data.get('detail')
-            self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-            self.assertEqual(detail, self.custom_message)
+        response = denied_view_with_detail(self.request, pk=1)
+        detail = response.data.get('detail')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(detail, self.custom_message)
 
     def test_permission_denied_for_object(self):
-            response = denied_object_view(self.request, pk=1)
-            detail = response.data.get('detail')
-            self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-            self.assertNotEqual(detail, self.custom_message)
+        response = denied_object_view(self.request, pk=1)
+        detail = response.data.get('detail')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertNotEqual(detail, self.custom_message)
 
     def test_permission_denied_for_object_with_custom_detail(self):
-            response = denied_object_view_with_detail(self.request, pk=1)
-            detail = response.data.get('detail')
-            self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-            self.assertEqual(detail, self.custom_message)
+        response = denied_object_view_with_detail(self.request, pk=1)
+        detail = response.data.get('detail')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(detail, self.custom_message)
 
 
 class PermissionsCompositionTests(TestCase):

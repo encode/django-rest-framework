@@ -29,10 +29,35 @@ class ExampleDetailView(APIView):
         pass
 
 
+class DocStringExampleListView(APIView):
+    """
+    get: A description of my GET operation.
+    post: A description of my POST operation.
+    """
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get(self, *args, **kwargs):
+        pass
+
+    def post(self, request, *args, **kwargs):
+        pass
+
+
+class DocStringExampleDetailView(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get(self, *args, **kwargs):
+        """
+        A description of my GET operation.
+        """
+        pass
+
+
 # Generics.
 class ExampleSerializer(serializers.Serializer):
     date = serializers.DateField()
     datetime = serializers.DateTimeField()
+    hstore = serializers.HStoreField()
 
 
 class ExampleGenericAPIView(generics.GenericAPIView):

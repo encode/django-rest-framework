@@ -222,11 +222,11 @@ Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.
         def perform_create(self, serializer):
             serializer.save(owner=self.request.user)
 
-    Alternatively you may override `save()` or `create()` or `update()` on the serialiser as appropriate.
+    Alternatively you may override `save()` or `create()` or `update()` on the serializer as appropriate.
 
 * Correct allow_null behaviour when required=False [#5888][gh5888]
 
-    Without an explicit `default`, `allow_null` implies a default of `null` for outgoing serialisation. Previously such
+    Without an explicit `default`, `allow_null` implies a default of `null` for outgoing serialization. Previously such
     fields were being skipped when read-only or otherwise not required.
 
     **Possible backwards compatibility break** if you were relying on such fields being excluded from the outgoing
@@ -464,7 +464,7 @@ Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.
 * Deprecated `exclude_from_schema` on `APIView` and `api_view` decorator. Set `schema = None` or `@schema(None)` as appropriate. [#5422][gh5422]
 * Timezone-aware `DateTimeField`s now respect active or default `timezone` during serialization, instead of always using UTC. [#5435][gh5435]
 
-    Resolves inconsistency whereby instances were serialised with supplied datetime for `create` but UTC for `retrieve`. [#3732][gh3732]
+    Resolves inconsistency whereby instances were serialized with supplied datetime for `create` but UTC for `retrieve`. [#3732][gh3732]
 
     **Possible backwards compatibility break** if you were relying on datetime strings being UTC. Have client interpret datetimes or [set default or active timezone (docs)][djangodocs-set-timezone] to UTC if needed.
 

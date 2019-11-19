@@ -1062,9 +1062,7 @@ class DecimalField(Field):
         except decimal.DecimalException:
             self.fail('invalid')
 
-        # Check for NaN. It is the only value that isn't equal to itself,
-        # so we can use this to identify NaN values.
-        if value != value:
+        if value.is_nan():
             self.fail('invalid')
 
         # Check for infinity and negative infinity.

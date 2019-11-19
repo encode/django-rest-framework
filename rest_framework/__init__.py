@@ -10,7 +10,7 @@ ______ _____ _____ _____    __
 __title__ = 'Django REST framework'
 __version__ = '3.10.3'
 __author__ = 'Tom Christie'
-__license__ = 'BSD 2-Clause'
+__license__ = 'BSD 3-Clause'
 __copyright__ = 'Copyright 2011-2019 Encode OSS Ltd'
 
 # Version synonym
