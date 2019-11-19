@@ -31,7 +31,7 @@ This will install the latest version of Django REST Framework which works on
 your version of Python. If you can't upgrade your pip (or Python), request
 an older version of Django REST Framework:
 
-    $ python -m pip install "django<3.10"
+    $ python -m pip install "djangorestframework<3.10"
 """.format(*(REQUIRED_PYTHON + CURRENT_PYTHON)))
     sys.exit(1)
 
