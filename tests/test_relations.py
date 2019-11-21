@@ -149,6 +149,7 @@ urlpatterns = [
     url(r'^example/(?P<name>.+)/$', lambda: None, name='example'),
 ]
 
+
 @override_settings(ROOT_URLCONF='tests.test_relations')
 class TestHyperlinkedRelatedField(APISimpleTestCase):
     def setUp(self):
