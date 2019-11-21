@@ -30,23 +30,14 @@ def qs_filter(queryset, **kwargs):
         return queryset.none()
 
 
-class ContextBasedValidator:
-    """Base class for validators that need a context during evaluation.
-
-    In extension to regular validators their `__call__` method must not only
-    accept a value, but also an instance of a serializer.
-    """
-    def __call__(self, value, serializer):
-        raise NotImplementedError('`__call__()` must be implemented.')
-
-
-class UniqueValidator(ContextBasedValidator):
+class UniqueValidator:
     """
     Validator that corresponds to `unique=True` on a model field.
 
     Should be applied to an individual field on the serializer.
     """
     message = _('This field must be unique.')
+    requires_context = True
 
     def __init__(self, queryset, message=None, lookup='exact'):
         self.queryset = queryset
@@ -90,7 +81,7 @@ class UniqueValidator(ContextBasedValidator):
         )
 
 
-class UniqueTogetherValidator(ContextBasedValidator):
+class UniqueTogetherValidator:
     """
     Validator that corresponds to `unique_together = (...)` on a model class.
 
@@ -98,6 +89,7 @@ class UniqueTogetherValidator(ContextBasedValidator):
     """
     message = _('The fields {field_names} must make a unique set.')
     missing_message = _('This field is required.')
+    requires_context = True
 
     def __init__(self, queryset, fields, message=None):
         self.queryset = queryset
@@ -174,9 +166,10 @@ class UniqueTogetherValidator(ContextBasedValidator):
         )
 
 
-class BaseUniqueForValidator(ContextBasedValidator):
+class BaseUniqueForValidator:
     message = None
     missing_message = _('This field is required.')
+    requires_context = True
 
     def __init__(self, queryset, field, date_field, message=None):
         self.queryset = queryset

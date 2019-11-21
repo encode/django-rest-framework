@@ -294,15 +294,14 @@ To write a class-based validator, use the `__call__` method. Class-based validat
 #### Accessing the context
 
 In some advanced cases you might want a validator to be passed the serializer
-field it is being used with as additional context. You can do so by using
-`rest_framework.validators.ContextBasedValidator` as a base class for the
-validator. The `__call__` method will then be called with the `serializer_field`
+field it is being used with as additional context. You can do so by setting
+a `requires_context = True` attribute on the validator. The `__call__` method
+will then be called with the `serializer_field`
 or `serializer` as an additional argument.
 
-    def __call__(self, value, serializer_field):
-        # Determine if this is an update or a create operation.
-        is_update = serializer_field.parent.instance is not None
+    requires_context = True
 
-        pass  # implementation of the validator that uses `is_update`
+    def __call__(self, value, serializer_field):
+        ...
 
 [cite]: https://docs.djangoproject.com/en/stable/ref/validators/
