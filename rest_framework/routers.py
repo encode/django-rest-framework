@@ -30,8 +30,28 @@ from rest_framework.schemas.views import SchemaView
 from rest_framework.settings import api_settings
 from rest_framework.urlpatterns import format_suffix_patterns
 
-Route = namedtuple('Route', ['url', 'mapping', 'name', 'detail', 'initkwargs'])
-DynamicRoute = namedtuple('DynamicRoute', ['url', 'name', 'detail', 'initkwargs'])
+
+class Route:
+    def __init__(self, mapping, name, detail, initkwargs, url=None, path=None):
+        assert url is None or path is None, "May not set both 'url' and 'path'."
+        assert not (url is None and path is None), "Either 'url' or 'path' must be set."
+        self.url = url
+        self.path = path
+        self.mapping = mapping
+        self.name = name
+        self.detail = detail
+        self.initkwargs = initkwargs
+
+
+class DynamicRoute:
+    def __init__(self, name, detail, initkwargs, url=None, path=None):
+        assert url is None or path is None, "May not set both 'url' and 'path'."
+        assert not (url is None and path is None), "Either 'url' or 'path' must be set."
+        self.url = url
+        self.path = path
+        self.name = name
+        self.detail = detail
+        self.initkwargs = initkwargs
 
 
 def escape_curly_brackets(url_path):
@@ -201,8 +221,15 @@ class SimpleRouter(BaseRouter):
 
         url_path = escape_curly_brackets(action.url_path)
 
+        # We support *either* `url=...` or `path=...` in line with Django's
+        # two alternate routing syntaxes.
+        # https://docs.djangoproject.com/en/2.0/releases/2.0/#simplified-url-routing-syntax
+        url = None if route.url is None else route.url.replace('{url_path}', url_path)
+        path = None if route.path is None else route.path.replace('{url_path}', url_path)
+
         return Route(
-            url=route.url.replace('{url_path}', url_path),
+            url=url,
+            path=path,
             mapping=action.mapping,
             name=route.name.replace('{url_name}', action.url_name),
             detail=route.detail,
@@ -262,7 +289,14 @@ class SimpleRouter(BaseRouter):
                     continue
 
                 # Build the url pattern
-                regex = route.url.format(
+                # route.url uses Django's `url(...)` routing syntax.
+                route_url = None if route.url is None else route.url.format(
+                    prefix=prefix,
+                    lookup=lookup,
+                    trailing_slash=self.trailing_slash
+                )
+                # route.path uses Django's `path(...)` routing syntax.
+                route_path = None if route.path is None else route.path.format(
                     prefix=prefix,
                     lookup=lookup,
                     trailing_slash=self.trailing_slash
@@ -272,8 +306,8 @@ class SimpleRouter(BaseRouter):
                 #   controlled by project's urls.py and the router is in an app,
                 #   so a slash in the beginning will (A) cause Django to give
                 #   warnings and (B) generate URLS that will require using '//'.
-                if not prefix and regex[:2] == '^/':
-                    regex = '^' + regex[2:]
+                if not prefix and route_url is not None and route_url[:2] == '^/':
+                    route_url = '^' + route_url[2:]
 
                 initkwargs = route.initkwargs.copy()
                 initkwargs.update({
@@ -283,7 +317,11 @@ class SimpleRouter(BaseRouter):
 
                 view = viewset.as_view(mapping, **initkwargs)
                 name = route.name.format(basename=basename)
-                ret.append(url(regex, view, name=name))
+                if route_url is not None:
+                    ret.append(url(route_url, view, name=name))
+                else:
+                    from django.urls import path
+                    ret.append(path(route_path, view, name=name))
 
         return ret
 
