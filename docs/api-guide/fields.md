@@ -50,7 +50,7 @@ If set, this gives the default value that will be used for the field if no input
 
 The `default` is not applied during partial update operations. In the partial update case only fields that are provided in the incoming data will have a validated value returned.
 
-May be set to a function or other callable, in which case the value will be evaluated each time it is used. When called, it will receive no arguments. If the callable has a `set_context` method, that will be called each time before getting the value with the field instance as only argument. This works the same way as for [validators](validators.md#using-set_context).
+May be set to a function or other callable, in which case the value will be evaluated each time it is used. When called, it will receive no arguments. If the callable has a `set_context` method, that will be called each time before getting the value with the field instance as only argument.
 
 When serializing the instance, default will be used if the object attribute or dictionary key is not present in the instance.
 

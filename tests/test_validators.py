@@ -361,8 +361,7 @@ class TestUniquenessTogetherValidation(TestCase):
         queryset = MockQueryset()
         validator = UniqueTogetherValidator(queryset, fields=('race_name',
                                                               'position'))
-        validator.instance = self.instance
-        validator.filter_queryset(attrs=data, queryset=queryset)
+        validator.filter_queryset(attrs=data, queryset=queryset, instance=self.instance)
         assert queryset.called_with == {'race_name': 'bar', 'position': 1}
 
 
@@ -586,4 +585,6 @@ class ValidatorsTests(TestCase):
         validator = BaseUniqueForValidator(queryset=object(), field='foo',
                                            date_field='bar')
         with pytest.raises(NotImplementedError):
-            validator.filter_queryset(attrs=None, queryset=None)
+            validator.filter_queryset(
+                attrs=None, queryset=None, field_name='', date_field_name=''
+            )
