@@ -344,7 +344,7 @@ class HyperlinkedRelatedField(RelatedField):
             if data.startswith(prefix):
                 data = '/' + data[len(prefix):]
 
-        data = uri_to_iri(data)
+        data = uri_to_iri(parse.unquote(data))
 
         try:
             match = resolve(data)
