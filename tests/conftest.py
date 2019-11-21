@@ -67,7 +67,7 @@ def pytest_configure(config):
     )
 
     # guardian is optional
-    # Note that for the test cases we're installing a version of django-gaurdian
+    # Note that for the test cases we're installing a version of django-guardian
     # that's only compatible with Django 2.0+.
     if django.VERSION >= (2, 0, 0):
         try:
