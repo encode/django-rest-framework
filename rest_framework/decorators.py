@@ -72,6 +72,11 @@ def api_view(http_method_names=None):
 
         WrappedAPIView.schema = getattr(func, 'schema',
                                         APIView.schema)
+        for extra_attr in getattr(func, 'extra_attrs', []):
+            assert not (hasattr(WrappedAPIView, extra_attr)), \
+                '{} already has attribute {}'.format(func.__name__, extra_attr)
+            setattr(WrappedAPIView, extra_attr,
+                    getattr(func, extra_attr, None))
 
         return WrappedAPIView.as_view()
 
@@ -116,6 +121,15 @@ def permission_classes(permission_classes):
 def schema(view_inspector):
     def decorator(func):
         func.schema = view_inspector
+        return func
+    return decorator
+
+
+def extra_attrs(**kwargs):
+    def decorator(func):
+        func.extra_attrs = list(kwargs.keys())
+        for extra_attr, val in kwargs.items():
+            setattr(func, extra_attr, val)
         return func
     return decorator
 

@@ -217,6 +217,21 @@ You may pass `None` in order to exclude the view from schema generation.
         return Response({"message": "Will not appear in schema!"})
 
 
+## View extra attrs decorator
+
+To set custom extra attribute on function-based view, you may use the `@extra_attrs` decorator.
+This must come *after* (below) the `@api_view` decorator. For example:
+
+    from rest_framework.decorators import api_view, extra_attrs
+
+    class ExtraClass:
+        pass
+
+    @api_view(['GET'])
+    @extra_attrs(extra_class=ExtraClass)
+    def view(request):
+        return Response({"message": "Hello for today! See you tomorrow!"})
+
 [cite]: https://reinout.vanrees.org/weblog/2011/08/24/class-based-views-usage.html
 [cite2]: http://www.boredomandlaziness.org/2012/05/djangos-cbvs-are-not-mistake-but.html
 [settings]: settings.md

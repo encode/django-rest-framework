@@ -4,7 +4,7 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.decorators import (
-    action, api_view, authentication_classes, parser_classes,
+    action, api_view, authentication_classes, extra_attrs, parser_classes,
     permission_classes, renderer_classes, schema, throttle_classes
 )
 from rest_framework.parsers import JSONParser
@@ -165,6 +165,25 @@ class DecoratorTestCase(TestCase):
             return Response({})
 
         assert isinstance(view.cls.schema, CustomSchema)
+
+    def test_extra_attrs(self):
+        """
+        Checks Custom extra attrs is set on view
+        """
+
+        def extra_func():
+            pass
+
+        class ExtraClass:
+            pass
+
+        @api_view(['get'])
+        @extra_attrs(extra_func=extra_func, extra_class=ExtraClass)
+        def view(request):
+            return Response({})
+
+        assert view.cls.extra_func is extra_func
+        assert view.cls.extra_class is ExtraClass
 
 
 class ActionDecoratorTestCase(TestCase):
