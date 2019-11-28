@@ -90,10 +90,10 @@ def exception_handler(exc, context):
         if getattr(exc, 'wait', None):
             headers['Retry-After'] = '%d' % exc.wait
 
-        if isinstance(exc.detail, (list, tuple, dict)):
+        if isinstance(exc.detail, (list, dict)):
             data = exc.detail
         else:
-            data = {'detail': exc.detail, 'code': exc.detail.code}
+            data = {'detail': exc.detail}
 
         set_rollback()
         return Response(data, status=exc.status_code, headers=headers)

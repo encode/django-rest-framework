@@ -499,34 +499,26 @@ class CustomPermissionsTests(TestCase):
     def test_permission_denied(self):
         response = denied_view(self.request, pk=1)
         detail = response.data.get('detail')
-        code = response.data.get('code')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertNotEqual(detail, self.custom_message)
-        self.assertNotEqual(code, self.custom_code)
 
     def test_permission_denied_with_custom_detail(self):
         response = denied_view_with_detail(self.request, pk=1)
         detail = response.data.get('detail')
-        code = response.data.get('code')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(detail, self.custom_message)
-        self.assertEqual(code, self.custom_code)
 
     def test_permission_denied_for_object(self):
         response = denied_object_view(self.request, pk=1)
         detail = response.data.get('detail')
-        code = response.data.get('code')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertNotEqual(detail, self.custom_message)
-        self.assertNotEqual(code, self.custom_code)
 
     def test_permission_denied_for_object_with_custom_detail(self):
         response = denied_object_view_with_detail(self.request, pk=1)
         detail = response.data.get('detail')
-        code = response.data.get('code')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(detail, self.custom_message)
-        self.assertEqual(code, self.custom_code)
 
 
 class PermissionsCompositionTests(TestCase):
