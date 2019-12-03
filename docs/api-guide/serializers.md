@@ -1176,6 +1176,10 @@ The [html-json-forms][html-json-forms] package provides an algorithm and seriali
 
 The [drf-writable-nested][drf-writable-nested] package provides writable nested model serializer which allows to create/update models with nested related data.
 
+## Django RESTQL
+
+* [django-restql][django-restql] - Turn your REST API into a GraphQL like API(It allows clients to control which fields will be sent in a response, uses GraphQL like syntax, supports read and write on both flat and nested fields).
+
 [cite]: https://groups.google.com/d/topic/django-users/sVFaOfQi4wY/discussion
 [relations]: relations.md
 [model-managers]: https://docs.djangoproject.com/en/stable/topics/db/managers/
@@ -1197,3 +1201,4 @@ The [drf-writable-nested][drf-writable-nested] package provides writable nested 
 [drf-serializer-extensions]: https://github.com/evenicoulddoit/django-rest-framework-serializer-extensions
 [djangorestframework-queryfields]: https://djangorestframework-queryfields.readthedocs.io/
 [drf-writable-nested]: https://github.com/beda-software/drf-writable-nested
+[django-restql]: https://github.com/yezyilomo/django-restql
