@@ -5,6 +5,7 @@ import functools
 import inspect
 import re
 import uuid
+import warnings
 from collections import OrderedDict
 from collections.abc import Mapping
 
@@ -249,19 +250,30 @@ class CreateOnlyDefault:
     for create operations, but that do not return any value for update
     operations.
     """
+    requires_context = True
+
     def __init__(self, default):
         self.default = default
 
-    def set_context(self, serializer_field):
-        self.is_update = serializer_field.parent.instance is not None
-        if callable(self.default) and hasattr(self.default, 'set_context') and not self.is_update:
-            self.default.set_context(serializer_field)
-
-    def __call__(self):
-        if self.is_update:
+    def __call__(self, serializer_field):
+        is_update = serializer_field.parent.instance is not None
+        if is_update:
             raise SkipField()
         if callable(self.default):
-            return self.default()
+            if hasattr(self.default, 'set_context'):
+                warnings.warn(
+                    "Method `set_context` on defaults is deprecated and will "
+                    "no longer be called starting with 3.12. Instead set "
+                    "`requires_context = True` on the class, and accept the "
+                    "context as an additional argument.",
+                    DeprecationWarning, stacklevel=2
+                )
+                self.default.set_context(self)
+
+            if getattr(self.default, 'requires_context', False):
+                return self.default(serializer_field)
+            else:
+                return self.default()
         return self.default
 
     def __repr__(self):
@@ -269,11 +281,10 @@ class CreateOnlyDefault:
 
 
 class CurrentUserDefault:
-    def set_context(self, serializer_field):
-        self.user = serializer_field.context['request'].user
+    requires_context = True
 
-    def __call__(self):
-        return self.user
+    def __call__(self, serializer_field):
+        return serializer_field.context['request'].user
 
     def __repr__(self):
         return '%s()' % self.__class__.__name__
@@ -489,8 +500,20 @@ class Field:
             raise SkipField()
         if callable(self.default):
             if hasattr(self.default, 'set_context'):
+                warnings.warn(
+                    "Method `set_context` on defaults is deprecated and will "
+                    "no longer be called starting with 3.12. Instead set "
+                    "`requires_context = True` on the class, and accept the "
+                    "context as an additional argument.",
+                    DeprecationWarning, stacklevel=2
+                )
                 self.default.set_context(self)
-            return self.default()
+
+            if getattr(self.default, 'requires_context', False):
+                return self.default(self)
+            else:
+                return self.default()
+
         return self.default
 
     def validate_empty_values(self, data):
@@ -551,10 +574,20 @@ class Field:
         errors = []
         for validator in self.validators:
             if hasattr(validator, 'set_context'):
+                warnings.warn(
+                    "Method `set_context` on validators is deprecated and will "
+                    "no longer be called starting with 3.12. Instead set "
+                    "`requires_context = True` on the class, and accept the "
+                    "context as an additional argument.",
+                    DeprecationWarning, stacklevel=2
+                )
                 validator.set_context(self)
 
             try:
-                validator(value)
+                if getattr(validator, 'requires_context', False):
+                    validator(value, self)
+                else:
+                    validator(value)
             except ValidationError as exc:
                 # If the validation error contains a mapping of fields to
                 # errors then simply raise it immediately rather than

@@ -291,13 +291,17 @@ To write a class-based validator, use the `__call__` method. Class-based validat
                 message = 'This field must be a multiple of %d.' % self.base
                 raise serializers.ValidationError(message)
 
-#### Using `set_context()`
+#### Accessing the context
 
-In some advanced cases you might want a validator to be passed the serializer field it is being used with as additional context. You can do so by declaring a `set_context` method on a class-based validator.
+In some advanced cases you might want a validator to be passed the serializer
+field it is being used with as additional context. You can do so by setting
+a `requires_context = True` attribute on the validator. The `__call__` method
+will then be called with the `serializer_field`
+or `serializer` as an additional argument.
 
-    def set_context(self, serializer_field):
-        # Determine if this is an update or a create operation.
-        # In `__call__` we can then use that information to modify the validation behavior.
-        self.is_update = serializer_field.parent.instance is not None
+    requires_context = True
+
+    def __call__(self, value, serializer_field):
+        ...
 
 [cite]: https://docs.djangoproject.com/en/stable/ref/validators/
