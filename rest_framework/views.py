@@ -7,7 +7,7 @@ from django.db import connection, models, transaction
 from django.http import Http404
 from django.http.response import HttpResponseBase
 from django.utils.cache import cc_delim_re, patch_vary_headers
-from django.utils.encoding import smart_text
+from django.utils.encoding import smart_str
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
@@ -56,7 +56,7 @@ def get_view_description(view, html=False):
     if description is None:
         description = view.__class__.__doc__ or ''
 
-    description = formatting.dedent(smart_text(description))
+    description = formatting.dedent(smart_str(description))
     if html:
         return formatting.markup_description(description)
     return description
