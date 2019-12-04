@@ -1,9 +1,5 @@
 # Release Notes
 
-> Release Early, Release Often
->
-> &mdash; Eric S. Raymond, [The Cathedral and the Bazaar][cite].
-
 ## Versioning
 
 Minor version numbers (0.0.x) are used for changes that are API compatible.  You should be able to upgrade between minor point releases without any other code changes.
