@@ -89,6 +89,7 @@ class FieldOptionsModel(models.Model):
     default_field = models.IntegerField(default=0)
     descriptive_field = models.IntegerField(help_text='Some help text', verbose_name='A label')
     choices_field = models.CharField(max_length=100, choices=COLOR_CHOICES)
+    text_choices_field = models.TextField(choices=COLOR_CHOICES)
 
 
 class ChoicesModel(models.Model):
@@ -211,6 +212,7 @@ class TestRegularFieldMappings(TestCase):
                 default_field = IntegerField(required=False)
                 descriptive_field = IntegerField(help_text='Some help text', label='A label')
                 choices_field = ChoiceField(choices=(('red', 'Red'), ('blue', 'Blue'), ('green', 'Green')))
+                text_choices_field = ChoiceField(choices=(('red', 'Red'), ('blue', 'Blue'), ('green', 'Green')))
         """)
         self.assertEqual(repr(TestSerializer()), expected)
 
