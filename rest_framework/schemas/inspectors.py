@@ -6,7 +6,7 @@ See schemas.__init__.py for package overview.
 import re
 from weakref import WeakKeyDictionary
 
-from django.utils.encoding import smart_text
+from django.utils.encoding import smart_str
 
 from rest_framework.settings import api_settings
 from rest_framework.utils import formatting
@@ -82,7 +82,7 @@ class ViewInspector:
         method_docstring = getattr(view, method_name, None).__doc__
         if method_docstring:
             # An explicit docstring on the method or action.
-            return self._get_description_section(view, method.lower(), formatting.dedent(smart_text(method_docstring)))
+            return self._get_description_section(view, method.lower(), formatting.dedent(smart_str(method_docstring)))
         else:
             return self._get_description_section(view, getattr(view, 'action', method.lower()),
                                                  view.get_view_description())

@@ -6,7 +6,7 @@ from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.db.models import Manager
 from django.db.models.query import QuerySet
 from django.urls import NoReverseMatch, Resolver404, get_script_prefix, resolve
-from django.utils.encoding import smart_text, uri_to_iri
+from django.utils.encoding import smart_str, uri_to_iri
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework.fields import (
@@ -452,7 +452,7 @@ class SlugRelatedField(RelatedField):
         try:
             return self.get_queryset().get(**{self.slug_field: data})
         except ObjectDoesNotExist:
-            self.fail('does_not_exist', slug_name=self.slug_field, value=smart_text(data))
+            self.fail('does_not_exist', slug_name=self.slug_field, value=smart_str(data))
         except (TypeError, ValueError):
             self.fail('invalid')
 
