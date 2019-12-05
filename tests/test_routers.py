@@ -1,4 +1,3 @@
-import warnings
 from collections import namedtuple
 
 import pytest
@@ -8,9 +7,7 @@ from django.db import models
 from django.test import TestCase, override_settings
 from django.urls import resolve, reverse
 
-from rest_framework import (
-    RemovedInDRF311Warning, permissions, serializers, viewsets
-)
+from rest_framework import permissions, serializers, viewsets
 from rest_framework.compat import get_regex_pattern
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -488,71 +485,3 @@ class TestViewInitkwargs(URLPatternsTestCase, TestCase):
         initkwargs = match.func.initkwargs
 
         assert initkwargs['basename'] == 'routertestmodel'
-
-
-class TestBaseNameRename(TestCase):
-
-    def test_base_name_and_basename_assertion(self):
-        router = SimpleRouter()
-
-        msg = "Do not provide both the `basename` and `base_name` arguments."
-        with warnings.catch_warnings(record=True) as w, \
-                self.assertRaisesMessage(AssertionError, msg):
-            warnings.simplefilter('always')
-            router.register('mock', MockViewSet, 'mock', base_name='mock')
-
-        msg = "The `base_name` argument is pending deprecation in favor of `basename`."
-        assert len(w) == 1
-        assert str(w[0].message) == msg
-
-    def test_base_name_argument_deprecation(self):
-        router = SimpleRouter()
-
-        with pytest.warns(RemovedInDRF311Warning) as w:
-            warnings.simplefilter('always')
-            router.register('mock', MockViewSet, base_name='mock')
-
-        msg = "The `base_name` argument is pending deprecation in favor of `basename`."
-        assert len(w) == 1
-        assert str(w[0].message) == msg
-        assert router.registry == [
-            ('mock', MockViewSet, 'mock'),
-        ]
-
-    def test_basename_argument_no_warnings(self):
-        router = SimpleRouter()
-
-        with warnings.catch_warnings(record=True) as w:
-            warnings.simplefilter('always')
-            router.register('mock', MockViewSet, basename='mock')
-
-        assert len(w) == 0
-        assert router.registry == [
-            ('mock', MockViewSet, 'mock'),
-        ]
-
-    def test_get_default_base_name_deprecation(self):
-        msg = "`CustomRouter.get_default_base_name` method should be renamed `get_default_basename`."
-
-        # Class definition should raise a warning
-        with pytest.warns(RemovedInDRF311Warning) as w:
-            warnings.simplefilter('always')
-
-            class CustomRouter(SimpleRouter):
-                def get_default_base_name(self, viewset):
-                    return 'foo'
-
-        assert len(w) == 1
-        assert str(w[0].message) == msg
-
-        # Deprecated method implementation should still be called
-        with warnings.catch_warnings(record=True) as w:
-            warnings.simplefilter('always')
-
-            router = CustomRouter()
-            router.register('mock', MockViewSet)
-
-        assert len(w) == 0
-        assert router.registry == [
-            ('mock', MockViewSet, 'foo'),
-        ]
