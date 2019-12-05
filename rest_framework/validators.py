@@ -41,7 +41,6 @@ class UniqueValidator:
 
     def __init__(self, queryset, message=None, lookup='exact'):
         self.queryset = queryset
-        self.serializer_field = None
         self.message = message or self.message
         self.lookup = lookup
 
@@ -94,7 +93,6 @@ class UniqueTogetherValidator:
     def __init__(self, queryset, fields, message=None):
         self.queryset = queryset
         self.fields = fields
-        self.serializer_field = None
         self.message = message or self.message
 
     def enforce_required_fields(self, attrs, serializer):
