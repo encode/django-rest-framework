@@ -357,11 +357,16 @@ class TestUniquenessTogetherValidation(TestCase):
             def filter(self, **kwargs):
                 self.called_with = kwargs
 
+        class MockSerializer:
+            def __init__(self, instance):
+                self.instance = instance
+
         data = {'race_name': 'bar'}
         queryset = MockQueryset()
+        serializer = MockSerializer(instance=self.instance)
         validator = UniqueTogetherValidator(queryset, fields=('race_name',
                                                               'position'))
-        validator.filter_queryset(attrs=data, queryset=queryset, instance=self.instance)
+        validator.filter_queryset(attrs=data, queryset=queryset, serializer=serializer)
         assert queryset.called_with == {'race_name': 'bar', 'position': 1}
 
 
