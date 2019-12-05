@@ -565,11 +565,10 @@ class TestCreateOnlyDefault:
         on the callable if possible
         """
         class TestCallableDefault:
-            def set_context(self, serializer_field):
-                self.field = serializer_field
+            requires_context = True
 
-            def __call__(self):
-                return "success" if hasattr(self, 'field') else "failure"
+            def __call__(self, field=None):
+                return "success" if field is not None else "failure"
 
         class TestSerializer(serializers.Serializer):
             context_set = serializers.CharField(default=serializers.CreateOnlyDefault(TestCallableDefault()))
