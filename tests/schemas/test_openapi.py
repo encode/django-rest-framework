@@ -571,6 +571,22 @@ class TestOperationIntrospection(TestCase):
         properties = response_schema['items']['properties']
         assert properties['hstore']['type'] == 'object'
 
+    def test_serializer_choice_field(self):
+        path = '/'
+        method = 'GET'
+        view = create_view(
+            views.ExampleChoiceFieldAPIView,
+            method,
+            create_request(path),
+        )
+        inspector = AutoSchema()
+        inspector.view = view
+
+        responses = inspector._get_responses(path, method)
+        response_schema = responses['200']['content']['application/json']['schema']
+        properties = response_schema['items']['properties']
+        assert 'type' in properties['gender']
+
     def test_serializer_validators(self):
         path = '/'
         method = 'GET'

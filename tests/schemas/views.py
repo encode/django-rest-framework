@@ -136,3 +136,24 @@ class ExampleValidatedAPIView(generics.GenericAPIView):
                                          url='http://localhost', uuid=uuid.uuid4(), ip4='127.0.0.1', ip6='::1',
                                          ip='192.168.1.1')
         return Response(serializer.data)
+
+
+MALE = 'male'
+FEMALE = 'female'
+
+EXAMPLE_GENDER_CHOICES = (
+    (MALE, 'male'),
+    (FEMALE, 'female')
+)
+
+
+class ExampleChoiceFieldSerializer(serializers.Serializer):
+    gender = serializers.ChoiceField(choices=EXAMPLE_GENDER_CHOICES)
+
+
+class ExampleChoiceFieldAPIView(generics.GenericAPIView):
+    serializer_class = ExampleChoiceFieldSerializer
+
+    def get(self, *args, **kwargs):
+        serializer = self.get_serializer(gender='male')
+        return Response(serializer.data)
