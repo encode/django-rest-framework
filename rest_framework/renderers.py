@@ -1053,6 +1053,8 @@ class OpenAPIRenderer(BaseRenderer):
         assert yaml, 'Using OpenAPIRenderer, but `pyyaml` is not installed.'
 
     def render(self, data, media_type=None, renderer_context=None):
+        # prevent polluting the output with yaml references (aliases)
+        yaml.Dumper.ignore_aliases = lambda *args: True
         return yaml.dump(data, default_flow_style=False, sort_keys=False).encode('utf-8')
 
 
