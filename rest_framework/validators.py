@@ -106,7 +106,7 @@ class UniqueTogetherValidator:
         missing_items = {
             field_name: self.missing_message
             for field_name in self.fields
-            if field_name not in attrs
+            if serializer.fields[field_name].source not in attrs
         }
         if missing_items:
             raise ValidationError(missing_items, code='required')
@@ -115,17 +115,23 @@ class UniqueTogetherValidator:
         """
         Filter the queryset to all instances matching the given attributes.
         """
+        # field names => field sources
+        sources = [
+            serializer.fields[field_name].source
+            for field_name in self.fields
+        ]
+
         # If this is an update, then any unprovided field should
         # have it's value set based on the existing instance attribute.
         if serializer.instance is not None:
-            for field_name in self.fields:
-                if field_name not in attrs:
-                    attrs[field_name] = getattr(serializer.instance, field_name)
+            for source in sources:
+                if source not in attrs:
+                    attrs[source] = getattr(serializer.instance, source)
 
         # Determine the filter keyword arguments and filter the queryset.
         filter_kwargs = {
-            field_name: attrs[field_name]
-            for field_name in self.fields
+            source: attrs[source]
+            for source in sources
         }
         return qs_filter(queryset, **filter_kwargs)
 
