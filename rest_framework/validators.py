@@ -41,7 +41,6 @@ class UniqueValidator:
 
     def __init__(self, queryset, message=None, lookup='exact'):
         self.queryset = queryset
-        self.serializer_field = None
         self.message = message or self.message
         self.lookup = lookup
 
@@ -94,15 +93,14 @@ class UniqueTogetherValidator:
     def __init__(self, queryset, fields, message=None):
         self.queryset = queryset
         self.fields = fields
-        self.serializer_field = None
         self.message = message or self.message
 
-    def enforce_required_fields(self, attrs, instance):
+    def enforce_required_fields(self, attrs, serializer):
         """
         The `UniqueTogetherValidator` always forces an implied 'required'
         state on the fields it applies to.
         """
-        if instance is not None:
+        if serializer.instance is not None:
             return
 
         missing_items = {
@@ -113,16 +111,16 @@ class UniqueTogetherValidator:
         if missing_items:
             raise ValidationError(missing_items, code='required')
 
-    def filter_queryset(self, attrs, queryset, instance):
+    def filter_queryset(self, attrs, queryset, serializer):
         """
         Filter the queryset to all instances matching the given attributes.
         """
         # If this is an update, then any unprovided field should
         # have it's value set based on the existing instance attribute.
-        if instance is not None:
+        if serializer.instance is not None:
             for field_name in self.fields:
                 if field_name not in attrs:
-                    attrs[field_name] = getattr(instance, field_name)
+                    attrs[field_name] = getattr(serializer.instance, field_name)
 
         # Determine the filter keyword arguments and filter the queryset.
         filter_kwargs = {
@@ -141,13 +139,10 @@ class UniqueTogetherValidator:
         return queryset
 
     def __call__(self, attrs, serializer):
-        # Determine the existing instance, if this is an update operation.
-        instance = getattr(serializer, 'instance', None)
-
-        self.enforce_required_fields(attrs, instance)
+        self.enforce_required_fields(attrs, serializer)
         queryset = self.queryset
-        queryset = self.filter_queryset(attrs, queryset, instance)
-        queryset = self.exclude_current_instance(attrs, queryset, instance)
+        queryset = self.filter_queryset(attrs, queryset, serializer)
+        queryset = self.exclude_current_instance(attrs, queryset, serializer.instance)
 
         # Ignore validation if any field is None
         checked_values = [
@@ -207,13 +202,11 @@ class BaseUniqueForValidator:
         # same as the serializer field names if `source=<>` is set.
         field_name = serializer.fields[self.field].source_attrs[-1]
         date_field_name = serializer.fields[self.date_field].source_attrs[-1]
-        # Determine the existing instance, if this is an update operation.
-        instance = getattr(serializer, 'instance', None)
 
         self.enforce_required_fields(attrs)
         queryset = self.queryset
         queryset = self.filter_queryset(attrs, queryset, field_name, date_field_name)
-        queryset = self.exclude_current_instance(attrs, queryset, instance)
+        queryset = self.exclude_current_instance(attrs, queryset, serializer.instance)
         if qs_exists(queryset):
             message = self.message.format(date_field=self.date_field)
             raise ValidationError({

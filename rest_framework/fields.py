@@ -30,7 +30,7 @@ from django.utils.timezone import utc
 from django.utils.translation import gettext_lazy as _
 from pytz.exceptions import InvalidTimeError
 
-from rest_framework import ISO_8601
+from rest_framework import ISO_8601, RemovedInDRF313Warning
 from rest_framework.compat import ProhibitNullCharactersValidator
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.settings import api_settings
@@ -263,10 +263,10 @@ class CreateOnlyDefault:
             if hasattr(self.default, 'set_context'):
                 warnings.warn(
                     "Method `set_context` on defaults is deprecated and will "
-                    "no longer be called starting with 3.12. Instead set "
+                    "no longer be called starting with 3.13. Instead set "
                     "`requires_context = True` on the class, and accept the "
                     "context as an additional argument.",
-                    DeprecationWarning, stacklevel=2
+                    RemovedInDRF313Warning, stacklevel=2
                 )
                 self.default.set_context(self)
 
@@ -502,10 +502,10 @@ class Field:
             if hasattr(self.default, 'set_context'):
                 warnings.warn(
                     "Method `set_context` on defaults is deprecated and will "
-                    "no longer be called starting with 3.12. Instead set "
+                    "no longer be called starting with 3.13. Instead set "
                     "`requires_context = True` on the class, and accept the "
                     "context as an additional argument.",
-                    DeprecationWarning, stacklevel=2
+                    RemovedInDRF313Warning, stacklevel=2
                 )
                 self.default.set_context(self)
 
@@ -576,10 +576,10 @@ class Field:
             if hasattr(validator, 'set_context'):
                 warnings.warn(
                     "Method `set_context` on validators is deprecated and will "
-                    "no longer be called starting with 3.12. Instead set "
+                    "no longer be called starting with 3.13. Instead set "
                     "`requires_context = True` on the class, and accept the "
                     "context as an additional argument.",
-                    DeprecationWarning, stacklevel=2
+                    RemovedInDRF313Warning, stacklevel=2
                 )
                 validator.set_context(self)
 
