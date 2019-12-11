@@ -301,6 +301,40 @@ class TestUniquenessTogetherValidation(TestCase):
             ]
         }
 
+    def test_read_only_fields_with_default_and_source(self):
+        class ReadOnlySerializer(serializers.ModelSerializer):
+            name = serializers.CharField(source='race_name', default='test', read_only=True)
+
+            class Meta:
+                model = UniquenessTogetherModel
+                fields = ['name', 'position']
+                validators = [
+                    UniqueTogetherValidator(
+                        queryset=UniquenessTogetherModel.objects.all(),
+                        fields=['name', 'position']
+                    )
+                ]
+
+        serializer = ReadOnlySerializer(data={'position': 1})
+        assert serializer.is_valid(raise_exception=True)
+
+    def test_writeable_fields_with_source(self):
+        class WriteableSerializer(serializers.ModelSerializer):
+            name = serializers.CharField(source='race_name')
+
+            class Meta:
+                model = UniquenessTogetherModel
+                fields = ['name', 'position']
+                validators = [
+                    UniqueTogetherValidator(
+                        queryset=UniquenessTogetherModel.objects.all(),
+                        fields=['name', 'position']
+                    )
+                ]
+
+        serializer = WriteableSerializer(data={'name': 'test', 'position': 1})
+        assert serializer.is_valid(raise_exception=True)
+
     def test_allow_explict_override(self):
         """
         Ensure validators can be explicitly removed..
