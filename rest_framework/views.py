@@ -107,8 +107,10 @@ class APIView(View):
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
     parser_classes = api_settings.DEFAULT_PARSER_CLASSES
     authentication_classes = api_settings.DEFAULT_AUTHENTICATION_CLASSES
+    required_authentication_classes = api_settings.REQUIRED_AUTHENTICATION_CLASSES
     throttle_classes = api_settings.DEFAULT_THROTTLE_CLASSES
     permission_classes = api_settings.DEFAULT_PERMISSION_CLASSES
+    required_permission_classes = api_settings.REQUIRED_PERMISSION_CLASSES
     content_negotiation_class = api_settings.DEFAULT_CONTENT_NEGOTIATION_CLASS
     metadata_class = api_settings.DEFAULT_METADATA_CLASS
     versioning_class = api_settings.DEFAULT_VERSIONING_CLASS
@@ -269,13 +271,17 @@ class APIView(View):
         """
         Instantiates and returns the list of authenticators that this view can use.
         """
-        return [auth() for auth in self.authentication_classes]
+        required = [auth() for auth in self.required_authentication_classes]
+        required.extend([auth() for auth in self.authentication_classes])
+        return required
 
     def get_permissions(self):
         """
         Instantiates and returns the list of permissions that this view requires.
         """
-        return [permission() for permission in self.permission_classes]
+        required = [permission() for permission in self.required_permission_classes]
+        required.extend([permission() for permission in self.permission_classes])
+        return required
 
     def get_throttles(self):
         """

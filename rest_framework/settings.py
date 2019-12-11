@@ -39,9 +39,11 @@ DEFAULTS = {
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication'
     ],
+    'REQUIRED_AUTHENTICATION_CLASSES': [],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
     ],
+    'REQUIRED_PERMISSION_CLASSES': [],
     'DEFAULT_THROTTLE_CLASSES': [],
     'DEFAULT_CONTENT_NEGOTIATION_CLASS': 'rest_framework.negotiation.DefaultContentNegotiation',
     'DEFAULT_METADATA_CLASS': 'rest_framework.metadata.SimpleMetadata',
@@ -132,7 +134,9 @@ IMPORT_STRINGS = [
     'DEFAULT_RENDERER_CLASSES',
     'DEFAULT_PARSER_CLASSES',
     'DEFAULT_AUTHENTICATION_CLASSES',
+    'REQUIRED_AUTHENTICATION_CLASSES',
     'DEFAULT_PERMISSION_CLASSES',
+    'REQUIRED_PERMISSION_CLASSES',
     'DEFAULT_THROTTLE_CLASSES',
     'DEFAULT_CONTENT_NEGOTIATION_CLASS',
     'DEFAULT_METADATA_CLASS',
