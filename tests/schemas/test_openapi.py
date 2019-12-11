@@ -585,7 +585,7 @@ class TestOperationIntrospection(TestCase):
         responses = inspector._get_responses(path, method)
         response_schema = responses['200']['content']['application/json']['schema']
         properties = response_schema['items']['properties']
-        assert 'type' in properties['gender']
+        assert 'type' in properties['choice_field']
 
     def test_serializer_validators(self):
         path = '/'

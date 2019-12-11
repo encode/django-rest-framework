@@ -138,22 +138,13 @@ class ExampleValidatedAPIView(generics.GenericAPIView):
         return Response(serializer.data)
 
 
-MALE = 'male'
-FEMALE = 'female'
-
-EXAMPLE_GENDER_CHOICES = (
-    (MALE, 'male'),
-    (FEMALE, 'female')
-)
-
-
 class ExampleChoiceFieldSerializer(serializers.Serializer):
-    gender = serializers.ChoiceField(choices=EXAMPLE_GENDER_CHOICES)
+    choice_field = serializers.ChoiceField(choices=[('a', 'Choice A', 'b', 'Choice B')])
 
 
 class ExampleChoiceFieldAPIView(generics.GenericAPIView):
     serializer_class = ExampleChoiceFieldSerializer
 
     def get(self, *args, **kwargs):
-        serializer = self.get_serializer(gender='male')
+        serializer = self.get_serializer(choice_field='a')
         return Response(serializer.data)
