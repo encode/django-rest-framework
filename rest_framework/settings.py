@@ -53,6 +53,12 @@ DEFAULTS = {
 
     # Schema
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.openapi.AutoSchema',
+    'SCHEMA_PATH_PREFIX': r'^\/api\/(?:v[0-9\.\_\-]+\/)?',
+    'SCHEMA_AUTHENTICATION_CLASSES': [
+        'rest_framework.schemas.openapi_utils.SessionAuthenticationScheme',
+        'rest_framework.schemas.openapi_utils.BasicAuthenticationScheme',
+        'rest_framework.schemas.openapi_utils.TokenAuthenticationScheme',
+    ],
 
     # Throttling
     'DEFAULT_THROTTLE_RATES': {
