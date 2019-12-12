@@ -298,18 +298,22 @@ class SerializerMetaclass(type):
                   if isinstance(obj, Field)]
         fields.sort(key=lambda x: x[1]._creation_counter)
 
-        # If this class is subclassing another Serializer, add that Serializer's
-        # fields.  Note that we loop over the bases in *reverse*. This is necessary
-        # in order to maintain the correct order of fields.
-        for base in reversed(bases):
-            if hasattr(base, '_declared_fields'):
-                fields = [
-                    (field_name, obj) for field_name, obj
-                    in base._declared_fields.items()
-                    if field_name not in attrs
-                ] + fields
+        # Ensures a base class field doesn't override cls attrs, and maintains
+        # field precedence when inheriting multiple parents. e.g. if there is a
+        # class C(A, B), and A and B both define 'field', use 'field' from A.
+        known = set(attrs)
 
-        return OrderedDict(fields)
+        def visit(name):
+            known.add(name)
+            return name
+
+        base_fields = [
+            (visit(name), f)
+            for base in bases if hasattr(base, '_declared_fields')
+            for name, f in base._declared_fields.items() if name not in known
+        ]
+
+        return OrderedDict(base_fields + fields)
 
     def __new__(cls, name, bases, attrs):
         attrs['_declared_fields'] = cls._get_declared_fields(bases, attrs)
