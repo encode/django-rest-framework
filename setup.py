@@ -82,7 +82,7 @@ setup(
     author_email='tom@tomchristie.com',  # SEE NOTE BELOW (*)
     packages=find_packages(exclude=['tests*']),
     include_package_data=True,
-    install_requires=[],
+    install_requires=["django>=1.11"],
     python_requires=">=3.5",
     zip_safe=False,
     classifiers=[
