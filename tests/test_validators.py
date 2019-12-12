@@ -335,6 +335,15 @@ class TestUniquenessTogetherValidation(TestCase):
         serializer = WriteableSerializer(data={'name': 'test', 'position': 1})
         assert serializer.is_valid(raise_exception=True)
 
+        # Validation error should use seriazlier field name, not source
+        serializer = WriteableSerializer(data={'position': 1})
+        assert not serializer.is_valid()
+        assert serializer.errors == {
+            'name': [
+                'This field is required.'
+            ]
+        }
+
     def test_allow_explict_override(self):
         """
         Ensure validators can be explicitly removed..
