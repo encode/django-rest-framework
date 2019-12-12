@@ -1080,10 +1080,11 @@ class DecimalField(Field):
         if value in (decimal.Decimal('Inf'), decimal.Decimal('-Inf')):
             self.fail('invalid')
 
-        if self.rounding is None:
-            return self.quantize(self.validate_precision(value))
-        else:
-            return self.validate_precision(self.quantize(value))
+        if self.rounding is not None:
+            # It is unnecessary to validate precision when rounding,
+            # since the value will be truncated to the correct size.
+            return self.quantize(value)
+        return self.quantize(self.validate_precision(value))
 
     def validate_precision(self, value):
         """
