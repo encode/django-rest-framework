@@ -66,6 +66,7 @@ nav:
      - 'Contributing to REST framework': 'community/contributing.md'
      - 'Project management': 'community/project-management.md'
      - 'Release Notes': 'community/release-notes.md'
+     - '3.11 Announcement': 'community/3.11-announcement.md'
      - '3.10 Announcement': 'community/3.10-announcement.md'
      - '3.9 Announcement': 'community/3.9-announcement.md'
      - '3.8 Announcement': 'community/3.8-announcement.md'
