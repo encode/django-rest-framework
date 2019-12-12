@@ -16,7 +16,6 @@ from django.core.exceptions import ImproperlyConfigured
 from django.core.paginator import Page
 from django.http.multipartparser import parse_header
 from django.template import engines, loader
-from django.test.client import encode_multipart
 from django.urls import NoReverseMatch
 from django.utils.html import mark_safe
 
@@ -902,6 +901,8 @@ class MultiPartRenderer(BaseRenderer):
     BOUNDARY = 'BoUnDaRyStRiNg'
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
+        from django.test.client import encode_multipart
+
         if hasattr(data, 'items'):
             for key, value in data.items():
                 assert not isinstance(value, dict), (
