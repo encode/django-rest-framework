@@ -298,6 +298,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../community/3.11-announcement/">3.11 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../community/3.10-announcement/">3.10 Announcement</a>
                   </li>
                   
@@ -487,7 +491,7 @@ urlpatterns = [
 <ul>
 <li><code>title</code>: May be used to provide a descriptive title for the schema definition.</li>
 <li><code>description</code>: Longer descriptive text.</li>
-<li><code>version</code>: The version of the API. Defaults to <code>0.1.0</code>.</li>
+<li><code>version</code>: The version of the API.</li>
 <li>
 <p><code>url</code>: May be used to pass a canonical base URL for the schema.</p>
 <pre><code>schema_view = get_schema_view(
@@ -506,20 +510,20 @@ urlpatterns = [
     urlconf='myproject.urls'
 )
 </code></pre>
-<ul>
+</li>
 <li>
 <p><code>patterns</code>: List of url patterns to limit the schema introspection to. If you
   only want the <code>myproject.api</code> urls to be exposed in the schema:</p>
-<p>schema_url_patterns = [
+<pre><code>schema_url_patterns = [
     url(r'^api/', include('myproject.api.urls')),
-]</p>
-<p>schema_view = get_schema_view(
+]
+
+schema_view = get_schema_view(
     title='Server Monitoring API',
     url='https://www.example.org/api/',
     patterns=schema_url_patterns,
-)</p>
-</li>
-</ul>
+)
+</code></pre>
 </li>
 <li>
 <p><code>generator_class</code>: May be used to specify a <code>SchemaGenerator</code> subclass to be
@@ -563,7 +567,7 @@ schema = generator.get_schema()
 </code></pre>
 <p>The <code>request</code> argument is optional, and may be used if you want to apply
 per-user permissions to the resulting schema generation.</p>
-<p>This is a good point to override if you want to customise the generated
+<p>This is a good point to override if you want to customize the generated
 dictionary,  for example to add custom
 <a href="https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#specification-extensions">specification extensions</a>.</p>
 <h3 id="per-view-customization"><a class="toclink" href="#per-view-customization">Per-View Customization</a></h3>
@@ -580,17 +584,17 @@ for each view, allowed method, and path.</p>
 <p><strong>Note</strong>: For basic <code>APIView</code> subclasses, default introspection is essentially
 limited to the URL kwarg path parameters. For <code>GenericAPIView</code>
 subclasses, which includes all the provided class based views, <code>AutoSchema</code> will
-attempt to introspect serialiser, pagination and filter fields, as well as
+attempt to introspect serializer, pagination and filter fields, as well as
 provide richer path field descriptions. (The key hooks here are the relevant
 <code>GenericAPIView</code> attributes and methods: <code>get_serializer</code>, <code>pagination_class</code>,
 <code>filter_backends</code> and so on.)</p>
 <hr />
-<p>In order to customise the operation generation, you should provide an <code>AutoSchema</code> subclass, overriding <code>get_operation()</code> as you need:</p>
+<p>In order to customize the operation generation, you should provide an <code>AutoSchema</code> subclass, overriding <code>get_operation()</code> as you need:</p>
 <pre><code>    from rest_framework.views import APIView
     from rest_framework.schemas.openapi import AutoSchema
 
     class CustomSchema(AutoSchema):
-        def get_link(...):
+        def get_operation(...):
             # Implement custom introspection here (or in other sub-methods)
 
     class CustomView(APIView):

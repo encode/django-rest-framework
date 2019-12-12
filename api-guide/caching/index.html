@@ -298,6 +298,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../community/3.11-announcement/">3.11 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../community/3.10-announcement/">3.10 Announcement</a>
                   </li>
                   
@@ -438,11 +442,16 @@ provided in Django.</p>
 decorators with class based views. This can be used with
 other cache decorators such as <a href="https://docs.djangoproject.com/en/dev/topics/cache/#the-per-view-cache"><code>cache_page</code></a> and
 <a href="https://docs.djangoproject.com/en/dev/topics/http/decorators/#django.views.decorators.vary.vary_on_cookie"><code>vary_on_cookie</code></a>.</p>
-<pre><code class="python">from rest_framework.response import Response
+<pre><code class="python">from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_cookie
+
+from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import viewsets
 
-class UserViewSet(viewsets.Viewset):
+
+class UserViewSet(viewsets.ViewSet):
 
     # Cache requested url for each user for 2 hours
     @method_decorator(cache_page(60*60*2))
@@ -452,6 +461,7 @@ class UserViewSet(viewsets.Viewset):
             'user_feed': request.user.get_user_feed()
         }
         return Response(content)
+
 
 class PostView(APIView):
 

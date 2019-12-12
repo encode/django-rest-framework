@@ -298,6 +298,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../community/3.11-announcement/">3.11 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../community/3.10-announcement/">3.10 Announcement</a>
                   </li>
                   
@@ -1305,10 +1309,10 @@ class BookSerializer(serializers.Serializer):
 </code></pre>
 <p>It's simple to create a read-only serializer for converting <code>HighScore</code> instances into primitive data types.</p>
 <pre><code>class HighScoreSerializer(serializers.BaseSerializer):
-    def to_representation(self, obj):
+    def to_representation(self, instance):
         return {
-            'score': obj.score,
-            'player_name': obj.player_name
+            'score': instance.score,
+            'player_name': instance.player_name
         }
 </code></pre>
 <p>We can now use this class to serialize single <code>HighScore</code> instances:</p>
@@ -1356,10 +1360,10 @@ def all_high_scores(request):
             'player_name': player_name
         }
 
-    def to_representation(self, obj):
+    def to_representation(self, instance):
         return {
-            'score': obj.score,
-            'player_name': obj.player_name
+            'score': instance.score,
+            'player_name': instance.player_name
         }
 
     def create(self, validated_data):
@@ -1373,10 +1377,10 @@ def all_high_scores(request):
     A read-only serializer that coerces arbitrary complex objects
     into primitive representations.
     """
-    def to_representation(self, obj):
+    def to_representation(self, instance):
         output = {}
-        for attribute_name in dir(obj):
-            attribute = getattr(obj, attribute_name)
+        for attribute_name in dir(instance):
+            attribute = getattr(instance, attribute_name)
             if attribute_name.startswith('_'):
                 # Ignore private attributes.
                 pass
@@ -1413,9 +1417,9 @@ def all_high_scores(request):
 <li>Improving serialization performance for a frequently accessed API endpoint that returns lots of data.</li>
 </ul>
 <p>The signatures for these methods are as follows:</p>
-<h4 id="to_representationself-obj"><a class="toclink" href="#to_representationself-obj"><code>.to_representation(self, obj)</code></a></h4>
+<h4 id="to_representationself-instance"><a class="toclink" href="#to_representationself-instance"><code>.to_representation(self, instance)</code></a></h4>
 <p>Takes the object instance that requires serialization, and should return a primitive representation. Typically this means returning a structure of built-in Python datatypes. The exact types that can be handled will depend on the render classes you have configured for your API.</p>
-<p>May be overridden in order modify the representation style. For example:</p>
+<p>May be overridden in order to modify the representation style. For example:</p>
 <pre><code>def to_representation(self, instance):
     """Convert `username` to lowercase."""
     ret = super().to_representation(instance)

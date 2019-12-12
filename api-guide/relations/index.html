@@ -298,6 +298,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../community/3.11-announcement/">3.11 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../community/3.10-announcement/">3.10 Announcement</a>
                   </li>
                   
@@ -733,7 +737,9 @@ class Track(models.Model):
 </ul>
 <hr />
 <h1 id="nested-relationships"><a class="toclink" href="#nested-relationships">Nested relationships</a></h1>
-<p>Nested relationships can be expressed by using serializers as fields.</p>
+<p>As opposed to previously discussed <em>references</em> to another entity, the referred entity can instead also be embedded or <em>nested</em>
+in the representation of the object that refers to it.
+Such nested relationships can be expressed by using serializers as fields. </p>
 <p>If the field is used to represent a to-many relationship, you should add the <code>many=True</code> flag to the serializer field.</p>
 <h2 id="example"><a class="toclink" href="#example">Example</a></h2>
 <p>For example, the following serializer:</p>

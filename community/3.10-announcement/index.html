@@ -61,7 +61,7 @@
           <a class="repo-link btn btn-inverse btn-small " rel="next" href="../3.9-announcement/">
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
-          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../release-notes/">
+          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../3.11-announcement/">
             <i class="icon-arrow-left icon-white"></i> Previous
           </a>
           <a id="search_modal_show" class="repo-link btn btn-inverse btn-small" href="#mkdocs_search_modal" data-toggle="modal" data-target="#mkdocs_search_modal"><i class="icon-search icon-white"></i> Search</a>
@@ -297,6 +297,10 @@
                     <a href="../release-notes/">Release Notes</a>
                   </li>
                   
+                  <li >
+                    <a href="../3.11-announcement/">3.11 Announcement</a>
+                  </li>
+                  
                   <li class="active" >
                     <a href="./">3.10 Announcement</a>
                   </li>
@@ -508,7 +512,7 @@ urlpatterns = [
 </code></pre>
 
 <h3 id="customization"><a class="toclink" href="#customization">Customization</a></h3>
-<p>For customizations that you want to apply across the the entire API, you can subclass <code>rest_framework.schemas.openapi.SchemaGenerator</code> and provide it as an argument
+<p>For customizations that you want to apply across the entire API, you can subclass <code>rest_framework.schemas.openapi.SchemaGenerator</code> and provide it as an argument
 to the <code>generateschema</code> command or <code>get_schema_view()</code> helper function.</p>
 <p>For specific per-view customizations, you can subclass <code>AutoSchema</code>,
 making sure to set <code>schema = &lt;YourCustomClass&gt;</code> on the view.</p>
@@ -537,7 +541,7 @@ on keeping any tooling outside of the core framework.</p>
 <h2 id="funding"><a class="toclink" href="#funding">Funding</a></h2>
 <p>REST framework is a <em>collaboratively funded project</em>. If you use
 REST framework commercially we strongly encourage you to invest in its
-continued development by <strong><a href="community/funding.md">signing up for a paid plan</a></strong>.</p>
+continued development by <strong><a href="../funding/">signing up for a paid plan</a></strong>.</p>
 <p><em>Every single sign-up helps us make REST framework long-term financially sustainable.</em></p>
 <ul class="premium-promo promo">
     <li><a href="https://getsentry.com/welcome/" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/sentry130.png)">Sentry</a></li>

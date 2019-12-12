@@ -298,6 +298,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../community/3.11-announcement/">3.11 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../community/3.10-announcement/">3.10 Announcement</a>
                   </li>
                   
@@ -717,12 +721,16 @@ to your <code>Serializer</code> subclass. This is documented in the
             message = 'This field must be a multiple of %d.' % self.base
             raise serializers.ValidationError(message)
 </code></pre>
-<h4 id="using-set_context"><a class="toclink" href="#using-set_context">Using <code>set_context()</code></a></h4>
-<p>In some advanced cases you might want a validator to be passed the serializer field it is being used with as additional context. You can do so by declaring a <code>set_context</code> method on a class-based validator.</p>
-<pre><code>def set_context(self, serializer_field):
-    # Determine if this is an update or a create operation.
-    # In `__call__` we can then use that information to modify the validation behavior.
-    self.is_update = serializer_field.parent.instance is not None
+<h4 id="accessing-the-context"><a class="toclink" href="#accessing-the-context">Accessing the context</a></h4>
+<p>In some advanced cases you might want a validator to be passed the serializer
+field it is being used with as additional context. You can do so by setting
+a <code>requires_context = True</code> attribute on the validator. The <code>__call__</code> method
+will then be called with the <code>serializer_field</code>
+or <code>serializer</code> as an additional argument.</p>
+<pre><code>requires_context = True
+
+def __call__(self, value, serializer_field):
+    ...
 </code></pre>
             
 

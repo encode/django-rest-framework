@@ -298,6 +298,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../community/3.11-announcement/">3.11 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../community/3.10-announcement/">3.10 Announcement</a>
                   </li>
                   
@@ -660,8 +664,19 @@ Set to false if this field is not required to be present during deserialization.
 <h3 id="default"><a class="toclink" href="#default"><code>default</code></a></h3>
 <p>If set, this gives the default value that will be used for the field if no input value is supplied. If not set the default behaviour is to not populate the attribute at all.</p>
 <p>The <code>default</code> is not applied during partial update operations. In the partial update case only fields that are provided in the incoming data will have a validated value returned.</p>
-<p>May be set to a function or other callable, in which case the value will be evaluated each time it is used. When called, it will receive no arguments. If the callable has a <code>set_context</code> method, that will be called each time before getting the value with the field instance as only argument. This works the same way as for <a href="../validators/#using-set_context">validators</a>.</p>
-<p>When serializing the instance, default will be used if the the object attribute or dictionary key is not present in the instance.</p>
+<p>May be set to a function or other callable, in which case the value will be evaluated each time it is used. When called, it will receive no arguments. If the callable has a <code>requires_context = True</code> attribute, then the serializer field will be passed as an argument.</p>
+<p>For example:</p>
+<pre><code>class CurrentUserDefault:
+    """
+    May be applied as a `default=...` value on a serializer field.
+    Returns the current user.
+    """
+    requires_context = True
+
+    def __call__(self, serializer_field):
+        return serializer_field.context['request'].user
+</code></pre>
+<p>When serializing the instance, default will be used if the object attribute or dictionary key is not present in the instance.</p>
 <p>Note that setting a <code>default</code> value implies that the field is not required. Including both the <code>default</code> and <code>required</code> keyword arguments is invalid and will raise an error.</p>
 <h3 id="allow_null"><a class="toclink" href="#allow_null"><code>allow_null</code></a></h3>
 <p>Normally an error will be raised if <code>None</code> is passed to a serializer field. Set this keyword argument to <code>True</code> if <code>None</code> should be considered a valid value.</p>
@@ -1141,7 +1156,7 @@ class DataPointSerializer(serializers.ModelSerializer):
         fields = ['label', 'coordinates']
 </code></pre>
 <p>Note that this example doesn't handle validation. Partly for that reason, in a
-real project, the coordinate nesting might be better handled with a nested serialiser
+real project, the coordinate nesting might be better handled with a nested serializer
 using <code>source='*'</code>, with two <code>IntegerField</code> instances, each with their own <code>source</code>
 pointing to the relevant field.</p>
 <p>The key points from the example, though, are:</p>
@@ -1176,7 +1191,7 @@ OrderedDict([('label', 'Second Example'),
 </code></pre>
 </li>
 </ul>
-<p>For completeness lets do the same thing again but with the nested serialiser
+<p>For completeness lets do the same thing again but with the nested serializer
 approach suggested above:</p>
 <pre><code>class NestedCoordinateSerializer(serializers.Serializer):
     x = serializers.IntegerField(source='x_coordinate')
@@ -1195,13 +1210,13 @@ class DataPointSerializer(serializers.ModelSerializer):
 declarations. It's our <code>NestedCoordinateSerializer</code> that takes <code>source='*'</code>.</p>
 <p>Our new <code>DataPointSerializer</code> exhibits the same behaviour as the custom field
 approach.</p>
-<p>Serialising:</p>
+<p>Serializing:</p>
 <pre><code>&gt;&gt;&gt; out_serializer = DataPointSerializer(instance)
 &gt;&gt;&gt; out_serializer.data
 ReturnDict([('label', 'testing'),
             ('coordinates', OrderedDict([('x', 1), ('y', 2)]))])
 </code></pre>
-<p>Deserialising:</p>
+<p>Deserializing:</p>
 <pre><code>&gt;&gt;&gt; in_serializer = DataPointSerializer(data=data)
 &gt;&gt;&gt; in_serializer.is_valid()
 True
@@ -1226,8 +1241,8 @@ ReturnDict([('coordinates',
              {'x': ['A valid integer is required.'],
               'y': ['A valid integer is required.']})])
 </code></pre>
-<p>For this reason, the nested serialiser approach would be the first to try. You
-would use the custom field approach when the nested serialiser becomes infeasible
+<p>For this reason, the nested serializer approach would be the first to try. You
+would use the custom field approach when the nested serializer becomes infeasible
 or overly complex.</p>
 <h1 id="third-party-packages"><a class="toclink" href="#third-party-packages">Third party packages</a></h1>
 <p>The following third party packages are also available.</p>
