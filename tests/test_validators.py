@@ -301,6 +301,49 @@ class TestUniquenessTogetherValidation(TestCase):
             ]
         }
 
+    def test_read_only_fields_with_default_and_source(self):
+        class ReadOnlySerializer(serializers.ModelSerializer):
+            name = serializers.CharField(source='race_name', default='test', read_only=True)
+
+            class Meta:
+                model = UniquenessTogetherModel
+                fields = ['name', 'position']
+                validators = [
+                    UniqueTogetherValidator(
+                        queryset=UniquenessTogetherModel.objects.all(),
+                        fields=['name', 'position']
+                    )
+                ]
+
+        serializer = ReadOnlySerializer(data={'position': 1})
+        assert serializer.is_valid(raise_exception=True)
+
+    def test_writeable_fields_with_source(self):
+        class WriteableSerializer(serializers.ModelSerializer):
+            name = serializers.CharField(source='race_name')
+
+            class Meta:
+                model = UniquenessTogetherModel
+                fields = ['name', 'position']
+                validators = [
+                    UniqueTogetherValidator(
+                        queryset=UniquenessTogetherModel.objects.all(),
+                        fields=['name', 'position']
+                    )
+                ]
+
+        serializer = WriteableSerializer(data={'name': 'test', 'position': 1})
+        assert serializer.is_valid(raise_exception=True)
+
+        # Validation error should use seriazlier field name, not source
+        serializer = WriteableSerializer(data={'position': 1})
+        assert not serializer.is_valid()
+        assert serializer.errors == {
+            'name': [
+                'This field is required.'
+            ]
+        }
+
     def test_allow_explict_override(self):
         """
         Ensure validators can be explicitly removed..
@@ -357,13 +400,9 @@ class TestUniquenessTogetherValidation(TestCase):
             def filter(self, **kwargs):
                 self.called_with = kwargs
 
-        class MockSerializer:
-            def __init__(self, instance):
-                self.instance = instance
-
         data = {'race_name': 'bar'}
         queryset = MockQueryset()
-        serializer = MockSerializer(instance=self.instance)
+        serializer = UniquenessTogetherSerializer(instance=self.instance)
         validator = UniqueTogetherValidator(queryset, fields=('race_name',
                                                               'position'))
         validator.filter_queryset(attrs=data, queryset=queryset, serializer=serializer)
