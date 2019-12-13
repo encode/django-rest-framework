@@ -62,18 +62,13 @@ def get_view_description(view, html=False):
     return description
 
 
-def set_rollback(request):
-    # We need the actual view func returned by the URL resolver which gets used
-    # by Django's BaseHandler to determine `non_atomic_requests`. Be cautious
-    # when fetching it though as it won't be set when views are tested with
-    # requessts from a RequestFactory.
-    try:
-        non_atomic_requests = request.resolver_match.func._non_atomic_requests
-    except AttributeError:
-        non_atomic_requests = set()
-
+def set_rollback():
+    # Rollback all connections that have ATOMIC_REQUESTS set, if it looks their
+    # @atomic for the request was started
+    # Note this check in_atomic_block may be a false positive due to
+    # transactions started another way, e.g. through testing with TestCase
     for db in connections.all():
-        if db.settings_dict['ATOMIC_REQUESTS'] and db.alias not in non_atomic_requests:
+        if db.settings_dict['ATOMIC_REQUESTS'] and db.in_atomic_block:
             transaction.set_rollback(True, using=db.alias)
 
 
@@ -104,7 +99,7 @@ def exception_handler(exc, context):
         else:
             data = {'detail': exc.detail}
 
-        set_rollback(context['request'])
+        set_rollback()
         return Response(data, status=exc.status_code, headers=headers)
 
     return None

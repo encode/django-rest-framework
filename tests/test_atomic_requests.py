@@ -3,7 +3,7 @@ import unittest
 from django.conf.urls import url
 from django.db import connection, connections, transaction
 from django.http import Http404
-from django.test import TestCase, override_settings
+from django.test import TestCase, TransactionTestCase, override_settings
 
 from rest_framework import status
 from rest_framework.exceptions import APIException
@@ -43,20 +43,8 @@ class NonAtomicAPIExceptionView(APIView):
         raise Http404
 
 
-class UrlDecoratedNonAtomicAPIExceptionView(APIView):
-    def get(self, request, *args, **kwargs):
-        list(BasicModel.objects.all())
-        raise Http404
-
-
 urlpatterns = (
     url(r'^non-atomic-exception$', NonAtomicAPIExceptionView.as_view()),
-    url(
-        r'^url-decorated-non-atomic-exception$',
-        transaction.non_atomic_requests(
-            UrlDecoratedNonAtomicAPIExceptionView.as_view()
-        ),
-    ),
 )
 
 
@@ -147,25 +135,19 @@ class DBTransactionAPIExceptionTests(TestCase):
     "'atomic' requires transactions and savepoints."
 )
 @override_settings(ROOT_URLCONF='tests.test_atomic_requests')
-class NonAtomicDBTransactionAPIExceptionTests(TestCase):
+class NonAtomicDBTransactionAPIExceptionTests(TransactionTestCase):
     def setUp(self):
         connections.databases['default']['ATOMIC_REQUESTS'] = True
 
-    def tearDown(self):
-        connections.databases['default']['ATOMIC_REQUESTS'] = False
+        @self.addCleanup
+        def restore_atomic_requests():
+            connections.databases['default']['ATOMIC_REQUESTS'] = False
 
     def test_api_exception_rollback_transaction_non_atomic_view(self):
         response = self.client.get('/non-atomic-exception')
 
+        # without check for db.in_atomic_block, would raise 500 due to attempt
+        # to rollback without transaction
         assert response.status_code == status.HTTP_404_NOT_FOUND
-        assert not transaction.get_rollback()
-        # Check we can still perform DB queries
-        list(BasicModel.objects.all())
-
-    def test_api_exception_rollback_transaction_url_decorated_non_atomic_view(self):
-        response = self.client.get('/url-decorated-non-atomic-exception')
-
-        assert response.status_code == status.HTTP_404_NOT_FOUND
-        assert not transaction.get_rollback()
         # Check we can still perform DB queries
         list(BasicModel.objects.all())
