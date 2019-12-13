@@ -329,7 +329,7 @@ class AutoSchema(ViewInspector):
         if isinstance(field, serializers.ManyRelatedField):
             return {
                 'type': 'array',
-                'items': self._map_field(field.child_relation)
+                'items': self._map_field(method, field.child_relation)
             }
         if isinstance(field, serializers.PrimaryKeyRelatedField):
             model = getattr(field.queryset, 'model', None)
@@ -361,7 +361,7 @@ class AutoSchema(ViewInspector):
                 'items': {},
             }
             if not isinstance(field.child, _UnvalidatedField):
-                map_field = self._map_field(field.child)
+                map_field = self._map_field(method, field.child)
                 items = {
                     "type": map_field.get('type')
                 }
