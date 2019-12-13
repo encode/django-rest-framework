@@ -1432,28 +1432,44 @@ class ChoiceField(Field):
     html_cutoff = None
     html_cutoff_text = _('More than {count} items...')
 
-    def __init__(self, choices, **kwargs):
+    def __init__(self, choices, underlying_field=None, **kwargs):
+        self.underlying_field = underlying_field
         self.choices = choices
         self.html_cutoff = kwargs.pop('html_cutoff', self.html_cutoff)
         self.html_cutoff_text = kwargs.pop('html_cutoff_text', self.html_cutoff_text)
 
         self.allow_blank = kwargs.pop('allow_blank', False)
-
         super().__init__(**kwargs)
+
+    @staticmethod
+    def _hashable_wrapper(value):
+        if isinstance(value, list):
+            return tuple(elem for elem in value)
+        elif isinstance(value, set):
+            return frozenset(value)
+        elif isinstance(value, dict):
+            return frozenset(value.items())
+        else:
+            return value
+
+    def _choices_key(self, value):
+        representation = self.underlying_field.to_representation(value) if self.underlying_field else str(value)
+        return self._hashable_wrapper(representation)
 
     def to_internal_value(self, data):
         if data == '' and self.allow_blank:
             return ''
 
         try:
-            return self.choice_strings_to_values[str(data)]
-        except KeyError:
+            return self.choice_reprs_to_values[self._choices_key(data)]
+        except (KeyError, TypeError) as e:
             self.fail('invalid_choice', input=data)
 
     def to_representation(self, value):
-        if value in ('', None):
+        # Preserving old untyped behavior
+        if not self.underlying_field:
             return value
-        return self.choice_strings_to_values.get(str(value), value)
+        return self.underlying_field.to_representation(value)
 
     def iter_options(self):
         """
@@ -1472,11 +1488,11 @@ class ChoiceField(Field):
         self.grouped_choices = to_choices_dict(choices)
         self._choices = flatten_choices_dict(self.grouped_choices)
 
-        # Map the string representation of choices to the underlying value.
+        # Map the representation (evaluated with underlying_field) of choices to the underlying value.
         # Allows us to deal with eg. integer choices while supporting either
         # integer or string input, but still get the correct datatype out.
-        self.choice_strings_to_values = {
-            str(key): key for key in self.choices
+        self.choice_reprs_to_values = {
+            self._choices_key(key): key for key in self.choices
         }
 
     choices = property(_get_choices, _set_choices)
@@ -1517,7 +1533,7 @@ class MultipleChoiceField(ChoiceField):
 
     def to_representation(self, value):
         return {
-            self.choice_strings_to_values.get(str(item), item) for item in value
+            self.underlying_field.to_representation(item) if self.underlying_field else value for item in value
         }
 
 
