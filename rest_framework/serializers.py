@@ -1634,3 +1634,73 @@ class HyperlinkedModelSerializer(ModelSerializer):
         field_kwargs = get_nested_relation_kwargs(relation_info)
 
         return field_class, field_kwargs
+
+class DynamicFieldsModelSerializer(serializers.ModelSerializer):
+    """
+    A DynamicFieldsModelSerializer that takes include and exclude fields dynamic from request.
+    example: site.ru/api/list?fields=id,name
+    example: site.ru/api/list?exclude=name
+    And if you have Nested relationships, your may add in Meta fields nested = [] with name nested serializer
+    class Meta:
+        nested = ['country']
+    example: site.ru/api/list?fields_country=id,name
+    example: site.ru/api/list?exclude_country=name
+    """
+
+    def _get_dynamic_nested_fields(self, request):
+        nested = getattr(self.Meta, 'nested', None)
+
+        if nested:
+            for serializer in nested:
+                nested_serializer = self.fields.get(serializer, None)
+                if nested_serializer:
+                    fields = request.query_params.get('fields_{}'.format(serializer))
+                    fields = fields.split(',')
+                    allowed = set(fields)
+                    existing = set(nested_serializer.fields.keys())
+                    for field_name in existing - allowed:
+                        nested_serializer.fields.pop(field_name)
+
+    def _get_dynamic_nested_exclude(self, request):
+        nested = getattr(self.Meta, 'nested', None)
+
+        if nested:
+            for serializer in nested:
+                nested_serializer = self.fields.get(serializer, None)
+                if nested_serializer:
+                    fields = request.query_params.get('exclude_{}'.format(serializer))
+                    exclude = set(fields)
+                    existing = set(nested_serializer.fields.keys())
+                    for field_name in exclude:
+                        if field_name in existing:
+                            nested_serializer.fields.pop(field_name)
+
+    def _get_dynamic_fields(self, request):
+        fields = request.query_params.get('fields')
+        if fields:
+            fields = fields.split(',')
+            allowed = set(fields)
+            existing = set(self.fields.keys())
+            for field_name in existing - allowed:
+                self.fields.pop(field_name)
+
+    def _get_dynamic_exclude(self, request):
+        fields_exclude = request.query_params.get('exclude')
+        if fields_exclude:
+            fields = fields_exclude.split(',')
+            exclude = set(fields)
+            existing = set(self.fields.keys())
+            for field_name in exclude:
+                if field_name in existing:
+                    self.fields.pop(field_name)
+
+    def __init__(self, *args, **kwargs):
+        super(DynamicFieldsModelSerializer, self).__init__(*args, **kwargs)
+
+        request = self.context.get('request')
+
+        if request:
+            self._get_dynamic_fields(request)
+            self._get_dynamic_exclude(request)
+            self._get_dynamic_nested_fields(request)
+            self._get_dynamic_nested_exclude(request)
