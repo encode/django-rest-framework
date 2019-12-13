@@ -141,7 +141,7 @@ class AutoSchema(ViewInspector):
     def get_operation(self, path, method):
         operation = {}
 
-        operation['operationId'] = self._get_operation_id(path, method)
+        operation['operationId'] = self.get_operation_id(path, method)
         operation['description'] = self.get_description(path, method)
         operation['parameters'] = sorted(
             [
@@ -207,38 +207,35 @@ class AutoSchema(ViewInspector):
 
     def get_tags(self, path, method):
         """ override this for custom behaviour """
-        path = re.sub(
-            pattern=api_settings.SCHEMA_PATH_PREFIX,
-            repl='',
-            string=path,
-            flags=re.IGNORECASE
-        ).split('/')
-        return [path[0]]
+        tokenized_path = self._tokenize_path(path)
+        # use first non-parameter path part as tag
+        return tokenized_path[:1]
 
-    def _get_operation_id(self, path, method):
-        """
-        Compute an operation ID from the model, serializer or view name.
-        """
-        # remove path prefix
-        sub_path = re.sub(
-            pattern=api_settings.SCHEMA_PATH_PREFIX,
-            repl='',
-            string=path,
-            flags=re.IGNORECASE
-        )
-        # cleanup, normalize and tokenize remaining parts.
+    def get_operation_id(self, path, method):
+        """ override this for custom behaviour """
+        tokenized_path = self._tokenize_path(path)
         # replace dashes as they can be problematic later in code generation
-        sub_path = sub_path.replace('-', '_').rstrip('/').lstrip('/')
-        sub_path = sub_path.split('/') if sub_path else []
-        # remove path variables
-        sub_path = [p for p in sub_path if not p.startswith('{')]
+        tokenized_path = [t.replace('-', '_') for t in tokenized_path]
 
         if is_list_view(path, method, self.view):
             action = 'list'
         else:
             action = self.method_mapping[method.lower()]
 
-        return '_'.join(sub_path + [action])
+        return '_'.join(tokenized_path + [action])
+
+    def _tokenize_path(self, path):
+        # remove path prefix
+        path = re.sub(
+            pattern=api_settings.SCHEMA_PATH_PREFIX,
+            repl='',
+            string=path,
+            flags=re.IGNORECASE
+        )
+        # cleanup and tokenize remaining parts.
+        path = path.rstrip('/').lstrip('/').split('/')
+        # remove path variables and empty tokens
+        return [t for t in path if t and not t.startswith('{')]
 
     def _get_path_parameters(self, path, method):
         """

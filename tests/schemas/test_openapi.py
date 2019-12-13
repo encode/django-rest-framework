@@ -90,7 +90,7 @@ class TestOperationIntrospection(TestCase):
             'operationId': 'example_list',
             'description': 'get: A description of my GET operation.\npost: A description of my POST operation.',
             'parameters': [],
-            'tags': [''],
+            'tags': ['example'],
             'security': [{'cookieAuth': []}, {'basicAuth': []}, {}],
             'responses': {
                 '200': {
@@ -138,7 +138,7 @@ class TestOperationIntrospection(TestCase):
                     }
                 }
             ],
-            'tags': [''],
+            'tags': ['example'],
             'security': [{'cookieAuth': []}, {'basicAuth': []}, {}],
             'responses': {
                 '200': {
@@ -555,7 +555,7 @@ class TestOperationIntrospection(TestCase):
         inspector.view = view
         inspector.init(ComponentRegistry())
 
-        operationId = inspector._get_operation_id(path, method)
+        operationId = inspector.get_operation_id(path, method)
         assert operationId == 'list'
 
     def test_repeat_operation_ids(self):

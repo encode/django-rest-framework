@@ -92,6 +92,7 @@ class QueryParameter(OpenApiSchemaBase):
 
 def extend_schema(
         operation=None,
+        operation_id=None,
         extra_parameters=None,
         responses=None,
         request=None,
@@ -117,10 +118,16 @@ def extend_schema(
                     return operation
                 return super().get_operation(path, method)
 
+            def get_operation_id(self, path, method):
+                if operation_id:
+                    return operation_id
+                return super().get_operation_id(path, method)
+
             def get_extra_parameters(self, path, method):
                 if extra_parameters:
                     return [
-                        p.to_schema() if isinstance(p, OpenApiSchemaBase) else p for p in extra_parameters
+                        p.to_schema() if isinstance(p, OpenApiSchemaBase) else p
+                        for p in extra_parameters
                     ]
                 return super().get_extra_parameters(path, method)
 
