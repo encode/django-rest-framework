@@ -1462,7 +1462,7 @@ class ChoiceField(Field):
 
         try:
             return self.choice_reprs_to_values[self._choices_key(data)]
-        except (KeyError, TypeError) as e:
+        except (KeyError, TypeError):
             self.fail('invalid_choice', input=data)
 
     def to_representation(self, value):
