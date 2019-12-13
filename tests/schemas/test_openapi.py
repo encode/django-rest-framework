@@ -1,14 +1,19 @@
 import pytest
 from django.conf.urls import url
+from django.db import models
 from django.test import RequestFactory, TestCase, override_settings
 from django.utils.translation import gettext_lazy as _
 
-from rest_framework import filters, generics, pagination, routers, serializers
+from rest_framework import (
+    filters, generics, pagination, routers, serializers, viewsets
+)
 from rest_framework.compat import uritemplate
 from rest_framework.parsers import JSONParser, MultiPartParser
 from rest_framework.renderers import JSONRenderer
 from rest_framework.request import Request
-from rest_framework.schemas.openapi import AutoSchema, SchemaGenerator, ComponentRegistry
+from rest_framework.schemas.openapi import (
+    AutoSchema, ComponentRegistry, SchemaGenerator
+)
 
 from . import views
 
@@ -126,7 +131,7 @@ class TestOperationIntrospection(TestCase):
         operation = inspector.get_operation(path, method)
         assert operation == {
             'operationId': 'example_retrieve',
-            'description': '\n\nA description of my GET operation.',
+            'description': 'A description of my GET operation.',
             'parameters': [
                 {
                     'name': 'id',
@@ -294,8 +299,7 @@ class TestOperationIntrospection(TestCase):
         inspector = AutoSchema()
         inspector.view = view
         inspector.init(registry)
-
-        operation = inspector.get_operation(path, method)
+        inspector.get_operation(path, method)
         example_schema = registry.schemas['Example']
         nested_schema = registry.schemas['Nested']
 
@@ -680,6 +684,36 @@ class TestOperationIntrospection(TestCase):
 
         assert properties['ip']['type'] == 'string'
         assert 'format' not in properties['ip']
+
+    def test_modelviewset(self):
+        class ExampleModel(models.Model):
+            text = models.TextField()
+
+        class ExampleSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = ExampleModel
+                fields = ['id', 'text']
+
+        class ExampleViewSet(viewsets.ModelViewSet):
+            serializer_class = ExampleSerializer
+            queryset = ExampleModel.objects.none()
+
+        from django.urls import path, include
+
+        router = routers.DefaultRouter()
+        router.register(r'example', ExampleViewSet)
+
+        generator = SchemaGenerator(patterns=[
+            path(r'api/', include(router.urls))
+        ])
+        generator._initialise_endpoints()
+
+        schema = generator.get_schema(request=None, public=True)
+
+        assert list(schema['paths']['/api/example/'].keys()) == ['get', 'post']
+        assert list(schema['paths']['/api/example/{id}/'].keys()) == ['get', 'put', 'patch', 'delete']
+        assert list(schema['components']['schemas'].keys()) == ['Example', 'PatchedExample']
+        # TODO do more checks
 
 
 @pytest.mark.skipif(uritemplate is None, reason='uritemplate not installed.')

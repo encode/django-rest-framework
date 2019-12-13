@@ -1,8 +1,8 @@
 import inspect
 import warnings
+from datetime import date, datetime
 from decimal import Decimal
 from uuid import UUID
-from datetime import datetime, date
 
 from rest_framework import authentication
 from rest_framework.settings import api_settings
@@ -103,6 +103,7 @@ def extend_schema(
     TODO some heavy explaining
 
     :param operation:
+    :param operation_id:
     :param extra_parameters:
     :param responses:
     :param request:

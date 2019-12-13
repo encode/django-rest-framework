@@ -14,15 +14,17 @@ from django.db import models
 from django.utils.encoding import force_str
 from django.utils.module_loading import import_string
 
-from rest_framework import exceptions, renderers, serializers, permissions
+from rest_framework import exceptions, permissions, renderers, serializers
 from rest_framework.compat import uritemplate
 from rest_framework.fields import _UnvalidatedField, empty
+from rest_framework.schemas.openapi_utils import (
+    TYPE_MAPPING, PolymorphicResponse
+)
 from rest_framework.settings import api_settings
-from rest_framework.schemas.openapi_utils import TYPE_MAPPING, PolymorphicResponse
+
 from .generators import BaseSchemaGenerator
 from .inspectors import ViewInspector
 from .utils import get_pk_description, is_list_view
-
 
 AUTHENTICATION_SCHEMES = {
     cls.authentication_class: cls
@@ -180,7 +182,7 @@ class AutoSchema(ViewInspector):
         action_or_method = getattr(self.view, getattr(self.view, 'action', method.lower()), None)
         view_doc = inspect.getdoc(self.view) or ''
         action_doc = inspect.getdoc(action_or_method) or ''
-        return view_doc + '\n\n' + action_doc if action_doc else view_doc
+        return action_doc or view_doc
 
     def get_auth(self, path, method):
         """ override this for custom behaviour """
@@ -262,8 +264,10 @@ class AutoSchema(ViewInspector):
                 elif model_field is not None and model_field.primary_key:
                     description = get_pk_description(model, model_field)
 
-                # TODO cover more cases
-                if isinstance(model_field, models.UUIDField):
+                # TODO are there more relevant PK base classes?
+                if isinstance(model_field, models.IntegerField):
+                    schema = TYPE_MAPPING[int]
+                elif isinstance(model_field, models.UUIDField):
                     schema = TYPE_MAPPING[UUID]
 
             parameter = {
@@ -498,7 +502,7 @@ class AutoSchema(ViewInspector):
         result = {
             'properties': properties
         }
-        if required and method != 'PATCH' and not nested:
+        if required and method != 'PATCH':
             result['required'] = required
 
         return result
@@ -648,7 +652,6 @@ class AutoSchema(ViewInspector):
             }
             return {'200': self._get_response_for_code(path, method, schema)}
 
-
     def _get_response_for_code(self, path, method, serializer_instance):
         if not serializer_instance:
             return {'description': 'No response body'}
@@ -702,7 +705,7 @@ class AutoSchema(ViewInspector):
 
         if name.endswith('Serializer'):
             name = name[:-10]
-        if method == 'PATCH' and not nested:
+        if method == 'PATCH' and not serializer.read_only:  # TODO maybe even use serializer.partial
             name = 'Patched' + name
 
         return name
