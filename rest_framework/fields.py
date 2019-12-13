@@ -1468,7 +1468,7 @@ class ChoiceField(Field):
     def to_representation(self, value):
         # Preserving old untyped behavior
         if not self.underlying_field:
-            return value
+            return self.choice_reprs_to_values.get(str(value), value)
         return self.underlying_field.to_representation(value)
 
     def iter_options(self):
@@ -1533,7 +1533,9 @@ class MultipleChoiceField(ChoiceField):
 
     def to_representation(self, value):
         return {
-            self.underlying_field.to_representation(item) if self.underlying_field else value for item in value
+            self.underlying_field.to_representation(item)
+            if self.underlying_field
+            else self.choice_reprs_to_values.get(str(item), item) for item in value
         }
 
 
