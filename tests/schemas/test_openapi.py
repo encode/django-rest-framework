@@ -1,5 +1,5 @@
 import pytest
-from django.conf.urls import url
+from django.conf.urls import include, url
 from django.db import models
 from django.test import RequestFactory, TestCase, override_settings
 from django.utils.translation import gettext_lazy as _
@@ -698,21 +698,19 @@ class TestOperationIntrospection(TestCase):
             serializer_class = ExampleSerializer
             queryset = ExampleModel.objects.none()
 
-        from django.urls import path, include
-
         router = routers.DefaultRouter()
         router.register(r'example', ExampleViewSet)
 
         generator = SchemaGenerator(patterns=[
-            path(r'api/', include(router.urls))
+            url(r'api/', include(router.urls))
         ])
         generator._initialise_endpoints()
 
         schema = generator.get_schema(request=None, public=True)
 
-        assert list(schema['paths']['/api/example/'].keys()) == ['get', 'post']
-        assert list(schema['paths']['/api/example/{id}/'].keys()) == ['get', 'put', 'patch', 'delete']
-        assert list(schema['components']['schemas'].keys()) == ['Example', 'PatchedExample']
+        assert sorted(schema['paths']['/api/example/'].keys()) == ['get', 'post']
+        assert sorted(schema['paths']['/api/example/{id}/'].keys()) == ['delete', 'get', 'patch', 'put']
+        assert sorted(schema['components']['schemas'].keys()) == ['Example', 'PatchedExample']
         # TODO do more checks
 
 
