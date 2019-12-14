@@ -273,8 +273,8 @@ class TestOperationIntrospection(TestCase):
                 'description': ''
             }
         }
-        assert registry.schemas['Example']['required'] == ['text', 'write_only']
-        assert list(registry.schemas['Example']['properties'].keys()) == ['text', 'write_only']
+        assert sorted(registry.schemas['Example']['required']) == ['text', 'write_only']
+        assert sorted(registry.schemas['Example']['properties'].keys()) == ['text', 'write_only']
 
     def test_response_body_nested_serializer(self):
         path = '/'
@@ -304,9 +304,9 @@ class TestOperationIntrospection(TestCase):
         nested_schema = registry.schemas['Nested']
 
         assert sorted(example_schema['required']) == ['nested', 'text']
-        assert sorted(list(example_schema['properties'].keys())) == ['nested', 'text']
+        assert sorted(example_schema['properties'].keys()) == ['nested', 'text']
         assert example_schema['properties']['nested']['type'] == 'object'
-        assert list(nested_schema['properties'].keys()) == ['number']
+        assert sorted(nested_schema['properties'].keys()) == ['number']
         assert nested_schema['required'] == ['number']
 
     def test_list_response_body_generation(self):
