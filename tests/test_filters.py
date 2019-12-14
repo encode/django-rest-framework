@@ -369,23 +369,21 @@ class SearchFilterAnnotatedFieldTests(TestCase):
         assert response.data[0]['title_text'] == 'ABCDEF'
 
 
-class SearchFilterModelPostgres(models.Model):
-    json_field = postgres_fields.JSONField()
+if postgres_fields:
+    class SearchFilterModelPostgres(models.Model):
+        json_field = postgres_fields.JSONField()
+
+    class SearchFilterPostgresSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = SearchFilterModelPostgres
+            fields = '__all__'
 
 
-class SearchFilterPostgresSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SearchFilterModelPostgres
-        fields = '__all__'
-
-
-@pytest.mark.skipif('connection.vendor != "postgresql"')
+@pytest.mark.skipif(
+    'connection.vendor != "postgresql"',
+    reason='not a PostgreSQL database'
+)
 class SearchFilterPostgresTests(TestCase):
-    class SearchListView(generics.ListAPIView):
-        queryset = SearchFilterModelPostgres.objects.all()
-        serializer_class = SearchFilterPostgresSerializer
-        filter_backends = (filters.SearchFilter,)
-        search_fields = ('=json_field__title', 'json_field__text')
 
     def setUp(self):
         for idx in range(10):
@@ -400,7 +398,13 @@ class SearchFilterPostgresTests(TestCase):
             ).save()
 
     def test_default_json_search(self):
-        view = self.SearchListView.as_view()
+        class SearchListView(generics.ListAPIView):
+            queryset = SearchFilterModelPostgres.objects.all()
+            serializer_class = SearchFilterPostgresSerializer
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('=json_field__title', 'json_field__text')
+
+        view = SearchListView.as_view()
 
         request = factory.get('/', {'search': 'b'})
         response = view(request)
@@ -419,7 +423,13 @@ class SearchFilterPostgresTests(TestCase):
         assert items == {('zzzz', 'def'), ('zzzzz', 'efg')}
 
     def test_exact_json_search(self):
-        view = self.SearchListView.as_view()
+        class SearchListView(generics.ListAPIView):
+            queryset = SearchFilterModelPostgres.objects.all()
+            serializer_class = SearchFilterPostgresSerializer
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('=json_field__title', 'json_field__text')
+
+        view = SearchListView.as_view()
 
         request = factory.get('/', {'search': 'zzzzz'})
         response = view(request)
