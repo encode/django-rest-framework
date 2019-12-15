@@ -597,8 +597,6 @@ The `.to_representation()` method is called to convert the initial datatype into
 
 The `to_internal_value()` method is called to restore a primitive datatype into its internal python representation. This method should raise a `serializers.ValidationError` if the data is invalid.
 
-Note that the `WritableField` class that was present in version 2.x no longer exists. You should subclass `Field` and override `to_internal_value()` if the field supports data input.
-
 ## Examples
 
 ### A Basic Custom Field

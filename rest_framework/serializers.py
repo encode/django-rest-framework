@@ -166,13 +166,6 @@ class BaseSerializer(Field):
         raise NotImplementedError('`create()` must be implemented.')
 
     def save(self, **kwargs):
-        assert not hasattr(self, 'save_object'), (
-            'Serializer `%s.%s` has old-style version 2 `.save_object()` '
-            'that is no longer compatible with REST framework 3. '
-            'Use the new-style `.create()` and `.update()` methods instead.' %
-            (self.__class__.__module__, self.__class__.__name__)
-        )
-
         assert hasattr(self, '_errors'), (
             'You must call `.is_valid()` before calling `.save()`.'
         )
@@ -216,13 +209,6 @@ class BaseSerializer(Field):
         return self.instance
 
     def is_valid(self, raise_exception=False):
-        assert not hasattr(self, 'restore_object'), (
-            'Serializer `%s.%s` has old-style version 2 `.restore_object()` '
-            'that is no longer compatible with REST framework 3. '
-            'Use the new-style `.create()` and `.update()` methods instead.' %
-            (self.__class__.__module__, self.__class__.__name__)
-        )
-
         assert hasattr(self, 'initial_data'), (
             'Cannot call `.is_valid()` as no `data=` keyword argument was '
             'passed when instantiating the serializer instance.'
