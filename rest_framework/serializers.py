@@ -894,6 +894,10 @@ class ModelSerializer(Serializer):
         models.GenericIPAddressField: IPAddressField,
         models.FilePathField: FilePathField,
     }
+    if postgres_fields:
+        serializer_field_mapping[postgres_fields.HStoreField] = HStoreField
+        serializer_field_mapping[postgres_fields.ArrayField] = ListField
+        serializer_field_mapping[postgres_fields.JSONField] = JSONField
     serializer_related_field = PrimaryKeyRelatedField
     serializer_related_to_field = SlugRelatedField
     serializer_url_field = HyperlinkedIdentityField
@@ -1582,12 +1586,6 @@ class ModelSerializer(Serializer):
                 validators.append(validator)
 
         return validators
-
-
-if postgres_fields:
-    ModelSerializer.serializer_field_mapping[postgres_fields.HStoreField] = HStoreField
-    ModelSerializer.serializer_field_mapping[postgres_fields.ArrayField] = ListField
-    ModelSerializer.serializer_field_mapping[postgres_fields.JSONField] = JSONField
 
 
 class HyperlinkedModelSerializer(ModelSerializer):
