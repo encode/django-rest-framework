@@ -19,7 +19,6 @@ from collections.abc import Mapping
 from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import models
-from django.db.models import DurationField as ModelDurationField
 from django.db.models.fields import Field as DjangoModelField
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -876,6 +875,7 @@ class ModelSerializer(Serializer):
         models.DateField: DateField,
         models.DateTimeField: DateTimeField,
         models.DecimalField: DecimalField,
+        models.DurationField: DurationField,
         models.EmailField: EmailField,
         models.Field: ModelField,
         models.FileField: FileField,
@@ -890,11 +890,10 @@ class ModelSerializer(Serializer):
         models.TextField: CharField,
         models.TimeField: TimeField,
         models.URLField: URLField,
+        models.UUIDField: UUIDField,
         models.GenericIPAddressField: IPAddressField,
         models.FilePathField: FilePathField,
     }
-    if ModelDurationField is not None:
-        serializer_field_mapping[ModelDurationField] = DurationField
     serializer_related_field = PrimaryKeyRelatedField
     serializer_related_to_field = SlugRelatedField
     serializer_url_field = HyperlinkedIdentityField
@@ -1584,13 +1583,6 @@ class ModelSerializer(Serializer):
 
         return validators
 
-
-if hasattr(models, 'UUIDField'):
-    ModelSerializer.serializer_field_mapping[models.UUIDField] = UUIDField
-
-# IPAddressField is deprecated in Django
-if hasattr(models, 'IPAddressField'):
-    ModelSerializer.serializer_field_mapping[models.IPAddressField] = IPAddressField
 
 if postgres_fields:
     ModelSerializer.serializer_field_mapping[postgres_fields.HStoreField] = HStoreField
