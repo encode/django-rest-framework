@@ -587,7 +587,7 @@ For full details see the [serializer relations][relations] documentation.
 
 ## Customizing field mappings
 
-The ModelSerializer class also exposes an API that you can override in order to alter how serializer fields are automatically determined when instantiating the serializer.
+The ModelSerializer class also exposes a set of class attributes that you can override in order to alter how serializer fields are automatically determined when first instantiating the serializer.
 
 Normally if a `ModelSerializer` does not generate the fields you need by default then you should either add them to the class explicitly, or simply use a regular `Serializer` class instead. However in some cases you may want to create a new base class that defines how the serializer fields are created for any given model.
 
@@ -617,15 +617,15 @@ Defaults to `serializers.ChoiceField`
 
 ### The field_class and field_kwargs API
 
-The following methods are called to determine the class and keyword arguments for each field that should be automatically included on the serializer. Each of these methods should return a two tuple of `(field_class, field_kwargs)`.
+The following class methods are called to determine the class and keyword arguments for each field that should be automatically included on the serializer. Each of these methods should return a two tuple of `(field_class, field_kwargs)`.
 
-### `.build_standard_field(self, field_name, model_field)`
+### `.build_standard_field(cls, field_name, model_field)`
 
 Called to generate a serializer field that maps to a standard model field.
 
 The default implementation returns a serializer class based on the `serializer_field_mapping` attribute.
 
-### `.build_relational_field(self, field_name, relation_info)`
+### `.build_relational_field(cls, field_name, relation_info)`
 
 Called to generate a serializer field that maps to a relational model field.
 
@@ -633,7 +633,7 @@ The default implementation returns a serializer class based on the `serializer_r
 
 The `relation_info` argument is a named tuple, that contains `model_field`, `related_model`, `to_many` and `has_through_model` properties.
 
-### `.build_nested_field(self, field_name, relation_info, nested_depth)`
+### `.build_nested_field(cls, field_name, relation_info, nested_depth)`
 
 Called to generate a serializer field that maps to a relational model field, when the `depth` option has been set.
 
@@ -643,17 +643,17 @@ The `nested_depth` will be the value of the `depth` option, minus one.
 
 The `relation_info` argument is a named tuple, that contains `model_field`, `related_model`, `to_many` and `has_through_model` properties.
 
-### `.build_property_field(self, field_name, model_class)`
+### `.build_property_field(cls, field_name, model_class)`
 
 Called to generate a serializer field that maps to a property or zero-argument method on the model class.
 
 The default implementation returns a `ReadOnlyField` class.
 
-### `.build_url_field(self, field_name, model_class)`
+### `.build_url_field(cls, field_name, model_class)`
 
 Called to generate a serializer field for the serializer's own `url` field. The default implementation returns a `HyperlinkedIdentityField` class.
 
-### `.build_unknown_field(self, field_name, model_class)`
+### `.build_unknown_field(cls, field_name, model_class)`
 
 Called when the field name did not map to any model field or model property.
 The default implementation raises an error, although subclasses may customize this behavior.
