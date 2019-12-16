@@ -19,7 +19,6 @@ from collections.abc import Mapping
 from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import models
-from django.db.models import DurationField as ModelDurationField
 from django.db.models.fields import Field as DjangoModelField
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -167,13 +166,6 @@ class BaseSerializer(Field):
         raise NotImplementedError('`create()` must be implemented.')
 
     def save(self, **kwargs):
-        assert not hasattr(self, 'save_object'), (
-            'Serializer `%s.%s` has old-style version 2 `.save_object()` '
-            'that is no longer compatible with REST framework 3. '
-            'Use the new-style `.create()` and `.update()` methods instead.' %
-            (self.__class__.__module__, self.__class__.__name__)
-        )
-
         assert hasattr(self, '_errors'), (
             'You must call `.is_valid()` before calling `.save()`.'
         )
@@ -217,13 +209,6 @@ class BaseSerializer(Field):
         return self.instance
 
     def is_valid(self, raise_exception=False):
-        assert not hasattr(self, 'restore_object'), (
-            'Serializer `%s.%s` has old-style version 2 `.restore_object()` '
-            'that is no longer compatible with REST framework 3. '
-            'Use the new-style `.create()` and `.update()` methods instead.' %
-            (self.__class__.__module__, self.__class__.__name__)
-        )
-
         assert hasattr(self, 'initial_data'), (
             'Cannot call `.is_valid()` as no `data=` keyword argument was '
             'passed when instantiating the serializer instance.'
@@ -876,6 +861,7 @@ class ModelSerializer(Serializer):
         models.DateField: DateField,
         models.DateTimeField: DateTimeField,
         models.DecimalField: DecimalField,
+        models.DurationField: DurationField,
         models.EmailField: EmailField,
         models.Field: ModelField,
         models.FileField: FileField,
@@ -890,11 +876,14 @@ class ModelSerializer(Serializer):
         models.TextField: CharField,
         models.TimeField: TimeField,
         models.URLField: URLField,
+        models.UUIDField: UUIDField,
         models.GenericIPAddressField: IPAddressField,
         models.FilePathField: FilePathField,
     }
-    if ModelDurationField is not None:
-        serializer_field_mapping[ModelDurationField] = DurationField
+    if postgres_fields:
+        serializer_field_mapping[postgres_fields.HStoreField] = HStoreField
+        serializer_field_mapping[postgres_fields.ArrayField] = ListField
+        serializer_field_mapping[postgres_fields.JSONField] = JSONField
     serializer_related_field = PrimaryKeyRelatedField
     serializer_related_to_field = SlugRelatedField
     serializer_url_field = HyperlinkedIdentityField
@@ -1583,19 +1572,6 @@ class ModelSerializer(Serializer):
                 validators.append(validator)
 
         return validators
-
-
-if hasattr(models, 'UUIDField'):
-    ModelSerializer.serializer_field_mapping[models.UUIDField] = UUIDField
-
-# IPAddressField is deprecated in Django
-if hasattr(models, 'IPAddressField'):
-    ModelSerializer.serializer_field_mapping[models.IPAddressField] = IPAddressField
-
-if postgres_fields:
-    ModelSerializer.serializer_field_mapping[postgres_fields.HStoreField] = HStoreField
-    ModelSerializer.serializer_field_mapping[postgres_fields.ArrayField] = ListField
-    ModelSerializer.serializer_field_mapping[postgres_fields.JSONField] = JSONField
 
 
 class HyperlinkedModelSerializer(ModelSerializer):
