@@ -18,7 +18,20 @@ from .inspectors import ViewInspector
 from .utils import get_pk_description, is_list_view
 
 
+class ComponentRegistry:
+    def __init__(self):
+        self.schemas = {}
+
+    def get_components(self):
+        return {
+            'schemas': self.schemas,
+        }
+
+
 class SchemaGenerator(BaseSchemaGenerator):
+    def __init__(self, *args, **kwargs):
+        self.registry = ComponentRegistry()
+        super().__init__(*args, **kwargs)
 
     def get_info(self):
         # Title and version are required by openapi specification 3.x
@@ -32,7 +45,7 @@ class SchemaGenerator(BaseSchemaGenerator):
 
         return info
 
-    def get_paths(self, request=None):
+    def parse(self, request=None):
         result = {}
 
         paths, view_endpoints = self._get_paths_and_endpoints(request)
@@ -44,7 +57,10 @@ class SchemaGenerator(BaseSchemaGenerator):
         for path, method, view in view_endpoints:
             if not self.has_view_permissions(path, method, view):
                 continue
-            operation = view.schema.get_operation(path, method)
+            # keep reference to schema as every access yields a fresh object (descriptor protocol)
+            schema = view.schema
+            schema.init(self.registry)
+            operation = schema.get_operation(path, method)
             # Normalise path for any provided mount url.
             if path.startswith('/'):
                 path = path[1:]
@@ -61,7 +77,7 @@ class SchemaGenerator(BaseSchemaGenerator):
         """
         self._initialise_endpoints()
 
-        paths = self.get_paths(None if public else request)
+        paths = self.parse(None if public else request)
         if not paths:
             return None
 
@@ -69,6 +85,7 @@ class SchemaGenerator(BaseSchemaGenerator):
             'openapi': '3.0.2',
             'info': self.get_info(),
             'paths': paths,
+            'components': self.registry.get_components(),
         }
 
         return schema
@@ -89,6 +106,9 @@ class AutoSchema(ViewInspector):
         'delete': 'Destroy',
     }
 
+    def init(self, registry):
+        self.registry = registry
+
     def get_operation(self, path, method):
         operation = {}
 
@@ -104,9 +124,17 @@ class AutoSchema(ViewInspector):
         request_body = self._get_request_body(path, method)
         if request_body:
             operation['requestBody'] = request_body
-        operation['responses'] = self._get_responses(path, method)
+        operation['responses'] = self._get_response_bodies(path, method)
 
         return operation
+
+    def get_request_serializer(self, path, method):
+        """ override this for custom behaviour """
+        return self._get_serializer(path, method)
+
+    def get_response_serializer(self, path, method):
+        """ override this for custom behaviour """
+        return self._get_serializer(path, method)
 
     def _get_operation_id(self, path, method):
         """
@@ -218,16 +246,16 @@ class AutoSchema(ViewInspector):
 
         return paginator.get_schema_operation_parameters(view)
 
-    def _map_field(self, field):
+    def _map_field(self, method, field):
 
         # Nested Serializers, `many` or not.
         if isinstance(field, serializers.ListSerializer):
             return {
                 'type': 'array',
-                'items': self._map_serializer(field.child)
+                'items': self.resolve_serializer(method, field.child)
             }
         if isinstance(field, serializers.Serializer):
-            data = self._map_serializer(field)
+            data = self.resolve_serializer(method, field)
             data['type'] = 'object'
             return data
 
@@ -268,7 +296,7 @@ class AutoSchema(ViewInspector):
                 'items': {},
             }
             if not isinstance(field.child, _UnvalidatedField):
-                map_field = self._map_field(field.child)
+                map_field = self._map_field(method, field.child)
                 items = {
                     "type": map_field.get('type')
                 }
@@ -370,7 +398,7 @@ class AutoSchema(ViewInspector):
         if field.min_value:
             content['minimum'] = field.min_value
 
-    def _map_serializer(self, serializer):
+    def _map_serializer(self, method, serializer):
         # Assuming we have a valid serializer instance.
         # TODO:
         #   - field is Nested or List serializer.
@@ -386,7 +414,7 @@ class AutoSchema(ViewInspector):
             if field.required:
                 required.append(field.field_name)
 
-            schema = self._map_field(field)
+            schema = self._map_field(method, field)
             if field.read_only:
                 schema['readOnly'] = True
             if field.write_only:
@@ -404,7 +432,7 @@ class AutoSchema(ViewInspector):
         result = {
             'properties': properties
         }
-        if required:
+        if required and method != 'PATCH':
             result['required'] = required
 
         return result
@@ -485,70 +513,98 @@ class AutoSchema(ViewInspector):
 
         self.request_media_types = self.map_parsers(path, method)
 
-        serializer = self._get_serializer(path, method)
+        serializer = self.get_request_serializer(path, method)
 
-        if not isinstance(serializer, serializers.Serializer):
+        if isinstance(serializer, serializers.Serializer):
+            schema = self.resolve_serializer(method, serializer)
+        else:
+            schema = {
+                'type': 'object',
+                'additionalProperties': {},  # https://github.com/swagger-api/swagger-codegen/issues/1318
+                'description': 'Unspecified request body',
+            }
+
+        # serializer has no fields so skip content enumeration
+        if not schema:
             return {}
-
-        content = self._map_serializer(serializer)
-        # No required fields for PATCH
-        if method == 'PATCH':
-            content.pop('required', None)
-        # No read_only fields for request.
-        for name, schema in content['properties'].copy().items():
-            if 'readOnly' in schema:
-                del content['properties'][name]
 
         return {
             'content': {
-                ct: {'schema': content}
-                for ct in self.request_media_types
+                mt: {'schema': schema} for mt in self.request_media_types
             }
         }
 
-    def _get_responses(self, path, method):
-        # TODO: Handle multiple codes and pagination classes.
-        if method == 'DELETE':
-            return {
-                '204': {
-                    'description': ''
-                }
-            }
-
-        self.response_media_types = self.map_renderers(path, method)
-
-        item_schema = {}
-        serializer = self._get_serializer(path, method)
+    def _get_response_bodies(self, path, method):
+        serializer = self.get_response_serializer(path, method)
 
         if isinstance(serializer, serializers.Serializer):
-            item_schema = self._map_serializer(serializer)
-            # No write_only fields for response.
-            for name, schema in item_schema['properties'].copy().items():
-                if 'writeOnly' in schema:
-                    del item_schema['properties'][name]
-                    if 'required' in item_schema:
-                        item_schema['required'] = [f for f in item_schema['required'] if f != name]
+            if method == 'DELETE':
+                return {'204': {'description': 'No response body'}}
+            return {'200': self._get_response_for_code(path, method, serializer)}
+        else:
+            schema = {
+                'type': 'object',
+                'description': 'Unspecified response body',
+            }
+            return {'200': self._get_response_for_code(path, method, schema)}
+
+    def _get_response_for_code(self, path, method, serializer):
+        # TODO: Handle multiple codes and pagination classes.
+        if not serializer:
+            return {'description': 'No response body'}
+        elif isinstance(serializer, serializers.Serializer):
+            schema = self.resolve_serializer(method, serializer)
+            if not schema:
+                return {'description': 'No response body'}
+        elif isinstance(serializer, dict):
+            # bypass processing and use given schema directly
+            schema = serializer
+        else:
+            raise ValueError('Serializer type unsupported')
 
         if is_list_view(path, method, self.view):
-            response_schema = {
+            schema = {
                 'type': 'array',
-                'items': item_schema,
+                'items': schema,
             }
             paginator = self._get_paginator()
             if paginator:
-                response_schema = paginator.get_paginated_response_schema(response_schema)
-        else:
-            response_schema = item_schema
+                schema = paginator.get_paginated_response_schema(schema)
 
         return {
-            '200': {
-                'content': {
-                    ct: {'schema': response_schema}
-                    for ct in self.response_media_types
-                },
-                # description is a mandatory property,
-                # https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#responseObject
-                # TODO: put something meaningful into it
-                'description': ""
-            }
+            'content': {
+                mt: {'schema': schema} for mt in self.map_renderers(path, method)
+            },
+            # description is a mandatory property,
+            # https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#responseObject
+            # TODO: put something meaningful into it
+            'description': ""
         }
+
+    def _get_serializer_name(self, method, serializer):
+        name = serializer.__class__.__name__
+
+        if name.endswith('Serializer'):
+            name = name[:-10]
+        if method == 'PATCH' and not serializer.read_only:
+            name = 'Patched' + name
+
+        return name
+
+    def resolve_serializer(self, method, serializer):
+        name = self._get_serializer_name(method, serializer)
+
+        if name not in self.registry.schemas:
+            # add placeholder to prevent recursion loop
+            self.registry.schemas[name] = None
+
+            mapped = self._map_serializer(method, serializer)
+            # empty serializer - usually a transactional serializer.
+            # no need to put it explicitly in the spec
+            if not mapped['properties']:
+                del self.registry.schemas[name]
+                return {}
+            else:
+                self.registry.schemas[name] = mapped
+
+        return {'$ref': '#/components/schemas/{}'.format(name)}
