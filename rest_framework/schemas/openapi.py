@@ -186,18 +186,16 @@ class AutoSchema(ViewInspector):
 
     def get_auth(self, path, method):
         """ override this for custom behaviour """
-        auth = []
-        if hasattr(self.view, 'authentication_classes'):
-            auth = [
-                self.resolve_authentication(method, ac) for ac in self.view.authentication_classes
-            ]
-        if hasattr(self.view, 'permission_classes'):
-            perms = self.view.permission_classes
-            if permissions.AllowAny in perms:
-                auth.append({})
-            elif permissions.IsAuthenticatedOrReadOnly in perms and method not in ('PUT', 'PATCH', 'POST'):
-                auth.append({})
-        return auth
+        view_auths = [
+            self.resolve_authentication(method, a) for a in self.view.get_authenticators()
+        ]
+        view_perms = [p.__class__ for p in self.view.get_permissions()]
+
+        if permissions.AllowAny in view_perms:
+            view_auths.append({})
+        elif permissions.IsAuthenticatedOrReadOnly in view_perms and method not in ('PUT', 'PATCH', 'POST'):
+            view_auths.append({})
+        return view_auths
 
     def get_request_serializer(self, path, method):
         """ override this for custom behaviour """
@@ -469,11 +467,6 @@ class AutoSchema(ViewInspector):
             content['minimum'] = field.min_value
 
     def _map_serializer(self, method, serializer, nested=False):
-        # Assuming we have a valid serializer instance.
-        # TODO:
-        #   - field is Nested or List serializer.
-        #   - Handle read_only/write_only for request/response differences.
-        #       - could do this with readOnly/writeOnly and then filter dict.
         required = []
         properties = {}
 
@@ -711,10 +704,7 @@ class AutoSchema(ViewInspector):
         return name
 
     def resolve_authentication(self, method, authentication):
-        if authentication not in AUTHENTICATION_SCHEMES:
-            raise ValueError()
-
-        auth_scheme = AUTHENTICATION_SCHEMES.get(authentication)
+        auth_scheme = AUTHENTICATION_SCHEMES.get(authentication.__class__)
 
         if not auth_scheme:
             raise ValueError('no auth scheme registered for {}'.format(authentication.__name__))
