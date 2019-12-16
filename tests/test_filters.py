@@ -297,8 +297,13 @@ class Blog(models.Model):
     name = models.CharField(max_length=20)
 
 
+class Tag(models.Model):
+    name = models.CharField(max_length=20)
+
+
 class Entry(models.Model):
     blog = models.ForeignKey(Blog, on_delete=models.CASCADE)
+    tags = models.ManyToManyField(Tag, related_name='entries', blank=True)
     headline = models.CharField(max_length=120)
     pub_date = models.DateField(null=True)
 
@@ -316,25 +321,62 @@ class SearchFilterToManyTests(TestCase):
         b1 = Blog.objects.create(name='Blog 1')
         b2 = Blog.objects.create(name='Blog 2')
 
+        t1 = Tag.objects.create(name='tag1')
+        t2 = Tag.objects.create(name='tag2')
+
         # Multiple entries on Lennon published in 1979 - distinct should deduplicate
-        Entry.objects.create(blog=b1, headline='Something about Lennon', pub_date=datetime.date(1979, 1, 1))
-        Entry.objects.create(blog=b1, headline='Another thing about Lennon', pub_date=datetime.date(1979, 6, 1))
+        e1 = Entry.objects.create(blog=b1, headline='Something about Lennon', pub_date=datetime.date(1979, 1, 1))
+        e1.tags.add(t1)
+        e1.save()
+
+        e2 = Entry.objects.create(blog=b1, headline='Another thing about Lennon', pub_date=datetime.date(1979, 6, 1))
+        e2.tags.add(t2)
+        e2.save()
 
         # Entry on Lennon *and* a separate entry in 1979 - should not match
-        Entry.objects.create(blog=b2, headline='Something unrelated', pub_date=datetime.date(1979, 1, 1))
-        Entry.objects.create(blog=b2, headline='Retrospective on Lennon', pub_date=datetime.date(1990, 6, 1))
+        e3 = Entry.objects.create(blog=b2, headline='Something unrelated', pub_date=datetime.date(1979, 1, 1))
 
-    def test_multiple_filter_conditions(self):
+        e4 = Entry.objects.create(blog=b2, headline='Retrospective on Lennon', pub_date=datetime.date(1990, 6, 1))
+        e4.tags.add(t1)
+        e4.tags.add(t2)
+        e4.save()
+
+    def setUp(self):
         class SearchListView(generics.ListAPIView):
             queryset = Blog.objects.all()
             serializer_class = BlogSerializer
             filter_backends = (filters.SearchFilter,)
-            search_fields = ('=name', 'entry__headline', '=entry__pub_date__year')
+            search_fields = (
+                '=name',
+                'entry__headline',
+                '=entry__pub_date__year',
+                'entry__tags__name'
+            )
+        self.SearchListView = SearchListView
 
-        view = SearchListView.as_view()
+    def test_multiple_filter_conditions(self):
+        view = self.SearchListView.as_view()
         request = factory.get('/', {'search': 'Lennon,1979'})
         response = view(request)
         assert len(response.data) == 1
+
+    def test_single_filter_condition_manytomany(self):
+        view = self.SearchListView.as_view()
+
+        request = factory.get('/', {'search': 'tag1'})
+        response = view(request)
+        assert len(response.data) == 2
+
+        request = factory.get('/', {'search': 'tag2'})
+        response = view(request)
+        assert len(response.data) == 2
+
+    def test_multiple_filter_conditions_manytomany(self):
+        view = self.SearchListView.as_view()
+        request = factory.get('/', {'search': 'tag1,tag2'})
+        response = view(request)
+        assert len(response.data) == 1
+
 
 
 class SearchFilterAnnotatedSerializer(serializers.ModelSerializer):
