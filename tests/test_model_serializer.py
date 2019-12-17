@@ -144,18 +144,12 @@ class TestModelSerializer(TestCase):
             class Meta:
                 abstract = True
 
-        class TestSerializer(serializers.ModelSerializer):
-            class Meta:
-                model = AbstractModel
-                fields = ('afield',)
-
-        serializer = TestSerializer(data={
-            'afield': 'foo',
-        })
-
         msginitial = 'Cannot use ModelSerializer with Abstract Models.'
         with self.assertRaisesMessage(ValueError, msginitial):
-            serializer.is_valid()
+            class TestSerializer(serializers.ModelSerializer):
+                class Meta:
+                    model = AbstractModel
+                    fields = ('afield',)
 
 
 class TestRegularFieldMappings(TestCase):
@@ -307,33 +301,29 @@ class TestRegularFieldMappings(TestCase):
         Field names that do not map to a model field or relationship should
         raise a configuration error.
         """
-        class TestSerializer(serializers.ModelSerializer):
-            class Meta:
-                model = RegularFieldsModel
-                fields = ('auto_field', 'invalid')
-
         expected = 'Field name `invalid` is not valid for model `RegularFieldsModel`.'
         with self.assertRaisesMessage(ImproperlyConfigured, expected):
-            TestSerializer().fields
+            class TestSerializer(serializers.ModelSerializer):
+                class Meta:
+                    model = RegularFieldsModel
+                    fields = ('auto_field', 'invalid')
 
     def test_missing_field(self):
         """
         Fields that have been declared on the serializer class must be included
         in the `Meta.fields` if it exists.
         """
-        class TestSerializer(serializers.ModelSerializer):
-            missing = serializers.ReadOnlyField()
-
-            class Meta:
-                model = RegularFieldsModel
-                fields = ('auto_field',)
-
         expected = (
             "The field 'missing' was declared on serializer TestSerializer, "
             "but has not been included in the 'fields' option."
         )
         with self.assertRaisesMessage(AssertionError, expected):
-            TestSerializer().fields
+            class TestSerializer(serializers.ModelSerializer):
+                missing = serializers.ReadOnlyField()
+
+                class Meta:
+                    model = RegularFieldsModel
+                    fields = ('auto_field',)
 
     def test_missing_superclass_field(self):
         """
@@ -921,51 +911,43 @@ class MetaClassTestModel(models.Model):
 
 class TestSerializerMetaClass(TestCase):
     def test_meta_class_fields_option(self):
-        class ExampleSerializer(serializers.ModelSerializer):
-            class Meta:
-                model = MetaClassTestModel
-                fields = 'text'
-
         msginitial = "The `fields` option must be a list or tuple"
         with self.assertRaisesMessage(TypeError, msginitial):
-            ExampleSerializer().fields
+            class ExampleSerializer(serializers.ModelSerializer):
+                class Meta:
+                    model = MetaClassTestModel
+                    fields = 'text'
 
     def test_meta_class_exclude_option(self):
-        class ExampleSerializer(serializers.ModelSerializer):
-            class Meta:
-                model = MetaClassTestModel
-                exclude = 'text'
-
         msginitial = "The `exclude` option must be a list or tuple"
         with self.assertRaisesMessage(TypeError, msginitial):
-            ExampleSerializer().fields
+            class ExampleSerializer(serializers.ModelSerializer):
+                class Meta:
+                    model = MetaClassTestModel
+                    exclude = 'text'
 
     def test_meta_class_fields_and_exclude_options(self):
-        class ExampleSerializer(serializers.ModelSerializer):
-            class Meta:
-                model = MetaClassTestModel
-                fields = ('text',)
-                exclude = ('text',)
-
         msginitial = "Cannot set both 'fields' and 'exclude' options on serializer ExampleSerializer."
         with self.assertRaisesMessage(AssertionError, msginitial):
-            ExampleSerializer().fields
+            class ExampleSerializer(serializers.ModelSerializer):
+                class Meta:
+                    model = MetaClassTestModel
+                    fields = ('text',)
+                    exclude = ('text',)
 
     def test_declared_fields_with_exclude_option(self):
-        class ExampleSerializer(serializers.ModelSerializer):
-            text = serializers.CharField()
-
-            class Meta:
-                model = MetaClassTestModel
-                exclude = ('text',)
-
         expected = (
             "Cannot both declare the field 'text' and include it in the "
             "ExampleSerializer 'exclude' option. Remove the field or, if "
             "inherited from a parent serializer, disable with `text = None`."
         )
         with self.assertRaisesMessage(AssertionError, expected):
-            ExampleSerializer().fields
+            class ExampleSerializer(serializers.ModelSerializer):
+                text = serializers.CharField()
+
+                class Meta:
+                    model = MetaClassTestModel
+                    exclude = ('text',)
 
 
 class Issue2704TestCase(TestCase):
@@ -1177,16 +1159,12 @@ class Issue3674Test(TestCase):
 
 class Issue4897TestCase(TestCase):
     def test_should_assert_if_writing_readonly_fields(self):
-        class TestSerializer(serializers.ModelSerializer):
-            class Meta:
-                model = OneFieldModel
-                fields = ('char_field',)
-                readonly_fields = fields
-
-        obj = OneFieldModel.objects.create(char_field='abc')
-
         with pytest.raises(AssertionError) as cm:
-            TestSerializer(obj).fields
+            class TestSerializer(serializers.ModelSerializer):
+                class Meta:
+                    model = OneFieldModel
+                    fields = ('char_field',)
+                    readonly_fields = fields
         cm.match(r'readonly_fields')
 
 
