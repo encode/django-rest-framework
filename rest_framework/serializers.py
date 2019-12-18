@@ -862,15 +862,13 @@ class ModelSerializerMetaclass(SerializerMetaclass):
 
     @classmethod
     def _get_fields(cls, new_class):
-        # XXX
+        # ModelSerializer itself and customized subclasses like
+        # HyperlinkedModelSerializer are never instantiated directly,
+        # and don't have a Meta. For these, the base_fields is None,
+        # and an error is raised if it's attempted to be used.
         if not hasattr(new_class, 'Meta'):
-            return OrderedDict()
+            return None
 
-        assert hasattr(new_class, 'Meta'), (
-            'Class {serializer_class} missing "Meta" attribute'.format(
-                serializer_class=new_class.__name__
-            )
-        )
         assert hasattr(new_class.Meta, 'model'), (
             'Class {serializer_class} missing "Meta.model" attribute'.format(
                 serializer_class=new_class.__name__
@@ -1097,6 +1095,11 @@ class ModelSerializer(Serializer, metaclass=ModelSerializerMetaclass):
         Return the dict of field names -> field instances that should be
         used for `self.fields` when instantiating the serializer.
         """
+        assert self.base_fields is not None, (
+            'Class {serializer_class} missing "Meta" attribute'.format(
+                serializer_class=self.__class__.__name__
+            )
+        )
         return copy.deepcopy(self.base_fields)
 
     # Methods for determining the set of field names to include...

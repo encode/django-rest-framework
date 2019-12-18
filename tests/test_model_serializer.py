@@ -151,6 +151,14 @@ class TestModelSerializer(TestCase):
                     model = AbstractModel
                     fields = ('afield',)
 
+    def test_missing_meta(self):
+        class TestSerializer(serializers.ModelSerializer):
+            text = serializers.CharField()
+
+        msginitial = 'Class TestSerializer missing "Meta" attribute'
+        with self.assertRaisesMessage(AssertionError, msginitial):
+            TestSerializer().fields
+
 
 class TestRegularFieldMappings(TestCase):
     def test_regular_fields(self):
