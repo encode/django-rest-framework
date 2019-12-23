@@ -242,6 +242,37 @@ class ListCreateAPIView(mixins.ListModelMixin,
         return self.create(request, *args, **kwargs)
 
 
+class ListRetrieveAPIView(mixins.ListModelMixin,
+                          mixins.RetrieveModelMixin,
+                          GenericAPIView):
+    """
+    Concrete view for listing a queryset or retrieving a model instance.
+    """
+    def get(self, request, *args, **kwargs):
+        lookup_param = request.GET.get(self.lookup_field)
+        if lookup_param is not None:
+            self.kwargs[self.lookup_field] = lookup_param
+            return self.retrieve(request, *args, **kwargs)
+        else:
+            return self.list(request, *args, **kwargs)
+
+    def get_object(self):
+        """
+        Returns the object the view is displaying.
+
+        Overriden to make use only of 'lookup_field', so 
+        retrieving objects can be done by query parameters
+        """
+        queryset = self.filter_queryset(self.get_queryset())
+        filter_kwargs = {self.lookup_field: self.kwargs[self.lookup_field]}
+        obj = get_object_or_404(queryset, **filter_kwargs)
+
+        # May raise a permission denied
+        self.check_object_permissions(self.request, obj)
+
+        return obj
+
+
 class RetrieveUpdateAPIView(mixins.RetrieveModelMixin,
                             mixins.UpdateModelMixin,
                             GenericAPIView):
