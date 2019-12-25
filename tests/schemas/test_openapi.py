@@ -571,6 +571,22 @@ class TestOperationIntrospection(TestCase):
         properties = response_schema['items']['properties']
         assert properties['hstore']['type'] == 'object'
 
+    def test_serializer_callable_default(self):
+        path = '/'
+        method = 'GET'
+        view = create_view(
+            views.ExampleGenericAPIView,
+            method,
+            create_request(path),
+        )
+        inspector = AutoSchema()
+        inspector.view = view
+
+        responses = inspector._get_responses(path, method)
+        response_schema = responses['200']['content']['application/json']['schema']
+        properties = response_schema['items']['properties']
+        assert 'default' not in properties['uuid_field']
+
     def test_serializer_validators(self):
         path = '/'
         method = 'GET'
