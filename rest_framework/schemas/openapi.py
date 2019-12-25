@@ -47,11 +47,13 @@ class SchemaGenerator(BaseSchemaGenerator):
             operation = view.schema.get_operation(path, method)
             # Normalise path for any provided mount url.
             if path.startswith('/'):
+                tags = [path.split('/')[1]]
                 path = path[1:]
             path = urljoin(self.url or '/', path)
 
             result.setdefault(path, {})
             result[path][method.lower()] = operation
+            result[path][method.lower()].update(tags=tags)
 
         return result
 
