@@ -384,7 +384,7 @@ First, install the API documentation views. These will include the schema resour
 
     urlpatterns = [
         ...
-        url(r'^docs/', include_docs_urls(title='My API service'))
+        url(r'^docs/', include_docs_urls(title='My API service'), name='api-docs'),
     ]
 
 Once the API documentation URLs are installed, you'll be able to include both the required JavaScript resources. Note that the ordering of these two lines is important, as the schema loading requires CoreAPI to already be installed.
@@ -401,14 +401,14 @@ Once the API documentation URLs are installed, you'll be able to include both th
 
 The `coreapi` library, and the `schema` object will now both be available on the `window` instance.
 
-    const coreapi = window.coreapi
-    const schema = window.schema
+    const coreapi = window.coreapi;
+    const schema = window.schema;
 
 ## Instantiating a client
 
 In order to interact with the API you'll need a client instance.
 
-    var client = new coreapi.Client()
+    var client = new coreapi.Client();
 
 Typically you'll also want to provide some authentication credentials when
 instantiating the client.
@@ -421,9 +421,9 @@ the user to login, and then instantiate a client using session authentication:
 
     let auth = new coreapi.auth.SessionAuthentication({
         csrfCookieName: 'csrftoken',
-        csrfHeaderName: 'X-CSRFToken'
-    })
-    let client = new coreapi.Client({auth: auth})
+        csrfHeaderName: 'X-CSRFToken',
+    });
+    let client = new coreapi.Client({auth: auth});
 
 The authentication scheme will handle including a CSRF header in any outgoing
 requests for unsafe HTTP methods.
@@ -434,10 +434,10 @@ The `TokenAuthentication` class can be used to support REST framework's built-in
 `TokenAuthentication`, as well as OAuth and JWT schemes.
 
     let auth = new coreapi.auth.TokenAuthentication({
-        scheme: 'JWT'
-        token: '<token>'
-    })
-    let client = new coreapi.Client({auth: auth})
+        scheme: 'JWT',
+        token: '<token>',
+    });
+    let client = new coreapi.Client({auth: auth});
 
 When using TokenAuthentication you'll probably need to implement a login flow
 using the CoreAPI client.
@@ -448,20 +448,20 @@ request to an "obtain token" endpoint
 For example, using the "Django REST framework JWT" package
 
     // Setup some globally accessible state
-    window.client = new coreapi.Client()
-    window.loggedIn = false
+    window.client = new coreapi.Client();
+    window.loggedIn = false;
 
     function loginUser(username, password) {
-        let action = ["api-token-auth", "obtain-token"]
-        let params = {username: "example", email: "example@example.com"}
+        let action = ["api-token-auth", "obtain-token"];
+        let params = {username: "example", email: "example@example.com"};
         client.action(schema, action, params).then(function(result) {
             // On success, instantiate an authenticated client.
             let auth = window.coreapi.auth.TokenAuthentication({
                 scheme: 'JWT',
-                token: result['token']
+                token: result['token'],
             })
-            window.client = coreapi.Client({auth: auth})
-            window.loggedIn = true
+            window.client = coreapi.Client({auth: auth});
+            window.loggedIn = true;
         }).catch(function (error) {
             // Handle error case where eg. user provides incorrect credentials.
         })
@@ -473,23 +473,23 @@ The `BasicAuthentication` class can be used to support HTTP Basic Authentication
 
     let auth = new coreapi.auth.BasicAuthentication({
         username: '<username>',
-        password: '<password>'
+        password: '<password>',
     })
-    let client = new coreapi.Client({auth: auth})
+    let client = new coreapi.Client({auth: auth});
 
 ## Using the client
 
 Making requests:
 
-    let action = ["users", "list"]
+    let action = ["users", "list"];
     client.action(schema, action).then(function(result) {
         // Return value is in 'result'
     })
 
 Including parameters:
 
-    let action = ["users", "create"]
-    let params = {username: "example", email: "example@example.com"}
+    let action = ["users", "create"];
+    let params = {username: "example", email: "example@example.com"};
     client.action(schema, action, params).then(function(result) {
         // Return value is in 'result'
     })
@@ -512,12 +512,12 @@ The coreapi package is available on NPM.
 
 You'll either want to include the API schema in your codebase directly, by copying it from the `schema.js` resource, or else load the schema asynchronously. For example:
 
-    let client = new coreapi.Client()
-    let schema = null
+    let client = new coreapi.Client();
+    let schema = null;
     client.get("https://api.example.org/").then(function(data) {
         // Load a CoreJSON API schema.
-        schema = data
-        console.log('schema loaded')
+        schema = data;
+        console.log('schema loaded');
     })
 
 [heroku-api]: https://devcenter.heroku.com/categories/platform-api
