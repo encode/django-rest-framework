@@ -1889,14 +1889,9 @@ class SerializerMethodField(Field):
         super().__init__(**kwargs)
 
     def bind(self, field_name, parent):
-        # In order to enforce a consistent style, we error if a redundant
-        # 'method_name' argument has been used. For example:
-        # my_field = serializer.SerializerMethodField(method_name='get_my_field')
-        default_method_name = 'get_{field_name}'.format(field_name=field_name)
-
-        # The method name should default to `get_{field_name}`.
+        # The method name defaults to `get_{field_name}`.
         if self.method_name is None:
-            self.method_name = default_method_name
+            self.method_name = 'get_{field_name}'.format(field_name=field_name)
 
         super().bind(field_name, parent)
 
