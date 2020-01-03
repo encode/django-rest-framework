@@ -58,6 +58,7 @@ class ExampleSerializer(serializers.Serializer):
     date = serializers.DateField()
     datetime = serializers.DateTimeField()
     hstore = serializers.HStoreField()
+    uuid_field = serializers.UUIDField(default=uuid.uuid4)
 
 
 class ExampleGenericAPIView(generics.GenericAPIView):
