@@ -6,7 +6,7 @@ spec-compliant encoding/decoding. Support for non-standard features should be
 handled by users at the renderer and parser layer.
 """
 import functools
-import ujson as json # noqa
+import ujson as json
 
 
 def strict_constant(o):

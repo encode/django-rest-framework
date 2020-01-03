@@ -3,7 +3,7 @@ Helper classes for parsers.
 """
 import datetime
 import decimal
-import ujson as json  # noqa
+import ujson as json
 import uuid
 
 from django.db.models.query import QuerySet
