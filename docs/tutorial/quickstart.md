@@ -85,6 +85,7 @@ Right, we'd better write some views then.  Open `tutorial/quickstart/views.py` a
 
     from django.contrib.auth.models import User, Group
     from rest_framework import viewsets
+    from rest_framework import permissions
     from tutorial.quickstart.serializers import UserSerializer, GroupSerializer
 
 
@@ -94,6 +95,7 @@ Right, we'd better write some views then.  Open `tutorial/quickstart/views.py` a
         """
         queryset = User.objects.all().order_by('-date_joined')
         serializer_class = UserSerializer
+        permission_classes = [permissions.IsAuthenticated]
 
 
     class GroupViewSet(viewsets.ModelViewSet):
@@ -102,6 +104,7 @@ Right, we'd better write some views then.  Open `tutorial/quickstart/views.py` a
         """
         queryset = Group.objects.all()
         serializer_class = GroupSerializer
+        permission_classes = [permissions.IsAuthenticated]
 
 Rather than write multiple views we're grouping together all the common behavior into classes called `ViewSets`.
 
