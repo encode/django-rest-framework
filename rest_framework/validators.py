@@ -167,6 +167,17 @@ class UniqueTogetherValidator:
         )
 
 
+class ProhibitSurrogateCharactersValidator:
+    message = _('Surrogate characters are not allowed: U+{code_point:X}.')
+    code = 'surrogate_characters_not_allowed'
+
+    def __call__(self, value):
+        for surrogate_character in (ch for ch in str(value)
+                                    if 0xD800 <= ord(ch) <= 0xDFFF):
+            message = self.message.format(code_point=ord(surrogate_character))
+            raise ValidationError(message, code=self.code)
+
+
 class BaseUniqueForValidator:
     message = None
     missing_message = _('This field is required.')

@@ -36,6 +36,7 @@ from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, humanize_datetime, json, representation
 from rest_framework.utils.formatting import lazy_format
+from rest_framework.validators import ProhibitSurrogateCharactersValidator
 
 
 class empty:
@@ -818,6 +819,7 @@ class CharField(Field):
         # ProhibitNullCharactersValidator is None on Django < 2.0
         if ProhibitNullCharactersValidator is not None:
             self.validators.append(ProhibitNullCharactersValidator())
+        self.validators.append(ProhibitSurrogateCharactersValidator())
 
     def run_validation(self, data=empty):
         # Test for the empty string here so that it does not get validated,
