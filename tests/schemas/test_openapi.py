@@ -635,12 +635,13 @@ class TestOperationIntrospection(TestCase):
             method,
             create_request(path),
         )
+        registry = ComponentRegistry()
         inspector = AutoSchema()
         inspector.view = view
+        inspector.init(registry)
+        inspector.get_operation(path, method)
 
-        responses = inspector._get_responses(path, method)
-        response_schema = responses['200']['content']['application/json']['schema']
-        properties = response_schema['items']['properties']
+        properties = registry.schemas['Example']['properties']
         assert 'default' not in properties['uuid_field']
 
     def test_serializer_validators(self):
