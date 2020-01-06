@@ -3,7 +3,7 @@ from collections import OrderedDict
 from urllib import parse
 
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
-from django.db.models import Manager
+from django.db.models.manager import BaseManager
 from django.db.models.query import QuerySet
 from django.urls import NoReverseMatch, Resolver404, get_script_prefix, resolve
 from django.utils.encoding import smart_str, uri_to_iri
@@ -154,7 +154,7 @@ class RelatedField(Field):
 
     def get_queryset(self):
         queryset = self.queryset
-        if isinstance(queryset, (QuerySet, Manager)):
+        if isinstance(queryset, (QuerySet, BaseManager)):
             # Ensure queryset is re-evaluated whenever used.
             # Note that actually a `Manager` class may also be used as the
             # queryset argument. This occurs on ModelSerializer fields,
