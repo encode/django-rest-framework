@@ -263,7 +263,7 @@ class AutoSchema(ViewInspector):
         if isinstance(field, serializers.ManyRelatedField):
             return {
                 'type': 'array',
-                'items': self._map_field(field.child_relation)
+                'items': self._map_field(method, field.child_relation)
             }
         if isinstance(field, serializers.PrimaryKeyRelatedField):
             model = getattr(field.queryset, 'model', None)
