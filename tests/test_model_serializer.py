@@ -181,7 +181,7 @@ class TestRegularFieldMappings(TestCase):
                 email_field = EmailField(max_length=100)
                 float_field = FloatField()
                 integer_field = IntegerField()
-                null_boolean_field = NullBooleanField(required=False)
+                null_boolean_field = BooleanField(allow_null=True, required=False)
                 positive_integer_field = IntegerField()
                 positive_small_integer_field = IntegerField()
                 slug_field = SlugField(allow_unicode=False, max_length=100)
