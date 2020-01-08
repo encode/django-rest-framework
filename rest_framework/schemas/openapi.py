@@ -35,12 +35,7 @@ class SchemaGenerator(BaseSchemaGenerator):
     def get_paths(self, request=None):
         result = {}
 
-        paths, view_endpoints = self._get_paths_and_endpoints(request)
-
-        # Only generate the path prefix for paths that will be included
-        if not paths:
-            return None
-
+        _, view_endpoints = self._get_paths_and_endpoints(request)
         for path, method, view in view_endpoints:
             if not self.has_view_permissions(path, method, view):
                 continue
@@ -62,9 +57,6 @@ class SchemaGenerator(BaseSchemaGenerator):
         self._initialise_endpoints()
 
         paths = self.get_paths(None if public else request)
-        if not paths:
-            return None
-
         schema = {
             'openapi': '3.0.2',
             'info': self.get_info(),
