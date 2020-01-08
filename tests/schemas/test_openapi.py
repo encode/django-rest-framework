@@ -659,7 +659,7 @@ class TestGenerator(TestCase):
         generator = SchemaGenerator(patterns=patterns)
         generator._initialise_endpoints()
 
-        paths = generator.get_paths()
+        paths = generator.get_schema()["paths"]
 
         assert '/example/' in paths
         example_operations = paths['/example/']
@@ -676,7 +676,7 @@ class TestGenerator(TestCase):
         generator = SchemaGenerator(patterns=patterns)
         generator._initialise_endpoints()
 
-        paths = generator.get_paths()
+        paths = generator.get_schema()["paths"]
 
         assert '/v1/example/' in paths
         assert '/v1/example/{id}/' in paths
@@ -689,7 +689,7 @@ class TestGenerator(TestCase):
         generator = SchemaGenerator(patterns=patterns, url='/api')
         generator._initialise_endpoints()
 
-        paths = generator.get_paths()
+        paths = generator.get_schema()["paths"]
 
         assert '/api/example/' in paths
         assert '/api/example/{id}/' in paths
