@@ -707,6 +707,15 @@ class TestGenerator(TestCase):
         assert 'openapi' in schema
         assert 'paths' in schema
 
+    def test_schema_with_no_paths(self):
+        patterns = []
+        generator = SchemaGenerator(patterns=patterns)
+
+        request = create_request('/')
+        schema = generator.get_schema(request=request)
+
+        assert schema['paths'] == {}
+
     def test_schema_information(self):
         """Construction of the top level dictionary."""
         patterns = [
