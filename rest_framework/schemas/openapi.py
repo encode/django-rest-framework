@@ -32,31 +32,30 @@ class SchemaGenerator(BaseSchemaGenerator):
 
         return info
 
-    def get_paths(self, request=None):
-        result = {}
-
-        _, view_endpoints = self._get_paths_and_endpoints(request)
-        for path, method, view in view_endpoints:
-            if not self.has_view_permissions(path, method, view):
-                continue
-            operation = view.schema.get_operation(path, method)
-            # Normalise path for any provided mount url.
-            if path.startswith('/'):
-                path = path[1:]
-            path = urljoin(self.url or '/', path)
-
-            result.setdefault(path, {})
-            result[path][method.lower()] = operation
-
-        return result
-
     def get_schema(self, request=None, public=False):
         """
         Generate a OpenAPI schema.
         """
         self._initialise_endpoints()
 
-        paths = self.get_paths(None if public else request)
+        # Iterate endpoints generating per method path operations.
+        # TODO: …and reference components.
+        paths = {}
+        _, view_endpoints = self._get_paths_and_endpoints(None if public else request)
+        for path, method, view in view_endpoints:
+            if not self.has_view_permissions(path, method, view):
+                continue
+
+            operation = view.schema.get_operation(path, method)
+            # Normalise path for any provided mount url.
+            if path.startswith('/'):
+                path = path[1:]
+            path = urljoin(self.url or '/', path)
+
+            paths.setdefault(path, {})
+            paths[path][method.lower()] = operation
+
+        # Compile final schema.
         schema = {
             'openapi': '3.0.2',
             'info': self.get_info(),
