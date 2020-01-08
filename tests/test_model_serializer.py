@@ -235,6 +235,27 @@ class TestRegularFieldMappings(TestCase):
 
         self.assertEqual(repr(NullableBooleanSerializer()), expected)
 
+    def test_nullable_boolean_field_choices(self):
+        class NullableBooleanChoicesModel(models.Model):
+            CHECKLIST_OPTIONS = (
+                (None, 'Unknown'),
+                (True, 'Yes'),
+                (False, 'No'),
+            )
+
+            field = models.BooleanField(null=True, choices=CHECKLIST_OPTIONS)
+
+        class NullableBooleanChoicesSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = NullableBooleanChoicesModel
+                fields = ['field']
+
+        serializer = NullableBooleanChoicesSerializer(data=dict(
+            field=None,
+        ))
+        self.assertTrue(serializer.is_valid())
+        self.assertEqual(serializer.errors, {})
+
     def test_method_field(self):
         """
         Properties and methods on the model should be allowed as `Meta.fields`
