@@ -748,6 +748,7 @@ class NullBooleanField(BooleanField):
         kwargs['allow_null'] = True
         super().__init__(**kwargs)
 
+
 # String types...
 
 class CharField(Field):
