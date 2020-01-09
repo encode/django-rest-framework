@@ -12,7 +12,7 @@ from collections import OrderedDict
 
 import django
 import pytest
-from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.validators import (
     MaxValueValidator, MinLengthValidator, MinValueValidator
@@ -1305,3 +1305,33 @@ class Issue6751Test(TestCase):
         serializer.save()
 
         self.assertEqual(instance.char_field, 'value changed by signal')
+
+
+class OverflowModel(models.Model):
+    value = models.IntegerField(unique=True, validators=[
+        MaxValueValidator(9223372036854775807),
+    ])
+
+
+class Issue7314Test(TestCase):
+
+    def test_model(self):
+        """
+        Assert that Django can validate the overflow model.
+        """
+        with self.assertRaises(ValidationError):
+            OverflowModel(value=9223372036854775808).full_clean()
+
+    def test_serializer(self):
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = OverflowModel
+                fields = '__all__'
+
+            def validate_value(self, value):
+                assert False
+
+        serializer = TestSerializer(data={'value': 9223372036854775808})
+
+        with self.assertRaises(serializers.ValidationError):
+            serializer.is_valid(raise_exception=True)
