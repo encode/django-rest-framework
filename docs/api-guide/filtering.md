@@ -212,7 +212,7 @@ The search behavior may be restricted by prepending various characters to the `s
 
 * '^' Starts-with search.
 * '=' Exact matches.
-* '@' Full-text search.  (Currently only supported Django's MySQL backend.)
+* '@' Full-text search.  (Currently only supported Django's [PostgreSQL backend](https://docs.djangoproject.com/en/dev/ref/contrib/postgres/search/).)
 * '$' Regex search.
 
 For example:
