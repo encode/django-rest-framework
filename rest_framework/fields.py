@@ -30,7 +30,7 @@ from django.utils.timezone import utc
 from django.utils.translation import gettext_lazy as _
 from pytz.exceptions import InvalidTimeError
 
-from rest_framework import ISO_8601, RemovedInDRF313Warning
+from rest_framework import ISO_8601, RemovedInDRF313Warning, RemovedInDRF314Warning
 from rest_framework.compat import ProhibitNullCharactersValidator
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.settings import api_settings
@@ -744,8 +744,16 @@ class NullBooleanField(BooleanField):
     initial = None
 
     def __init__(self, **kwargs):
+        warnings.warn(
+            "The `NullBooleanField` is deprecated and will be removed starting "
+            "with 3.14. Instead use the `BooleanField` field and set "
+            "`null=True` which does the same thing.",
+            RemovedInDRF314Warning, stacklevel=2
+        )
+
         assert 'allow_null' not in kwargs, '`allow_null` is not a valid option.'
         kwargs['allow_null'] = True
+
         super().__init__(**kwargs)
 
 
