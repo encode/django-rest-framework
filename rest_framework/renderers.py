@@ -1054,8 +1054,10 @@ class OpenAPIRenderer(BaseRenderer):
 
     def render(self, data, media_type=None, renderer_context=None):
         # disable yaml advanced feature 'alias' for clean, portable, and readable output
-        yaml.Dumper.ignore_aliases = lambda *args: True
-        return yaml.dump(data, default_flow_style=False, sort_keys=False).encode('utf-8')
+        class Dumper(yaml.Dumper):
+            def ignore_aliases(self, data):
+                return True
+        return yaml.dump(data, default_flow_style=False, sort_keys=False, Dumper=Dumper).encode('utf-8')
 
 
 class JSONOpenAPIRenderer(BaseRenderer):
