@@ -259,13 +259,7 @@ class AutoSchema(ViewInspector):
                 'items': {},
             }
             if not isinstance(field.child, _UnvalidatedField):
-                map_field = self._map_field(field.child)
-                items = {
-                    "type": map_field.get('type')
-                }
-                if 'format' in map_field:
-                    items['format'] = map_field.get('format')
-                mapping['items'] = items
+                mapping['items'] = self._map_field(field.child)
             return mapping
 
         # DateField and DateTimeField type is string
