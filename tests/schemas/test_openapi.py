@@ -51,7 +51,7 @@ class TestFieldMapping(TestCase):
             (serializers.ListField(child=serializers.FloatField()), {'items': {'type': 'number'}, 'type': 'array'}),
             (serializers.ListField(child=serializers.CharField()), {'items': {'type': 'string'}, 'type': 'array'}),
             (serializers.ListField(child=serializers.IntegerField(max_value=4294967295)),
-             {'items': {'type': 'integer', 'format': 'int64'}, 'type': 'array'}),
+             {'items': {'type': 'integer', 'maximum': 4294967295, 'format': 'int64'}, 'type': 'array'}),
             (serializers.ListField(child=serializers.ChoiceField(choices=[('a', 'Choice A'), ('b', 'Choice B')])),
              {'items': {'enum': ['a', 'b']}, 'type': 'array'}),
             (serializers.IntegerField(min_value=2147483648),
