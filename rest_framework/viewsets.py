@@ -35,10 +35,10 @@ def _is_extra_action(attr):
 
 def _check_attr_name(func, name):
     assert func.__name__ == name, (
-        f'Expected function (`{func.__name__}`) to match its attribute name '
-        f'(`{name}`). If using a decorator, ensure the inner function is '
-        f'decorated with `functools.wraps`, or that `{func.__name__}.__name__` '
-        f'is otherwise set to `{name}`.')
+        'Expected function (`{func.__name__}`) to match its attribute name '
+        '(`{name}`). If using a decorator, ensure the inner function is '
+        'decorated with `functools.wraps`, or that `{func.__name__}.__name__` '
+        'is otherwise set to `{name}`.').format(func=func, name=name)
     return func
 
 
