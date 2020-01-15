@@ -30,6 +30,25 @@ class ForeignKeyTargetSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'sources')
 
 
+class ForeignKeyTargetCallableSourceSerializer(serializers.ModelSerializer):
+    first_source = serializers.PrimaryKeyRelatedField(
+        source='get_first_source',
+        read_only=True,
+    )
+
+    class Meta:
+        model = ForeignKeyTarget
+        fields = ('id', 'name', 'first_source')
+
+
+class ForeignKeyTargetPropertySourceSerializer(serializers.ModelSerializer):
+    first_source = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = ForeignKeyTarget
+        fields = ('id', 'name', 'first_source')
+
+
 class ForeignKeySourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = ForeignKeySource
@@ -387,6 +406,34 @@ class PKForeignKeyTests(TestCase):
 
         queryset = QLimitedChoicesSerializer().fields["target"].get_queryset()
         assert len(queryset) == 1
+
+
+class PKRelationTests(TestCase):
+
+    def setUp(self):
+        self.target = ForeignKeyTarget.objects.create(name='target-1')
+        ForeignKeySource.objects.create(name='source-1', target=self.target)
+        ForeignKeySource.objects.create(name='source-2', target=self.target)
+
+    def test_relation_field_callable_source(self):
+        serializer = ForeignKeyTargetCallableSourceSerializer(self.target)
+        expected = {
+            'id': 1,
+            'name': 'target-1',
+            'first_source': 1,
+        }
+        with self.assertNumQueries(1):
+            self.assertEqual(serializer.data, expected)
+
+    def test_relation_field_property_source(self):
+        serializer = ForeignKeyTargetPropertySourceSerializer(self.target)
+        expected = {
+            'id': 1,
+            'name': 'target-1',
+            'first_source': 1,
+        }
+        with self.assertNumQueries(1):
+            self.assertEqual(serializer.data, expected)
 
 
 class PKNullableForeignKeyTests(TestCase):
