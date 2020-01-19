@@ -30,6 +30,19 @@ class CreateModelMixin:
             return {}
 
 
+class CreateOneOrMoreModelMixin(CreateModelMixin):
+    """
+    Create one or more model instances.
+    """
+
+    def get_serializer(self, *args, **kwargs):
+        if self.request.method == 'POST':
+            kwargs['many'] = isinstance(self.request.data, list) or kwargs.get(
+                'many', False
+            )
+        return super().get_serializer(*args, **kwargs)
+
+
 class ListModelMixin:
     """
     List a queryset.
