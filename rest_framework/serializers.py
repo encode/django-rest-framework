@@ -1508,16 +1508,16 @@ class ModelSerializer(Serializer):
         # which may map onto a model field. Any dotted field name lookups
         # cannot map to a field, and must be a traversal, so we're not
         # including those.
-        field_sources = {
-            field.field_name: field.source for field in self._writable_fields
+        field_sources = OrderedDict(
+            (field.field_name, field.source) for field in self._writable_fields
             if (field.source != '*') and ('.' not in field.source)
-        }
+        )
 
         # Special Case: Add read_only fields with defaults.
-        field_sources.update({
-            field.field_name: field.source for field in self.fields.values()
+        field_sources.update(OrderedDict(
+            (field.field_name, field.source) for field in self.fields.values()
             if (field.read_only) and (field.default != empty) and (field.source != '*') and ('.' not in field.source)
-        })
+        ))
 
         # Invert so we can find the serializer field names that correspond to
         # the model field names in the unique_together sets. This also allows
