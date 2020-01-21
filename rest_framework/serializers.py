@@ -511,7 +511,10 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
             if check_for_none is None:
                 ret[field.field_name] = None
             else:
-                ret[field.field_name] = field.to_representation(attribute)
+                try:
+                    ret[field.field_name] = field.to_representation(attribute)
+                except SkipField:
+                    continue
 
         return ret
 
