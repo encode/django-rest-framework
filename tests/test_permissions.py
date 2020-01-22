@@ -311,6 +311,7 @@ class ObjectPermissionsIntegrationTests(TestCase):
     """
     Integration tests for the object level permissions API.
     """
+
     def setUp(self):
         from guardian.shortcuts import assign_perm
 
@@ -605,6 +606,16 @@ class PermissionsCompositionTests(TestCase):
         )
         assert composed_perm().has_permission(request, None) is True
 
+    def test_has_object_permissions_not_short_circuited(self):
+        request = factory.get('/1', format='json')
+        request.user = self.user
+        composed_perm = (
+            permissions.IsAdminUser |
+            BasicObjectPerm
+        )
+        assert composed_perm().has_object_permission(request, None, None) is False
+
+    @pytest.mark.skipif(not PY36, reason="assert_called_once() not available")
     def test_or_lazyness(self):
         request = factory.get('/1', format='json')
         request.user = AnonymousUser()
