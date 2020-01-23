@@ -449,7 +449,7 @@ class AutoSchema(ViewInspector):
             media_types.append(renderer.media_type)
         return media_types
 
-    def _get_serializer(self, method, path):
+    def _get_serializer(self, path, method):
         view = self.view
 
         if not hasattr(view, 'get_serializer'):
