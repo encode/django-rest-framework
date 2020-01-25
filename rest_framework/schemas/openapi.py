@@ -212,20 +212,21 @@ class AutoSchema(ViewInspector):
         return paginator.get_schema_operation_parameters(view)
 
     def _map_choicefield(self, field):
-        type = None
         choices = list(field.choices)
-        if all(isinstance(choice, int) for choice in choices):
-            type = 'integer'
-        if all(isinstance(choice, float) or isinstance(choice, Decimal) for choice in choices):
-            type = 'number'
-        if all(isinstance(choice, str) for choice in choices):
-            type = 'string'
         if all(isinstance(choice, bool) for choice in choices):
             # Here we can not use `boolean` as type because choicefield expects `True` and `False` which is different
             # from the `true` and `false` of OpenAPI Specification.
             # Ref: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#format
             type = 'string'
             choices = list(map(lambda choice: str(choice), choices))
+        elif all(isinstance(choice, int) for choice in choices):
+            type = 'integer'
+        elif all(isinstance(choice, (int, float, Decimal)) for choice in choices):  # `number` includes `integer`
+            type = 'number'
+        elif all(isinstance(choice, str) for choice in choices):
+            type = 'string'
+        else:
+            type = None
 
         mapping = {
             # The value of `enum` keyword MUST be an array and SHOULD be unique.
