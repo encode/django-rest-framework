@@ -1,4 +1,6 @@
 import warnings
+from collections import OrderedDict
+from decimal import Decimal
 from operator import attrgetter
 from urllib.parse import urljoin
 
@@ -209,6 +211,35 @@ class AutoSchema(ViewInspector):
 
         return paginator.get_schema_operation_parameters(view)
 
+    def _map_choicefield(self, field):
+        type = None
+        choices = list(field.choices)
+        if all(isinstance(choice, int) for choice in choices):
+            type = 'integer'
+        if all(isinstance(choice, float) or isinstance(choice, Decimal) for choice in choices):
+            type = 'number'
+        if all(isinstance(choice, str) for choice in choices):
+            type = 'string'
+        if all(isinstance(choice, bool) for choice in choices):
+            # Here we can not use `boolean` as type because choicefield expects `True` and `False` which is different
+            # from the `true` and `false` of OpenAPI Specification.
+            # Ref: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#format
+            type = 'string'
+            choices = list(map(lambda choice: str(choice), choices))
+
+        mapping = {
+            # The value of `enum` keyword MUST be an array and SHOULD be unique.
+            # Ref: https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.20
+            'enum': list(OrderedDict.fromkeys(choices))  # preserve order and remove duplicates
+        }
+
+        # If We figured out `type` then and only then we should set it. It must be string or an array.
+        # It is optional but it can not be null.
+        # Ref: https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.21
+        if type:
+            mapping['type'] = type
+        return mapping
+
     def _map_field(self, field):
 
         # Nested Serializers, `many` or not.
@@ -242,15 +273,11 @@ class AutoSchema(ViewInspector):
         if isinstance(field, serializers.MultipleChoiceField):
             return {
                 'type': 'array',
-                'items': {
-                    'enum': list(field.choices)
-                },
+                'items': self._map_choicefield(field)
             }
 
         if isinstance(field, serializers.ChoiceField):
-            return {
-                'enum': list(field.choices),
-            }
+            return self._map_choicefield(field)
 
         # ListField.
         if isinstance(field, serializers.ListField):
