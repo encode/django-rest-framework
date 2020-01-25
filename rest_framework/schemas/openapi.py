@@ -218,7 +218,7 @@ class AutoSchema(ViewInspector):
         elif all(isinstance(choice, int) for choice in choices):
             type = 'integer'
         elif all(isinstance(choice, (int, float, Decimal)) for choice in choices):  # `number` includes `integer`
-            # SEE: https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.21
+            # Ref: https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.21
             type = 'number'
         elif all(isinstance(choice, str) for choice in choices):
             type = 'string'
