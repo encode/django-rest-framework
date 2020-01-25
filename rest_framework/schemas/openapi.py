@@ -214,11 +214,7 @@ class AutoSchema(ViewInspector):
     def _map_choicefield(self, field):
         choices = list(field.choices)
         if all(isinstance(choice, bool) for choice in choices):
-            # Here we can not use `boolean` as type because choicefield expects `True` and `False` which is different
-            # from the `true` and `false` of OpenAPI Specification.
-            # Ref: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#format
-            type = 'string'
-            choices = list(map(lambda choice: str(choice), choices))
+            type = 'boolean'
         elif all(isinstance(choice, int) for choice in choices):
             type = 'integer'
         elif all(isinstance(choice, (int, float, Decimal)) for choice in choices):  # `number` includes `integer`
