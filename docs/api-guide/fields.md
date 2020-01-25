@@ -50,7 +50,19 @@ If set, this gives the default value that will be used for the field if no input
 
 The `default` is not applied during partial update operations. In the partial update case only fields that are provided in the incoming data will have a validated value returned.
 
-May be set to a function or other callable, in which case the value will be evaluated each time it is used. When called, it will receive no arguments. If the callable has a `set_context` method, that will be called each time before getting the value with the field instance as only argument. This works the same way as for [validators](validators.md#using-set_context).
+May be set to a function or other callable, in which case the value will be evaluated each time it is used. When called, it will receive no arguments. If the callable has a `requires_context = True` attribute, then the serializer field will be passed as an argument.
+
+For example:
+
+    class CurrentUserDefault:
+        """
+        May be applied as a `default=...` value on a serializer field.
+        Returns the current user.
+        """
+        requires_context = True
+
+        def __call__(self, serializer_field):
+            return serializer_field.context['request'].user
 
 When serializing the instance, default will be used if the object attribute or dictionary key is not present in the instance.
 
@@ -584,8 +596,6 @@ If you want to create a custom field, you'll need to subclass `Field` and then o
 The `.to_representation()` method is called to convert the initial datatype into a primitive, serializable datatype.
 
 The `to_internal_value()` method is called to restore a primitive datatype into its internal python representation. This method should raise a `serializers.ValidationError` if the data is invalid.
-
-Note that the `WritableField` class that was present in version 2.x no longer exists. You should subclass `Field` and override `to_internal_value()` if the field supports data input.
 
 ## Examples
 

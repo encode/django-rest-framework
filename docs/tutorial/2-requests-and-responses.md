@@ -29,13 +29,11 @@ REST framework provides two wrappers you can use to write API views.
 
 These wrappers provide a few bits of functionality such as making sure you receive `Request` instances in your view, and adding context to `Response` objects so that content negotiation can be performed.
 
-The wrappers also provide behaviour such as returning `405 Method Not Allowed` responses when appropriate, and handling any `ParseError` exception that occurs when accessing `request.data` with malformed input.
+The wrappers also provide behaviour such as returning `405 Method Not Allowed` responses when appropriate, and handling any `ParseError` exceptions that occur when accessing `request.data` with malformed input.
 
 ## Pulling it all together
 
-Okay, let's go ahead and start using these new components to write a few views.
-
-We don't need our `JSONResponse` class in `views.py` any more, so go ahead and delete that.  Once that's done we can start refactoring our views slightly.
+Okay, let's go ahead and start using these new components to refactor our views slightly.
 
     from rest_framework import status
     from rest_framework.decorators import api_view

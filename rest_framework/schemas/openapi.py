@@ -32,39 +32,30 @@ class SchemaGenerator(BaseSchemaGenerator):
 
         return info
 
-    def get_paths(self, request=None):
-        result = {}
-
-        paths, view_endpoints = self._get_paths_and_endpoints(request)
-
-        # Only generate the path prefix for paths that will be included
-        if not paths:
-            return None
-
-        for path, method, view in view_endpoints:
-            if not self.has_view_permissions(path, method, view):
-                continue
-            operation = view.schema.get_operation(path, method)
-            # Normalise path for any provided mount url.
-            if path.startswith('/'):
-                path = path[1:]
-            path = urljoin(self.url or '/', path)
-
-            result.setdefault(path, {})
-            result[path][method.lower()] = operation
-
-        return result
-
     def get_schema(self, request=None, public=False):
         """
         Generate a OpenAPI schema.
         """
         self._initialise_endpoints()
 
-        paths = self.get_paths(None if public else request)
-        if not paths:
-            return None
+        # Iterate endpoints generating per method path operations.
+        # TODO: …and reference components.
+        paths = {}
+        _, view_endpoints = self._get_paths_and_endpoints(None if public else request)
+        for path, method, view in view_endpoints:
+            if not self.has_view_permissions(path, method, view):
+                continue
 
+            operation = view.schema.get_operation(path, method)
+            # Normalise path for any provided mount url.
+            if path.startswith('/'):
+                path = path[1:]
+            path = urljoin(self.url or '/', path)
+
+            paths.setdefault(path, {})
+            paths[path][method.lower()] = operation
+
+        # Compile final schema.
         schema = {
             'openapi': '3.0.2',
             'info': self.get_info(),
@@ -268,13 +259,7 @@ class AutoSchema(ViewInspector):
                 'items': {},
             }
             if not isinstance(field.child, _UnvalidatedField):
-                map_field = self._map_field(field.child)
-                items = {
-                    "type": map_field.get('type')
-                }
-                if 'format' in map_field:
-                    items['format'] = map_field.get('format')
-                mapping['items'] = items
+                mapping['items'] = self._map_field(field.child)
             return mapping
 
         # DateField and DateTimeField type is string
@@ -393,7 +378,7 @@ class AutoSchema(ViewInspector):
                 schema['writeOnly'] = True
             if field.allow_null:
                 schema['nullable'] = True
-            if field.default and field.default != empty:  # why don't they use None?!
+            if field.default and field.default != empty and not callable(field.default):
                 schema['default'] = field.default
             if field.help_text:
                 schema['description'] = str(field.help_text)
@@ -464,7 +449,7 @@ class AutoSchema(ViewInspector):
             media_types.append(renderer.media_type)
         return media_types
 
-    def _get_serializer(self, method, path):
+    def _get_serializer(self, path, method):
         view = self.view
 
         if not hasattr(view, 'get_serializer'):

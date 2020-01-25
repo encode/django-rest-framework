@@ -51,7 +51,9 @@ class TestFieldMapping(TestCase):
             (serializers.ListField(child=serializers.FloatField()), {'items': {'type': 'number'}, 'type': 'array'}),
             (serializers.ListField(child=serializers.CharField()), {'items': {'type': 'string'}, 'type': 'array'}),
             (serializers.ListField(child=serializers.IntegerField(max_value=4294967295)),
-             {'items': {'type': 'integer', 'format': 'int64'}, 'type': 'array'}),
+             {'items': {'type': 'integer', 'maximum': 4294967295, 'format': 'int64'}, 'type': 'array'}),
+            (serializers.ListField(child=serializers.ChoiceField(choices=[('a', 'Choice A'), ('b', 'Choice B')])),
+             {'items': {'enum': ['a', 'b']}, 'type': 'array'}),
             (serializers.IntegerField(min_value=2147483648),
              {'type': 'integer', 'minimum': 2147483648, 'format': 'int64'}),
         ]
@@ -571,6 +573,22 @@ class TestOperationIntrospection(TestCase):
         properties = response_schema['items']['properties']
         assert properties['hstore']['type'] == 'object'
 
+    def test_serializer_callable_default(self):
+        path = '/'
+        method = 'GET'
+        view = create_view(
+            views.ExampleGenericAPIView,
+            method,
+            create_request(path),
+        )
+        inspector = AutoSchema()
+        inspector.view = view
+
+        responses = inspector._get_responses(path, method)
+        response_schema = responses['200']['content']['application/json']['schema']
+        properties = response_schema['items']['properties']
+        assert 'default' not in properties['uuid_field']
+
     def test_serializer_validators(self):
         path = '/'
         method = 'GET'
@@ -643,7 +661,7 @@ class TestGenerator(TestCase):
         generator = SchemaGenerator(patterns=patterns)
         generator._initialise_endpoints()
 
-        paths = generator.get_paths()
+        paths = generator.get_schema()["paths"]
 
         assert '/example/' in paths
         example_operations = paths['/example/']
@@ -660,7 +678,7 @@ class TestGenerator(TestCase):
         generator = SchemaGenerator(patterns=patterns)
         generator._initialise_endpoints()
 
-        paths = generator.get_paths()
+        paths = generator.get_schema()["paths"]
 
         assert '/v1/example/' in paths
         assert '/v1/example/{id}/' in paths
@@ -673,7 +691,7 @@ class TestGenerator(TestCase):
         generator = SchemaGenerator(patterns=patterns, url='/api')
         generator._initialise_endpoints()
 
-        paths = generator.get_paths()
+        paths = generator.get_schema()["paths"]
 
         assert '/api/example/' in paths
         assert '/api/example/{id}/' in paths
@@ -690,6 +708,15 @@ class TestGenerator(TestCase):
 
         assert 'openapi' in schema
         assert 'paths' in schema
+
+    def test_schema_with_no_paths(self):
+        patterns = []
+        generator = SchemaGenerator(patterns=patterns)
+
+        request = create_request('/')
+        schema = generator.get_schema(request=request)
+
+        assert schema['paths'] == {}
 
     def test_schema_information(self):
         """Construction of the top level dictionary."""

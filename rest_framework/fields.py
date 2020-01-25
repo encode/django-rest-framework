@@ -5,6 +5,7 @@ import functools
 import inspect
 import re
 import uuid
+import warnings
 from collections import OrderedDict
 from collections.abc import Mapping
 
@@ -22,19 +23,20 @@ from django.utils.dateparse import (
     parse_date, parse_datetime, parse_duration, parse_time
 )
 from django.utils.duration import duration_string
-from django.utils.encoding import is_protected_type, smart_text
+from django.utils.encoding import is_protected_type, smart_str
 from django.utils.formats import localize_input, sanitize_separators
 from django.utils.ipv6 import clean_ipv6_address
 from django.utils.timezone import utc
 from django.utils.translation import gettext_lazy as _
 from pytz.exceptions import InvalidTimeError
 
-from rest_framework import ISO_8601
+from rest_framework import ISO_8601, RemovedInDRF313Warning
 from rest_framework.compat import ProhibitNullCharactersValidator
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, humanize_datetime, json, representation
 from rest_framework.utils.formatting import lazy_format
+from rest_framework.validators import ProhibitSurrogateCharactersValidator
 
 
 class empty:
@@ -249,19 +251,30 @@ class CreateOnlyDefault:
     for create operations, but that do not return any value for update
     operations.
     """
+    requires_context = True
+
     def __init__(self, default):
         self.default = default
 
-    def set_context(self, serializer_field):
-        self.is_update = serializer_field.parent.instance is not None
-        if callable(self.default) and hasattr(self.default, 'set_context') and not self.is_update:
-            self.default.set_context(serializer_field)
-
-    def __call__(self):
-        if self.is_update:
+    def __call__(self, serializer_field):
+        is_update = serializer_field.parent.instance is not None
+        if is_update:
             raise SkipField()
         if callable(self.default):
-            return self.default()
+            if hasattr(self.default, 'set_context'):
+                warnings.warn(
+                    "Method `set_context` on defaults is deprecated and will "
+                    "no longer be called starting with 3.13. Instead set "
+                    "`requires_context = True` on the class, and accept the "
+                    "context as an additional argument.",
+                    RemovedInDRF313Warning, stacklevel=2
+                )
+                self.default.set_context(self)
+
+            if getattr(self.default, 'requires_context', False):
+                return self.default(serializer_field)
+            else:
+                return self.default()
         return self.default
 
     def __repr__(self):
@@ -269,11 +282,10 @@ class CreateOnlyDefault:
 
 
 class CurrentUserDefault:
-    def set_context(self, serializer_field):
-        self.user = serializer_field.context['request'].user
+    requires_context = True
 
-    def __call__(self):
-        return self.user
+    def __call__(self, serializer_field):
+        return serializer_field.context['request'].user
 
     def __repr__(self):
         return '%s()' % self.__class__.__name__
@@ -489,8 +501,20 @@ class Field:
             raise SkipField()
         if callable(self.default):
             if hasattr(self.default, 'set_context'):
+                warnings.warn(
+                    "Method `set_context` on defaults is deprecated and will "
+                    "no longer be called starting with 3.13. Instead set "
+                    "`requires_context = True` on the class, and accept the "
+                    "context as an additional argument.",
+                    RemovedInDRF313Warning, stacklevel=2
+                )
                 self.default.set_context(self)
-            return self.default()
+
+            if getattr(self.default, 'requires_context', False):
+                return self.default(self)
+            else:
+                return self.default()
+
         return self.default
 
     def validate_empty_values(self, data):
@@ -551,10 +575,20 @@ class Field:
         errors = []
         for validator in self.validators:
             if hasattr(validator, 'set_context'):
+                warnings.warn(
+                    "Method `set_context` on validators is deprecated and will "
+                    "no longer be called starting with 3.13. Instead set "
+                    "`requires_context = True` on the class, and accept the "
+                    "context as an additional argument.",
+                    RemovedInDRF313Warning, stacklevel=2
+                )
                 validator.set_context(self)
 
             try:
-                validator(value)
+                if getattr(validator, 'requires_context', False):
+                    validator(value, self)
+                else:
+                    validator(value)
             except ValidationError as exc:
                 # If the validation error contains a mapping of fields to
                 # errors then simply raise it immediately rather than
@@ -572,8 +606,11 @@ class Field:
         Transform the *incoming* primitive data into a native value.
         """
         raise NotImplementedError(
-            '{cls}.to_internal_value() must be implemented.'.format(
-                cls=self.__class__.__name__
+            '{cls}.to_internal_value() must be implemented for field '
+            '{field_name}. If you do not need to support write operations '
+            'you probably want to subclass `ReadOnlyField` instead.'.format(
+                cls=self.__class__.__name__,
+                field_name=self.field_name,
             )
         )
 
@@ -582,9 +619,7 @@ class Field:
         Transform the *outgoing* native value into primitive data.
         """
         raise NotImplementedError(
-            '{cls}.to_representation() must be implemented for field '
-            '{field_name}. If you do not need to support write operations '
-            'you probably want to subclass `ReadOnlyField` instead.'.format(
+            '{cls}.to_representation() must be implemented for field {field_name}.'.format(
                 cls=self.__class__.__name__,
                 field_name=self.field_name,
             )
@@ -784,6 +819,7 @@ class CharField(Field):
         # ProhibitNullCharactersValidator is None on Django < 2.0
         if ProhibitNullCharactersValidator is not None:
             self.validators.append(ProhibitNullCharactersValidator())
+        self.validators.append(ProhibitSurrogateCharactersValidator())
 
     def run_validation(self, data=empty):
         # Test for the empty string here so that it does not get validated,
@@ -1049,7 +1085,7 @@ class DecimalField(Field):
         instance.
         """
 
-        data = smart_text(data).strip()
+        data = smart_str(data).strip()
 
         if self.localize:
             data = sanitize_separators(data)
@@ -1855,14 +1891,9 @@ class SerializerMethodField(Field):
         super().__init__(**kwargs)
 
     def bind(self, field_name, parent):
-        # In order to enforce a consistent style, we error if a redundant
-        # 'method_name' argument has been used. For example:
-        # my_field = serializer.SerializerMethodField(method_name='get_my_field')
-        default_method_name = 'get_{field_name}'.format(field_name=field_name)
-
-        # The method name should default to `get_{field_name}`.
+        # The method name defaults to `get_{field_name}`.
         if self.method_name is None:
-            self.method_name = default_method_name
+            self.method_name = 'get_{field_name}'.format(field_name=field_name)
 
         super().bind(field_name, parent)
 

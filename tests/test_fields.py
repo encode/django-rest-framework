@@ -565,11 +565,10 @@ class TestCreateOnlyDefault:
         on the callable if possible
         """
         class TestCallableDefault:
-            def set_context(self, serializer_field):
-                self.field = serializer_field
+            requires_context = True
 
-            def __call__(self):
-                return "success" if hasattr(self, 'field') else "failure"
+            def __call__(self, field=None):
+                return "success" if field is not None else "failure"
 
         class TestSerializer(serializers.Serializer):
             context_set = serializers.CharField(default=serializers.CreateOnlyDefault(TestCallableDefault()))
@@ -758,6 +757,21 @@ class TestCharField(FieldValues):
             assert exc_info.value.detail == [
                 'Null characters are not allowed.'
             ]
+
+    def test_surrogate_characters(self):
+        field = serializers.CharField()
+
+        for code_point, expected_message in (
+                (0xD800, 'Surrogate characters are not allowed: U+D800.'),
+                (0xDFFF, 'Surrogate characters are not allowed: U+DFFF.'),
+        ):
+            with pytest.raises(serializers.ValidationError) as exc_info:
+                field.run_validation(chr(code_point))
+            assert exc_info.value.detail[0].code == 'surrogate_characters_not_allowed'
+            assert str(exc_info.value.detail[0]) == expected_message
+
+        for code_point in (0xD800 - 1, 0xDFFF + 1):
+            field.run_validation(chr(code_point))
 
     def test_iterable_validators(self):
         """
