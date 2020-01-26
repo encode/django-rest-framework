@@ -117,8 +117,8 @@ class AutoSchema(ViewInspector):
             name = model.__name__
 
         # Try with the serializer class name
-        elif hasattr(self.view, 'get_serializer_class'):
-            name = self.view.get_serializer_class().__name__
+        elif self._get_serializer(path, method) is not None:
+            name = self._get_serializer(path, method).__class__.__name__
             if name.endswith('Serializer'):
                 name = name[:-10]
 
