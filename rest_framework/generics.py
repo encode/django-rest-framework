@@ -107,7 +107,7 @@ class GenericAPIView(views.APIView):
         """
         serializer_class = self.get_serializer_class()
         
-        # Include view's costum context
+        # Include view's custom context
         default_context = self.get_serializer_context()
         if 'context' in kwargs:
             kwargs['context'].update(default_context)
