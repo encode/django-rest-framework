@@ -68,6 +68,14 @@ class TestFieldMapping(TestCase):
              {'items': {'enum': [uuid1, uuid2]}, 'type': 'array'}),
             (serializers.ListField(child=serializers.ChoiceField(choices=[(1, 'One'), ('a', 'Choice A')])),
              {'items': {'enum': [1, 'a']}, 'type': 'array'}),
+            (serializers.ListField(child=serializers.ChoiceField(choices=[
+                (1, 'One'), ('a', 'Choice A'), (1.1, 'First'), (1.1, 'First'), (1, 'One'), ('a', 'Choice A'), (1, 'One')
+            ])),
+                {'items': {'enum': [1, 'a', 1.1]}, 'type': 'array'}),
+            (serializers.ListField(child=serializers.ChoiceField(choices=[
+                (1, 'One'), (2, 'Two'), (3, 'Three'), (2, 'Two'), (3, 'Three'), (1, 'One'),
+            ])),
+                {'items': {'enum': [1, 2, 3], 'type': 'integer'}, 'type': 'array'}),
             (serializers.IntegerField(min_value=2147483648),
              {'type': 'integer', 'minimum': 2147483648, 'format': 'int64'}),
         ]
