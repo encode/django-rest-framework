@@ -212,7 +212,7 @@ class AutoSchema(ViewInspector):
         return paginator.get_schema_operation_parameters(view)
 
     def _map_choicefield(self, field):
-        choices = list(field.choices)
+        choices = list(OrderedDict.fromkeys(field.choices))  # preserve order and remove duplicates
         if all(isinstance(choice, bool) for choice in choices):
             type = 'boolean'
         elif all(isinstance(choice, int) for choice in choices):
@@ -228,7 +228,7 @@ class AutoSchema(ViewInspector):
         mapping = {
             # The value of `enum` keyword MUST be an array and SHOULD be unique.
             # Ref: https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.20
-            'enum': list(OrderedDict.fromkeys(choices))  # preserve order and remove duplicates
+            'enum': choices
         }
 
         # If We figured out `type` then and only then we should set it. It must be string or an array.
