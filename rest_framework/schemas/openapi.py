@@ -231,7 +231,8 @@ class AutoSchema(ViewInspector):
             'enum': choices
         }
 
-        # If We figured out `type` then and only then we should set it. It must be string or an array.
+        # If We figured out `type` then and only then we should set it. It must be a string.
+        # Ref: https://swagger.io/docs/specification/data-models/data-types/#mixed-type
         # It is optional but it can not be null.
         # Ref: https://tools.ietf.org/html/draft-wright-json-schema-validation-00#section-5.21
         if type:
