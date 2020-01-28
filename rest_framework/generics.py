@@ -106,14 +106,13 @@ class GenericAPIView(views.APIView):
         deserializing input, and for serializing output.
         """
         serializer_class = self.get_serializer_class()
-        
-        # Include view's custom context
-        default_context = self.get_serializer_context()
-        if 'context' in kwargs:
-            kwargs['context'].update(default_context)
-        else:
-            kwargs['context'] = default_context
-           
+
+        assert 'context' not in kwargs, (
+            "`get_serializer` does not accept a `context` argument, "
+            "you may override `get_serializer_context` instead."
+        )
+        kwargs['context'] = self.get_serializer_context()
+
         return serializer_class(*args, **kwargs)
 
     def get_serializer_class(self):
