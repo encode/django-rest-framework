@@ -70,6 +70,19 @@ class TestFieldMapping(TestCase):
         data = inspector._map_serializer(Serializer())
         assert isinstance(data['properties']['text']['description'], str), "description must be str"
 
+    def test_boolean_default_field(self):
+        class Serializer(serializers.Serializer):
+            default_true = serializers.BooleanField(default=True)
+            default_false = serializers.BooleanField(default=False)
+            without_default = serializers.BooleanField()
+
+        inspector = AutoSchema()
+
+        data = inspector._map_serializer(Serializer())
+        assert data['properties']['default_true']['default'] is True, "default must be true"
+        assert data['properties']['default_false']['default'] is False, "default must be false"
+        assert 'default' not in data['properties']['without_default'], "default must not be defined"
+
 
 @pytest.mark.skipif(uritemplate is None, reason='uritemplate not installed.')
 class TestOperationIntrospection(TestCase):
