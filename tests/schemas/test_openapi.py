@@ -1,3 +1,5 @@
+import uuid
+
 import pytest
 from django.conf.urls import url
 from django.test import RequestFactory, TestCase, override_settings
@@ -44,6 +46,8 @@ class TestBasics(TestCase):
 
 class TestFieldMapping(TestCase):
     def test_list_field_mapping(self):
+        uuid1 = uuid.uuid4()
+        uuid2 = uuid.uuid4()
         inspector = AutoSchema()
         cases = [
             (serializers.ListField(), {'items': {}, 'type': 'array'}),
@@ -53,7 +57,25 @@ class TestFieldMapping(TestCase):
             (serializers.ListField(child=serializers.IntegerField(max_value=4294967295)),
              {'items': {'type': 'integer', 'maximum': 4294967295, 'format': 'int64'}, 'type': 'array'}),
             (serializers.ListField(child=serializers.ChoiceField(choices=[('a', 'Choice A'), ('b', 'Choice B')])),
-             {'items': {'enum': ['a', 'b']}, 'type': 'array'}),
+             {'items': {'enum': ['a', 'b'], 'type': 'string'}, 'type': 'array'}),
+            (serializers.ListField(child=serializers.ChoiceField(choices=[(1, 'One'), (2, 'Two')])),
+             {'items': {'enum': [1, 2], 'type': 'integer'}, 'type': 'array'}),
+            (serializers.ListField(child=serializers.ChoiceField(choices=[(1.1, 'First'), (2.2, 'Second')])),
+             {'items': {'enum': [1.1, 2.2], 'type': 'number'}, 'type': 'array'}),
+            (serializers.ListField(child=serializers.ChoiceField(choices=[(True, 'true'), (False, 'false')])),
+             {'items': {'enum': [True, False], 'type': 'boolean'}, 'type': 'array'}),
+            (serializers.ListField(child=serializers.ChoiceField(choices=[(uuid1, 'uuid1'), (uuid2, 'uuid2')])),
+             {'items': {'enum': [uuid1, uuid2]}, 'type': 'array'}),
+            (serializers.ListField(child=serializers.ChoiceField(choices=[(1, 'One'), ('a', 'Choice A')])),
+             {'items': {'enum': [1, 'a']}, 'type': 'array'}),
+            (serializers.ListField(child=serializers.ChoiceField(choices=[
+                (1, 'One'), ('a', 'Choice A'), (1.1, 'First'), (1.1, 'First'), (1, 'One'), ('a', 'Choice A'), (1, 'One')
+            ])),
+                {'items': {'enum': [1, 'a', 1.1]}, 'type': 'array'}),
+            (serializers.ListField(child=serializers.ChoiceField(choices=[
+                (1, 'One'), (2, 'Two'), (3, 'Three'), (2, 'Two'), (3, 'Three'), (1, 'One'),
+            ])),
+                {'items': {'enum': [1, 2, 3], 'type': 'integer'}, 'type': 'array'}),
             (serializers.IntegerField(min_value=2147483648),
              {'type': 'integer', 'minimum': 2147483648, 'format': 'int64'}),
         ]
