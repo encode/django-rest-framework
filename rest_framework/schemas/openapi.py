@@ -378,7 +378,7 @@ class AutoSchema(ViewInspector):
                 schema['writeOnly'] = True
             if field.allow_null:
                 schema['nullable'] = True
-            if field.default and field.default != empty and not callable(field.default):
+            if field.default is not None and field.default != empty and not callable(field.default):
                 schema['default'] = field.default
             if field.help_text:
                 schema['description'] = str(field.help_text)
