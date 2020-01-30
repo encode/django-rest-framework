@@ -335,6 +335,7 @@ class TestOperationIntrospection(TestCase):
                         'schema': {
                             'type': 'array',
                             'items': {
+                                'type': 'object',
                                 'properties': {
                                     'text': {
                                         'type': 'string',
@@ -386,6 +387,7 @@ class TestOperationIntrospection(TestCase):
                             'item': {
                                 'type': 'array',
                                 'items': {
+                                    'type': 'object',
                                     'properties': {
                                         'text': {
                                             'type': 'string',
@@ -532,6 +534,7 @@ class TestOperationIntrospection(TestCase):
                 'content': {
                     'application/json': {
                         'schema': {
+                            'type': 'object',
                             'properties': {
                                 'text': {
                                     'type': 'string',

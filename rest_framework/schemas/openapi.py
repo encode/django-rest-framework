@@ -413,6 +413,7 @@ class AutoSchema(ViewInspector):
             properties[field.field_name] = schema
 
         result = {
+            'type': 'object',
             'properties': properties
         }
         if required:
