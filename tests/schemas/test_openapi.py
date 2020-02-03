@@ -125,6 +125,7 @@ class TestOperationIntrospection(TestCase):
         assert operation == {
             'operationId': 'listDocStringExamples',
             'description': 'A description of my GET operation.',
+            'tags': ['default'],
             'parameters': [],
             'responses': {
                 '200': {
@@ -157,6 +158,47 @@ class TestOperationIntrospection(TestCase):
         assert operation == {
             'operationId': 'RetrieveDocStringExampleDetail',
             'description': 'A description of my GET operation.',
+            'tags': ['default'],
+            'parameters': [{
+                'description': '',
+                'in': 'path',
+                'name': 'id',
+                'required': True,
+                'schema': {
+                    'type': 'string',
+                },
+            }],
+            'responses': {
+                '200': {
+                    'description': '',
+                    'content': {
+                        'application/json': {
+                            'schema': {
+                            },
+                        },
+                    },
+                },
+            },
+        }
+
+    def test_modify_openapi_tags(self):
+        path = '/example/{id}/'
+        method = 'GET'
+
+        view = create_view(
+            views.DocStringExampleDetailWithTagsView,
+            method,
+            create_request(path)
+        )
+        inspector = AutoSchema()
+        inspector.view = view
+
+        operation = inspector.get_operation(path, method)
+
+        assert operation == {
+            'operationId': 'RetrieveDocStringExampleDetailWithTags',
+            'description': 'A description of my GET operation.',
+            'tags': ['DocString'],
             'parameters': [{
                 'description': '',
                 'in': 'path',

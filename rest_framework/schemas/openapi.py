@@ -87,6 +87,7 @@ class AutoSchema(ViewInspector):
 
         operation['operationId'] = self._get_operation_id(path, method)
         operation['description'] = self.get_description(path, method)
+        operation['tags'] = self._get_tags(path, method)
 
         parameters = []
         parameters += self._get_path_parameters(path, method)
@@ -210,6 +211,24 @@ class AutoSchema(ViewInspector):
             return []
 
         return paginator.get_schema_operation_parameters(view)
+
+    def _get_tags(self, path, method):
+        """
+        Get tags parameters from view
+
+        Default value to return it will be tuple with default tag
+        In other hand it will try to get it from openapi_tags of view
+        """
+
+        tags = ['default']
+
+        if hasattr(self.view, 'openapi_tags'):
+            tags = getattr(self.view, 'openapi_tags', tags)
+
+            assert type(tags) == list, 'openapi_tags property is not a list'
+            assert len(tags) > 0, 'openapi_tags property should has almost one tag'
+
+        return tags
 
     def _map_choicefield(self, field):
         choices = list(OrderedDict.fromkeys(field.choices))  # preserve order and remove duplicates

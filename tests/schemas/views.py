@@ -53,6 +53,17 @@ class DocStringExampleDetailView(APIView):
         pass
 
 
+class DocStringExampleDetailWithTagsView(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    openapi_tags = ['DocString']
+
+    def get(self, *args, **kwargs):
+        """
+        A description of my GET operation.
+        """
+        pass
+
+
 # Generics.
 class ExampleSerializer(serializers.Serializer):
     date = serializers.DateField()
