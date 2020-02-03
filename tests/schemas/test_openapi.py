@@ -8,7 +8,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import filters, generics, pagination, routers, serializers
 from rest_framework.compat import uritemplate
 from rest_framework.parsers import JSONParser, MultiPartParser
-from rest_framework.renderers import JSONRenderer
+from rest_framework.renderers import JSONRenderer, OpenAPIRenderer
 from rest_framework.request import Request
 from rest_framework.schemas.openapi import AutoSchema, SchemaGenerator
 
@@ -472,6 +472,19 @@ class TestOperationIntrospection(TestCase):
 
         assert len(success_response['content'].keys()) == 1
         assert 'application/json' in success_response['content']
+
+    def test_openapi_yaml_rendering_without_aliases(self):
+        renderer = OpenAPIRenderer()
+
+        reused_object = {'test': 'test'}
+        data = {
+            'o1': reused_object,
+            'o2': reused_object,
+        }
+        assert (
+            renderer.render(data) == b'o1:\n  test: test\no2:\n  test: test\n' or
+            renderer.render(data) == b'o2:\n  test: test\no1:\n  test: test\n'  # py <= 3.5
+        )
 
     def test_serializer_filefield(self):
         path = '/{id}/'
