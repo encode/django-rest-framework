@@ -19,6 +19,23 @@ Two popular options are [Swagger UI][swagger-ui] and [ReDoc][redoc].
 Both require little more than the location of your static schema file or
 dynamic `SchemaView` endpoint.
 
+openapi allows you to group endpoints by tags, that's you can configure these tags
+on your view by adding `openapi_tags` as property, by default will set ['default'].
+
+```python
+from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+
+class HelloWorldApiView(APIView):
+    permission_classes = [AllowAny]
+    openapi_tags = ['example', 'hello-world']
+
+    def get(self, request):
+        return Response(data={'message': 'hello world!'})
+
+```
+
 ### A minimal example with Swagger UI
 
 Assuming you've followed the example from the schemas documentation for routing
