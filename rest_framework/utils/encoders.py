@@ -10,10 +10,9 @@ from django.conf import settings
 from django.db.models.query import QuerySet
 from django.test.client import encode_file
 from django.utils import timezone
-from django.utils.encoding import force_str, force_bytes
+from django.utils.encoding import force_bytes, force_str
 from django.utils.functional import Promise
 from django.utils.itercompat import is_iterable
-
 
 from rest_framework.compat import coreapi
 
@@ -83,7 +82,8 @@ class NestedMultiPartEncoder:
 
         def to_lines(d, prefix='', dot='.'):
             for (key, value) in d.items():
-                key = f'{prefix}{dot}{key}' if prefix else key
+                if prefix:
+                    key = '{prefix}{dot}{key}'
 
                 if value is None:
                     raise TypeError(
