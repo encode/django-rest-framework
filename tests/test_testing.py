@@ -46,11 +46,33 @@ def post_view(request):
     return Response(serializer.validated_data)
 
 
+class IntermediateSerializer(serializers.Serializer):
+    base = BasicSerializer(many=True)
+
+
+class NestedSerializer(serializers.Serializer):
+    dictionary = IntermediateSerializer()
+
+
+class ComplexSerializer(serializers.Serializer):
+    foo = NestedSerializer()
+    bar = fields.IntegerField()
+    baz = fields.IntegerField()
+
+
+@api_view(['POST'])
+def post_complex_view(request):
+    serializer = ComplexSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    return Response(serializer.validated_data)
+
+
 urlpatterns = [
     url(r'^view/$', view),
     url(r'^session-view/$', session_view),
     url(r'^redirect-view/$', redirect_view),
-    url(r'^post-view/$', post_view)
+    url(r'^post-view/$', post_view),
+    url(r'^post-complex-view/$', post_complex_view)
 ]
 
 
@@ -190,6 +212,31 @@ class TestAPITestClient(TestCase):
             AssertionError, self.client.post,
             path='/view/', data={'valid': 123, 'invalid': {'a': 123}}
         )
+
+    def test_valid_nestedmultipart_data(self):
+        """
+        NestedMultiPart encoding supports nested data
+        so it shouldn't raise if the user attempts to do so.
+        """
+        data = {
+            'baz': 42,
+            'bar': 24,
+            'foo': {
+                'dictionary': {
+                    'base': [
+                        {'flag': True},
+                        {'flag': False}
+                    ]
+                }
+            }
+        }
+        response = self.client.post(
+            path='/post-complex-view/',
+            data=data,
+            format='nestedmultipart'
+        )
+        assert response.status_code == 200
+        assert response.data == data
 
     def test_empty_post_uses_default_boolean_value(self):
         response = self.client.post(
