@@ -83,7 +83,7 @@ class NestedMultiPartEncoder:
         def to_lines(d, prefix='', dot='.'):
             for (key, value) in d.items():
                 if prefix:
-                    key = '{prefix}{dot}{key}'
+                    key = '%s%s%s' % (prefix, dot, key)
 
                 if value is None:
                     raise TypeError(
@@ -97,13 +97,13 @@ class NestedMultiPartEncoder:
                 elif not isinstance(value, str) and is_iterable(value):
                     for index, item in enumerate(value):
                         if isinstance(item, dict):
-                            to_lines(item, f'{key}[{index}]', '')
+                            to_lines(item, '%s[%s]' % (key, index), '')
                         elif is_file(item):
-                            lines.extend(encode_file(boundary, f'{key}{[index]}', item))
+                            lines.extend(encode_file(boundary, '%s[%s]' % (key, index), item))
                         else:
                             lines.extend(to_bytes(val) for val in [
-                                f'--{boundary}',
-                                f'Content-Disposition: form-data; name="{key}{[index]}"',
+                                '--%s' % boundary,
+                                'Content-Disposition: form-data; name="%s[%s]"' % (key, index),
                                 '',
                                 item
                             ])
