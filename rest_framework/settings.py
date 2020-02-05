@@ -87,6 +87,7 @@ DEFAULTS = {
 
     # Testing
     'TEST_REQUEST_RENDERER_CLASSES': [
+        'rest_framework.renderers.NestedMultiPartRenderer',
         'rest_framework.renderers.MultiPartRenderer',
         'rest_framework.renderers.JSONRenderer'
     ],

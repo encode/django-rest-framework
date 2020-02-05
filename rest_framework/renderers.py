@@ -914,6 +914,14 @@ class MultiPartRenderer(BaseRenderer):
         return encode_multipart(self.BOUNDARY, data)
 
 
+class NestedMultiPartRenderer(MultiPartRenderer):
+    format = 'nestedmultipart'
+
+    def render(self, data, media_type=None, renderer_context=None):
+        encoder = encoders.NestedMultiPartEncoder()
+        return encoder.encode(self.BOUNDARY, data)
+
+
 class CoreJSONRenderer(BaseRenderer):
     media_type = 'application/coreapi+json'
     charset = None

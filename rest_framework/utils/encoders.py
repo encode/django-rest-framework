@@ -6,10 +6,14 @@ import decimal
 import json  # noqa
 import uuid
 
+from django.conf import settings
 from django.db.models.query import QuerySet
+from django.test.client import encode_file
 from django.utils import timezone
-from django.utils.encoding import force_str
+from django.utils.encoding import force_str, force_bytes
 from django.utils.functional import Promise
+from django.utils.itercompat import is_iterable
+
 
 from rest_framework.compat import coreapi
 
@@ -65,3 +69,56 @@ class JSONEncoder(json.JSONEncoder):
         elif hasattr(obj, '__iter__'):
             return tuple(item for item in obj)
         return super().default(obj)
+
+
+class NestedMultiPartEncoder:
+    def encode(self, boundary, data):
+        lines = []
+
+        def to_bytes(s):
+            return force_bytes(s, settings.DEFAULT_CHARSET)
+
+        def is_file(thing):
+            return hasattr(thing, "read") and callable(thing.read)
+
+        def to_lines(d, prefix='', dot='.'):
+            for (key, value) in d.items():
+                key = f'{prefix}{dot}{key}' if prefix else key
+
+                if value is None:
+                    raise TypeError(
+                        'Cannot encode None as POST data. Did you mean to pass an '
+                        'empty string or omit the value?'
+                    )
+                elif isinstance(value, dict):
+                    to_lines(value, key)
+                elif is_file(value):
+                    lines.extend(encode_file(boundary, key, value))
+                elif not isinstance(value, str) and is_iterable(value):
+                    for index, item in enumerate(value):
+                        if isinstance(item, dict):
+                            to_lines(item, f'{key}[{index}]', '')
+                        elif is_file(item):
+                            lines.extend(encode_file(boundary, f'{key}{[index]}', item))
+                        else:
+                            lines.extend(to_bytes(val) for val in [
+                                f'--{boundary}',
+                                f'Content-Disposition: form-data; name="{key}{[index]}"',
+                                '',
+                                item
+                            ])
+                else:
+                    lines.extend(to_bytes(val) for val in [
+                        '--%s' % boundary,
+                        'Content-Disposition: form-data; name="%s"' % key,
+                        '',
+                        value
+                    ])
+
+        to_lines(data)
+
+        lines.extend([
+            to_bytes('--%s--' % boundary),
+            b'',
+        ])
+        return b'\r\n'.join(lines)
