@@ -126,6 +126,7 @@ class TestOperationIntrospection(TestCase):
             'operationId': 'listDocStringExamples',
             'description': 'A description of my GET operation.',
             'parameters': [],
+            'tags': ['example'],
             'responses': {
                 '200': {
                     'description': '',
@@ -166,6 +167,7 @@ class TestOperationIntrospection(TestCase):
                     'type': 'string',
                 },
             }],
+            'tags': ['example'],
             'responses': {
                 '200': {
                     'description': '',
