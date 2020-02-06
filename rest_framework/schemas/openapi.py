@@ -66,10 +66,15 @@ class SchemaGenerator(BaseSchemaGenerator):
 
         return schema
 
+
 # View Inspectors
 
 
 class AutoSchema(ViewInspector):
+
+    def __init__(self, tags=None):
+        self.tags = tags
+        super().__init__()
 
     request_media_types = []
     response_media_types = []
@@ -98,6 +103,7 @@ class AutoSchema(ViewInspector):
         if request_body:
             operation['requestBody'] = request_body
         operation['responses'] = self._get_responses(path, method)
+        operation['tags'] = self.get_tags(path, method)
 
         return operation
 
@@ -564,3 +570,29 @@ class AutoSchema(ViewInspector):
                 'description': ""
             }
         }
+
+    def get_tags(self, path, method):
+        # If user have specified tags, use them.
+        if self.tags:
+            if isinstance(self.tags, (list, set, tuple)):
+                return self.tags
+            if isinstance(self.tags, (dict, OrderedDict)):
+                return self.tags
+            raise ValueError('tags must be dict or list.')
+
+        # Extract tag from viewset name
+        # UserViewSet      tags = [User]
+        # User             tags = [User]
+        if hasattr(self.view, 'action'):
+            name = self.view.__class__.__name__
+            if name.lower().endswith('viewset'):
+                name = name[:-7]  # remove trailing `viewset` from name
+            return [name]
+
+        # First element of a specific path could be valid tag. This is a fallback solution.
+        # PUT, PATCH, GET(Retrieve), DELETE:        /users/{id}/       tags = [users]
+        # POST, GET(List):                          /users/            tags = [users]
+        if path.startswith('/'):
+            path = path[1:]
+
+        return [path.split('/')[0]]
