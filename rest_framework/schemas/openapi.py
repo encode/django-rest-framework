@@ -593,7 +593,7 @@ class AutoSchema(ViewInspector):
         # User             tags = [User]
         if hasattr(self.view, 'action'):
             name = self.view.__class__.__name__
-            if name.endswith('APIView') or name.endswith('ViewSet'):
+            if name.endswith('ViewSet'):
                 name = name[:-7]
             elif name.endswith('View'):
                 name = name[:-4]
