@@ -215,6 +215,90 @@ This also applies to extra actions for `ViewSet`s:
 If you wish to provide a base `AutoSchema` subclass to be used throughout your
 project you may adjust `settings.DEFAULT_SCHEMA_CLASS`  appropriately.
 
+
+### Grouping Operations With Tags
+
+Tags can be used for logical grouping `View`s. Each tag name in the list MUST be unique. 
+
+**Django REST Framework generates tags automatically by the following logic:**
+1. Extract tag name from `ViewSet`. If `ViewSet` name ends with `ViewSet`, or `View`, it will be truncated from tag name.
+
+    ViewSet Class   |  Tag Name
+    ----------------|------------
+    User	        |   user	 
+    UserView	    |   user	 
+    UserViewSet     |   user	 
+
+2. If View is not an instance of ViewSet, generate tag name from the path. Consider the below table to understand more about path-based tag generation.
+
+    Example 1: Consider a user management system. The following table will illustrate the tag generation logic.
+
+    Http Method                          |        Path       |     Tags
+    -------------------------------------|-------------------|-------------
+    PUT, PATCH, GET(Retrieve), DELETE:   |     /users/{id}/  |   [users]
+    POST, GET(List):                     |     /users/       |   [users]
+    
+    Example 2: Consider a restaurant management system. The System has restaurants. Each restaurant has branches.
+    Consider a REST APIs to deal with a branch of a particular restaurant.
+    
+    Http Method                          |                         Path                       |     Tags
+    -------------------------------------|----------------------------------------------------|-------------------
+    PUT, PATCH, GET(Retrieve), DELETE:   | /restaurants/{restaurant_id}/branches/{branch_id}  |   [restaurants]
+    POST, GET(List):                     | /restaurants/{restaurant_id}/branches/             |   [restaurants]
+
+
+**You can override auto-generated tags by passing a list of tags to each `View` by passing `tags` as an argument to the constructor of `AutoSchema`. `tags` argument can be:**
+1. list of string.
+    ```python
+   class MyView(APIView):
+        ...
+        schema = AutoSchema(tags=['tag1', 'tag2'])
+   ```
+2.  list of dict. This adds metadata to a single tag. Each dict can have 3 possible keys:
+
+    Field name   | Data type | Required | Description 
+    -------------|-----------|----------|-------------------------------------------------------------------------
+    name	     |   string	 | yes      | The name of the tag.
+    description	 |   string  | no       | A short description for the tag. [CommonMark syntax](https://spec.commonmark.org/) MAY be used for rich text representation.
+    externalDocs |	  dict   | no       | Additional external documentation for this tag. [Click here](https://swagger.io/specification/#externalDocumentationObject) to know more.
+
+    Note: A tag dict with only `name` as a key is logically equivalent to passing a `string` as a tag.
+
+    ```python
+    class MyView(APIView):
+        ...
+        schema = AutoSchema(tags=[
+            {
+                "name": "user"
+            },
+            {
+                "name": "pet",
+                "description": "Everything about your Pets"
+            },
+            {
+                "name": "store",
+                "description": "Access to Petstore orders",
+                "externalDocs": {
+                    "url": "https://example.com",
+                    "description": "Find more info here"
+                }
+            },
+        ])
+    ```
+3. list which is mix of string and strings.
+    ```python
+    class MyView(APIView):
+        ...
+        schema = AutoSchema(tags=[
+            'user',
+            {
+                "name": "order",
+                "description": "Everything about your Pets"
+            },
+           'pet'
+        ])
+    ```
+
 [openapi]: https://github.com/OAI/OpenAPI-Specification
 [openapi-specification-extensions]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#specification-extensions
 [openapi-operation]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#operationObject
