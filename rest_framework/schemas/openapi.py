@@ -73,7 +73,6 @@ class SchemaGenerator(BaseSchemaGenerator):
 
         return schema
 
-
 # View Inspectors
 
 
