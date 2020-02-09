@@ -590,12 +590,14 @@ class AutoSchema(ViewInspector):
             return self._tags
 
         # Extract tag from viewset name
-        # UserViewSet      tags = [User]
+        # UserView         tags = [User]
         # User             tags = [User]
         if hasattr(self.view, 'action'):
             name = self.view.__class__.__name__
-            if name.lower().endswith('viewset'):
-                name = name[:-7]  # remove trailing `viewset` from name
+            if name.endswith('APIView') or name.endswith('ViewSet'):
+                name = name[:-7]
+            elif name.endswith('View'):
+                name = name[:-4]
             return [name]
 
         # First element of a specific path could be valid tag. This is a fallback solution.
