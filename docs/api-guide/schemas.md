@@ -218,35 +218,38 @@ project you may adjust `settings.DEFAULT_SCHEMA_CLASS`  appropriately.
 
 ### Grouping Operations With Tags
 
-Tags can be used for logical grouping `View`s. Each tag name in the list MUST be unique. 
+Tags can be used for logical grouping operations. Each tag name in the list MUST be unique. 
 
-**Django REST Framework generates tags automatically by the following logic:**
+---
+**Django REST Framework generates tags automatically with following logic:**
 1. Extract tag name from `ViewSet`. If `ViewSet` name ends with `ViewSet`, or `View`, it will be truncated from tag name.
 
-    ViewSet Class   |  Tag Name
+    ViewSet Class   |   Tags
     ----------------|------------
-    User	        |   user	 
-    UserView	    |   user	 
+    User            |   User	 
+    UserView        |   User	 
     UserViewSet     |   user	 
 
-2. If View is not an instance of ViewSet, generate tag name from the path. Consider the below table to understand more about path-based tag generation.
+2. If View is not an instance of ViewSet, tag name will be first element from the path. Consider below examples.
 
     Example 1: Consider a user management system. The following table will illustrate the tag generation logic.
+    Here first element from the paths is: `users`. Hence tag wil be `users`
 
     Http Method                          |        Path       |     Tags
     -------------------------------------|-------------------|-------------
-    PUT, PATCH, GET(Retrieve), DELETE:   |     /users/{id}/  |   [users]
-    POST, GET(List):                     |     /users/       |   [users]
+    PUT, PATCH, GET(Retrieve), DELETE    |     /users/{id}/  |   [users]
+    POST, GET(List)                      |     /users/       |   [users]
     
     Example 2: Consider a restaurant management system. The System has restaurants. Each restaurant has branches.
     Consider REST APIs to deal with a branch of a particular restaurant.
+    Here first element from the paths is: `restaurants`. Hence tag wil be `restaurants`.
     
     Http Method                          |                         Path                       |     Tags
     -------------------------------------|----------------------------------------------------|-------------------
     PUT, PATCH, GET(Retrieve), DELETE:   | /restaurants/{restaurant_id}/branches/{branch_id}  |   [restaurants]
     POST, GET(List):                     | /restaurants/{restaurant_id}/branches/             |   [restaurants]
 
-
+---
 **You can override auto-generated tags by passing a list of tags to each `View` by passing `tags` as an argument to the constructor of `AutoSchema`. `tags` argument can be:**
 1. list of string.
     ```python
@@ -258,9 +261,9 @@ Tags can be used for logical grouping `View`s. Each tag name in the list MUST be
 
     Field name   | Data type | Required | Description 
     -------------|-----------|----------|-------------------------------------------------------------------------
-    name	     |   string	 | yes      | The name of the tag.
-    description	 |   string  | no       | A short description for the tag. [CommonMark syntax](https://spec.commonmark.org/) MAY be used for rich text representation.
-    externalDocs |	  dict   | no       | Additional external documentation for this tag. [Click here](https://swagger.io/specification/#externalDocumentationObject) to know more.
+    name         |  string   |   yes    | The name of the tag.
+    description  |  string   |    no    | A short description for the tag. [CommonMark syntax](https://spec.commonmark.org/) MAY be used for rich text representation.
+    externalDocs |  dict     |    no    | Additional external documentation for this tag. [Click here](https://swagger.io/specification/#externalDocumentationObject) to know more.
 
     Note: A tag dict with only `name` as a key is logically equivalent to passing a `string` as a tag.
 
@@ -285,7 +288,7 @@ Tags can be used for logical grouping `View`s. Each tag name in the list MUST be
             },
         ])
     ```
-3. list which is mix of string and strings.
+3. list which is mix of dicts and strings.
     ```python
     class MyView(APIView):
         ...
