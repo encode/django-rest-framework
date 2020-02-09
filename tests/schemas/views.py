@@ -137,3 +137,14 @@ class ExampleValidatedAPIView(generics.GenericAPIView):
                                          url='http://localhost', uuid=uuid.uuid4(), ip4='127.0.0.1', ip6='::1',
                                          ip='192.168.1.1')
         return Response(serializer.data)
+
+
+class ExampleTagsViewSet(GenericViewSet):
+    serializer_class = ExampleSerializer
+
+    def retrieve(self, request, *args, **kwargs):
+        serializer = self.get_serializer(integer=33, string='hello', regex='foo', decimal1=3.55,
+                                         decimal2=5.33, email='a@b.co',
+                                         url='http://localhost', uuid=uuid.uuid4(), ip4='127.0.0.1', ip6='::1',
+                                         ip='192.168.1.1')
+        return Response(serializer.data)
