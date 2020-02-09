@@ -239,7 +239,7 @@ Tags can be used for logical grouping `View`s. Each tag name in the list MUST be
     POST, GET(List):                     |     /users/       |   [users]
     
     Example 2: Consider a restaurant management system. The System has restaurants. Each restaurant has branches.
-    Consider a REST APIs to deal with a branch of a particular restaurant.
+    Consider REST APIs to deal with a branch of a particular restaurant.
     
     Http Method                          |                         Path                       |     Tags
     -------------------------------------|----------------------------------------------------|-------------------
