@@ -698,6 +698,122 @@ class TestOperationIntrospection(TestCase):
         assert properties['ip']['type'] == 'string'
         assert 'format' not in properties['ip']
 
+    def test_overridden_string_tags(self):
+        class ExampleStringTagsViewSet(views.ExampleTagsViewSet):
+            schema = AutoSchema(tags=['example1', 'example2'])
+
+        router = routers.SimpleRouter()
+        router.register('test', ExampleStringTagsViewSet, basename="test")
+        generator = SchemaGenerator(patterns=router.urls)
+        schema = generator.get_schema(request=create_request('/'))
+        assert schema['paths']['/test/{id}/']['get']['tags'] == ['example1', 'example2']
+        assert schema['tags'] == []
+
+    def test_overridden_dict_tags(self):
+        class ExampleDictTagsViewSet(views.ExampleTagsViewSet):
+            schema = AutoSchema(tags=[
+                {
+                    "name": "user"
+                },
+                {
+                    "name": "pet",
+                    "description": "Everything about your Pets"
+                },
+                {
+                    "name": "store",
+                    "description": "Access to Petstore orders",
+                    "externalDocs": {
+                        "url": "https://example.com",
+                        "description": "Find more info here"
+                    }
+                },
+            ])
+
+        router = routers.SimpleRouter()
+        router.register('test', ExampleDictTagsViewSet, basename="test")
+        generator = SchemaGenerator(patterns=router.urls)
+        schema = generator.get_schema(request=create_request('/'))
+        assert schema['paths']['/test/{id}/']['get']['tags'] == ['user', 'pet', 'store']
+        assert schema['tags'] == [
+            {
+                "name": "user"
+            },
+            {
+                "name": "pet",
+                "description": "Everything about your Pets"
+            },
+            {
+                "name": "store",
+                "description": "Access to Petstore orders",
+                "externalDocs": {
+                    "url": "https://example.com",
+                    "description": "Find more info here"
+                }
+            },
+        ]
+
+    def test_mix_of_string_and_dict_tags(self):
+        class ExampleMixTagsViewSet(views.ExampleTagsViewSet):
+            schema = AutoSchema(tags=[
+                'user',
+                {
+                    "name": "order",
+                    "description": "Everything about your Pets"
+                },
+                'pet'
+            ])
+
+        router = routers.SimpleRouter()
+        router.register('test', ExampleMixTagsViewSet, basename="test")
+        generator = SchemaGenerator(patterns=router.urls)
+        schema = generator.get_schema(request=create_request('/'))
+        assert schema['paths']['/test/{id}/']['get']['tags'] == ['user', 'order', 'pet']
+        assert schema['tags'] == [
+            {
+                "name": "order",
+                "description": "Everything about your Pets"
+            }
+        ]
+
+    def test_auto_generated_viewset_tags(self):
+        class ExampleViewSet(views.ExampleTagsViewSet):
+            pass
+
+        class ExampleView(views.ExampleTagsViewSet):
+            pass
+
+        class Example(views.ExampleTagsViewSet):
+            pass
+
+        router = routers.SimpleRouter()
+        router.register('test1', ExampleViewSet, basename="test")
+        router.register('test2', ExampleView, basename="test")
+        router.register('test3', Example, basename="test")
+
+        generator = SchemaGenerator(patterns=router.urls)
+        schema = generator.get_schema(request=create_request('/'))
+        assert schema['paths']['/test1/{id}/']['get']['tags'] == ['Example']
+        assert schema['paths']['/test2/{id}/']['get']['tags'] == ['Example']
+        assert schema['paths']['/test3/{id}/']['get']['tags'] == ['Example']
+        assert schema['tags'] == []
+
+    def test_auto_generated_apiview_tags(self):
+        class RestaurantAPIView(views.ExampleGenericAPIView):
+            pass
+
+        class BranchAPIView(views.ExampleGenericAPIView):
+            pass
+
+        url_patterns = [
+            url(r'^restaurants/?$', RestaurantAPIView.as_view()),
+            url(r'^restaurants/branches/?$', BranchAPIView.as_view())
+        ]
+        generator = SchemaGenerator(patterns=url_patterns)
+        schema = generator.get_schema(request=create_request('/'))
+        assert schema['paths']['/restaurants/']['get']['tags'] == ['restaurants']
+        assert schema['paths']['/restaurants/branches/']['get']['tags'] == ['restaurants']
+        assert schema['tags'] == []
+
 
 @pytest.mark.skipif(uritemplate is None, reason='uritemplate not installed.')
 @override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.openapi.AutoSchema'})
