@@ -222,23 +222,30 @@ Tags can be used for logical grouping operations. Each tag name in the list MUST
 
 ---
 **Django REST Framework generates tags automatically with following logic:**
-1. Extract tag name from `ViewSet`. If `ViewSet` name ends with `ViewSet`, or `View`, it will be truncated from tag name.
+1. Extract tag from `ViewSet`. 
+    1. If `ViewSet` name ends with `ViewSet`, or `View`, remove them.
+    2. Convert class name into words & join each word with a space. 
+    
+    Examples:
+    
+        ViewSet Class   |   Tags
+        ----------------|------------
+        User            |   ['user']	 
+        UserView        |   ['user']	 
+        UserViewSet     |   ['user']	
+        PascalCaseXYZ   |   ['pascal case xyz']
+        IPAddressView   |   ['ip address']
 
-    ViewSet Class   |   Tags
-    ----------------|------------
-    User            |   User	 
-    UserView        |   User	 
-    UserViewSet     |   user	 
-
-2. If View is not an instance of ViewSet, tag name will be first element from the path. Consider below examples.
+2. If View is not an instance of ViewSet, tag name will be first element from the path. Also, any `-` or `_` in path name will be converted as a space.
+Consider below examples.
 
     Example 1: Consider a user management system. The following table will illustrate the tag generation logic.
     Here first element from the paths is: `users`. Hence tag wil be `users`
 
     Http Method                          |        Path       |     Tags
     -------------------------------------|-------------------|-------------
-    PUT, PATCH, GET(Retrieve), DELETE    |     /users/{id}/  |   [users]
-    POST, GET(List)                      |     /users/       |   [users]
+    PUT, PATCH, GET(Retrieve), DELETE    |     /users/{id}/  |   ['users']
+    POST, GET(List)                      |     /users/       |   ['users']
     
     Example 2: Consider a restaurant management system. The System has restaurants. Each restaurant has branches.
     Consider REST APIs to deal with a branch of a particular restaurant.
@@ -246,11 +253,21 @@ Tags can be used for logical grouping operations. Each tag name in the list MUST
     
     Http Method                          |                         Path                       |     Tags
     -------------------------------------|----------------------------------------------------|-------------------
-    PUT, PATCH, GET(Retrieve), DELETE:   | /restaurants/{restaurant_id}/branches/{branch_id}  |   [restaurants]
-    POST, GET(List):                     | /restaurants/{restaurant_id}/branches/             |   [restaurants]
+    PUT, PATCH, GET(Retrieve), DELETE:   | /restaurants/{restaurant_id}/branches/{branch_id}  |   ['restaurants']
+    POST, GET(List):                     | /restaurants/{restaurant_id}/branches/             |   ['restaurants']
+    
+    Example 3: Consider Order items for an e commerce company.
+    
+    Http Method                          |          Path           |     Tags
+    -------------------------------------|-------------------------|-------------
+    PUT, PATCH, GET(Retrieve), DELETE    |     /order-items/{id}/  |   ['order items']
+    POST, GET(List)                      |     /order-items/       |   ['order items']
+   
 
 ---
-**You can override auto-generated tags by passing a list of tags to each `View` by passing `tags` as an argument to the constructor of `AutoSchema`. `tags` argument can be:**
+**You can override auto-generated tags by passing `tags` argument to the constructor of `AutoSchema`.**
+
+**`tags` argument can be a**
 1. list of string.
     ```python
    class MyView(APIView):

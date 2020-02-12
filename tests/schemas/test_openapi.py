@@ -776,25 +776,25 @@ class TestOperationIntrospection(TestCase):
         ]
 
     def test_auto_generated_viewset_tags(self):
-        class ExampleViewSet(views.ExampleTagsViewSet):
+        class ExampleIPViewSet(views.ExampleTagsViewSet):
             pass
 
-        class ExampleView(views.ExampleTagsViewSet):
+        class ExampleXYZView(views.ExampleTagsViewSet):
             pass
 
         class Example(views.ExampleTagsViewSet):
             pass
 
         router = routers.SimpleRouter()
-        router.register('test1', ExampleViewSet, basename="test")
-        router.register('test2', ExampleView, basename="test")
+        router.register('test1', ExampleIPViewSet, basename="test")
+        router.register('test2', ExampleXYZView, basename="test")
         router.register('test3', Example, basename="test")
 
         generator = SchemaGenerator(patterns=router.urls)
         schema = generator.get_schema(request=create_request('/'))
-        assert schema['paths']['/test1/{id}/']['get']['tags'] == ['Example']
-        assert schema['paths']['/test2/{id}/']['get']['tags'] == ['Example']
-        assert schema['paths']['/test3/{id}/']['get']['tags'] == ['Example']
+        assert schema['paths']['/test1/{id}/']['get']['tags'] == ['example ip']
+        assert schema['paths']['/test2/{id}/']['get']['tags'] == ['example xyz']
+        assert schema['paths']['/test3/{id}/']['get']['tags'] == ['example']
         assert schema['tags'] == []
 
     def test_auto_generated_apiview_tags(self):
@@ -805,12 +805,12 @@ class TestOperationIntrospection(TestCase):
             pass
 
         url_patterns = [
-            url(r'^restaurants/?$', RestaurantAPIView.as_view()),
+            url(r'^any-dash_underscore/?$', RestaurantAPIView.as_view()),
             url(r'^restaurants/branches/?$', BranchAPIView.as_view())
         ]
         generator = SchemaGenerator(patterns=url_patterns)
         schema = generator.get_schema(request=create_request('/'))
-        assert schema['paths']['/restaurants/']['get']['tags'] == ['restaurants']
+        assert schema['paths']['/any-dash_underscore/']['get']['tags'] == ['any dash underscore']
         assert schema['paths']['/restaurants/branches/']['get']['tags'] == ['restaurants']
         assert schema['tags'] == []
 
