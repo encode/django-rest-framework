@@ -218,13 +218,13 @@ project you may adjust `settings.DEFAULT_SCHEMA_CLASS`  appropriately.
 
 ### Grouping Operations With Tags
 
-Tags can be used for logical grouping operations. Each tag name in the list MUST be unique. 
+Tags can be used to group logical operations. Each tag name in the list MUST be unique. 
 
 ---
 **Django REST Framework generates tags automatically with following logic:**
 1. Extract tag from `ViewSet`. 
-    1. If `ViewSet` name ends with `ViewSet`, or `View`, remove them.
-    2. Convert class name into words & join each word with a space. 
+    1. If `ViewSet` name ends with `ViewSet`, or `View`; remove it.
+    2. Convert class name into lowercase words & join each word with a space. 
     
     Examples:
     
