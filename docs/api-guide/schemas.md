@@ -30,7 +30,7 @@ into the commonly used YAML-based OpenAPI format.
 If your schema is static, you can use the `generateschema` management command:
 
 ```bash
-./manage.py generateschema > openapi-schema.yml
+./manage.py generateschema --file openapi-schema.yml
 ```
 
 Once you've generated a schema in this way you can annotate it with any
