@@ -224,7 +224,7 @@ Tags can be used to group logical operations. Each tag name in the list MUST be 
 **Django REST Framework generates tags automatically with following logic:**
 1. Extract tag from `ViewSet`. 
     1. If `ViewSet` name ends with `ViewSet`, or `View`; remove it.
-    2. Convert class name into lowercase words & join each word with a space. 
+    2. Convert class name into lowercase words & join each word using a space. 
     
     Examples:
     
@@ -236,7 +236,7 @@ Tags can be used to group logical operations. Each tag name in the list MUST be 
         PascalCaseXYZ   |   ['pascal case xyz']
         IPAddressView   |   ['ip address']
 
-2. If View is not an instance of ViewSet, tag name will be first element from the path. Also, any `-` or `_` in path name will be converted as a space.
+2. If View is not an instance of ViewSet, tag name will be first element from the path. Also, any `-` or `_` in path name will be replaced by a space.
 Consider below examples.
 
     Example 1: Consider a user management system. The following table will illustrate the tag generation logic.
