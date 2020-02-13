@@ -218,6 +218,12 @@ class Request:
         if not hasattr(self, '_user'):
             with wrap_attributeerrors():
                 self._authenticate()
+
+            # if we have user from upstream middlewares / django auth - we would like to use it
+            if hasattr(self._request, 'user'):
+                if hasattr(self._request.user, 'is_authenticated') and self._request.user.is_authenticated:
+                    self._user = self._request.user
+
         return self._user
 
     @user.setter
