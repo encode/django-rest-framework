@@ -21,7 +21,6 @@ from .utils import get_pk_description, is_list_view
 
 
 class SchemaGenerator(BaseSchemaGenerator):
-
     def get_info(self):
         # Title and version are required by openapi specification 3.x
         info = {
@@ -70,7 +69,6 @@ class SchemaGenerator(BaseSchemaGenerator):
 
 
 class AutoSchema(ViewInspector):
-
     request_media_types = []
     response_media_types = []
 
