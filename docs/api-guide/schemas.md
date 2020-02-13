@@ -303,7 +303,7 @@ class ExampleView(APIView):
     schema = AutoSchema(operation_name="Custom")
 ```
 
-The previous example will generate the following operationid: "ListCustoms", "RetrieveCustom", "UpdateCustom", "PartialUpdateCustom", `DestroyCustom`.
+The previous example will generate the following operationid: "ListCustoms", "RetrieveCustom", "UpdateCustom", "PartialUpdateCustom", "DestroyCustom".
 
 [openapi]: https://github.com/OAI/OpenAPI-Specification
 [openapi-specification-extensions]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#specification-extensions
