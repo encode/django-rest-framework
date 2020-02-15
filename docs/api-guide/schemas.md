@@ -18,12 +18,12 @@ Django REST Framework provides support for automatic generation of
 
 ## Generating an OpenAPI Schema
 
-### Install `pyyaml`
+### Install dependencies
 
-You'll need to install `pyyaml`, so that you can render your generated schema
-into the commonly used YAML-based OpenAPI format.
+    pip install pyyaml uritemplate
 
-    pip install pyyaml
+* `pyyaml` is used to generate schema into YAML-based OpenAPI format.
+* `uritemplate` is used internally to get parameters in path.
 
 ### Generating a static schema with the `generateschema` management command
 
