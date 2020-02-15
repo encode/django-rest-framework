@@ -18,6 +18,7 @@ This module provides the `api_setting` object, that is used to access
 REST framework settings, checking for user settings first, then falling
 back to the defaults.
 """
+from datetime import timedelta
 from django.conf import settings
 from django.test.signals import setting_changed
 from django.utils.module_loading import import_string
@@ -124,6 +125,8 @@ DEFAULTS = {
         'retrieve': 'read',
         'destroy': 'delete'
     },
+    "DEFAULT_JWT_ALGORITHM": "HS256",
+    "DEFAULT_JWT_DURATION": timedelta(minutes=5),
 }
 
 

@@ -15,7 +15,7 @@ from rest_framework.authentication import (
     SessionAuthentication, TokenAuthentication
 )
 from rest_framework.authtoken.models import Token
-from rest_framework.authtoken.views import obtain_auth_token
+from rest_framework.authtoken.views import obtain_auth_token, obtain_json_web_token
 from rest_framework.response import Response
 from rest_framework.test import APIClient, APIRequestFactory
 from rest_framework.views import APIView
@@ -74,6 +74,7 @@ urlpatterns = [
         )
     ),
     url(r'^auth-token/$', obtain_auth_token),
+    url(r'^auth-jwt/$', obtain_json_web_token),
     url(r'^auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
 
@@ -418,6 +419,42 @@ class TokenAuthTests(BaseTokenAuthTests, TestCase):
         )
         assert response.status_code == status.HTTP_200_OK
         assert response.data['token'] == self.key
+
+
+@override_settings(ROOT_URLCONF=__name__)
+class JSONWebTokenAuthTests(BaseTokenAuthTests, TestCase):
+    path = '/token/'
+
+    def test_token_login_json(self):
+        """Ensure token login view using JSON POST works."""
+        client = APIClient(enforce_csrf_checks=True)
+        response = client.post(
+            '/auth-jwt/',
+            {'username': self.username, 'password': self.password},
+            format='json'
+        )
+        assert response.status_code == status.HTTP_200_OK
+        assert "token" in response.data
+
+    def test_token_login_json_bad_creds(self):
+        """
+        Ensure token login view using JSON POST fails if
+        bad credentials are used
+        """
+        client = APIClient(enforce_csrf_checks=True)
+        response = client.post(
+            '/auth-jwt/',
+            {'username': self.username, 'password': "badpass"},
+            format='json'
+        )
+        assert response.status_code == 400
+
+    def test_token_login_json_missing_fields(self):
+        """Ensure token login view using JSON POST fails if missing fields."""
+        client = APIClient(enforce_csrf_checks=True)
+        response = client.post('/auth-jwt/',
+                               {'username': self.username}, format='json')
+        assert response.status_code == 400
 
 
 @override_settings(ROOT_URLCONF=__name__)

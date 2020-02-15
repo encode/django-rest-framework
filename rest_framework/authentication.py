@@ -7,7 +7,8 @@ import binascii
 from django.contrib.auth import authenticate, get_user_model
 from django.middleware.csrf import CsrfViewMiddleware
 from django.utils.translation import gettext_lazy as _
-
+from django.conf import settings as django_settings
+from rest_framework.authtoken.handlers import JWTHandler
 from rest_framework import HTTP_HEADER_ENCODING, exceptions
 
 
@@ -223,3 +224,72 @@ class RemoteUserAuthentication(BaseAuthentication):
         user = authenticate(remote_user=request.META.get(self.header))
         if user and user.is_active:
             return (user, None)
+
+
+class JWTAuthentication(BaseAuthentication):
+    """
+    Json Web Token authentication.
+
+    Clients should authenticate by passing the jwt key in the "Authorization"
+    HTTP header, prepended with the string "Bearer ".  For example:
+
+        Authorization: Bearer <json-web-token>
+    """
+
+    keyword = 'Bearer'
+    _user_model = None
+
+    """
+    A custom token model may be used, but must have the following properties.
+
+    * key -- The string identifying the token
+    * user -- The user to which the token belongs
+    """
+
+    def authenticate(self, request):
+        auth = get_authorization_header(request).split()
+
+        if not auth or auth[0].lower() != self.keyword.lower().encode():
+            return None
+
+        if len(auth) == 1:
+            msg = _('Invalid token header. No credentials provided.')
+            raise exceptions.AuthenticationFailed(msg)
+        elif len(auth) > 2:
+            msg = _('Invalid token header. Token string should not contain spaces.')
+            raise exceptions.AuthenticationFailed(msg)
+
+        try:
+            token = auth[1].decode()
+        except UnicodeError:
+            msg = _('Invalid token header. Token string should not contain invalid characters.')
+            raise exceptions.AuthenticationFailed(msg)
+
+        return self.authenticate_credentials(token)
+
+    def authenticate_credentials(self, key):
+        payload = JWTHandler.decode(token=key)
+        user = self.get_user(payload)
+        return (user, key)
+
+    def authenticate_header(self, request):
+        return self.keyword
+
+    def get_user(self, payload):
+        try:
+            user = self.user_model.objects.get(pk=payload.get("user"))
+        except self.user_model.DoesNotExist:
+            raise exceptions.AuthenticationFailed("User Doesn't Exist.")
+
+        if not user.is_active:
+            raise exceptions.AuthenticationFailed(_('User inactive or deleted.'))
+
+        return user
+
+    @property
+    def user_model(self):
+        if self._user_model is None:
+            from django.apps import apps
+            self._user_model = apps.get_model(*django_settings.AUTH_USER_MODEL.rsplit(".", 1))
+
+        return self._user_model
