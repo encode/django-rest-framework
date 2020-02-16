@@ -85,7 +85,7 @@ class BasicAuthTests(TestCase):
         self.csrf_client = APIClient(enforce_csrf_checks=True)
         self.username = 'john'
         self.email = 'lennon@thebeatles.com'
-        self.password = 'password'
+        self.password = 'pässwörd'
         self.user = User.objects.create_user(
             self.username, self.email, self.password
         )
@@ -94,7 +94,7 @@ class BasicAuthTests(TestCase):
         """Ensure POSTing json over basic auth with correct credentials passes and does not require CSRF"""
         credentials = ('%s:%s' % (self.username, self.password))
         base64_credentials = base64.b64encode(
-            credentials.encode(HTTP_HEADER_ENCODING)
+            credentials.encode('utf-8')
         ).decode(HTTP_HEADER_ENCODING)
         auth = 'Basic %s' % base64_credentials
         response = self.csrf_client.post(
@@ -108,7 +108,7 @@ class BasicAuthTests(TestCase):
         """Ensure POSTing form over basic auth with correct credentials passes and does not require CSRF"""
         credentials = ('%s:%s' % (self.username, self.password))
         base64_credentials = base64.b64encode(
-            credentials.encode(HTTP_HEADER_ENCODING)
+            credentials.encode('utf-8')
         ).decode(HTTP_HEADER_ENCODING)
         auth = 'Basic %s' % base64_credentials
         response = self.csrf_client.post(
