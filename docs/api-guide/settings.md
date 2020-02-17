@@ -103,6 +103,13 @@ A view inspector class that will be used for schema generation.
 
 Default: `'rest_framework.schemas.openapi.AutoSchema'`
 
+#### DEFAULT_MISSING_DATA
+
+The value that should be used for `request.data` when the client did not send any data in the request body. This
+setting applies only if the client did not send a header indicating form encoding.
+
+Default: `None`
+
 ---
 
 ## Generic view settings
