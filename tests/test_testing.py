@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import redirect
 from django.test import TestCase, override_settings
 
-from rest_framework import fields, serializers
+from rest_framework import serializers
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.test import (
@@ -35,13 +35,10 @@ def redirect_view(request):
     return redirect('/view/')
 
 
-class BasicSerializer(serializers.Serializer):
-    flag = fields.BooleanField(default=lambda: True)
-
-
 @api_view(['POST'])
 def post_view(request):
-    serializer = BasicSerializer(data=request.data)
+    serializer = serializers.Serializer(data=request.data)
+    serializer.allow_null = True
     serializer.is_valid(raise_exception=True)
     return Response(serializer.validated_data)
 
@@ -198,7 +195,7 @@ class TestAPITestClient(TestCase):
             content_type='application/json'
         )
         assert response.status_code == 200
-        assert response.data == {"flag": True}
+        assert response.data is None
 
 
 class TestAPIRequestFactory(TestCase):

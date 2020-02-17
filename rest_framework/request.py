@@ -334,7 +334,7 @@ class Request:
             if media_type and is_form_media_type(media_type):
                 empty_data = QueryDict('', encoding=self._request._encoding)
             else:
-                empty_data = {}
+                empty_data = None
             empty_files = MultiValueDict()
             return (empty_data, empty_files)
 
