@@ -44,8 +44,6 @@ class SchemaGenerator(BaseSchemaGenerator):
         # Iterate endpoints generating per method path operations.
         # TODO: …and reference components.
         paths = {}
-        tags = []
-        processed_views_for_tags = set()
         _, view_endpoints = self._get_paths_and_endpoints(None if public else request)
         for path, method, view in view_endpoints:
             if not self.has_view_permissions(path, method, view):
@@ -60,16 +58,11 @@ class SchemaGenerator(BaseSchemaGenerator):
             paths.setdefault(path, {})
             paths[path][method.lower()] = operation
 
-            if view.__class__.__name__ not in processed_views_for_tags:
-                tags.extend(view.schema.get_tag_objects())
-                processed_views_for_tags.add(view.__class__.__name__)
-
         # Compile final schema.
         schema = {
             'openapi': '3.0.2',
             'info': self.get_info(),
             'paths': paths,
-            'tags': tags
         }
 
         return schema
@@ -80,10 +73,9 @@ class SchemaGenerator(BaseSchemaGenerator):
 class AutoSchema(ViewInspector):
 
     def __init__(self, tags=None):
-        if tags is None:
-            tags = []
-        self._tag_objects = list(filter(lambda tag: isinstance(tag, (dict, OrderedDict)), tags))
-        self._tags = list(map(lambda tag: tag['name'] if isinstance(tag, (dict, OrderedDict)) else tag, tags))
+        if tags and not all(isinstance(tag, str) for tag in tags):
+            raise ValueError('tags must be a list of string.')
+        self._tags = tags
         super().__init__()
 
     request_media_types = []
@@ -116,9 +108,6 @@ class AutoSchema(ViewInspector):
         operation['tags'] = self._get_tags(path, method)
 
         return operation
-
-    def get_tag_objects(self):
-        return self._tag_objects
 
     def _get_operation_id(self, path, method):
         """
