@@ -587,7 +587,7 @@ class AutoSchema(ViewInspector):
                 name = name[:-7]
             elif name.endswith('View'):
                 name = name[:-4]
-            return [camelcase_to_spaces(name).lower()]
+            return [camelcase_to_spaces(name).lower().replace(' ', '-')]
 
         # First element of a specific path could be valid tag. This is a fallback solution.
         # PUT, PATCH, GET(Retrieve), DELETE:        /users/{id}/       tags = [users]
@@ -595,4 +595,4 @@ class AutoSchema(ViewInspector):
         if path.startswith('/'):
             path = path[1:]
 
-        return [path.split('/')[0].translate(str.maketrans({'-': ' ', '_': ' '}))]
+        return [path.split('/')[0].replace('_', '-')]
