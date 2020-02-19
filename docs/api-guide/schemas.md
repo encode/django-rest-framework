@@ -221,10 +221,11 @@ project you may adjust `settings.DEFAULT_SCHEMA_CLASS`  appropriately.
 Tags can be used to group logical operations. Each tag name in the list MUST be unique. 
 
 ---
-**Django REST Framework generates tags automatically with following logic:**
+#### Django REST Framework generates tags automatically with following logic:
+
 1. Extract tag from `ViewSet`. 
     1. If `ViewSet` name ends with `ViewSet`, or `View`; remove it.
-    2. Convert class name into lowercase words & join each word using a space. 
+    2. Convert class name into lowercase words & join each word using a `-`(dash). 
     
     Examples:
     
@@ -233,10 +234,10 @@ Tags can be used to group logical operations. Each tag name in the list MUST be 
         User            |   ['user']	 
         UserView        |   ['user']	 
         UserViewSet     |   ['user']	
-        PascalCaseXYZ   |   ['pascal case xyz']
-        IPAddressView   |   ['ip address']
+        PascalCaseXYZ   |   ['pascal-case-xyz']
+        IPAddressView   |   ['ip-address']
 
-2. If View is not an instance of ViewSet, tag name will be first element from the path. Also, any `-` or `_` in path name will be replaced by a space.
+2. If View is not an instance of ViewSet, tag name will be first element from the path. Also, any `_` in path name will be replaced by a `-`.
 Consider below examples.
 
     Example 1: Consider a user management system. The following table will illustrate the tag generation logic.
@@ -260,65 +261,23 @@ Consider below examples.
     
     Http Method                          |          Path           |     Tags
     -------------------------------------|-------------------------|-------------
-    PUT, PATCH, GET(Retrieve), DELETE    |     /order-items/{id}/  |   ['order items']
-    POST, GET(List)                      |     /order-items/       |   ['order items']
+    PUT, PATCH, GET(Retrieve), DELETE    |     /order_items/{id}/  |   ['order-items']
+    POST, GET(List)                      |     /order_items/       |   ['order-items']
    
 
 ---
-**You can override auto-generated tags by passing `tags` argument to the constructor of `AutoSchema`.**
+#### Overriding auto generated tags:
+You can override auto-generated tags by passing `tags` argument to the constructor of `AutoSchema`. `tags` argument must be a list of string.
+```python
+from rest_framework.schemas.openapi import AutoSchema
+from rest_framework.views import APIView
 
-**`tags` argument can be a**
-1. list of string.
-    ```python
-   class MyView(APIView):
-        ...
-        schema = AutoSchema(tags=['tag1', 'tag2'])
-   ```
-2.  list of dict. This adds metadata to a single tag. Each dict can have 3 possible keys:
-
-    Field name   | Data type | Required | Description 
-    -------------|-----------|----------|-------------------------------------------------------------------------
-    name         |  string   |   yes    | The name of the tag.
-    description  |  string   |    no    | A short description for the tag. [CommonMark syntax](https://spec.commonmark.org/) MAY be used for rich text representation.
-    externalDocs |  dict     |    no    | Additional external documentation for this tag. [Click here](https://swagger.io/specification/#externalDocumentationObject) to know more.
-
-    Note: A tag dict with only `name` as a key is logically equivalent to passing a `string` as a tag.
-
-    ```python
-    class MyView(APIView):
-        ...
-        schema = AutoSchema(tags=[
-            {
-                "name": "user"
-            },
-            {
-                "name": "pet",
-                "description": "Everything about your Pets"
-            },
-            {
-                "name": "store",
-                "description": "Access to Petstore orders",
-                "externalDocs": {
-                    "url": "https://example.com",
-                    "description": "Find more info here"
-                }
-            },
-        ])
-    ```
-3. list which is mix of dicts and strings.
-    ```python
-    class MyView(APIView):
-        ...
-        schema = AutoSchema(tags=[
-            'user',
-            {
-                "name": "order",
-                "description": "Everything about your Pets"
-            },
-           'pet'
-        ])
-    ```
+class MyView(APIView):
+    schema = AutoSchema(tags=['tag1', 'tag2'])
+    ...
+```
 
 [openapi]: https://github.com/OAI/OpenAPI-Specification
 [openapi-specification-extensions]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#specification-extensions
 [openapi-operation]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#operationObject
+[openapi-tags]: https://swagger.io/specification/#tagObject
