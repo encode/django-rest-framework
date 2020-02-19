@@ -105,7 +105,7 @@ class AutoSchema(ViewInspector):
         if request_body:
             operation['requestBody'] = request_body
         operation['responses'] = self._get_responses(path, method)
-        operation['tags'] = self._get_tags(path, method)
+        operation['tags'] = self.get_tags(path, method)
 
         return operation
 
@@ -573,7 +573,7 @@ class AutoSchema(ViewInspector):
             }
         }
 
-    def _get_tags(self, path, method):
+    def get_tags(self, path, method):
         # If user have specified tags, use them.
         if self._tags:
             return self._tags
