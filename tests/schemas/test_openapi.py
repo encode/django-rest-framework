@@ -708,6 +708,28 @@ class TestOperationIntrospection(TestCase):
         schema = generator.get_schema(request=create_request('/'))
         assert schema['paths']['/test/{id}/']['get']['tags'] == ['example1', 'example2']
 
+    def test_overridden_get_tags_method(self):
+        class MySchema(AutoSchema):
+            def get_tags(self, path, method):
+                if path.endswith('/new/'):
+                    tags = ['tag1', 'tag2']
+                elif path.endswith('/old/'):
+                    tags = ['tag2', 'tag3']
+                else:
+                    tags = ['tag4', 'tag5']
+
+                return tags
+
+        class ExampleStringTagsViewSet(views.ExampleGenericViewSet):
+            schema = MySchema()
+
+        router = routers.SimpleRouter()
+        router.register('example', ExampleStringTagsViewSet, basename="example")
+        generator = SchemaGenerator(patterns=router.urls)
+        schema = generator.get_schema(request=create_request('/'))
+        assert schema['paths']['/example/new/']['get']['tags'] == ['tag1', 'tag2']
+        assert schema['paths']['/example/old/']['get']['tags'] == ['tag2', 'tag3']
+
     def test_auto_generated_viewset_tags(self):
         class ExampleIPViewSet(views.ExampleTagsViewSet):
             pass
