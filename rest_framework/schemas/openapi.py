@@ -74,7 +74,7 @@ class AutoSchema(ViewInspector):
 
     def __init__(self, tags=None):
         if tags and not all(isinstance(tag, str) for tag in tags):
-            raise ValueError('tags must be a list of string.')
+            raise ValueError('tags must be a list or tuple of string.')
         self._tags = tags
         super().__init__()
 
