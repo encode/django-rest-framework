@@ -579,8 +579,9 @@ class AutoSchema(ViewInspector):
             return self._tags
 
         # Extract tag from viewset name
-        # UserView         tags = [User]
-        # User             tags = [User]
+        # UserProfileViewSet      tags = [user-profile]
+        # UserProfileView         tags = [user-profile]
+        # UserProfile             tags = [user-profile]
         if hasattr(self.view, 'action'):
             name = self.view.__class__.__name__
             if name.endswith('ViewSet'):
@@ -590,8 +591,8 @@ class AutoSchema(ViewInspector):
             return [camelcase_to_spaces(name).lower().replace(' ', '-')]
 
         # First element of a specific path could be valid tag. This is a fallback solution.
-        # PUT, PATCH, GET(Retrieve), DELETE:        /users/{id}/       tags = [users]
-        # POST, GET(List):                          /users/            tags = [users]
+        # PUT, PATCH, GET(Retrieve), DELETE:        /user_profile/{id}/       tags = [user-profile]
+        # POST, GET(List):                          /user_profile/            tags = [user-profile]
         if path.startswith('/'):
             path = path[1:]
 
