@@ -122,7 +122,7 @@ on a per-view basis.
 
 ### Schema Level Customization
 
-In order to customize the top-level schema sublass
+In order to customize the top-level schema subclass
 `rest_framework.schemas.openapi.SchemaGenerator` and provide it as an argument
 to the `generateschema` command or `get_schema_view()` helper function.
 
