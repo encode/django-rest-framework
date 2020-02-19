@@ -267,7 +267,7 @@ Consider below examples.
 
 ---
 #### Overriding auto generated tags:
-You can override auto-generated tags by passing `tags` argument to the constructor of `AutoSchema`. `tags` argument must be a list of string.
+You can override auto-generated tags by passing `tags` argument to the constructor of `AutoSchema`. `tags` argument must be a list or tuple of string.
 ```python
 from rest_framework.schemas.openapi import AutoSchema
 from rest_framework.views import APIView
