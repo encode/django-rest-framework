@@ -627,7 +627,7 @@ class TestOperationIntrospection(TestCase):
 
     def test_operation_id_override_base(self):
         class CustomSchema(AutoSchema):
-            def get_operation_id_base(self, action):
+            def get_operation_id_base(self, path, method, action):
                 return 'Item'
 
         path = '/'

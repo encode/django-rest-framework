@@ -310,7 +310,7 @@ If you need more configuration over the `operationId` field, you can override th
 
 ```python
 class CustomSchema(AutoSchema):
-    def get_operation_id_base(self, action):
+    def get_operation_id_base(self, path, method, action):
         pass
 
     def get_operation_id(self, path, method):

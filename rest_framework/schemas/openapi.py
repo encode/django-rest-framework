@@ -115,7 +115,7 @@ class AutoSchema(ViewInspector):
 
         return operation
 
-    def get_operation_id_base(self, action):
+    def get_operation_id_base(self, path, method, action):
         """
         Compute the base part for operation ID from the model, serializer or view name.
         """
@@ -164,7 +164,7 @@ class AutoSchema(ViewInspector):
         else:
             action = self.method_mapping[method.lower()]
 
-        name = self.get_operation_id_base(action)
+        name = self.get_operation_id_base(path, method, action)
 
         return action + name
 
