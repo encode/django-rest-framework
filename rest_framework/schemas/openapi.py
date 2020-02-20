@@ -15,7 +15,6 @@ from rest_framework import exceptions, renderers, serializers
 from rest_framework.compat import uritemplate
 from rest_framework.fields import _UnvalidatedField, empty
 
-from ..utils.formatting import camelcase_to_spaces
 from .generators import BaseSchemaGenerator
 from .inspectors import ViewInspector
 from .utils import get_pk_description, is_list_view
@@ -577,18 +576,6 @@ class AutoSchema(ViewInspector):
         # If user have specified tags, use them.
         if self._tags:
             return self._tags
-
-        # Extract tag from viewset name
-        # UserProfileViewSet      tags = [user-profile]
-        # UserProfileView         tags = [user-profile]
-        # UserProfile             tags = [user-profile]
-        if hasattr(self.view, 'action'):
-            name = self.view.__class__.__name__
-            if name.endswith('ViewSet'):
-                name = name[:-7]
-            elif name.endswith('View'):
-                name = name[:-4]
-            return [camelcase_to_spaces(name).lower().replace(' ', '-')]
 
         # First element of a specific path could be valid tag. This is a fallback solution.
         # PUT, PATCH, GET(Retrieve), DELETE:        /user_profile/{id}/       tags = [user-profile]

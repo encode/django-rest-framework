@@ -699,14 +699,15 @@ class TestOperationIntrospection(TestCase):
         assert 'format' not in properties['ip']
 
     def test_overridden_tags(self):
-        class ExampleStringTagsViewSet(views.ExampleTagsViewSet):
+        class ExampleStringTagsViewSet(views.ExampleGenericAPIView):
             schema = AutoSchema(tags=['example1', 'example2'])
 
-        router = routers.SimpleRouter()
-        router.register('test', ExampleStringTagsViewSet, basename="test")
-        generator = SchemaGenerator(patterns=router.urls)
+        url_patterns = [
+            url(r'^test/?$', ExampleStringTagsViewSet.as_view()),
+        ]
+        generator = SchemaGenerator(patterns=url_patterns)
         schema = generator.get_schema(request=create_request('/'))
-        assert schema['paths']['/test/{id}/']['get']['tags'] == ['example1', 'example2']
+        assert schema['paths']['/test/']['get']['tags'] == ['example1', 'example2']
 
     def test_overridden_get_tags_method(self):
         class MySchema(AutoSchema):
@@ -729,32 +730,6 @@ class TestOperationIntrospection(TestCase):
         schema = generator.get_schema(request=create_request('/'))
         assert schema['paths']['/example/new/']['get']['tags'] == ['tag1', 'tag2']
         assert schema['paths']['/example/old/']['get']['tags'] == ['tag2', 'tag3']
-
-    def test_auto_generated_viewset_tags(self):
-        class ExampleIPViewSet(views.ExampleTagsViewSet):
-            pass
-
-        class ExampleXYZView(views.ExampleTagsViewSet):
-            pass
-
-        class Example(views.ExampleTagsViewSet):
-            pass
-
-        class PascalCaseXYZTestIp(views.ExampleTagsViewSet):
-            pass
-
-        router = routers.SimpleRouter()
-        router.register('test1', ExampleIPViewSet, basename="test1")
-        router.register('test2', ExampleXYZView, basename="test2")
-        router.register('test3', Example, basename="test3")
-        router.register('test4', PascalCaseXYZTestIp, basename="test4")
-
-        generator = SchemaGenerator(patterns=router.urls)
-        schema = generator.get_schema(request=create_request('/'))
-        assert schema['paths']['/test1/{id}/']['get']['tags'] == ['example-ip']
-        assert schema['paths']['/test2/{id}/']['get']['tags'] == ['example-xyz']
-        assert schema['paths']['/test3/{id}/']['get']['tags'] == ['example']
-        assert schema['paths']['/test4/{id}/']['get']['tags'] == ['pascal-case-xyz-test-ip']
 
     def test_auto_generated_apiview_tags(self):
         class RestaurantAPIView(views.ExampleGenericAPIView):

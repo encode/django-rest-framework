@@ -223,46 +223,32 @@ Tags can be used to group logical operations. Each tag name in the list MUST be 
 ---
 #### Django REST Framework generates tags automatically with the following logic:
 
-1. Extract tag from `ViewSet`. 
-    1. If `ViewSet` name ends with `ViewSet`, or `View`; remove it.
-    2. Convert class name into lowercase words & join each word using a `-`(dash). 
-    
-    Examples:
-    
-        ViewSet Class   |   Tags
-        ----------------|------------
-        User            |   ['user']	 
-        UserView        |   ['user']	 
-        UserViewSet     |   ['user']	
-        PascalCaseXYZ   |   ['pascal-case-xyz']
-        IPAddressView   |   ['ip-address']
-
-2. If View is not an instance of ViewSet, tag name will be first element from the path. Also, any `_` in path name will be replaced by a `-`.
+Tag name will be first element from the path. Also, any `_` in path name will be replaced by a `-`.
 Consider below examples.
 
-    Example 1: Consider a user management system. The following table will illustrate the tag generation logic.
-    Here first element from the paths is: `users`. Hence tag wil be `users`
+Example 1: Consider a user management system. The following table will illustrate the tag generation logic.
+Here first element from the paths is: `users`. Hence tag wil be `users`
 
-    Http Method                          |        Path       |     Tags
-    -------------------------------------|-------------------|-------------
-    PUT, PATCH, GET(Retrieve), DELETE    |     /users/{id}/  |   ['users']
-    POST, GET(List)                      |     /users/       |   ['users']
-    
-    Example 2: Consider a restaurant management system. The System has restaurants. Each restaurant has branches.
-    Consider REST APIs to deal with a branch of a particular restaurant.
-    Here first element from the paths is: `restaurants`. Hence tag wil be `restaurants`.
-    
-    Http Method                          |                         Path                       |     Tags
-    -------------------------------------|----------------------------------------------------|-------------------
-    PUT, PATCH, GET(Retrieve), DELETE:   | /restaurants/{restaurant_id}/branches/{branch_id}  |   ['restaurants']
-    POST, GET(List):                     | /restaurants/{restaurant_id}/branches/             |   ['restaurants']
-    
-    Example 3: Consider Order items for an e commerce company.
-    
-    Http Method                          |          Path           |     Tags
-    -------------------------------------|-------------------------|-------------
-    PUT, PATCH, GET(Retrieve), DELETE    |     /order_items/{id}/  |   ['order-items']
-    POST, GET(List)                      |     /order_items/       |   ['order-items']
+Http Method                          |        Path       |     Tags
+-------------------------------------|-------------------|-------------
+PUT, PATCH, GET(Retrieve), DELETE    |     /users/{id}/  |   ['users']
+POST, GET(List)                      |     /users/       |   ['users']
+
+Example 2: Consider a restaurant management system. The System has restaurants. Each restaurant has branches.
+Consider REST APIs to deal with a branch of a particular restaurant.
+Here first element from the paths is: `restaurants`. Hence tag wil be `restaurants`.
+
+Http Method                          |                         Path                       |     Tags
+-------------------------------------|----------------------------------------------------|-------------------
+PUT, PATCH, GET(Retrieve), DELETE:   | /restaurants/{restaurant_id}/branches/{branch_id}  |   ['restaurants']
+POST, GET(List):                     | /restaurants/{restaurant_id}/branches/             |   ['restaurants']
+
+Example 3: Consider Order items for an e commerce company.
+
+Http Method                          |          Path           |     Tags
+-------------------------------------|-------------------------|-------------
+PUT, PATCH, GET(Retrieve), DELETE    |     /order_items/{id}/  |   ['order-items']
+POST, GET(List)                      |     /order_items/       |   ['order-items']
    
 
 ---
