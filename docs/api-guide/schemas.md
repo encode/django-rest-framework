@@ -303,11 +303,10 @@ class ExampleView(APIView):
     schema = AutoSchema(operation_id_base="Custom")
 ```
 
-The previous example will generate the following operationid: "ListCustoms", "RetrieveCustom", "UpdateCustom", "PartialUpdateCustom", "DestroyCustom".
+The previous example will generate the following operationId: "ListCustoms", "RetrieveCustom", "UpdateCustom", "PartialUpdateCustom", "DestroyCustom".
+You need to provide the singular form of he operation name. For the list operation, a "s" will be appended at the end of the operation.
 
-You need to provide the singular form of he operation name. For the list operation, a "s" will be append at the end of the name.
-
-If you need more configuration over the `operationId` field, you can override the `get_operation_id_base` and `get_operation_id` methods from the `AutoSchema` class.
+If you need more configuration over the `operationId` field, you can override the `get_operation_id_base` and `get_operation_id` methods from the `AutoSchema` class:
 
 ```python
 class CustomSchema(AutoSchema):
