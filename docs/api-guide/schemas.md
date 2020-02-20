@@ -300,10 +300,27 @@ from rest_framework.schemas.openapi import AutoSchema
 
 class ExampleView(APIView):
     """APIView subclass with custom schema introspection."""
-    schema = AutoSchema(operation_name="Custom")
+    schema = AutoSchema(operation_id_base="Custom")
 ```
 
 The previous example will generate the following operationid: "ListCustoms", "RetrieveCustom", "UpdateCustom", "PartialUpdateCustom", "DestroyCustom".
+
+You need to provide the singular form of he operation name. For the list operation, a "s" will be append at the end of the name.
+
+If you need more configuration over the `operationId` field, you can override the `get_operation_id_base` and `get_operation_id` methods from the `AutoSchema` class.
+
+```python
+class CustomSchema(AutoSchema):
+    def get_operation_id_base(self, action):
+        pass
+
+    def get_operation_id(self, path, method):
+        pass
+
+class CustomView(APIView):
+    """APIView subclass with custom schema introspection."""
+    schema = CustomSchema()
+```
 
 [openapi]: https://github.com/OAI/OpenAPI-Specification
 [openapi-specification-extensions]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#specification-extensions

@@ -88,17 +88,17 @@ class AutoSchema(ViewInspector):
         'delete': 'Destroy',
     }
 
-    def __init__(self, operation_name=None):
+    def __init__(self, operation_id_base=None):
         """
-        :param operation_name: user-defined name in operationId. If empty, it will be deducted from the Model/Serializer/View name.
+        :param operation_id_base: user-defined name in operationId. If empty, it will be deducted from the Model/Serializer/View name.
         """
         super().__init__()
-        self.operation_name = operation_name
+        self.operation_id_base = operation_id_base
 
     def get_operation(self, path, method):
         operation = {}
 
-        operation['operationId'] = self._get_operation_id(path, method)
+        operation['operationId'] = self.get_operation_id(path, method)
         operation['description'] = self.get_description(path, method)
 
         parameters = []
@@ -115,22 +115,14 @@ class AutoSchema(ViewInspector):
 
         return operation
 
-    def _get_operation_id(self, path, method):
+    def get_operation_id_base(self, action):
         """
-        Compute an operation ID from the model, serializer or view name.
+        Compute the base part for operation ID from the model, serializer or view name.
         """
-        method_name = getattr(self.view, 'action', method.lower())
-        if is_list_view(path, method, self.view):
-            action = 'list'
-        elif method_name not in self.method_mapping:
-            action = method_name
-        else:
-            action = self.method_mapping[method.lower()]
-
         model = getattr(getattr(self.view, 'queryset', None), 'model', None)
 
-        if self.operation_name is not None:
-            name = self.operation_name
+        if self.operation_id_base is not None:
+            name = self.operation_id_base
 
         # Try to deduce the ID from the view's model
         elif model is not None:
@@ -157,6 +149,22 @@ class AutoSchema(ViewInspector):
 
         if action == 'list' and not name.endswith('s'):  # listThings instead of listThing
             name += 's'
+
+        return name
+
+    def get_operation_id(self, path, method):
+        """
+        Compute an operation ID from the view type and get_operation_id_base method.
+        """
+        method_name = getattr(self.view, 'action', method.lower())
+        if is_list_view(path, method, self.view):
+            action = 'list'
+        elif method_name not in self.method_mapping:
+            action = method_name
+        else:
+            action = self.method_mapping[method.lower()]
+
+        name = self.get_operation_id_base(action)
 
         return action + name
 
