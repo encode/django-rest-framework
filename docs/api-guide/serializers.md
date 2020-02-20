@@ -333,7 +333,7 @@ Here's an example for an `.update()` method on our previous `UserSerializer` cla
         def update(self, instance, validated_data):
             profile_data = validated_data.pop('profile')
             # Unless the application properly enforces that this field is
-            # always set, the follow could raise a `DoesNotExist`, which
+            # always set, the following could raise a `DoesNotExist`, which
             # would need to be handled.
             profile = instance.profile
 
