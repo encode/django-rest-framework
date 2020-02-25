@@ -382,8 +382,8 @@ This manager class now more nicely encapsulates that user instances and profile 
     def create(self, validated_data):
         return User.objects.create(
             username=validated_data['username'],
-            email=validated_data['email']
-            is_premium_member=validated_data['profile']['is_premium_member']
+            email=validated_data['email'],
+            is_premium_member=validated_data['profile']['is_premium_member'],
             has_support_contract=validated_data['profile']['has_support_contract']
         )
 
