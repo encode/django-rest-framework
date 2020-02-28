@@ -71,10 +71,14 @@ class SchemaGenerator(BaseSchemaGenerator):
 
 class AutoSchema(ViewInspector):
 
-    def __init__(self, tags=None):
+    def __init__(self, operation_id_base=None, tags=None):
+        """
+        :param operation_id_base: user-defined name in operationId. If empty, it will be deducted from the Model/Serializer/View name.
+        """
         if tags and not all(isinstance(tag, str) for tag in tags):
             raise ValueError('tags must be a list or tuple of string.')
         self._tags = tags
+        self.operation_id_base = operation_id_base
         super().__init__()
 
     request_media_types = []
@@ -87,13 +91,6 @@ class AutoSchema(ViewInspector):
         'patch': 'PartialUpdate',
         'delete': 'Destroy',
     }
-
-    def __init__(self, operation_id_base=None):
-        """
-        :param operation_id_base: user-defined name in operationId. If empty, it will be deducted from the Model/Serializer/View name.
-        """
-        super().__init__()
-        self.operation_id_base = operation_id_base
 
     def get_operation(self, path, method):
         operation = {}
