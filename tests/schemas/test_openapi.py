@@ -577,6 +577,21 @@ class TestOperationIntrospection(TestCase):
         operationId = inspector._get_operation_id(path, method)
         assert operationId == 'listExamples'
 
+    def test_operation_id_custom_name(self):
+        path = '/'
+        method = 'GET'
+
+        view = create_view(
+            views.ExampleGenericAPIView,
+            method,
+            create_request(path),
+        )
+        inspector = AutoSchema(operation_name="Ulysse")
+        inspector.view = view
+
+        operationId = inspector._get_operation_id(path, method)
+        assert operationId == 'listUlysses'
+
     def test_repeat_operation_ids(self):
         router = routers.SimpleRouter()
         router.register('account', views.ExampleGenericViewSet, basename="account")

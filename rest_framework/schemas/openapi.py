@@ -88,6 +88,13 @@ class AutoSchema(ViewInspector):
         'delete': 'Destroy',
     }
 
+    def __init__(self, operation_name=None):
+        """
+        :param operation_name: user-defined name in operationId. If empty, it will be deducted from the Model/Serializer/View name.
+        """
+        super().__init__()
+        self.operation_name = operation_name
+
     def get_operation(self, path, method):
         operation = {}
 
@@ -120,9 +127,13 @@ class AutoSchema(ViewInspector):
         else:
             action = self.method_mapping[method.lower()]
 
-        # Try to deduce the ID from the view's model
         model = getattr(getattr(self.view, 'queryset', None), 'model', None)
-        if model is not None:
+
+        if self.operation_name is not None:
+            name = self.operation_name
+
+        # Try to deduce the ID from the view's model
+        elif model is not None:
             name = model.__name__
 
         # Try with the serializer class name

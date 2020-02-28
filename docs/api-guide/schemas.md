@@ -288,8 +288,25 @@ class MyView(APIView):
     ...
 ```
 
+### OperationId
+
+The schema generator generates an [operationid](openapi-operationid) for each operation. This `operationId` is deduced from the model name, serializer name or view name. The operationId may looks like "ListItems", "RetrieveItem", "UpdateItem", etc..
+
+If you have several views with the same model, the generator may generate duplicate operationId.
+In order to work around this, you can override the second part of the operationId: operation name.
+
+```python
+from rest_framework.schemas.openapi import AutoSchema
+
+class ExampleView(APIView):
+    """APIView subclass with custom schema introspection."""
+    schema = AutoSchema(operation_name="Custom")
+```
+
+The previous example will generate the following operationid: "ListCustoms", "RetrieveCustom", "UpdateCustom", "PartialUpdateCustom", `DestroyCustom`.
 
 [openapi]: https://github.com/OAI/OpenAPI-Specification
 [openapi-specification-extensions]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#specification-extensions
 [openapi-operation]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#operationObject
 [openapi-tags]: https://swagger.io/specification/#tagObject
+[openapi-operationid]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#fixed-fields-17
