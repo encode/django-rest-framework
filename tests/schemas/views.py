@@ -11,7 +11,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.schemas.openapi import AutoSchema
 from rest_framework.views import APIView
-from rest_framework.viewsets import GenericViewSet
+from rest_framework.viewsets import GenericViewSet, ViewSet
 
 
 class ExampleListView(APIView):
@@ -215,3 +215,25 @@ class ExampleAutoSchemaDuplicate2(generics.GenericAPIView):
 
         serializer = self.get_serializer(data=now.date(), datetime=now)
         return Response(serializer.data)
+
+
+class ExampleViewSet(ViewSet):
+    serializer_class = ExampleSerializerModel
+
+    def list(self, request):
+        pass
+
+    def create(self, request):
+        pass
+
+    def retrieve(self, request, pk=None):
+        pass
+
+    def update(self, request, pk=None):
+        pass
+
+    def partial_update(self, request, pk=None):
+        pass
+
+    def destroy(self, request, pk=None):
+        pass
