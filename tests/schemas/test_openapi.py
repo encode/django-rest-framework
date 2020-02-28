@@ -126,6 +126,7 @@ class TestOperationIntrospection(TestCase):
             'operationId': 'listDocStringExamples',
             'description': 'A description of my GET operation.',
             'parameters': [],
+            'tags': ['example'],
             'responses': {
                 '200': {
                     'description': '',
@@ -166,6 +167,7 @@ class TestOperationIntrospection(TestCase):
                     'type': 'string',
                 },
             }],
+            'tags': ['example'],
             'responses': {
                 '200': {
                     'description': '',
@@ -695,6 +697,55 @@ class TestOperationIntrospection(TestCase):
 
         assert properties['ip']['type'] == 'string'
         assert 'format' not in properties['ip']
+
+    def test_overridden_tags(self):
+        class ExampleStringTagsViewSet(views.ExampleGenericAPIView):
+            schema = AutoSchema(tags=['example1', 'example2'])
+
+        url_patterns = [
+            url(r'^test/?$', ExampleStringTagsViewSet.as_view()),
+        ]
+        generator = SchemaGenerator(patterns=url_patterns)
+        schema = generator.get_schema(request=create_request('/'))
+        assert schema['paths']['/test/']['get']['tags'] == ['example1', 'example2']
+
+    def test_overridden_get_tags_method(self):
+        class MySchema(AutoSchema):
+            def get_tags(self, path, method):
+                if path.endswith('/new/'):
+                    tags = ['tag1', 'tag2']
+                elif path.endswith('/old/'):
+                    tags = ['tag2', 'tag3']
+                else:
+                    tags = ['tag4', 'tag5']
+
+                return tags
+
+        class ExampleStringTagsViewSet(views.ExampleGenericViewSet):
+            schema = MySchema()
+
+        router = routers.SimpleRouter()
+        router.register('example', ExampleStringTagsViewSet, basename="example")
+        generator = SchemaGenerator(patterns=router.urls)
+        schema = generator.get_schema(request=create_request('/'))
+        assert schema['paths']['/example/new/']['get']['tags'] == ['tag1', 'tag2']
+        assert schema['paths']['/example/old/']['get']['tags'] == ['tag2', 'tag3']
+
+    def test_auto_generated_apiview_tags(self):
+        class RestaurantAPIView(views.ExampleGenericAPIView):
+            pass
+
+        class BranchAPIView(views.ExampleGenericAPIView):
+            pass
+
+        url_patterns = [
+            url(r'^any-dash_underscore/?$', RestaurantAPIView.as_view()),
+            url(r'^restaurants/branches/?$', BranchAPIView.as_view())
+        ]
+        generator = SchemaGenerator(patterns=url_patterns)
+        schema = generator.get_schema(request=create_request('/'))
+        assert schema['paths']['/any-dash_underscore/']['get']['tags'] == ['any-dash-underscore']
+        assert schema['paths']['/restaurants/branches/']['get']['tags'] == ['restaurants']
 
 
 @pytest.mark.skipif(uritemplate is None, reason='uritemplate not installed.')

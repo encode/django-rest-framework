@@ -71,6 +71,12 @@ class SchemaGenerator(BaseSchemaGenerator):
 
 class AutoSchema(ViewInspector):
 
+    def __init__(self, tags=None):
+        if tags and not all(isinstance(tag, str) for tag in tags):
+            raise ValueError('tags must be a list or tuple of string.')
+        self._tags = tags
+        super().__init__()
+
     request_media_types = []
     response_media_types = []
 
@@ -98,6 +104,7 @@ class AutoSchema(ViewInspector):
         if request_body:
             operation['requestBody'] = request_body
         operation['responses'] = self._get_responses(path, method)
+        operation['tags'] = self.get_tags(path, method)
 
         return operation
 
@@ -564,3 +571,16 @@ class AutoSchema(ViewInspector):
                 'description': ""
             }
         }
+
+    def get_tags(self, path, method):
+        # If user have specified tags, use them.
+        if self._tags:
+            return self._tags
+
+        # First element of a specific path could be valid tag. This is a fallback solution.
+        # PUT, PATCH, GET(Retrieve), DELETE:        /user_profile/{id}/       tags = [user-profile]
+        # POST, GET(List):                          /user_profile/            tags = [user-profile]
+        if path.startswith('/'):
+            path = path[1:]
+
+        return [path.split('/')[0].replace('_', '-')]

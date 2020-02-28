@@ -215,6 +215,81 @@ This also applies to extra actions for `ViewSet`s:
 If you wish to provide a base `AutoSchema` subclass to be used throughout your
 project you may adjust `settings.DEFAULT_SCHEMA_CLASS`  appropriately.
 
+
+### Grouping Operations With Tags
+
+Tags can be used to group logical operations. Each tag name in the list MUST be unique. 
+
+---
+#### Django REST Framework generates tags automatically with the following logic:
+
+Tag name will be first element from the path. Also, any `_` in path name will be replaced by a `-`.
+Consider below examples.
+
+Example 1: Consider a user management system. The following table will illustrate the tag generation logic.
+Here first element from the paths is: `users`. Hence tag wil be `users`
+
+Http Method                          |        Path       |     Tags
+-------------------------------------|-------------------|-------------
+PUT, PATCH, GET(Retrieve), DELETE    |     /users/{id}/  |   ['users']
+POST, GET(List)                      |     /users/       |   ['users']
+
+Example 2: Consider a restaurant management system. The System has restaurants. Each restaurant has branches.
+Consider REST APIs to deal with a branch of a particular restaurant.
+Here first element from the paths is: `restaurants`. Hence tag wil be `restaurants`.
+
+Http Method                          |                         Path                       |     Tags
+-------------------------------------|----------------------------------------------------|-------------------
+PUT, PATCH, GET(Retrieve), DELETE:   | /restaurants/{restaurant_id}/branches/{branch_id}  |   ['restaurants']
+POST, GET(List):                     | /restaurants/{restaurant_id}/branches/             |   ['restaurants']
+
+Example 3: Consider Order items for an e commerce company.
+
+Http Method                          |          Path           |     Tags
+-------------------------------------|-------------------------|-------------
+PUT, PATCH, GET(Retrieve), DELETE    |     /order_items/{id}/  |   ['order-items']
+POST, GET(List)                      |     /order_items/       |   ['order-items']
+   
+
+---
+#### Overriding auto generated tags:
+You can override auto-generated tags by passing `tags` argument to the constructor of `AutoSchema`. `tags` argument must be a list or tuple of string.
+```python
+from rest_framework.schemas.openapi import AutoSchema
+from rest_framework.views import APIView
+
+class MyView(APIView):
+    schema = AutoSchema(tags=['tag1', 'tag2'])
+    ...
+```
+
+If you need more customization, you can override the `get_tags` method of `AutoSchema` class. Consider the following example:
+
+```python
+from rest_framework.schemas.openapi import AutoSchema
+from rest_framework.views import APIView
+
+class MySchema(AutoSchema):
+    ...
+    def get_tags(self, path, method):
+        if method == 'POST':
+            tags = ['tag1', 'tag2']
+        elif method == 'GET':
+            tags = ['tag2', 'tag3'] 
+        elif path == '/example/path/':
+            tags = ['tag3', 'tag4']
+        else:
+            tags = ['tag5', 'tag6', 'tag7']
+    
+        return tags
+
+class MyView(APIView):
+    schema = MySchema()
+    ...
+```
+
+
 [openapi]: https://github.com/OAI/OpenAPI-Specification
 [openapi-specification-extensions]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#specification-extensions
 [openapi-operation]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#operationObject
+[openapi-tags]: https://swagger.io/specification/#tagObject
