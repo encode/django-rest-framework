@@ -558,9 +558,9 @@ class AutoSchema(ViewInspector):
                 response_schema = paginator.get_paginated_response_schema(response_schema)
         else:
             response_schema = item_schema
-
+        status_code = '201' if method == 'POST' else '200'
         return {
-            '200': {
+            status_code: {
                 'content': {
                     ct: {'schema': response_schema}
                     for ct in self.response_media_types
