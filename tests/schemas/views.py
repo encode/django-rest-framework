@@ -4,6 +4,7 @@ from django.core.validators import (
     DecimalValidator, MaxLengthValidator, MaxValueValidator,
     MinLengthValidator, MinValueValidator, RegexValidator
 )
+from django.db import models
 
 from rest_framework import generics, permissions, serializers
 from rest_framework.decorators import action
@@ -137,3 +138,32 @@ class ExampleValidatedAPIView(generics.GenericAPIView):
                                          url='http://localhost', uuid=uuid.uuid4(), ip4='127.0.0.1', ip6='::1',
                                          ip='192.168.1.1')
         return Response(serializer.data)
+
+
+# Serializer with model.
+class OpenAPIExample(models.Model):
+    first_name = models.CharField(max_length=30)
+
+
+class ExampleSerializerModel(serializers.Serializer):
+    date = serializers.DateField()
+    datetime = serializers.DateTimeField()
+    hstore = serializers.HStoreField()
+    uuid_field = serializers.UUIDField(default=uuid.uuid4)
+
+    class Meta:
+        model = OpenAPIExample
+
+
+class ExampleOperationIdDuplicate1(generics.GenericAPIView):
+    serializer_class = ExampleSerializerModel
+
+    def get(self, *args, **kwargs):
+        pass
+
+
+class ExampleOperationIdDuplicate2(generics.GenericAPIView):
+    serializer_class = ExampleSerializerModel
+
+    def get(self, *args, **kwargs):
+        pass
