@@ -7,6 +7,7 @@ from django.test import RequestFactory, TestCase, override_settings
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import filters, generics, pagination, routers, serializers
+from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.compat import uritemplate
 from rest_framework.parsers import JSONParser, MultiPartParser
 from rest_framework.renderers import JSONRenderer, OpenAPIRenderer
@@ -995,15 +996,44 @@ class TestGenerator(TestCase):
         patterns = [
             url(r'^example/?$', views.ExampleGenericAPIViewModel.as_view()),
         ]
+
         generator = SchemaGenerator(patterns=patterns)
 
         request = create_request('/')
         schema = generator.get_schema(request=request)
 
         print(schema)
+
         assert 'components' in schema
         assert 'schemas' in schema['components']
         assert 'ExampleModel' in schema['components']['schemas']
+
+    def test_authtoken_serializer(self):
+        patterns = [
+            url(r'^api-token-auth/', obtain_auth_token)
+        ]
+        generator = SchemaGenerator(patterns=patterns)
+
+        request = create_request('/')
+        schema = generator.get_schema(request=request)
+
+        print(schema)
+
+        route = schema['paths']['/api-token-auth/']['post']
+        body_schema = route['requestBody']['content']['application/json']['schema']
+
+        assert body_schema == {
+            '$ref': '#/components/schemas/AuthToken'
+        }
+        assert schema['components']['schemas']['AuthToken'] == {
+            'type': 'object',
+            'properties': {
+                'username': {'type': 'string', 'writeOnly': True},
+                'password': {'type': 'string', 'writeOnly': True},
+                'token': {'type': 'string', 'readOnly': True},
+            },
+            'required': ['username', 'password']
+        }
 
     def test_component_name(self):
         patterns = [
