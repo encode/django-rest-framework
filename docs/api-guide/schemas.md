@@ -316,6 +316,65 @@ class CustomSchema(AutoSchema):
     def get_operation_id(self, path, method):
         pass
 
+class MyView(APIView):
+   schema = AutoSchema(component_name="Ulysses")
+```
+
+### Components
+
+Since DRF 3.12, Schema uses the [OpenAPI Components](openapi-components). This method defines components in the schema and [references them](openapi-reference) inside request and response objects. By default, the component's name is deduced from the Serializer's name.
+
+Using OpenAPI's components provides the following advantages:
+* The schema is more readable and lightweight.
+* If you use the schema to generate an SDK (using [openapi-generator](openapi-generator) or [swagger-codegen](swagger-codegen)). The generator can name your SDK's models.
+
+### Handling component's schema errors
+
+You may get the following error while generating the schema:
+```
+"Serializer" is an invalid class name for schema generation.
+Serializer's class name should be unique and explicit. e.g. "ItemSerializer".
+```
+
+This error occurs when the Serializer name is "Serializer". You should choose a component's name unique across your schema and different than "Serializer".
+
+You may also get the following warning:
+```
+Schema component "ComponentName" has been overriden with a different value.
+```
+
+This warning occurs when different components have the same name in one schema. Your component name should be unique across your project. This is likely an error that may lead to an invalid schema.
+
+You have two ways to solve the previous issues:
+* You can rename your serializer with a unique name and another name than "Serializer".
+* You can set the `component_name` kwarg parameter of the AutoSchema constructor (see below).
+* You can override the `get_component_name` method of the AutoSchema class (see below).
+
+#### Set a custom component's name for your view
+
+To override the component's name in your view, you can use the `component_name` parameter of the AutoSchema constructor:
+
+```python
+from rest_framework.schemas.openapi import AutoSchema
+
+class MyView(APIView):
+   schema = AutoSchema(component_name="Ulysses")
+```
+
+#### Override the default implementation
+
+If you want to have more control and customization about how the schema's components are generated, you can override the `get_component_name` and `get_components` method from the AutoSchema class.
+
+```python
+from rest_framework.schemas.openapi import AutoSchema
+
+class CustomSchema(AutoSchema):
+	def get_components(self, path, method):
+		# Implement your custom implementation
+
+	def get_component_name(self, serializer):
+		# Implement your custom implementation
+
 class CustomView(APIView):
     """APIView subclass with custom schema introspection."""
     schema = CustomSchema()
@@ -326,3 +385,7 @@ class CustomView(APIView):
 [openapi-operation]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#operationObject
 [openapi-tags]: https://swagger.io/specification/#tagObject
 [openapi-operationid]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#fixed-fields-17
+[openapi-components]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#componentsObject
+[openapi-reference]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#referenceObject
+[openapi-generator]: https://github.com/OpenAPITools/openapi-generator
+[swagger-codegen]: https://github.com/swagger-api/swagger-codegen
