@@ -1,4 +1,5 @@
 import uuid
+import warnings
 
 import pytest
 from django.conf.urls import url
@@ -658,6 +659,24 @@ class TestOperationIntrospection(TestCase):
         assert schema_str.count("operationId") == 2
         assert schema_str.count("newExample") == 1
         assert schema_str.count("oldExample") == 1
+
+    def test_duplicate_operation_id(self):
+        patterns = [
+            url(r'^duplicate1/?$', views.ExampleOperationIdDuplicate1.as_view()),
+            url(r'^duplicate2/?$', views.ExampleOperationIdDuplicate2.as_view()),
+        ]
+
+        generator = SchemaGenerator(patterns=patterns)
+        request = create_request('/')
+
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter('always')
+            generator.get_schema(request=request)
+
+            assert len(w) == 1
+            assert issubclass(w[-1].category, UserWarning)
+            print(str(w[-1].message))
+            assert 'You have a duplicated operationId' in str(w[-1].message)
 
     def test_serializer_datefield(self):
         path = '/'
