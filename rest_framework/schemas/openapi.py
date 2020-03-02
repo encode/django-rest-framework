@@ -1,3 +1,4 @@
+import re
 import warnings
 from collections import OrderedDict
 from decimal import Decimal
@@ -65,9 +66,9 @@ class SchemaGenerator(BaseSchemaGenerator):
         Generate a OpenAPI schema.
         """
         self._initialise_endpoints()
+        components_schemas = {}
 
         # Iterate endpoints generating per method path operations.
-        # TODO: …and reference components.
         paths = {}
         _, view_endpoints = self._get_paths_and_endpoints(None if public else request)
         for path, method, view in view_endpoints:
@@ -75,6 +76,16 @@ class SchemaGenerator(BaseSchemaGenerator):
                 continue
 
             operation = view.schema.get_operation(path, method)
+            components = view.schema.get_components(path, method)
+            for k in components.keys():
+                if k not in components_schemas:
+                    continue
+                if components_schemas[k] == components[k]:
+                    continue
+                warnings.warn('Schema component "{}" has been overriden with a different value.'.format(k))
+
+            components_schemas.update(components)
+
             # Normalise path for any provided mount url.
             if path.startswith('/'):
                 path = path[1:]
@@ -92,6 +103,11 @@ class SchemaGenerator(BaseSchemaGenerator):
             'paths': paths,
         }
 
+        if len(components_schemas) > 0:
+            schema['components'] = {
+                'schemas': components_schemas
+            }
+
         return schema
 
 # View Inspectors
@@ -99,14 +115,16 @@ class SchemaGenerator(BaseSchemaGenerator):
 
 class AutoSchema(ViewInspector):
 
-    def __init__(self, operation_id_base=None, tags=None):
+    def __init__(self, tags=None, operation_id_base=None, component_name=None):
         """
         :param operation_id_base: user-defined name in operationId. If empty, it will be deducted from the Model/Serializer/View name.
+        :param component_name: user-defined component's name. If empty, it will be deducted from the Serializer's class name.
         """
         if tags and not all(isinstance(tag, str) for tag in tags):
             raise ValueError('tags must be a list or tuple of string.')
         self._tags = tags
         self.operation_id_base = operation_id_base
+        self.component_name = component_name
         super().__init__()
 
     request_media_types = []
@@ -139,6 +157,43 @@ class AutoSchema(ViewInspector):
         operation['tags'] = self.get_tags(path, method)
 
         return operation
+
+    def get_component_name(self, serializer):
+        """
+        Compute the component's name from the serializer.
+        Raise an exception if the serializer's class name is "Serializer" (case-insensitive).
+        """
+        if self.component_name is not None:
+            return self.component_name
+
+        # use the serializer's class name as the component name.
+        component_name = serializer.__class__.__name__
+        # We remove the "serializer" string from the class name.
+        pattern = re.compile("serializer", re.IGNORECASE)
+        component_name = pattern.sub("", component_name)
+
+        if component_name == "":
+            raise Exception(
+                '"{}" is an invalid class name for schema generation. '
+                'Serializer\'s class name should be unique and explicit. e.g. "ItemSerializer"'
+                .format(serializer.__class__.__name__)
+            )
+
+        return component_name
+
+    def get_components(self, path, method):
+        """
+        Return components with their properties from the serializer.
+        """
+        serializer = self._get_serializer(path, method)
+
+        if not isinstance(serializer, serializers.Serializer):
+            return {}
+
+        component_name = self.get_component_name(serializer)
+
+        content = self._map_serializer(serializer)
+        return {component_name: content}
 
     def get_operation_id_base(self, path, method, action):
         """
@@ -434,10 +489,6 @@ class AutoSchema(ViewInspector):
 
     def _map_serializer(self, serializer):
         # Assuming we have a valid serializer instance.
-        # TODO:
-        #   - field is Nested or List serializer.
-        #   - Handle read_only/write_only for request/response differences.
-        #       - could do this with readOnly/writeOnly and then filter dict.
         required = []
         properties = {}
 
@@ -542,6 +593,9 @@ class AutoSchema(ViewInspector):
                           .format(view.__class__.__name__, method, path))
             return None
 
+    def _get_reference(self, serializer):
+        return {'$ref': '#/components/schemas/{}'.format(self.get_component_name(serializer))}
+
     def _get_request_body(self, path, method):
         if method not in ('PUT', 'PATCH', 'POST'):
             return {}
@@ -551,20 +605,13 @@ class AutoSchema(ViewInspector):
         serializer = self._get_serializer(path, method)
 
         if not isinstance(serializer, serializers.Serializer):
-            return {}
-
-        content = self._map_serializer(serializer)
-        # No required fields for PATCH
-        if method == 'PATCH':
-            content.pop('required', None)
-        # No read_only fields for request.
-        for name, schema in content['properties'].copy().items():
-            if 'readOnly' in schema:
-                del content['properties'][name]
+            item_schema = {}
+        else:
+            item_schema = self._get_reference(serializer)
 
         return {
             'content': {
-                ct: {'schema': content}
+                ct: {'schema': item_schema}
                 for ct in self.request_media_types
             }
         }
@@ -580,17 +627,12 @@ class AutoSchema(ViewInspector):
 
         self.response_media_types = self.map_renderers(path, method)
 
-        item_schema = {}
         serializer = self._get_serializer(path, method)
 
-        if isinstance(serializer, serializers.Serializer):
-            item_schema = self._map_serializer(serializer)
-            # No write_only fields for response.
-            for name, schema in item_schema['properties'].copy().items():
-                if 'writeOnly' in schema:
-                    del item_schema['properties'][name]
-                    if 'required' in item_schema:
-                        item_schema['required'] = [f for f in item_schema['required'] if f != name]
+        if not isinstance(serializer, serializers.Serializer):
+            item_schema = {}
+        else:
+            item_schema = self._get_reference(serializer)
 
         if is_list_view(path, method, self.view):
             response_schema = {

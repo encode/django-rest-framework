@@ -9,6 +9,7 @@ from django.db import models
 from rest_framework import generics, permissions, serializers
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.schemas.openapi import AutoSchema
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 
@@ -167,3 +168,50 @@ class ExampleOperationIdDuplicate2(generics.GenericAPIView):
 
     def get(self, *args, **kwargs):
         pass
+
+
+class ExampleGenericAPIViewModel(generics.GenericAPIView):
+    serializer_class = ExampleSerializerModel
+
+    def get(self, *args, **kwargs):
+        from datetime import datetime
+        now = datetime.now()
+
+        serializer = self.get_serializer(data=now.date(), datetime=now)
+        return Response(serializer.data)
+
+
+class ExampleAutoSchemaComponentName(generics.GenericAPIView):
+    serializer_class = ExampleSerializerModel
+    schema = AutoSchema(component_name="Ulysses")
+
+    def get(self, *args, **kwargs):
+        from datetime import datetime
+        now = datetime.now()
+
+        serializer = self.get_serializer(data=now.date(), datetime=now)
+        return Response(serializer.data)
+
+
+class ExampleAutoSchemaDuplicate1(generics.GenericAPIView):
+    serializer_class = ExampleValidatedSerializer
+    schema = AutoSchema(component_name="Duplicate")
+
+    def get(self, *args, **kwargs):
+        from datetime import datetime
+        now = datetime.now()
+
+        serializer = self.get_serializer(data=now.date(), datetime=now)
+        return Response(serializer.data)
+
+
+class ExampleAutoSchemaDuplicate2(generics.GenericAPIView):
+    serializer_class = ExampleSerializerModel
+    schema = AutoSchema(component_name="Duplicate")
+
+    def get(self, *args, **kwargs):
+        from datetime import datetime
+        now = datetime.now()
+
+        serializer = self.get_serializer(data=now.date(), datetime=now)
+        return Response(serializer.data)
