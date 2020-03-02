@@ -275,9 +275,10 @@ class TestOperationIntrospection(TestCase):
         inspector.view = view
 
         responses = inspector._get_responses(path, method)
-        assert responses['200']['content']['application/json']['schema']['required'] == ['text']
-        assert list(responses['200']['content']['application/json']['schema']['properties'].keys()) == ['text']
-        assert 'description' in responses['200']
+        assert '201' in responses
+        assert responses['201']['content']['application/json']['schema']['required'] == ['text']
+        assert list(responses['201']['content']['application/json']['schema']['properties'].keys()) == ['text']
+        assert 'description' in responses['201']
 
     def test_response_body_nested_serializer(self):
         path = '/'
@@ -302,7 +303,7 @@ class TestOperationIntrospection(TestCase):
         inspector.view = view
 
         responses = inspector._get_responses(path, method)
-        schema = responses['200']['content']['application/json']['schema']
+        schema = responses['201']['content']['application/json']['schema']
         assert sorted(schema['required']) == ['nested', 'text']
         assert sorted(list(schema['properties'].keys())) == ['nested', 'text']
         assert schema['properties']['nested']['type'] == 'object'
