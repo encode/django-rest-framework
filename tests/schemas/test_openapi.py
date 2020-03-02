@@ -575,8 +575,74 @@ class TestOperationIntrospection(TestCase):
         inspector = AutoSchema()
         inspector.view = view
 
-        operationId = inspector._get_operation_id(path, method)
+        operationId = inspector.get_operation_id(path, method)
         assert operationId == 'listExamples'
+
+    def test_operation_id_custom_operation_id_base(self):
+        path = '/'
+        method = 'GET'
+
+        view = create_view(
+            views.ExampleGenericAPIView,
+            method,
+            create_request(path),
+        )
+        inspector = AutoSchema(operation_id_base="Ulysse")
+        inspector.view = view
+
+        operationId = inspector.get_operation_id(path, method)
+        assert operationId == 'listUlysses'
+
+    def test_operation_id_custom_name(self):
+        path = '/'
+        method = 'GET'
+
+        view = create_view(
+            views.ExampleGenericAPIView,
+            method,
+            create_request(path),
+        )
+        inspector = AutoSchema(operation_id_base='Ulysse')
+        inspector.view = view
+
+        operationId = inspector.get_operation_id(path, method)
+        assert operationId == 'listUlysses'
+
+    def test_operation_id_override_get(self):
+        class CustomSchema(AutoSchema):
+            def get_operation_id(self, path, method):
+                return 'myCustomOperationId'
+
+        path = '/'
+        method = 'GET'
+        view = create_view(
+            views.ExampleGenericAPIView,
+            method,
+            create_request(path),
+        )
+        inspector = CustomSchema()
+        inspector.view = view
+
+        operationId = inspector.get_operation_id(path, method)
+        assert operationId == 'myCustomOperationId'
+
+    def test_operation_id_override_base(self):
+        class CustomSchema(AutoSchema):
+            def get_operation_id_base(self, path, method, action):
+                return 'Item'
+
+        path = '/'
+        method = 'GET'
+        view = create_view(
+            views.ExampleGenericAPIView,
+            method,
+            create_request(path),
+        )
+        inspector = CustomSchema()
+        inspector.view = view
+
+        operationId = inspector.get_operation_id(path, method)
+        assert operationId == 'listItem'
 
     def test_repeat_operation_ids(self):
         router = routers.SimpleRouter()

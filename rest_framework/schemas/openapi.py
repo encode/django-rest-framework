@@ -71,10 +71,14 @@ class SchemaGenerator(BaseSchemaGenerator):
 
 class AutoSchema(ViewInspector):
 
-    def __init__(self, tags=None):
+    def __init__(self, operation_id_base=None, tags=None):
+        """
+        :param operation_id_base: user-defined name in operationId. If empty, it will be deducted from the Model/Serializer/View name.
+        """
         if tags and not all(isinstance(tag, str) for tag in tags):
             raise ValueError('tags must be a list or tuple of string.')
         self._tags = tags
+        self.operation_id_base = operation_id_base
         super().__init__()
 
     request_media_types = []
@@ -91,7 +95,7 @@ class AutoSchema(ViewInspector):
     def get_operation(self, path, method):
         operation = {}
 
-        operation['operationId'] = self._get_operation_id(path, method)
+        operation['operationId'] = self.get_operation_id(path, method)
         operation['description'] = self.get_description(path, method)
 
         parameters = []
@@ -108,21 +112,17 @@ class AutoSchema(ViewInspector):
 
         return operation
 
-    def _get_operation_id(self, path, method):
+    def get_operation_id_base(self, path, method, action):
         """
-        Compute an operation ID from the model, serializer or view name.
+        Compute the base part for operation ID from the model, serializer or view name.
         """
-        method_name = getattr(self.view, 'action', method.lower())
-        if is_list_view(path, method, self.view):
-            action = 'list'
-        elif method_name not in self.method_mapping:
-            action = method_name
-        else:
-            action = self.method_mapping[method.lower()]
+        model = getattr(getattr(self.view, 'queryset', None), 'model', None)
+
+        if self.operation_id_base is not None:
+            name = self.operation_id_base
 
         # Try to deduce the ID from the view's model
-        model = getattr(getattr(self.view, 'queryset', None), 'model', None)
-        if model is not None:
+        elif model is not None:
             name = model.__name__
 
         # Try with the serializer class name
@@ -146,6 +146,22 @@ class AutoSchema(ViewInspector):
 
         if action == 'list' and not name.endswith('s'):  # listThings instead of listThing
             name += 's'
+
+        return name
+
+    def get_operation_id(self, path, method):
+        """
+        Compute an operation ID from the view type and get_operation_id_base method.
+        """
+        method_name = getattr(self.view, 'action', method.lower())
+        if is_list_view(path, method, self.view):
+            action = 'list'
+        elif method_name not in self.method_mapping:
+            action = method_name
+        else:
+            action = self.method_mapping[method.lower()]
+
+        name = self.get_operation_id_base(path, method, action)
 
         return action + name
 
