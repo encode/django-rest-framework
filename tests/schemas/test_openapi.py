@@ -158,7 +158,7 @@ class TestOperationIntrospection(TestCase):
 
         operation = inspector.get_operation(path, method)
         assert operation == {
-            'operationId': 'RetrieveDocStringExampleDetail',
+            'operationId': 'retrieveDocStringExampleDetail',
             'description': 'A description of my GET operation.',
             'parameters': [{
                 'description': '',
@@ -734,6 +734,23 @@ class TestOperationIntrospection(TestCase):
             assert issubclass(w[-1].category, UserWarning)
             print(str(w[-1].message))
             assert 'You have a duplicated operationId' in str(w[-1].message)
+
+    def test_operation_id_viewset(self):
+        router = routers.SimpleRouter()
+        router.register('account', views.ExampleViewSet, basename="account")
+        urlpatterns = router.urls
+
+        generator = SchemaGenerator(patterns=urlpatterns)
+
+        request = create_request('/')
+        schema = generator.get_schema(request=request)
+        print(schema)
+        assert schema['paths']['/account/']['get']['operationId'] == 'listExampleViewSets'
+        assert schema['paths']['/account/']['post']['operationId'] == 'createExampleViewSet'
+        assert schema['paths']['/account/{id}/']['get']['operationId'] == 'retrieveExampleViewSet'
+        assert schema['paths']['/account/{id}/']['put']['operationId'] == 'updateExampleViewSet'
+        assert schema['paths']['/account/{id}/']['patch']['operationId'] == 'partialUpdateExampleViewSet'
+        assert schema['paths']['/account/{id}/']['delete']['operationId'] == 'destroyExampleViewSet'
 
     def test_serializer_datefield(self):
         path = '/'

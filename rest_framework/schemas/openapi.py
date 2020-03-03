@@ -131,11 +131,11 @@ class AutoSchema(ViewInspector):
     response_media_types = []
 
     method_mapping = {
-        'get': 'Retrieve',
-        'post': 'Create',
-        'put': 'Update',
-        'patch': 'PartialUpdate',
-        'delete': 'Destroy',
+        'get': 'retrieve',
+        'post': 'create',
+        'put': 'update',
+        'patch': 'partialUpdate',
+        'delete': 'destroy',
     }
 
     def get_operation(self, path, method):
@@ -195,6 +195,12 @@ class AutoSchema(ViewInspector):
         content = self._map_serializer(serializer)
         return {component_name: content}
 
+    def _to_camel_case(self, snake_str):
+        components = snake_str.split('_')
+        # We capitalize the first letter of each component except the first one
+        # with the 'title' method and join them together.
+        return components[0] + ''.join(x.title() for x in components[1:])
+
     def get_operation_id_base(self, path, method, action):
         """
         Compute the base part for operation ID from the model, serializer or view name.
@@ -240,7 +246,7 @@ class AutoSchema(ViewInspector):
         if is_list_view(path, method, self.view):
             action = 'list'
         elif method_name not in self.method_mapping:
-            action = method_name
+            action = self._to_camel_case(method_name)
         else:
             action = self.method_mapping[method.lower()]
 

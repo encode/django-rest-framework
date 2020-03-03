@@ -290,7 +290,8 @@ class MyView(APIView):
 
 ### OperationId
 
-The schema generator generates an [operationid](openapi-operationid) for each operation. This `operationId` is deduced from the model name, serializer name or view name. The operationId may looks like "ListItems", "RetrieveItem", "UpdateItem", etc..
+The schema generator generates an [operationid](openapi-operationid) for each operation. This `operationId` is deduced from the model name, serializer name or view name. The operationId may looks like "listItems", "retrieveItem", "updateItem", etc..
+The `operationId` is camelCase by convention.
 
 If you have several views with the same model, the generator may generate duplicate operationId.
 In order to work around this, you can override the second part of the operationId: operation name.
@@ -303,7 +304,7 @@ class ExampleView(APIView):
     schema = AutoSchema(operation_id_base="Custom")
 ```
 
-The previous example will generate the following operationId: "ListCustoms", "RetrieveCustom", "UpdateCustom", "PartialUpdateCustom", "DestroyCustom".
+The previous example will generate the following operationId: "listCustoms", "retrieveCustom", "updateCustom", "partialUpdateCustom", "destroyCustom".
 You need to provide the singular form of he operation name. For the list operation, a "s" will be appended at the end of the operation.
 
 If you need more configuration over the `operationId` field, you can override the `get_operation_id_base` and `get_operation_id` methods from the `AutoSchema` class:
