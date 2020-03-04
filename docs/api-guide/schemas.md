@@ -115,6 +115,67 @@ The `get_schema_view()` helper takes the following keyword arguments:
 * `renderer_classes`: May be used to pass the set of renderer classes that can
   be used to render the API root endpoint.
 
+### Handling `SerializerMethodField` returning a `dict`
+
+As Python is not a typed language, DRF cannot guess the return type of your method. By default, [`SerializerMethodField`][serializer-method-field] returned type in schema is a `string`. However, you may need to return another type.
+
+```python
+from django.contrib.auth.models import User
+from django.utils.timezone import now
+from rest_framework import serializers
+
+
+class UserSerializer(serializers.ModelSerializer):
+    days_and_hours_since_joined = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+
+    def get_days_and_hours_since_joined(self, obj):
+        deltaT = now() - obj.date_joined
+        return {
+            'days_since_joined': deltaT.days,
+            'hours_since_joined': deltaT.seconds // 3600
+        }
+```
+
+In this example, `days_and_hours_since_joined` type in auto-generated schema type is `string`. It however should be an object containing 2 properties of type integer: `days_since_joined` and `hours_since_joined`.
+
+In order to workaround this, [nested serializers][nested-serializer] should be used instead.
+In order to keep the initial implementation, the `.to_representation()`of the serializer method can be overridden:
+
+```python
+from django.contrib.auth.models import User
+from django.utils.timezone import now
+from rest_framework import serializers
+
+
+class TimeSinceJoinedSerializer(serializers.Serializer):
+    days_since_joined = serializers.IntegerField()
+    hours_since_joined = serializers.IntegerField()
+
+    def to_representation(self, instance):
+        deltaT = now() - instance.date_joined
+        return {
+            'days_since_joined': deltaT.days,
+            'hours_since_joined': deltaT.seconds // 3600
+        }
+
+
+class UserSerializer(serializers.ModelSerializer):
+    days_and_hours_since_joined = TimeSinceJoinedSerializer(
+        source='*',
+        many=False,
+        read_only=True,
+        )
+
+    class Meta:
+        model = User
+        fields = '__all__'
+```
+
+`source='*'` indicates here that the entire object should be passed through to the field to determine the output representation.
+
 ## Customizing Schema Generation
 
 You may customize schema generation at the level of the schema as a whole, or
@@ -390,3 +451,5 @@ class CustomView(APIView):
 [openapi-reference]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#referenceObject
 [openapi-generator]: https://github.com/OpenAPITools/openapi-generator
 [swagger-codegen]: https://github.com/swagger-api/swagger-codegen
+[nested-serializer]: https://www.django-rest-framework.org/api-guide/serializers/#dealing-with-nested-objects
+[serializer-method-field]: https://www.django-rest-framework.org/api-guide/fields/#serializermethodfield
