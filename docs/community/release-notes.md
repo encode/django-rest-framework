@@ -34,9 +34,31 @@ You can determine your currently installed version using `pip show`:
 
 ---
 
+## 3.11.x series
+
+### 3.11.0
+
+**Date**: 12th December 2019
+
+* Drop `.set_context` API [in favour of a `requires_context` marker](../3.11-announcement#validator-default-context).
+* Changed default widget for TextField with choices to select box. [#6892][gh6892]
+* Supported nested writes on non-relational fields, such as JSONField. [#6916][gh6916]
+* Include request/response media types in OpenAPI schemas, based on configured parsers/renderers. [#6865][gh6865]
+* Include operation descriptions in OpenAPI schemas, based on the docstring on the view. [#6898][gh6898]
+* Fix representation of serializers with all optional fields in OpenAPI schemas. [#6941][gh6941], [#6944][gh6944]
+* Fix representation of `serializers.HStoreField` in OpenAPI schemas. [#6914][gh6914]
+* Fix OpenAPI generation when title or version is not provided. [#6912][gh6912]
+* Use `int64` representation for large integers in OpenAPI schemas. [#7018][gh7018]
+* Improved error messages if no `.to_representation` implementation is provided on a field subclass. [#6996][gh6996]
+* Fix for serializer classes that use multiple inheritance. [#6980][gh6980]
+* Fix for reversing Hyperlinked URL fields with percent encoded components in the path. [#7059][gh7059]
+* Update bootstrap to 3.4.1. [#6923][gh6923]
+
 ## 3.10.x series
 
 ### 3.10.3
+
+**Date**: 4th September 2019
 
 * Include API version in OpenAPI schema generation, defaulting to empty string.
 * Add pagination properties to OpenAPI response schemas.
@@ -47,9 +69,7 @@ You can determine your currently installed version using `pip show`:
 * Use consistent `lowerInitialCamelCase` style in OpenAPI operation IDs.
 * Fix `minLength`/`maxLength`/`minItems`/`maxItems` properties in OpenAPI schemas.
 * Only call `FileField.url` once in serialization, for improved performance.
-* Fix an edge case where throttling calcualtions could error after a configuration change.
-
-* TODO
+* Fix an edge case where throttling calculations could error after a configuration change.
 
 ### 3.10.2
 
@@ -2175,3 +2195,18 @@ For older release notes, [please see the version 2.x documentation][old-release-
 <!-- 3.10.0 -->
 [gh6680]: https://github.com/encode/django-rest-framework/issues/6680
 [gh6317]: https://github.com/encode/django-rest-framework/issues/6317
+
+<!-- 3.11.0 -->
+[gh6892]: https://github.com/encode/django-rest-framework/issues/6892
+[gh6916]: https://github.com/encode/django-rest-framework/issues/6916
+[gh6865]: https://github.com/encode/django-rest-framework/issues/6865
+[gh6898]: https://github.com/encode/django-rest-framework/issues/6898
+[gh6941]: https://github.com/encode/django-rest-framework/issues/6941
+[gh6944]: https://github.com/encode/django-rest-framework/issues/6944
+[gh6914]: https://github.com/encode/django-rest-framework/issues/6914
+[gh6912]: https://github.com/encode/django-rest-framework/issues/6912
+[gh7018]: https://github.com/encode/django-rest-framework/issues/7018
+[gh6996]: https://github.com/encode/django-rest-framework/issues/6996
+[gh6980]: https://github.com/encode/django-rest-framework/issues/6980
+[gh7059]: https://github.com/encode/django-rest-framework/issues/7059
+[gh6923]: https://github.com/encode/django-rest-framework/issues/6923
