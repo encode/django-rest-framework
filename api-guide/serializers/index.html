@@ -906,7 +906,7 @@ serializer.errors
 <pre><code>    def update(self, instance, validated_data):
         profile_data = validated_data.pop('profile')
         # Unless the application properly enforces that this field is
-        # always set, the follow could raise a `DoesNotExist`, which
+        # always set, the following could raise a `DoesNotExist`, which
         # would need to be handled.
         profile = instance.profile
 
@@ -949,8 +949,8 @@ serializer.errors
 <pre><code>def create(self, validated_data):
     return User.objects.create(
         username=validated_data['username'],
-        email=validated_data['email']
-        is_premium_member=validated_data['profile']['is_premium_member']
+        email=validated_data['email'],
+        is_premium_member=validated_data['profile']['is_premium_member'],
         has_support_contract=validated_data['profile']['has_support_contract']
     )
 </code></pre>

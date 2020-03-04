@@ -74,6 +74,12 @@ pre {
   white-space: pre;
 }
 
+code, pre {
+    font-family: Consolas,Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace,sans-serif;
+    font-size: 13px;
+}
+
+
 /* Preserve the spacing of the navbar across different screen sizes. */
 .navbar-inner {
   /*padding: 5px 0;*/
@@ -432,3 +438,4 @@ ul.sponsor {
   margin: 0 !important;
   display: inline-block !important;
 }
+

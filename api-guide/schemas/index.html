@@ -449,14 +449,16 @@ can interact with your API.</p>
 <p>Django REST Framework provides support for automatic generation of
 <a href="https://github.com/OAI/OpenAPI-Specification">OpenAPI</a> schemas.</p>
 <h2 id="generating-an-openapi-schema"><a class="toclink" href="#generating-an-openapi-schema">Generating an OpenAPI Schema</a></h2>
-<h3 id="install-pyyaml"><a class="toclink" href="#install-pyyaml">Install <code>pyyaml</code></a></h3>
-<p>You'll need to install <code>pyyaml</code>, so that you can render your generated schema
-into the commonly used YAML-based OpenAPI format.</p>
-<pre><code>pip install pyyaml
+<h3 id="install-dependencies"><a class="toclink" href="#install-dependencies">Install dependencies</a></h3>
+<pre><code>pip install pyyaml uritemplate
 </code></pre>
+<ul>
+<li><code>pyyaml</code> is used to generate schema into YAML-based OpenAPI format.</li>
+<li><code>uritemplate</code> is used internally to get parameters in path.</li>
+</ul>
 <h3 id="generating-a-static-schema-with-the-generateschema-management-command"><a class="toclink" href="#generating-a-static-schema-with-the-generateschema-management-command">Generating a static schema with the <code>generateschema</code> management command</a></h3>
 <p>If your schema is static, you can use the <code>generateschema</code> management command:</p>
-<pre><code class="bash">./manage.py generateschema &gt; openapi-schema.yml
+<pre><code class="bash">./manage.py generateschema --file openapi-schema.yml
 </code></pre>
 
 <p>Once you've generated a schema in this way you can annotate it with any
@@ -542,7 +544,7 @@ schema_view = get_schema_view(
 <p>You may customize schema generation at the level of the schema as a whole, or
 on a per-view basis.</p>
 <h3 id="schema-level-customization"><a class="toclink" href="#schema-level-customization">Schema Level Customization</a></h3>
-<p>In order to customize the top-level schema sublass
+<p>In order to customize the top-level schema subclass
 <code>rest_framework.schemas.openapi.SchemaGenerator</code> and provide it as an argument
 to the <code>generateschema</code> command or <code>get_schema_view()</code> helper function.</p>
 <h4 id="schemagenerator"><a class="toclink" href="#schemagenerator">SchemaGenerator</a></h4>
@@ -616,6 +618,185 @@ provide richer path field descriptions. (The key hooks here are the relevant
 </code></pre>
 <p>If you wish to provide a base <code>AutoSchema</code> subclass to be used throughout your
 project you may adjust <code>settings.DEFAULT_SCHEMA_CLASS</code>  appropriately.</p>
+<h3 id="grouping-operations-with-tags"><a class="toclink" href="#grouping-operations-with-tags">Grouping Operations With Tags</a></h3>
+<p>Tags can be used to group logical operations. Each tag name in the list MUST be unique. </p>
+<hr />
+<h4 id="django-rest-framework-generates-tags-automatically-with-the-following-logic"><a class="toclink" href="#django-rest-framework-generates-tags-automatically-with-the-following-logic">Django REST Framework generates tags automatically with the following logic:</a></h4>
+<p>Tag name will be first element from the path. Also, any <code>_</code> in path name will be replaced by a <code>-</code>.
+Consider below examples.</p>
+<p>Example 1: Consider a user management system. The following table will illustrate the tag generation logic.
+Here first element from the paths is: <code>users</code>. Hence tag wil be <code>users</code></p>
+<table>
+<thead>
+<tr>
+<th>Http Method</th>
+<th>Path</th>
+<th>Tags</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PUT, PATCH, GET(Retrieve), DELETE</td>
+<td>/users/{id}/</td>
+<td>['users']</td>
+</tr>
+<tr>
+<td>POST, GET(List)</td>
+<td>/users/</td>
+<td>['users']</td>
+</tr>
+</tbody>
+</table>
+<p>Example 2: Consider a restaurant management system. The System has restaurants. Each restaurant has branches.
+Consider REST APIs to deal with a branch of a particular restaurant.
+Here first element from the paths is: <code>restaurants</code>. Hence tag wil be <code>restaurants</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Http Method</th>
+<th>Path</th>
+<th>Tags</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PUT, PATCH, GET(Retrieve), DELETE:</td>
+<td>/restaurants/{restaurant_id}/branches/{branch_id}</td>
+<td>['restaurants']</td>
+</tr>
+<tr>
+<td>POST, GET(List):</td>
+<td>/restaurants/{restaurant_id}/branches/</td>
+<td>['restaurants']</td>
+</tr>
+</tbody>
+</table>
+<p>Example 3: Consider Order items for an e commerce company.</p>
+<table>
+<thead>
+<tr>
+<th>Http Method</th>
+<th>Path</th>
+<th>Tags</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PUT, PATCH, GET(Retrieve), DELETE</td>
+<td>/order_items/{id}/</td>
+<td>['order-items']</td>
+</tr>
+<tr>
+<td>POST, GET(List)</td>
+<td>/order_items/</td>
+<td>['order-items']</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h4 id="overriding-auto-generated-tags"><a class="toclink" href="#overriding-auto-generated-tags">Overriding auto generated tags:</a></h4>
+<p>You can override auto-generated tags by passing <code>tags</code> argument to the constructor of <code>AutoSchema</code>. <code>tags</code> argument must be a list or tuple of string.</p>
+<pre><code class="python">from rest_framework.schemas.openapi import AutoSchema
+from rest_framework.views import APIView
+
+class MyView(APIView):
+    schema = AutoSchema(tags=['tag1', 'tag2'])
+    ...
+</code></pre>
+
+<p>If you need more customization, you can override the <code>get_tags</code> method of <code>AutoSchema</code> class. Consider the following example:</p>
+<pre><code class="python">from rest_framework.schemas.openapi import AutoSchema
+from rest_framework.views import APIView
+
+class MySchema(AutoSchema):
+    ...
+    def get_tags(self, path, method):
+        if method == 'POST':
+            tags = ['tag1', 'tag2']
+        elif method == 'GET':
+            tags = ['tag2', 'tag3'] 
+        elif path == '/example/path/':
+            tags = ['tag3', 'tag4']
+        else:
+            tags = ['tag5', 'tag6', 'tag7']
+
+        return tags
+
+class MyView(APIView):
+    schema = MySchema()
+    ...
+</code></pre>
+
+<h3 id="operationid"><a class="toclink" href="#operationid">OperationId</a></h3>
+<p>The schema generator generates an <a href="openapi-operationid">operationid</a> for each operation. This <code>operationId</code> is deduced from the model name, serializer name or view name. The operationId may looks like "listItems", "retrieveItem", "updateItem", etc..
+The <code>operationId</code> is camelCase by convention.</p>
+<p>If you have several views with the same model, the generator may generate duplicate operationId.
+In order to work around this, you can override the second part of the operationId: operation name.</p>
+<pre><code class="python">from rest_framework.schemas.openapi import AutoSchema
+
+class ExampleView(APIView):
+    &quot;&quot;&quot;APIView subclass with custom schema introspection.&quot;&quot;&quot;
+    schema = AutoSchema(operation_id_base=&quot;Custom&quot;)
+</code></pre>
+
+<p>The previous example will generate the following operationId: "listCustoms", "retrieveCustom", "updateCustom", "partialUpdateCustom", "destroyCustom".
+You need to provide the singular form of he operation name. For the list operation, a "s" will be appended at the end of the operation.</p>
+<p>If you need more configuration over the <code>operationId</code> field, you can override the <code>get_operation_id_base</code> and <code>get_operation_id</code> methods from the <code>AutoSchema</code> class:</p>
+<pre><code class="python">class CustomSchema(AutoSchema):
+    def get_operation_id_base(self, path, method, action):
+        pass
+
+    def get_operation_id(self, path, method):
+        pass
+
+class MyView(APIView):
+   schema = AutoSchema(component_name=&quot;Ulysses&quot;)
+</code></pre>
+
+<h3 id="components"><a class="toclink" href="#components">Components</a></h3>
+<p>Since DRF 3.12, Schema uses the <a href="openapi-components">OpenAPI Components</a>. This method defines components in the schema and <a href="openapi-reference">references them</a> inside request and response objects. By default, the component's name is deduced from the Serializer's name.</p>
+<p>Using OpenAPI's components provides the following advantages:
+* The schema is more readable and lightweight.
+* If you use the schema to generate an SDK (using <a href="openapi-generator">openapi-generator</a> or <a href="swagger-codegen">swagger-codegen</a>). The generator can name your SDK's models.</p>
+<h3 id="handling-components-schema-errors"><a class="toclink" href="#handling-components-schema-errors">Handling component's schema errors</a></h3>
+<p>You may get the following error while generating the schema:</p>
+<pre><code>&quot;Serializer&quot; is an invalid class name for schema generation.
+Serializer's class name should be unique and explicit. e.g. &quot;ItemSerializer&quot;.
+</code></pre>
+
+<p>This error occurs when the Serializer name is "Serializer". You should choose a component's name unique across your schema and different than "Serializer".</p>
+<p>You may also get the following warning:</p>
+<pre><code>Schema component &quot;ComponentName&quot; has been overriden with a different value.
+</code></pre>
+
+<p>This warning occurs when different components have the same name in one schema. Your component name should be unique across your project. This is likely an error that may lead to an invalid schema.</p>
+<p>You have two ways to solve the previous issues:
+* You can rename your serializer with a unique name and another name than "Serializer".
+* You can set the <code>component_name</code> kwarg parameter of the AutoSchema constructor (see below).
+* You can override the <code>get_component_name</code> method of the AutoSchema class (see below).</p>
+<h4 id="set-a-custom-components-name-for-your-view"><a class="toclink" href="#set-a-custom-components-name-for-your-view">Set a custom component's name for your view</a></h4>
+<p>To override the component's name in your view, you can use the <code>component_name</code> parameter of the AutoSchema constructor:</p>
+<pre><code class="python">from rest_framework.schemas.openapi import AutoSchema
+
+class MyView(APIView):
+   schema = AutoSchema(component_name=&quot;Ulysses&quot;)
+</code></pre>
+
+<h4 id="override-the-default-implementation"><a class="toclink" href="#override-the-default-implementation">Override the default implementation</a></h4>
+<p>If you want to have more control and customization about how the schema's components are generated, you can override the <code>get_component_name</code> and <code>get_components</code> method from the AutoSchema class.</p>
+<pre><code class="python">from rest_framework.schemas.openapi import AutoSchema
+
+class CustomSchema(AutoSchema):
+    def get_components(self, path, method):
+        # Implement your custom implementation
+
+    def get_component_name(self, serializer):
+        # Implement your custom implementation
+
+class CustomView(APIView):
+    &quot;&quot;&quot;APIView subclass with custom schema introspection.&quot;&quot;&quot;
+    schema = CustomSchema()
+</code></pre>
             
 
           </div> <!--/span-->

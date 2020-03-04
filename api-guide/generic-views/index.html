@@ -678,7 +678,6 @@ class UserList(generics.ListCreateAPIView):
         raise ValidationError('You have already signed up')
     serializer.save(user=self.request.user)
 </code></pre>
-<p><strong>Note</strong>: These methods replace the old-style version 2.x <code>pre_save</code>, <code>post_save</code>, <code>pre_delete</code> and <code>post_delete</code> methods, which are no longer available.</p>
 <p><strong>Other methods</strong>:</p>
 <p>You won't typically need to override the following methods, although you might need to call into them if you're writing custom views using <code>GenericAPIView</code>.</p>
 <ul>

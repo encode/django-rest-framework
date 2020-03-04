@@ -525,6 +525,7 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 <p>Right, we'd better write some views then.  Open <code>tutorial/quickstart/views.py</code> and get typing.</p>
 <pre><code>from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
+from rest_framework import permissions
 from tutorial.quickstart.serializers import UserSerializer, GroupSerializer
 
 
@@ -534,6 +535,7 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class GroupViewSet(viewsets.ModelViewSet):
@@ -542,6 +544,7 @@ class GroupViewSet(viewsets.ModelViewSet):
     """
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
+    permission_classes = [permissions.IsAuthenticated]
 </code></pre>
 <p>Rather than write multiple views we're grouping together all the common behavior into classes called <code>ViewSets</code>.</p>
 <p>We can easily break these down into individual views if we need to, but using viewsets keeps the view logic nicely organized as well as being very concise.</p>
@@ -636,7 +639,7 @@ HTTP/1.1 200 OK
 <p><img alt="Quick start image" src="../../img/quickstart.png" /></p>
 <p>If you're working through the browser, make sure to login using the control in the top right corner.</p>
 <p>Great, that was easy!</p>
-<p>If you want to get a more in depth understanding of how REST framework fits together head on over to <a href="../1-serialization/">the tutorial</a>, or start browsing the <a href="../#api-guide">API guide</a>.</p>
+<p>If you want to get a more in depth understanding of how REST framework fits together head on over to <a href="../1-serialization/">the tutorial</a>, or start browsing the <a href="../../api-guide/requests/">API guide</a>.</p>
             
 
           </div> <!--/span-->

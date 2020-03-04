@@ -679,7 +679,7 @@ class UserListView(generics.ListAPIView):
 <ul>
 <li>'^' Starts-with search.</li>
 <li>'=' Exact matches.</li>
-<li>'@' Full-text search.  (Currently only supported Django's MySQL backend.)</li>
+<li>'@' Full-text search.  (Currently only supported Django's <a href="https://docs.djangoproject.com/en/dev/ref/contrib/postgres/search/">PostgreSQL backend</a>.)</li>
 <li>'$' Regex search.</li>
 </ul>
 <p>For example:</p>

@@ -422,6 +422,10 @@
                     </li>
                   
                     <li>
+                      <a href="#311x-series">3.11.x series</a>
+                    </li>
+                  
+                    <li>
                       <a href="#310x-series">3.10.x series</a>
                     </li>
                   
@@ -508,8 +512,27 @@
 <pre><code>pip show djangorestframework
 </code></pre>
 <hr />
+<h2 id="311x-series"><a class="toclink" href="#311x-series">3.11.x series</a></h2>
+<h3 id="3110"><a class="toclink" href="#3110">3.11.0</a></h3>
+<p><strong>Date</strong>: 12th December 2019</p>
+<ul>
+<li>Drop <code>.set_context</code> API <a href="../3.11-announcement#validator-default-context">in favour of a <code>requires_context</code> marker</a>.</li>
+<li>Changed default widget for TextField with choices to select box. <a href="https://github.com/encode/django-rest-framework/issues/6892">#6892</a></li>
+<li>Supported nested writes on non-relational fields, such as JSONField. <a href="https://github.com/encode/django-rest-framework/issues/6916">#6916</a></li>
+<li>Include request/response media types in OpenAPI schemas, based on configured parsers/renderers. <a href="https://github.com/encode/django-rest-framework/issues/6865">#6865</a></li>
+<li>Include operation descriptions in OpenAPI schemas, based on the docstring on the view. <a href="https://github.com/encode/django-rest-framework/issues/6898">#6898</a></li>
+<li>Fix representation of serializers with all optional fields in OpenAPI schemas. <a href="https://github.com/encode/django-rest-framework/issues/6941">#6941</a>, <a href="https://github.com/encode/django-rest-framework/issues/6944">#6944</a></li>
+<li>Fix representation of <code>serializers.HStoreField</code> in OpenAPI schemas. <a href="https://github.com/encode/django-rest-framework/issues/6914">#6914</a></li>
+<li>Fix OpenAPI generation when title or version is not provided. <a href="https://github.com/encode/django-rest-framework/issues/6912">#6912</a></li>
+<li>Use <code>int64</code> representation for large integers in OpenAPI schemas. <a href="https://github.com/encode/django-rest-framework/issues/7018">#7018</a></li>
+<li>Improved error messages if no <code>.to_representation</code> implementation is provided on a field subclass. <a href="https://github.com/encode/django-rest-framework/issues/6996">#6996</a></li>
+<li>Fix for serializer classes that use multiple inheritance. <a href="https://github.com/encode/django-rest-framework/issues/6980">#6980</a></li>
+<li>Fix for reversing Hyperlinked URL fields with percent encoded components in the path. <a href="https://github.com/encode/django-rest-framework/issues/7059">#7059</a></li>
+<li>Update bootstrap to 3.4.1. <a href="https://github.com/encode/django-rest-framework/issues/6923">#6923</a></li>
+</ul>
 <h2 id="310x-series"><a class="toclink" href="#310x-series">3.10.x series</a></h2>
 <h3 id="3103"><a class="toclink" href="#3103">3.10.3</a></h3>
+<p><strong>Date</strong>: 4th September 2019</p>
 <ul>
 <li>Include API version in OpenAPI schema generation, defaulting to empty string.</li>
 <li>Add pagination properties to OpenAPI response schemas.</li>
@@ -520,12 +543,7 @@
 <li>Use consistent <code>lowerInitialCamelCase</code> style in OpenAPI operation IDs.</li>
 <li>Fix <code>minLength</code>/<code>maxLength</code>/<code>minItems</code>/<code>maxItems</code> properties in OpenAPI schemas.</li>
 <li>Only call <code>FileField.url</code> once in serialization, for improved performance.</li>
-<li>
-<p>Fix an edge case where throttling calcualtions could error after a configuration change.</p>
-</li>
-<li>
-<p>TODO</p>
-</li>
+<li>Fix an edge case where throttling calculations could error after a configuration change.</li>
 </ul>
 <h3 id="3102"><a class="toclink" href="#3102">3.10.2</a></h3>
 <p><strong>Date</strong>: 29th July 2019</p>
@@ -1645,6 +1663,8 @@ Previously may have been stored internally as <code>None</code>.</p>
 <!-- 3.9.3 -->
 
 <!-- 3.10.0 -->
+
+<!-- 3.11.0 -->
             
 
           </div> <!--/span-->
