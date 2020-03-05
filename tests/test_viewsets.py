@@ -146,6 +146,15 @@ class InitializeViewSetsTestCase(TestCase):
             self.assertIn(attribute, dir(view))
 
 
+class ThingWithMapping:
+    def __init__(self):
+        self.mapping = {}
+
+
+class ActionViewSetWithMapping(ActionViewSet):
+    mapper = ThingWithMapping()
+
+
 class GetExtraActionsTests(TestCase):
 
     def test_extra_actions(self):
@@ -159,6 +168,18 @@ class GetExtraActionsTests(TestCase):
             'unresolvable_detail_action',
         ]
 
+        self.assertEqual(actual, expected)
+
+    def test_should_only_return_decorated_methods(self):
+        view = ActionViewSetWithMapping()
+        actual = [action.__name__ for action in view.get_extra_actions()]
+        expected = [
+            'custom_detail_action',
+            'custom_list_action',
+            'detail_action',
+            'list_action',
+            'unresolvable_detail_action',
+        ]
         self.assertEqual(actual, expected)
 
 
