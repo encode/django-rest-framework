@@ -451,5 +451,5 @@ class CustomView(APIView):
 [openapi-reference]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#referenceObject
 [openapi-generator]: https://github.com/OpenAPITools/openapi-generator
 [swagger-codegen]: https://github.com/swagger-api/swagger-codegen
-[nested-serializer]: https://www.django-rest-framework.org/api-guide/serializers/#dealing-with-nested-objects
-[serializer-method-field]: https://www.django-rest-framework.org/api-guide/fields/#serializermethodfield
+[nested-serializer]: serializers.md#dealing-with-nested-objects
+[serializer-method-field]: fields.md#serializermethodfield
