@@ -90,7 +90,6 @@ class ActionViewSetWithMapping(ActionViewSet):
     mapper = ThingWithMapping()
 
 
-
 router = SimpleRouter()
 router.register(r'actions', ActionViewSet)
 router.register(r'actions-alt', ActionViewSet, basename='actions-alt')
@@ -155,6 +154,7 @@ class InitializeViewSetsTestCase(TestCase):
         for attribute in ('args', 'kwargs', 'request', 'action_map'):
             self.assertNotIn(attribute, dir(bare_view))
             self.assertIn(attribute, dir(view))
+
 
 class GetExtraActionsTests(TestCase):
 

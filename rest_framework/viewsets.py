@@ -25,11 +25,12 @@ from django.utils.decorators import classonlymethod
 from django.views.decorators.csrf import csrf_exempt
 
 from rest_framework import generics, mixins, views
+from rest_framework.decorators import MethodMapper
 from rest_framework.reverse import reverse
 
 
 def _is_extra_action(attr):
-    return hasattr(attr, 'mapping')
+    return hasattr(attr, 'mapping') and isinstance(attr.mapping, MethodMapper)
 
 
 class ViewSetMixin:
