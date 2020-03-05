@@ -113,7 +113,7 @@ class InitializeViewSetsTestCase(TestCase):
         assert response.status_code == status.HTTP_200_OK
         assert response.data == {'ACTION': 'LIST'}
 
-    def testhead_request_against_viewset(self):
+    def test_head_request_against_viewset(self):
         request = factory.head('/', '', content_type='application/json')
         my_view = BasicViewSet.as_view(actions={
             'get': 'list',
