@@ -81,10 +81,20 @@ class ActionNamesViewSet(GenericViewSet):
         raise NotImplementedError
 
 
+class ThingWithMapping:
+    def __init__(self):
+        self.mapping = {}
+
+
+class ActionViewSetWithMapping(ActionViewSet):
+    mapper = ThingWithMapping()
+
+
 router = SimpleRouter()
 router.register(r'actions', ActionViewSet)
 router.register(r'actions-alt', ActionViewSet, basename='actions-alt')
 router.register(r'names', ActionNamesViewSet, basename='names')
+router.register(r'mapping', ActionViewSetWithMapping, basename='mapping')
 
 
 urlpatterns = [
@@ -159,6 +169,18 @@ class GetExtraActionsTests(TestCase):
             'unresolvable_detail_action',
         ]
 
+        self.assertEqual(actual, expected)
+
+    def test_should_only_return_decorated_methods(self):
+        view = ActionViewSetWithMapping()
+        actual = [action.__name__ for action in view.get_extra_actions()]
+        expected = [
+            'custom_detail_action',
+            'custom_list_action',
+            'detail_action',
+            'list_action',
+            'unresolvable_detail_action',
+        ]
         self.assertEqual(actual, expected)
 
 
