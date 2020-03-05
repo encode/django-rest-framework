@@ -81,10 +81,21 @@ class ActionNamesViewSet(GenericViewSet):
         raise NotImplementedError
 
 
+class ThingWithMapping:
+    def __init__(self):
+        self.mapping = {}
+
+
+class ActionViewSetWithMapping(ActionViewSet):
+    mapper = ThingWithMapping()
+
+
+
 router = SimpleRouter()
 router.register(r'actions', ActionViewSet)
 router.register(r'actions-alt', ActionViewSet, basename='actions-alt')
 router.register(r'names', ActionNamesViewSet, basename='names')
+router.register(r'mapping', ActionViewSetWithMapping, basename='mapping')
 
 
 urlpatterns = [
@@ -144,16 +155,6 @@ class InitializeViewSetsTestCase(TestCase):
         for attribute in ('args', 'kwargs', 'request', 'action_map'):
             self.assertNotIn(attribute, dir(bare_view))
             self.assertIn(attribute, dir(view))
-
-
-class ThingWithMapping:
-    def __init__(self):
-        self.mapping = {}
-
-
-class ActionViewSetWithMapping(ActionViewSet):
-    mapper = ThingWithMapping()
-
 
 class GetExtraActionsTests(TestCase):
 
