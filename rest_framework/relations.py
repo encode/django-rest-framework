@@ -250,6 +250,10 @@ class PrimaryKeyRelatedField(RelatedField):
         return True
 
     def to_internal_value(self, data):
+
+        if isinstance(data, self.get_queryset().model):
+            return data
+
         if self.pk_field is not None:
             data = self.pk_field.to_internal_value(data)
         try:
@@ -331,6 +335,10 @@ class HyperlinkedRelatedField(RelatedField):
         return self.reverse(view_name, kwargs=kwargs, request=request, format=format)
 
     def to_internal_value(self, data):
+
+        if isinstance(data, self.get_queryset().model):
+            return data
+
         request = self.context.get('request', None)
         try:
             http_prefix = data.startswith(('http:', 'https:'))
