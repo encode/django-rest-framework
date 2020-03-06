@@ -27,7 +27,7 @@ Read-only fields are included in the API output, but should not be included in t
 
 Set this to `True` to ensure that the field is used when serializing a representation, but is not used when creating or updating an instance during deserialization.
 
-Defaults to `False`
+Defaults to `False`. If you're using [Model Serializer](https://www.django-rest-framework.org/api-guide/serializers/#modelserializer) default value will be `False` if you have specified `blank=True` at this field.
 
 ### `write_only`
 
