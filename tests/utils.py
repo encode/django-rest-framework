@@ -17,6 +17,8 @@ class MockObject:
 
 
 class MockQueryset:
+    model = MockObject
+
     def __init__(self, iterable):
         self.items = iterable
 

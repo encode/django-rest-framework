@@ -116,6 +116,10 @@ class TestPrimaryKeyRelatedField(APISimpleTestCase):
         instance = field.to_internal_value(self.instance.pk)
         assert instance is self.instance
 
+    def test_pk_related_object_given(self):
+        instance = self.field.to_internal_value(self.instance)
+        assert instance is self.queryset.items[2]
+
 
 class TestProxiedPrimaryKeyRelatedField(APISimpleTestCase):
     def setUp(self):
@@ -216,6 +220,11 @@ class TestHyperlinkedRelatedField(APISimpleTestCase):
 
     def hyperlinked_related_queryset_error(self, exc_type):
         class QuerySet:
+            class FakeObject:
+                pass
+
+            model = FakeObject
+
             def get(self, *args, **kwargs):
                 raise exc_type
 
@@ -234,6 +243,10 @@ class TestHyperlinkedRelatedField(APISimpleTestCase):
 
     def test_hyperlinked_related_queryset_value_error(self):
         self.hyperlinked_related_queryset_error(ValueError)
+
+    def test_hyperlinked_related_object_given(self):
+        instance = self.field.to_internal_value(self.queryset.items[2])
+        assert instance is self.queryset.items[2]
 
 
 class TestHyperlinkedIdentityField(APISimpleTestCase):
