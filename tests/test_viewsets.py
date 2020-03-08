@@ -37,14 +37,18 @@ class ActionViewSet(GenericViewSet):
     queryset = Action.objects.all()
 
     def list(self, request, *args, **kwargs):
-        return Response()
+        response = Response()
+        response.view = self
+        return response
 
     def retrieve(self, request, *args, **kwargs):
         return Response()
 
     @action(detail=False)
     def list_action(self, request, *args, **kwargs):
-        raise NotImplementedError
+        response = Response()
+        response.view = self
+        return response
 
     @action(detail=False, url_name='list-custom')
     def custom_list_action(self, request, *args, **kwargs):
@@ -154,6 +158,22 @@ class InitializeViewSetsTestCase(TestCase):
         for attribute in ('args', 'kwargs', 'request', 'action_map'):
             self.assertNotIn(attribute, dir(bare_view))
             self.assertIn(attribute, dir(view))
+
+    def test_viewset_action_attr(self):
+        view = ActionViewSet.as_view(actions={'get': 'list'})
+
+        get = view(factory.get('/'))
+        head = view(factory.head('/'))
+        assert get.view.action == 'list'
+        assert head.view.action == 'list'
+
+    def test_viewset_action_attr_for_extra_action(self):
+        view = ActionViewSet.as_view(actions=dict(ActionViewSet.list_action.mapping))
+
+        get = view(factory.get('/'))
+        head = view(factory.head('/'))
+        assert get.view.action == 'list_action'
+        assert head.view.action == 'list_action'
 
 
 class GetExtraActionsTests(TestCase):
