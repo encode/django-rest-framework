@@ -290,12 +290,24 @@ class AutoSchema(ViewInspector):
 
         return parameters
 
+    def _get_manual_query_parameters(self, path, method):
+        # TODO: parse method docstring / typing / something else?
+        return []
+
     def _get_filter_parameters(self, path, method):
+        """
+        Return a list of parameters from filter_backends if defined, or from manual implementation.
+        """
         if not self._allows_filters(path, method):
             return []
+
         parameters = []
-        for filter_backend in self.view.filter_backends:
-            parameters += filter_backend().get_schema_operation_parameters(self.view)
+        if self.view.filter_backends:
+            for filter_backend in self.view.filter_backends:
+                parameters += filter_backend().get_schema_operation_parameters(self.view)
+        else:
+            parameters += self._get_manual_query_parameters(path, method)
+
         return parameters
 
     def _allows_filters(self, path, method):
