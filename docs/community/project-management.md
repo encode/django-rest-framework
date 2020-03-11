@@ -112,6 +112,9 @@ The following template should be used for the description of the issue, and serv
         - [ ] `docs` Python & Django versions
     - [ ] Update the translations from [transifex](https://www.django-rest-framework.org/topics/project-management/#translations).
     - [ ] Ensure the pull request increments the version to `*.*.*` in [`restframework/__init__.py`](https://github.com/encode/django-rest-framework/blob/master/rest_framework/__init__.py).
+    - [ ] Ensure documentation validates
+        - Build and serve docs `mkdocs serve`
+        - Validate links `pylinkvalidate.py -P http://127.0.0.1:8000`
     - [ ] Confirm with @tomchristie that release is finalized and ready to go.
     - [ ] Ensure that release date is included in pull request.
     - [ ] Merge the release pull request.
