@@ -1087,3 +1087,15 @@ class TestGenerator(TestCase):
         assert 'components' in schema
         assert 'schemas' in schema['components']
         assert 'Duplicate' in schema['components']['schemas']
+
+    def test_component_should_not_be_generated_for_delete_method(self):
+        class ExampleView(generics.DestroyAPIView):
+            schema = AutoSchema(operation_id_base='example')
+
+        url_patterns = [
+            url(r'^example/?$', ExampleView.as_view()),
+        ]
+        generator = SchemaGenerator(patterns=url_patterns)
+        schema = generator.get_schema(request=create_request('/'))
+        assert 'components' not in schema
+        assert 'content' not in schema['paths']['/example/']['delete']['responses']['204']

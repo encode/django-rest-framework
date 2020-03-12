@@ -185,6 +185,10 @@ class AutoSchema(ViewInspector):
         """
         Return components with their properties from the serializer.
         """
+
+        if method.lower() == 'delete':
+            return {}
+
         serializer = self._get_serializer(path, method)
 
         if not isinstance(serializer, serializers.Serializer):
