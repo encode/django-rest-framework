@@ -238,10 +238,12 @@ Serializer classes can also include reusable validators that are applied to the 
 
         class Meta:
             # Each room only has one event per day.
-            validators = UniqueTogetherValidator(
-                queryset=Event.objects.all(),
-                fields=['room_number', 'date']
-            )
+            validators = [
+                UniqueTogetherValidator(
+                    queryset=Event.objects.all(),
+                    fields=['room_number', 'date']
+                )
+            ]
 
 For more information see the [validators documentation](validators.md).
 
