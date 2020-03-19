@@ -148,7 +148,7 @@ Don't forget to make sure you've also added `rest_framework` to your `INSTALLED_
 We're ready to create our API now.
 Here's our project's root `urls.py` module:
 
-    from django.conf.urls import url, include
+    from django.urls import path, include
     from django.contrib.auth.models import User
     from rest_framework import routers, serializers, viewsets
 
@@ -170,8 +170,8 @@ Here's our project's root `urls.py` module:
     # Wire up our API using automatic URL routing.
     # Additionally, we include login URLs for the browsable API.
     urlpatterns = [
-        url(r'^', include(router.urls)),
-        url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+        path('', include(router.urls)),
+        path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
     ]
 
 You can now open the API in your browser at [http://127.0.0.1:8000/](http://127.0.0.1:8000/), and view your new 'users' API. If you use the login control in the top right corner you'll also be able to add, create and delete users from the system.
