@@ -272,6 +272,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [djangorestframework-mvt][djangorestframework-mvt] - An extension for creating views that serve Postgres data as Map Box Vector Tiles.
 * [drf-viewset-profiler][drf-viewset-profiler] - Lib to profile all methods from a viewset line by line.
 * [djangorestframework-features][djangorestframework-features] - Advanced schema generation and more based on named features.
+* [django-elasticsearch-dsl-drf][django-elasticsearch-dsl-drf] - Integrate Elasticsearch DSL with Django REST framework. Package provides views, serializers, filter backends, pagination and other handy add-ons.
 
 [cite]: http://www.software-ecosystems.com/Software_Ecosystems/Ecosystems.html
 [cookiecutter]: https://github.com/jpadilla/cookiecutter-django-rest-framework
@@ -354,3 +355,4 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [django-rest-framework-guardian]: https://github.com/rpkilby/django-rest-framework-guardian
 [drf-viewset-profiler]: https://github.com/fvlima/drf-viewset-profiler
 [djangorestframework-features]: https://github.com/cloudcode-hungary/django-rest-framework-features/
+[django-elasticsearch-dsl-drf]: https://github.com/barseghyanartur/django-elasticsearch-dsl-drf
