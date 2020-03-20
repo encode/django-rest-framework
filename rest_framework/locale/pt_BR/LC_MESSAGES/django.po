@@ -255,7 +255,7 @@ msgstr "Formato inválido para Duração. Use um dos formatos a seguir: {format}
 
 #: fields.py:1251 fields.py:1300
 msgid "\"{input}\" is not a valid choice."
-msgstr "\"{input}\" não é um escolha válida."
+msgstr "\"{input}\" não é uma escolha válida."
 
 #: fields.py:1254 relations.py:71 relations.py:441
 msgid "More than {count} items..."
