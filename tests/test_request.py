@@ -272,6 +272,12 @@ class TestSecure(TestCase):
 
 
 class TestHttpRequest(TestCase):
+    def test_repr(self):
+        http_request = factory.get('/path')
+        request = Request(http_request)
+
+        assert repr(request) == "<rest_framework.request.Request: GET '/path'>"
+
     def test_attribute_access_proxy(self):
         http_request = factory.get('/')
         request = Request(http_request)
