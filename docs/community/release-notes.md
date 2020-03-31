@@ -174,7 +174,7 @@ Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.
 * Add testing of Python 3.7 support [#6141][gh6141]
 * Test using Django 2.1 final release. [#6109][gh6109]
 * Added djangorestframework-datatables to third-party packages [#5931][gh5931]
-* Change ISO 8601 date format to exclude year/month [#5936][gh5936]
+* Change ISO 8601 date format to exclude year/month-only options [#5936][gh5936]
 * Update all pypi.python.org URLs to pypi.org [#5942][gh5942]
 * Ensure that html forms (multipart form data) respect optional fields [#5927][gh5927]
 * Allow hashing of ErrorDetail. [#5932][gh5932]
