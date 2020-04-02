@@ -151,6 +151,7 @@ class TestURLReversing(URLPatternsTestCase, APITestCase):
     urlpatterns = [
         url(r'^v1/', include((included, 'v1'), namespace='v1')),
         url(r'^another/$', dummy_view, name='another'),
+        url(r'^(?P<foo>.+)/unversioned/$', dummy_view, name='unversioned'),
         url(r'^(?P<version>[v1|v2]+)/another/$', dummy_view, name='another'),
     ]
 
@@ -197,6 +198,14 @@ class TestURLReversing(URLPatternsTestCase, APITestCase):
         request = factory.get('/endpoint/')
         response = view(request)
         assert response.data == {'url': 'http://testserver/another/'}
+
+        # Test fallback when kwargs is not None
+        request = factory.get('/v1/endpoint/')
+        request.versioning_scheme = scheme()
+        request.version = 'v1'
+
+        reversed_url = reverse('unversioned', request=request, kwargs={'foo': 'bar'})
+        assert reversed_url == 'http://testserver/bar/unversioned/'
 
     def test_reverse_namespace_versioning(self):
         class FakeResolverMatch:
