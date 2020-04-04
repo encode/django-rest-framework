@@ -830,13 +830,9 @@ class TestOperationIntrospection(TestCase):
         assert properties['regex']['pattern'] == r'[ABC]12{3}'
         assert properties['regex']['description'] == 'must have an A, B, or C followed by 1222'
 
-        assert properties['decimal1']['type'] == 'number'
-        assert properties['decimal1']['multipleOf'] == .01
-        assert properties['decimal1']['maximum'] == 10000
-        assert properties['decimal1']['minimum'] == -10000
+        assert properties['decimal1'] == {'type': 'string', 'format': 'decimal'}
 
-        assert properties['decimal2']['type'] == 'number'
-        assert properties['decimal2']['multipleOf'] == .0001
+        assert properties['decimal2'] == {'type': 'string', 'format': 'decimal'}
 
         assert properties['email']['type'] == 'string'
         assert properties['email']['format'] == 'email'
