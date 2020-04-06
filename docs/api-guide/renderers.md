@@ -273,7 +273,7 @@ By default this will include the following keys: `view`, `request`, `response`, 
 
 The following is an example plaintext renderer that will return a response with the `data` parameter as the content of the response.
 
-    from django.utils.encoding import smart_unicode
+    from django.utils.encoding import smart_text
     from rest_framework import renderers
 
 
@@ -282,7 +282,7 @@ The following is an example plaintext renderer that will return a response with 
         format = 'txt'
 
         def render(self, data, media_type=None, renderer_context=None):
-            return data.encode(self.charset)
+            return smart_text(data, encoding=self.charset)
 
 ## Setting the character set
 
