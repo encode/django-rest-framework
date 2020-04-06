@@ -14,7 +14,7 @@ class CreateModelMixin:
     Create a model instance.
     """
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        serializer = self.get_serializer(data=self.get_create_data(request))
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
@@ -22,6 +22,9 @@ class CreateModelMixin:
 
     def perform_create(self, serializer):
         serializer.save()
+
+    def get_create_data(self, request):
+        return request.data
 
     def get_success_headers(self, data):
         try:
