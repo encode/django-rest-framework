@@ -444,7 +444,7 @@ class AutoSchema(ViewInspector):
             return content
 
         if isinstance(field, serializers.DecimalField):
-            if field.coerce_to_string:
+            if getattr(field, 'coerce_to_string', api_settings.COERCE_DECIMAL_TO_STRING):
                 return {
                     'type': 'string',
                     'format': 'decimal',
