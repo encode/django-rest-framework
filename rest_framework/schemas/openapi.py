@@ -337,10 +337,10 @@ class AutoSchema(ViewInspector):
         elif all(isinstance(choice, int) for choice in choices):
             mapping['type'] = 'integer'
         elif all(isinstance(choice, Decimal) for choice in choices):
+            mapping['format'] = 'decimal'
             if api_settings.COERCE_DECIMAL_TO_STRING:
                 mapping['enum'] = [str(choice) for choice in mapping['enum']]
                 mapping['type'] = 'string'
-                mapping['format'] = 'decimal'
             else:
                 mapping['type'] = 'number'
         elif all(isinstance(choice, (int, float, Decimal)) for choice in choices):  # `number` includes `integer`
