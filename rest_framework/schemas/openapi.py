@@ -445,7 +445,7 @@ class AutoSchema(ViewInspector):
 
         if isinstance(field, serializers.DecimalField):
             if getattr(field, 'coerce_to_string', api_settings.COERCE_DECIMAL_TO_STRING):
-                return {
+                content = {
                     'type': 'string',
                     'format': 'decimal',
                 }
@@ -453,13 +453,14 @@ class AutoSchema(ViewInspector):
                 content = {
                     'type': 'number'
                 }
-                if field.decimal_places:
-                    content['multipleOf'] = float('.' + (field.decimal_places - 1) * '0' + '1')
-                if field.max_whole_digits:
-                    content['maximum'] = int(field.max_whole_digits * '9') + 1
-                    content['minimum'] = -content['maximum']
-                self._map_min_max(field, content)
-                return content
+
+            if field.decimal_places:
+                content['multipleOf'] = float('.' + (field.decimal_places - 1) * '0' + '1')
+            if field.max_whole_digits:
+                content['maximum'] = int(field.max_whole_digits * '9') + 1
+                content['minimum'] = -content['maximum']
+            self._map_min_max(field, content)
+            return content
 
         if isinstance(field, serializers.FloatField):
             content = {

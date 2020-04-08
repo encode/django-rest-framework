@@ -125,6 +125,7 @@ class ExampleValidatedSerializer(serializers.Serializer):
     decimal3 = serializers.DecimalField(max_digits=8, decimal_places=2, coerce_to_string=True)
     decimal4 = serializers.DecimalField(max_digits=8, decimal_places=2, coerce_to_string=True,
                                         validators=(DecimalValidator(max_digits=17, decimal_places=4),))
+    decimal5 = serializers.DecimalField(max_digits=6, decimal_places=2)
     email = serializers.EmailField(default='foo@bar.com')
     url = serializers.URLField(default='http://www.example.com', allow_null=True)
     uuid = serializers.UUIDField()
