@@ -1,6 +1,5 @@
 import uuid
 import warnings
-from decimal import Decimal
 
 import pytest
 from django.conf.urls import url
@@ -79,24 +78,12 @@ class TestFieldMapping(TestCase):
                 (1, 'One'), (2, 'Two'), (3, 'Three'), (2, 'Two'), (3, 'Three'), (1, 'One'),
             ])),
                 {'items': {'enum': [1, 2, 3], 'type': 'integer'}, 'type': 'array'}),
-            (serializers.ListField(child=
-                                   serializers.ChoiceField(choices=[(Decimal('1.111'), 'one'), (Decimal('2.222'), 'two')])),
-             {'items': {'enum': ['1.111', '2.222'], 'type': 'string', 'format': 'decimal'}, 'type': 'array'}),
             (serializers.IntegerField(min_value=2147483648),
              {'type': 'integer', 'minimum': 2147483648, 'format': 'int64'}),
         ]
         for field, mapping in cases:
             with self.subTest(field=field):
                 assert inspector._map_field(field) == mapping
-
-    @override_settings(REST_FRAMEWORK={'COERCE_DECIMAL_TO_STRING': False})
-    def test_decimal_schema_for_choice_field(self):
-        inspector = AutoSchema()
-        field = serializers.ListField(
-            child=serializers.ChoiceField(choices=[(Decimal('1.111'), 'one'), (Decimal('2.222'), 'two')]))
-        mapping = {'items': {'enum': [Decimal('1.111'), Decimal('2.222')], 'type': 'number'}, 'type': 'array'}
-        assert inspector._map_field(field) == mapping
-
 
     def test_lazy_string_field(self):
         class ItemSerializer(serializers.Serializer):
