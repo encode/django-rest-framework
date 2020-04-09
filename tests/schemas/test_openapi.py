@@ -94,9 +94,9 @@ class TestFieldMapping(TestCase):
         inspector = AutoSchema()
         field = serializers.ListField(
             child=serializers.ChoiceField(choices=[(Decimal('1.111'), 'one'), (Decimal('2.222'), 'two')]))
-        mapping = {'items': {'enum': [Decimal('1.111'), Decimal('2.222')], 'type': 'number'}, 'type': 'array'}
+        mapping = {'type': 'array', 'items': {
+            'enum': [Decimal('1.111'), Decimal('2.222')], 'type': 'number', 'format': 'decimal'}}
         assert inspector._map_field(field) == mapping
-
 
     def test_lazy_string_field(self):
         class ItemSerializer(serializers.Serializer):
