@@ -838,6 +838,16 @@ class TestOperationIntrospection(TestCase):
         assert properties['decimal2']['type'] == 'number'
         assert properties['decimal2']['multipleOf'] == .0001
 
+        assert properties['decimal3'] == {
+            'type': 'string', 'format': 'decimal', 'maximum': 1000000, 'minimum': -1000000, 'multipleOf': 0.01
+        }
+        assert properties['decimal4'] == {
+            'type': 'string', 'format': 'decimal', 'maximum': 1000000, 'minimum': -1000000, 'multipleOf': 0.01
+        }
+        assert properties['decimal5'] == {
+            'type': 'string', 'format': 'decimal', 'maximum': 10000, 'minimum': -10000, 'multipleOf': 0.01
+        }
+
         assert properties['email']['type'] == 'string'
         assert properties['email']['format'] == 'email'
         assert properties['email']['default'] == 'foo@bar.com'

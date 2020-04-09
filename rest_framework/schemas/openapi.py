@@ -15,6 +15,7 @@ from django.utils.encoding import force_str
 from rest_framework import exceptions, renderers, serializers
 from rest_framework.compat import uritemplate
 from rest_framework.fields import _UnvalidatedField, empty
+from rest_framework.settings import api_settings
 
 from .generators import BaseSchemaGenerator
 from .inspectors import ViewInspector
@@ -446,11 +447,17 @@ class AutoSchema(ViewInspector):
                 content['format'] = field.protocol
             return content
 
-        # DecimalField has multipleOf based on decimal_places
         if isinstance(field, serializers.DecimalField):
-            content = {
-                'type': 'number'
-            }
+            if getattr(field, 'coerce_to_string', api_settings.COERCE_DECIMAL_TO_STRING):
+                content = {
+                    'type': 'string',
+                    'format': 'decimal',
+                }
+            else:
+                content = {
+                    'type': 'number'
+                }
+
             if field.decimal_places:
                 content['multipleOf'] = float('.' + (field.decimal_places - 1) * '0' + '1')
             if field.max_whole_digits:
@@ -461,7 +468,7 @@ class AutoSchema(ViewInspector):
 
         if isinstance(field, serializers.FloatField):
             content = {
-                'type': 'number'
+                'type': 'number',
             }
             self._map_min_max(field, content)
             return content
@@ -560,7 +567,8 @@ class AutoSchema(ViewInspector):
                 schema['maximum'] = v.limit_value
             elif isinstance(v, MinValueValidator):
                 schema['minimum'] = v.limit_value
-            elif isinstance(v, DecimalValidator):
+            elif isinstance(v, DecimalValidator) and \
+                    not getattr(field, 'coerce_to_string', api_settings.COERCE_DECIMAL_TO_STRING):
                 if v.decimal_places:
                     schema['multipleOf'] = float('.' + (v.decimal_places - 1) * '0' + '1')
                 if v.max_digits:
