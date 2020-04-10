@@ -317,5 +317,5 @@ To create a base viewset class that provides `create`, `list` and `retrieve` ope
 
 By creating your own base `ViewSet` classes, you can provide common behavior that can be reused in multiple viewsets across your API.
 
-[cite]: https://guides.rubyonrails.org/routing.html
+[cite]: https://guides.rubyonrails.org/action_controller_overview.html
 [routers]: routers.md
