@@ -87,7 +87,7 @@ class TestFieldMapping(TestCase):
         ]
         for field, mapping in cases:
             with self.subTest(field=field):
-                assert inspector._map_field(field) == mapping
+                assert inspector.map_field(field) == mapping
 
     @override_settings(REST_FRAMEWORK={'COERCE_DECIMAL_TO_STRING': False})
     def test_decimal_schema_for_choice_field(self):
@@ -104,7 +104,7 @@ class TestFieldMapping(TestCase):
 
         inspector = AutoSchema()
 
-        data = inspector._map_serializer(ItemSerializer())
+        data = inspector.map_serializer(ItemSerializer())
         assert isinstance(data['properties']['text']['description'], str), "description must be str"
 
     def test_boolean_default_field(self):
@@ -115,7 +115,7 @@ class TestFieldMapping(TestCase):
 
         inspector = AutoSchema()
 
-        data = inspector._map_serializer(Serializer())
+        data = inspector.map_serializer(Serializer())
         assert data['properties']['default_true']['default'] is True, "default must be true"
         assert data['properties']['default_false']['default'] is False, "default must be false"
         assert 'default' not in data['properties']['without_default'], "default must not be defined"
@@ -215,7 +215,7 @@ class TestOperationIntrospection(TestCase):
         inspector = AutoSchema()
         inspector.view = view
 
-        request_body = inspector._get_request_body(path, method)
+        request_body = inspector.get_request_body(path, method)
         print(request_body)
         assert request_body['content']['application/json']['schema']['$ref'] == '#/components/schemas/Item'
 
@@ -242,7 +242,7 @@ class TestOperationIntrospection(TestCase):
         inspector = AutoSchema()
         inspector.view = view
 
-        serializer = inspector._get_serializer(path, method)
+        serializer = inspector.get_serializer(path, method)
 
         with pytest.raises(Exception) as exc:
             inspector.get_component_name(serializer)
@@ -272,7 +272,7 @@ class TestOperationIntrospection(TestCase):
         # there should be no empty 'required' property, see #6834
         assert 'required' not in component
 
-        for response in inspector._get_responses(path, method).values():
+        for response in inspector.get_responses(path, method).values():
             assert 'required' not in component
 
     def test_empty_required_with_patch_method(self):
@@ -298,7 +298,7 @@ class TestOperationIntrospection(TestCase):
         component = components['Item']
         # there should be no empty 'required' property, see #6834
         assert 'required' not in component
-        for response in inspector._get_responses(path, method).values():
+        for response in inspector.get_responses(path, method).values():
             assert 'required' not in component
 
     def test_response_body_generation(self):
@@ -320,7 +320,7 @@ class TestOperationIntrospection(TestCase):
         inspector = AutoSchema()
         inspector.view = view
 
-        responses = inspector._get_responses(path, method)
+        responses = inspector.get_responses(path, method)
         assert responses['201']['content']['application/json']['schema']['$ref'] == '#/components/schemas/Item'
 
         components = inspector.get_components(path, method)
@@ -350,7 +350,7 @@ class TestOperationIntrospection(TestCase):
         inspector = AutoSchema()
         inspector.view = view
 
-        responses = inspector._get_responses(path, method)
+        responses = inspector.get_responses(path, method)
         assert responses['201']['content']['application/json']['schema']['$ref'] == '#/components/schemas/Item'
         components = inspector.get_components(path, method)
         assert components['Item']
@@ -381,7 +381,7 @@ class TestOperationIntrospection(TestCase):
         inspector = AutoSchema()
         inspector.view = view
 
-        responses = inspector._get_responses(path, method)
+        responses = inspector.get_responses(path, method)
         assert responses == {
             '200': {
                 'description': '',
@@ -437,7 +437,7 @@ class TestOperationIntrospection(TestCase):
         inspector = AutoSchema()
         inspector.view = view
 
-        responses = inspector._get_responses(path, method)
+        responses = inspector.get_responses(path, method)
         assert responses == {
             '200': {
                 'description': '',
@@ -485,7 +485,7 @@ class TestOperationIntrospection(TestCase):
         inspector = AutoSchema()
         inspector.view = view
 
-        responses = inspector._get_responses(path, method)
+        responses = inspector.get_responses(path, method)
         assert responses == {
             '204': {
                 'description': '',
@@ -509,7 +509,7 @@ class TestOperationIntrospection(TestCase):
         inspector = AutoSchema()
         inspector.view = view
 
-        request_body = inspector._get_request_body(path, method)
+        request_body = inspector.get_request_body(path, method)
 
         assert len(request_body['content'].keys()) == 2
         assert 'multipart/form-data' in request_body['content']
@@ -532,7 +532,7 @@ class TestOperationIntrospection(TestCase):
         inspector = AutoSchema()
         inspector.view = view
 
-        responses = inspector._get_responses(path, method)
+        responses = inspector.get_responses(path, method)
         # TODO this should be changed once the multiple response
         # schema support is there
         success_response = responses['200']
@@ -607,7 +607,7 @@ class TestOperationIntrospection(TestCase):
         inspector = AutoSchema()
         inspector.view = view
 
-        responses = inspector._get_responses(path, method)
+        responses = inspector.get_responses(path, method)
         assert responses == {
             '200': {
                 'description': '',
@@ -850,6 +850,16 @@ class TestOperationIntrospection(TestCase):
 
         assert properties['decimal2']['type'] == 'number'
         assert properties['decimal2']['multipleOf'] == .0001
+
+        assert properties['decimal3'] == {
+            'type': 'string', 'format': 'decimal', 'maximum': 1000000, 'minimum': -1000000, 'multipleOf': 0.01
+        }
+        assert properties['decimal4'] == {
+            'type': 'string', 'format': 'decimal', 'maximum': 1000000, 'minimum': -1000000, 'multipleOf': 0.01
+        }
+        assert properties['decimal5'] == {
+            'type': 'string', 'format': 'decimal', 'maximum': 10000, 'minimum': -10000, 'multipleOf': 0.01
+        }
 
         assert properties['email']['type'] == 'string'
         assert properties['email']['format'] == 'email'
@@ -1100,3 +1110,15 @@ class TestGenerator(TestCase):
         assert 'components' in schema
         assert 'schemas' in schema['components']
         assert 'Duplicate' in schema['components']['schemas']
+
+    def test_component_should_not_be_generated_for_delete_method(self):
+        class ExampleView(generics.DestroyAPIView):
+            schema = AutoSchema(operation_id_base='example')
+
+        url_patterns = [
+            url(r'^example/?$', ExampleView.as_view()),
+        ]
+        generator = SchemaGenerator(patterns=url_patterns)
+        schema = generator.get_schema(request=create_request('/'))
+        assert 'components' not in schema
+        assert 'content' not in schema['paths']['/example/']['delete']['responses']['204']
