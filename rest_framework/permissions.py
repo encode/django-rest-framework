@@ -119,6 +119,7 @@ class OR:
 class NOT:
     def __init__(self, op1):
         self.op1 = op1
+        self.message = getattr(self.op1, 'message_inverted', None)
 
     def has_permission(self, request, view):
         return not self.op1.has_permission(request, view)
