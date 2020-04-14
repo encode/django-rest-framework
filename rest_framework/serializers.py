@@ -539,14 +539,6 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
             return JSONBoundField(field, value, error)
         return BoundField(field, value, error)
 
-    # Include a backlink to the serializer class on return objects.
-    # Allows renderers such as HTMLFormRenderer to get the full field info.
-
-    @property
-    def data(self):
-        ret = super().data
-        return ReturnDict(ret, serializer=self)
-
     @property
     def errors(self):
         ret = super().errors
@@ -736,14 +728,6 @@ class ListSerializer(BaseSerializer):
 
     def __repr__(self):
         return representation.list_repr(self, indent=1)
-
-    # Include a backlink to the serializer class on return objects.
-    # Allows renderers such as HTMLFormRenderer to get the full field info.
-
-    @property
-    def data(self):
-        ret = super().data
-        return ReturnList(ret, serializer=self)
 
     @property
     def errors(self):

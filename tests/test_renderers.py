@@ -499,17 +499,15 @@ class TestHTMLFormRenderer(TestCase):
 
     def test_render_with_default_args(self):
         self.serializer.is_valid()
-        renderer = HTMLFormRenderer()
 
-        result = renderer.render(self.serializer.data)
+        result = self.renderer.render(self.serializer.data, renderer_context={'serializer': self.serializer})
 
         self.assertIsInstance(result, SafeText)
 
     def test_render_with_provided_args(self):
         self.serializer.is_valid()
-        renderer = HTMLFormRenderer()
 
-        result = renderer.render(self.serializer.data, None, {})
+        result = self.renderer.render(self.serializer.data, None, {'serializer': self.serializer})
 
         self.assertIsInstance(result, SafeText)
 
@@ -531,7 +529,7 @@ class TestChoiceFieldHTMLFormRenderer(TestCase):
 
     def test_render_initial_option(self):
         serializer = self.TestSerializer()
-        result = self.renderer.render(serializer.data)
+        result = self.renderer.render(serializer.data, renderer_context={'serializer': serializer})
 
         self.assertIsInstance(result, SafeText)
 
@@ -544,7 +542,7 @@ class TestChoiceFieldHTMLFormRenderer(TestCase):
         serializer = self.TestSerializer(data={'test_field': '12'})
 
         serializer.is_valid()
-        result = self.renderer.render(serializer.data)
+        result = self.renderer.render(serializer.data, renderer_context={'serializer': serializer})
 
         self.assertIsInstance(result, SafeText)
 
@@ -572,7 +570,7 @@ class TestMultipleChoiceFieldHTMLFormRenderer(TestCase):
         serializer = TestSerializer(data={'test_field': ['12']})
         serializer.is_valid()
 
-        result = self.renderer.render(serializer.data)
+        result = self.renderer.render(serializer.data, renderer_context={'serializer': serializer})
 
         self.assertIsInstance(result, SafeText)
 
@@ -591,7 +589,7 @@ class TestMultipleChoiceFieldHTMLFormRenderer(TestCase):
         serializer = TestSerializer(data={'test_field': ['12']})
         serializer.is_valid()
 
-        result = self.renderer.render(serializer.data)
+        result = self.renderer.render(serializer.data, renderer_context={'serializer': serializer})
 
         self.assertIsInstance(result, SafeText)
 

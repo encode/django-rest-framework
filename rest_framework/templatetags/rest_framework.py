@@ -78,7 +78,7 @@ def get_pagination_html(pager):
 def render_form(serializer, template_pack=None):
     style = {'template_pack': template_pack} if template_pack else {}
     renderer = HTMLFormRenderer()
-    return renderer.render(serializer.data, None, {'style': style})
+    return renderer.render(serializer.data, None, {'style': style, 'serializer': serializer})
 
 
 @register.simple_tag

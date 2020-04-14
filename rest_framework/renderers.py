@@ -355,7 +355,7 @@ class HTMLFormRenderer(BaseRenderer):
         Render serializer data and return an HTML form, as a string.
         """
         renderer_context = renderer_context or {}
-        form = data.serializer
+        form = renderer_context.get('serializer')
 
         style = renderer_context.get('style', {})
         if 'template_pack' not in style:
@@ -518,7 +518,10 @@ class BrowsableAPIRenderer(BaseRenderer):
         return form_renderer.render(
             serializer.data,
             self.accepted_media_type,
-            {'style': {'template_pack': 'rest_framework/horizontal'}}
+            {
+                'style': {'template_pack': 'rest_framework/horizontal'},
+                'serializer': serializer
+            }
         )
 
     def get_raw_data_form(self, data, view, method, request):
