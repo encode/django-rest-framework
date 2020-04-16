@@ -281,10 +281,14 @@ class TestPageNumberPagination:
                 'next': {
                     'type': 'string',
                     'nullable': True,
+                    'format': 'uri',
+                    'example': 'http://api.example.org/accounts/?page=4',
                 },
                 'previous': {
                     'type': 'string',
                     'nullable': True,
+                    'format': 'uri',
+                    'example': 'http://api.example.org/accounts/?page=2',
                 },
                 'results': unpaginated_schema,
             },
@@ -588,10 +592,14 @@ class TestLimitOffset:
                 'next': {
                     'type': 'string',
                     'nullable': True,
+                    'format': 'uri',
+                    'example': 'http://api.example.org/accounts/?offset=400&limit=100',
                 },
                 'previous': {
                     'type': 'string',
                     'nullable': True,
+                    'format': 'uri',
+                    'example': 'http://api.example.org/accounts/?offset=200&limit=100',
                 },
                 'results': unpaginated_schema,
             },
