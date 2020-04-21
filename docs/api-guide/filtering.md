@@ -205,6 +205,10 @@ This will allow the client to filter the items in the list by making queries suc
 You can also perform a related lookup on a ForeignKey or ManyToManyField with the lookup API double-underscore notation:
 
     search_fields = ['username', 'email', 'profile__profession']
+    
+For [JSONField][JSONField] and [HStoreField][HStoreField] fields you can filter based on nested values within the data structure using the same double-underscore notation:
+
+    search_fields = ['data__breed', 'data__owner__other_pets__0__name']
 
 By default, searches will use case-insensitive partial matches.  The search parameter may contain multiple search terms, which should be whitespace and/or comma separated.  If multiple search terms are used then objects will be returned in the list only if all the provided terms are matched.
 
@@ -360,3 +364,5 @@ The [djangorestframework-word-filter][django-rest-framework-word-search-filter] 
 [django-rest-framework-word-search-filter]: https://github.com/trollknurr/django-rest-framework-word-search-filter
 [django-url-filter]: https://github.com/miki725/django-url-filter
 [drf-url-filter]: https://github.com/manjitkumar/drf-url-filters
+[HStoreField]: https://docs.djangoproject.com/en/3.0/ref/contrib/postgres/fields/#hstorefield
+[JSONField]: https://docs.djangoproject.com/en/3.0/ref/contrib/postgres/fields/#jsonfield
