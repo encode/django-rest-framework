@@ -28,7 +28,7 @@ from .inspectors import DefaultSchema  # noqa
 
 
 def get_schema_view(
-        title=None, url=None, description=None, urlconf=None, renderer_classes=None,
+        title=None, description=None, terms_of_service=None, url=None, urlconf=None, renderer_classes=None,
         public=False, patterns=None, generator_class=None,
         authentication_classes=api_settings.DEFAULT_AUTHENTICATION_CLASSES,
         permission_classes=api_settings.DEFAULT_PERMISSION_CLASSES,
@@ -43,7 +43,7 @@ def get_schema_view(
             generator_class = openapi.SchemaGenerator
 
     generator = generator_class(
-        title=title, url=url, description=description,
+        title=title, description=description, terms_of_service=terms_of_service, url=url,
         urlconf=urlconf, patterns=patterns, version=version
     )
 
