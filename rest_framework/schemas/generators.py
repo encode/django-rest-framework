@@ -151,17 +151,18 @@ class BaseSchemaGenerator(object):
     # Set by 'SCHEMA_COERCE_PATH_PK'.
     coerce_path_pk = None
 
-    def __init__(self, title=None, url=None, description=None, patterns=None, urlconf=None, version=None):
+    def __init__(self, title=None, description=None, terms_of_service=None, url=None, patterns=None, urlconf=None, version=None):
         if url and not url.endswith('/'):
             url += '/'
 
         self.coerce_path_pk = api_settings.SCHEMA_COERCE_PATH_PK
 
-        self.patterns = patterns
-        self.urlconf = urlconf
         self.title = title
         self.description = description
         self.version = version
+        self.terms_of_service = terms_of_service
+        self.patterns = patterns
+        self.urlconf = urlconf
         self.url = url
         self.endpoints = None
 
