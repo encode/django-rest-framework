@@ -27,14 +27,25 @@ from .utils import get_pk_description, is_list_view
 class SchemaGenerator(BaseSchemaGenerator):
 
     def get_info(self):
-        # Title and version are required by openapi specification 3.x
+        """
+        Generate a OpenAPI Info Object.
+
+        https://swagger.io/specification/#infoObject
+        """
+        if self.title is None:
+            raise AssertionError("title is required for Swagger Info Object")
+
+        if self.version is None:
+            raise AssertionError("version is required for Swagger Info Object")
+
         info = {
-            'title': self.title or '',
-            'version': self.version or ''
+            'title': self.title
         }
 
         if self.description is not None:
             info['description'] = self.description
+
+        info['version'] = self.version
 
         return info
 
