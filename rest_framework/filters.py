@@ -96,6 +96,9 @@ class SearchFilter(BaseFilterBackend):
                     if any(path.m2m for path in path_info):
                         # This field is a m2m relation so we know we need to call distinct
                         return True
+                else:
+                    # This field has a custom __ query transform but is not a relational field.
+                    break
         return False
 
     def filter_queryset(self, request, queryset, view):
