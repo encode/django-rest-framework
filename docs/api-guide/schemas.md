@@ -326,6 +326,7 @@ class MyView(APIView):
 Since DRF 3.12, Schema uses the [OpenAPI Components](openapi-components). This method defines components in the schema and [references them](openapi-reference) inside request and response objects. By default, the component's name is deduced from the Serializer's name.
 
 Using OpenAPI's components provides the following advantages:
+
 * The schema is more readable and lightweight.
 * If you use the schema to generate an SDK (using [openapi-generator](openapi-generator) or [swagger-codegen](swagger-codegen)). The generator can name your SDK's models.
 
@@ -347,6 +348,7 @@ Schema component "ComponentName" has been overriden with a different value.
 This warning occurs when different components have the same name in one schema. Your component name should be unique across your project. This is likely an error that may lead to an invalid schema.
 
 You have two ways to solve the previous issues:
+
 * You can rename your serializer with a unique name and another name than "Serializer".
 * You can set the `component_name` kwarg parameter of the AutoSchema constructor (see below).
 * You can override the `get_component_name` method of the AutoSchema class (see below).
