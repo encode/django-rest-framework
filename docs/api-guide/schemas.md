@@ -290,7 +290,7 @@ class MyView(APIView):
 
 ### OperationId
 
-The schema generator generates an [operationid](openapi-operationid) for each operation. This `operationId` is deduced from the model name, serializer name or view name. The operationId may looks like "listItems", "retrieveItem", "updateItem", etc..
+The schema generator generates an [operationid][openapi-operationid] for each operation. This `operationId` is deduced from the model name, serializer name or view name. The operationId may looks like "listItems", "retrieveItem", "updateItem", etc..
 The `operationId` is camelCase by convention.
 
 If you have several views with the same model, the generator may generate duplicate operationId.
@@ -323,12 +323,12 @@ class MyView(APIView):
 
 ### Components
 
-Since DRF 3.12, Schema uses the [OpenAPI Components](openapi-components). This method defines components in the schema and [references them](openapi-reference) inside request and response objects. By default, the component's name is deduced from the Serializer's name.
+Since DRF 3.12, Schema uses the [OpenAPI Components][openapi-components]. This method defines components in the schema and [references them][openapi-reference] inside request and response objects. By default, the component's name is deduced from the Serializer's name.
 
 Using OpenAPI's components provides the following advantages:
 
 * The schema is more readable and lightweight.
-* If you use the schema to generate an SDK (using [openapi-generator](openapi-generator) or [swagger-codegen](swagger-codegen)). The generator can name your SDK's models.
+* If you use the schema to generate an SDK (using [openapi-generator][openapi-generator] or [swagger-codegen][swagger-codegen]). The generator can name your SDK's models.
 
 ### Handling component's schema errors
 
