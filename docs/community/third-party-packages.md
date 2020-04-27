@@ -223,6 +223,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 ### Views
 
 * [django-rest-multiple-models][django-rest-multiple-models] - Provides a generic view (and mixin) for sending multiple serialized models and/or querysets via a single API request.
+* [drf-typed-views][drf-typed-views] - Use Python type annotations to validate/deserialize request parameters. Inspired by API Star, Hug and FastAPI.
 
 ### Routers
 
@@ -348,6 +349,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [django-rest-witchcraft]: https://github.com/shosca/django-rest-witchcraft
 [drf-access-policy]: https://github.com/rsinger86/drf-access-policy
 [drf-flex-fields]: https://github.com/rsinger86/drf-flex-fields
+[drf-typed-views]: https://github.com/rsinger86/drf-typed-views
 [drf-action-serializer]: https://github.com/gregschmit/drf-action-serializer
 [djangorestframework-dataclasses]: https://github.com/oxan/djangorestframework-dataclasses
 [django-restql]: https://github.com/yezyilomo/django-restql
