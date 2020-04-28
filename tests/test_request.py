@@ -137,7 +137,9 @@ class MockView(APIView):
 
 class EchoView(APIView):
     def post(self, request):
-        return Response(status=status.HTTP_200_OK, data=request.data)
+        response = Response(status=status.HTTP_200_OK, data=request.data)
+        response._request = request  # test client sets `request` input
+        return response
 
 
 class FileUploadView(APIView):
@@ -306,7 +308,7 @@ class TestHttpRequest(TestCase):
         `RawPostDataException` being raised.
         """
         response = APIClient().post('/echo/', data={'a': 'b'}, format='json')
-        request = response.renderer_context['request']
+        request = response._request
 
         # ensure that request stream was consumed by json parser
         assert request.content_type.startswith('application/json')
@@ -325,7 +327,7 @@ class TestHttpRequest(TestCase):
         the duplicate stream parse exception.
         """
         response = APIClient().post('/echo/', data={'a': 'b'})
-        request = response.renderer_context['request']
+        request = response._request
 
         # ensure that request stream was consumed by form parser
         assert request.content_type.startswith('multipart/form-data')
@@ -333,7 +335,7 @@ class TestHttpRequest(TestCase):
 
         # pass same HttpRequest to view, form data set on underlying request
         response = EchoView.as_view()(request._request)
-        request = response.renderer_context['request']
+        request = response._request
 
         # ensure that request stream was consumed by form parser
         assert request.content_type.startswith('multipart/form-data')
