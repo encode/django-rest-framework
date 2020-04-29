@@ -189,6 +189,8 @@ class AutoSchema(ViewInspector):
         Return components with their properties from the serializer.
         """
 
+        components = {}
+
         if method.lower() == 'delete':
             return {}
 
@@ -197,10 +199,28 @@ class AutoSchema(ViewInspector):
         if not isinstance(serializer, serializers.Serializer):
             return {}
 
-        component_name = self.get_component_name(serializer)
+        item_component_name = self.get_component_name(serializer)
+        item_schema = self.map_serializer(serializer)
+        components[item_component_name] = item_schema
 
-        content = self.map_serializer(serializer)
-        return {component_name: content}
+        response_component_name = self._get_response_component_name(
+            self.get_operation_id(path, method)
+        )
+
+        if is_list_view(path, method, self.view):
+            response_component_schema = {
+                'type': 'array',
+                'items': self._get_serializer_reference(serializer),
+            }
+            paginator = self.get_paginator()
+            if paginator:
+                response_component_schema = paginator.get_paginated_response_schema(response_component_schema)
+        else:
+            response_component_schema = self._get_serializer_reference(serializer)
+
+        components[response_component_name] = response_component_schema
+
+        return components
 
     def _to_camel_case(self, snake_str):
         components = snake_str.split('_')
@@ -613,8 +633,16 @@ class AutoSchema(ViewInspector):
                           .format(view.__class__.__name__, method, path))
             return None
 
-    def _get_reference(self, serializer):
+    def _get_serializer_reference(self, serializer):
         return {'$ref': '#/components/schemas/{}'.format(self.get_component_name(serializer))}
+
+    @staticmethod
+    def _get_response_component_name(operation_id):
+        operation_id = operation_id[0].upper() + operation_id[1:]
+        return operation_id + 'Response'
+
+    def _get_response_reference(self, operation_id):
+        return {'$ref': '#/components/schemas/{0}'.format(self._get_response_component_name(operation_id))}
 
     def get_request_body(self, path, method):
         if method not in ('PUT', 'PATCH', 'POST'):
@@ -627,7 +655,7 @@ class AutoSchema(ViewInspector):
         if not isinstance(serializer, serializers.Serializer):
             item_schema = {}
         else:
-            item_schema = self._get_reference(serializer)
+            item_schema = self._get_serializer_reference(serializer)
 
         return {
             'content': {
@@ -649,20 +677,17 @@ class AutoSchema(ViewInspector):
         serializer = self.get_serializer(path, method)
 
         if not isinstance(serializer, serializers.Serializer):
-            item_schema = {}
+            if is_list_view(path, method, self.view):
+                response_schema = {
+                    'type': 'array',
+                    'items': {}
+                }
+            else:
+                response_schema = {}
         else:
-            item_schema = self._get_reference(serializer)
-
-        if is_list_view(path, method, self.view):
-            response_schema = {
-                'type': 'array',
-                'items': item_schema,
-            }
-            paginator = self.get_paginator()
-            if paginator:
-                response_schema = paginator.get_paginated_response_schema(response_schema)
-        else:
-            response_schema = item_schema
+            response_schema = self._get_response_reference(
+                self.get_operation_id(path, method)
+            )
         status_code = '201' if method == 'POST' else '200'
         return {
             status_code: {
