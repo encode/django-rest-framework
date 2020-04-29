@@ -8,6 +8,7 @@ an appropriate set of serializer fields for each case.
 import datetime
 import decimal
 import sys
+import tempfile
 from collections import OrderedDict
 
 import django
@@ -71,7 +72,7 @@ class RegularFieldsModel(models.Model):
     time_field = models.TimeField()
     url_field = models.URLField(max_length=100)
     custom_field = CustomField()
-    file_path_field = models.FilePathField(path='/tmp/')
+    file_path_field = models.FilePathField(path=tempfile.gettempdir())
 
     def method(self):
         return 'method'
@@ -191,8 +192,8 @@ class TestRegularFieldMappings(TestCase):
                 time_field = TimeField()
                 url_field = URLField(max_length=100)
                 custom_field = ModelField(model_field=<tests.test_model_serializer.CustomField: custom_field>)
-                file_path_field = FilePathField(path='/tmp/')
-        """)
+                file_path_field = FilePathField(path=%r)
+        """ % tempfile.gettempdir())
 
         self.assertEqual(repr(TestSerializer()), expected)
 
