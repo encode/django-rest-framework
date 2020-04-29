@@ -42,7 +42,9 @@ class ActionViewSet(GenericViewSet):
         return response
 
     def retrieve(self, request, *args, **kwargs):
-        return Response()
+        response = Response()
+        response.view = self
+        return response
 
     @action(detail=False)
     def list_action(self, request, *args, **kwargs):
@@ -70,7 +72,9 @@ class ActionViewSet(GenericViewSet):
 class ActionNamesViewSet(GenericViewSet):
 
     def retrieve(self, request, *args, **kwargs):
-        return Response()
+        response = Response()
+        response.view = self
+        return response
 
     @action(detail=True)
     def unnamed_action(self, request, *args, **kwargs):
@@ -209,7 +213,7 @@ class GetExtraActionUrlMapTests(TestCase):
 
     def test_list_view(self):
         response = self.client.get('/api/actions/')
-        view = response.renderer_context['view']
+        view = response.view
 
         expected = OrderedDict([
             ('Custom list action', 'http://testserver/api/actions/custom_list_action/'),
@@ -220,7 +224,7 @@ class GetExtraActionUrlMapTests(TestCase):
 
     def test_detail_view(self):
         response = self.client.get('/api/actions/1/')
-        view = response.renderer_context['view']
+        view = response.view
 
         expected = OrderedDict([
             ('Custom detail action', 'http://testserver/api/actions/1/custom_detail_action/'),
@@ -236,7 +240,7 @@ class GetExtraActionUrlMapTests(TestCase):
     def test_action_names(self):
         # Action 'name' and 'suffix' kwargs should be respected
         response = self.client.get('/api/names/1/')
-        view = response.renderer_context['view']
+        view = response.view
 
         expected = OrderedDict([
             ('Custom Name', 'http://testserver/api/names/1/named_action/'),
