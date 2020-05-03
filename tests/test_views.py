@@ -136,3 +136,31 @@ class TestCustomSettings(TestCase):
         response = self.view(request)
         assert response.status_code == 400
         assert response.data == {'error': 'SyntaxError'}
+
+
+class FormatView(APIView):
+    def get(self, request, *args, **kwargs):
+        return Response({'format': self.format_kwarg})
+
+
+class TestAPIViewFormat(TestCase):
+    def setUp(self):
+        self.view = FormatView.as_view()
+
+    def test_uses_kwargs_format(self):
+        request = factory.get('/')
+        response = self.view(request, format='json')
+
+        assert response.data == {'format': 'json'}
+
+    def test_uses_url_format(self):
+        request = factory.get('/test?format=json')
+        response = self.view(request)
+
+        assert response.data == {'format': 'json'}
+
+    def test_prefers_kwarg_over_url_format(self):
+        request = factory.get('/test?format=json')
+        response = self.view(request, format='api')
+
+        assert response.data == {'format': 'api'}
