@@ -69,6 +69,36 @@ class ViewInspector:
     def view(self):
         self._view = None
 
+    def get_summary(self, path, method):
+        """
+        Determine a path summary.
+
+        This will be based on the method docstring if one exists.
+        """
+        view = self.view
+
+        method_name = getattr(view, 'action', method.lower())
+        method_docstring = getattr(view, method_name, None).__doc__
+        if method_docstring:
+            # An explicit docstring on the method or action.
+            return self._get_summary_section(view, method.lower(), formatting.dedent(smart_str(method_docstring)))
+
+    def _get_summary_section(self, view, header, description):
+        lines = [line for line in description.splitlines()]
+        current_section = ''
+        sections = {'': ''}
+
+        for line in lines:
+            if self.header_regex.match(line):
+                current_section, separator, lead = line.partition(':')
+                sections[current_section] = lead.strip()
+            else:
+                sections[current_section] += '\n' + line
+
+        if 'summary' in sections:
+            return sections['summary'].strip()
+        return ''
+
     def get_description(self, path, method):
         """
         Determine a path description.
