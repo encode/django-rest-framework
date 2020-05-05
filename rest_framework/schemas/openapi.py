@@ -144,6 +144,7 @@ class AutoSchema(ViewInspector):
     def get_operation(self, path, method):
         operation = {}
 
+        operation['summary'] = self.get_summary(path, method)
         operation['operationId'] = self.get_operation_id(path, method)
         operation['description'] = self.get_description(path, method)
 
