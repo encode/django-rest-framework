@@ -6,7 +6,7 @@ pre {
 
 .dropdown .dropdown-menu {
   display: none;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .dropdown.open .dropdown-menu {

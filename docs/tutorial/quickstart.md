@@ -137,12 +137,12 @@ Finally, we're including default login and logout views for use with the browsab
 
 ## Pagination
 Pagination allows you to control how many objects per page are returned. To enable it add the following lines to `tutorial/settings.py`
-    
+
     REST_FRAMEWORK = {
         'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
         'PAGE_SIZE': 10
     }
-    
+
 ## Settings
 
 Add `'rest_framework'` to `INSTALLED_APPS`. The settings module will be in `tutorial/settings.py`
@@ -224,5 +224,5 @@ If you want to get a more in depth understanding of how REST framework fits toge
 
 [image]: ../img/quickstart.png
 [tutorial]: 1-serialization.md
-[guide]: ../#api-guide
+[guide]: ../api-guide/requests.md
 [httpie]: https://github.com/jakubroztocil/httpie#installation

@@ -741,6 +741,11 @@ class AdminRendererTests(TestCase):
         class DummyGenericViewsetLike(APIView):
             lookup_field = 'test'
 
+            def get(self, request):
+                response = Response()
+                response.view = self
+                return response
+
             def reverse_action(view, *args, **kwargs):
                 self.assertEqual(kwargs['kwargs']['test'], 1)
                 return '/example/'
@@ -749,7 +754,7 @@ class AdminRendererTests(TestCase):
         view = DummyGenericViewsetLike.as_view()
         request = factory.get('/')
         response = view(request)
-        view = response.renderer_context['view']
+        view = response.view
 
         self.assertEqual(self.renderer.get_result_url({'test': 1}, view), '/example/')
         self.assertIsNone(self.renderer.get_result_url({}, view))
@@ -760,11 +765,16 @@ class AdminRendererTests(TestCase):
         class DummyView(APIView):
             lookup_field = 'test'
 
+            def get(self, request):
+                response = Response()
+                response.view = self
+                return response
+
         # get the view instance instead of the view function
         view = DummyView.as_view()
         request = factory.get('/')
         response = view(request)
-        view = response.renderer_context['view']
+        view = response.view
 
         self.assertIsNone(self.renderer.get_result_url({'test': 1}, view))
         self.assertIsNone(self.renderer.get_result_url({}, view))

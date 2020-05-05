@@ -1,12 +1,16 @@
+import uuid
+import warnings
+
 import pytest
 from django.conf.urls import url
 from django.test import RequestFactory, TestCase, override_settings
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import filters, generics, pagination, routers, serializers
+from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.compat import uritemplate
 from rest_framework.parsers import JSONParser, MultiPartParser
-from rest_framework.renderers import JSONRenderer
+from rest_framework.renderers import JSONRenderer, OpenAPIRenderer
 from rest_framework.request import Request
 from rest_framework.schemas.openapi import AutoSchema, SchemaGenerator
 
@@ -44,6 +48,8 @@ class TestBasics(TestCase):
 
 class TestFieldMapping(TestCase):
     def test_list_field_mapping(self):
+        uuid1 = uuid.uuid4()
+        uuid2 = uuid.uuid4()
         inspector = AutoSchema()
         cases = [
             (serializers.ListField(), {'items': {}, 'type': 'array'}),
@@ -53,22 +59,53 @@ class TestFieldMapping(TestCase):
             (serializers.ListField(child=serializers.IntegerField(max_value=4294967295)),
              {'items': {'type': 'integer', 'maximum': 4294967295, 'format': 'int64'}, 'type': 'array'}),
             (serializers.ListField(child=serializers.ChoiceField(choices=[('a', 'Choice A'), ('b', 'Choice B')])),
-             {'items': {'enum': ['a', 'b']}, 'type': 'array'}),
+             {'items': {'enum': ['a', 'b'], 'type': 'string'}, 'type': 'array'}),
+            (serializers.ListField(child=serializers.ChoiceField(choices=[(1, 'One'), (2, 'Two')])),
+             {'items': {'enum': [1, 2], 'type': 'integer'}, 'type': 'array'}),
+            (serializers.ListField(child=serializers.ChoiceField(choices=[(1.1, 'First'), (2.2, 'Second')])),
+             {'items': {'enum': [1.1, 2.2], 'type': 'number'}, 'type': 'array'}),
+            (serializers.ListField(child=serializers.ChoiceField(choices=[(True, 'true'), (False, 'false')])),
+             {'items': {'enum': [True, False], 'type': 'boolean'}, 'type': 'array'}),
+            (serializers.ListField(child=serializers.ChoiceField(choices=[(uuid1, 'uuid1'), (uuid2, 'uuid2')])),
+             {'items': {'enum': [uuid1, uuid2]}, 'type': 'array'}),
+            (serializers.ListField(child=serializers.ChoiceField(choices=[(1, 'One'), ('a', 'Choice A')])),
+             {'items': {'enum': [1, 'a']}, 'type': 'array'}),
+            (serializers.ListField(child=serializers.ChoiceField(choices=[
+                (1, 'One'), ('a', 'Choice A'), (1.1, 'First'), (1.1, 'First'), (1, 'One'), ('a', 'Choice A'), (1, 'One')
+            ])),
+                {'items': {'enum': [1, 'a', 1.1]}, 'type': 'array'}),
+            (serializers.ListField(child=serializers.ChoiceField(choices=[
+                (1, 'One'), (2, 'Two'), (3, 'Three'), (2, 'Two'), (3, 'Three'), (1, 'One'),
+            ])),
+                {'items': {'enum': [1, 2, 3], 'type': 'integer'}, 'type': 'array'}),
             (serializers.IntegerField(min_value=2147483648),
              {'type': 'integer', 'minimum': 2147483648, 'format': 'int64'}),
         ]
         for field, mapping in cases:
             with self.subTest(field=field):
-                assert inspector._map_field(field) == mapping
+                assert inspector.map_field(field) == mapping
 
     def test_lazy_string_field(self):
-        class Serializer(serializers.Serializer):
+        class ItemSerializer(serializers.Serializer):
             text = serializers.CharField(help_text=_('lazy string'))
 
         inspector = AutoSchema()
 
-        data = inspector._map_serializer(Serializer())
+        data = inspector.map_serializer(ItemSerializer())
         assert isinstance(data['properties']['text']['description'], str), "description must be str"
+
+    def test_boolean_default_field(self):
+        class Serializer(serializers.Serializer):
+            default_true = serializers.BooleanField(default=True)
+            default_false = serializers.BooleanField(default=False)
+            without_default = serializers.BooleanField()
+
+        inspector = AutoSchema()
+
+        data = inspector.map_serializer(Serializer())
+        assert data['properties']['default_true']['default'] is True, "default must be true"
+        assert data['properties']['default_false']['default'] is False, "default must be false"
+        assert 'default' not in data['properties']['without_default'], "default must not be defined"
 
 
 @pytest.mark.skipif(uritemplate is None, reason='uritemplate not installed.')
@@ -91,6 +128,7 @@ class TestOperationIntrospection(TestCase):
             'operationId': 'listDocStringExamples',
             'description': 'A description of my GET operation.',
             'parameters': [],
+            'tags': ['example'],
             'responses': {
                 '200': {
                     'description': '',
@@ -120,7 +158,7 @@ class TestOperationIntrospection(TestCase):
 
         operation = inspector.get_operation(path, method)
         assert operation == {
-            'operationId': 'RetrieveDocStringExampleDetail',
+            'operationId': 'retrieveDocStringExampleDetail',
             'description': 'A description of my GET operation.',
             'parameters': [{
                 'description': '',
@@ -131,6 +169,7 @@ class TestOperationIntrospection(TestCase):
                     'type': 'string',
                 },
             }],
+            'tags': ['example'],
             'responses': {
                 '200': {
                     'description': '',
@@ -148,6 +187,33 @@ class TestOperationIntrospection(TestCase):
         path = '/'
         method = 'POST'
 
+        class ItemSerializer(serializers.Serializer):
+            text = serializers.CharField()
+            read_only = serializers.CharField(read_only=True)
+
+        class View(generics.GenericAPIView):
+            serializer_class = ItemSerializer
+
+        view = create_view(
+            View,
+            method,
+            create_request(path)
+        )
+        inspector = AutoSchema()
+        inspector.view = view
+
+        request_body = inspector.get_request_body(path, method)
+        print(request_body)
+        assert request_body['content']['application/json']['schema']['$ref'] == '#/components/schemas/Item'
+
+        components = inspector.get_components(path, method)
+        assert components['Item']['required'] == ['text']
+        assert sorted(list(components['Item']['properties'].keys())) == ['read_only', 'text']
+
+    def test_invalid_serializer_class_name(self):
+        path = '/'
+        method = 'POST'
+
         class Serializer(serializers.Serializer):
             text = serializers.CharField()
             read_only = serializers.CharField(read_only=True)
@@ -163,20 +229,22 @@ class TestOperationIntrospection(TestCase):
         inspector = AutoSchema()
         inspector.view = view
 
-        request_body = inspector._get_request_body(path, method)
-        assert request_body['content']['application/json']['schema']['required'] == ['text']
-        assert list(request_body['content']['application/json']['schema']['properties'].keys()) == ['text']
+        serializer = inspector.get_serializer(path, method)
+
+        with pytest.raises(Exception) as exc:
+            inspector.get_component_name(serializer)
+        assert "is an invalid class name for schema generation" in str(exc.value)
 
     def test_empty_required(self):
         path = '/'
         method = 'POST'
 
-        class Serializer(serializers.Serializer):
+        class ItemSerializer(serializers.Serializer):
             read_only = serializers.CharField(read_only=True)
             write_only = serializers.CharField(write_only=True, required=False)
 
         class View(generics.GenericAPIView):
-            serializer_class = Serializer
+            serializer_class = ItemSerializer
 
         view = create_view(
             View,
@@ -186,23 +254,24 @@ class TestOperationIntrospection(TestCase):
         inspector = AutoSchema()
         inspector.view = view
 
-        request_body = inspector._get_request_body(path, method)
+        components = inspector.get_components(path, method)
+        component = components['Item']
         # there should be no empty 'required' property, see #6834
-        assert 'required' not in request_body['content']['application/json']['schema']
+        assert 'required' not in component
 
-        for response in inspector._get_responses(path, method).values():
-            assert 'required' not in response['content']['application/json']['schema']
+        for response in inspector.get_responses(path, method).values():
+            assert 'required' not in component
 
     def test_empty_required_with_patch_method(self):
         path = '/'
         method = 'PATCH'
 
-        class Serializer(serializers.Serializer):
+        class ItemSerializer(serializers.Serializer):
             read_only = serializers.CharField(read_only=True)
             write_only = serializers.CharField(write_only=True, required=False)
 
         class View(generics.GenericAPIView):
-            serializer_class = Serializer
+            serializer_class = ItemSerializer
 
         view = create_view(
             View,
@@ -212,22 +281,23 @@ class TestOperationIntrospection(TestCase):
         inspector = AutoSchema()
         inspector.view = view
 
-        request_body = inspector._get_request_body(path, method)
+        components = inspector.get_components(path, method)
+        component = components['Item']
         # there should be no empty 'required' property, see #6834
-        assert 'required' not in request_body['content']['application/json']['schema']
-        for response in inspector._get_responses(path, method).values():
-            assert 'required' not in response['content']['application/json']['schema']
+        assert 'required' not in component
+        for response in inspector.get_responses(path, method).values():
+            assert 'required' not in component
 
     def test_response_body_generation(self):
         path = '/'
         method = 'POST'
 
-        class Serializer(serializers.Serializer):
+        class ItemSerializer(serializers.Serializer):
             text = serializers.CharField()
             write_only = serializers.CharField(write_only=True)
 
         class View(generics.GenericAPIView):
-            serializer_class = Serializer
+            serializer_class = ItemSerializer
 
         view = create_view(
             View,
@@ -237,10 +307,13 @@ class TestOperationIntrospection(TestCase):
         inspector = AutoSchema()
         inspector.view = view
 
-        responses = inspector._get_responses(path, method)
-        assert responses['200']['content']['application/json']['schema']['required'] == ['text']
-        assert list(responses['200']['content']['application/json']['schema']['properties'].keys()) == ['text']
-        assert 'description' in responses['200']
+        responses = inspector.get_responses(path, method)
+        assert responses['201']['content']['application/json']['schema']['$ref'] == '#/components/schemas/Item'
+
+        components = inspector.get_components(path, method)
+        assert sorted(components['Item']['required']) == ['text', 'write_only']
+        assert sorted(list(components['Item']['properties'].keys())) == ['text', 'write_only']
+        assert 'description' in responses['201']
 
     def test_response_body_nested_serializer(self):
         path = '/'
@@ -249,12 +322,12 @@ class TestOperationIntrospection(TestCase):
         class NestedSerializer(serializers.Serializer):
             number = serializers.IntegerField()
 
-        class Serializer(serializers.Serializer):
+        class ItemSerializer(serializers.Serializer):
             text = serializers.CharField()
             nested = NestedSerializer()
 
         class View(generics.GenericAPIView):
-            serializer_class = Serializer
+            serializer_class = ItemSerializer
 
         view = create_view(
             View,
@@ -264,8 +337,12 @@ class TestOperationIntrospection(TestCase):
         inspector = AutoSchema()
         inspector.view = view
 
-        responses = inspector._get_responses(path, method)
-        schema = responses['200']['content']['application/json']['schema']
+        responses = inspector.get_responses(path, method)
+        assert responses['201']['content']['application/json']['schema']['$ref'] == '#/components/schemas/Item'
+        components = inspector.get_components(path, method)
+        assert components['Item']
+
+        schema = components['Item']
         assert sorted(schema['required']) == ['nested', 'text']
         assert sorted(list(schema['properties'].keys())) == ['nested', 'text']
         assert schema['properties']['nested']['type'] == 'object'
@@ -291,7 +368,7 @@ class TestOperationIntrospection(TestCase):
         inspector = AutoSchema()
         inspector.view = view
 
-        responses = inspector._get_responses(path, method)
+        responses = inspector.get_responses(path, method)
         assert responses == {
             '200': {
                 'description': '',
@@ -300,17 +377,24 @@ class TestOperationIntrospection(TestCase):
                         'schema': {
                             'type': 'array',
                             'items': {
-                                'properties': {
-                                    'text': {
-                                        'type': 'string',
-                                    },
-                                },
-                                'required': ['text'],
+                                '$ref': '#/components/schemas/Item'
                             },
                         },
                     },
                 },
             },
+        }
+        components = inspector.get_components(path, method)
+        assert components == {
+            'Item': {
+                'type': 'object',
+                'properties': {
+                    'text': {
+                        'type': 'string',
+                    },
+                },
+                'required': ['text'],
+            }
         }
 
     def test_paginated_list_response_body_generation(self):
@@ -340,7 +424,7 @@ class TestOperationIntrospection(TestCase):
         inspector = AutoSchema()
         inspector.view = view
 
-        responses = inspector._get_responses(path, method)
+        responses = inspector.get_responses(path, method)
         assert responses == {
             '200': {
                 'description': '',
@@ -351,18 +435,25 @@ class TestOperationIntrospection(TestCase):
                             'item': {
                                 'type': 'array',
                                 'items': {
-                                    'properties': {
-                                        'text': {
-                                            'type': 'string',
-                                        },
-                                    },
-                                    'required': ['text'],
+                                    '$ref': '#/components/schemas/Item'
                                 },
                             },
                         },
                     },
                 },
             },
+        }
+        components = inspector.get_components(path, method)
+        assert components == {
+            'Item': {
+                'type': 'object',
+                'properties': {
+                    'text': {
+                        'type': 'string',
+                    },
+                },
+                'required': ['text'],
+            }
         }
 
     def test_delete_response_body_generation(self):
@@ -381,7 +472,7 @@ class TestOperationIntrospection(TestCase):
         inspector = AutoSchema()
         inspector.view = view
 
-        responses = inspector._get_responses(path, method)
+        responses = inspector.get_responses(path, method)
         assert responses == {
             '204': {
                 'description': '',
@@ -405,7 +496,7 @@ class TestOperationIntrospection(TestCase):
         inspector = AutoSchema()
         inspector.view = view
 
-        request_body = inspector._get_request_body(path, method)
+        request_body = inspector.get_request_body(path, method)
 
         assert len(request_body['content'].keys()) == 2
         assert 'multipart/form-data' in request_body['content']
@@ -428,13 +519,26 @@ class TestOperationIntrospection(TestCase):
         inspector = AutoSchema()
         inspector.view = view
 
-        responses = inspector._get_responses(path, method)
+        responses = inspector.get_responses(path, method)
         # TODO this should be changed once the multiple response
         # schema support is there
         success_response = responses['200']
 
         assert len(success_response['content'].keys()) == 1
         assert 'application/json' in success_response['content']
+
+    def test_openapi_yaml_rendering_without_aliases(self):
+        renderer = OpenAPIRenderer()
+
+        reused_object = {'test': 'test'}
+        data = {
+            'o1': reused_object,
+            'o2': reused_object,
+        }
+        assert (
+            renderer.render(data) == b'o1:\n  test: test\no2:\n  test: test\n' or
+            renderer.render(data) == b'o2:\n  test: test\no1:\n  test: test\n'  # py <= 3.5
+        )
 
     def test_serializer_filefield(self):
         path = '/{id}/'
@@ -454,10 +558,10 @@ class TestOperationIntrospection(TestCase):
         inspector = AutoSchema()
         inspector.view = view
 
-        request_body = inspector._get_request_body(path, method)
-        mp_media = request_body['content']['multipart/form-data']
-        attachment = mp_media['schema']['properties']['attachment']
-        assert attachment['format'] == 'binary'
+        components = inspector.get_components(path, method)
+        component = components['Item']
+        properties = component['properties']
+        assert properties['attachment']['format'] == 'binary'
 
     def test_retrieve_response_body_generation(self):
         """
@@ -490,23 +594,31 @@ class TestOperationIntrospection(TestCase):
         inspector = AutoSchema()
         inspector.view = view
 
-        responses = inspector._get_responses(path, method)
+        responses = inspector.get_responses(path, method)
         assert responses == {
             '200': {
                 'description': '',
                 'content': {
                     'application/json': {
                         'schema': {
-                            'properties': {
-                                'text': {
-                                    'type': 'string',
-                                },
-                            },
-                            'required': ['text'],
+                            '$ref': '#/components/schemas/Item'
                         },
                     },
                 },
             },
+        }
+
+        components = inspector.get_components(path, method)
+        assert components == {
+            'Item': {
+                'type': 'object',
+                'properties': {
+                    'text': {
+                        'type': 'string',
+                    },
+                },
+                'required': ['text'],
+            }
         }
 
     def test_operation_id_generation(self):
@@ -521,8 +633,74 @@ class TestOperationIntrospection(TestCase):
         inspector = AutoSchema()
         inspector.view = view
 
-        operationId = inspector._get_operation_id(path, method)
+        operationId = inspector.get_operation_id(path, method)
         assert operationId == 'listExamples'
+
+    def test_operation_id_custom_operation_id_base(self):
+        path = '/'
+        method = 'GET'
+
+        view = create_view(
+            views.ExampleGenericAPIView,
+            method,
+            create_request(path),
+        )
+        inspector = AutoSchema(operation_id_base="Ulysse")
+        inspector.view = view
+
+        operationId = inspector.get_operation_id(path, method)
+        assert operationId == 'listUlysses'
+
+    def test_operation_id_custom_name(self):
+        path = '/'
+        method = 'GET'
+
+        view = create_view(
+            views.ExampleGenericAPIView,
+            method,
+            create_request(path),
+        )
+        inspector = AutoSchema(operation_id_base='Ulysse')
+        inspector.view = view
+
+        operationId = inspector.get_operation_id(path, method)
+        assert operationId == 'listUlysses'
+
+    def test_operation_id_override_get(self):
+        class CustomSchema(AutoSchema):
+            def get_operation_id(self, path, method):
+                return 'myCustomOperationId'
+
+        path = '/'
+        method = 'GET'
+        view = create_view(
+            views.ExampleGenericAPIView,
+            method,
+            create_request(path),
+        )
+        inspector = CustomSchema()
+        inspector.view = view
+
+        operationId = inspector.get_operation_id(path, method)
+        assert operationId == 'myCustomOperationId'
+
+    def test_operation_id_override_base(self):
+        class CustomSchema(AutoSchema):
+            def get_operation_id_base(self, path, method, action):
+                return 'Item'
+
+        path = '/'
+        method = 'GET'
+        view = create_view(
+            views.ExampleGenericAPIView,
+            method,
+            create_request(path),
+        )
+        inspector = CustomSchema()
+        inspector.view = view
+
+        operationId = inspector.get_operation_id(path, method)
+        assert operationId == 'listItem'
 
     def test_repeat_operation_ids(self):
         router = routers.SimpleRouter()
@@ -539,6 +717,41 @@ class TestOperationIntrospection(TestCase):
         assert schema_str.count("newExample") == 1
         assert schema_str.count("oldExample") == 1
 
+    def test_duplicate_operation_id(self):
+        patterns = [
+            url(r'^duplicate1/?$', views.ExampleOperationIdDuplicate1.as_view()),
+            url(r'^duplicate2/?$', views.ExampleOperationIdDuplicate2.as_view()),
+        ]
+
+        generator = SchemaGenerator(patterns=patterns)
+        request = create_request('/')
+
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter('always')
+            generator.get_schema(request=request)
+
+            assert len(w) == 1
+            assert issubclass(w[-1].category, UserWarning)
+            print(str(w[-1].message))
+            assert 'You have a duplicated operationId' in str(w[-1].message)
+
+    def test_operation_id_viewset(self):
+        router = routers.SimpleRouter()
+        router.register('account', views.ExampleViewSet, basename="account")
+        urlpatterns = router.urls
+
+        generator = SchemaGenerator(patterns=urlpatterns)
+
+        request = create_request('/')
+        schema = generator.get_schema(request=request)
+        print(schema)
+        assert schema['paths']['/account/']['get']['operationId'] == 'listExampleViewSets'
+        assert schema['paths']['/account/']['post']['operationId'] == 'createExampleViewSet'
+        assert schema['paths']['/account/{id}/']['get']['operationId'] == 'retrieveExampleViewSet'
+        assert schema['paths']['/account/{id}/']['put']['operationId'] == 'updateExampleViewSet'
+        assert schema['paths']['/account/{id}/']['patch']['operationId'] == 'partialUpdateExampleViewSet'
+        assert schema['paths']['/account/{id}/']['delete']['operationId'] == 'destroyExampleViewSet'
+
     def test_serializer_datefield(self):
         path = '/'
         method = 'GET'
@@ -550,9 +763,9 @@ class TestOperationIntrospection(TestCase):
         inspector = AutoSchema()
         inspector.view = view
 
-        responses = inspector._get_responses(path, method)
-        response_schema = responses['200']['content']['application/json']['schema']
-        properties = response_schema['items']['properties']
+        components = inspector.get_components(path, method)
+        component = components['Example']
+        properties = component['properties']
         assert properties['date']['type'] == properties['datetime']['type'] == 'string'
         assert properties['date']['format'] == 'date'
         assert properties['datetime']['format'] == 'date-time'
@@ -568,9 +781,9 @@ class TestOperationIntrospection(TestCase):
         inspector = AutoSchema()
         inspector.view = view
 
-        responses = inspector._get_responses(path, method)
-        response_schema = responses['200']['content']['application/json']['schema']
-        properties = response_schema['items']['properties']
+        components = inspector.get_components(path, method)
+        component = components['Example']
+        properties = component['properties']
         assert properties['hstore']['type'] == 'object'
 
     def test_serializer_callable_default(self):
@@ -584,9 +797,9 @@ class TestOperationIntrospection(TestCase):
         inspector = AutoSchema()
         inspector.view = view
 
-        responses = inspector._get_responses(path, method)
-        response_schema = responses['200']['content']['application/json']['schema']
-        properties = response_schema['items']['properties']
+        components = inspector.get_components(path, method)
+        component = components['Example']
+        properties = component['properties']
         assert 'default' not in properties['uuid_field']
 
     def test_serializer_validators(self):
@@ -600,9 +813,9 @@ class TestOperationIntrospection(TestCase):
         inspector = AutoSchema()
         inspector.view = view
 
-        responses = inspector._get_responses(path, method)
-        response_schema = responses['200']['content']['application/json']['schema']
-        properties = response_schema['items']['properties']
+        components = inspector.get_components(path, method)
+        component = components['ExampleValidated']
+        properties = component['properties']
 
         assert properties['integer']['type'] == 'integer'
         assert properties['integer']['maximum'] == 99
@@ -625,6 +838,16 @@ class TestOperationIntrospection(TestCase):
         assert properties['decimal2']['type'] == 'number'
         assert properties['decimal2']['multipleOf'] == .0001
 
+        assert properties['decimal3'] == {
+            'type': 'string', 'format': 'decimal', 'maximum': 1000000, 'minimum': -1000000, 'multipleOf': 0.01
+        }
+        assert properties['decimal4'] == {
+            'type': 'string', 'format': 'decimal', 'maximum': 1000000, 'minimum': -1000000, 'multipleOf': 0.01
+        }
+        assert properties['decimal5'] == {
+            'type': 'string', 'format': 'decimal', 'maximum': 10000, 'minimum': -10000, 'multipleOf': 0.01
+        }
+
         assert properties['email']['type'] == 'string'
         assert properties['email']['format'] == 'email'
         assert properties['email']['default'] == 'foo@bar.com'
@@ -644,6 +867,56 @@ class TestOperationIntrospection(TestCase):
 
         assert properties['ip']['type'] == 'string'
         assert 'format' not in properties['ip']
+
+    def test_overridden_tags(self):
+        class ExampleStringTagsViewSet(views.ExampleGenericAPIView):
+            schema = AutoSchema(tags=['example1', 'example2'])
+
+        url_patterns = [
+            url(r'^test/?$', ExampleStringTagsViewSet.as_view()),
+        ]
+        generator = SchemaGenerator(patterns=url_patterns)
+        schema = generator.get_schema(request=create_request('/'))
+        assert schema['paths']['/test/']['get']['tags'] == ['example1', 'example2']
+
+    def test_overridden_get_tags_method(self):
+        class MySchema(AutoSchema):
+            def get_tags(self, path, method):
+                if path.endswith('/new/'):
+                    tags = ['tag1', 'tag2']
+                elif path.endswith('/old/'):
+                    tags = ['tag2', 'tag3']
+                else:
+                    tags = ['tag4', 'tag5']
+
+                return tags
+
+        class ExampleStringTagsViewSet(views.ExampleGenericViewSet):
+            schema = MySchema()
+
+        router = routers.SimpleRouter()
+        router.register('example', ExampleStringTagsViewSet, basename="example")
+        generator = SchemaGenerator(patterns=router.urls)
+        schema = generator.get_schema(request=create_request('/'))
+        assert schema['paths']['/example/new/']['get']['tags'] == ['tag1', 'tag2']
+        assert schema['paths']['/example/old/']['get']['tags'] == ['tag2', 'tag3']
+
+    def test_auto_generated_apiview_tags(self):
+        class RestaurantAPIView(views.ExampleGenericAPIView):
+            schema = AutoSchema(operation_id_base="restaurant")
+            pass
+
+        class BranchAPIView(views.ExampleGenericAPIView):
+            pass
+
+        url_patterns = [
+            url(r'^any-dash_underscore/?$', RestaurantAPIView.as_view()),
+            url(r'^restaurants/branches/?$', BranchAPIView.as_view())
+        ]
+        generator = SchemaGenerator(patterns=url_patterns)
+        schema = generator.get_schema(request=create_request('/'))
+        assert schema['paths']['/any-dash_underscore/']['get']['tags'] == ['any-dash-underscore']
+        assert schema['paths']['/restaurants/branches/']['get']['tags'] == ['restaurants']
 
 
 @pytest.mark.skipif(uritemplate is None, reason='uritemplate not installed.')
@@ -744,3 +1017,95 @@ class TestGenerator(TestCase):
 
         assert schema['info']['title'] == ''
         assert schema['info']['version'] == ''
+
+    def test_serializer_model(self):
+        """Construction of the top level dictionary."""
+        patterns = [
+            url(r'^example/?$', views.ExampleGenericAPIViewModel.as_view()),
+        ]
+
+        generator = SchemaGenerator(patterns=patterns)
+
+        request = create_request('/')
+        schema = generator.get_schema(request=request)
+
+        print(schema)
+
+        assert 'components' in schema
+        assert 'schemas' in schema['components']
+        assert 'ExampleModel' in schema['components']['schemas']
+
+    def test_authtoken_serializer(self):
+        patterns = [
+            url(r'^api-token-auth/', obtain_auth_token)
+        ]
+        generator = SchemaGenerator(patterns=patterns)
+
+        request = create_request('/')
+        schema = generator.get_schema(request=request)
+
+        print(schema)
+
+        route = schema['paths']['/api-token-auth/']['post']
+        body_schema = route['requestBody']['content']['application/json']['schema']
+
+        assert body_schema == {
+            '$ref': '#/components/schemas/AuthToken'
+        }
+        assert schema['components']['schemas']['AuthToken'] == {
+            'type': 'object',
+            'properties': {
+                'username': {'type': 'string', 'writeOnly': True},
+                'password': {'type': 'string', 'writeOnly': True},
+                'token': {'type': 'string', 'readOnly': True},
+            },
+            'required': ['username', 'password']
+        }
+
+    def test_component_name(self):
+        patterns = [
+            url(r'^example/?$', views.ExampleAutoSchemaComponentName.as_view()),
+        ]
+
+        generator = SchemaGenerator(patterns=patterns)
+
+        request = create_request('/')
+        schema = generator.get_schema(request=request)
+
+        print(schema)
+        assert 'components' in schema
+        assert 'schemas' in schema['components']
+        assert 'Ulysses' in schema['components']['schemas']
+
+    def test_duplicate_component_name(self):
+        patterns = [
+            url(r'^duplicate1/?$', views.ExampleAutoSchemaDuplicate1.as_view()),
+            url(r'^duplicate2/?$', views.ExampleAutoSchemaDuplicate2.as_view()),
+        ]
+
+        generator = SchemaGenerator(patterns=patterns)
+        request = create_request('/')
+
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter('always')
+            schema = generator.get_schema(request=request)
+
+            assert len(w) == 1
+            assert issubclass(w[-1].category, UserWarning)
+            assert 'has been overriden with a different value.' in str(w[-1].message)
+
+        assert 'components' in schema
+        assert 'schemas' in schema['components']
+        assert 'Duplicate' in schema['components']['schemas']
+
+    def test_component_should_not_be_generated_for_delete_method(self):
+        class ExampleView(generics.DestroyAPIView):
+            schema = AutoSchema(operation_id_base='example')
+
+        url_patterns = [
+            url(r'^example/?$', ExampleView.as_view()),
+        ]
+        generator = SchemaGenerator(patterns=url_patterns)
+        schema = generator.get_schema(request=create_request('/'))
+        assert 'components' not in schema
+        assert 'content' not in schema['paths']['/example/']['delete']['responses']['204']

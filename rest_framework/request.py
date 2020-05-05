@@ -179,6 +179,13 @@ class Request:
             forced_auth = ForcedAuthentication(force_user, force_token)
             self.authenticators = (forced_auth,)
 
+    def __repr__(self):
+        return '<%s.%s: %s %r>' % (
+            self.__class__.__module__,
+            self.__class__.__name__,
+            self.method,
+            self.get_full_path())
+
     def _default_negotiator(self):
         return api_settings.DEFAULT_CONTENT_NEGOTIATION_CLASS()
 

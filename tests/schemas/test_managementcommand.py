@@ -1,4 +1,6 @@
 import io
+import os
+import tempfile
 
 import pytest
 from django.conf.urls import url
@@ -72,6 +74,21 @@ class GenerateSchemaTests(TestCase):
                      stdout=self.out)
         out_json = yaml.safe_load(self.out.getvalue())
         assert out_json == CustomSchemaGenerator.SCHEMA
+
+    def test_writes_schema_to_file_on_parameter(self):
+        fd, path = tempfile.mkstemp()
+        try:
+            call_command('generateschema', '--file={}'.format(path), stdout=self.out)
+            # nothing on stdout
+            assert not self.out.getvalue()
+
+            call_command('generateschema', stdout=self.out)
+            expected_out = self.out.getvalue()
+            # file output identical to stdout output
+            with os.fdopen(fd) as fh:
+                assert expected_out and fh.read() == expected_out
+        finally:
+            os.remove(path)
 
     @pytest.mark.skipif(yaml is None, reason='PyYAML is required.')
     @override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema'})

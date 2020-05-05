@@ -410,9 +410,15 @@ HTTP Signature (currently a [IETF draft][http-signature-ietf-draft]) provides a 
 
 [Djoser][djoser] library provides a set of views to handle basic actions such as registration, login, logout, password reset and account activation. The package works with a custom user model and it uses token based authentication. This is a ready to use REST implementation of Django authentication system.
 
-## django-rest-auth
+## django-rest-auth / dj-rest-auth
 
-[Django-rest-auth][django-rest-auth] library provides a set of REST API endpoints for registration, authentication (including social media authentication), password reset, retrieve and update user details, etc. By having these API endpoints, your client apps such as AngularJS, iOS, Android, and others can communicate to your Django backend site independently via REST APIs for user management.
+This library provides a set of REST API endpoints for registration, authentication (including social media authentication), password reset, retrieve and update user details, etc. By having these API endpoints, your client apps such as AngularJS, iOS, Android, and others can communicate to your Django backend site independently via REST APIs for user management.
+
+
+There are currently two forks of this project.
+
+* [Django-rest-auth][django-rest-auth] is the original project, [but is not currently receiving updates](https://github.com/Tivix/django-rest-auth/issues/568).
+* [Dj-rest-auth][dj-rest-auth] is a newer fork of the project.
 
 ## django-rest-framework-social-oauth2
 
@@ -456,6 +462,7 @@ HTTP Signature (currently a [IETF draft][http-signature-ietf-draft]) provides a 
 [mac]: https://tools.ietf.org/html/draft-hammer-oauth-v2-mac-token-05
 [djoser]: https://github.com/sunscrapers/djoser
 [django-rest-auth]: https://github.com/Tivix/django-rest-auth
+[dj-rest-auth]: https://github.com/jazzband/dj-rest-auth
 [django-rest-framework-social-oauth2]: https://github.com/PhilipGarnero/django-rest-framework-social-oauth2
 [django-rest-knox]: https://github.com/James1345/django-rest-knox
 [drfpasswordless]: https://github.com/aaronn/django-rest-framework-passwordless
