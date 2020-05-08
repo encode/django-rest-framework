@@ -145,6 +145,7 @@ class AutoSchema(ViewInspector):
         operation = {}
 
         operation['operationId'] = self.get_operation_id(path, method)
+        operation['summary'] = self.get_summary(path, method)
         operation['description'] = self.get_description(path, method)
 
         parameters = []
@@ -208,6 +209,9 @@ class AutoSchema(ViewInspector):
         # with the 'title' method and join them together.
         return components[0] + ''.join(x.title() for x in components[1:])
 
+    def _camel_case_split(self, camel_case_str):
+        return " ".join(re.findall(r'[A-Z](?:[a-z]+|[A-Z]*(?=[A-Z]|$))', camel_case_str))
+
     def get_operation_id_base(self, path, method, action):
         """
         Compute the base part for operation ID from the model, serializer or view name.
@@ -244,6 +248,29 @@ class AutoSchema(ViewInspector):
             name += 's'
 
         return name
+
+    def get_summary(self, path, method):
+        """
+        Compute an summary from the view type and get_operation_id_base method.
+        """
+
+        if self.view.__doc__ is not None:
+            return self.view.__doc__.strip().split("\n")[0]
+
+        method_name = getattr(self.view, 'action', method.lower())
+
+        if is_list_view(path, method, self.view):
+            action = 'list'
+        elif method_name not in self.method_mapping:
+            action = method_name.replace("_", " ").title()
+        else:
+            action = self._camel_case_split(self.method_mapping[method.lower()])
+
+        name = self.get_operation_id_base(path, method, action)
+        if action == 'list':
+            action = 'List of'
+
+        return action + " " + name
 
     def get_operation_id(self, path, method):
         """
