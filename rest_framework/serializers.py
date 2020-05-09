@@ -361,6 +361,12 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
             if not field.write_only:
                 yield field
 
+    def get_fields_to_validate(self, data):
+        """
+        Override this method if you want more control over the fields you want to validate
+        """
+        return self._writable_fields
+
     def get_fields(self):
         """
         Returns a dictionary of {field_name: field_instance}.
@@ -466,7 +472,7 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
 
         ret = OrderedDict()
         errors = OrderedDict()
-        fields = self._writable_fields
+        fields = self.get_fields_to_validate(data)
 
         for field in fields:
             validate_method = getattr(self, 'validate_' + field.field_name, None)
