@@ -61,7 +61,7 @@ class FormatSuffixTests(TestCase):
 
     def test_trailing_slash(self):
         urlpatterns = [
-            re_path(r'^test/$', dummy_view),
+            path('test/', dummy_view),
         ]
         self._test_trailing_slash(urlpatterns)
 
@@ -82,7 +82,7 @@ class FormatSuffixTests(TestCase):
 
     def test_format_suffix(self):
         urlpatterns = [
-            re_path(r'^test$', dummy_view),
+            path('test', dummy_view),
         ]
         self._test_format_suffix(urlpatterns)
 
@@ -97,7 +97,7 @@ class FormatSuffixTests(TestCase):
     def test_format_suffix_django2_args(self):
         urlpatterns = [
             path('convtest/<int:pk>', dummy_view),
-            re_path(r'^retest/(?P<pk>[0-9]+)$', dummy_view),
+            path('retest/<int:pk>', dummy_view),
         ]
         test_paths = [
             URLTestPath('/convtest/42', (), {'pk': 42}),
@@ -119,7 +119,7 @@ class FormatSuffixTests(TestCase):
 
     def test_default_args(self):
         urlpatterns = [
-            re_path(r'^test$', dummy_view, {'foo': 'bar'}),
+            path('test', dummy_view, {'foo': 'bar'}),
         ]
         self._test_default_args(urlpatterns)
 
@@ -140,10 +140,10 @@ class FormatSuffixTests(TestCase):
 
     def test_included_urls(self):
         nested_patterns = [
-            re_path(r'^path$', dummy_view)
+            path('path', dummy_view)
         ]
         urlpatterns = [
-            re_path(r'^test/', include(nested_patterns), {'foo': 'bar'}),
+            path('test/', include(nested_patterns), {'foo': 'bar'}),
         ]
         self._test_included_urls(urlpatterns)
 
@@ -163,7 +163,7 @@ class FormatSuffixTests(TestCase):
             path('path', dummy_view)
         ]
         urlpatterns = [
-            re_path('^test/', include(nested_patterns), {'foo': 'bar'}),
+            path('test/', include(nested_patterns), {'foo': 'bar'}),
         ]
         self._test_included_urls(urlpatterns)
 
