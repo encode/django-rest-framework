@@ -4,7 +4,7 @@ from collections import namedtuple
 from django.test import TestCase
 from django.urls import Resolver404, include
 
-from rest_framework.compat import make_url_resolver, path, re_path
+from rest_framework.compat import make_url_resolver, path
 from rest_framework.test import APIRequestFactory
 from rest_framework.urlpatterns import format_suffix_patterns
 
@@ -171,10 +171,10 @@ class FormatSuffixTests(TestCase):
     def test_included_urls_django2_mixed_args(self):
         nested_patterns = [
             path('path/<int:child>', dummy_view),
-            re_path('^url/(?P<child>[0-9]+)$', dummy_view)
+            path('url/<int:child>', dummy_view)
         ]
         urlpatterns = [
-            re_path('^purl/(?P<parent>[0-9]+)/', include(nested_patterns), {'foo': 'bar'}),
+            path('purl/<int:parent>/', include(nested_patterns), {'foo': 'bar'}),
             path('ppath/<int:parent>/', include(nested_patterns), {'foo': 'bar'}),
         ]
         test_paths = [
