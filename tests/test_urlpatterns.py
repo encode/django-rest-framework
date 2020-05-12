@@ -2,7 +2,7 @@ import unittest
 from collections import namedtuple
 
 from django.test import TestCase
-from django.urls import Resolver404
+from django.urls import include, Resolver404
 
 from rest_framework.compat import make_url_resolver, path, re_path
 from rest_framework.test import APIRequestFactory
