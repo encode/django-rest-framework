@@ -85,7 +85,7 @@ class SearchFilter(BaseFilterBackend):
                 search_field = search_field[1:]
             # Annotated fields do not need to be distinct
             if isinstance(queryset, models.QuerySet) and search_field in queryset.query.annotations:
-                return False
+                continue
             parts = search_field.split(LOOKUP_SEP)
             for part in parts:
                 field = opts.get_field(part)

@@ -304,7 +304,7 @@ If successfully authenticated, `RemoteUserAuthentication` provides the following
 Consult your web server's documentation for information about configuring an authentication method, e.g.:
 
 * [Apache Authentication How-To](https://httpd.apache.org/docs/2.4/howto/auth.html)
-* [NGINX (Restricting Access)](https://www.nginx.com/resources/admin-guide/#restricting_access)
+* [NGINX (Restricting Access)](https://docs.nginx.com/nginx/admin-guide/security-controls/configuring-http-basic-authentication/)
 
 
 # Custom authentication

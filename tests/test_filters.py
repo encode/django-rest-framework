@@ -406,6 +406,21 @@ class SearchFilterAnnotatedFieldTests(TestCase):
         assert len(response.data) == 1
         assert response.data[0]['title_text'] == 'ABCDEF'
 
+    def test_must_call_distinct_subsequent_m2m_fields(self):
+        f = filters.SearchFilter()
+
+        queryset = SearchFilterModelM2M.objects.annotate(
+            title_text=Upper(
+                Concat(models.F('title'), models.F('text'))
+            )
+        ).all()
+
+        # Sanity check that m2m must call distinct
+        assert f.must_call_distinct(queryset, ['attributes'])
+
+        # Annotated field should not prevent m2m must call distinct
+        assert f.must_call_distinct(queryset, ['title_text', 'attributes'])
+
 
 class OrderingFilterModel(models.Model):
     title = models.CharField(max_length=20, verbose_name='verbose title')
