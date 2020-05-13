@@ -21,7 +21,7 @@ Let's start by creating a simple object we can use for example purposes:
 
     from datetime import datetime
 
-    class Comment(object):
+    class Comment:
         def __init__(self, email, content, created=None):
             self.email = email
             self.content = content
