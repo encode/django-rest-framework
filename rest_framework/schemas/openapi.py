@@ -364,7 +364,7 @@ class AutoSchema(ViewInspector):
         if isinstance(field, serializers.ListSerializer):
             return {
                 'type': 'array',
-                'items': self.map_serializer(field.child)
+                'items': self.map_field(field.child)
             }
         if isinstance(field, serializers.Serializer):
             data = self.map_serializer(field)
