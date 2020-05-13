@@ -31,7 +31,3 @@ class RemovedInDRF313Warning(DeprecationWarning):
 
 class RemovedInDRF314Warning(PendingDeprecationWarning):
     pass
-
-
-class RemovedInDRF314Warning(PendingDeprecationWarning):
-    pass
