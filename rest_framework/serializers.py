@@ -13,7 +13,7 @@ response content is handled by parsers and renderers.
 import copy
 import inspect
 import traceback
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 from collections.abc import Mapping
 
 from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured
@@ -1508,28 +1508,55 @@ class ModelSerializer(Serializer):
         # which may map onto a model field. Any dotted field name lookups
         # cannot map to a field, and must be a traversal, so we're not
         # including those.
-        field_names = {
-            field.source for field in self._writable_fields
+        field_sources = OrderedDict(
+            (field.field_name, field.source) for field in self._writable_fields
             if (field.source != '*') and ('.' not in field.source)
-        }
+        )
 
         # Special Case: Add read_only fields with defaults.
-        field_names |= {
-            field.source for field in self.fields.values()
+        field_sources.update(OrderedDict(
+            (field.field_name, field.source) for field in self.fields.values()
             if (field.read_only) and (field.default != empty) and (field.source != '*') and ('.' not in field.source)
-        }
+        ))
+
+        # Invert so we can find the serializer field names that correspond to
+        # the model field names in the unique_together sets. This also allows
+        # us to check that multiple fields don't map to the same source.
+        source_map = defaultdict(list)
+        for name, source in field_sources.items():
+            source_map[source].append(name)
 
         # Note that we make sure to check `unique_together` both on the
         # base model class, but also on any parent classes.
         validators = []
         for parent_class in model_class_inheritance_tree:
             for unique_together in parent_class._meta.unique_together:
-                if field_names.issuperset(set(unique_together)):
-                    validator = UniqueTogetherValidator(
-                        queryset=parent_class._default_manager,
-                        fields=unique_together
+                # Skip if serializer does not map to all unique together sources
+                if not set(source_map).issuperset(set(unique_together)):
+                    continue
+
+                for source in unique_together:
+                    assert len(source_map[source]) == 1, (
+                        "Unable to create `UniqueTogetherValidator` for "
+                        "`{model}.{field}` as `{serializer}` has multiple "
+                        "fields ({fields}) that map to this model field. "
+                        "Either remove the extra fields, or override "
+                        "`Meta.validators` with a `UniqueTogetherValidator` "
+                        "using the desired field names."
+                        .format(
+                            model=self.Meta.model.__name__,
+                            serializer=self.__class__.__name__,
+                            field=source,
+                            fields=', '.join(source_map[source]),
+                        )
                     )
-                    validators.append(validator)
+
+                field_names = tuple(source_map[f][0] for f in unique_together)
+                validator = UniqueTogetherValidator(
+                    queryset=parent_class._default_manager,
+                    fields=field_names
+                )
+                validators.append(validator)
         return validators
 
     def get_unique_for_date_validators(self):
