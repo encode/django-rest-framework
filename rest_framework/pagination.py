@@ -236,10 +236,16 @@ class PageNumberPagination(BasePagination):
                 'next': {
                     'type': 'string',
                     'nullable': True,
+                    'format': 'uri',
+                    'example': 'http://api.example.org/accounts/?{page_query_param}=4'.format(
+                        page_query_param=self.page_query_param)
                 },
                 'previous': {
                     'type': 'string',
                     'nullable': True,
+                    'format': 'uri',
+                    'example': 'http://api.example.org/accounts/?{page_query_param}=2'.format(
+                        page_query_param=self.page_query_param)
                 },
                 'results': schema,
             },
@@ -403,10 +409,16 @@ class LimitOffsetPagination(BasePagination):
                 'next': {
                     'type': 'string',
                     'nullable': True,
+                    'format': 'uri',
+                    'example': 'http://api.example.org/accounts/?{offset_param}=400&{limit_param}=100'.format(
+                        offset_param=self.offset_query_param, limit_param=self.limit_query_param),
                 },
                 'previous': {
                     'type': 'string',
                     'nullable': True,
+                    'format': 'uri',
+                    'example': 'http://api.example.org/accounts/?{offset_param}=200&{limit_param}=100'.format(
+                        offset_param=self.offset_query_param, limit_param=self.limit_query_param),
                 },
                 'results': schema,
             },

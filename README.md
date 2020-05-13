@@ -55,7 +55,7 @@ There is a live example API for testing purposes, [available here][sandbox].
 # Requirements
 
 * Python (3.5, 3.6, 3.7, 3.8)
-* Django (1.11, 2.0, 2.1, 2.2, 3.0)
+* Django (2.2, 3.0)
 
 We **highly recommend** and only officially support the latest patch release of
 each Python and Django series.
@@ -89,7 +89,7 @@ Startup up a new project like so...
 Now edit the `example/urls.py` module in your project:
 
 ```python
-from django.conf.urls import url, include
+from django.urls import path, include
 from django.contrib.auth.models import User
 from rest_framework import serializers, viewsets, routers
 
@@ -114,8 +114,8 @@ router.register(r'users', UserViewSet)
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
-    url(r'^', include(router.urls)),
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+    path('', include(router.urls)),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]
 ```
 

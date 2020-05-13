@@ -159,6 +159,25 @@ class BasicAuthTests(TestCase):
         )
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
+    def test_decoding_of_utf8_credentials(self):
+        username = 'walterwhité'
+        email = 'walterwhite@example.com'
+        password = 'pässwörd'
+        User.objects.create_user(
+            username, email, password
+        )
+        credentials = ('%s:%s' % (username, password))
+        base64_credentials = base64.b64encode(
+            credentials.encode('utf-8')
+        ).decode(HTTP_HEADER_ENCODING)
+        auth = 'Basic %s' % base64_credentials
+        response = self.csrf_client.post(
+            '/basic/',
+            {'example': 'example'},
+            HTTP_AUTHORIZATION=auth
+        )
+        assert response.status_code == status.HTTP_200_OK
+
 
 @override_settings(ROOT_URLCONF=__name__)
 class SessionAuthTests(TestCase):

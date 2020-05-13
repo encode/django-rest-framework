@@ -108,7 +108,7 @@ class GenericAPIView(views.APIView):
         serializer_class = self.get_serializer_class()
 
         kwargs.setdefault('context', self.get_serializer_context())
-
+  
         return serializer_class(*args, **kwargs)
 
     def get_serializer_class(self):
