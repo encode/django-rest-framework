@@ -143,7 +143,7 @@ class EndpointEnumerator:
         return [method for method in methods if method not in ('OPTIONS', 'HEAD')]
 
 
-class BaseSchemaGenerator(object):
+class BaseSchemaGenerator:
     endpoint_inspector_cls = EndpointEnumerator
 
     # 'pk' isn't great as an externally exposed name for an identifier,
