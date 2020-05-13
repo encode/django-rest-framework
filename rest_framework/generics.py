@@ -107,11 +107,7 @@ class GenericAPIView(views.APIView):
         """
         serializer_class = self.get_serializer_class()
 
-        assert 'context' not in kwargs, (
-            "`get_serializer` does not accept a `context` argument, "
-            "you may override `get_serializer_context` instead."
-        )
-        kwargs['context'] = self.get_serializer_context()
+        kwargs.setdefault('context', self.get_serializer_context())
 
         return serializer_class(*args, **kwargs)
 
