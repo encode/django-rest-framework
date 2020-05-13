@@ -14,7 +14,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.validators import (
     EmailValidator, MaxLengthValidator, MaxValueValidator, MinLengthValidator,
-    MinValueValidator, RegexValidator, URLValidator, ip_address_validators
+    MinValueValidator, ProhibitNullCharactersValidator, RegexValidator,
+    URLValidator, ip_address_validators
 )
 from django.forms import FilePathField as DjangoFilePathField
 from django.forms import ImageField as DjangoImageField
@@ -33,7 +34,6 @@ from pytz.exceptions import InvalidTimeError
 from rest_framework import (
     ISO_8601, RemovedInDRF313Warning, RemovedInDRF314Warning
 )
-from rest_framework.compat import ProhibitNullCharactersValidator
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, humanize_datetime, json, representation
@@ -785,9 +785,7 @@ class CharField(Field):
             self.validators.append(
                 MinLengthValidator(self.min_length, message=message))
 
-        # ProhibitNullCharactersValidator is None on Django < 2.0
-        if ProhibitNullCharactersValidator is not None:
-            self.validators.append(ProhibitNullCharactersValidator())
+        self.validators.append(ProhibitNullCharactersValidator())
         self.validators.append(ProhibitSurrogateCharactersValidator())
 
     def run_validation(self, data=empty):
