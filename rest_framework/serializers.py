@@ -868,7 +868,7 @@ class ModelSerializer(Serializer):
         models.FloatField: FloatField,
         models.ImageField: ImageField,
         models.IntegerField: IntegerField,
-        models.NullBooleanField: NullBooleanField,
+        models.NullBooleanField: BooleanField,
         models.PositiveIntegerField: IntegerField,
         models.PositiveSmallIntegerField: IntegerField,
         models.SlugField: SlugField,
