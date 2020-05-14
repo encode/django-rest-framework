@@ -319,7 +319,7 @@ Often you'll want to use the existing generic views, but use some slightly custo
 
 For example, if you need to lookup objects based on multiple fields in the URL conf, you could create a mixin class like the following:
 
-    class MultipleFieldLookupMixin(object):
+    class MultipleFieldLookupMixin:
         """
         Apply this mixin to any view or viewset to get multiple field filtering
         based on a `lookup_fields` attribute, instead of the default single field filtering.
