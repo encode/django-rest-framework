@@ -1,7 +1,8 @@
 from django.conf.urls import include, url
+from django.urls import path, register_converter
 
 from rest_framework.compat import (
-    URLResolver, get_regex_pattern, is_route_pattern, path, register_converter
+    URLResolver, get_regex_pattern, is_route_pattern
 )
 from rest_framework.settings import api_settings
 

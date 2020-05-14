@@ -5,11 +5,12 @@ from django.conf.urls import include, url
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.test import TestCase, override_settings
+from django.urls import path
 
 from rest_framework import (
     filters, generics, pagination, permissions, serializers
 )
-from rest_framework.compat import coreapi, coreschema, get_regex_pattern, path
+from rest_framework.compat import coreapi, coreschema, get_regex_pattern
 from rest_framework.decorators import action, api_view, schema
 from rest_framework.request import Request
 from rest_framework.routers import DefaultRouter, SimpleRouter
