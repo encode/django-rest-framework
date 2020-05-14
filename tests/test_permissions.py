@@ -3,7 +3,6 @@ import unittest
 from unittest import mock
 
 import django
-import pytest
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, Group, Permission, User
 from django.db import models
@@ -14,7 +13,6 @@ from rest_framework import (
     HTTP_HEADER_ENCODING, authentication, generics, permissions, serializers,
     status, views
 )
-from rest_framework.compat import PY36
 from rest_framework.routers import DefaultRouter
 from rest_framework.test import APIRequestFactory
 from tests.models import BasicModel
@@ -607,7 +605,6 @@ class PermissionsCompositionTests(TestCase):
         )
         assert composed_perm().has_permission(request, None) is True
 
-    @pytest.mark.skipif(not PY36, reason="assert_called_once() not available")
     def test_or_lazyness(self):
         request = factory.get('/1', format='json')
         request.user = AnonymousUser()
@@ -616,19 +613,18 @@ class PermissionsCompositionTests(TestCase):
             with mock.patch.object(permissions.IsAuthenticated, 'has_permission', return_value=False) as mock_deny:
                 composed_perm = (permissions.AllowAny | permissions.IsAuthenticated)
                 hasperm = composed_perm().has_permission(request, None)
-                self.assertIs(hasperm, True)
-                mock_allow.assert_called_once()
+                assert hasperm is True
+                assert mock_allow.call_count == 1
                 mock_deny.assert_not_called()
 
         with mock.patch.object(permissions.AllowAny, 'has_permission', return_value=True) as mock_allow:
             with mock.patch.object(permissions.IsAuthenticated, 'has_permission', return_value=False) as mock_deny:
                 composed_perm = (permissions.IsAuthenticated | permissions.AllowAny)
                 hasperm = composed_perm().has_permission(request, None)
-                self.assertIs(hasperm, True)
-                mock_deny.assert_called_once()
-                mock_allow.assert_called_once()
+                assert hasperm is True
+                assert mock_deny.call_count == 1
+                assert mock_allow.call_count == 1
 
-    @pytest.mark.skipif(not PY36, reason="assert_called_once() not available")
     def test_object_or_lazyness(self):
         request = factory.get('/1', format='json')
         request.user = AnonymousUser()
@@ -637,19 +633,18 @@ class PermissionsCompositionTests(TestCase):
             with mock.patch.object(permissions.IsAuthenticated, 'has_object_permission', return_value=False) as mock_deny:
                 composed_perm = (permissions.AllowAny | permissions.IsAuthenticated)
                 hasperm = composed_perm().has_object_permission(request, None, None)
-                self.assertIs(hasperm, True)
-                mock_allow.assert_called_once()
+                assert hasperm is True
+                assert mock_allow.call_count == 1
                 mock_deny.assert_not_called()
 
         with mock.patch.object(permissions.AllowAny, 'has_object_permission', return_value=True) as mock_allow:
             with mock.patch.object(permissions.IsAuthenticated, 'has_object_permission', return_value=False) as mock_deny:
                 composed_perm = (permissions.IsAuthenticated | permissions.AllowAny)
                 hasperm = composed_perm().has_object_permission(request, None, None)
-                self.assertIs(hasperm, True)
-                mock_deny.assert_called_once()
-                mock_allow.assert_called_once()
+                assert hasperm is True
+                assert mock_deny.call_count == 1
+                assert mock_allow.call_count == 1
 
-    @pytest.mark.skipif(not PY36, reason="assert_called_once() not available")
     def test_and_lazyness(self):
         request = factory.get('/1', format='json')
         request.user = AnonymousUser()
@@ -658,19 +653,18 @@ class PermissionsCompositionTests(TestCase):
             with mock.patch.object(permissions.IsAuthenticated, 'has_permission', return_value=False) as mock_deny:
                 composed_perm = (permissions.AllowAny & permissions.IsAuthenticated)
                 hasperm = composed_perm().has_permission(request, None)
-                self.assertIs(hasperm, False)
-                mock_allow.assert_called_once()
-                mock_deny.assert_called_once()
+                assert hasperm is False
+                assert mock_allow.call_count == 1
+                assert mock_deny.call_count == 1
 
         with mock.patch.object(permissions.AllowAny, 'has_permission', return_value=True) as mock_allow:
             with mock.patch.object(permissions.IsAuthenticated, 'has_permission', return_value=False) as mock_deny:
                 composed_perm = (permissions.IsAuthenticated & permissions.AllowAny)
                 hasperm = composed_perm().has_permission(request, None)
-                self.assertIs(hasperm, False)
+                assert hasperm is False
+                assert mock_deny.call_count == 1
                 mock_allow.assert_not_called()
-                mock_deny.assert_called_once()
 
-    @pytest.mark.skipif(not PY36, reason="assert_called_once() not available")
     def test_object_and_lazyness(self):
         request = factory.get('/1', format='json')
         request.user = AnonymousUser()
@@ -679,14 +673,14 @@ class PermissionsCompositionTests(TestCase):
             with mock.patch.object(permissions.IsAuthenticated, 'has_object_permission', return_value=False) as mock_deny:
                 composed_perm = (permissions.AllowAny & permissions.IsAuthenticated)
                 hasperm = composed_perm().has_object_permission(request, None, None)
-                self.assertIs(hasperm, False)
-                mock_allow.assert_called_once()
-                mock_deny.assert_called_once()
+                assert hasperm is False
+                assert mock_allow.call_count == 1
+                assert mock_deny.call_count == 1
 
         with mock.patch.object(permissions.AllowAny, 'has_object_permission', return_value=True) as mock_allow:
             with mock.patch.object(permissions.IsAuthenticated, 'has_object_permission', return_value=False) as mock_deny:
                 composed_perm = (permissions.IsAuthenticated & permissions.AllowAny)
                 hasperm = composed_perm().has_object_permission(request, None, None)
-                self.assertIs(hasperm, False)
+                assert hasperm is False
+                assert mock_deny.call_count == 1
                 mock_allow.assert_not_called()
-                mock_deny.assert_called_once()

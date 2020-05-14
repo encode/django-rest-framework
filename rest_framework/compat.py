@@ -2,8 +2,6 @@
 The `compat` module provides support for backwards compatibility with older
 versions of Django/Python, and compatibility wrappers around optional packages.
 """
-import sys
-
 from django.conf import settings
 from django.views.generic import View
 
@@ -227,7 +225,3 @@ except ImportError:
 SHORT_SEPARATORS = (',', ':')
 LONG_SEPARATORS = (', ', ': ')
 INDENT_SEPARATORS = (',', ': ')
-
-
-# Version Constants.
-PY36 = sys.version_info >= (3, 6)
