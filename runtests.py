@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 import subprocess
 import sys
+from contextlib import suppress
 
 import pytest
 
@@ -54,27 +55,21 @@ def is_class(string):
 
 
 if __name__ == "__main__":
-    try:
+    run_flake8 = True
+    run_isort = True
+    with suppress(ValueError):
         sys.argv.remove('--nolint')
-    except ValueError:
-        run_flake8 = True
-        run_isort = True
-    else:
         run_flake8 = False
         run_isort = False
 
-    try:
+    run_tests = True
+    with suppress(ValueError):
         sys.argv.remove('--lintonly')
-    except ValueError:
-        run_tests = True
-    else:
         run_tests = False
 
-    try:
+    style = 'default'
+    with suppress(ValueError):
         sys.argv.remove('--fast')
-    except ValueError:
-        style = 'default'
-    else:
         style = 'fast'
         run_flake8 = False
         run_isort = False
@@ -83,11 +78,8 @@ if __name__ == "__main__":
         pytest_args = sys.argv[1:]
         first_arg = pytest_args[0]
 
-        try:
+        with suppress(ValueError):
             pytest_args.remove('--coverage')
-        except ValueError:
-            pass
-        else:
             pytest_args = [
                 '--cov', '.',
                 '--cov-report', 'xml',
