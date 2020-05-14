@@ -1,9 +1,7 @@
 from django.conf.urls import include, url
-from django.urls import path, register_converter
+from django.urls import URLResolver, path, register_converter
+from django.urls.resolvers import RoutePattern
 
-from rest_framework.compat import (
-    URLResolver, get_regex_pattern, is_route_pattern
-)
 from rest_framework.settings import api_settings
 
 
@@ -38,7 +36,7 @@ def apply_suffix_patterns(urlpatterns, suffix_pattern, suffix_required, suffix_r
     for urlpattern in urlpatterns:
         if isinstance(urlpattern, URLResolver):
             # Set of included URL patterns
-            regex = get_regex_pattern(urlpattern)
+            regex = urlpattern.pattern.regex.pattern
             namespace = urlpattern.namespace
             app_name = urlpattern.app_name
             kwargs = urlpattern.default_kwargs
@@ -49,7 +47,7 @@ def apply_suffix_patterns(urlpatterns, suffix_pattern, suffix_required, suffix_r
                                              suffix_route)
 
             # if the original pattern was a RoutePattern we need to preserve it
-            if is_route_pattern(urlpattern):
+            if isinstance(urlpattern.pattern, RoutePattern):
                 assert path is not None
                 route = str(urlpattern.pattern)
                 new_pattern = path(route, include((patterns, app_name), namespace), kwargs)
@@ -59,7 +57,7 @@ def apply_suffix_patterns(urlpatterns, suffix_pattern, suffix_required, suffix_r
             ret.append(new_pattern)
         else:
             # Regular URL pattern
-            regex = get_regex_pattern(urlpattern).rstrip('$').rstrip('/') + suffix_pattern
+            regex = urlpattern.pattern.regex.pattern.rstrip('$').rstrip('/') + suffix_pattern
             view = urlpattern.callback
             kwargs = urlpattern.default_args
             name = urlpattern.name
@@ -68,7 +66,7 @@ def apply_suffix_patterns(urlpatterns, suffix_pattern, suffix_required, suffix_r
                 ret.append(urlpattern)
 
             # if the original pattern was a RoutePattern we need to preserve it
-            if is_route_pattern(urlpattern):
+            if isinstance(urlpattern.pattern, RoutePattern):
                 assert path is not None
                 assert suffix_route is not None
                 route = str(urlpattern.pattern).rstrip('$').rstrip('/') + suffix_route
