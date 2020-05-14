@@ -212,16 +212,6 @@ else:
         return False
 
 
-# Django 1.x url routing syntax. Remove when dropping Django 1.11 support.
-try:
-    from django.urls import include, path, re_path, register_converter  # noqa
-except ImportError:
-    from django.conf.urls import include, url # noqa
-    path = None
-    register_converter = None
-    re_path = url
-
-
 # `separators` argument to `json.dumps()` differs between 2.x and 3.x
 # See: https://bugs.python.org/issue22767
 SHORT_SEPARATORS = (',', ':')
