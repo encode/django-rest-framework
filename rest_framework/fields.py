@@ -14,7 +14,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.validators import (
     EmailValidator, MaxLengthValidator, MaxValueValidator, MinLengthValidator,
-    MinValueValidator, RegexValidator, URLValidator, ip_address_validators
+    MinValueValidator, ProhibitNullCharactersValidator, RegexValidator,
+    URLValidator, ip_address_validators
 )
 from django.forms import FilePathField as DjangoFilePathField
 from django.forms import ImageField as DjangoImageField
@@ -30,8 +31,9 @@ from django.utils.timezone import utc
 from django.utils.translation import gettext_lazy as _
 from pytz.exceptions import InvalidTimeError
 
-from rest_framework import ISO_8601, RemovedInDRF313Warning
-from rest_framework.compat import ProhibitNullCharactersValidator
+from rest_framework import (
+    ISO_8601, RemovedInDRF313Warning, RemovedInDRF314Warning
+)
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, humanize_datetime, json, representation
@@ -740,54 +742,21 @@ class BooleanField(Field):
         return bool(value)
 
 
-class NullBooleanField(Field):
-    default_error_messages = {
-        'invalid': _('Must be a valid boolean.')
-    }
+class NullBooleanField(BooleanField):
     initial = None
-    TRUE_VALUES = {
-        't', 'T',
-        'y', 'Y', 'yes', 'YES',
-        'true', 'True', 'TRUE',
-        'on', 'On', 'ON',
-        '1', 1,
-        True
-    }
-    FALSE_VALUES = {
-        'f', 'F',
-        'n', 'N', 'no', 'NO',
-        'false', 'False', 'FALSE',
-        'off', 'Off', 'OFF',
-        '0', 0, 0.0,
-        False
-    }
-    NULL_VALUES = {'null', 'Null', 'NULL', '', None}
 
     def __init__(self, **kwargs):
+        warnings.warn(
+            "The `NullBooleanField` is deprecated and will be removed starting "
+            "with 3.14. Instead use the `BooleanField` field and set "
+            "`null=True` which does the same thing.",
+            RemovedInDRF314Warning, stacklevel=2
+        )
+
         assert 'allow_null' not in kwargs, '`allow_null` is not a valid option.'
         kwargs['allow_null'] = True
+
         super().__init__(**kwargs)
-
-    def to_internal_value(self, data):
-        try:
-            if data in self.TRUE_VALUES:
-                return True
-            elif data in self.FALSE_VALUES:
-                return False
-            elif data in self.NULL_VALUES:
-                return None
-        except TypeError:  # Input is an unhashable type
-            pass
-        self.fail('invalid', input=data)
-
-    def to_representation(self, value):
-        if value in self.NULL_VALUES:
-            return None
-        if value in self.TRUE_VALUES:
-            return True
-        elif value in self.FALSE_VALUES:
-            return False
-        return bool(value)
 
 
 # String types...
@@ -816,9 +785,7 @@ class CharField(Field):
             self.validators.append(
                 MinLengthValidator(self.min_length, message=message))
 
-        # ProhibitNullCharactersValidator is None on Django < 2.0
-        if ProhibitNullCharactersValidator is not None:
-            self.validators.append(ProhibitNullCharactersValidator())
+        self.validators.append(ProhibitNullCharactersValidator())
         self.validators.append(ProhibitSurrogateCharactersValidator())
 
     def run_validation(self, data=empty):

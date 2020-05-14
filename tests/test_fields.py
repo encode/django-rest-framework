@@ -13,7 +13,6 @@ from django.utils.timezone import activate, deactivate, override, utc
 
 import rest_framework
 from rest_framework import exceptions, serializers
-from rest_framework.compat import ProhibitNullCharactersValidator
 from rest_framework.fields import (
     BuiltinSignatureError, DjangoImageField, is_simple_callable
 )
@@ -747,7 +746,6 @@ class TestCharField(FieldValues):
             field.run_validation('   ')
         assert exc_info.value.detail == ['This field may not be blank.']
 
-    @pytest.mark.skipif(ProhibitNullCharactersValidator is None, reason="Skipped on Django < 2.0")
     def test_null_bytes(self):
         field = serializers.CharField()
 
@@ -762,8 +760,8 @@ class TestCharField(FieldValues):
         field = serializers.CharField()
 
         for code_point, expected_message in (
-                (0xD800, 'Surrogate characters are not allowed: U+D800.'),
-                (0xDFFF, 'Surrogate characters are not allowed: U+DFFF.'),
+            (0xD800, 'Surrogate characters are not allowed: U+D800.'),
+            (0xDFFF, 'Surrogate characters are not allowed: U+DFFF.'),
         ):
             with pytest.raises(serializers.ValidationError) as exc_info:
                 field.run_validation(chr(code_point))

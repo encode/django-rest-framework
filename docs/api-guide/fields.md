@@ -603,7 +603,7 @@ The `to_internal_value()` method is called to restore a primitive datatype into 
 
 Let's look at an example of serializing a class that represents an RGB color value:
 
-    class Color(object):
+    class Color:
         """
         A color represented in the RGB colorspace.
         """
