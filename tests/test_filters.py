@@ -1,7 +1,6 @@
 import datetime
 from importlib import reload as reload_module
 
-import django
 import pytest
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
@@ -191,7 +190,6 @@ class SearchFilterTests(TestCase):
 
         assert terms == ['asdf']
 
-    @pytest.mark.skipif(django.VERSION[:2] < (2, 2), reason="requires django 2.2 or higher")
     def test_search_field_with_additional_transforms(self):
         from django.test.utils import register_lookup
 
