@@ -97,7 +97,7 @@ class FormatSuffixTests(TestCase):
     def test_format_suffix_django2_args(self):
         urlpatterns = [
             path('convtest/<int:pk>', dummy_view),
-            path('retest/<int:pk>', dummy_view),
+            re_path(r'^retest/(?P<pk>[0-9]+)$', dummy_view),
         ]
         test_paths = [
             URLTestPath('/convtest/42', (), {'pk': 42}),
