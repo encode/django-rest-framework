@@ -282,7 +282,7 @@ to your `Serializer` subclass. This is documented in the
 
 To write a class-based validator, use the `__call__` method. Class-based validators are useful as they allow you to parameterize and reuse behavior.
 
-    class MultipleOf(object):
+    class MultipleOf:
         def __init__(self, base):
             self.base = base
 
