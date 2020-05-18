@@ -77,11 +77,10 @@ class OR:
         )
 
     def has_object_permission(self, request, view, obj):
-        return (
-            (self.op1.has_permission(request, view) and self.op1.has_object_permission(request, view, obj))
-            or
-            (self.op2.has_permission(request, view) and self.op2.has_object_permission(request, view, obj))
-        )
+        op1 = self.op1.has_permission(request, view) and self.op1.has_object_permission(request, view, obj)
+        if op1:
+            return op1
+        return self.op2.has_permission(request, view) and self.op2.has_object_permission(request, view, obj)
 
 
 class NOT:

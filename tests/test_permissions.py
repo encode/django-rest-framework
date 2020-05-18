@@ -648,7 +648,7 @@ class PermissionsCompositionTests(TestCase):
                 mock_deny.assert_not_called()
 
         with mock.patch.object(permissions.AllowAny, 'has_object_permission', return_value=True) as mock_allow:
-            with mock.patch.object(permissions.IsAuthenticated, 'has_object_permission', return_value=False) as mock_deny:
+            with mock.patch.object(permissions.IsAuthenticated, 'has_permission', return_value=False) as mock_deny:
                 composed_perm = (permissions.IsAuthenticated | permissions.AllowAny)
                 hasperm = composed_perm().has_object_permission(request, None, None)
                 assert hasperm is True
