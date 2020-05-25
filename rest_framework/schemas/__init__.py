@@ -42,10 +42,14 @@ def get_schema_view(
         else:
             generator_class = openapi.SchemaGenerator
 
+    kwargs = {}
+    if issubclass(generator_class, openapi.SchemaGenerator):
+        kwargs['tag_objects'] = tag_objects
+
     generator = generator_class(
         title=title, url=url, description=description,
         urlconf=urlconf, patterns=patterns, version=version,
-        tag_objects=tag_objects
+        **kwargs,
     )
 
     # Avoid import cycle on APIView
