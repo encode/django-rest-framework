@@ -29,10 +29,10 @@ class SchemaGenerator(BaseSchemaGenerator):
 
     def __init__(self, title=None, url=None, description=None, patterns=None, urlconf=None, version=None,
                  tag_objects: List[Dict] = None):
-        self.tag_objects = tag_objects
         super().__init__(title, url, description, patterns, urlconf, version)
 
         if tag_objects:
+            assert isinstance(tag_objects, (list, tuple)), 'tag_objects must be list of dict'
             self.tag_objects = tag_objects
 
     def get_info(self):
@@ -115,7 +115,7 @@ class SchemaGenerator(BaseSchemaGenerator):
             'paths': paths,
         }
 
-        if self.tag_objects:
+        if hasattr(self, 'tag_objects'):
             schema['tags'] = self.tag_objects
 
         if len(components_schemas) > 0:
