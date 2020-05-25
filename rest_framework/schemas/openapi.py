@@ -189,7 +189,7 @@ class AutoSchema(ViewInspector):
             raise Exception(
                 '"{}" is an invalid class name for schema generation. '
                 'Serializer\'s class name should be unique and explicit. e.g. "ItemSerializer"'
-                    .format(serializer.__class__.__name__)
+                .format(serializer.__class__.__name__)
             )
 
         return component_name
