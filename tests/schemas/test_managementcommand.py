@@ -174,3 +174,10 @@ class GenerateSchemaTests(TestCase):
             call_command('generateschema',
                          '--tag_objects={}'.format(tag_objects),
                          stdout=self.out)
+
+    def test_rejects_invalid_dict_tag_objects(self):
+        tag_objects = '{"name": "pet", "description": "Pets operations"}'
+        with pytest.raises(AssertionError):
+            call_command('generateschema',
+                         '--tag_objects={}'.format(tag_objects),
+                         stdout=self.out)
