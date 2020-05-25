@@ -1,3 +1,5 @@
+import ast
+
 from django.core.management.base import BaseCommand
 from django.utils.module_loading import import_string
 
@@ -33,12 +35,14 @@ class Command(BaseCommand):
             generator_class = import_string(options['generator_class'])
         else:
             generator_class = self.get_generator_class()
+
+        tag_objects = ast.literal_eval(options['tag_objects']) if options['tag_objects'] else None
         generator = generator_class(
             url=options['url'],
             title=options['title'],
             description=options['description'],
             urlconf=options['urlconf'],
-            tag_objects=options['tag_objects']
+            tag_objects=tag_objects,
         )
         schema = generator.get_schema(request=None, public=True)
         renderer = self.get_renderer(options['format'])
