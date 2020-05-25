@@ -149,3 +149,28 @@ class GenerateSchemaTests(TestCase):
                      '--format=corejson',
                      stdout=self.out)
         self.assertIn(expected_out, self.out.getvalue())
+
+    def test_accepts_tag_objects(self):
+        tag_objects = '[{"name": "pet", "description": "Pets operations"}, {"name": "store", "description": "Store ' \
+                      'operations"}]'
+        call_command('generateschema',
+                     '--tag_objects={}'.format(tag_objects),
+                     stdout=self.out)
+        out_json = yaml.safe_load(self.out.getvalue())
+        assert out_json['tags'] == [
+            {
+                "name": "pet",
+                "description": "Pets operations"
+            },
+            {
+                "name": "store",
+                "description": "Store operations"
+            }
+        ]
+
+    def test_rejects_invalid_tag_objects(self):
+        tag_objects = '[{"name": "pet", "description": "Pets operations"}'
+        with pytest.raises(SyntaxError):
+            call_command('generateschema',
+                         '--tag_objects={}'.format(tag_objects),
+                         stdout=self.out)
