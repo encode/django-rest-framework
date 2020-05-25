@@ -7,6 +7,7 @@ from rest_framework.schemas import coreapi, get_schema_view, openapi
 
 class GetSchemaViewTests(TestCase):
     """For the get_schema_view() helper."""
+
     def test_openapi(self):
         schema_view = get_schema_view(title="With OpenAPI")
         assert isinstance(schema_view.initkwargs['schema_generator'], openapi.SchemaGenerator)
@@ -18,3 +19,11 @@ class GetSchemaViewTests(TestCase):
             schema_view = get_schema_view(title="With CoreAPI")
             assert isinstance(schema_view.initkwargs['schema_generator'], coreapi.SchemaGenerator)
             assert renderers.CoreAPIOpenAPIRenderer in schema_view.cls().renderer_classes
+
+    def test_tag_objects(self):
+        schema_view = get_schema_view(
+            title="With OpenAPI",
+            tag_objects=[{'name': 'pet', 'description': 'store description'}]
+        )
+        assert schema_view.initkwargs['schema_generator'].tag_objects, [
+            {'name': 'pet', 'description': 'store description'}]
