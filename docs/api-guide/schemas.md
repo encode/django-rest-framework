@@ -221,7 +221,7 @@ project you may adjust `settings.DEFAULT_SCHEMA_CLASS`  appropriately.
 Tags can be used to group logical operations. Each tag name in the list MUST be unique. 
 
 ---
-#### Django REST Framework generates tags automatically with the following logic:
+#### Django REST Framework generates tags automatically with the following logic
 
 Tag name will be first element from the path. Also, any `_` in path name will be replaced by a `-`.
 Consider below examples.
@@ -252,7 +252,7 @@ POST, GET(List)                      |     /order_items/       |   ['order-items
    
 
 ---
-#### Overriding auto generated tags:
+#### Overriding auto generated tags
 You can override auto-generated tags by passing `tags` argument to the constructor of `AutoSchema`. `tags` argument must be a list or tuple of string.
 ```python
 from rest_framework.schemas.openapi import AutoSchema
@@ -286,6 +286,68 @@ class MySchema(AutoSchema):
 class MyView(APIView):
     schema = MySchema()
     ...
+```
+
+#### Tag Object
+
+For each tag, you can provide optional tag object. Tag Object adds metadata to a tag.
+
+A tag object should have following keys:
+
+Field Name | Type | Description
+---|:---:|---
+name | string | The name of the tag. (**Required**)
+description | string | A short description for the tag. (Optional)
+externalDocs | dict | Additional external documentation for this tag. (Optional)
+
+Sample tag object:
+```python
+{
+	"name": "pet",
+	"description": "Pets operations"
+}
+```
+
+You can pass a list of tag objects as argument to constructor of SchemaGenerator class.
+```python
+from rest_framework.schemas.openapi import SchemaGenerator
+
+tag_objects = [
+    {
+        "name": "pet",
+        "description": "Pets operations"
+    },
+    {
+        "name": "store",
+        "description": "Store operations"
+    }
+]
+
+generator = SchemaGenerator(..., tag_objects=tag_objects)
+```
+
+You can also pass a list of tag objects as argument to `get_schema_view`.
+```python
+from rest_framework.schemas import get_schema_view
+
+get_schema_view(
+    ...,
+    tag_objects=[
+        {
+            "name": "pet",
+            "description": "Pets operations"
+        },
+        {
+            "name": "store",
+            "description": "Store operations"
+        }
+    ],
+)
+```
+
+You can also pass tag_objects as an option to `generateschema` command.
+```shell script
+$ python manage.py generateschema --tag_objects='[{"name": "pet", "description": "Pets operations"}, {"name": "store", "description": "Store operations"}]'
 ```
 
 ### OperationId
