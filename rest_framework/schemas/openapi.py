@@ -3,6 +3,7 @@ import warnings
 from collections import OrderedDict
 from decimal import Decimal
 from operator import attrgetter
+from typing import List, Dict
 from urllib.parse import urljoin
 
 from django.core.validators import (
@@ -18,13 +19,20 @@ from rest_framework import (
 from rest_framework.compat import uritemplate
 from rest_framework.fields import _UnvalidatedField, empty
 from rest_framework.settings import api_settings
-
 from .generators import BaseSchemaGenerator
 from .inspectors import ViewInspector
 from .utils import get_pk_description, is_list_view
 
 
 class SchemaGenerator(BaseSchemaGenerator):
+
+    def __init__(self, title=None, url=None, description=None, patterns=None, urlconf=None, version=None,
+                 tag_objects: List[Dict] = None):
+        self.tag_objects = tag_objects
+        super().__init__(title, url, description, patterns, urlconf, version)
+
+        if tag_objects:
+            self.tag_objects = tag_objects
 
     def get_info(self):
         # Title and version are required by openapi specification 3.x
@@ -106,6 +114,9 @@ class SchemaGenerator(BaseSchemaGenerator):
             'paths': paths,
         }
 
+        if self.tag_objects:
+            schema['tags'] = self.tag_objects
+
         if len(components_schemas) > 0:
             schema['components'] = {
                 'schemas': components_schemas
@@ -113,9 +124,8 @@ class SchemaGenerator(BaseSchemaGenerator):
 
         return schema
 
+
 # View Inspectors
-
-
 class AutoSchema(ViewInspector):
 
     def __init__(self, tags=None, operation_id_base=None, component_name=None):
@@ -179,7 +189,7 @@ class AutoSchema(ViewInspector):
             raise Exception(
                 '"{}" is an invalid class name for schema generation. '
                 'Serializer\'s class name should be unique and explicit. e.g. "ItemSerializer"'
-                .format(serializer.__class__.__name__)
+                    .format(serializer.__class__.__name__)
             )
 
         return component_name
