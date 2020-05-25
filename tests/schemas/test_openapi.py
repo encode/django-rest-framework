@@ -1109,3 +1109,21 @@ class TestGenerator(TestCase):
         schema = generator.get_schema(request=create_request('/'))
         assert 'components' not in schema
         assert 'content' not in schema['paths']['/example/']['delete']['responses']['204']
+
+    def test_tag_objects(self):
+        patterns = [
+            url(r'^example/?$', views.ExampleGenericAPIViewModel.as_view()),
+        ]
+        generator = SchemaGenerator(patterns=patterns, tag_objects=[{"name": "pet", "description": "Pets operations"}])
+        request = create_request('/')
+        schema = generator.get_schema(request=request)
+        assert schema['tags'] == [{"name": "pet", "description": "Pets operations"}]
+
+    def test_schema_without_tag_objects(self):
+        patterns = [
+            url(r'^example/?$', views.ExampleGenericAPIViewModel.as_view()),
+        ]
+        generator = SchemaGenerator(patterns=patterns)
+        request = create_request('/')
+        schema = generator.get_schema(request=request)
+        assert 'tags' not in schema
