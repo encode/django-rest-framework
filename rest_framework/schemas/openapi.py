@@ -3,7 +3,7 @@ import warnings
 from collections import OrderedDict
 from decimal import Decimal
 from operator import attrgetter
-from typing import List, Dict
+from typing import Dict, List
 from urllib.parse import urljoin
 
 from django.core.validators import (
@@ -19,6 +19,7 @@ from rest_framework import (
 from rest_framework.compat import uritemplate
 from rest_framework.fields import _UnvalidatedField, empty
 from rest_framework.settings import api_settings
+
 from .generators import BaseSchemaGenerator
 from .inspectors import ViewInspector
 from .utils import get_pk_description, is_list_view
