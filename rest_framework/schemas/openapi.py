@@ -286,7 +286,8 @@ class AutoSchema(ViewInspector):
                     description = get_pk_description(model, model_field)
 
                 if model_field is None and isinstance(model.__dict__[variable], property):
-                    description = getdoc(model.__dict__[variable])
+                    doc = getdoc(model.__dict__[variable])
+                    description = '' if doc is None else doc
 
             parameter = {
                 "name": variable,
