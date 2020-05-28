@@ -2,6 +2,7 @@ import re
 import warnings
 from collections import OrderedDict
 from decimal import Decimal
+from inspect import getdoc
 from operator import attrgetter
 from urllib.parse import urljoin
 
@@ -283,6 +284,9 @@ class AutoSchema(ViewInspector):
                     description = force_str(model_field.help_text)
                 elif model_field is not None and model_field.primary_key:
                     description = get_pk_description(model, model_field)
+
+                if model_field is None and isinstance(model.__dict__[variable], property):
+                    description = getdoc(model.__dict__[variable])
 
             parameter = {
                 "name": variable,
