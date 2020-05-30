@@ -1,732 +1,166 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>George Floyd</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous"
+    <meta name="theme-color" content="#563d7c">
 
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <meta charset="utf-8">
-  <title>Home - Django REST framework</title>
-  <link href="img/favicon.ico" rel="icon" type="image/x-icon">
-  <link rel="canonical" href="https://www.django-rest-framework.org/" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Django, API, REST, Home">
-  <meta name="author" content="Tom Christie">
 
-  <!-- Le styles -->
-  <link href="css/prettify.css" rel="stylesheet">
-  <link href="css/bootstrap.css" rel="stylesheet">
-  <link href="css/bootstrap-responsive.css" rel="stylesheet">
-  <link href="css/default.css" rel="stylesheet">
+    <style>
+      /*
+ * Globals
+ */
 
-  <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
-  <!--[if lt IE 9]>
-    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-  <![endif]-->
+/* Links */
+a,
+a:focus,
+a:hover {
+  color: #fff;
+}
 
-  <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-18852272-2']);
-    _gaq.push(['_trackPageview']);
+/* Custom default button */
+.btn-secondary,
+.btn-secondary:hover,
+.btn-secondary:focus {
+  color: #333;
+  text-shadow: none; /* Prevent inheritance from `body` */
+  background-color: #fff;
+  border: .05rem solid #fff;
+}
 
-    (function() {
-      var ga = document.createElement('script');
-      ga.type = 'text/javascript';
-      ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0];
-      s.parentNode.insertBefore(ga, s);
-    })();
-  </script>
 
-  <style>
-  #sidebarInclude img {
-      margin-bottom: 10px;
-  }
-  #sidebarInclude a.promo {
-      color: black;
-  }
-    @media (max-width: 767px) {
-      div.promo {
-        display: none;
-      }
-    }
-  </style>
-</head>
-<body onload="prettyPrint()" class="index-page">
+/*
+ * Base structure
+ */
 
-  <div class="wrapper">
-        <div class="navbar navbar-inverse navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container-fluid">
-          <a class="repo-link btn btn-primary btn-small" href="https://github.com/encode/django-rest-framework/tree/master">GitHub</a>
-          <a class="repo-link btn btn-inverse btn-small " rel="next" href="tutorial/quickstart/">
-            Next <i class="icon-arrow-right icon-white"></i>
-          </a>
-          <a class="repo-link btn btn-inverse btn-small disabled" rel="prev" >
-            <i class="icon-arrow-left icon-white"></i> Previous
-          </a>
-          <a id="search_modal_show" class="repo-link btn btn-inverse btn-small" href="#mkdocs_search_modal" data-toggle="modal" data-target="#mkdocs_search_modal"><i class="icon-search icon-white"></i> Search</a>
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-          <a class="brand" href="https://www.django-rest-framework.org/">Django REST framework</a>
-          <div class="nav-collapse collapse">
-            
-            <!-- Main navigation -->
-            <ul class="nav navbar-nav">
-               
-              <li class="active" >
-                <a href=".">Home</a>
-              </li>
-                
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorial <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="tutorial/quickstart/">Quickstart</a>
-                  </li>
-                  
-                  <li >
-                    <a href="tutorial/1-serialization/">1 - Serialization</a>
-                  </li>
-                  
-                  <li >
-                    <a href="tutorial/2-requests-and-responses/">2 - Requests and responses</a>
-                  </li>
-                  
-                  <li >
-                    <a href="tutorial/3-class-based-views/">3 - Class based views</a>
-                  </li>
-                  
-                  <li >
-                    <a href="tutorial/4-authentication-and-permissions/">4 - Authentication and permissions</a>
-                  </li>
-                  
-                  <li >
-                    <a href="tutorial/5-relationships-and-hyperlinked-apis/">5 - Relationships and hyperlinked APIs</a>
-                  </li>
-                  
-                  <li >
-                    <a href="tutorial/6-viewsets-and-routers/">6 - Viewsets and routers</a>
-                  </li>
-                  
-                </ul>
-              </li>
-                
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">API Guide <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="api-guide/requests/">Requests</a>
-                  </li>
-                  
-                  <li >
-                    <a href="api-guide/responses/">Responses</a>
-                  </li>
-                  
-                  <li >
-                    <a href="api-guide/views/">Views</a>
-                  </li>
-                  
-                  <li >
-                    <a href="api-guide/generic-views/">Generic views</a>
-                  </li>
-                  
-                  <li >
-                    <a href="api-guide/viewsets/">Viewsets</a>
-                  </li>
-                  
-                  <li >
-                    <a href="api-guide/routers/">Routers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="api-guide/parsers/">Parsers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="api-guide/renderers/">Renderers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="api-guide/serializers/">Serializers</a>
-                  </li>
-                  
-                  <li >
-                    <a href="api-guide/fields/">Serializer fields</a>
-                  </li>
-                  
-                  <li >
-                    <a href="api-guide/relations/">Serializer relations</a>
-                  </li>
-                  
-                  <li >
-                    <a href="api-guide/validators/">Validators</a>
-                  </li>
-                  
-                  <li >
-                    <a href="api-guide/authentication/">Authentication</a>
-                  </li>
-                  
-                  <li >
-                    <a href="api-guide/permissions/">Permissions</a>
-                  </li>
-                  
-                  <li >
-                    <a href="api-guide/caching/">Caching</a>
-                  </li>
-                  
-                  <li >
-                    <a href="api-guide/throttling/">Throttling</a>
-                  </li>
-                  
-                  <li >
-                    <a href="api-guide/filtering/">Filtering</a>
-                  </li>
-                  
-                  <li >
-                    <a href="api-guide/pagination/">Pagination</a>
-                  </li>
-                  
-                  <li >
-                    <a href="api-guide/versioning/">Versioning</a>
-                  </li>
-                  
-                  <li >
-                    <a href="api-guide/content-negotiation/">Content negotiation</a>
-                  </li>
-                  
-                  <li >
-                    <a href="api-guide/metadata/">Metadata</a>
-                  </li>
-                  
-                  <li >
-                    <a href="api-guide/schemas/">Schemas</a>
-                  </li>
-                  
-                  <li >
-                    <a href="api-guide/format-suffixes/">Format suffixes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="api-guide/reverse/">Returning URLs</a>
-                  </li>
-                  
-                  <li >
-                    <a href="api-guide/exceptions/">Exceptions</a>
-                  </li>
-                  
-                  <li >
-                    <a href="api-guide/status-codes/">Status codes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="api-guide/testing/">Testing</a>
-                  </li>
-                  
-                  <li >
-                    <a href="api-guide/settings/">Settings</a>
-                  </li>
-                  
-                </ul>
-              </li>
-                
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Topics <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="topics/documenting-your-api/">Documenting your API</a>
-                  </li>
-                  
-                  <li >
-                    <a href="topics/api-clients/">API Clients</a>
-                  </li>
-                  
-                  <li >
-                    <a href="topics/internationalization/">Internationalization</a>
-                  </li>
-                  
-                  <li >
-                    <a href="topics/ajax-csrf-cors/">AJAX, CSRF & CORS</a>
-                  </li>
-                  
-                  <li >
-                    <a href="topics/html-and-forms/">HTML & Forms</a>
-                  </li>
-                  
-                  <li >
-                    <a href="topics/browser-enhancements/">Browser Enhancements</a>
-                  </li>
-                  
-                  <li >
-                    <a href="topics/browsable-api/">The Browsable API</a>
-                  </li>
-                  
-                  <li >
-                    <a href="topics/rest-hypermedia-hateoas/">REST, Hypermedia & HATEOAS</a>
-                  </li>
-                  
-                </ul>
-              </li>
-                
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Community <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  
-                  <li >
-                    <a href="community/tutorials-and-resources/">Tutorials and Resources</a>
-                  </li>
-                  
-                  <li >
-                    <a href="community/third-party-packages/">Third Party Packages</a>
-                  </li>
-                  
-                  <li >
-                    <a href="community/contributing/">Contributing to REST framework</a>
-                  </li>
-                  
-                  <li >
-                    <a href="community/project-management/">Project management</a>
-                  </li>
-                  
-                  <li >
-                    <a href="community/release-notes/">Release Notes</a>
-                  </li>
-                  
-                  <li >
-                    <a href="community/3.11-announcement/">3.11 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="community/3.10-announcement/">3.10 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="community/3.9-announcement/">3.9 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="community/3.8-announcement/">3.8 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="community/3.7-announcement/">3.7 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="community/3.6-announcement/">3.6 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="community/3.5-announcement/">3.5 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="community/3.4-announcement/">3.4 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="community/3.3-announcement/">3.3 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="community/3.2-announcement/">3.2 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="community/3.1-announcement/">3.1 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="community/3.0-announcement/">3.0 Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="community/kickstarter-announcement/">Kickstarter Announcement</a>
-                  </li>
-                  
-                  <li >
-                    <a href="community/mozilla-grant/">Mozilla Grant</a>
-                  </li>
-                  
-                  <li >
-                    <a href="community/funding/">Funding</a>
-                  </li>
-                  
-                  <li >
-                    <a href="community/jobs/">Jobs</a>
-                  </li>
-                  
-                </ul>
-              </li>
-               
+html,
+body {
+  height: 100%;
+  background-color: #333;
+}
 
-            </ul>
-            
-          </div>
-          <!--/.nav-collapse -->
+body {
+  display: -ms-flexbox;
+  display: flex;
+  color: #fff;
+  text-shadow: 0 .05rem .1rem rgba(0, 0, 0, .5);
+  box-shadow: inset 0 0 5rem rgba(0, 0, 0, .5);
+}
 
-        </div>
-      </div>
-    </div>
+.cover-container {
+  max-width: 42em;
+}
 
-    <div class="body-content">
-      <div class="container-fluid">
-        <!-- Search Modal -->
-        <div id="mkdocs_search_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h3 id="myModalLabel">Documentation search</h3>
-          </div>
 
-          <div class="modal-body">
-            <form role="form" autocomplete="off">
-              <div class="form-group">
-                <input type="text" name="q" class="form-control" placeholder="Search..." id="mkdocs-search-query">
-              </div>
-            </form>
-            <div id="mkdocs-search-results"></div>
-          </div>
+/*
+ * Header
+ */
+.masthead {
+  margin-bottom: 2rem;
+}
 
-          <div class="modal-footer">
-            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-          </div>
-        </div>
+.masthead-brand {
+  margin-bottom: 0;
+}
 
-        <div class="row-fluid">
-          <div class="span3">
-            <div id="table-of-contents">
-              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-                
-                  <li class="main">
-                    <a href="#">Django REST framework</a>
-                  </li>
-                
+.nav-masthead .nav-link {
+  padding: .25rem 0;
+  font-weight: 700;
+  color: rgba(255, 255, 255, .5);
+  background-color: transparent;
+  border-bottom: .25rem solid transparent;
+}
 
-                
-                  <li class="">
-                    <a href="#funding">Funding</a>
-                  </li>
+.nav-masthead .nav-link:hover,
+.nav-masthead .nav-link:focus {
+  border-bottom-color: rgba(255, 255, 255, .25);
+}
 
-                  
-                
-                  <li class="">
-                    <a href="#requirements">Requirements</a>
-                  </li>
+.nav-masthead .nav-link + .nav-link {
+  margin-left: 1rem;
+}
 
-                  
-                
-                  <li class="">
-                    <a href="#installation">Installation</a>
-                  </li>
+.nav-masthead .active {
+  color: #fff;
+  border-bottom-color: #fff;
+}
 
-                  
-                
-                  <li class="">
-                    <a href="#example">Example</a>
-                  </li>
-
-                  
-                
-                  <li class="">
-                    <a href="#quickstart">Quickstart</a>
-                  </li>
-
-                  
-                
-                  <li class="">
-                    <a href="#development">Development</a>
-                  </li>
-
-                  
-                
-                  <li class="">
-                    <a href="#support">Support</a>
-                  </li>
-
-                  
-                
-                  <li class="">
-                    <a href="#security">Security</a>
-                  </li>
-
-                  
-                
-                  <li class="">
-                    <a href="#license">License</a>
-                  </li>
-
-                  
-                
-
-                  <div class="promo">
-                    <hr/>
-                    <div id="sidebarInclude">
-                  </div>
-              </ul>
-
-            </div>
-          </div>
-
-          <div id="main-content" class="span9">
-            
-              
-
-              <style>
-.promo li a {
+@media (min-width: 48em) {
+  .masthead-brand {
     float: left;
-    width: 130px;
-    height: 20px;
-    text-align: center;
-    margin: 10px 30px;
-    padding: 150px 0 0 0;
-    background-position: 0 50%;
-    background-size: 130px auto;
-    background-repeat: no-repeat;
-    font-size: 120%;
-    color: black;
+  }
+  .nav-masthead {
+    float: right;
+  }
 }
-.promo li {
-    list-style: none;
+
+
+/*
+ * Cover
+ */
+.cover {
+  padding: 0 1.5rem;
 }
-</style>
-
-<p class="badges" height=20px>
-    <iframe src="https://ghbtns.com/github-btn.html?user=encode&amp;repo=django-rest-framework&amp;type=watch&amp;count=true" class="github-star-button" allowtransparency="true" frameborder="0" scrolling="0" width="110px" height="20px"></iframe>
-
-    <a href="https://travis-ci.org/encode/django-rest-framework?branch=master">
-        <img src="https://secure.travis-ci.org/encode/django-rest-framework.svg?branch=master" class="status-badge">
-    </a>
-
-    <a href="https://pypi.org/project/djangorestframework/">
-        <img src="https://img.shields.io/pypi/v/djangorestframework.svg" class="status-badge">
-    </a>
-</p>
-
-<hr />
-<p>
-<h1 style="position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0,0,0,0);
-    border: 0;">Django REST Framework</h1>
-
-<img alt="Django REST Framework" title="Logo by Jake 'Sid' Smith" src="img/logo.png" width="600px" style="display: block; margin: 0 auto 0 auto">
-</p>
-
-<p>Django REST framework is a powerful and flexible toolkit for building Web APIs.</p>
-<p>Some reasons you might want to use REST framework:</p>
-<ul>
-<li>The <a href="https://restframework.herokuapp.com/">Web browsable API</a> is a huge usability win for your developers.</li>
-<li><a href="api-guide/authentication/">Authentication policies</a> including packages for <a href="api-guide/authentication/#django-rest-framework-oauth">OAuth1a</a> and <a href="api-guide/authentication/#django-oauth-toolkit">OAuth2</a>.</li>
-<li><a href="api-guide/serializers/">Serialization</a> that supports both <a href="api-guide/serializers#modelserializer">ORM</a> and <a href="api-guide/serializers#serializers">non-ORM</a> data sources.</li>
-<li>Customizable all the way down - just use <a href="api-guide/views#function-based-views">regular function-based views</a> if you don't need the <a href="api-guide/generic-views/">more</a> <a href="api-guide/viewsets/">powerful</a> <a href="api-guide/routers/">features</a>.</li>
-<li>Extensive documentation, and <a href="https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework">great community support</a>.</li>
-<li>Used and trusted by internationally recognised companies including <a href="https://www.mozilla.org/en-US/about/">Mozilla</a>, <a href="https://www.redhat.com/">Red Hat</a>, <a href="https://www.heroku.com/">Heroku</a>, and <a href="https://www.eventbrite.co.uk/about/">Eventbrite</a>.</li>
-</ul>
-<hr />
-<h2 id="funding"><a class="toclink" href="#funding">Funding</a></h2>
-<p>REST framework is a <em>collaboratively funded project</em>. If you use
-REST framework commercially we strongly encourage you to invest in its
-continued development by <strong><a href="community/funding/">signing up for a paid plan</a></strong>.</p>
-<p><em>Every single sign-up helps us make REST framework long-term financially sustainable.</em></p>
-<ul class="premium-promo promo">
-    <li><a href="https://getsentry.com/welcome/" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/sentry130.png)">Sentry</a></li>
-    <li><a href="https://getstream.io/try-the-api/?utm_source=drf&utm_medium=banner&utm_campaign=drf" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/stream-130.png)">Stream</a></li>
-    <li><a href="https://software.esg-usa.com" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/esg-new-logo.png)">ESG</a></li>
-    <li><a href="https://rollbar.com" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/rollbar2.png)">Rollbar</a></li>
-    <li><a href="https://cadre.com" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/cadre.png)">Cadre</a></li>
-    <li><a href="https://hubs.ly/H0f30Lf0" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/kloudless-plus-text.png)">Kloudless</a></li>
-    <li><a href="https://lightsonsoftware.com" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/lightson-dark.png)">Lights On Software</a></li>
-    <li><a href="https://retool.com/?utm_source=djangorest&utm_medium=sponsorship" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/retool-sidebar.png)">Retool</a></li>
-</ul>
-
-<div style="clear: both; padding-bottom: 20px;"></div>
-
-<p><em>Many thanks to all our <a href="https://fund.django-rest-framework.org/topics/funding/#our-sponsors">wonderful sponsors</a>, and in particular to our premium backers, <a href="https://getsentry.com/welcome/">Sentry</a>, <a href="https://getstream.io/?utm_source=drf&amp;utm_medium=banner&amp;utm_campaign=drf">Stream</a>, <a href="https://software.esg-usa.com/">ESG</a>, <a href="https://rollbar.com/?utm_source=django&amp;utm_medium=sponsorship&amp;utm_campaign=freetrial">Rollbar</a>, <a href="https://cadre.com">Cadre</a>, <a href="https://hubs.ly/H0f30Lf0">Kloudless</a>, <a href="https://lightsonsoftware.com">Lights On Software</a>, and <a href="https://retool.com/?utm_source=djangorest&amp;utm_medium=sponsorship">Retool</a>.</em></p>
-<hr />
-<h2 id="requirements"><a class="toclink" href="#requirements">Requirements</a></h2>
-<p>REST framework requires the following:</p>
-<ul>
-<li>Python (3.5, 3.6, 3.7, 3.8)</li>
-<li>Django (1.11, 2.0, 2.1, 2.2, 3.0)</li>
-</ul>
-<p>We <strong>highly recommend</strong> and only officially support the latest patch release of
-each Python and Django series.</p>
-<p>The following packages are optional:</p>
-<ul>
-<li><a href="https://pypi.org/project/coreapi/">coreapi</a> (1.32.0+) - Schema generation support.</li>
-<li><a href="https://pypi.org/project/Markdown/">Markdown</a> (3.0.0+) - Markdown support for the browsable API.</li>
-<li><a href="https://pypi.org/project/Pygments/">Pygments</a> (2.4.0+) - Add syntax highlighting to Markdown processing.</li>
-<li><a href="https://pypi.org/project/django-filter/">django-filter</a> (1.0.1+) - Filtering support.</li>
-<li><a href="https://github.com/django-guardian/django-guardian">django-guardian</a> (1.1.1+) - Object level permissions support.</li>
-</ul>
-<h2 id="installation"><a class="toclink" href="#installation">Installation</a></h2>
-<p>Install using <code>pip</code>, including any optional packages you want...</p>
-<pre><code>pip install djangorestframework
-pip install markdown       # Markdown support for the browsable API.
-pip install django-filter  # Filtering support
-</code></pre>
-<p>...or clone the project from github.</p>
-<pre><code>git clone https://github.com/encode/django-rest-framework
-</code></pre>
-<p>Add <code>'rest_framework'</code> to your <code>INSTALLED_APPS</code> setting.</p>
-<pre><code>INSTALLED_APPS = [
-    ...
-    'rest_framework',
-]
-</code></pre>
-<p>If you're intending to use the browsable API you'll probably also want to add REST framework's login and logout views.  Add the following to your root <code>urls.py</code> file.</p>
-<pre><code>urlpatterns = [
-    ...
-    url(r'^api-auth/', include('rest_framework.urls'))
-]
-</code></pre>
-<p>Note that the URL path can be whatever you want.</p>
-<h2 id="example"><a class="toclink" href="#example">Example</a></h2>
-<p>Let's take a look at a quick example of using REST framework to build a simple model-backed API.</p>
-<p>We'll create a read-write API for accessing information on the users of our project.</p>
-<p>Any global settings for a REST framework API are kept in a single configuration dictionary named <code>REST_FRAMEWORK</code>.  Start off by adding the following to your <code>settings.py</code> module:</p>
-<pre><code>REST_FRAMEWORK = {
-    # Use Django's standard `django.contrib.auth` permissions,
-    # or allow read-only access for unauthenticated users.
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    ]
+.cover .btn-lg {
+  padding: .75rem 1.25rem;
+  font-weight: 700;
 }
-</code></pre>
-<p>Don't forget to make sure you've also added <code>rest_framework</code> to your <code>INSTALLED_APPS</code>.</p>
-<p>We're ready to create our API now.
-Here's our project's root <code>urls.py</code> module:</p>
-<pre><code>from django.conf.urls import url, include
-from django.contrib.auth.models import User
-from rest_framework import routers, serializers, viewsets
 
-# Serializers define the API representation.
-class UserSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = User
-        fields = ['url', 'username', 'email', 'is_staff']
 
-# ViewSets define the view behavior.
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+/*
+ * Footer
+ */
+.mastfoot {
+  color: rgba(255, 255, 255, .5);
+}
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
 
-# Routers provide an easy way of automatically determining the URL conf.
-router = routers.DefaultRouter()
-router.register(r'users', UserViewSet)
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
+    <!-- Custom styles for this template -->
+    <link href="cover.css" rel="stylesheet">
+  </head>
+  <body class="text-center">
+    <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+  <header class="masthead mb-auto">
+    <!--
+    <div class="inner">
+      <h3 class="masthead-brand">Cover</h3>
+      <nav class="nav nav-masthead justify-content-center">
+        <a class="nav-link active" href="#">Home</a>
+        <a class="nav-link" href="#">Features</a>
+        <a class="nav-link" href="#">Contact</a>
+      </nav>
+    </div>
+    -->
+  </header>
 
-# Wire up our API using automatic URL routing.
-# Additionally, we include login URLs for the browsable API.
-urlpatterns = [
-    url(r'^', include(router.urls)),
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
-]
-</code></pre>
-<p>You can now open the API in your browser at <a href="http://127.0.0.1:8000/">http://127.0.0.1:8000/</a>, and view your new 'users' API. If you use the login control in the top right corner you'll also be able to add, create and delete users from the system.</p>
-<h2 id="quickstart"><a class="toclink" href="#quickstart">Quickstart</a></h2>
-<p>Can't wait to get started? The <a href="tutorial/quickstart/">quickstart guide</a> is the fastest way to get up and running, and building APIs with REST framework.</p>
-<h2 id="development"><a class="toclink" href="#development">Development</a></h2>
-<p>See the <a href="community/contributing/">Contribution guidelines</a> for information on how to clone
-the repository, run the test suite and contribute changes back to REST
-Framework.</p>
-<h2 id="support"><a class="toclink" href="#support">Support</a></h2>
-<p>For support please see the <a href="https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework">REST framework discussion group</a>, try the  <code>#restframework</code> channel on <code>irc.freenode.net</code>, search <a href="https://botbot.me/freenode/restframework/">the IRC archives</a>, or raise a  question on <a href="https://stackoverflow.com/">Stack Overflow</a>, making sure to include the <a href="https://stackoverflow.com/questions/tagged/django-rest-framework">'django-rest-framework'</a> tag.</p>
-<p>For priority support please sign up for a <a href="https://fund.django-rest-framework.org/topics/funding/">professional or premium sponsorship plan</a>.</p>
-<p>For updates on REST framework development, you may also want to follow <a href="https://twitter.com/_tomchristie">the author</a> on Twitter.</p>
-<p><a style="padding-top: 10px" href="https://twitter.com/_tomchristie" class="twitter-follow-button" data-show-count="false">Follow @_tomchristie</a>
-<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></p>
-<h2 id="security"><a class="toclink" href="#security">Security</a></h2>
-<p>If you believe you’ve found something in Django REST framework which has security implications, please <strong>do not raise the issue in a public forum</strong>.</p>
-<p>Send a description of the issue via email to <a href="mailto:rest-framework-security@googlegroups.com">rest-framework-security@googlegroups.com</a>.  The project maintainers will then work with you to resolve any issues where required, prior to any public disclosure.</p>
-<h2 id="license"><a class="toclink" href="#license">License</a></h2>
-<p>Copyright © 2011-present, <a href="https://www.encode.io/">Encode OSS Ltd</a>.
-All rights reserved.</p>
-<p>Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:</p>
-<ul>
-<li>
-<p>Redistributions of source code must retain the above copyright notice, this
-  list of conditions and the following disclaimer.</p>
-</li>
-<li>
-<p>Redistributions in binary form must reproduce the above copyright notice,
-  this list of conditions and the following disclaimer in the documentation
-  and/or other materials provided with the distribution.</p>
-</li>
-<li>
-<p>Neither the name of the copyright holder nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.</p>
-</li>
-</ul>
-<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
-            
+  <main role="main" class="inner cover">
+    <h1 class="cover-heading">George Floyd</h1>
+    <p class="lead mastfoot">Natosha McDade, Yassin Mohamed, Finan H. Berhe, Sean Reed, Steven Demarco Taylor, Ariane McCree, Terrance Franklin, Miles Hall, Darius Tarver, William Green, Samuel David Mallard, Kwame Jones, De’von Bailey, Christopher Whitfield, Anthony Hill, De’Von Bailey, Eric Logan, Jamarion Robinson, Gregory Hill Jr, JaQuavion Slaton, Ryan Twyman, Brandon Webber, Jimmy Atchison, Willie McCoy, Emantic Fitzgerald Bradford J, D’ettrick Griffin, Jemel Roberson, DeAndre Ballard, Botham Shem Jean, Robert Lawrence White, Anthony Lamar Smith, Ramarley Graham, Manuel Loggins Jr, Trayvon Martin, Wendell Allen, Kendrec McDade, Larry Jackson Jr, Jonathan Ferrell, Jordan Baker, Victor White III, Dontre Hamilton, Eric Garner, John Crawford III, Michael Brown, Ezell Ford, Dante Parker, Kajieme Powell, Laquan McDonald, Akai Gurley, Tamir Rice, Rumain Brisbon, Jerame Reid, Charly Keunang, Tony Robinson, Walter Scott, Freddie Gray, Brendon Glenn, Samuel DuBose, Christian Taylor, Jamar Clark, Mario Woods, Quintonio LeGrier, Gregory Gunn, Akiel Denkins, Alton Sterling, Philando Castile, Terrence Sterling, Terence Crutcher, Keith Lamont Scott, Alfred Olango, Jordan Edwards, Stephon Clark, Danny Ray Thomas, DeJuan Guillory, Patrick Harmon, Jonathan Hart, Maurice Granton, Julius Johnson, Jamee Johnson, Michael Dean...</p>
+    <!--<p class="lead">
+      <a href="#" class="btn btn-lg btn-secondary">Learn more</a>
+    </p>-->
+  </main>
 
-          </div> <!--/span-->
-        </div> <!--/row-->
-      </div> <!--/.fluid-container-->
-    </div> <!--/.body content-->
-    <div id="push"></div>
-  </div> <!--/.wrapper -->
-
-  <footer class="span12">
-    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.
-    </p>
+  <footer class="mastfoot mt-auto">
+    <div class="inner">
+      <p>-</p>
+    </div>
   </footer>
-
-  <!-- Le javascript
-  ================================================== -->
-  <!-- Placed at the end of the document so the pages load faster -->
-  <script async src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
-  <script src="js/jquery-1.8.1-min.js"></script>
-  <script src="js/prettify-1.0.js"></script>
-  <script src="js/bootstrap-2.1.1-min.js"></script>
-  <script src="js/theme.js"></script>
-
-  <script>var base_url = '.';</script>
-  
-  <script src="search/main.js" defer></script>
-  
-
-  <script>
-    var shiftWindow = function() {
-      scrollBy(0, -50)
-    };
-
-    if (location.hash) shiftWindow();
-    window.addEventListener("hashchange", shiftWindow);
-
-    $('.dropdown-menu').on('click touchstart', function(event) {
-      event.stopPropagation();
-    });
-
-    // Dynamically force sidenav/dropdown to no higher than browser window
-    $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
-
-    $(function() {
-      $(window).resize(function() {
-        $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
-      });
-    });
-  </script>
+</div>
 </body>
-
 </html>
