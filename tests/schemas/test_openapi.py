@@ -4,6 +4,7 @@ import warnings
 import pytest
 from django.conf.urls import url
 from django.test import RequestFactory, TestCase, override_settings
+from django.urls import path
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import filters, generics, pagination, routers, serializers
@@ -1112,7 +1113,7 @@ class TestGenerator(TestCase):
 
     def test_tag_objects(self):
         patterns = [
-            url(r'^example/?$', views.ExampleGenericAPIViewModel.as_view()),
+            path('example/', views.ExampleGenericAPIViewModel.as_view()),
         ]
         generator = SchemaGenerator(patterns=patterns, tag_objects=[{"name": "pet", "description": "Pets operations"}])
         request = create_request('/')
@@ -1121,7 +1122,7 @@ class TestGenerator(TestCase):
 
     def test_schema_without_tag_objects(self):
         patterns = [
-            url(r'^example/?$', views.ExampleGenericAPIViewModel.as_view()),
+            path('example/', views.ExampleGenericAPIViewModel.as_view()),
         ]
         generator = SchemaGenerator(patterns=patterns)
         request = create_request('/')
