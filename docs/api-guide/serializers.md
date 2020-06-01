@@ -161,7 +161,7 @@ Each key in the dictionary will be the field name, and the values will be lists 
 
 When deserializing a list of items, errors will be returned as a list of dictionaries representing each of the deserialized items.
 
-#### Raising an exception on invalid data
+#### Raising an exception on invalid data
 
 The `.is_valid()` method takes an optional `raise_exception` flag that will cause it to raise a `serializers.ValidationError` exception if there are validation errors.
 
