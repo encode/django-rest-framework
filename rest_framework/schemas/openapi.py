@@ -358,6 +358,13 @@ class AutoSchema(ViewInspector):
             mapping['type'] = type
         return mapping
 
+    FIELD_CLASS_SCHEMA_TYPE = {
+        serializers.BooleanField: 'boolean',
+        serializers.JSONField: 'object',
+        serializers.DictField: 'object',
+        serializers.HStoreField: 'object',
+    }
+
     def map_field(self, field):
 
         # Nested Serializers, `many` or not.
@@ -492,13 +499,7 @@ class AutoSchema(ViewInspector):
             }
 
         # Simplest cases, default to 'string' type:
-        FIELD_CLASS_SCHEMA_TYPE = {
-            serializers.BooleanField: 'boolean',
-            serializers.JSONField: 'object',
-            serializers.DictField: 'object',
-            serializers.HStoreField: 'object',
-        }
-        return {'type': FIELD_CLASS_SCHEMA_TYPE.get(field.__class__, 'string')}
+        return {'type': self.FIELD_CLASS_SCHEMA_TYPE.get(field.__class__, 'string')}
 
     def _map_min_max(self, field, content):
         if field.max_value:
