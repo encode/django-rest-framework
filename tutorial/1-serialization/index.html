@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <title>1 - Serialization - Django REST framework</title>
+  <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
+  <link rel="canonical" href="https://www.django-rest-framework.org/tutorial/1-serialization/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Django, API, REST, 1 - Serialization">
+  <meta name="author" content="Tom Christie">
+
+  <!-- Le styles -->
+  <link href="../../css/prettify.css" rel="stylesheet">
+  <link href="../../css/bootstrap.css" rel="stylesheet">
+  <link href="../../css/bootstrap-responsive.css" rel="stylesheet">
+  <link href="../../css/default.css" rel="stylesheet">
+
+  <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-18852272-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script');
+      ga.type = 'text/javascript';
+      ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+  <style>
+  #sidebarInclude img {
+      margin-bottom: 10px;
+  }
+  #sidebarInclude a.promo {
+      color: black;
+  }
+    @media (max-width: 767px) {
+      div.promo {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body onload="prettyPrint()" class="-page">
+
+  <div class="wrapper">
+        <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="repo-link btn btn-primary btn-small" href="https://github.com/encode/django-rest-framework/tree/master">GitHub</a>
+          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../2-requests-and-responses/">
+            Next <i class="icon-arrow-right icon-white"></i>
+          </a>
+          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../quickstart/">
+            <i class="icon-arrow-left icon-white"></i> Previous
+          </a>
+          <a id="search_modal_show" class="repo-link btn btn-inverse btn-small" href="#mkdocs_search_modal" data-toggle="modal" data-target="#mkdocs_search_modal"><i class="icon-search icon-white"></i> Search</a>
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="https://www.django-rest-framework.org/">Django REST framework</a>
+          <div class="nav-collapse collapse">
+            
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+               
+              <li >
+                <a href="../..">Home</a>
+              </li>
+                
+              <li class="dropdown active">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorial <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../quickstart/">Quickstart</a>
+                  </li>
+                  
+                  <li class="active" >
+                    <a href="./">1 - Serialization</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../2-requests-and-responses/">2 - Requests and responses</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../3-class-based-views/">3 - Class based views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../4-authentication-and-permissions/">4 - Authentication and permissions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../5-relationships-and-hyperlinked-apis/">5 - Relationships and hyperlinked APIs</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../6-viewsets-and-routers/">6 - Viewsets and routers</a>
+                  </li>
+                  
+                </ul>
+              </li>
+                
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">API Guide <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../../api-guide/requests/">Requests</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/responses/">Responses</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/views/">Views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/generic-views/">Generic views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/viewsets/">Viewsets</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/routers/">Routers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/parsers/">Parsers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/renderers/">Renderers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/serializers/">Serializers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/fields/">Serializer fields</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/relations/">Serializer relations</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/validators/">Validators</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/authentication/">Authentication</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/permissions/">Permissions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/caching/">Caching</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/throttling/">Throttling</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/filtering/">Filtering</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/pagination/">Pagination</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/versioning/">Versioning</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/content-negotiation/">Content negotiation</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/metadata/">Metadata</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/schemas/">Schemas</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/format-suffixes/">Format suffixes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/reverse/">Returning URLs</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/exceptions/">Exceptions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/status-codes/">Status codes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/testing/">Testing</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../api-guide/settings/">Settings</a>
+                  </li>
+                  
+                </ul>
+              </li>
+                
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Topics <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../../topics/documenting-your-api/">Documenting your API</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/api-clients/">API Clients</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/internationalization/">Internationalization</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/ajax-csrf-cors/">AJAX, CSRF & CORS</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/html-and-forms/">HTML & Forms</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/browser-enhancements/">Browser Enhancements</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/browsable-api/">The Browsable API</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/rest-hypermedia-hateoas/">REST, Hypermedia & HATEOAS</a>
+                  </li>
+                  
+                </ul>
+              </li>
+                
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Community <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../../community/tutorials-and-resources/">Tutorials and Resources</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/third-party-packages/">Third Party Packages</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/contributing/">Contributing to REST framework</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/project-management/">Project management</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/release-notes/">Release Notes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.11-announcement/">3.11 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.10-announcement/">3.10 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.9-announcement/">3.9 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.8-announcement/">3.8 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.7-announcement/">3.7 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.6-announcement/">3.6 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.5-announcement/">3.5 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.4-announcement/">3.4 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.3-announcement/">3.3 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.2-announcement/">3.2 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.1-announcement/">3.1 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.0-announcement/">3.0 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/kickstarter-announcement/">Kickstarter Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/mozilla-grant/">Mozilla Grant</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/funding/">Funding</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/jobs/">Jobs</a>
+                  </li>
+                  
+                </ul>
+              </li>
+               
+
+            </ul>
+            
+          </div>
+          <!--/.nav-collapse -->
+
+        </div>
+      </div>
+    </div>
+
+    <div class="body-content">
+      <div class="container-fluid">
+        <!-- Search Modal -->
+        <div id="mkdocs_search_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3 id="myModalLabel">Documentation search</h3>
+          </div>
+
+          <div class="modal-body">
+            <form role="form" autocomplete="off">
+              <div class="form-group">
+                <input type="text" name="q" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+              </div>
+            </form>
+            <div id="mkdocs-search-results"></div>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="span3">
+            <div id="table-of-contents">
+              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
+                
+
+                
+                  <li class="main">
+                    <a href="#tutorial-1-serialization">Tutorial 1: Serialization</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#introduction">Introduction</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#setting-up-a-new-environment">Setting up a new environment</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#getting-started">Getting started</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#creating-a-model-to-work-with">Creating a model to work with</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#creating-a-serializer-class">Creating a Serializer class</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#working-with-serializers">Working with Serializers</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#using-modelserializers">Using ModelSerializers</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#writing-regular-django-views-using-our-serializer">Writing regular Django views using our Serializer</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#testing-our-first-attempt-at-a-web-api">Testing our first attempt at a Web API</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#where-are-we-now">Where are we now</a>
+                    </li>
+                  
+                
+
+                  <div class="promo">
+                    <hr/>
+                    <div id="sidebarInclude">
+                  </div>
+              </ul>
+
+            </div>
+          </div>
+
+          <div id="main-content" class="span9">
+            
+              
+
+              <h1 id="tutorial-1-serialization"><a class="toclink" href="#tutorial-1-serialization">Tutorial 1: Serialization</a></h1>
+<h2 id="introduction"><a class="toclink" href="#introduction">Introduction</a></h2>
+<p>This tutorial will cover creating a simple pastebin code highlighting Web API.  Along the way it will introduce the various components that make up REST framework, and give you a comprehensive understanding of how everything fits together.</p>
+<p>The tutorial is fairly in-depth, so you should probably get a cookie and a cup of your favorite brew before getting started.  If you just want a quick overview, you should head over to the <a href="../quickstart/">quickstart</a> documentation instead.</p>
+<hr />
+<p><strong>Note</strong>: The code for this tutorial is available in the <a href="https://github.com/encode/rest-framework-tutorial">encode/rest-framework-tutorial</a> repository on GitHub.  The completed implementation is also online as a sandbox version for testing, <a href="https://restframework.herokuapp.com/">available here</a>.</p>
+<hr />
+<h2 id="setting-up-a-new-environment"><a class="toclink" href="#setting-up-a-new-environment">Setting up a new environment</a></h2>
+<p>Before we do anything else we'll create a new virtual environment, using <a href="https://docs.python.org/3/library/venv.html">venv</a>. This will make sure our package configuration is kept nicely isolated from any other projects we're working on.</p>
+<pre><code>python3 -m venv env
+source env/bin/activate
+</code></pre>
+<p>Now that we're inside a virtual environment, we can install our package requirements.</p>
+<pre><code>pip install django
+pip install djangorestframework
+pip install pygments  # We'll be using this for the code highlighting
+</code></pre>
+<p><strong>Note:</strong> To exit the virtual environment at any time, just type <code>deactivate</code>.  For more information see the <a href="https://docs.python.org/3/library/venv.html">venv documentation</a>.</p>
+<h2 id="getting-started"><a class="toclink" href="#getting-started">Getting started</a></h2>
+<p>Okay, we're ready to get coding.
+To get started, let's create a new project to work with.</p>
+<pre><code>cd ~
+django-admin startproject tutorial
+cd tutorial
+</code></pre>
+<p>Once that's done we can create an app that we'll use to create a simple Web API.</p>
+<pre><code>python manage.py startapp snippets
+</code></pre>
+<p>We'll need to add our new <code>snippets</code> app and the <code>rest_framework</code> app to <code>INSTALLED_APPS</code>. Let's edit the <code>tutorial/settings.py</code> file:</p>
+<pre><code>INSTALLED_APPS = [
+    ...
+    'rest_framework',
+    'snippets.apps.SnippetsConfig',
+]
+</code></pre>
+<p>Okay, we're ready to roll.</p>
+<h2 id="creating-a-model-to-work-with"><a class="toclink" href="#creating-a-model-to-work-with">Creating a model to work with</a></h2>
+<p>For the purposes of this tutorial we're going to start by creating a simple <code>Snippet</code> model that is used to store code snippets.  Go ahead and edit the <code>snippets/models.py</code> file.  Note: Good programming practices include comments.  Although you will find them in our repository version of this tutorial code, we have omitted them here to focus on the code itself.</p>
+<pre><code>from django.db import models
+from pygments.lexers import get_all_lexers
+from pygments.styles import get_all_styles
+
+LEXERS = [item for item in get_all_lexers() if item[1]]
+LANGUAGE_CHOICES = sorted([(item[1][0], item[0]) for item in LEXERS])
+STYLE_CHOICES = sorted([(item, item) for item in get_all_styles()])
+
+
+class Snippet(models.Model):
+    created = models.DateTimeField(auto_now_add=True)
+    title = models.CharField(max_length=100, blank=True, default='')
+    code = models.TextField()
+    linenos = models.BooleanField(default=False)
+    language = models.CharField(choices=LANGUAGE_CHOICES, default='python', max_length=100)
+    style = models.CharField(choices=STYLE_CHOICES, default='friendly', max_length=100)
+
+    class Meta:
+        ordering = ['created']
+</code></pre>
+<p>We'll also need to create an initial migration for our snippet model, and sync the database for the first time.</p>
+<pre><code>python manage.py makemigrations snippets
+python manage.py migrate
+</code></pre>
+<h2 id="creating-a-serializer-class"><a class="toclink" href="#creating-a-serializer-class">Creating a Serializer class</a></h2>
+<p>The first thing we need to get started on our Web API is to provide a way of serializing and deserializing the snippet instances into representations such as <code>json</code>.  We can do this by declaring serializers that work very similar to Django's forms.  Create a file in the <code>snippets</code> directory named <code>serializers.py</code> and add the following.</p>
+<pre><code>from rest_framework import serializers
+from snippets.models import Snippet, LANGUAGE_CHOICES, STYLE_CHOICES
+
+
+class SnippetSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    title = serializers.CharField(required=False, allow_blank=True, max_length=100)
+    code = serializers.CharField(style={'base_template': 'textarea.html'})
+    linenos = serializers.BooleanField(required=False)
+    language = serializers.ChoiceField(choices=LANGUAGE_CHOICES, default='python')
+    style = serializers.ChoiceField(choices=STYLE_CHOICES, default='friendly')
+
+    def create(self, validated_data):
+        """
+        Create and return a new `Snippet` instance, given the validated data.
+        """
+        return Snippet.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        """
+        Update and return an existing `Snippet` instance, given the validated data.
+        """
+        instance.title = validated_data.get('title', instance.title)
+        instance.code = validated_data.get('code', instance.code)
+        instance.linenos = validated_data.get('linenos', instance.linenos)
+        instance.language = validated_data.get('language', instance.language)
+        instance.style = validated_data.get('style', instance.style)
+        instance.save()
+        return instance
+</code></pre>
+<p>The first part of the serializer class defines the fields that get serialized/deserialized.  The <code>create()</code> and <code>update()</code> methods define how fully fledged instances are created or modified when calling <code>serializer.save()</code></p>
+<p>A serializer class is very similar to a Django <code>Form</code> class, and includes similar validation flags on the various fields, such as <code>required</code>, <code>max_length</code> and <code>default</code>.</p>
+<p>The field flags can also control how the serializer should be displayed in certain circumstances, such as when rendering to HTML. The <code>{'base_template': 'textarea.html'}</code> flag above is equivalent to using <code>widget=widgets.Textarea</code> on a Django <code>Form</code> class. This is particularly useful for controlling how the browsable API should be displayed, as we'll see later in the tutorial.</p>
+<p>We can actually also save ourselves some time by using the <code>ModelSerializer</code> class, as we'll see later, but for now we'll keep our serializer definition explicit.</p>
+<h2 id="working-with-serializers"><a class="toclink" href="#working-with-serializers">Working with Serializers</a></h2>
+<p>Before we go any further we'll familiarize ourselves with using our new Serializer class.  Let's drop into the Django shell.</p>
+<pre><code>python manage.py shell
+</code></pre>
+<p>Okay, once we've got a few imports out of the way, let's create a couple of code snippets to work with.</p>
+<pre><code>from snippets.models import Snippet
+from snippets.serializers import SnippetSerializer
+from rest_framework.renderers import JSONRenderer
+from rest_framework.parsers import JSONParser
+
+snippet = Snippet(code='foo = "bar"\n')
+snippet.save()
+
+snippet = Snippet(code='print("hello, world")\n')
+snippet.save()
+</code></pre>
+<p>We've now got a few snippet instances to play with.  Let's take a look at serializing one of those instances.</p>
+<pre><code>serializer = SnippetSerializer(snippet)
+serializer.data
+# {'id': 2, 'title': '', 'code': 'print("hello, world")\n', 'linenos': False, 'language': 'python', 'style': 'friendly'}
+</code></pre>
+<p>At this point we've translated the model instance into Python native datatypes.  To finalize the serialization process we render the data into <code>json</code>.</p>
+<pre><code>content = JSONRenderer().render(serializer.data)
+content
+# b'{"id": 2, "title": "", "code": "print(\\"hello, world\\")\\n", "linenos": false, "language": "python", "style": "friendly"}'
+</code></pre>
+<p>Deserialization is similar.  First we parse a stream into Python native datatypes...</p>
+<pre><code>import io
+
+stream = io.BytesIO(content)
+data = JSONParser().parse(stream)
+</code></pre>
+<p>...then we restore those native datatypes into a fully populated object instance.</p>
+<pre><code>serializer = SnippetSerializer(data=data)
+serializer.is_valid()
+# True
+serializer.validated_data
+# OrderedDict([('title', ''), ('code', 'print("hello, world")\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])
+serializer.save()
+# &lt;Snippet: Snippet object&gt;
+</code></pre>
+<p>Notice how similar the API is to working with forms.  The similarity should become even more apparent when we start writing views that use our serializer.</p>
+<p>We can also serialize querysets instead of model instances.  To do so we simply add a <code>many=True</code> flag to the serializer arguments.</p>
+<pre><code>serializer = SnippetSerializer(Snippet.objects.all(), many=True)
+serializer.data
+# [OrderedDict([('id', 1), ('title', ''), ('code', 'foo = "bar"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('id', 2), ('title', ''), ('code', 'print("hello, world")\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('id', 3), ('title', ''), ('code', 'print("hello, world")'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])]
+</code></pre>
+<h2 id="using-modelserializers"><a class="toclink" href="#using-modelserializers">Using ModelSerializers</a></h2>
+<p>Our <code>SnippetSerializer</code> class is replicating a lot of information that's also contained in the <code>Snippet</code> model.  It would be nice if we could keep our code a bit  more concise.</p>
+<p>In the same way that Django provides both <code>Form</code> classes and <code>ModelForm</code> classes, REST framework includes both <code>Serializer</code> classes, and <code>ModelSerializer</code> classes.</p>
+<p>Let's look at refactoring our serializer using the <code>ModelSerializer</code> class.
+Open the file <code>snippets/serializers.py</code> again, and replace the <code>SnippetSerializer</code> class with the following.</p>
+<pre><code>class SnippetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Snippet
+        fields = ['id', 'title', 'code', 'linenos', 'language', 'style']
+</code></pre>
+<p>One nice property that serializers have is that you can inspect all the fields in a serializer instance, by printing its representation. Open the Django shell with <code>python manage.py shell</code>, then try the following:</p>
+<pre><code>from snippets.serializers import SnippetSerializer
+serializer = SnippetSerializer()
+print(repr(serializer))
+# SnippetSerializer():
+#    id = IntegerField(label='ID', read_only=True)
+#    title = CharField(allow_blank=True, max_length=100, required=False)
+#    code = CharField(style={'base_template': 'textarea.html'})
+#    linenos = BooleanField(required=False)
+#    language = ChoiceField(choices=[('Clipper', 'FoxPro'), ('Cucumber', 'Gherkin'), ('RobotFramework', 'RobotFramework'), ('abap', 'ABAP'), ('ada', 'Ada')...
+#    style = ChoiceField(choices=[('autumn', 'autumn'), ('borland', 'borland'), ('bw', 'bw'), ('colorful', 'colorful')...
+</code></pre>
+<p>It's important to remember that <code>ModelSerializer</code> classes don't do anything particularly magical, they are simply a shortcut for creating serializer classes:</p>
+<ul>
+<li>An automatically determined set of fields.</li>
+<li>Simple default implementations for the <code>create()</code> and <code>update()</code> methods.</li>
+</ul>
+<h2 id="writing-regular-django-views-using-our-serializer"><a class="toclink" href="#writing-regular-django-views-using-our-serializer">Writing regular Django views using our Serializer</a></h2>
+<p>Let's see how we can write some API views using our new Serializer class.
+For the moment we won't use any of REST framework's other features, we'll just write the views as regular Django views.</p>
+<p>Edit the <code>snippets/views.py</code> file, and add the following.</p>
+<pre><code>from django.http import HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.parsers import JSONParser
+from snippets.models import Snippet
+from snippets.serializers import SnippetSerializer
+</code></pre>
+<p>The root of our API is going to be a view that supports listing all the existing snippets, or creating a new snippet.</p>
+<pre><code>@csrf_exempt
+def snippet_list(request):
+    """
+    List all code snippets, or create a new snippet.
+    """
+    if request.method == 'GET':
+        snippets = Snippet.objects.all()
+        serializer = SnippetSerializer(snippets, many=True)
+        return JsonResponse(serializer.data, safe=False)
+
+    elif request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = SnippetSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
+</code></pre>
+<p>Note that because we want to be able to POST to this view from clients that won't have a CSRF token we need to mark the view as <code>csrf_exempt</code>.  This isn't something that you'd normally want to do, and REST framework views actually use more sensible behavior than this, but it'll do for our purposes right now.</p>
+<p>We'll also need a view which corresponds to an individual snippet, and can be used to retrieve, update or delete the snippet.</p>
+<pre><code>@csrf_exempt
+def snippet_detail(request, pk):
+    """
+    Retrieve, update or delete a code snippet.
+    """
+    try:
+        snippet = Snippet.objects.get(pk=pk)
+    except Snippet.DoesNotExist:
+        return HttpResponse(status=404)
+
+    if request.method == 'GET':
+        serializer = SnippetSerializer(snippet)
+        return JsonResponse(serializer.data)
+
+    elif request.method == 'PUT':
+        data = JSONParser().parse(request)
+        serializer = SnippetSerializer(snippet, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status=400)
+
+    elif request.method == 'DELETE':
+        snippet.delete()
+        return HttpResponse(status=204)
+</code></pre>
+<p>Finally we need to wire these views up.  Create the <code>snippets/urls.py</code> file:</p>
+<pre><code>from django.urls import path
+from snippets import views
+
+urlpatterns = [
+    path('snippets/', views.snippet_list),
+    path('snippets/&lt;int:pk&gt;/', views.snippet_detail),
+]
+</code></pre>
+<p>We also need to wire up the root urlconf, in the <code>tutorial/urls.py</code> file, to include our snippet app's URLs.</p>
+<pre><code>from django.urls import path, include
+
+urlpatterns = [
+    path('', include('snippets.urls')),
+]
+</code></pre>
+<p>It's worth noting that there are a couple of edge cases we're not dealing with properly at the moment.  If we send malformed <code>json</code>, or if a request is made with a method that the view doesn't handle, then we'll end up with a 500 "server error" response.  Still, this'll do for now.</p>
+<h2 id="testing-our-first-attempt-at-a-web-api"><a class="toclink" href="#testing-our-first-attempt-at-a-web-api">Testing our first attempt at a Web API</a></h2>
+<p>Now we can start up a sample server that serves our snippets.</p>
+<p>Quit out of the shell...</p>
+<pre><code>quit()
+</code></pre>
+<p>...and start up Django's development server.</p>
+<pre><code>python manage.py runserver
+
+Validating models...
+
+0 errors found
+Django version 1.11, using settings 'tutorial.settings'
+Development server is running at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+</code></pre>
+<p>In another terminal window, we can test the server.</p>
+<p>We can test our API using <a href="https://curl.haxx.se/">curl</a> or <a href="https://github.com/jakubroztocil/httpie#installation">httpie</a>. Httpie is a user friendly http client that's written in Python. Let's install that.</p>
+<p>You can install httpie using pip:</p>
+<pre><code>pip install httpie
+</code></pre>
+<p>Finally, we can get a list of all of the snippets:</p>
+<pre><code>http http://127.0.0.1:8000/snippets/
+
+HTTP/1.1 200 OK
+...
+[
+  {
+    "id": 1,
+    "title": "",
+    "code": "foo = \"bar\"\n",
+    "linenos": false,
+    "language": "python",
+    "style": "friendly"
+  },
+  {
+    "id": 2,
+    "title": "",
+    "code": "print(\"hello, world\")\n",
+    "linenos": false,
+    "language": "python",
+    "style": "friendly"
+  }
+]
+</code></pre>
+<p>Or we can get a particular snippet by referencing its id:</p>
+<pre><code>http http://127.0.0.1:8000/snippets/2/
+
+HTTP/1.1 200 OK
+...
+{
+  "id": 2,
+  "title": "",
+  "code": "print(\"hello, world\")\n",
+  "linenos": false,
+  "language": "python",
+  "style": "friendly"
+}
+</code></pre>
+<p>Similarly, you can have the same json displayed by visiting these URLs in a web browser.</p>
+<h2 id="where-are-we-now"><a class="toclink" href="#where-are-we-now">Where are we now</a></h2>
+<p>We're doing okay so far, we've got a serialization API that feels pretty similar to Django's Forms API, and some regular Django views.</p>
+<p>Our API views don't do anything particularly special at the moment, beyond serving <code>json</code> responses, and there are some error handling edge cases we'd still like to clean up, but it's a functioning Web API.</p>
+<p>We'll see how we can start to improve things in <a href="../2-requests-and-responses/">part 2 of the tutorial</a>.</p>
+            
+
+          </div> <!--/span-->
+        </div> <!--/row-->
+      </div> <!--/.fluid-container-->
+    </div> <!--/.body content-->
+    <div id="push"></div>
+  </div> <!--/.wrapper -->
+
+  <footer class="span12">
+    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.
+    </p>
+  </footer>
+
+  <!-- Le javascript
+  ================================================== -->
+  <!-- Placed at the end of the document so the pages load faster -->
+  <script async src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
+  <script src="../../js/jquery-1.8.1-min.js"></script>
+  <script src="../../js/prettify-1.0.js"></script>
+  <script src="../../js/bootstrap-2.1.1-min.js"></script>
+  <script src="../../js/theme.js"></script>
+
+  <script>var base_url = '../..';</script>
+  
+  <script src="../../search/main.js" defer></script>
+  
+
+  <script>
+    var shiftWindow = function() {
+      scrollBy(0, -50)
+    };
+
+    if (location.hash) shiftWindow();
+    window.addEventListener("hashchange", shiftWindow);
+
+    $('.dropdown-menu').on('click touchstart', function(event) {
+      event.stopPropagation();
+    });
+
+    // Dynamically force sidenav/dropdown to no higher than browser window
+    $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
+
+    $(function() {
+      $(window).resize(function() {
+        $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
+      });
+    });
+  </script>
+</body>
+
+</html>

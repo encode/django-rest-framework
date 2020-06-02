@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <title>Validators - Django REST framework</title>
+  <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
+  <link rel="canonical" href="https://www.django-rest-framework.org/api-guide/validators/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Django, API, REST, Validators">
+  <meta name="author" content="Tom Christie">
+
+  <!-- Le styles -->
+  <link href="../../css/prettify.css" rel="stylesheet">
+  <link href="../../css/bootstrap.css" rel="stylesheet">
+  <link href="../../css/bootstrap-responsive.css" rel="stylesheet">
+  <link href="../../css/default.css" rel="stylesheet">
+
+  <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-18852272-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script');
+      ga.type = 'text/javascript';
+      ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+  <style>
+  #sidebarInclude img {
+      margin-bottom: 10px;
+  }
+  #sidebarInclude a.promo {
+      color: black;
+  }
+    @media (max-width: 767px) {
+      div.promo {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body onload="prettyPrint()" class="-page">
+
+  <div class="wrapper">
+        <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="repo-link btn btn-primary btn-small" href="https://github.com/encode/django-rest-framework/tree/master">GitHub</a>
+          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../authentication/">
+            Next <i class="icon-arrow-right icon-white"></i>
+          </a>
+          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../relations/">
+            <i class="icon-arrow-left icon-white"></i> Previous
+          </a>
+          <a id="search_modal_show" class="repo-link btn btn-inverse btn-small" href="#mkdocs_search_modal" data-toggle="modal" data-target="#mkdocs_search_modal"><i class="icon-search icon-white"></i> Search</a>
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="https://www.django-rest-framework.org/">Django REST framework</a>
+          <div class="nav-collapse collapse">
+            
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+               
+              <li >
+                <a href="../..">Home</a>
+              </li>
+                
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorial <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../../tutorial/quickstart/">Quickstart</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/1-serialization/">1 - Serialization</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/2-requests-and-responses/">2 - Requests and responses</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/3-class-based-views/">3 - Class based views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/4-authentication-and-permissions/">4 - Authentication and permissions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/5-relationships-and-hyperlinked-apis/">5 - Relationships and hyperlinked APIs</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/6-viewsets-and-routers/">6 - Viewsets and routers</a>
+                  </li>
+                  
+                </ul>
+              </li>
+                
+              <li class="dropdown active">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">API Guide <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../requests/">Requests</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../responses/">Responses</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../views/">Views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../generic-views/">Generic views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../viewsets/">Viewsets</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../routers/">Routers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../parsers/">Parsers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../renderers/">Renderers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../serializers/">Serializers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../fields/">Serializer fields</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../relations/">Serializer relations</a>
+                  </li>
+                  
+                  <li class="active" >
+                    <a href="./">Validators</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../authentication/">Authentication</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../permissions/">Permissions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../caching/">Caching</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../throttling/">Throttling</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../filtering/">Filtering</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../pagination/">Pagination</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../versioning/">Versioning</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../content-negotiation/">Content negotiation</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../metadata/">Metadata</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../schemas/">Schemas</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../format-suffixes/">Format suffixes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../reverse/">Returning URLs</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../exceptions/">Exceptions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../status-codes/">Status codes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../testing/">Testing</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../settings/">Settings</a>
+                  </li>
+                  
+                </ul>
+              </li>
+                
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Topics <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../../topics/documenting-your-api/">Documenting your API</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/api-clients/">API Clients</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/internationalization/">Internationalization</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/ajax-csrf-cors/">AJAX, CSRF & CORS</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/html-and-forms/">HTML & Forms</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/browser-enhancements/">Browser Enhancements</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/browsable-api/">The Browsable API</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/rest-hypermedia-hateoas/">REST, Hypermedia & HATEOAS</a>
+                  </li>
+                  
+                </ul>
+              </li>
+                
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Community <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../../community/tutorials-and-resources/">Tutorials and Resources</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/third-party-packages/">Third Party Packages</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/contributing/">Contributing to REST framework</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/project-management/">Project management</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/release-notes/">Release Notes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.11-announcement/">3.11 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.10-announcement/">3.10 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.9-announcement/">3.9 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.8-announcement/">3.8 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.7-announcement/">3.7 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.6-announcement/">3.6 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.5-announcement/">3.5 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.4-announcement/">3.4 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.3-announcement/">3.3 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.2-announcement/">3.2 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.1-announcement/">3.1 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.0-announcement/">3.0 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/kickstarter-announcement/">Kickstarter Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/mozilla-grant/">Mozilla Grant</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/funding/">Funding</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/jobs/">Jobs</a>
+                  </li>
+                  
+                </ul>
+              </li>
+               
+
+            </ul>
+            
+          </div>
+          <!--/.nav-collapse -->
+
+        </div>
+      </div>
+    </div>
+
+    <div class="body-content">
+      <div class="container-fluid">
+        <!-- Search Modal -->
+        <div id="mkdocs_search_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3 id="myModalLabel">Documentation search</h3>
+          </div>
+
+          <div class="modal-body">
+            <form role="form" autocomplete="off">
+              <div class="form-group">
+                <input type="text" name="q" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+              </div>
+            </form>
+            <div id="mkdocs-search-results"></div>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="span3">
+            <div id="table-of-contents">
+              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
+                
+
+                
+                  <li class="main">
+                    <a href="#validators">Validators</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#validation-in-rest-framework">Validation in REST framework</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#uniquevalidator">UniqueValidator</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#uniquetogethervalidator">UniqueTogetherValidator</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#uniquefordatevalidator">UniqueForDateValidator</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#uniqueformonthvalidator">UniqueForMonthValidator</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#uniqueforyearvalidator">UniqueForYearValidator</a>
+                    </li>
+                  
+                
+                  <li class="main">
+                    <a href="#advanced-field-defaults">Advanced field defaults</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#currentuserdefault">CurrentUserDefault</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#createonlydefault">CreateOnlyDefault</a>
+                    </li>
+                  
+                
+                  <li class="main">
+                    <a href="#limitations-of-validators">Limitations of validators</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#optional-fields">Optional fields</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#updating-nested-serializers">Updating nested serializers</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#debugging-complex-cases">Debugging complex cases</a>
+                    </li>
+                  
+                
+                  <li class="main">
+                    <a href="#writing-custom-validators">Writing custom validators</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#function-based">Function based</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#class-based">Class-based</a>
+                    </li>
+                  
+                
+
+                  <div class="promo">
+                    <hr/>
+                    <div id="sidebarInclude">
+                  </div>
+              </ul>
+
+            </div>
+          </div>
+
+          <div id="main-content" class="span9">
+            
+              
+                
+                  <a class="github" href="https://github.com/encode/django-rest-framework/tree/master/rest_framework/validators.py">
+                    <span class="label label-info">validators.py</span>
+                  </a>
+                
+              
+
+              <h1 id="validators"><a class="toclink" href="#validators">Validators</a></h1>
+<blockquote>
+<p>Validators can be useful for re-using validation logic between different types of fields.</p>
+<p>&mdash; <a href="https://docs.djangoproject.com/en/stable/ref/validators/">Django documentation</a></p>
+</blockquote>
+<p>Most of the time you're dealing with validation in REST framework you'll simply be relying on the default field validation, or writing explicit validation methods on serializer or field classes.</p>
+<p>However, sometimes you'll want to place your validation logic into reusable components, so that it can easily be reused throughout your codebase. This can be achieved by using validator functions and validator classes.</p>
+<h2 id="validation-in-rest-framework"><a class="toclink" href="#validation-in-rest-framework">Validation in REST framework</a></h2>
+<p>Validation in Django REST framework serializers is handled a little differently to how validation works in Django's <code>ModelForm</code> class.</p>
+<p>With <code>ModelForm</code> the validation is performed partially on the form, and partially on the model instance. With REST framework the validation is performed entirely on the serializer class. This is advantageous for the following reasons:</p>
+<ul>
+<li>It introduces a proper separation of concerns, making your code behavior more obvious.</li>
+<li>It is easy to switch between using shortcut <code>ModelSerializer</code> classes and using  explicit <code>Serializer</code> classes. Any validation behavior being used for <code>ModelSerializer</code> is simple to replicate.</li>
+<li>Printing the <code>repr</code> of a serializer instance will show you exactly what validation rules it applies. There's no extra hidden validation behavior being called on the model instance.</li>
+</ul>
+<p>When you're using <code>ModelSerializer</code> all of this is handled automatically for you. If you want to drop down to using <code>Serializer</code> classes instead, then you need to define the validation rules explicitly.</p>
+<h4 id="example"><a class="toclink" href="#example">Example</a></h4>
+<p>As an example of how REST framework uses explicit validation, we'll take a simple model class that has a field with a uniqueness constraint.</p>
+<pre><code>class CustomerReportRecord(models.Model):
+    time_raised = models.DateTimeField(default=timezone.now, editable=False)
+    reference = models.CharField(unique=True, max_length=20)
+    description = models.TextField()
+</code></pre>
+<p>Here's a basic <code>ModelSerializer</code> that we can use for creating or updating instances of <code>CustomerReportRecord</code>:</p>
+<pre><code>class CustomerReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomerReportRecord
+</code></pre>
+<p>If we open up the Django shell using <code>manage.py shell</code> we can now</p>
+<pre><code>&gt;&gt;&gt; from project.example.serializers import CustomerReportSerializer
+&gt;&gt;&gt; serializer = CustomerReportSerializer()
+&gt;&gt;&gt; print(repr(serializer))
+CustomerReportSerializer():
+    id = IntegerField(label='ID', read_only=True)
+    time_raised = DateTimeField(read_only=True)
+    reference = CharField(max_length=20, validators=[&lt;UniqueValidator(queryset=CustomerReportRecord.objects.all())&gt;])
+    description = CharField(style={'type': 'textarea'})
+</code></pre>
+<p>The interesting bit here is the <code>reference</code> field. We can see that the uniqueness constraint is being explicitly enforced by a validator on the serializer field.</p>
+<p>Because of this more explicit style REST framework includes a few validator classes that are not available in core Django. These classes are detailed below.</p>
+<hr />
+<h2 id="uniquevalidator"><a class="toclink" href="#uniquevalidator">UniqueValidator</a></h2>
+<p>This validator can be used to enforce the <code>unique=True</code> constraint on model fields.
+It takes a single required argument, and an optional <code>messages</code> argument:</p>
+<ul>
+<li><code>queryset</code> <em>required</em> - This is the queryset against which uniqueness should be enforced.</li>
+<li><code>message</code> - The error message that should be used when validation fails.</li>
+<li><code>lookup</code> - The lookup used to find an existing instance with the value being validated. Defaults to <code>'exact'</code>.</li>
+</ul>
+<p>This validator should be applied to <em>serializer fields</em>, like so:</p>
+<pre><code>from rest_framework.validators import UniqueValidator
+
+slug = SlugField(
+    max_length=100,
+    validators=[UniqueValidator(queryset=BlogPost.objects.all())]
+)
+</code></pre>
+<h2 id="uniquetogethervalidator"><a class="toclink" href="#uniquetogethervalidator">UniqueTogetherValidator</a></h2>
+<p>This validator can be used to enforce <code>unique_together</code> constraints on model instances.
+It has two required arguments, and a single optional <code>messages</code> argument:</p>
+<ul>
+<li><code>queryset</code> <em>required</em> - This is the queryset against which uniqueness should be enforced.</li>
+<li><code>fields</code> <em>required</em> - A list or tuple of field names which should make a unique set. These must exist as fields on the serializer class.</li>
+<li><code>message</code> - The error message that should be used when validation fails.</li>
+</ul>
+<p>The validator should be applied to <em>serializer classes</em>, like so:</p>
+<pre><code>from rest_framework.validators import UniqueTogetherValidator
+
+class ExampleSerializer(serializers.Serializer):
+    # ...
+    class Meta:
+        # ToDo items belong to a parent list, and have an ordering defined
+        # by the 'position' field. No two items in a given list may share
+        # the same position.
+        validators = [
+            UniqueTogetherValidator(
+                queryset=ToDoItem.objects.all(),
+                fields=['list', 'position']
+            )
+        ]
+</code></pre>
+<hr />
+<p><strong>Note</strong>: The <code>UniqueTogetherValidator</code> class always imposes an implicit constraint that all the fields it applies to are always treated as required. Fields with <code>default</code> values are an exception to this as they always supply a value even when omitted from user input.</p>
+<hr />
+<h2 id="uniquefordatevalidator"><a class="toclink" href="#uniquefordatevalidator">UniqueForDateValidator</a></h2>
+<h2 id="uniqueformonthvalidator"><a class="toclink" href="#uniqueformonthvalidator">UniqueForMonthValidator</a></h2>
+<h2 id="uniqueforyearvalidator"><a class="toclink" href="#uniqueforyearvalidator">UniqueForYearValidator</a></h2>
+<p>These validators can be used to enforce the <code>unique_for_date</code>, <code>unique_for_month</code> and <code>unique_for_year</code> constraints on model instances. They take the following arguments:</p>
+<ul>
+<li><code>queryset</code> <em>required</em> - This is the queryset against which uniqueness should be enforced.</li>
+<li><code>field</code> <em>required</em> - A field name against which uniqueness in the given date range will be validated. This must exist as a field on the serializer class.</li>
+<li><code>date_field</code> <em>required</em> - A field name which will be used to determine date range for the uniqueness constrain. This must exist as a field on the serializer class.</li>
+<li><code>message</code> - The error message that should be used when validation fails.</li>
+</ul>
+<p>The validator should be applied to <em>serializer classes</em>, like so:</p>
+<pre><code>from rest_framework.validators import UniqueForYearValidator
+
+class ExampleSerializer(serializers.Serializer):
+    # ...
+    class Meta:
+        # Blog posts should have a slug that is unique for the current year.
+        validators = [
+            UniqueForYearValidator(
+                queryset=BlogPostItem.objects.all(),
+                field='slug',
+                date_field='published'
+            )
+        ]
+</code></pre>
+<p>The date field that is used for the validation is always required to be present on the serializer class. You can't simply rely on a model class <code>default=...</code>, because the value being used for the default wouldn't be generated until after the validation has run.</p>
+<p>There are a couple of styles you may want to use for this depending on how you want your API to behave. If you're using <code>ModelSerializer</code> you'll probably simply rely on the defaults that REST framework generates for you, but if you are using <code>Serializer</code> or simply want more explicit control, use on of the styles demonstrated below.</p>
+<h4 id="using-with-a-writable-date-field"><a class="toclink" href="#using-with-a-writable-date-field">Using with a writable date field.</a></h4>
+<p>If you want the date field to be writable the only thing worth noting is that you should ensure that it is always available in the input data, either by setting a <code>default</code> argument, or by setting <code>required=True</code>.</p>
+<pre><code>published = serializers.DateTimeField(required=True)
+</code></pre>
+<h4 id="using-with-a-read-only-date-field"><a class="toclink" href="#using-with-a-read-only-date-field">Using with a read-only date field.</a></h4>
+<p>If you want the date field to be visible, but not editable by the user, then set <code>read_only=True</code> and additionally set a <code>default=...</code> argument.</p>
+<pre><code>published = serializers.DateTimeField(read_only=True, default=timezone.now)
+</code></pre>
+<h4 id="using-with-a-hidden-date-field"><a class="toclink" href="#using-with-a-hidden-date-field">Using with a hidden date field.</a></h4>
+<p>If you want the date field to be entirely hidden from the user, then use <code>HiddenField</code>. This field type does not accept user input, but instead always returns its default value to the <code>validated_data</code> in the serializer.</p>
+<pre><code>published = serializers.HiddenField(default=timezone.now)
+</code></pre>
+<hr />
+<p><strong>Note</strong>: The <code>UniqueFor&lt;Range&gt;Validator</code> classes impose an implicit constraint that the fields they are applied to are always treated as required. Fields with <code>default</code> values are an exception to this as they always supply a value even when omitted from user input.</p>
+<hr />
+<h1 id="advanced-field-defaults"><a class="toclink" href="#advanced-field-defaults">Advanced field defaults</a></h1>
+<p>Validators that are applied across multiple fields in the serializer can sometimes require a field input that should not be provided by the API client, but that <em>is</em> available as input to the validator.</p>
+<p>Two patterns that you may want to use for this sort of validation include:</p>
+<ul>
+<li>Using <code>HiddenField</code>. This field will be present in <code>validated_data</code> but <em>will not</em> be used in the serializer output representation.</li>
+<li>Using a standard field with <code>read_only=True</code>, but that also includes a <code>default=…</code> argument. This field <em>will</em> be used in the serializer output representation, but cannot be set directly by the user.</li>
+</ul>
+<p>REST framework includes a couple of defaults that may be useful in this context.</p>
+<h4 id="currentuserdefault"><a class="toclink" href="#currentuserdefault">CurrentUserDefault</a></h4>
+<p>A default class that can be used to represent the current user. In order to use this, the 'request' must have been provided as part of the context dictionary when instantiating the serializer.</p>
+<pre><code>owner = serializers.HiddenField(
+    default=serializers.CurrentUserDefault()
+)
+</code></pre>
+<h4 id="createonlydefault"><a class="toclink" href="#createonlydefault">CreateOnlyDefault</a></h4>
+<p>A default class that can be used to <em>only set a default argument during create operations</em>. During updates the field is omitted.</p>
+<p>It takes a single argument, which is the default value or callable that should be used during create operations.</p>
+<pre><code>created_at = serializers.DateTimeField(
+    default=serializers.CreateOnlyDefault(timezone.now)
+)
+</code></pre>
+<hr />
+<h1 id="limitations-of-validators"><a class="toclink" href="#limitations-of-validators">Limitations of validators</a></h1>
+<p>There are some ambiguous cases where you'll need to instead handle validation
+explicitly, rather than relying on the default serializer classes that
+<code>ModelSerializer</code> generates.</p>
+<p>In these cases you may want to disable the automatically generated validators,
+by specifying an empty list for the serializer <code>Meta.validators</code> attribute.</p>
+<h2 id="optional-fields"><a class="toclink" href="#optional-fields">Optional fields</a></h2>
+<p>By default "unique together" validation enforces that all fields be
+<code>required=True</code>. In some cases, you might want to explicit apply
+<code>required=False</code> to one of the fields, in which case the desired behaviour
+of the validation is ambiguous.</p>
+<p>In this case you will typically need to exclude the validator from the
+serializer class, and instead write any validation logic explicitly, either
+in the <code>.validate()</code> method, or else in the view.</p>
+<p>For example:</p>
+<pre><code>class BillingRecordSerializer(serializers.ModelSerializer):
+    def validate(self, attrs):
+        # Apply custom validation either here, or in the view.
+
+    class Meta:
+        fields = ['client', 'date', 'amount']
+        extra_kwargs = {'client': {'required': False}}
+        validators = []  # Remove a default "unique together" constraint.
+</code></pre>
+<h2 id="updating-nested-serializers"><a class="toclink" href="#updating-nested-serializers">Updating nested serializers</a></h2>
+<p>When applying an update to an existing instance, uniqueness validators will
+exclude the current instance from the uniqueness check. The current instance
+is available in the context of the uniqueness check, because it exists as
+an attribute on the serializer, having initially been passed using
+<code>instance=...</code> when instantiating the serializer.</p>
+<p>In the case of update operations on <em>nested</em> serializers there's no way of
+applying this exclusion, because the instance is not available.</p>
+<p>Again, you'll probably want to explicitly remove the validator from the
+serializer class, and write the code the for the validation constraint
+explicitly, in a <code>.validate()</code> method, or in the view.</p>
+<h2 id="debugging-complex-cases"><a class="toclink" href="#debugging-complex-cases">Debugging complex cases</a></h2>
+<p>If you're not sure exactly what behavior a <code>ModelSerializer</code> class will
+generate it is usually a good idea to run <code>manage.py shell</code>, and print
+an instance of the serializer, so that you can inspect the fields and
+validators that it automatically generates for you.</p>
+<pre><code>&gt;&gt;&gt; serializer = MyComplexModelSerializer()
+&gt;&gt;&gt; print(serializer)
+class MyComplexModelSerializer:
+    my_fields = ...
+</code></pre>
+<p>Also keep in mind that with complex cases it can often be better to explicitly
+define your serializer classes, rather than relying on the default
+<code>ModelSerializer</code> behavior. This involves a little more code, but ensures
+that the resulting behavior is more transparent.</p>
+<hr />
+<h1 id="writing-custom-validators"><a class="toclink" href="#writing-custom-validators">Writing custom validators</a></h1>
+<p>You can use any of Django's existing validators, or write your own custom validators.</p>
+<h2 id="function-based"><a class="toclink" href="#function-based">Function based</a></h2>
+<p>A validator may be any callable that raises a <code>serializers.ValidationError</code> on failure.</p>
+<pre><code>def even_number(value):
+    if value % 2 != 0:
+        raise serializers.ValidationError('This field must be an even number.')
+</code></pre>
+<h4 id="field-level-validation"><a class="toclink" href="#field-level-validation">Field-level validation</a></h4>
+<p>You can specify custom field-level validation by adding <code>.validate_&lt;field_name&gt;</code> methods
+to your <code>Serializer</code> subclass. This is documented in the
+<a href="https://www.django-rest-framework.org/api-guide/serializers/#field-level-validation">Serializer docs</a></p>
+<h2 id="class-based"><a class="toclink" href="#class-based">Class-based</a></h2>
+<p>To write a class-based validator, use the <code>__call__</code> method. Class-based validators are useful as they allow you to parameterize and reuse behavior.</p>
+<pre><code>class MultipleOf(object):
+    def __init__(self, base):
+        self.base = base
+
+    def __call__(self, value):
+        if value % self.base != 0:
+            message = 'This field must be a multiple of %d.' % self.base
+            raise serializers.ValidationError(message)
+</code></pre>
+<h4 id="accessing-the-context"><a class="toclink" href="#accessing-the-context">Accessing the context</a></h4>
+<p>In some advanced cases you might want a validator to be passed the serializer
+field it is being used with as additional context. You can do so by setting
+a <code>requires_context = True</code> attribute on the validator. The <code>__call__</code> method
+will then be called with the <code>serializer_field</code>
+or <code>serializer</code> as an additional argument.</p>
+<pre><code>requires_context = True
+
+def __call__(self, value, serializer_field):
+    ...
+</code></pre>
+            
+
+          </div> <!--/span-->
+        </div> <!--/row-->
+      </div> <!--/.fluid-container-->
+    </div> <!--/.body content-->
+    <div id="push"></div>
+  </div> <!--/.wrapper -->
+
+  <footer class="span12">
+    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.
+    </p>
+  </footer>
+
+  <!-- Le javascript
+  ================================================== -->
+  <!-- Placed at the end of the document so the pages load faster -->
+  <script async src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
+  <script src="../../js/jquery-1.8.1-min.js"></script>
+  <script src="../../js/prettify-1.0.js"></script>
+  <script src="../../js/bootstrap-2.1.1-min.js"></script>
+  <script src="../../js/theme.js"></script>
+
+  <script>var base_url = '../..';</script>
+  
+  <script src="../../search/main.js" defer></script>
+  
+
+  <script>
+    var shiftWindow = function() {
+      scrollBy(0, -50)
+    };
+
+    if (location.hash) shiftWindow();
+    window.addEventListener("hashchange", shiftWindow);
+
+    $('.dropdown-menu').on('click touchstart', function(event) {
+      event.stopPropagation();
+    });
+
+    // Dynamically force sidenav/dropdown to no higher than browser window
+    $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
+
+    $(function() {
+      $(window).resize(function() {
+        $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
+      });
+    });
+  </script>
+</body>
+
+</html>

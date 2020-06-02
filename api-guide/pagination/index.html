@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <title>Pagination - Django REST framework</title>
+  <link href="../../img/favicon.ico" rel="icon" type="image/x-icon">
+  <link rel="canonical" href="https://www.django-rest-framework.org/api-guide/pagination/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Django, API, REST, Pagination">
+  <meta name="author" content="Tom Christie">
+
+  <!-- Le styles -->
+  <link href="../../css/prettify.css" rel="stylesheet">
+  <link href="../../css/bootstrap.css" rel="stylesheet">
+  <link href="../../css/bootstrap-responsive.css" rel="stylesheet">
+  <link href="../../css/default.css" rel="stylesheet">
+
+  <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-18852272-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script');
+      ga.type = 'text/javascript';
+      ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+  <style>
+  #sidebarInclude img {
+      margin-bottom: 10px;
+  }
+  #sidebarInclude a.promo {
+      color: black;
+  }
+    @media (max-width: 767px) {
+      div.promo {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body onload="prettyPrint()" class="-page">
+
+  <div class="wrapper">
+        <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="repo-link btn btn-primary btn-small" href="https://github.com/encode/django-rest-framework/tree/master">GitHub</a>
+          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../versioning/">
+            Next <i class="icon-arrow-right icon-white"></i>
+          </a>
+          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../filtering/">
+            <i class="icon-arrow-left icon-white"></i> Previous
+          </a>
+          <a id="search_modal_show" class="repo-link btn btn-inverse btn-small" href="#mkdocs_search_modal" data-toggle="modal" data-target="#mkdocs_search_modal"><i class="icon-search icon-white"></i> Search</a>
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="https://www.django-rest-framework.org/">Django REST framework</a>
+          <div class="nav-collapse collapse">
+            
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+               
+              <li >
+                <a href="../..">Home</a>
+              </li>
+                
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorial <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../../tutorial/quickstart/">Quickstart</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/1-serialization/">1 - Serialization</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/2-requests-and-responses/">2 - Requests and responses</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/3-class-based-views/">3 - Class based views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/4-authentication-and-permissions/">4 - Authentication and permissions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/5-relationships-and-hyperlinked-apis/">5 - Relationships and hyperlinked APIs</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../tutorial/6-viewsets-and-routers/">6 - Viewsets and routers</a>
+                  </li>
+                  
+                </ul>
+              </li>
+                
+              <li class="dropdown active">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">API Guide <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../requests/">Requests</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../responses/">Responses</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../views/">Views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../generic-views/">Generic views</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../viewsets/">Viewsets</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../routers/">Routers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../parsers/">Parsers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../renderers/">Renderers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../serializers/">Serializers</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../fields/">Serializer fields</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../relations/">Serializer relations</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../validators/">Validators</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../authentication/">Authentication</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../permissions/">Permissions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../caching/">Caching</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../throttling/">Throttling</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../filtering/">Filtering</a>
+                  </li>
+                  
+                  <li class="active" >
+                    <a href="./">Pagination</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../versioning/">Versioning</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../content-negotiation/">Content negotiation</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../metadata/">Metadata</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../schemas/">Schemas</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../format-suffixes/">Format suffixes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../reverse/">Returning URLs</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../exceptions/">Exceptions</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../status-codes/">Status codes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../testing/">Testing</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../settings/">Settings</a>
+                  </li>
+                  
+                </ul>
+              </li>
+                
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Topics <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../../topics/documenting-your-api/">Documenting your API</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/api-clients/">API Clients</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/internationalization/">Internationalization</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/ajax-csrf-cors/">AJAX, CSRF & CORS</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/html-and-forms/">HTML & Forms</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/browser-enhancements/">Browser Enhancements</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/browsable-api/">The Browsable API</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../topics/rest-hypermedia-hateoas/">REST, Hypermedia & HATEOAS</a>
+                  </li>
+                  
+                </ul>
+              </li>
+                
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Community <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  
+                  <li >
+                    <a href="../../community/tutorials-and-resources/">Tutorials and Resources</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/third-party-packages/">Third Party Packages</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/contributing/">Contributing to REST framework</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/project-management/">Project management</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/release-notes/">Release Notes</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.11-announcement/">3.11 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.10-announcement/">3.10 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.9-announcement/">3.9 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.8-announcement/">3.8 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.7-announcement/">3.7 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.6-announcement/">3.6 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.5-announcement/">3.5 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.4-announcement/">3.4 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.3-announcement/">3.3 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.2-announcement/">3.2 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.1-announcement/">3.1 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/3.0-announcement/">3.0 Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/kickstarter-announcement/">Kickstarter Announcement</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/mozilla-grant/">Mozilla Grant</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/funding/">Funding</a>
+                  </li>
+                  
+                  <li >
+                    <a href="../../community/jobs/">Jobs</a>
+                  </li>
+                  
+                </ul>
+              </li>
+               
+
+            </ul>
+            
+          </div>
+          <!--/.nav-collapse -->
+
+        </div>
+      </div>
+    </div>
+
+    <div class="body-content">
+      <div class="container-fluid">
+        <!-- Search Modal -->
+        <div id="mkdocs_search_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3 id="myModalLabel">Documentation search</h3>
+          </div>
+
+          <div class="modal-body">
+            <form role="form" autocomplete="off">
+              <div class="form-group">
+                <input type="text" name="q" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+              </div>
+            </form>
+            <div id="mkdocs-search-results"></div>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="span3">
+            <div id="table-of-contents">
+              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
+                
+
+                
+                  <li class="main">
+                    <a href="#pagination">Pagination</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#setting-the-pagination-style">Setting the pagination style</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#modifying-the-pagination-style">Modifying the pagination style</a>
+                    </li>
+                  
+                
+                  <li class="main">
+                    <a href="#api-reference">API Reference</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#pagenumberpagination">PageNumberPagination</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#limitoffsetpagination">LimitOffsetPagination</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#cursorpagination">CursorPagination</a>
+                    </li>
+                  
+                
+                  <li class="main">
+                    <a href="#custom-pagination-styles">Custom pagination styles</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#example">Example</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#using-your-custom-pagination-class">Using your custom pagination class</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#pagination-schemas">Pagination &amp; schemas</a>
+                    </li>
+                  
+                
+                  <li class="main">
+                    <a href="#html-pagination-controls">HTML pagination controls</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#customizing-the-controls">Customizing the controls</a>
+                    </li>
+                  
+                
+                  <li class="main">
+                    <a href="#third-party-packages">Third party packages</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#drf-extensions">DRF-extensions</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#drf-proxy-pagination">drf-proxy-pagination</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#link-header-pagination">link-header-pagination</a>
+                    </li>
+                  
+                
+
+                  <div class="promo">
+                    <hr/>
+                    <div id="sidebarInclude">
+                  </div>
+              </ul>
+
+            </div>
+          </div>
+
+          <div id="main-content" class="span9">
+            
+              
+                
+                  <a class="github" href="https://github.com/encode/django-rest-framework/tree/master/rest_framework/pagination.py">
+                    <span class="label label-info">pagination.py</span>
+                  </a>
+                
+              
+
+              <h1 id="pagination"><a class="toclink" href="#pagination">Pagination</a></h1>
+<blockquote>
+<p>Django provides a few classes that help you manage paginated data – that is, data that’s split across several pages, with “Previous/Next” links.</p>
+<p>&mdash; <a href="https://docs.djangoproject.com/en/stable/topics/pagination/">Django documentation</a></p>
+</blockquote>
+<p>REST framework includes support for customizable pagination styles. This allows you to modify how large result sets are split into individual pages of data.</p>
+<p>The pagination API can support either:</p>
+<ul>
+<li>Pagination links that are provided as part of the content of the response.</li>
+<li>Pagination links that are included in response headers, such as <code>Content-Range</code> or <code>Link</code>.</li>
+</ul>
+<p>The built-in styles currently all use links included as part of the content of the response. This style is more accessible when using the browsable API.</p>
+<p>Pagination is only performed automatically if you're using the generic views or viewsets. If you're using a regular <code>APIView</code>, you'll need to call into the pagination API yourself to ensure you return a paginated response. See the source code for the <code>mixins.ListModelMixin</code> and <code>generics.GenericAPIView</code> classes for an example.</p>
+<p>Pagination can be turned off by setting the pagination class to <code>None</code>.</p>
+<h2 id="setting-the-pagination-style"><a class="toclink" href="#setting-the-pagination-style">Setting the pagination style</a></h2>
+<p>The pagination style may be set globally, using the <code>DEFAULT_PAGINATION_CLASS</code> and <code>PAGE_SIZE</code> setting keys. For example, to use the built-in limit/offset pagination, you would do something like this:</p>
+<pre><code>REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 100
+}
+</code></pre>
+<p>Note that you need to set both the pagination class, and the page size that should be used.  Both <code>DEFAULT_PAGINATION_CLASS</code> and <code>PAGE_SIZE</code> are <code>None</code> by default.</p>
+<p>You can also set the pagination class on an individual view by using the <code>pagination_class</code> attribute. Typically you'll want to use the same pagination style throughout your API, although you might want to vary individual aspects of the pagination, such as default or maximum page size, on a per-view basis.</p>
+<h2 id="modifying-the-pagination-style"><a class="toclink" href="#modifying-the-pagination-style">Modifying the pagination style</a></h2>
+<p>If you want to modify particular aspects of the pagination style, you'll want to override one of the pagination classes, and set the attributes that you want to change.</p>
+<pre><code>class LargeResultsSetPagination(PageNumberPagination):
+    page_size = 1000
+    page_size_query_param = 'page_size'
+    max_page_size = 10000
+
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 100
+    page_size_query_param = 'page_size'
+    max_page_size = 1000
+</code></pre>
+<p>You can then apply your new style to a view using the <code>pagination_class</code> attribute:</p>
+<pre><code>class BillingRecordsView(generics.ListAPIView):
+    queryset = Billing.objects.all()
+    serializer_class = BillingRecordsSerializer
+    pagination_class = LargeResultsSetPagination
+</code></pre>
+<p>Or apply the style globally, using the <code>DEFAULT_PAGINATION_CLASS</code> settings key. For example:</p>
+<pre><code>REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'apps.core.pagination.StandardResultsSetPagination'
+}
+</code></pre>
+<hr />
+<h1 id="api-reference"><a class="toclink" href="#api-reference">API Reference</a></h1>
+<h2 id="pagenumberpagination"><a class="toclink" href="#pagenumberpagination">PageNumberPagination</a></h2>
+<p>This pagination style accepts a single number page number in the request query parameters.</p>
+<p><strong>Request</strong>:</p>
+<pre><code>GET https://api.example.org/accounts/?page=4
+</code></pre>
+<p><strong>Response</strong>:</p>
+<pre><code>HTTP 200 OK
+{
+    "count": 1023
+    "next": "https://api.example.org/accounts/?page=5",
+    "previous": "https://api.example.org/accounts/?page=3",
+    "results": [
+       …
+    ]
+}
+</code></pre>
+<h4 id="setup"><a class="toclink" href="#setup">Setup</a></h4>
+<p>To enable the <code>PageNumberPagination</code> style globally, use the following configuration, and set the <code>PAGE_SIZE</code> as desired:</p>
+<pre><code>REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 100
+}
+</code></pre>
+<p>On <code>GenericAPIView</code> subclasses you may also set the <code>pagination_class</code> attribute to select <code>PageNumberPagination</code> on a per-view basis.</p>
+<h4 id="configuration"><a class="toclink" href="#configuration">Configuration</a></h4>
+<p>The <code>PageNumberPagination</code> class includes a number of attributes that may be overridden to modify the pagination style.</p>
+<p>To set these attributes you should override the <code>PageNumberPagination</code> class, and then enable your custom pagination class as above.</p>
+<ul>
+<li><code>django_paginator_class</code> - The Django Paginator class to use. Default is <code>django.core.paginator.Paginator</code>, which should be fine for most use cases.</li>
+<li><code>page_size</code> - A numeric value indicating the page size. If set, this overrides the <code>PAGE_SIZE</code> setting. Defaults to the same value as the <code>PAGE_SIZE</code> settings key.</li>
+<li><code>page_query_param</code> - A string value indicating the name of the query parameter to use for the pagination control.</li>
+<li><code>page_size_query_param</code> - If set, this is a string value indicating the name of a query parameter that allows the client to set the page size on a per-request basis. Defaults to <code>None</code>, indicating that the client may not control the requested page size.</li>
+<li><code>max_page_size</code> - If set, this is a numeric value indicating the maximum allowable requested page size. This attribute is only valid if <code>page_size_query_param</code> is also set.</li>
+<li><code>last_page_strings</code> - A list or tuple of string values indicating values that may be used with the <code>page_query_param</code> to request the final page in the set. Defaults to <code>('last',)</code></li>
+<li><code>template</code> - The name of a template to use when rendering pagination controls in the browsable API. May be overridden to modify the rendering style, or set to <code>None</code> to disable HTML pagination controls completely. Defaults to <code>"rest_framework/pagination/numbers.html"</code>.</li>
+</ul>
+<hr />
+<h2 id="limitoffsetpagination"><a class="toclink" href="#limitoffsetpagination">LimitOffsetPagination</a></h2>
+<p>This pagination style mirrors the syntax used when looking up multiple database records. The client includes both a "limit" and an
+"offset" query parameter. The limit indicates the maximum number of items to return, and is equivalent to the <code>page_size</code> in other styles. The offset indicates the starting position of the query in relation to the complete set of unpaginated items.</p>
+<p><strong>Request</strong>:</p>
+<pre><code>GET https://api.example.org/accounts/?limit=100&amp;offset=400
+</code></pre>
+<p><strong>Response</strong>:</p>
+<pre><code>HTTP 200 OK
+{
+    "count": 1023
+    "next": "https://api.example.org/accounts/?limit=100&amp;offset=500",
+    "previous": "https://api.example.org/accounts/?limit=100&amp;offset=300",
+    "results": [
+       …
+    ]
+}
+</code></pre>
+<h4 id="setup_1"><a class="toclink" href="#setup_1">Setup</a></h4>
+<p>To enable the <code>LimitOffsetPagination</code> style globally, use the following configuration:</p>
+<pre><code>REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination'
+}
+</code></pre>
+<p>Optionally, you may also set a <code>PAGE_SIZE</code> key. If the <code>PAGE_SIZE</code> parameter is also used then the <code>limit</code> query parameter will be optional, and may be omitted by the client.</p>
+<p>On <code>GenericAPIView</code> subclasses you may also set the <code>pagination_class</code> attribute to select <code>LimitOffsetPagination</code> on a per-view basis.</p>
+<h4 id="configuration_1"><a class="toclink" href="#configuration_1">Configuration</a></h4>
+<p>The <code>LimitOffsetPagination</code> class includes a number of attributes that may be overridden to modify the pagination style.</p>
+<p>To set these attributes you should override the <code>LimitOffsetPagination</code> class, and then enable your custom pagination class as above.</p>
+<ul>
+<li><code>default_limit</code> - A numeric value indicating the limit to use if one is not provided by the client in a query parameter. Defaults to the same value as the <code>PAGE_SIZE</code> settings key.</li>
+<li><code>limit_query_param</code> - A string value indicating the name of the "limit" query parameter. Defaults to <code>'limit'</code>.</li>
+<li><code>offset_query_param</code> - A string value indicating the name of the "offset" query parameter. Defaults to <code>'offset'</code>.</li>
+<li><code>max_limit</code> - If set this is a numeric value indicating the maximum allowable limit that may be requested by the client. Defaults to <code>None</code>.</li>
+<li><code>template</code> - The name of a template to use when rendering pagination controls in the browsable API. May be overridden to modify the rendering style, or set to <code>None</code> to disable HTML pagination controls completely. Defaults to <code>"rest_framework/pagination/numbers.html"</code>.</li>
+</ul>
+<hr />
+<h2 id="cursorpagination"><a class="toclink" href="#cursorpagination">CursorPagination</a></h2>
+<p>The cursor-based pagination presents an opaque "cursor" indicator that the client may use to page through the result set. This pagination style only presents forward and reverse controls, and does not allow the client to navigate to arbitrary positions.</p>
+<p>Cursor based pagination requires that there is a unique, unchanging ordering of items in the result set. This ordering might typically be a creation timestamp on the records, as this presents a consistent ordering to paginate against.</p>
+<p>Cursor based pagination is more complex than other schemes. It also requires that the result set presents a fixed ordering, and does not allow the client to arbitrarily index into the result set. However it does provide the following benefits:</p>
+<ul>
+<li>Provides a consistent pagination view. When used properly <code>CursorPagination</code> ensures that the client will never see the same item twice when paging through records, even when new items are being inserted by other clients during the pagination process.</li>
+<li>Supports usage with very large datasets. With extremely large datasets pagination using offset-based pagination styles may become inefficient or unusable. Cursor based pagination schemes instead have fixed-time properties, and do not slow down as the dataset size increases.</li>
+</ul>
+<h4 id="details-and-limitations"><a class="toclink" href="#details-and-limitations">Details and limitations</a></h4>
+<p>Proper use of cursor based pagination requires a little attention to detail. You'll need to think about what ordering you want the scheme to be applied against. The default is to order by <code>"-created"</code>. This assumes that <strong>there must be a 'created' timestamp field</strong> on the model instances, and will present a "timeline" style paginated view, with the most recently added items first.</p>
+<p>You can modify the ordering by overriding the <code>'ordering'</code> attribute on the pagination class, or by using the <code>OrderingFilter</code> filter class together with <code>CursorPagination</code>. When used with <code>OrderingFilter</code> you should strongly consider restricting the fields that the user may order by.</p>
+<p>Proper usage of cursor pagination should have an ordering field that satisfies the following:</p>
+<ul>
+<li>Should be an unchanging value, such as a timestamp, slug, or other field that is only set once, on creation.</li>
+<li>Should be unique, or nearly unique. Millisecond precision timestamps are a good example. This implementation of cursor pagination uses a smart "position plus offset" style that allows it to properly support not-strictly-unique values as the ordering.</li>
+<li>Should be a non-nullable value that can be coerced to a string.</li>
+<li>Should not be a float. Precision errors easily lead to incorrect results.
+  Hint: use decimals instead.
+  (If you already have a float field and must paginate on that, an
+  <a href="https://gist.github.com/keturn/8bc88525a183fd41c73ffb729b8865be#file-fpcursorpagination-py">example <code>CursorPagination</code> subclass that uses decimals to limit precision is available here</a>.)</li>
+<li>The field should have a database index.</li>
+</ul>
+<p>Using an ordering field that does not satisfy these constraints will generally still work, but you'll be losing some of the benefits of cursor pagination.</p>
+<p>For more technical details on the implementation we use for cursor pagination, the <a href="https://cra.mr/2011/03/08/building-cursors-for-the-disqus-api">"Building cursors for the Disqus API"</a> blog post gives a good overview of the basic approach.</p>
+<h4 id="setup_2"><a class="toclink" href="#setup_2">Setup</a></h4>
+<p>To enable the <code>CursorPagination</code> style globally, use the following configuration, modifying the <code>PAGE_SIZE</code> as desired:</p>
+<pre><code>REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.CursorPagination',
+    'PAGE_SIZE': 100
+}
+</code></pre>
+<p>On <code>GenericAPIView</code> subclasses you may also set the <code>pagination_class</code> attribute to select <code>CursorPagination</code> on a per-view basis.</p>
+<h4 id="configuration_2"><a class="toclink" href="#configuration_2">Configuration</a></h4>
+<p>The <code>CursorPagination</code> class includes a number of attributes that may be overridden to modify the pagination style.</p>
+<p>To set these attributes you should override the <code>CursorPagination</code> class, and then enable your custom pagination class as above.</p>
+<ul>
+<li><code>page_size</code> = A numeric value indicating the page size. If set, this overrides the <code>PAGE_SIZE</code> setting. Defaults to the same value as the <code>PAGE_SIZE</code> settings key.</li>
+<li><code>cursor_query_param</code> = A string value indicating the name of the "cursor" query parameter. Defaults to <code>'cursor'</code>.</li>
+<li><code>ordering</code> = This should be a string, or list of strings, indicating the field against which the cursor based pagination will be applied. For example: <code>ordering = 'slug'</code>. Defaults to <code>-created</code>. This value may also be overridden by using <code>OrderingFilter</code> on the view.</li>
+<li><code>template</code> = The name of a template to use when rendering pagination controls in the browsable API. May be overridden to modify the rendering style, or set to <code>None</code> to disable HTML pagination controls completely. Defaults to <code>"rest_framework/pagination/previous_and_next.html"</code>.</li>
+</ul>
+<hr />
+<h1 id="custom-pagination-styles"><a class="toclink" href="#custom-pagination-styles">Custom pagination styles</a></h1>
+<p>To create a custom pagination serializer class you should subclass <code>pagination.BasePagination</code> and override the <code>paginate_queryset(self, queryset, request, view=None)</code> and <code>get_paginated_response(self, data)</code> methods:</p>
+<ul>
+<li>The <code>paginate_queryset</code> method is passed the initial queryset and should return an iterable object that contains only the data in the requested page.</li>
+<li>The <code>get_paginated_response</code> method is passed the serialized page data and should return a <code>Response</code> instance.</li>
+</ul>
+<p>Note that the <code>paginate_queryset</code> method may set state on the pagination instance, that may later be used by the <code>get_paginated_response</code> method.</p>
+<h2 id="example"><a class="toclink" href="#example">Example</a></h2>
+<p>Suppose we want to replace the default pagination output style with a modified format that  includes the next and previous links under in a nested 'links' key. We could specify a custom pagination class like so:</p>
+<pre><code>class CustomPagination(pagination.PageNumberPagination):
+    def get_paginated_response(self, data):
+        return Response({
+            'links': {
+                'next': self.get_next_link(),
+                'previous': self.get_previous_link()
+            },
+            'count': self.page.paginator.count,
+            'results': data
+        })
+</code></pre>
+<p>We'd then need to setup the custom class in our configuration:</p>
+<pre><code>REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'my_project.apps.core.pagination.CustomPagination',
+    'PAGE_SIZE': 100
+}
+</code></pre>
+<p>Note that if you care about how the ordering of keys is displayed in responses in the browsable API you might choose to use an <code>OrderedDict</code> when constructing the body of paginated responses, but this is optional.</p>
+<h2 id="using-your-custom-pagination-class"><a class="toclink" href="#using-your-custom-pagination-class">Using your custom pagination class</a></h2>
+<p>To have your custom pagination class be used by default, use the <code>DEFAULT_PAGINATION_CLASS</code> setting:</p>
+<pre><code>REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'my_project.apps.core.pagination.LinkHeaderPagination',
+    'PAGE_SIZE': 100
+}
+</code></pre>
+<p>API responses for list endpoints will now include a <code>Link</code> header, instead of including the pagination links as part of the body of the response, for example:</p>
+<p><img alt="Link Header" src="../../img/link-header-pagination.png" /></p>
+<p><em>A custom pagination style, using the 'Link' header'</em></p>
+<h2 id="pagination-schemas"><a class="toclink" href="#pagination-schemas">Pagination &amp; schemas</a></h2>
+<p>You can also make the pagination controls available to the schema autogeneration
+that REST framework provides, by implementing a <code>get_schema_fields()</code> method. This method should have the following signature:</p>
+<p><code>get_schema_fields(self, view)</code></p>
+<p>The method should return a list of <code>coreapi.Field</code> instances.</p>
+<hr />
+<h1 id="html-pagination-controls"><a class="toclink" href="#html-pagination-controls">HTML pagination controls</a></h1>
+<p>By default using the pagination classes will cause HTML pagination controls to be displayed in the browsable API. There are two built-in display styles. The <code>PageNumberPagination</code> and <code>LimitOffsetPagination</code> classes display a list of page numbers with previous and next controls. The <code>CursorPagination</code> class displays a simpler style that only displays a previous and next control.</p>
+<h2 id="customizing-the-controls"><a class="toclink" href="#customizing-the-controls">Customizing the controls</a></h2>
+<p>You can override the templates that render the HTML pagination controls. The two built-in styles are:</p>
+<ul>
+<li><code>rest_framework/pagination/numbers.html</code></li>
+<li><code>rest_framework/pagination/previous_and_next.html</code></li>
+</ul>
+<p>Providing a template with either of these paths in a global template directory will override the default rendering for the relevant pagination classes.</p>
+<p>Alternatively you can disable HTML pagination controls completely by subclassing on of the existing classes, setting <code>template = None</code> as an attribute on the class. You'll then need to configure your <code>DEFAULT_PAGINATION_CLASS</code> settings key to use your custom class as the default pagination style.</p>
+<h4 id="low-level-api"><a class="toclink" href="#low-level-api">Low-level API</a></h4>
+<p>The low-level API for determining if a pagination class should display the controls or not is exposed as a <code>display_page_controls</code> attribute on the pagination instance. Custom pagination classes should be set to <code>True</code> in the <code>paginate_queryset</code> method if they require the HTML pagination controls to be displayed.</p>
+<p>The <code>.to_html()</code> and <code>.get_html_context()</code> methods may also be overridden in a custom pagination class in order to further customize how the controls are rendered.</p>
+<hr />
+<h1 id="third-party-packages"><a class="toclink" href="#third-party-packages">Third party packages</a></h1>
+<p>The following third party packages are also available.</p>
+<h2 id="drf-extensions"><a class="toclink" href="#drf-extensions">DRF-extensions</a></h2>
+<p>The <a href="https://chibisov.github.io/drf-extensions/docs/"><code>DRF-extensions</code> package</a> includes a <a href="https://chibisov.github.io/drf-extensions/docs/#paginatebymaxmixin"><code>PaginateByMaxMixin</code> mixin class</a> that allows your API clients to specify <code>?page_size=max</code> to obtain the maximum allowed page size.</p>
+<h2 id="drf-proxy-pagination"><a class="toclink" href="#drf-proxy-pagination">drf-proxy-pagination</a></h2>
+<p>The <a href="https://github.com/tuffnatty/drf-proxy-pagination"><code>drf-proxy-pagination</code> package</a> includes a <code>ProxyPagination</code> class which allows to choose pagination class with a query parameter.</p>
+<h2 id="link-header-pagination"><a class="toclink" href="#link-header-pagination">link-header-pagination</a></h2>
+<p>The <a href="https://github.com/tbeadle/django-rest-framework-link-header-pagination"><code>django-rest-framework-link-header-pagination</code> package</a> includes a <code>LinkHeaderPagination</code> class which provides pagination via an HTTP <code>Link</code> header as described in <a href="github-link-pagination">Github's developer documentation</a>.</p>
+            
+
+          </div> <!--/span-->
+        </div> <!--/row-->
+      </div> <!--/.fluid-container-->
+    </div> <!--/.body content-->
+    <div id="push"></div>
+  </div> <!--/.wrapper -->
+
+  <footer class="span12">
+    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.
+    </p>
+  </footer>
+
+  <!-- Le javascript
+  ================================================== -->
+  <!-- Placed at the end of the document so the pages load faster -->
+  <script async src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
+  <script src="../../js/jquery-1.8.1-min.js"></script>
+  <script src="../../js/prettify-1.0.js"></script>
+  <script src="../../js/bootstrap-2.1.1-min.js"></script>
+  <script src="../../js/theme.js"></script>
+
+  <script>var base_url = '../..';</script>
+  
+  <script src="../../search/main.js" defer></script>
+  
+
+  <script>
+    var shiftWindow = function() {
+      scrollBy(0, -50)
+    };
+
+    if (location.hash) shiftWindow();
+    window.addEventListener("hashchange", shiftWindow);
+
+    $('.dropdown-menu').on('click touchstart', function(event) {
+      event.stopPropagation();
+    });
+
+    // Dynamically force sidenav/dropdown to no higher than browser window
+    $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
+
+    $(function() {
+      $(window).resize(function() {
+        $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
+      });
+    });
+  </script>
+</body>
+
+</html>
