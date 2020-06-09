@@ -30,6 +30,25 @@ def qs_filter(queryset, **kwargs):
         return queryset.none()
 
 
+class PasswordValidator:
+    """
+    This validator uses default django password validation function
+        django validator validates value with AUTH_PASSWORD_VALIDATORS in settings.py
+
+    The message with the key of field name will be generated automatically in function.
+
+    Should be applied to an individual field on the serializer.
+
+    If the password is valid, return ``None``.
+    """
+
+    def __init__(self, validators=None, user=None):
+        self.validators = validators
+        self.user = user
+
+
+
+
 class UniqueValidator:
     """
     Validator that corresponds to `unique=True` on a model field.
