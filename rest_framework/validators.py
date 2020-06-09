@@ -40,6 +40,9 @@ class PasswordValidator:
 
     Should be applied to an individual field on the serializer.
 
+    If you use this class at serializers' field validators, UserAttributeSimilarityValidator won't affect
+        You can use validate_FOO() and pass user to PasswordValidator.
+
     If the password is valid, return ``None``.
     """
 
