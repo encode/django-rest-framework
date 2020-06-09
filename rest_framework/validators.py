@@ -8,6 +8,7 @@ object creation, and makes it possible to switch between using the implicit
 """
 from django.db import DataError
 from django.utils.translation import gettext_lazy as _
+from django.contrib.auth import password_validation
 
 from rest_framework.exceptions import ValidationError
 from rest_framework.utils.representation import smart_repr
@@ -46,7 +47,21 @@ class PasswordValidator:
         self.validators = validators
         self.user = user
 
+    def __call__(self, value, serializer_field):
+        try:
+            password_validation.validate_password(
+                password=value,
+                user=self.user,
+                password_validators=self.validators
+            )
+        except ValidationError as e:
+            raise ValidationError(e)
 
+    def __repr__(self):
+        return '<%s(validators=%s)>' % (
+            self.__class__.__name__,
+            self.validators if self.validators else 'AUTH_PASSWORD_VALIDATORS'
+        )
 
 
 class UniqueValidator:
