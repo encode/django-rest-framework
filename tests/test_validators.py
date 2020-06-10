@@ -1,15 +1,15 @@
 import datetime
 
 import pytest
+from django.contrib.auth import password_validation
 from django.db import DataError, models
 from django.test import TestCase
-from django.contrib.auth import password_validation
 
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.validators import (
-    BaseUniqueForValidator, UniqueTogetherValidator, UniqueValidator,
-    qs_exists, PasswordValidator
+    BaseUniqueForValidator, PasswordValidator, UniqueTogetherValidator,
+    UniqueValidator, qs_exists
 )
 
 

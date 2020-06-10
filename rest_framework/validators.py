@@ -6,9 +6,9 @@ This gives us better separation of concerns, allows us to use single-step
 object creation, and makes it possible to switch between using the implicit
 `ModelSerializer` class and an equivalent explicit `Serializer` class.
 """
+from django.contrib.auth import password_validation
 from django.db import DataError
 from django.utils.translation import gettext_lazy as _
-from django.contrib.auth import password_validation
 
 from rest_framework.exceptions import ValidationError
 from rest_framework.utils.representation import smart_repr
