@@ -46,11 +46,11 @@ class PasswordValidator:
     If the password is valid, return ``None``.
     """
 
-    def __init__(self, validators=None, user=None):
-        self.validators = validators
+    def __init__(self, custom_validators=None, user=None):
+        self.validators = custom_validators
         self.user = user
 
-    def __call__(self, value, serializer_field):
+    def __call__(self, value, *args, **kwargs):
         try:
             password_validation.validate_password(
                 password=value,
@@ -58,7 +58,7 @@ class PasswordValidator:
                 password_validators=self.validators
             )
         except ValidationError as e:
-            raise ValidationError(e)
+            raise e
 
     def __repr__(self):
         return '<%s(validators=%s)>' % (
