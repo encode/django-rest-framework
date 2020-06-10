@@ -107,6 +107,42 @@ The validator should be applied to *serializer classes*, like so:
 
 ---
 
+## PasswordValidator
+
+This validator can be used for password fields of database where we can enforce user to set strong passwords.
+This validator works with [django default password validators][django default password validators]. Please make sure you 
+have enabled django validators in settings.
+It takes two optional `custom_validators` and `user` arguments:
+
+* `custom_validators` - Used for passing a list of custom password validators. default is set to django `AUTH_PASSWORD_VALIDATORS`.
+* `user` - You can pass user instance to PasswordValidator and determinate strength of password with user given specifications. 
+
+This validator should be applied to *serializer fields*, like so:
+
+    from rest_framework.validators import PasswordValidator
+
+    password = CharField(
+        max_length=100,
+        validators=[PasswordValidator()]
+    )
+
+If you need to pass `user` instance to `PasswordValidator`, you can use this example:
+
+    from rest_framework.validators import PasswordValidator, ValidationError
+
+    password = CharField(
+        max_length=100,
+    )
+    
+    def validate_password(self, value):
+        try:
+            PasswordValidator(password=value, user=self)  # self is user instance
+        except ValidationError as e:
+            raise e
+        return value
+
+---
+
 ## UniqueForDateValidator
 
 ## UniqueForMonthValidator
@@ -305,3 +341,4 @@ or `serializer` as an additional argument.
         ...
 
 [cite]: https://docs.djangoproject.com/en/stable/ref/validators/
+[django default password validators]: https://docs.djangoproject.com/en/3.0/topics/auth/passwords/#enabling-password-validation
