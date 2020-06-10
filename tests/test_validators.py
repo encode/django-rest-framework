@@ -704,9 +704,11 @@ class PasswordValidatorSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
         required=True,
         write_only=True,
-        validators=[PasswordValidator(
-            custom_validators=password_validation.get_password_validators(DEFAULT_AUTH_PASSWORD_VALIDATORS)
-            )]
+        validators=[
+            PasswordValidator(
+                custom_validators=password_validation.get_password_validators(DEFAULT_AUTH_PASSWORD_VALIDATORS)
+            )
+        ]
     )
 
     class Meta:
@@ -750,7 +752,8 @@ class TestPasswordValidator(TestCase):
         assert not serializer.is_valid()
         assert serializer.errors == {'password': [
             'This password is too short. It must contain at least 8 characters.', 'This password is too common.'
-            ]}
+        ]
+        }
 
     def test_password_all_numeric(self):
         """
@@ -760,4 +763,3 @@ class TestPasswordValidator(TestCase):
         serializer = PasswordValidatorSerializer(data=data)
         assert not serializer.is_valid()
         assert serializer.errors == {'password': ['This password is entirely numeric.']}
-
