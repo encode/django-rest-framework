@@ -3,12 +3,13 @@ import datetime
 import pytest
 from django.db import DataError, models
 from django.test import TestCase
+from django.contrib.auth import password_validation
 
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.validators import (
     BaseUniqueForValidator, UniqueTogetherValidator, UniqueValidator,
-    qs_exists
+    qs_exists, PasswordValidator
 )
 
 
@@ -675,3 +676,88 @@ class ValidatorsTests(TestCase):
             validator.filter_queryset(
                 attrs=None, queryset=None, field_name='', date_field_name=''
             )
+
+
+# Tests for 'PasswordValidator'
+# ------------------------------
+DEFAULT_AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
+
+
+class PasswordValidatorModel(models.Model):
+    password = models.CharField(max_length=100)
+
+
+class PasswordValidatorSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(
+        required=True,
+        write_only=True,
+        validators=[PasswordValidator(
+            custom_validators=password_validation.get_password_validators(DEFAULT_AUTH_PASSWORD_VALIDATORS)
+            )]
+    )
+
+    class Meta:
+        model = PasswordValidatorModel
+        fields = ['password']
+
+
+class TestPasswordValidator(TestCase):
+    def setUp(self):
+        self.instance1 = PasswordValidatorModel.objects.create(password='password')
+
+    def test_repr(self):
+        serializer = PasswordValidatorSerializer()
+        expected = dedent("""
+            PasswordValidatorSerializer():
+                password = CharField(required=True, validators=[<PasswordValidator(validators=[<django.contrib.auth.password_validation.UserAttributeSimilarityValidator object>, <django.contrib.auth.password_validation.MinimumLengthValidator object>, <django.contrib.auth.password_validation.CommonPasswordValidator object>, <django.contrib.auth.password_validation.NumericPasswordValidator object>])>], write_only=True)
+        """)
+        assert repr(serializer) == expected
+
+    def test_password_too_common(self):
+        data = {'password': 'password'}
+        serializer = PasswordValidatorSerializer(data=data)
+        assert not serializer.is_valid()
+        assert serializer.errors == {'password': ['This password is too common.']}
+
+    def test_password_too_short(self):
+        """
+        Password characters are less that 8 words
+        """
+        data = {'password': 'MiLaD'}
+        serializer = PasswordValidatorSerializer(data=data)
+        assert not serializer.is_valid()
+        assert serializer.errors == {'password': ['This password is too short. It must contain at least 8 characters.']}
+
+    def test_password_too_short_too_common(self):
+        """
+        Password characters are less that 8 words
+        """
+        data = {'password': '1qaz'}
+        serializer = PasswordValidatorSerializer(data=data)
+        assert not serializer.is_valid()
+        assert serializer.errors == {'password': [
+            'This password is too short. It must contain at least 8 characters.', 'This password is too common.'
+            ]}
+
+    def test_password_all_numeric(self):
+        """
+        Password characters are less that 8 words
+        """
+        data = {'password': '159357159'}
+        serializer = PasswordValidatorSerializer(data=data)
+        assert not serializer.is_valid()
+        assert serializer.errors == {'password': ['This password is entirely numeric.']}
+
