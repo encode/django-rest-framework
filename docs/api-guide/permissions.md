@@ -161,6 +161,12 @@ The `IsAdminUser` permission class will deny permission to any user, unless `use
 
 This permission is suitable if you want your API to only be accessible to a subset of trusted administrators.
 
+## IsSuperUser
+
+The `IsSuperUser` permission class will deny permission to any user, unless `user.is_superuser` is `True` in which case permission will be allowed.
+
+This permission is suitable if you want your API to only be accessible to only a super user.
+
 ## IsAuthenticatedOrReadOnly
 
 The `IsAuthenticatedOrReadOnly` will allow authenticated users to perform any request.  Requests for unauthorised users will only be permitted if the request method is one of the "safe" methods; `GET`, `HEAD` or `OPTIONS`.
