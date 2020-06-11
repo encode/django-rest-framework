@@ -1,6 +1,7 @@
 """
 Provides various authentication policies.
 """
+import abc
 import base64
 import binascii
 
@@ -30,7 +31,7 @@ class CSRFCheck(CsrfViewMiddleware):
         return reason
 
 
-class BaseAuthentication:
+class BaseAuthentication(abc.ABC):
     """
     All authentication classes should extend BaseAuthentication.
     """
