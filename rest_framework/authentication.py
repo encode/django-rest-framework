@@ -36,6 +36,7 @@ class BaseAuthentication(abc.ABC):
     All authentication classes should extend BaseAuthentication.
     """
 
+    @abc.abstractmethod
     def authenticate(self, request):
         """
         Authenticate the request and return a two-tuple of (user, token).

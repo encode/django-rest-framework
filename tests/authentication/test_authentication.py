@@ -537,7 +537,7 @@ class NoAuthenticationClassesTests(TestCase):
 class BasicAuthenticationUnitTests(TestCase):
 
     def test_base_authentication_abstract_method(self):
-        with pytest.raises(NotImplementedError):
+        with pytest.raises(TypeError):
             BaseAuthentication().authenticate({})
 
     def test_basic_authentication_raises_error_if_user_not_found(self):
