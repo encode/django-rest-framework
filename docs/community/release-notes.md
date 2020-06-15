@@ -40,7 +40,7 @@ You can determine your currently installed version using `pip show`:
 
 **Date**: 12th December 2019
 
-* Drop `.set_context` API [in favour of a `requires_context` marker](../3.11-announcement#validator-default-context).
+* Drop `.set_context` API [in favour of a `requires_context` marker](3.11-announcement.md#validator-default-context).
 * Changed default widget for TextField with choices to select box. [#6892][gh6892]
 * Supported nested writes on non-relational fields, such as JSONField. [#6916][gh6916]
 * Include request/response media types in OpenAPI schemas, based on configured parsers/renderers. [#6865][gh6865]
