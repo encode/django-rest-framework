@@ -37,3 +37,16 @@ class Token(models.Model):
 
     def __str__(self):
         return self.key
+
+
+class TokenProxy(Token):
+    """
+    Proxy mapping pk to user pk for use in admin.
+    """
+    @property
+    def pk(self):
+        return self.user.pk
+
+    class Meta:
+        proxy = True
+        verbose_name = "token"

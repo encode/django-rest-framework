@@ -322,7 +322,7 @@ The [Django Rest Framework Role Filters][django-rest-framework-role-filters] pac
 [filtering]: filtering.md
 [composed-permissions]: https://github.com/niwibe/djangorestframework-composed-permissions
 [rest-condition]: https://github.com/caxap/rest_condition
-[dry-rest-permissions]: https://github.com/Helioscene/dry-rest-permissions
+[dry-rest-permissions]: https://github.com/FJNR-inc/dry-rest-permissions
 [django-rest-framework-roles]: https://github.com/computer-lab/django-rest-framework-roles
 [djangorestframework-api-key]: https://florimondmanca.github.io/djangorestframework-api-key/
 [django-rest-framework-role-filters]: https://github.com/allisson/django-rest-framework-role-filters
