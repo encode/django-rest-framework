@@ -52,6 +52,12 @@ If your schema is static, you can use the `generateschema` management command:
 ./manage.py generateschema --file openapi-schema.yml
 ```
 
+You can also pass `tag_objects` as an option to `generateschema` command.
+
+```shell script
+$ python manage.py generateschema --tag_objects='[{"name": "pet", "description": "Pets operations"}, {"name": "store", "description": "Store operations"}]'
+```
+
 Once you've generated a schema in this way you can annotate it with any
 additional information that cannot be automatically inferred by the schema
 generator.
@@ -133,6 +139,24 @@ The `get_schema_view()` helper takes the following keyword arguments:
   `settings.DEFAULT_PERMISSION_CLASSES`.
 * `renderer_classes`: May be used to pass the set of renderer classes that can
   be used to render the API root endpoint.
+* `tag_objects`: list of dict which acts as **global** 
+  [tag objects][openapi-tag-object]. tags are used to group APIs together.
+  You can pass `tags` as an argument to constructor to `AutoSchema`.
+  This will be used for grouping APIs. While this tag objects argument adds
+  metadata to a single tag. [A nice example to understand the difference.](
+  https://swagger.io/docs/specification/grouping-operations-with-tags/)
+        
+        tag_objects = [
+            {
+                "name": "pet",
+                "description": "Pets operations"
+            },
+            ...
+        ]
+        get_schema_view(
+            ...,
+            tag_objects=tag_objects
+        )
 
 
 ## SchemaGenerator
@@ -159,6 +183,19 @@ Arguments:
 * `url`: The root URL of the API schema. This option is not required unless the schema is included under path prefix.
 * `patterns`: A list of URLs to inspect when generating the schema. Defaults to the project's URL conf.
 * `urlconf`: A URL conf module name to use when generating the schema. Defaults to `settings.ROOT_URLCONF`.
+* `tag_objects`: list of dict which acts as [tag objects][openapi-tag-object].            
+    ```python
+    tag_objects = [
+        {
+            "name": "pet",
+            "description": "Pets operations"
+        },
+        ...
+    ]
+    
+    generator = SchemaGenerator(..., tag_objects=tag_objects)
+    ```
+
 
 In order to customize the top-level schema, subclass
 `rest_framework.schemas.openapi.SchemaGenerator` and provide your subclass
@@ -411,6 +448,7 @@ create a base `AutoSchema` subclass for your project that takes additional
 [openapi-specification-extensions]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#specification-extensions
 [openapi-operation]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#operationObject
 [openapi-tags]: https://swagger.io/specification/#tagObject
+[openapi-tag-object]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#tagObject
 [openapi-operationid]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#fixed-fields-17
 [openapi-components]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#componentsObject
 [openapi-reference]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#referenceObject
