@@ -121,6 +121,10 @@ class BaseSerializer(Field):
             return cls.many_init(*args, **kwargs)
         return super().__new__(cls, *args, **kwargs)
 
+    # Allow type checkers to make serializers generic.
+    def __class_getitem__(cls, *args, **kwargs):
+        return cls
+
     @classmethod
     def many_init(cls, *args, **kwargs):
         """
