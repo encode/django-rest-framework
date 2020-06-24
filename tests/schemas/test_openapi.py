@@ -13,7 +13,6 @@ from rest_framework.parsers import JSONParser, MultiPartParser
 from rest_framework.renderers import JSONRenderer, OpenAPIRenderer
 from rest_framework.request import Request
 from rest_framework.schemas.openapi import AutoSchema, SchemaGenerator
-
 from . import views
 
 
@@ -855,6 +854,12 @@ class TestOperationIntrospection(TestCase):
         assert properties['url']['type'] == 'string'
         assert properties['url']['nullable'] is True
         assert properties['url']['default'] == 'http://www.example.com'
+        assert properties['url']['pattern'] == r"^(?:[a-z0-9\.\-\+]*)://(?:[^\s:@/]+(?::[^\s:@/]*)?@)?(?:(?:25[0-5]" \
+                                               r"|2[0-4]\d|[0-1]?\d?\d)(?:\.(?:25[0-5]|2[0-4]\d|[0-1]?\d?\d)){3}|" \
+                                               r"\[[0-9a-f:\.]+\]|([a-z¡-￿0-9](?:[a-z¡-￿0-9-]{0,61}[a-z¡-￿0-9])?" \
+                                               r"(?:\.(?!-)[a-z¡-￿0-9-]{1,63}(?<!-))*\.(?!-)(?:[a-z¡-￿-]{2,63}|" \
+                                               r"xn--[a-z0-9]{1,59})(?<!-)\.?|localhost))(?::\d{2,5})?(?:[/?#][^\s]*)" \
+                                               r"?\z"
 
         assert properties['uuid']['type'] == 'string'
         assert properties['uuid']['format'] == 'uuid'

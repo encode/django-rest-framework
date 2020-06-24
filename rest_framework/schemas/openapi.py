@@ -554,7 +554,7 @@ class AutoSchema(ViewInspector):
             if isinstance(v, URLValidator):
                 schema['format'] = 'uri'
             if isinstance(v, RegexValidator):
-                schema['pattern'] = v.regex.pattern
+                schema['pattern'] = v.regex.pattern.replace('\\Z', '\\z')
             elif isinstance(v, MaxLengthValidator):
                 attr_name = 'maxLength'
                 if isinstance(field, serializers.ListField):
