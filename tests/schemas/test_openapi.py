@@ -855,6 +855,7 @@ class TestOperationIntrospection(TestCase):
         assert properties['url']['type'] == 'string'
         assert properties['url']['nullable'] is True
         assert properties['url']['default'] == 'http://www.example.com'
+        assert '\\Z' not in properties['url']['pattern']
 
         assert properties['uuid']['type'] == 'string'
         assert properties['uuid']['format'] == 'uuid'
