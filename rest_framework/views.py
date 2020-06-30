@@ -479,6 +479,16 @@ class APIView(View):
             request.force_plaintext_errors(use_plaintext_traceback)
         raise exc
 
+    # Get the appropriate handler method
+    def get_handler(self, request):
+        if request.method.lower() in self.http_method_names:
+            handler = getattr(self, request.method.lower(),
+                              self.http_method_not_allowed)
+        else:
+            handler = self.http_method_not_allowed
+
+        return handler
+
     # Note: Views are made CSRF exempt from within `as_view` as to prevent
     # accidental removal of this exemption in cases where `dispatch` needs to
     # be overridden.
@@ -495,14 +505,7 @@ class APIView(View):
 
         try:
             self.initial(request, *args, **kwargs)
-
-            # Get the appropriate handler method
-            if request.method.lower() in self.http_method_names:
-                handler = getattr(self, request.method.lower(),
-                                  self.http_method_not_allowed)
-            else:
-                handler = self.http_method_not_allowed
-
+            handler = self.get_handler(request)
             response = handler(request, *args, **kwargs)
 
         except Exception as exc:
