@@ -150,6 +150,11 @@ class ViewSetMixin:
         Reverse the action for the given `url_name`.
         """
         url_name = '%s-%s' % (self.basename, url_name)
+        namespace = None
+        if self.request and self.request.resolver_match:
+            namespace = self.request.resolver_match.namespace
+        if namespace:
+            url_name = namespace + ':' + url_name
         kwargs.setdefault('request', self.request)
 
         return reverse(url_name, *args, **kwargs)
