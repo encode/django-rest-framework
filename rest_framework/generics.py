@@ -97,6 +97,7 @@ class GenericAPIView(views.APIView):
 
         # May raise a permission denied
         self.check_object_permissions(self.request, obj)
+        self.instance = obj
 
         return obj
 
