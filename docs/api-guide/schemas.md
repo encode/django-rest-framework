@@ -165,7 +165,7 @@ In order to customize the top-level schema, subclass
 as an argument to the `generateschema` command or `get_schema_view()` helper
 function.
 
-### get_schema(self, request)
+### get_schema(self, request=None, public=False)
 
 Returns a dictionary that represents the OpenAPI schema:
 
