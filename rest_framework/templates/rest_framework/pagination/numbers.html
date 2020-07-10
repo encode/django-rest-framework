@@ -1,13 +1,13 @@
 <ul class="pagination" style="margin: 5px 0 10px 0">
   {% if previous_url %}
-    <li>
-      <a href="{{ previous_url }}" aria-label="Previous">
+    <li class="page-item">
+      <a class="page-link" href="{{ previous_url }}" aria-label="Previous">
         <span aria-hidden="true">&laquo;</span>
       </a>
     </li>
   {% else %}
-    <li class="disabled">
-      <a href="#" aria-label="Previous">
+    <li class="page-item disabled">
+      <a class="page-link" href="#" aria-label="Previous">
         <span aria-hidden="true">&laquo;</span>
       </a>
     </li>
@@ -15,31 +15,31 @@
 
   {% for page_link in page_links %}
     {% if page_link.is_break %}
-      <li class="disabled">
+      <li class="page-item disabled">
         <a href="#"><span aria-hidden="true">&hellip;</span></a>
       </li>
     {% else %}
       {% if page_link.is_active %}
-        <li class="active">
-          <a href="{{ page_link.url }}">{{ page_link.number }}</a>
+        <li class="page-item active">
+          <a class="page-link" href="{{ page_link.url }}">{{ page_link.number }}</a>
         </li>
       {% else %}
-        <li>
-          <a href="{{ page_link.url }}">{{ page_link.number }}</a>
+        <li class="page-item">
+          <a class="page-link" href="{{ page_link.url }}">{{ page_link.number }}</a>
         </li>
       {% endif %}
     {% endif %}
   {% endfor %}
 
   {% if next_url %}
-    <li>
-      <a href="{{ next_url }}" aria-label="Next">
+    <li class="page-item">
+      <a class="page-link" href="{{ next_url }}" aria-label="Next">
         <span aria-hidden="true">&raquo;</span>
       </a>
     </li>
   {% else %}
-    <li class="disabled">
-      <a href="#" aria-label="Next">
+    <li class="page-item disabled">
+      <a class="page-link" href="#" aria-label="Next">
         <span aria-hidden="true">&raquo;</span>
       </a>
     </li>
