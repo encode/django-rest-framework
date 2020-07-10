@@ -33,17 +33,15 @@
 
     <div class="wrapper">
       {% block navbar %}
-        <div class="navbar navbar-static-top {% block bootstrap_navbar_variant %}navbar-inverse{% endblock %}"
+        <div class="navbar navbar-expand-md fixed-top {% block bootstrap_navbar_variant %}navbar-dark{% endblock %}"
              role="navigation" aria-label="{% trans "navbar" %}">
           <div class="container">
-            <span>
               {% block branding %}
                 <a class='navbar-brand' rel="nofollow" href='https://www.django-rest-framework.org/'>
                     Django REST framework
                 </a>
               {% endblock %}
-            </span>
-            <ul class="nav navbar-nav pull-right">
+            <ul class="navbar-nav">
               {% block userlinks %}
                 {% if user.is_authenticated %}
                   {% optional_logout request user %}
@@ -61,9 +59,9 @@
           <ul class="breadcrumb">
             {% for breadcrumb_name, breadcrumb_url in breadcrumblist %}
               {% if forloop.last %}
-                <li class="active"><a href="{{ breadcrumb_url }}">{{ breadcrumb_name }}</a></li>
+                <li class="breadcrumb-item active"><a href="{{ breadcrumb_url }}">{{ breadcrumb_name }}</a></li>
               {% else %}
-                <li><a href="{{ breadcrumb_url }}">{{ breadcrumb_name }}</a></li>
+                <li class="breadcrumb-item"><a href="{{ breadcrumb_url }}">{{ breadcrumb_name }}</a></li>
               {% endif %}
             {% empty %}
               {% block breadcrumbs_empty %}&nbsp;{% endblock breadcrumbs_empty %}
@@ -79,25 +77,24 @@
           {% block request_forms %}
 
           {% if 'GET' in allowed_methods %}
-            <form id="get-form" class="pull-right">
+            <form id="get-form" class="float-right">
               <fieldset>
                 {% if api_settings.URL_FORMAT_OVERRIDE %}
-                  <div class="btn-group format-selection">
-                    <a class="btn btn-primary js-tooltip" href="{{ request.get_full_path }}" rel="nofollow" title="Make a GET request on the {{ name }} resource">GET</a>
-
-                    <button class="btn btn-primary dropdown-toggle js-tooltip" data-toggle="dropdown" title="Specify a format for the GET request">
-                      <span class="caret"></span>
+                  <div class="btn-group">
+                    <button class="btn btn-primary" data-toggle="tooltip" href="{{ request.get_full_path }}" rel="nofollow" title="Make a GET request on the {{ name }} resource">GET</button>
+                    <button class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" data-toggle-second="tooltip" title="Specify a format for the GET request">
+                      <span class="sr-only">Toggle Dropdown</span>
                     </button>
                     <ul class="dropdown-menu">
                       {% for format in available_formats %}
                         <li>
-                          <a class="js-tooltip format-option" href="{% add_query_param request api_settings.URL_FORMAT_OVERRIDE format %}" rel="nofollow" title="Make a GET request on the {{ name }} resource with the format set to `{{ format }}`">{{ format }}</a>
+                          <a class="dropdown-item" data-toggle="tooltip" href="{% add_query_param request api_settings.URL_FORMAT_OVERRIDE format %}" rel="nofollow" title="Make a GET request on the {{ name }} resource with the format set to `{{ format }}`">{{ format }}</a>
                         </li>
                       {% endfor %}
                     </ul>
                   </div>
                 {% else %}
-                  <a class="btn btn-primary js-tooltip" href="{{ request.get_full_path }}" rel="nofollow" title="Make a GET request on the {{ name }} resource">GET</a>
+                  <a class="btn btn-primary" data-toggle="tooltip" href="{{ request.get_full_path }}" rel="nofollow" title="Make a GET request on the {{ name }} resource">GET</a>
                 {% endif %}
               </fieldset>
             </form>
@@ -105,12 +102,12 @@
 
           {% if options_form %}
             <form class="button-form" action="{{ request.get_full_path }}" data-method="OPTIONS">
-              <button class="btn btn-primary js-tooltip" title="Make an OPTIONS request on the {{ name }} resource">OPTIONS</button>
+              <button class="btn btn-primary" data-toggle="tooltip" title="Make an OPTIONS request on the {{ name }} resource">OPTIONS</button>
             </form>
           {% endif %}
 
           {% if delete_form %}
-            <button class="btn btn-danger button-form js-tooltip" title="Make a DELETE request on the {{ name }} resource" data-toggle="modal" data-target="#deleteModal">DELETE</button>
+            <button class="btn btn-danger button-form" data-toggle="tooltip" title="Make a DELETE request on the {{ name }} resource" data-toggle="modal" data-target="#deleteModal">DELETE</button>
 
             <!-- Delete Modal -->
             <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -132,13 +129,12 @@
 
           {% if extra_actions %}
             <div class="dropdown" style="float: right; margin-right: 10px">
-              <button class="btn btn-default" id="extra-actions-menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+              <button class="btn btn-info dropdown-toggle" id="extra-actions-menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 {% trans "Extra Actions" %}
-                <span class="caret"></span>
               </button>
               <ul class="dropdown-menu" aria-labelledby="extra-actions-menu">
                 {% for action_name, url in extra_actions|items %}
-                <li><a href="{{ url }}">{{ action_name }}</a></li>
+                <li><a class="dropdown-item" href="{{ url }}">{{ action_name }}</a></li>
                 {% endfor %}
               </ul>
             </div>
@@ -305,6 +301,15 @@
           $('form').ajaxForm();
         });
       </script>
+      <! -- enable tooltips -->
+      <script type="text/javascript">
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="tooltip"], [data-toggle-second="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+         return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+
+      </script>
+
     {% endblock %}
 
   </body>

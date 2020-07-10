@@ -18,10 +18,10 @@ a single block in the template.
   font-size: 80%;
 }
 
-.navbar-inverse .brand a {
+.navbar-dark .navbar-brand {
   color: #999999;
 }
-.navbar-inverse .brand:hover a {
+.navbar-inverse .navbar-brand:hover {
   color: white;
   text-decoration: none;
 }

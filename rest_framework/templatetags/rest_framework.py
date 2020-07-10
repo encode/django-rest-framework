@@ -97,7 +97,7 @@ def optional_login(request):
     except NoReverseMatch:
         return ''
 
-    snippet = "<li><a href='{href}?next={next}'>Log in</a></li>"
+    snippet = "<li class='nav-item'><a href='{href}?next={next}' class='nav-link'>Log in</a></li>"
     snippet = format_html(snippet, href=login_url, next=escape(request.path))
 
     return mark_safe(snippet)
@@ -127,16 +127,15 @@ def optional_logout(request, user):
     try:
         logout_url = reverse('rest_framework:logout')
     except NoReverseMatch:
-        snippet = format_html('<li class="navbar-text">{user}</li>', user=escape(user))
+        snippet = format_html('<li class="nav-item">{user}</li>', user=escape(user))
         return mark_safe(snippet)
 
-    snippet = """<li class="dropdown">
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+    snippet = """<li class="nav-item dropdown">
+        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" id="navbarDropdown" role="button" data-toggle="dropdown">
             {user}
-            <b class="caret"></b>
         </a>
         <ul class="dropdown-menu">
-            <li><a href='{href}?next={next}'>Log out</a></li>
+            <li><a class="dropdown-item" href='{href}?next={next}'>Log out</a></li>
         </ul>
     </li>"""
     snippet = format_html(snippet, user=escape(user), href=logout_url, next=escape(request.path))
