@@ -198,20 +198,6 @@ body a:hover {
   clear:both;
 }
 
-.horizontal-checkbox label {
-  padding-top: 0;
-}
-
-.horizontal-checkbox label {
-  padding-top: 0 !important;
-}
-
-.horizontal-checkbox input {
-  float: left;
-  width: 20px;
-  margin-top: 3px;
-}
-
 .modal-footer form {
   margin-left: 5px;
   margin-right: 5px;

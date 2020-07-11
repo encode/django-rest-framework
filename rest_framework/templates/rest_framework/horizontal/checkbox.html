@@ -1,21 +1,23 @@
-<div class="mb-3 horizontal-checkbox {% if field.errors %}has-error{% endif %}">
+<div class="mb-3 row">
   {% if field.label %}
-    <label class="col-sm-2 control-label {% if style.hide_label %}sr-only{% endif %}">
+    <label class="col-sm-2 col-form-label pt-0 {% if style.hide_label %}sr-only{% endif %}">
       {{ field.label }}
     </label>
   {% endif %}
 
   <div class="col-sm-10">
-    <input type="checkbox" name="{{ field.name }}" value="true" {% if field.value %}checked{% endif %}>
+    <div class="col-sm-10">
+    <input class="form-check-input {% if field.errors %}is-invalid{% endif %}" type="checkbox" name="{{ field.name }}" value="true" {% if field.value %}checked{% endif %}>
 
     {% if field.errors %}
       {% for error in field.errors %}
-        <span class="help-block">{{ error }}</span>
+        <span class="invalid-feedback">{{ error }}</span>
       {% endfor %}
     {% endif %}
 
     {% if field.help_text %}
-      <span class="help-block">{{ field.help_text|safe }}</span>
+      <span class="form-text">{{ field.help_text|safe }}</span>
     {% endif %}
   </div>
+    </div>
 </div>
