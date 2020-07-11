@@ -2,7 +2,7 @@
 {% load rest_framework %}
 {% trans "No items to select." as no_items %}
 
-<div class="form-group {% if field.errors %}has-error{% endif %}">
+<div class="mb-3 {% if field.errors %}has-error{% endif %}">
   {% if field.label %}
     <label class="sr-only">
       {{ field.label }}

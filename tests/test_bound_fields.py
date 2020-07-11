@@ -78,7 +78,7 @@ class TestSimpleBoundField:
         renderer = HTMLFormRenderer()
         rendered = renderer.render_field(serializer['bool_field'], {})
         expected_packed = (
-            '<divclass="form-group">'
+            '<divclass="mb-3">'
             '<divclass="checkbox">'
             '<label>'
             '<inputtype="checkbox"name="bool_field"value="true"checked>'
@@ -170,12 +170,12 @@ class TestNestedBoundField:
                 '<legend>Nested2</legend>'
                 '<fieldset>'
                 '<legend>Nested1</legend>'
-                '<divclass="form-group">'
+                '<divclass="mb-3">'
                 '<label>Textfield</label>'
                 '<inputname="nested2.nested1.text_field"class="form-control"type="text"value="">'
                 '</div>'
                 '</fieldset>'
-                '<divclass="form-group">'
+                '<divclass="mb-3">'
                 '<label>Textfield</label>'
                 '<inputname="nested2.text_field"class="form-control"type="text"value="test">'
                 '</div>'

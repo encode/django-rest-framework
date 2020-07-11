@@ -2,7 +2,7 @@
 {% load rest_framework %}
 {% trans "None" as none_choice %}
 
-<div class="form-group {% if field.errors %}has-error{% endif %}">
+<div class="mb-3 {% if field.errors %}has-error{% endif %}">
   {% if field.label %}
     <label {% if style.hide_label %}class="sr-only"{% endif %}>
       {{ field.label }}
