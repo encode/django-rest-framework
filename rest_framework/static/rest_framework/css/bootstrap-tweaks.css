@@ -124,21 +124,6 @@ html, body {
   margin-bottom: 0;
 }
 
-.well {
-  -webkit-box-shadow: none;
-     -moz-box-shadow: none;
-          box-shadow: none;
-}
-
-.well .form-actions {
-  padding-bottom: 0;
-  margin-bottom: 0;
-}
-
-.well form {
-  margin-bottom: 0;
-}
-
 .nav-tabs {
   border: 0;
 }

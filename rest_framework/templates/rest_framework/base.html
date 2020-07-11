@@ -182,26 +182,26 @@
               {% if post_form or raw_data_post_form %}
                 <div {% if post_form %}class="tabbable"{% endif %}>
                   {% if post_form %}
-                    <ul class="nav nav-tabs form-switcher">
-                      <li>
-                        <a name='html-tab' href="#post-object-form" data-toggle="tab">HTML form</a>
+                    <ul class="nav nav-tabs justify-content-end" role="tablist">
+                      <li class="nav-item" role="presentation">
+                        <a class="nav-link active" name='html-tab' href="#post-object-form" data-toggle="tab" role="tab">HTML form</a>
                       </li>
-                      <li>
-                        <a name='raw-tab' href="#post-generic-content-form" data-toggle="tab">Raw data</a>
+                      <li class="nav-item" role="presentation">
+                        <a class="nav-link" name='raw-tab' href="#post-generic-content-form" data-toggle="tab" role="tab">Raw data</a>
                       </li>
                     </ul>
                   {% endif %}
 
-                  <div class="well tab-content">
+                  <div class="tab-content p-4 bg-light border">
                     {% if post_form %}
-                      <div class="tab-pane" id="post-object-form">
+                      <div class="tab-pane active" id="post-object-form" role="tabpanel">
                         {% with form=post_form %}
-                          <form action="{{ request.get_full_path }}" method="POST" enctype="multipart/form-data" class="form-horizontal" novalidate>
+                          <form action="{{ request.get_full_path }}" method="POST" enctype="multipart/form-data" novalidate>
                             <fieldset>
                               {% csrf_token %}
                               {{ post_form }}
                               <div class="form-actions">
-                                <button class="btn btn-primary js-tooltip" title="Make a POST request on the {{ name }} resource">POST</button>
+                                <button class="btn btn-primary" data-toggle="tooltip" title="Make a POST request on the {{ name }} resource">POST</button>
                               </div>
                             </fieldset>
                           </form>
@@ -209,13 +209,13 @@
                       </div>
                     {% endif %}
 
-                    <div {% if post_form %}class="tab-pane"{% endif %} id="post-generic-content-form">
+                    <div {% if post_form %}class="tab-pane"{% endif %} id="post-generic-content-form" role="tabpanel">
                       {% with form=raw_data_post_form %}
-                        <form action="{{ request.get_full_path }}" method="POST" class="form-horizontal">
+                        <form action="{{ request.get_full_path }}" method="POST">
                           <fieldset>
                             {% include "rest_framework/raw_data_form.html" %}
                             <div class="form-actions">
-                              <button class="btn btn-primary js-tooltip" title="Make a POST request on the {{ name }} resource">POST</button>
+                              <button class="btn btn-primary" data-toggle="tooltip" title="Make a POST request on the {{ name }} resource">POST</button>
                             </div>
                           </fieldset>
                         </form>
@@ -228,41 +228,41 @@
               {% if put_form or raw_data_put_form or raw_data_patch_form %}
                 <div {% if put_form %}class="tabbable"{% endif %}>
                   {% if put_form %}
-                    <ul class="nav nav-tabs form-switcher">
-                      <li>
-                        <a name='html-tab' href="#put-object-form" data-toggle="tab">HTML form</a>
+                    <ul class="nav nav-tabs justify-content-end" role="tablist">
+                      <li class="nav-item" role="presentation">
+                        <a class="nav-link active" name='html-tab' href="#put-object-form" data-toggle="tab" role="tab">HTML form</a>
                       </li>
-                      <li>
-                        <a  name='raw-tab' href="#put-generic-content-form" data-toggle="tab">Raw data</a>
+                      <li class="nav-item" role="presentation">
+                        <a class="nav-link" name='raw-tab' href="#put-generic-content-form" data-toggle="tab" role="tab">Raw data</a>
                       </li>
                     </ul>
                   {% endif %}
 
-                  <div class="well tab-content">
+                  <div class="tab-content p-4 bg-light border">
                     {% if put_form %}
-                      <div class="tab-pane" id="put-object-form">
-                        <form action="{{ request.get_full_path }}" data-method="PUT" enctype="multipart/form-data" class="form-horizontal" novalidate>
+                      <div class="tab-pane active" id="put-object-form" role="tabpanel">
+                        <form action="{{ request.get_full_path }}" data-method="PUT" enctype="multipart/form-data" novalidate>
                           <fieldset>
                             {{ put_form }}
                             <div class="form-actions">
-                              <button class="btn btn-primary js-tooltip" title="Make a PUT request on the {{ name }} resource">PUT</button>
+                              <button class="btn btn-primary" data-toggle="tooltip" title="Make a PUT request on the {{ name }} resource">PUT</button>
                             </div>
                           </fieldset>
                         </form>
                       </div>
                     {% endif %}
 
-                    <div {% if put_form %}class="tab-pane"{% endif %} id="put-generic-content-form">
+                    <div {% if put_form %}class="tab-pane"{% endif %} id="put-generic-content-form" role="tabpanel">
                       {% with form=raw_data_put_or_patch_form %}
-                        <form action="{{ request.get_full_path }}" data-method="PUT" class="form-horizontal">
+                        <form action="{{ request.get_full_path }}" data-method="PUT">
                           <fieldset>
                             {% include "rest_framework/raw_data_form.html" %}
                             <div class="form-actions">
                               {% if raw_data_put_form %}
-                                <button class="btn btn-primary js-tooltip" title="Make a PUT request on the {{ name }} resource">PUT</button>
+                                <button class="btn btn-primary" data-toggle="tooltip" title="Make a PUT request on the {{ name }} resource">PUT</button>
                               {% endif %}
                               {% if raw_data_patch_form %}
-                              <button data-method="PATCH" class="btn btn-primary js-tooltip" title="Make a PATCH request on the {{ name }} resource">PATCH</button>
+                              <button data-method="PATCH" class="btn btn-primary" data-toggle="tooltip" title="Make a PATCH request on the {{ name }} resource">PATCH</button>
                                 {% endif %}
                             </div>
                           </fieldset>
