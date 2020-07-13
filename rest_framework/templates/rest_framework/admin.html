@@ -27,57 +27,59 @@
   </head>
 
   {% block body %}
-    <body class="{% block bodyclass %}{% endblock %}">
-      <div class="wrapper">
-          {% block navbar %}
-            <div class="navbar navbar-static-top {% block bootstrap_navbar_variant %}navbar-inverse{% endblock %}">
-              <div class="container">
-                <span>
-                  {% block branding %}
-                    <a class='navbar-brand' rel="nofollow" href='https://www.django-rest-framework.org/'>
-                      Django REST framework
-                    </a>
-                  {% endblock %}
-                </span>
-                <ul class="nav navbar-nav pull-right">
-                  {% block userlinks %}
-                    {% if user.is_authenticated %}
-                      {% optional_logout request user %}
-                    {% else %}
-                      {% optional_login request %}
-                    {% endif %}
-                  {% endblock %}
-                </ul>
-              </div>
-            </div>
-          {% endblock %}
+  <body class="{% block bodyclass %}{% endblock %}">
 
+    <div class="wrapper">
+      {% block navbar %}
+        <div class="navbar navbar-expand-md fixed-top {% block bootstrap_navbar_variant %}navbar-dark{% endblock %}"
+             role="navigation" aria-label="{% trans "navbar" %}">
           <div class="container">
-            {% block breadcrumbs %}
-              <ul class="breadcrumb">
-                {% for breadcrumb_name, breadcrumb_url in breadcrumblist %}
-                  {% if forloop.last %}
-                    <li class="active"><a href="{{ breadcrumb_url }}">{{ breadcrumb_name }}</a></li>
-                  {% else %}
-                    <li><a href="{{ breadcrumb_url }}">{{ breadcrumb_name }}</a></li>
-                  {% endif %}
-                {% endfor %}
-              </ul>
-            {% endblock %}
+              {% block branding %}
+                <a class='navbar-brand' rel="nofollow" href='https://www.django-rest-framework.org/'>
+                    Django REST framework
+                </a>
+              {% endblock %}
+            <ul class="navbar-nav">
+              {% block userlinks %}
+                {% if user.is_authenticated %}
+                  {% optional_logout request user %}
+                {% else %}
+                  {% optional_login request %}
+                {% endif %}
+              {% endblock %}
+            </ul>
+          </div>
+        </div>
+      {% endblock %}
+
+      <div class="container">
+        {% block breadcrumbs %}
+          <ul class="breadcrumb">
+            {% for breadcrumb_name, breadcrumb_url in breadcrumblist %}
+              {% if forloop.last %}
+                <li class="breadcrumb-item active"><a href="{{ breadcrumb_url }}">{{ breadcrumb_name }}</a></li>
+              {% else %}
+                <li class="breadcrumb-item"><a href="{{ breadcrumb_url }}">{{ breadcrumb_name }}</a></li>
+              {% endif %}
+            {% empty %}
+              {% block breadcrumbs_empty %}&nbsp;{% endblock breadcrumbs_empty %}
+            {% endfor %}
+          </ul>
+        {% endblock %}
 
           <!-- Content -->
           <div id="content">
             {% if 'GET' in allowed_methods %}
-              <form id="get-form" class="pull-right">
+              <form id="get-form" class="float-right">
                 <fieldset>
-                  <div class="btn-group format-selection">
+                  <div class="dropdown format-selection">
                     <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-                      Format <span class="caret"></span>
+                      Format
                     </button>
                     <ul class="dropdown-menu">
                       {% for format in available_formats %}
                         <li>
-                          <a class="format-option"
+                          <a class="dropdown-item"
                               href='{% add_query_param request api_settings.URL_FORMAT_OVERRIDE format %}'
                                rel="nofollow">
                               {{ format }}
@@ -92,47 +94,60 @@
 
             {% if post_form %}
               <button type="button" class="button-form btn btn-primary" data-toggle="modal" data-target="#createModal">
-                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Create
+                <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-file-plus mb-1" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" d="M4 1h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2zm0 1a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H4z"/>
+                  <path fill-rule="evenodd" d="M8 5.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V10a.5.5 0 0 1-1 0V8.5H6a.5.5 0 0 1 0-1h1.5V6a.5.5 0 0 1 .5-.5z"/>
+                </svg>
+                Create
               </button>
             {% endif %}
 
             {% if put_form %}
               <button type="button" class="button-form btn btn-primary" data-toggle="modal" data-target="#editModal">
-                <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Edit
+                <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-pencil mb-1" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" d="M11.293 1.293a1 1 0 0 1 1.414 0l2 2a1 1 0 0 1 0 1.414l-9 9a1 1 0 0 1-.39.242l-3 1a1 1 0 0 1-1.266-1.265l1-3a1 1 0 0 1 .242-.391l9-9zM12 2l2 2-9 9-3 1 1-3 9-9z"/>
+                  <path fill-rule="evenodd" d="M12.146 6.354l-2.5-2.5.708-.708 2.5 2.5-.707.708zM3 10v.5a.5.5 0 0 0 .5.5H4v.5a.5.5 0 0 0 .5.5H5v.5a.5.5 0 0 0 .5.5H6v-1.5a.5.5 0 0 0-.5-.5H5v-.5a.5.5 0 0 0-.5-.5H3z"/>
+                </svg>
+                Edit
               </button>
             {% endif %}
 
             {% if delete_form %}
               <form class="button-form" action="{{ request.get_full_path }}" data-method="DELETE">
                 <button class="btn btn-danger">
-                  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete
+                  <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-file-minus mb-1" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M4 1h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2zm0 1a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H4z"/>
+                    <path fill-rule="evenodd" d="M5.5 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1H6a.5.5 0 0 1-.5-.5z"/>
+                  </svg>
+                  Delete
                 </button>
               </form>
             {% endif %}
 
             {% if extra_actions %}
               <div class="dropdown" style="float: right; margin-right: 10px">
-                <button class="btn btn-default" id="extra-actions-menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                <button class="btn btn-info dropdown-toggle" id="extra-actions-menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                   {% trans "Extra Actions" %}
-                  <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="extra-actions-menu">
                   {% for action_name, url in extra_actions|items %}
-                  <li><a href="{{ url }}">{{ action_name }}</a></li>
+                  <li><a class="dropdown-item" href="{{ url }}">{{ action_name }}</a></li>
                   {% endfor %}
                 </ul>
               </div>
             {% endif %}
 
             {% if filter_form %}
-              <button style="float: right; margin-right: 10px" data-toggle="modal" data-target="#filtersModal" class="btn btn-default">
-                <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+              <button data-toggle="modal" data-target="#filtersModal" class="btn btn-outline-secondary button-form">
+                <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-wrench mb-1" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" d="M.102 2.223A3.004 3.004 0 0 0 3.78 5.897l6.341 6.252A3.003 3.003 0 0 0 13 16a3 3 0 1 0-.851-5.878L5.897 3.781A3.004 3.004 0 0 0 2.223.1l2.141 2.142L4 4l-1.757.364L.102 2.223zm13.37 9.019L13 11l-.471.242-.529.026-.287.445-.445.287-.026.529L11 13l.242.471.026.529.445.287.287.445.529.026L13 15l.471-.242.529-.026.287-.445.445-.287.026-.529L15 13l-.242-.471-.026-.529-.445-.287-.287-.445-.529-.026z"/>
+                </svg>
                 {% trans "Filters" %}
               </button>
             {% endif %}
 
             <div class="content-main">
-              <div class="page-header">
+              <div class="page-header mt-3">
                 <h1>{{ name }}</h1>
               </div>
 
@@ -172,8 +187,8 @@
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
               <h4 class="modal-title" id="myModalLabel">Create</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             </div>
             <form action="{{ request.get_full_path }}" method="POST" enctype="multipart/form-data" class="form-horizontal" novalidate>
               <div class="modal-body">
@@ -183,7 +198,7 @@
                 </fieldset>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 <button type="submit" class="btn btn-primary">Save</button>
               </div>
             </form>
@@ -196,8 +211,8 @@
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
               <h4 class="modal-title" id="myModalLabel">Edit</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             </div>
             <form action="{{ request.get_full_path }}" data-method="PUT" enctype="multipart/form-data" class="form-horizontal" novalidate>
               <div class="modal-body">
@@ -206,7 +221,7 @@
                 </fieldset>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 <button type="submit" class="btn btn-primary">Save</button>
               </div>
             </form>
@@ -220,8 +235,8 @@
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="myModalLabel">{{ error_title }}</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
               </div>
               <form action="{{ request.get_full_path }}" data-method="{{ request.method }}" enctype="multipart/form-data" class="form-horizontal" novalidate>
                 <div class="modal-body">
@@ -230,7 +245,7 @@
                   </fieldset>
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                   <button type="submit" class="btn btn-primary">Save</button>
                 </div>
               </form>
@@ -253,6 +268,7 @@
         <script src="{% static "rest_framework/js/jquery-3.5.1.min.js" %}"></script>
         <script src="{% static "rest_framework/js/ajax-form.js" %}"></script>
         <script src="{% static "rest_framework/js/csrf.js" %}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
         <script src="{% static "rest_framework/js/bootstrap.min.js" %}"></script>
         <script src="{% static "rest_framework/js/prettify-min.js" %}"></script>
         <script src="{% static "rest_framework/js/default.js" %}"></script>
