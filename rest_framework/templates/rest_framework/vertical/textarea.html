@@ -1,17 +1,17 @@
-<div class="mb-3 {% if field.errors %}has-error{% endif %}">
+<div class="mb-3">
   {% if field.label %}
-    <label {% if style.hide_label %}class="sr-only"{% endif %}>
+    <label class="form-label {% if style.hide_label %}sr-only{% endif %}">
       {{ field.label }}
     </label>
   {% endif %}
 
-  <textarea name="{{ field.name }}" class="form-control" {% if style.placeholder %}placeholder="{{ style.placeholder }}"{% endif %} {% if style.rows %}rows="{{ style.rows }}"{% endif %}>{% if field.value %}{{ field.value }}{% endif %}</textarea>
+  <textarea name="{{ field.name }}" class="form-control{% if field.errors %} is-invalid{% endif %}" {% if style.placeholder %}placeholder="{{ style.placeholder }}"{% endif %} {% if style.rows %}rows="{{ style.rows }}"{% endif %}>{% if field.value %}{{ field.value }}{% endif %}</textarea>
 
   {% if field.errors %}
-    {% for error in field.errors %}<span class="help-block">{{ error }}</span>{% endfor %}
+    {% for error in field.errors %}<span class="invalid-feedback">{{ error }}</span>{% endfor %}
   {% endif %}
 
   {% if field.help_text %}
-    <span class="help-block">{{ field.help_text|safe }}</span>
+    <span class="form-text">{{ field.help_text|safe }}</span>
   {% endif %}
 </div>

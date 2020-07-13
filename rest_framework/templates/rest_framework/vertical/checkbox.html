@@ -1,18 +1,16 @@
-<div class="mb-3 {% if field.errors %}has-error{% endif %}">
-  <div class="checkbox">
-    <label>
-      <input type="checkbox" name="{{ field.name }}" value="true" {% if field.value %}checked{% endif %}>
-        {% if field.label %}{{ field.label }}{% endif %}
-    </label>
-  </div>
+<div class="mb-3">
+  <div class="form-check">
+  <input class="form-check-input{% if field.errors %} is-invalid{% endif %}" type="checkbox" name="{{ field.name }}" value="true" {% if field.value %}checked{% endif %}>
+    {% if field.label %}<label class="form-check-label">{{ field.label }}</label>{% endif %}
 
   {% if field.errors %}
     {% for error in field.errors %}
-      <span class="help-block">{{ error }}</span>
+      <span class="invalid-feedback">{{ error }}</span>
     {% endfor %}
   {% endif %}
 
   {% if field.help_text %}
-    <span class="help-block">{{ field.help_text|safe }}</span>
+    <span class="form-text">{{ field.help_text|safe }}</span>
   {% endif %}
+    </div>
 </div>

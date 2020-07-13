@@ -1,9 +1,7 @@
 <fieldset>
   {% if field.label %}
-    <legend {% if style.hide_label %}class="sr-only"{% endif %}>
-      {{ field.label }}
-    </legend>
+    <label class="form-label {% if style.hide_label %}sr-only{% endif %}">{{ field.label }}</label>
   {% endif %}
 
-  <p>Lists are not currently supported in HTML input.</p>
+  <p class="form-label">Lists are not currently supported in HTML input.</p>
 </fieldset>

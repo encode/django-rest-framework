@@ -2,9 +2,7 @@
 
 <fieldset>
   {% if field.label %}
-    <legend {% if style.hide_label %}class="sr-only"{% endif %}>
-      {{ field.label }}
-    </legend>
+    <label class="form-label {% if style.hide_label %}sr-only{% endif %}">{{ field.label }}</label>
   {% endif %}
 
   {% for nested_field in field %}

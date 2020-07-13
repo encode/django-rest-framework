@@ -2,14 +2,12 @@
 {% load rest_framework %}
 {% trans "No items to select." as no_items %}
 
-<div class="mb-3 {% if field.errors %}has-error{% endif %}">
+<div class="mb-3">
   {% if field.label %}
-    <label {% if style.hide_label %}class="sr-only"{% endif %}>
-      {{ field.label }}
-    </label>
+    <label class="form-label {% if style.hide_label %}sr-only{% endif %}">{{ field.label }}</label>
   {% endif %}
 
-  <select multiple {{ field.choices|yesno:",disabled" }} class="form-control" name="{{ field.name }}">
+  <select multiple {{ field.choices|yesno:",disabled" }} class="form-select {% if field.errors %} is-invalid{% endif %}" name="{{ field.name }}">
     {% for select in field.iter_options %}
         {% if select.start_option_group %}
           <optgroup label="{{ select.label }}">
@@ -24,10 +22,10 @@
   </select>
 
     {% if field.errors %}
-      {% for error in field.errors %}<span class="help-block">{{ error }}</span>{% endfor %}
+      {% for error in field.errors %}<span class="invalid-feedback">{{ error }}</span>{% endfor %}
     {% endif %}
 
     {% if field.help_text %}
-      <span class="help-block">{{ field.help_text|safe }}</span>
+      <span class="form-text">{{ field.help_text|safe }}</span>
     {% endif %}
 </div>

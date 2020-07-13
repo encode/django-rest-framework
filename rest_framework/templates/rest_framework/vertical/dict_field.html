@@ -1,7 +1,7 @@
 <div class="mb-3">
   {% if field.label %}
-    <label {% if style.hide_label %}class="sr-only"{% endif %}>{{ field.label }}</label>
+    <label class="form-label {% if style.hide_label %}sr-only{% endif %}">{{ field.label }}</label>
   {% endif %}
 
-  <p class="form-control-static">Dictionaries are not currently supported in HTML input.</p>
+  <p class="form-label">Dictionaries are not currently supported in HTML input.</p>
 </div>

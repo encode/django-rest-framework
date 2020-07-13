@@ -1,37 +1,30 @@
 {% load rest_framework %}
 
-<div class="mb-3 {% if field.errors %}has-error{% endif %}">
+<div class="mb-3">
   {% if field.label %}
-    <label {% if style.hide_label %}class="sr-only"{% endif %}>{{ field.label }}</label>
+    <label class="form-label {% if style.hide_label %}sr-only{% endif %}">{{ field.label }}</label>
   {% endif %}
 
-  {% if style.inline %}
-    <div>
-      {% for key, text in field.choices|items %}
-        <label class="checkbox-inline">
-          <input type="checkbox" name="{{ field.name }}" value="{{ key }}" {% if key|as_string in field.value|as_list_of_strings %}checked{% endif %}>
-            {{ text }}
-        </label>
-      {% endfor %}
-    </div>
-  {% else %}
+  <div>
     {% for key, text in field.choices|items %}
-      <div class="checkbox">
-        <label>
-          <input type="checkbox" name="{{ field.name }}" value="{{ key }}" {% if key|as_string in field.value|as_list_of_strings %}checked{% endif %}>
-          {{ text }}
-        </label>
+      <div class="form-check {% if style.inline %}form-check-inline{% endif %}">
+        <input class="form-check-input{% if field.errors %} is-invalid{% endif %}" type="checkbox" name="{{ field.name }}" value="{{ key }}" {% if key|as_string in field.value|as_list_of_strings %}checked{% endif %}>
+        <label class="form-check-label">{{ text }}</label>
       </div>
     {% endfor %}
-  {% endif %}
 
-  {% if field.errors %}
-    {% for error in field.errors %}
-      <span class="help-block">{{ error }}</span>
-    {% endfor %}
-  {% endif %}
+    {% if field.errors %}
+      {# A fake input to trigger the error messages as it needs to be after a valid input #}
+      {# If it's with the last input and it's inline then the error stacks under the last input label #}
+      {# It has no name so no data will be sent #}
+      <input type="radio" class="is-invalid" style="display: none"/>
+      {% for error in field.errors %}
+        <span class="invalid-feedback">{{ error }}</span>
+      {% endfor %}
+    {% endif %}
 
   {% if field.help_text %}
-    <span class="help-block">{{ field.help_text|safe }}</span>
+    <span class="form-text">{{ field.help_text|safe }}</span>
   {% endif %}
+</div>
 </div>
