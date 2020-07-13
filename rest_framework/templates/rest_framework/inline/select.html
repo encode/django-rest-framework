@@ -1,13 +1,13 @@
 {% load rest_framework %}
 
-<div class="mb-3 {% if field.errors %}has-error{% endif %}">
+<div class="col-12">
   {% if field.label %}
     <label class="sr-only">
       {{ field.label }}
     </label>
   {% endif %}
 
-  <select class="form-control" name="{{ field.name }}">
+  <select class="form-select{% if field.errors %} is-invalid{% endif %}" name="{{ field.name }}">
     {% if field.allow_null or field.allow_blank %}
       <option value="" {% if not field.value %}selected{% endif %}>--------</option>
     {% endif %}

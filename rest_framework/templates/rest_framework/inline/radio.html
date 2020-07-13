@@ -2,7 +2,7 @@
 {% load rest_framework %}
 {% trans "None" as none_choice %}
 
-<div class="mb-3 {% if field.errors %}has-error{% endif %}">
+<div class="col-12">
   {% if field.label %}
     <label class="sr-only">
       {{ field.label }}
@@ -10,20 +10,16 @@
   {% endif %}
 
   {% if field.allow_null or field.allow_blank %}
-    <div class="radio">
-      <label>
-        <input type="radio" name="{{ field.name }}" value="" {% if not field.value %}checked{% endif %}>
-        {{ none_choice }}
-      </label>
+    <div class="form-check {% if style.inline %}form-check-inline {% endif %}">
+      <input class="form-check-input{% if field.errors %} is-invalid{% endif %}" type="radio" name="{{ field.name }}" value="" {% if not field.value %}checked{% endif %}>
+      <label>{{ none_choice }}</label>
     </div>
   {% endif %}
 
   {% for key, text in field.choices|items %}
-    <div class="radio">
-      <label>
-        <input type="radio" name="{{ field.name }}" value="{{ key }}" {% if key|as_string == field.value|as_string %}checked{% endif %}>
-        {{ text }}
-      </label>
+    <div class="form-check {% if style.inline %}form-check-inline {% endif %}">
+      <input class="form-check-input{% if field.errors %} is-invalid{% endif %}" type="radio" name="{{ field.name }}" value="{{ key }}" {% if key|as_string == field.value|as_string %}checked{% endif %}>
+      <label>{{ text }}</label>
     </div>
   {% endfor %}
 </div>

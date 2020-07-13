@@ -1,6 +1,8 @@
 {% load rest_framework %}
+<div class="row row-cols-md-auto g-3 align-items-center">
 {% for field in form %}
   {% if not field.read_only %}
     {% render_field field style=style %}
   {% endif %}
 {% endfor %}
+</div>

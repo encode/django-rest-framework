@@ -1,9 +1,9 @@
-<div class="mb-3 {% if field.errors %}has-error{% endif %}">
+<div class="col-12">
   {% if field.label %}
     <label class="sr-only">
       {{ field.label }}
     </label>
   {% endif %}
 
-  <input name="{{ field.name }}" type="text" class="form-control" {% if style.placeholder %}placeholder="{{ style.placeholder }}"{% endif %} {% if field.value %}value="{{ field.value }}"{% endif %}>
+  <input name="{{ field.name }}" type="text" class="form-control{% if field.errors %} is-invalid{% endif %}" {% if style.placeholder %}placeholder="{{ style.placeholder }}"{% endif %} {% if field.value %}value="{{ field.value }}"{% endif %}>
 </div>
