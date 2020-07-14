@@ -29,7 +29,7 @@
         <code>{{ link.url }}</code>
     </div>
 
-    <p>{% render_markdown link.description %}</p>
+    {% render_markdown link.description %}
 
 {% if link.fields|with_location:'path' %}
     <h4>Path Parameters</h4>

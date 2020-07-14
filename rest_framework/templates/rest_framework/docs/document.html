@@ -4,7 +4,7 @@
 <div class="col-md-6 intro-title">
     <h1>{{ document.title }}</h1>
     {% if document.description %}
-    <p>{% render_markdown document.description %}</p>
+    {% render_markdown document.description %}
     {% endif %}
 </div>
 <div class="col-md-6 intro-code">
