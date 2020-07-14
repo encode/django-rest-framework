@@ -115,7 +115,7 @@ pre.highlight code {
   padding-top: 10px;
   padding-bottom: 10px;
   padding-right: 10px;
-  padding-left: 25px;
+  padding-left: 10px;
 }
 
 .sidebar .menu-list ul .sub-menu li:hover,
@@ -129,19 +129,6 @@ pre.highlight code {
   display: block;
 }
 
-.sidebar .menu-list ul .sub-menu li a:before,
-.sidebar .menu-list li .sub-menu li a:before {
-  font-family: FontAwesome;
-  font-size: 14px;
-  font-weight: bold;
-  content: "\f105";
-  display: inline;
-  vertical-align: middle;
-  padding-left: 0;
-  padding-right: 7px;
-  margin-left: -12px;
-}
-
 .sidebar .menu-list li {
   padding-left: 0px;
   border-left: 3px solid #2e353d;
@@ -153,10 +140,8 @@ pre.highlight code {
   color: white;
 }
 
-.sidebar .menu-list li a i {
-  padding-left: 10px;
-  width: 20px;
-  padding-right: 20px;
+.sidebar .menu-list li a svg {
+
 }
 
 .sidebar .menu-list li:hover {
