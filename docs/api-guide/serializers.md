@@ -595,7 +595,7 @@ Normally if a `ModelSerializer` does not generate the fields you need by default
 
 ### `.serializer_field_mapping`
 
-A mapping of Django model classes to REST framework serializer classes. You can override this mapping to alter the default serializer classes that should be used for each model class.
+A mapping of Django model fields to REST framework serializer fields. You can override this mapping to alter the default serializer fields that should be used for each model field.
 
 ### `.serializer_related_field`
 
