@@ -265,6 +265,18 @@ class PrimaryKeyRelatedField(RelatedField):
         return value.pk
 
 
+class PrimaryKeySerializerField(PrimaryKeyRelatedField):
+    def __init__(self, serializer, **kwargs):
+        self.serializer = serializer
+        super().__init__(**kwargs)
+
+    def use_pk_only_optimization(self):
+        return False
+
+    def to_representation(self, instance):
+        return self.serializer(instance, context=self.context).data
+
+
 class HyperlinkedRelatedField(RelatedField):
     lookup_field = 'pk'
     view_name = None
