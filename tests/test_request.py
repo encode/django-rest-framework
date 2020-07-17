@@ -5,7 +5,6 @@ import os.path
 import tempfile
 
 import pytest
-from django.conf.urls import url
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.middleware import AuthenticationMiddleware
 from django.contrib.auth.models import User
@@ -13,6 +12,7 @@ from django.contrib.sessions.middleware import SessionMiddleware
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http.request import RawPostDataException
 from django.test import TestCase, override_settings
+from django.urls import path
 
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
@@ -153,9 +153,9 @@ class FileUploadView(APIView):
 
 
 urlpatterns = [
-    url(r'^$', MockView.as_view()),
-    url(r'^echo/$', EchoView.as_view()),
-    url(r'^upload/$', FileUploadView.as_view())
+    path('', MockView.as_view()),
+    path('echo/', EchoView.as_view()),
+    path('upload/', FileUploadView.as_view())
 ]
 
 

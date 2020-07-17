@@ -125,7 +125,7 @@ If it is called without a `filename` URL keyword argument, then the client must 
     # urls.py
     urlpatterns = [
         # ...
-        url(r'^upload/(?P<filename>[^/]+)$', FileUploadView.as_view())
+        re_path(r'^upload/(?P<filename>[^/]+)$', FileUploadView.as_view())
     ]
 
 ---

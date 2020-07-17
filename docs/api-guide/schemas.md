@@ -114,7 +114,7 @@ The `get_schema_view()` helper takes the following keyword arguments:
   only want the `myproject.api` urls to be exposed in the schema:
 
         schema_url_patterns = [
-            url(r'^api/', include('myproject.api.urls')),
+            path('api/', include('myproject.api.urls')),
         ]
 
         schema_view = get_schema_view(
