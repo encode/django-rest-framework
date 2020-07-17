@@ -2,9 +2,10 @@ from collections import OrderedDict
 from functools import wraps
 
 import pytest
-from django.conf.urls import include, url
+from django.conf.urls import include
 from django.db import models
 from django.test import TestCase, override_settings
+from django.urls import path
 
 from rest_framework import status
 from rest_framework.decorators import action
@@ -124,7 +125,7 @@ router.register(r'mapping', ActionViewSetWithMapping, basename='mapping')
 
 
 urlpatterns = [
-    url(r'^api/', include(router.urls)),
+    path('api/', include(router.urls)),
 ]
 
 

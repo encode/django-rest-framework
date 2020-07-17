@@ -3,10 +3,10 @@ import os
 import tempfile
 
 import pytest
-from django.conf.urls import url
 from django.core.management import call_command
 from django.test import TestCase
 from django.test.utils import override_settings
+from django.urls import path
 
 from rest_framework.compat import uritemplate, yaml
 from rest_framework.management.commands import generateschema
@@ -20,7 +20,7 @@ class FooView(APIView):
 
 
 urlpatterns = [
-    url(r'^$', FooView.as_view())
+    path('', FooView.as_view())
 ]
 
 

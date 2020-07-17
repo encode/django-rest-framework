@@ -120,7 +120,7 @@ If you're intending to use the browsable API you'll probably also want to add RE
 
     urlpatterns = [
         ...
-        url(r'^api-auth/', include('rest_framework.urls'))
+        path('api-auth/', include('rest_framework.urls'))
     ]
 
 Note that the URL path can be whatever you want.
