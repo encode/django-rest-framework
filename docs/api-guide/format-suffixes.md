@@ -32,7 +32,7 @@ Example:
     from blog import views
 
     urlpatterns = [
-        path('/', views.apt_root),
+        path('', views.apt_root),
         path('comments/', views.comment_list),
         path('comments/<int:pk>/', views.comment_detail)
     ]

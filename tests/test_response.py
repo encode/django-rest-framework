@@ -1,6 +1,5 @@
-from django.conf.urls import include
 from django.test import TestCase, override_settings
-from django.urls import path, re_path
+from django.urls import include, path, re_path
 
 from rest_framework import generics, routers, serializers, status, viewsets
 from rest_framework.parsers import JSONParser

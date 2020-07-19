@@ -1,8 +1,7 @@
 from collections import namedtuple
 
-from django.conf.urls import include
 from django.test import TestCase
-from django.urls import Resolver404, URLResolver, path, re_path
+from django.urls import Resolver404, URLResolver, include, path, re_path
 from django.urls.resolvers import RegexPattern
 
 from rest_framework.test import APIRequestFactory

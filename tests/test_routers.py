@@ -1,11 +1,10 @@
 from collections import namedtuple
 
 import pytest
-from django.conf.urls import include
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.test import TestCase, override_settings
-from django.urls import path, resolve, reverse
+from django.urls import include, path, resolve, reverse
 
 from rest_framework import permissions, serializers, viewsets
 from rest_framework.decorators import action

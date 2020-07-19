@@ -2,11 +2,10 @@ import base64
 
 import pytest
 from django.conf import settings
-from django.conf.urls import include
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.test import TestCase, override_settings
-from django.urls import path
+from django.urls import include, path
 
 from rest_framework import (
     HTTP_HEADER_ENCODING, exceptions, permissions, renderers, status
