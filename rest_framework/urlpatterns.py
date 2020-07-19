@@ -1,5 +1,4 @@
-from django.conf.urls import include
-from django.urls import URLResolver, path, re_path, register_converter
+from django.urls import URLResolver, include, path, re_path, register_converter
 from django.urls.resolvers import RoutePattern
 
 from rest_framework.settings import api_settings

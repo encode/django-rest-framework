@@ -1,5 +1,4 @@
-from django.conf.urls import include
-from django.urls import path
+from django.urls import include, path
 
 from .views import MockView
 

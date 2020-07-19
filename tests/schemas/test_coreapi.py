@@ -1,11 +1,10 @@
 import unittest
 
 import pytest
-from django.conf.urls import include
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.test import TestCase, override_settings
-from django.urls import path
+from django.urls import include, path
 
 from rest_framework import (
     filters, generics, pagination, permissions, serializers

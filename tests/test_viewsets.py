@@ -1,10 +1,9 @@
 from collections import OrderedDict
 
 import pytest
-from django.conf.urls import include
 from django.db import models
 from django.test import TestCase, override_settings
-from django.urls import path
+from django.urls import include, path
 
 from rest_framework import status
 from rest_framework.decorators import action
