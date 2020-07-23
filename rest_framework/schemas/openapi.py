@@ -192,7 +192,7 @@ class AutoSchema(ViewInspector):
         if method.lower() == 'delete':
             return {}
 
-        serializer = self.get_serializer(path, method)
+        serializer = self.get_components_serializer(path, method)
 
         if not isinstance(serializer, serializers.Serializer):
             return {}
@@ -615,6 +615,18 @@ class AutoSchema(ViewInspector):
                           .format(view.__class__.__name__, method, path))
             return None
 
+    def get_components_serializer(self, path, method):
+        # Override this function in a subclass if necessary.
+        return self.get_serializer(path, method)
+
+    def get_body_serializer(self, path, method):
+        # Override this function in a subclass if necessary.
+        return self.get_serializer(path, method)
+
+    def get_response_serializer(self, path, method):
+        # Override this function in a subclass if necessary.
+        return self.get_serializer(path, method)
+
     def _get_reference(self, serializer):
         return {'$ref': '#/components/schemas/{}'.format(self.get_component_name(serializer))}
 
@@ -624,7 +636,7 @@ class AutoSchema(ViewInspector):
 
         self.request_media_types = self.map_parsers(path, method)
 
-        serializer = self.get_serializer(path, method)
+        serializer = self.get_body_serializer(path, method)
 
         if not isinstance(serializer, serializers.Serializer):
             item_schema = {}
@@ -648,7 +660,7 @@ class AutoSchema(ViewInspector):
 
         self.response_media_types = self.map_renderers(path, method)
 
-        serializer = self.get_serializer(path, method)
+        serializer = self.get_response_serializer(path, method)
 
         if not isinstance(serializer, serializers.Serializer):
             item_schema = {}
