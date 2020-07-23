@@ -178,7 +178,7 @@ We can now access our API, both from the command-line, using tools like `curl`..
             },
             {
                 "email": "tom@example.com",
-                "groups": [                ],
+                "groups": [],
                 "url": "http://127.0.0.1:8000/users/2/",
                 "username": "tom"
             }
@@ -204,7 +204,7 @@ Or using the [httpie][httpie], command line tool...
             },
             {
                 "email": "tom@example.com",
-                "groups": [                ],
+                "groups": [],
                 "url": "http://127.0.0.1:8000/users/2/",
                 "username": "tom"
             }
