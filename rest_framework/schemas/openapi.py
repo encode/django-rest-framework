@@ -623,9 +623,17 @@ class AutoSchema(ViewInspector):
             return None
 
     def get_request_serializer(self, path, method):
+        """
+        Override this method if your view uses a different serializer for
+        handling request body.
+        """
         return self.get_serializer(path, method)
 
     def get_response_serializer(self, path, method):
+        """
+        Override this method if your view uses a different serializer for
+        populating response data.
+        """
         return self.get_serializer(path, method)
 
     def _get_reference(self, serializer):
