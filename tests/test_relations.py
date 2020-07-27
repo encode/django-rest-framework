@@ -145,6 +145,46 @@ class TestProxiedPrimaryKeyRelatedField(APISimpleTestCase):
         assert representation == self.instance.pk.int
 
 
+class TestPrimaryKeySerializerField(APISimpleTestCase):
+    class TestSerializer(serializers.Serializer):
+        pk = serializers.IntegerField()
+        name = serializers.CharField()
+
+    def setUp(self):
+        self.queryset = MockQueryset([
+            MockObject(pk=1, name='foo'),
+            MockObject(pk=2, name='bar'),
+            MockObject(pk=3, name='baz')
+        ])
+        self.instance = self.queryset.items[2]
+        self.field = serializers.PrimaryKeySerializerField(queryset=self.queryset, serializer=self.TestSerializer)
+
+    def test_pk_related_lookup_exists(self):
+        instance = self.field.to_internal_value(self.instance.pk)
+        assert instance is self.instance
+
+    def test_pk_related_lookup_does_not_exist(self):
+        with pytest.raises(serializers.ValidationError) as excinfo:
+            self.field.to_internal_value(4)
+        msg = excinfo.value.detail[0]
+        assert msg == 'Invalid pk "4" - object does not exist.'
+
+    def test_pk_related_lookup_invalid_type(self):
+        with pytest.raises(serializers.ValidationError) as excinfo:
+            self.field.to_internal_value(BadType())
+        msg = excinfo.value.detail[0]
+        assert msg == 'Incorrect type. Expected pk value, received BadType.'
+
+    def test_pk_representation(self):
+        representation = self.field.to_representation(self.instance)
+        assert representation == {'pk': 3, 'name': 'baz'}
+
+    def test_explicit_many_false(self):
+        field = serializers.PrimaryKeySerializerField(queryset=self.queryset, serializer=self.TestSerializer, many=False)
+        instance = field.to_internal_value(self.instance.pk)
+        assert instance is self.instance
+
+
 urlpatterns = [
     url(r'^example/(?P<name>.+)/$', lambda: None, name='example'),
 ]
