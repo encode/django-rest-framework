@@ -280,7 +280,8 @@ Corresponds to `django.db.models.fields.FloatField`.
 
 - `max_value` Validate that the number provided is no greater than this value.
 - `min_value` Validate that the number provided is no less than this value.
-- `exclusive_min` If true, validate that the number provided is no greater than or equals `min_value`.
+- `exclusive_min` If true, validate that the number provided is no greater than or equals to `min_value`.
+- `exclusive_max` If true, validate that the number provided is no less than or equals to `max_value`.
 
 ## DecimalField
 

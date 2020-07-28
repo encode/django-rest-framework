@@ -281,9 +281,17 @@ class UniqueForYearValidator(BaseUniqueForValidator):
         return qs_filter(queryset, **filter_kwargs)
 
 
-class ExclusiveLMinValueValidator(BaseValidator):
+class ExclusiveMinValueValidator(BaseValidator):
     message = _('Ensure this value is greater than %(limit_value)s.')
     code = "exclusive_min_value"
 
     def compare(self, a, b):
         return a <= b
+
+
+class ExclusiveMaxValueValidator(BaseValidator):
+    message = _('Ensure this value is lesser than %(limit_value)s.')
+    code = "exclusive_max_value"
+
+    def compare(self, a, b):
+        return a >= b
