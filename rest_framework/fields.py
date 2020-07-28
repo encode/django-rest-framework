@@ -38,8 +38,10 @@ from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, humanize_datetime, json, representation
 from rest_framework.utils.formatting import lazy_format
-from rest_framework.validators import (ExclusiveMaxValueValidator, ExclusiveMinValueValidator,
-                                       ProhibitSurrogateCharactersValidator)
+from rest_framework.validators import (
+    ExclusiveMaxValueValidator, ExclusiveMinValueValidator,
+    ProhibitSurrogateCharactersValidator
+)
 
 
 class empty:
