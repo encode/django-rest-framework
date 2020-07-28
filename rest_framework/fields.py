@@ -38,7 +38,7 @@ from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, humanize_datetime, json, representation
 from rest_framework.utils.formatting import lazy_format
-from rest_framework.validators import ProhibitSurrogateCharactersValidator
+from rest_framework.validators import ExclusiveLMinValueValidator, ProhibitSurrogateCharactersValidator
 
 
 class empty:
@@ -968,6 +968,7 @@ class FloatField(Field):
         'invalid': _('A valid number is required.'),
         'max_value': _('Ensure this value is less than or equal to {max_value}.'),
         'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
+        'exclusive_min_value': _('Ensure this value is greater than {min_value}.'),
         'max_string_length': _('String value too large.')
     }
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
@@ -975,15 +976,21 @@ class FloatField(Field):
     def __init__(self, **kwargs):
         self.max_value = kwargs.pop('max_value', None)
         self.min_value = kwargs.pop('min_value', None)
+        self.exclusive_min = kwargs.pop("exclusive_min", False)
         super().__init__(**kwargs)
         if self.max_value is not None:
             message = lazy_format(self.error_messages['max_value'], max_value=self.max_value)
             self.validators.append(
                 MaxValueValidator(self.max_value, message=message))
         if self.min_value is not None:
-            message = lazy_format(self.error_messages['min_value'], min_value=self.min_value)
-            self.validators.append(
-                MinValueValidator(self.min_value, message=message))
+            if self.exclusive_min:
+                message = lazy_format(self.error_messages["exclusive_min_value"], min_value=self.min_value)
+                self.validators.append(
+                    ExclusiveLMinValueValidator(self.min_value, message=message))
+            else:
+                message = lazy_format(self.error_messages['min_value'], min_value=self.min_value)
+                self.validators.append(
+                    MinValueValidator(self.min_value, message=message))
 
     def to_internal_value(self, data):
 

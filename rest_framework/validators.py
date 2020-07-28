@@ -6,6 +6,7 @@ This gives us better separation of concerns, allows us to use single-step
 object creation, and makes it possible to switch between using the implicit
 `ModelSerializer` class and an equivalent explicit `Serializer` class.
 """
+from django.core.validators import BaseValidator
 from django.db import DataError
 from django.utils.translation import gettext_lazy as _
 
@@ -278,3 +279,11 @@ class UniqueForYearValidator(BaseUniqueForValidator):
         filter_kwargs[field_name] = value
         filter_kwargs['%s__year' % date_field_name] = date.year
         return qs_filter(queryset, **filter_kwargs)
+
+
+class ExclusiveLMinValueValidator(BaseValidator):
+    message = _('Ensure this value is greater than %(limit_value)s.')
+    code = "exclusive_min_value"
+
+    def compare(self, a, b):
+        return a <= b

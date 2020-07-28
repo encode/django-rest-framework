@@ -276,10 +276,11 @@ A floating point representation.
 
 Corresponds to `django.db.models.fields.FloatField`.
 
-**Signature**: `FloatField(max_value=None, min_value=None)`
+**Signature**: `FloatField(max_value=None, min_value=None, exclusive_min=False)`
 
 - `max_value` Validate that the number provided is no greater than this value.
 - `min_value` Validate that the number provided is no less than this value.
+- `exclusive_min` If true, validate that the number provided is no greater than or equals `min_value`.
 
 ## DecimalField
 

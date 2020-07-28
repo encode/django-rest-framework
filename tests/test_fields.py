@@ -1076,6 +1076,26 @@ class TestMinMaxFloatField(FieldValues):
     field = serializers.FloatField(min_value=1, max_value=3)
 
 
+class TestExclusiveMinFloatField(FieldValues):
+    """
+    Valid and invalid values for 'FloatField' with exclusive_min limits.
+    """
+    valid_inputs = {
+        '1.01': 1.01,
+        '3': 3,
+        1.01: 1.01,
+        3: 3,
+        3.0: 3.0,
+    }
+    invalid_inputs = {
+        1: ['Ensure this value is greater than 1.'],
+        '1': ['Ensure this value is greater than 1.'],
+        '1.0': ['Ensure this value is greater than 1.'],
+    }
+    outputs = {}
+    field = serializers.FloatField(min_value=1, exclusive_min=True)
+
+
 class TestDecimalField(FieldValues):
     """
     Valid and invalid values for `DecimalField`.
