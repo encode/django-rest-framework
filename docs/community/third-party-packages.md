@@ -274,6 +274,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [drf-viewset-profiler][drf-viewset-profiler] - Lib to profile all methods from a viewset line by line.
 * [djangorestframework-features][djangorestframework-features] - Advanced schema generation and more based on named features.
 * [django-elasticsearch-dsl-drf][django-elasticsearch-dsl-drf] - Integrate Elasticsearch DSL with Django REST framework. Package provides views, serializers, filter backends, pagination and other handy add-ons.
+* [django-api-client][django-api-client] - DRF client that groups the Endpoint response, for use in CBVs and FBV as if you were working with Django's Native Models..
 
 [cite]: http://www.software-ecosystems.com/Software_Ecosystems/Ecosystems.html
 [cookiecutter]: https://github.com/jpadilla/cookiecutter-django-rest-framework
@@ -358,3 +359,4 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [drf-viewset-profiler]: https://github.com/fvlima/drf-viewset-profiler
 [djangorestframework-features]: https://github.com/cloudcode-hungary/django-rest-framework-features/
 [django-elasticsearch-dsl-drf]: https://github.com/barseghyanartur/django-elasticsearch-dsl-drf
+[django-api-client]: https://github.com/rhenter/django-api-client
