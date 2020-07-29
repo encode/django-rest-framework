@@ -697,7 +697,7 @@ class TestNullBooleanField(TestBooleanField):
         None: None,
         'other': True
     }
-    field = serializers.BooleanField(null=True)
+    field = serializers.BooleanField(allow_null=True)
 
 
 class TestNullableBooleanField(TestNullBooleanField):
