@@ -17,10 +17,6 @@
   <link href="../../css/bootstrap-responsive.css" rel="stylesheet">
   <link href="../../css/default.css" rel="stylesheet">
 
-  <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
-  <!--[if lt IE 9]>
-    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-  <![endif]-->
 
   <script type="text/javascript">
     var _gaq = _gaq || [];
@@ -477,7 +473,7 @@ request.data  # Handles arbitrary data.  Works for 'POST', 'PUT' and 'PATCH' met
 <li>The <code>APIView</code> class for working with class-based views.</li>
 </ol>
 <p>These wrappers provide a few bits of functionality such as making sure you receive <code>Request</code> instances in your view, and adding context to <code>Response</code> objects so that content negotiation can be performed.</p>
-<p>The wrappers also provide behaviour such as returning <code>405 Method Not Allowed</code> responses when appropriate, and handling any <code>ParseError</code> exception that occurs when accessing <code>request.data</code> with malformed input.</p>
+<p>The wrappers also provide behaviour such as returning <code>405 Method Not Allowed</code> responses when appropriate, and handling any <code>ParseError</code> exceptions that occur when accessing <code>request.data</code> with malformed input.</p>
 <h2 id="pulling-it-all-together"><a class="toclink" href="#pulling-it-all-together">Pulling it all together</a></h2>
 <p>Okay, let's go ahead and start using these new components to refactor our views slightly.</p>
 <pre><code>from rest_framework import status

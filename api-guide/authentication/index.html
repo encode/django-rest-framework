@@ -17,10 +17,6 @@
   <link href="../../css/bootstrap-responsive.css" rel="stylesheet">
   <link href="../../css/default.css" rel="stylesheet">
 
-  <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
-  <!--[if lt IE 9]>
-    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-  <![endif]-->
 
   <script type="text/javascript">
     var _gaq = _gaq || [];
@@ -488,7 +484,7 @@
                     </li>
                   
                     <li>
-                      <a href="#django-rest-auth">django-rest-auth</a>
+                      <a href="#django-rest-auth-dj-rest-auth">django-rest-auth / dj-rest-auth</a>
                     </li>
                   
                     <li>
@@ -746,7 +742,7 @@ already exist. To change this and other behaviour, consult the
 <p>Consult your web server's documentation for information about configuring an authentication method, e.g.:</p>
 <ul>
 <li><a href="https://httpd.apache.org/docs/2.4/howto/auth.html">Apache Authentication How-To</a></li>
-<li><a href="https://www.nginx.com/resources/admin-guide/#restricting_access">NGINX (Restricting Access)</a></li>
+<li><a href="https://docs.nginx.com/nginx/admin-guide/security-controls/configuring-http-basic-authentication/">NGINX (Restricting Access)</a></li>
 </ul>
 <h1 id="custom-authentication"><a class="toclink" href="#custom-authentication">Custom authentication</a></h1>
 <p>To implement a custom authentication scheme, subclass <code>BaseAuthentication</code> and override the <code>.authenticate(self, request)</code> method.  The method should return a two-tuple of <code>(user, auth)</code> if authentication succeeds, or <code>None</code> otherwise.</p>
@@ -818,8 +814,13 @@ REST_FRAMEWORK = {
 <p>HTTP Signature (currently a <a href="https://datatracker.ietf.org/doc/draft-cavage-http-signatures/">IETF draft</a>) provides a way to achieve origin authentication and message integrity for HTTP messages. Similar to <a href="https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html">Amazon's HTTP Signature scheme</a>, used by many of its services, it permits stateless, per-request authentication. <a href="https://github.com/etoccalino/">Elvio Toccalino</a> maintains the <a href="https://github.com/etoccalino/django-rest-framework-httpsignature">djangorestframework-httpsignature</a> (outdated) package which provides an easy to use HTTP Signature Authentication mechanism. You can use the updated fork version of <a href="https://github.com/etoccalino/django-rest-framework-httpsignature">djangorestframework-httpsignature</a>, which is <a href="https://github.com/ahknight/drf-httpsig">drf-httpsig</a>.</p>
 <h2 id="djoser"><a class="toclink" href="#djoser">Djoser</a></h2>
 <p><a href="https://github.com/sunscrapers/djoser">Djoser</a> library provides a set of views to handle basic actions such as registration, login, logout, password reset and account activation. The package works with a custom user model and it uses token based authentication. This is a ready to use REST implementation of Django authentication system.</p>
-<h2 id="django-rest-auth"><a class="toclink" href="#django-rest-auth">django-rest-auth</a></h2>
-<p><a href="https://github.com/Tivix/django-rest-auth">Django-rest-auth</a> library provides a set of REST API endpoints for registration, authentication (including social media authentication), password reset, retrieve and update user details, etc. By having these API endpoints, your client apps such as AngularJS, iOS, Android, and others can communicate to your Django backend site independently via REST APIs for user management.</p>
+<h2 id="django-rest-auth-dj-rest-auth"><a class="toclink" href="#django-rest-auth-dj-rest-auth">django-rest-auth / dj-rest-auth</a></h2>
+<p>This library provides a set of REST API endpoints for registration, authentication (including social media authentication), password reset, retrieve and update user details, etc. By having these API endpoints, your client apps such as AngularJS, iOS, Android, and others can communicate to your Django backend site independently via REST APIs for user management.</p>
+<p>There are currently two forks of this project.</p>
+<ul>
+<li><a href="https://github.com/Tivix/django-rest-auth">Django-rest-auth</a> is the original project, <a href="https://github.com/Tivix/django-rest-auth/issues/568">but is not currently receiving updates</a>.</li>
+<li><a href="https://github.com/jazzband/dj-rest-auth">Dj-rest-auth</a> is a newer fork of the project.</li>
+</ul>
 <h2 id="django-rest-framework-social-oauth2"><a class="toclink" href="#django-rest-framework-social-oauth2">django-rest-framework-social-oauth2</a></h2>
 <p><a href="https://github.com/PhilipGarnero/django-rest-framework-social-oauth2">Django-rest-framework-social-oauth2</a> library provides an easy way to integrate social plugins (facebook, twitter, google, etc.) to your authentication system and an easy oauth2 setup. With this library, you will be able to authenticate users based on external tokens (e.g. facebook access token), convert these tokens to "in-house" oauth2 tokens and use and generate oauth2 tokens to authenticate your users.</p>
 <h2 id="django-rest-knox"><a class="toclink" href="#django-rest-knox">django-rest-knox</a></h2>

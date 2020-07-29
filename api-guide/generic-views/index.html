@@ -17,10 +17,6 @@
   <link href="../../css/bootstrap-responsive.css" rel="stylesheet">
   <link href="../../css/default.css" rel="stylesheet">
 
-  <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
-  <!--[if lt IE 9]>
-    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-  <![endif]-->
 
   <script type="text/javascript">
     var _gaq = _gaq || [];
@@ -678,7 +674,6 @@ class UserList(generics.ListCreateAPIView):
         raise ValidationError('You have already signed up')
     serializer.save(user=self.request.user)
 </code></pre>
-<p><strong>Note</strong>: These methods replace the old-style version 2.x <code>pre_save</code>, <code>post_save</code>, <code>pre_delete</code> and <code>post_delete</code> methods, which are no longer available.</p>
 <p><strong>Other methods</strong>:</p>
 <p>You won't typically need to override the following methods, although you might need to call into them if you're writing custom views using <code>GenericAPIView</code>.</p>
 <ul>
@@ -755,7 +750,7 @@ class UserList(generics.ListCreateAPIView):
 <p>Often you'll want to use the existing generic views, but use some slightly customized behavior.  If you find yourself reusing some bit of customized behavior in multiple places, you might want to refactor the behavior into a common class that you can then just apply to any view or viewset as needed.</p>
 <h2 id="creating-custom-mixins"><a class="toclink" href="#creating-custom-mixins">Creating custom mixins</a></h2>
 <p>For example, if you need to lookup objects based on multiple fields in the URL conf, you could create a mixin class like the following:</p>
-<pre><code>class MultipleFieldLookupMixin(object):
+<pre><code>class MultipleFieldLookupMixin:
     """
     Apply this mixin to any view or viewset to get multiple field filtering
     based on a `lookup_fields` attribute, instead of the default single field filtering.

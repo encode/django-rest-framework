@@ -17,10 +17,6 @@
   <link href="../../css/bootstrap-responsive.css" rel="stylesheet">
   <link href="../../css/default.css" rel="stylesheet">
 
-  <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
-  <!--[if lt IE 9]>
-    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-  <![endif]-->
 
   <script type="text/javascript">
     var _gaq = _gaq || [];
@@ -674,12 +670,15 @@ class UserListView(generics.ListAPIView):
 <p>You can also perform a related lookup on a ForeignKey or ManyToManyField with the lookup API double-underscore notation:</p>
 <pre><code>search_fields = ['username', 'email', 'profile__profession']
 </code></pre>
+<p>For <a href="https://docs.djangoproject.com/en/3.0/ref/contrib/postgres/fields/#jsonfield">JSONField</a> and <a href="https://docs.djangoproject.com/en/3.0/ref/contrib/postgres/fields/#hstorefield">HStoreField</a> fields you can filter based on nested values within the data structure using the same double-underscore notation:</p>
+<pre><code>search_fields = ['data__breed', 'data__owner__other_pets__0__name']
+</code></pre>
 <p>By default, searches will use case-insensitive partial matches.  The search parameter may contain multiple search terms, which should be whitespace and/or comma separated.  If multiple search terms are used then objects will be returned in the list only if all the provided terms are matched.</p>
 <p>The search behavior may be restricted by prepending various characters to the <code>search_fields</code>.</p>
 <ul>
 <li>'^' Starts-with search.</li>
 <li>'=' Exact matches.</li>
-<li>'@' Full-text search.  (Currently only supported Django's MySQL backend.)</li>
+<li>'@' Full-text search.  (Currently only supported Django's <a href="https://docs.djangoproject.com/en/dev/ref/contrib/postgres/search/">PostgreSQL backend</a>.)</li>
 <li>'$' Regex search.</li>
 </ul>
 <p>For example:</p>

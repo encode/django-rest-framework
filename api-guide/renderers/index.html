@@ -17,10 +17,6 @@
   <link href="../../css/bootstrap-responsive.css" rel="stylesheet">
   <link href="../../css/default.css" rel="stylesheet">
 
-  <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
-  <!--[if lt IE 9]>
-    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-  <![endif]-->
 
   <script type="text/javascript">
     var _gaq = _gaq || [];
@@ -748,7 +744,7 @@ def simple_html_view(request):
 <p>By default this will include the following keys: <code>view</code>, <code>request</code>, <code>response</code>, <code>args</code>, <code>kwargs</code>.</p>
 <h2 id="example"><a class="toclink" href="#example">Example</a></h2>
 <p>The following is an example plaintext renderer that will return a response with the <code>data</code> parameter as the content of the response.</p>
-<pre><code>from django.utils.encoding import smart_unicode
+<pre><code>from django.utils.encoding import smart_text
 from rest_framework import renderers
 
 
@@ -757,7 +753,7 @@ class PlainTextRenderer(renderers.BaseRenderer):
     format = 'txt'
 
     def render(self, data, media_type=None, renderer_context=None):
-        return data.encode(self.charset)
+        return smart_text(data, encoding=self.charset)
 </code></pre>
 <h2 id="setting-the-character-set"><a class="toclink" href="#setting-the-character-set">Setting the character set</a></h2>
 <p>By default renderer classes are assumed to be using the <code>UTF-8</code> encoding.  To use a different encoding, set the <code>charset</code> attribute on the renderer.</p>

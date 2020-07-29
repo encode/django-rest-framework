@@ -17,10 +17,6 @@
   <link href="../../css/bootstrap-responsive.css" rel="stylesheet">
   <link href="../../css/default.css" rel="stylesheet">
 
-  <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
-  <!--[if lt IE 9]>
-    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-  <![endif]-->
 
   <script type="text/javascript">
     var _gaq = _gaq || [];
@@ -712,7 +708,7 @@ to your <code>Serializer</code> subclass. This is documented in the
 <a href="https://www.django-rest-framework.org/api-guide/serializers/#field-level-validation">Serializer docs</a></p>
 <h2 id="class-based"><a class="toclink" href="#class-based">Class-based</a></h2>
 <p>To write a class-based validator, use the <code>__call__</code> method. Class-based validators are useful as they allow you to parameterize and reuse behavior.</p>
-<pre><code>class MultipleOf(object):
+<pre><code>class MultipleOf:
     def __init__(self, base):
         self.base = base
 
