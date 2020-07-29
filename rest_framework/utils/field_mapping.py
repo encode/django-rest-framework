@@ -62,6 +62,29 @@ def get_detail_view_name(model):
     }
 
 
+def get_unique_validators(field_name, model_field):
+    """
+    Returns a list of UniqueValidators that should be applied to the field.
+    """
+    field_set = set([field_name])
+    conditions = {
+        c.condition
+        for c in model_field.model._meta.constraints
+        if isinstance(c, models.UniqueConstraint) and set(c.fields) == field_set
+    }
+    if getattr(model_field, 'unique', False):
+        conditions.add(None)
+    if not conditions:
+        return
+    unique_error_message = get_unique_error_message(model_field)
+    queryset = model_field.model._default_manager
+    for condition in conditions:
+        yield UniqueValidator(
+            queryset=queryset if condition is None else queryset.filter(condition),
+            message=unique_error_message
+        )
+
+
 def get_field_kwargs(field_name, model_field):
     """
     Creates a default instance of a basic non-relational field.
@@ -216,11 +239,7 @@ def get_field_kwargs(field_name, model_field):
             if not isinstance(validator, validators.MinLengthValidator)
         ]
 
-    if getattr(model_field, 'unique', False):
-        validator = UniqueValidator(
-            queryset=model_field.model._default_manager,
-            message=get_unique_error_message(model_field))
-        validator_kwarg.append(validator)
+    validator_kwarg += get_unique_validators(field_name, model_field)
 
     if validator_kwarg:
         kwargs['validators'] = validator_kwarg
