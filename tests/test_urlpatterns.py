@@ -175,7 +175,7 @@ class FormatSuffixTests(TestCase):
         ]
         urlpatterns = [
             path('purl/<int:parent>/', include(nested_patterns), {'foo': 'bar'}),
-            path('ppath/<int:parent>/', include(nested_patterns), {'foo': 'bar'}),
+            re_path('^purl/(?P<parent>[0-9]+)/', include(nested_patterns), {'foo': 'bar'}),
         ]
         test_paths = [
             # parent url() nesting child path()
