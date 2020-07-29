@@ -311,6 +311,9 @@ if postgres_fields:
         """Model declaring a postgres JSONField"""
         data = postgres_fields.JSONField()
 
+        class Meta:
+            required_db_features = {'supports_json_field'}
+
 
 @pytest.mark.skipif(not postgres_fields, reason='psycopg2 is not installed')
 class TestNestedNonRelationalFieldWrite:

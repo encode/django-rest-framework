@@ -187,7 +187,7 @@ Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.
 * Fixed Javascript `e.indexOf` is not a function error [#5982][gh5982]
 * Fix schemas for extra actions [#5992][gh5992]
 * Improved get_error_detail to use error_dict/error_list [#5785][gh5785]
-* Imprvied URLs in Admin renderer [#5988][gh5988]
+* Improved URLs in Admin renderer [#5988][gh5988]
 * Add "Community" section to docs, minor cleanup [#5993][gh5993]
 * Moved guardian imports out of compat [#6054][gh6054]
 * Deprecate the `DjangoObjectPermissionsFilter` class, moved to the `djangorestframework-guardian` package. [#6075][gh6075]

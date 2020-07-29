@@ -105,12 +105,9 @@ def format_suffix_patterns(urlpatterns, suffix_required=False, allowed=None):
     else:
         suffix_pattern = r'\.(?P<%s>[a-z0-9]+)/?$' % suffix_kwarg
 
-    if path and register_converter:
-        converter_name, suffix_converter = _get_format_path_converter(suffix_kwarg, allowed)
-        register_converter(suffix_converter, converter_name)
+    converter_name, suffix_converter = _get_format_path_converter(suffix_kwarg, allowed)
+    register_converter(suffix_converter, converter_name)
 
-        suffix_route = '<%s:%s>' % (converter_name, suffix_kwarg)
-    else:
-        suffix_route = None
+    suffix_route = '<%s:%s>' % (converter_name, suffix_kwarg)
 
     return apply_suffix_patterns(urlpatterns, suffix_pattern, suffix_required, suffix_route)

@@ -327,7 +327,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [django-versatileimagefield-drf-docs]:https://django-versatileimagefield.readthedocs.io/en/latest/drf_integration.html
 [drf-tracking]: https://github.com/aschn/drf-tracking
 [django-rest-framework-braces]: https://github.com/dealertrack/django-rest-framework-braces
-[dry-rest-permissions]: https://github.com/Helioscene/dry-rest-permissions
+[dry-rest-permissions]: https://github.com/FJNR-inc/dry-rest-permissions
 [django-url-filter]: https://github.com/miki725/django-url-filter
 [drf-url-filter]: https://github.com/manjitkumar/drf-url-filters
 [cookiecutter-django-rest]:  https://github.com/agconti/cookiecutter-django-rest

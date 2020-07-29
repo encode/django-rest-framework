@@ -179,9 +179,11 @@ class APIRequestFactory(DjangoRequestFactory):
             ret = renderer.render(data)
 
             # Determine the content-type header from the renderer
-            content_type = "{}; charset={}".format(
-                renderer.media_type, renderer.charset
-            )
+            content_type = renderer.media_type
+            if renderer.charset:
+                content_type = "{}; charset={}".format(
+                    content_type, renderer.charset
+                )
 
             # Coerce text to bytes if required.
             if isinstance(ret, str):
