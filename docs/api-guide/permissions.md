@@ -243,19 +243,19 @@ Custom permissions will raise a `PermissionDenied` exception if the test fails. 
 
 ## Examples
 
-The following is an example of a permission class that checks the incoming request's IP address against a blocklist, and denies the request if the IP has been blocklisted.
+The following is an example of a permission class that checks the incoming request's IP address against a blocklist, and denies the request if the IP has been blocked.
 
     from rest_framework import permissions
 
     class BlocklistPermission(permissions.BasePermission):
         """
-        Global permission check for blocklisted IPs.
+        Global permission check for blocked IPs.
         """
 
         def has_permission(self, request, view):
             ip_addr = request.META['REMOTE_ADDR']
-            blocklisted = Blocklist.objects.filter(ip_addr=ip_addr).exists()
-            return not blocklisted
+            blocked = Blocklist.objects.filter(ip_addr=ip_addr).exists()
+            return not blocked
 
 As well as global permissions, that are run against all incoming requests, you can also create object-level permissions, that are only run against operations that affect a particular object instance.  For example:
 
