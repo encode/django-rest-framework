@@ -143,9 +143,9 @@ class Request:
 
     Kwargs:
         - request(HttpRequest). The original request instance.
-        - parsers_classes(list/tuple). The parsers to use for parsing the
+        - parsers(list/tuple). The parsers to use for parsing the
           request content.
-        - authentication_classes(list/tuple). The authentications used to try
+        - authenticators(list/tuple). The authenticators used to try
           authenticating the request's user.
     """
 
