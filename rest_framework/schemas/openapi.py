@@ -241,7 +241,10 @@ class AutoSchema(ViewInspector):
                 name = name[:-len(action)]
 
         if action == 'list' and not name.endswith('s'):  # listThings instead of listThing
-            name += 's'
+            if name.endswith('y'):
+                name = name[:-1] + 'ies'
+            else:
+                name += 's'
 
         return name
 
