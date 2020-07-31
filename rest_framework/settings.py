@@ -61,6 +61,9 @@ DEFAULTS = {
     },
     'NUM_PROXIES': None,
 
+    # Custom template engine NAME
+    'DEFAULT_TEMPLATE_ENGINE': None
+
     # Pagination
     'PAGE_SIZE': None,
 

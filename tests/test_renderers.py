@@ -7,7 +7,6 @@ from django.conf.urls import include, url
 from django.core.cache import cache
 from django.db import models
 from django.http.request import HttpRequest
-from django.template import loader
 from django.test import TestCase, override_settings
 from django.utils.safestring import SafeText
 from django.utils.translation import gettext_lazy as _
@@ -17,7 +16,8 @@ from rest_framework.compat import coreapi
 from rest_framework.decorators import action
 from rest_framework.renderers import (
     AdminRenderer, BaseRenderer, BrowsableAPIRenderer, DocumentationRenderer,
-    HTMLFormRenderer, JSONRenderer, SchemaJSRenderer, StaticHTMLRenderer
+    HTMLFormRenderer, JSONRenderer, SchemaJSRenderer, StaticHTMLRenderer,
+    loader
 )
 from rest_framework.request import Request
 from rest_framework.response import Response
