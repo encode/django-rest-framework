@@ -70,6 +70,8 @@ For performance reasons the generic views will not automatically apply object le
 
 Often when you're using object level permissions you'll also want to [filter the queryset][filtering] appropriately, to ensure that users only have visibility onto instances that they are permitted to view.
 
+Because the `get_object()` method is not called, object level permissions from the `has_object_permission()` method **are not applied** when creating objects. In order to restrict object creation you need to implement the permission check either in your Serializer class or override the `perform_create()` method of your ViewSet class.
+
 ## Setting the permission policy
 
 The default permission policy may be set globally, using the `DEFAULT_PERMISSION_CLASSES` setting.  For example.
