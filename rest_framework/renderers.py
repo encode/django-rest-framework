@@ -50,6 +50,7 @@ class TemplateEngineLoader(object):
     def select_template(self, template_name_list, using=None):
         return django_template_loader.select_template(template_name_list, using=self.engine_name)
 
+
 loader = TemplateEngineLoader()
 
 
