@@ -666,6 +666,21 @@ class TestOperationIntrospection(TestCase):
         operationId = inspector.get_operation_id(path, method)
         assert operationId == 'listUlysses'
 
+    def test_operation_id_ies_plural(self):
+        path = '/'
+        method = 'GET'
+
+        view = create_view(
+            views.ExampleGenericAPIView,
+            method,
+            create_request(path),
+        )
+        inspector = AutoSchema(operation_id_base='Entry')
+        inspector.view = view
+
+        operationId = inspector.get_operation_id(path, method)
+        assert operationId == 'listEntries'
+
     def test_operation_id_override_get(self):
         class CustomSchema(AutoSchema):
             def get_operation_id(self, path, method):
