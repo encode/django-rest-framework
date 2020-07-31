@@ -15,7 +15,8 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.paginator import Page
 from django.http.multipartparser import parse_header
-from django.template import engines, loader as django_template_loader
+from django.template import engines
+from django.template import loader as django_template_loader
 from django.urls import NoReverseMatch
 from django.utils.html import mark_safe
 
@@ -35,6 +36,7 @@ from rest_framework.utils.field_mapping import ClassLookupDict
 def zero_as_none(value):
     return None if value == 0 else value
 
+
 class TemplateEngineLoader(object):
     """
     In case a project uses multiple template engines
@@ -45,8 +47,10 @@ class TemplateEngineLoader(object):
     """
     def __init__(self):
         self.engine_name = api_settings.DEFAULT_TEMPLATE_ENGINE
+
     def get_template(self, template_name):
         return django_template_loader.get_template(template_name, using=self.engine_name)
+
     def select_template(self, template_name_list, using=None):
         return django_template_loader.select_template(template_name_list, using=self.engine_name)
 
