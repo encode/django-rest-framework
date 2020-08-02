@@ -17,7 +17,7 @@ def get_object_or_404(queryset, *filter_args, **filter_kwargs):
     """
     try:
         return _get_object_or_404(queryset, *filter_args, **filter_kwargs)
-    except (TypeError, ValueError, ValidationError):
+    except (OverflowError, TypeError, ValueError, ValidationError):
         raise Http404
 
 
