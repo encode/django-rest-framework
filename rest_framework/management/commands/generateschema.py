@@ -6,6 +6,7 @@ from rest_framework.schemas import coreapi
 from rest_framework.schemas.openapi import SchemaGenerator
 
 OPENAPI_MODE = 'openapi'
+OPENAPI_AGID_MODE = 'openapi-agid' # WiP
 COREAPI_MODE = 'coreapi'
 
 
@@ -20,9 +21,9 @@ class Command(BaseCommand):
         parser.add_argument('--url', dest="url", default=None, type=str)
         parser.add_argument('--description', dest="description", default=None, type=str)
         if self.get_mode() == COREAPI_MODE:
-            parser.add_argument('--format', dest="format", choices=['openapi', 'openapi-json', 'corejson'], default='openapi', type=str)
+            parser.add_argument('--format', dest="format", choices=['openapi', 'openapi-json', 'openapi-agid', 'openapi-agid-json', 'corejson'], default='openapi', type=str)
         else:
-            parser.add_argument('--format', dest="format", choices=['openapi', 'openapi-json'], default='openapi', type=str)
+            parser.add_argument('--format', dest="format", choices=['openapi', 'openapi-json', 'openapi-agid', 'openapi-agid-json'], default='openapi', type=str)
         parser.add_argument('--urlconf', dest="urlconf", default=None, type=str)
         parser.add_argument('--generator_class', dest="generator_class", default=None, type=str)
         parser.add_argument('--file', dest="file", default=None, type=str)
@@ -54,12 +55,16 @@ class Command(BaseCommand):
                 'corejson': renderers.CoreJSONRenderer,
                 'openapi': renderers.CoreAPIOpenAPIRenderer,
                 'openapi-json': renderers.CoreAPIJSONOpenAPIRenderer,
+                'openapi-agid-json': renderers.CoreAPIJSONOpenAPIRenderer,
+                'openapi-agid': renderers.CoreAPIOpenAPIRenderer,
             }[format]
             return renderer_cls()
 
         renderer_cls = {
             'openapi': renderers.OpenAPIRenderer,
             'openapi-json': renderers.JSONOpenAPIRenderer,
+            'openapi-agid-json': renderers.JSONOpenAPIRenderer,
+            'openapi-agid': renderers.OpenAPIRenderer,
         }[format]
         return renderer_cls()
 
