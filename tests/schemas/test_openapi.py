@@ -54,7 +54,7 @@ class TestFieldMapping(TestCase):
         cases = [
             (serializers.ListField(), {'items': {}, 'type': 'array'}),
             (serializers.ListField(child=serializers.BooleanField()), {'items': {'type': 'boolean'}, 'type': 'array'}),
-            (serializers.ListField(child=serializers.FloatField()), {'items': {'type': 'number'}, 'type': 'array'}),
+            (serializers.ListField(child=serializers.FloatField()), {'items': {'type': 'number', 'format': 'float'}, 'type': 'array'}),
             (serializers.ListField(child=serializers.CharField()), {'items': {'type': 'string'}, 'type': 'array'}),
             (serializers.ListField(child=serializers.IntegerField(max_value=4294967295)),
              {'items': {'type': 'integer', 'maximum': 4294967295, 'format': 'int64'}, 'type': 'array'}),
