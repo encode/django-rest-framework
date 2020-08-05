@@ -113,9 +113,8 @@ class SchemaGenerator(BaseSchemaGenerator):
 
         return schema
 
+
 # View Inspectors
-
-
 class AutoSchema(ViewInspector):
 
     def __init__(self, tags=None, operation_id_base=None, component_name=None):
@@ -471,13 +470,15 @@ class AutoSchema(ViewInspector):
         if isinstance(field, serializers.FloatField):
             content = {
                 'type': 'number',
+                'format': 'float'
             }
             self._map_min_max(field, content)
             return content
 
         if isinstance(field, serializers.IntegerField):
             content = {
-                'type': 'integer'
+                'type': 'integer',
+                'format': 'int64'
             }
             self._map_min_max(field, content)
             # 2147483647 is max for int32_size, so we use int64 for format

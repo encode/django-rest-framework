@@ -32,7 +32,7 @@ def get_schema_view(
         public=False, patterns=None, generator_class=None,
         authentication_classes=api_settings.DEFAULT_AUTHENTICATION_CLASSES,
         permission_classes=api_settings.DEFAULT_PERMISSION_CLASSES,
-        version=None):
+        version=None, **kwargs):
     """
     Return a schema view.
     """
@@ -44,7 +44,7 @@ def get_schema_view(
 
     generator = generator_class(
         title=title, url=url, description=description,
-        urlconf=urlconf, patterns=patterns, version=version
+        urlconf=urlconf, patterns=patterns, version=version, **kwargs
     )
 
     # Avoid import cycle on APIView
