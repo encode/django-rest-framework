@@ -67,6 +67,13 @@ class JSONParser(BaseParser):
             raise ParseError('JSON parse error - %s' % str(exc))
 
 
+class OAS3JSONParser(JSONParser):
+    """
+    Parses OpenAPI+JSON-serialized data.
+    """
+    media_type = 'application/openapi+json'
+
+
 class FormParser(BaseParser):
     """
     Parser for form data.
