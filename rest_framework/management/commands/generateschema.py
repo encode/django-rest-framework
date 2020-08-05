@@ -6,7 +6,7 @@ from rest_framework.schemas import coreapi
 from rest_framework.schemas.openapi import SchemaGenerator
 
 OPENAPI_MODE = 'openapi'
-OPENAPI_AGID_MODE = 'openapi-agid' # WiP
+OPENAPI_AGID_MODE = 'openapi-agid'
 COREAPI_MODE = 'coreapi'
 
 

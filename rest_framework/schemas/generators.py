@@ -167,7 +167,7 @@ class BaseSchemaGenerator:
         self.url = url
         self.endpoints = None
 
-        for k,v in kwargs.items():
+        for k, v in kwargs.items():
             setattr(self, k, v)
 
     def _initialise_endpoints(self):

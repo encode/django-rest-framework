@@ -1,10 +1,10 @@
-from rest_framework import (
-    RemovedInDRF314Warning, exceptions, renderers, serializers
-)
+import warnings
 from urllib.parse import urljoin
 
-from . openapi import SchemaGenerator, AutoSchema
-from . utils import get_pk_description, is_list_view
+from rest_framework import serializers
+
+from .openapi import AutoSchema, SchemaGenerator
+from .utils import is_list_view
 
 
 class AgidSchemaGenerator(SchemaGenerator):
@@ -31,8 +31,8 @@ class AgidSchemaGenerator(SchemaGenerator):
         return servers
 
     def get_tags(self):
-        tags =  getattr(self, 'tags', {}),
-        return tags[0] if isinstance(tags, tuple) else tags
+        tags = getattr(self, 'tags', {})
+        return tags
 
     def get_schema(self, request=None, public=False):
         """
@@ -90,7 +90,6 @@ class AgidSchemaGenerator(SchemaGenerator):
             }
 
         return schema
-
 
 
 class AgidAutoSchema(AutoSchema):

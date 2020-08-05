@@ -21,12 +21,12 @@ basic use-cases:
 Other access should target the submodules directly
 """
 from rest_framework.settings import api_settings
+
+from . import openapi_agid  # noqa
+from .inspectors import DefaultSchema  # noqa
+
 api_settings.defaults['DEFAULT_SCHEMA_CLASS'] = \
     'rest_framework.schemas.openapi_agid.AgidAutoSchema'
-
-from . import openapi_agid
-#  from .openapi_agid import AgidAutoSchema, AgidSchemaGenerator  # noqa
-from .inspectors import DefaultSchema  # noqa
 
 
 def get_schema_view(
