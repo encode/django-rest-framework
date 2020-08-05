@@ -113,9 +113,8 @@ class SchemaGenerator(BaseSchemaGenerator):
 
         return schema
 
+
 # View Inspectors
-
-
 class AutoSchema(ViewInspector):
 
     def __init__(self, tags=None, operation_id_base=None, component_name=None):
