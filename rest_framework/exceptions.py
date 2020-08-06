@@ -73,11 +73,12 @@ class ErrorDetail(str):
 
     def __eq__(self, other):
         r = super().__eq__(other)
+
+        if r is NotImplemented:
+            return r
+
         try:
-            if r is not NotImplemented:
-                return r and self.code == other.code
-            else:
-                return self.code == other.code
+            return r and self.code == other.code
         except AttributeError:
             return r
 
