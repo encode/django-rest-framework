@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from functools import wraps
 
 import pytest
 from django.conf.urls import include, url
@@ -31,6 +32,13 @@ class InstanceViewSet(GenericViewSet):
 
 class Action(models.Model):
     pass
+
+
+def decorate(fn):
+    @wraps(fn)
+    def wrapper(self, request, *args, **kwargs):
+        return fn(self, request, *args, **kwargs)
+    return wrapper
 
 
 class ActionViewSet(GenericViewSet):
@@ -66,6 +74,16 @@ class ActionViewSet(GenericViewSet):
 
     @action(detail=True, url_path=r'unresolvable/(?P<arg>\w+)', url_name='unresolvable')
     def unresolvable_detail_action(self, request, *args, **kwargs):
+        raise NotImplementedError
+
+    @action(detail=False)
+    @decorate
+    def wrapped_list_action(self, request, *args, **kwargs):
+        raise NotImplementedError
+
+    @action(detail=True)
+    @decorate
+    def wrapped_detail_action(self, request, *args, **kwargs):
         raise NotImplementedError
 
 
@@ -191,6 +209,8 @@ class GetExtraActionsTests(TestCase):
             'detail_action',
             'list_action',
             'unresolvable_detail_action',
+            'wrapped_detail_action',
+            'wrapped_list_action',
         ]
 
         self.assertEqual(actual, expected)
@@ -204,8 +224,34 @@ class GetExtraActionsTests(TestCase):
             'detail_action',
             'list_action',
             'unresolvable_detail_action',
+            'wrapped_detail_action',
+            'wrapped_list_action',
         ]
         self.assertEqual(actual, expected)
+
+    def test_attr_name_check(self):
+        def decorate(fn):
+            def wrapper(self, request, *args, **kwargs):
+                return fn(self, request, *args, **kwargs)
+            return wrapper
+
+        class ActionViewSet(GenericViewSet):
+            queryset = Action.objects.all()
+
+            @action(detail=False)
+            @decorate
+            def wrapped_list_action(self, request, *args, **kwargs):
+                raise NotImplementedError
+
+        view = ActionViewSet()
+        with pytest.raises(AssertionError) as excinfo:
+            view.get_extra_actions()
+
+        assert str(excinfo.value) == (
+            'Expected function (`wrapper`) to match its attribute name '
+            '(`wrapped_list_action`). If using a decorator, ensure the inner '
+            'function is decorated with `functools.wraps`, or that '
+            '`wrapper.__name__` is otherwise set to `wrapped_list_action`.')
 
 
 @override_settings(ROOT_URLCONF='tests.test_viewsets')
@@ -218,6 +264,7 @@ class GetExtraActionUrlMapTests(TestCase):
         expected = OrderedDict([
             ('Custom list action', 'http://testserver/api/actions/custom_list_action/'),
             ('List action', 'http://testserver/api/actions/list_action/'),
+            ('Wrapped list action', 'http://testserver/api/actions/wrapped_list_action/'),
         ])
 
         self.assertEqual(view.get_extra_action_url_map(), expected)
@@ -229,6 +276,7 @@ class GetExtraActionUrlMapTests(TestCase):
         expected = OrderedDict([
             ('Custom detail action', 'http://testserver/api/actions/1/custom_detail_action/'),
             ('Detail action', 'http://testserver/api/actions/1/detail_action/'),
+            ('Wrapped detail action', 'http://testserver/api/actions/1/wrapped_detail_action/'),
             # "Unresolvable detail action" excluded, since it's not resolvable
         ])
 
