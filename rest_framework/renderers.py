@@ -37,7 +37,7 @@ def zero_as_none(value):
     return None if value == 0 else value
 
 
-class TemplateEngineLoader(object):
+class TemplateEngineLoader:
     """
     In case a project uses multiple template engines
     this class enhances the used `loader.get_template`
