@@ -34,7 +34,7 @@ REST framework also includes [serialization] and [parser]/[renderer] components 
 
 What REST framework doesn't do is give you machine readable hypermedia formats such as [HAL][hal], [Collection+JSON][collection], [JSON API][json-api] or HTML [microformats] by default, or the ability to auto-magically create fully HATEOAS style APIs that include hypermedia-based form descriptions and semantically labelled hyperlinks. Doing so would involve making opinionated choices about API design that should really remain outside of the framework's scope.
 
-[cite]: https://vimeo.com/channels/restfest/page:2
+[cite]: https://vimeo.com/channels/restfest/49503453
 [dissertation]: https://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm
 [hypertext-driven]: https://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
 [restful-web-apis]: http://restfulwebapis.org/
