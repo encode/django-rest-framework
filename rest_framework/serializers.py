@@ -476,6 +476,8 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
             validate_method = getattr(self, 'validate_' + field.field_name, None)
             primitive_value = field.get_value(data)
             try:
+                if self.instance and hasattr(field, 'fields'):
+                    field.instance = getattr(self.instance, field.source)
                 validated_value = field.run_validation(primitive_value)
                 if validate_method is not None:
                     validated_value = validate_method(validated_value)
