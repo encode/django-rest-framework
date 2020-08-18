@@ -673,9 +673,9 @@ class TestBooleanField(FieldValues):
             assert exc_info.value.detail == expected
 
 
-class TestNullBooleanField(TestBooleanField):
+class TestNullableBooleanField(TestBooleanField):
     """
-    Valid and invalid values for `NullBooleanField`.
+    Valid and invalid values for `BooleanField(allow_null=True)`.
     """
     valid_inputs = {
         'true': True,
@@ -697,17 +697,7 @@ class TestNullBooleanField(TestBooleanField):
         None: None,
         'other': True
     }
-    field = serializers.NullBooleanField()
-
-
-class TestNullableBooleanField(TestNullBooleanField):
-    """
-    Valid and invalid values for `BooleanField` when `allow_null=True`.
-    """
-
-    @property
-    def field(self):
-        return serializers.BooleanField(allow_null=True)
+    field = serializers.BooleanField(allow_null=True)
 
 
 # String types...
