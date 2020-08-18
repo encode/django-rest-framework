@@ -2,6 +2,7 @@ import datetime
 import os
 import re
 import uuid
+import warnings
 from decimal import ROUND_DOWN, ROUND_UP, Decimal
 
 import pytest
@@ -698,6 +699,25 @@ class TestNullableBooleanField(TestBooleanField):
         'other': True
     }
     field = serializers.BooleanField(allow_null=True)
+
+
+class TestNullBooleanField(TestCase):
+    def test_allow_null(self):
+        msg = '`allow_null` is not a valid option.'
+
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore', rest_framework.RemovedInDRF314Warning)
+            with self.assertRaisesMessage(AssertionError, msg):
+                serializers.NullBooleanField(allow_null=False)
+
+    def test_deprecation_warning(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter('always', rest_framework.RemovedInDRF314Warning)
+            serializers.NullBooleanField()
+
+        self.assertEqual(len(w), 1)
+        self.assertIs(w[0].category, rest_framework.RemovedInDRF314Warning)
+        self.assertIn("The `NullBooleanField` is deprecated", str(w[0].message))
 
 
 # String types...
