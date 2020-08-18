@@ -1,10 +1,13 @@
+import warnings
+
 import pytest
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.test import TestCase
 
 from rest_framework import (
-    exceptions, metadata, serializers, status, versioning, views
+    RemovedInDRF314Warning, exceptions, metadata, serializers, status,
+    versioning, views
 )
 from rest_framework.renderers import BrowsableAPIRenderer
 from rest_framework.test import APIRequestFactory
@@ -311,7 +314,10 @@ class TestMetadata:
 class TestSimpleMetadataFieldInfo(TestCase):
     def test_null_boolean_field_info_type(self):
         options = metadata.SimpleMetadata()
-        field_info = options.get_field_info(serializers.NullBooleanField())
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore', RemovedInDRF314Warning)
+            field = serializers.NullBooleanField()
+        field_info = options.get_field_info(field)
         assert field_info['type'] == 'boolean'
 
     def test_related_field_choices(self):
