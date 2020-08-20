@@ -291,7 +291,7 @@ Would serialize to a nested representation like this:
 
 ## Writable nested serializers
 
-By default nested serializers are read-only. If you want to support write-operations to a nested serializer field you'll need to create `create()` and/or `update()` methods in order to explicitly specify how the child relationships should be saved.
+By default nested serializers are read-only. If you want to support write-operations to a nested serializer field you'll need to create `create()` and/or `update()` methods in order to explicitly specify how the child relationships should be saved:
 
     class TrackSerializer(serializers.ModelSerializer):
         class Meta:
@@ -343,7 +343,7 @@ To provide a dynamic queryset based on the `context`, you can also override `.ge
 
 ## Example
 
-For example, we could define a relational field to serialize a track to a custom string representation, using its ordering, title, and duration.
+For example, we could define a relational field to serialize a track to a custom string representation, using its ordering, title, and duration:
 
     import time
 
@@ -359,7 +359,7 @@ For example, we could define a relational field to serialize a track to a custom
             model = Album
             fields = ['album_name', 'artist', 'tracks']
 
-This custom field would then serialize to the following representation.
+This custom field would then serialize to the following representation:
 
     {
         'album_name': 'Sometimes I Wish We Were an Eagle',
@@ -535,7 +535,7 @@ And the following two models, which may have associated tags:
         text = models.CharField(max_length=1000)
         tags = GenericRelation(TaggedItem)
 
-We could define a custom field that could be used to serialize tagged instances, using the type of each instance to determine how it should be serialized.
+We could define a custom field that could be used to serialize tagged instances, using the type of each instance to determine how it should be serialized:
 
     class TaggedObjectRelatedField(serializers.RelatedField):
         """
