@@ -1327,3 +1327,35 @@ class Issue6751Test(TestCase):
         serializer.save()
 
         self.assertEqual(instance.char_field, 'value changed by signal')
+
+
+class Issue7489Parent(models.Model):
+    pass
+
+
+class Issue7489Child(models.Model):
+    parent = models.ForeignKey(Issue7489Parent, on_delete=models.CASCADE)
+    stage = models.CharField(max_length=1, choices=(('A', 'A'), ('B', 'B')), default='A')
+
+    class Meta:
+        unique_together = ('parent', 'stage')
+
+
+class Issue7489ChildSerializer(serializers.ModelSerializer):
+    parent = serializers.PrimaryKeyRelatedField(
+        allow_null=True,
+        queryset=Issue7489Parent.objects.all(),
+        required=False)
+
+    class Meta:
+        model = Issue7489Child
+        fields = ('parent', 'stage')
+
+
+class IssueTest(TestCase):
+    def test_model_serializer_inserts_choices_default_on_unique_together_validation(self):
+        parent = Issue7489Parent.objects.create()
+        Issue7489Child.objects.create(parent=parent, stage='A')
+        child_b = Issue7489Child.objects.create(parent=parent, stage='B')
+        serializer = Issue7489ChildSerializer(instance=child_b)
+        self.assertTrue(serializer.is_valid(), serializer.errors)
