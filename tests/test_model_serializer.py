@@ -1345,8 +1345,9 @@ class Issue7489Serializer(serializers.ModelSerializer):
 
 
 class Issue7489Test(TestCase):
-    def test_model_serializer_inserts_choices_default_on_unique_together_validation(self):
+    def test_model_serializer_substitutes_default_on_unique_together_validation(self):
         Issue7489Model.objects.create(field1='A', field2='A')
-        b = Issue7489Model.objects.create(field1='A', field2='B')
+        b = Issue7489Model.objects.create(field1='B', field2='B')
+        # Attempt to validate the serializer for updating `field3` on instance `b`
         serializer = Issue7489Serializer(instance=b, data={'field3': 'X'})
         self.assertTrue(serializer.is_valid(), serializer.errors)
