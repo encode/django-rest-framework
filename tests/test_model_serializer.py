@@ -1336,6 +1336,7 @@ class Issue7489Parent(models.Model):
 class Issue7489Child(models.Model):
     parent = models.ForeignKey(Issue7489Parent, on_delete=models.CASCADE)
     stage = models.CharField(max_length=1, choices=(('A', 'A'), ('B', 'B')), default='A')
+    is_thing = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('parent', 'stage')
@@ -1357,5 +1358,5 @@ class IssueTest(TestCase):
         parent = Issue7489Parent.objects.create()
         Issue7489Child.objects.create(parent=parent, stage='A')
         child_b = Issue7489Child.objects.create(parent=parent, stage='B')
-        serializer = Issue7489ChildSerializer(instance=child_b)
+        serializer = Issue7489ChildSerializer(instance=child_b, data={'is_thing': True})
         self.assertTrue(serializer.is_valid(), serializer.errors)
