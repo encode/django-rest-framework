@@ -1329,34 +1329,24 @@ class Issue6751Test(TestCase):
         self.assertEqual(instance.char_field, 'value changed by signal')
 
 
-class Issue7489Parent(models.Model):
-    pass
-
-
-class Issue7489Child(models.Model):
-    parent = models.ForeignKey(Issue7489Parent, on_delete=models.CASCADE)
-    stage = models.CharField(max_length=1, choices=(('A', 'A'), ('B', 'B')), default='A')
-    is_thing = models.BooleanField(default=False)
+class Issue7489Model(models.Model):
+    field1 = models.CharField(max_length=1, default='A')
+    field2 = models.CharField(max_length=1, default='A')
+    field3 = models.CharField(max_length=1, default='A')
 
     class Meta:
-        unique_together = ('parent', 'stage')
+        unique_together = ('field1', 'field2')
 
 
-class Issue7489ChildSerializer(serializers.ModelSerializer):
-    parent = serializers.PrimaryKeyRelatedField(
-        allow_null=True,
-        queryset=Issue7489Parent.objects.all(),
-        required=False)
-
+class Issue7489Serializer(serializers.ModelSerializer):
     class Meta:
-        model = Issue7489Child
-        fields = ('parent', 'stage')
+        model = Issue7489Model
+        fields = '__all__'
 
 
-class IssueTest(TestCase):
+class Issue7489Test(TestCase):
     def test_model_serializer_inserts_choices_default_on_unique_together_validation(self):
-        parent = Issue7489Parent.objects.create()
-        Issue7489Child.objects.create(parent=parent, stage='A')
-        child_b = Issue7489Child.objects.create(parent=parent, stage='B')
-        serializer = Issue7489ChildSerializer(instance=child_b, data={'is_thing': True})
+        Issue7489Model.objects.create(field1='A', field2='A')
+        b = Issue7489Model.objects.create(field1='A', field2='B')
+        serializer = Issue7489Serializer(instance=b, data={'field3': 'X'})
         self.assertTrue(serializer.is_valid(), serializer.errors)
