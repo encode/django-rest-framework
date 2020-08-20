@@ -56,7 +56,7 @@ In order to explain the various types of relational fields, we'll use a couple o
 
 `StringRelatedField` may be used to represent the target of the relationship using its `__str__` method.
 
-For example, the following serializer.
+For example, the following serializer:
 
     class AlbumSerializer(serializers.ModelSerializer):
         tracks = serializers.StringRelatedField(many=True)
@@ -65,7 +65,7 @@ For example, the following serializer.
             model = Album
             fields = ['album_name', 'artist', 'tracks']
 
-Would serialize to the following representation.
+Would serialize to the following representation:
 
     {
         'album_name': 'Things We Lost In The Fire',
