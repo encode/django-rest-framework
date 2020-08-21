@@ -50,7 +50,7 @@ class SchemaGenerator(BaseSchemaGenerator):
                         'You have a duplicated operationId in your OpenAPI schema: {operation_id}\n'
                         '\tRoute: {route1}, Method: {method1}\n'
                         '\tRoute: {route2}, Method: {method2}\n'
-                        '\tAn operationId has to be unique accros your schema. Your schema may not work in other tools.'
+                        '\tAn operationId has to be unique across your schema. Your schema may not work in other tools.'
                         .format(
                             route1=ids[operation_id]['route'],
                             method1=ids[operation_id]['method'],
