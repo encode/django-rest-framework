@@ -583,6 +583,10 @@ class AutoSchema(ViewInspector):
                     schema['minimum'] = -schema['maximum']
 
     def get_field_name(self, field):
+        """
+        Override this method if you want to change schema field name.
+        For example, convert snake_case field name to camelCase.
+        """
         return field.field_name
 
     def get_paginator(self):
