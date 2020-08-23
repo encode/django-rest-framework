@@ -240,7 +240,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 
 * [djangorestframework-csv][djangorestframework-csv] - Provides CSV renderer support.
 * [djangorestframework-jsonapi][djangorestframework-jsonapi] - Provides a parser, renderer, serializers, and other tools to help build an API that is compliant with the jsonapi.org spec.
-* [drf_ujson][drf_ujson] - Implements JSON rendering using the UJSON package.
+* [drf_ujson2][drf_ujson2] - Implements JSON rendering using the UJSON package.
 * [rest-pandas][rest-pandas] - Pandas DataFrame-powered renderers including Excel, CSV, and SVG formats.
 * [djangorestframework-rapidjson][djangorestframework-rapidjson] - Provides rapidjson support with parser and renderer.
 
@@ -313,7 +313,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [djangorestframework-msgpack]: https://github.com/juanriaza/django-rest-framework-msgpack
 [djangorestframework-camel-case]: https://github.com/vbabiy/djangorestframework-camel-case
 [djangorestframework-csv]: https://github.com/mjumbewu/django-rest-framework-csv
-[drf_ujson]: https://github.com/gizmag/drf-ujson-renderer
+[drf_ujson2]: https://github.com/Amertz08/drf_ujson2
 [rest-pandas]: https://github.com/wq/django-rest-pandas
 [djangorestframework-rapidjson]: https://github.com/allisson/django-rest-framework-rapidjson
 [djangorestframework-chain]: https://github.com/philipn/django-rest-framework-chain
