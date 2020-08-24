@@ -1,5 +1,3 @@
-import warnings
-
 import pytest
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
@@ -314,8 +312,7 @@ class TestMetadata:
 class TestSimpleMetadataFieldInfo(TestCase):
     def test_null_boolean_field_info_type(self):
         options = metadata.SimpleMetadata()
-        with warnings.catch_warnings():
-            warnings.simplefilter('ignore', RemovedInDRF314Warning)
+        with self.assertWarns(RemovedInDRF314Warning):
             field = serializers.NullBooleanField()
         field_info = options.get_field_info(field)
         assert field_info['type'] == 'boolean'
