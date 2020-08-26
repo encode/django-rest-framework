@@ -595,7 +595,7 @@ class AutoSchema(ViewInspector):
         media_types = []
         for renderer in self.view.renderer_classes:
             # BrowsableAPIRenderer not relevant to OpenAPI spec
-            if renderer == renderers.BrowsableAPIRenderer:
+            if issubclass(renderer, renderers.BrowsableAPIRenderer):
                 continue
             media_types.append(renderer.media_type)
         return media_types
