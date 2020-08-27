@@ -512,7 +512,7 @@ class AutoSchema(ViewInspector):
         properties = {}
 
         try:
-            return serializer.get_object_openapi_schema()
+            return serializer.get_object_openapi_schema(autoschema=self)
         except AttributeError:
             pass
 
