@@ -511,6 +511,11 @@ class AutoSchema(ViewInspector):
         required = []
         properties = {}
 
+        try:
+            return serializer.get_object_openapi_schema()
+        except AttributeError:
+            pass
+
         for field in serializer.fields.values():
             if isinstance(field, serializers.HiddenField):
                 continue
