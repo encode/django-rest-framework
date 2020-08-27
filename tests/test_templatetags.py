@@ -300,6 +300,8 @@ class URLizerTests(TestCase):
             '&quot;url&quot;: &quot;<a href="http://api/users/1/">http://api/users/1/</a>&quot;, '
         data['"foo_set": [\n    "http://api/foos/1/"\n], '] = \
             '&quot;foo_set&quot;: [\n    &quot;<a href="http://api/foos/1/">http://api/foos/1/</a>&quot;\n], '
+        data['"url_escaped_params": "http://api/urls/http%3A%2F%2Fabc/", '] = \
+            '&quot;url_escaped_params&quot;: &quot;<a href="http://api/urls/http%3A%2F%2Fabc/">http://api/urls/http%253A%252F%252Fabc/</a>&quot;, '
         self._urlize_dict_check(data)
 
     def test_template_render_with_autoescape(self):
