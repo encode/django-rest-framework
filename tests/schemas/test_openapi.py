@@ -83,7 +83,8 @@ class TestFieldMapping(TestCase):
         ]
         for field, mapping in cases:
             with self.subTest(field=field):
-                assert inspector.map_field(field) == mapping
+                data, _ = inspector.map_field(field)
+                assert data == mapping
 
     def test_lazy_string_field(self):
         class ItemSerializer(serializers.Serializer):
@@ -91,18 +92,20 @@ class TestFieldMapping(TestCase):
 
         inspector = AutoSchema()
 
-        data = inspector.map_serializer(ItemSerializer())
+        ref, component = inspector.map_serializer(ItemSerializer())
+        data = component['Item']
         assert isinstance(data['properties']['text']['description'], str), "description must be str"
 
     def test_boolean_default_field(self):
-        class Serializer(serializers.Serializer):
+        class BooleanSerializer(serializers.Serializer):
             default_true = serializers.BooleanField(default=True)
             default_false = serializers.BooleanField(default=False)
             without_default = serializers.BooleanField()
 
         inspector = AutoSchema()
 
-        data = inspector.map_serializer(Serializer())
+        ref, component = inspector.map_serializer(BooleanSerializer())
+        data = component['Boolean']
         assert data['properties']['default_true']['default'] is True, "default must be true"
         assert data['properties']['default_false']['default'] is False, "default must be false"
         assert 'default' not in data['properties']['without_default'], "default must not be defined"
@@ -345,9 +348,10 @@ class TestOperationIntrospection(TestCase):
         schema = components['Item']
         assert sorted(schema['required']) == ['nested', 'text']
         assert sorted(list(schema['properties'].keys())) == ['nested', 'text']
-        assert schema['properties']['nested']['type'] == 'object'
-        assert list(schema['properties']['nested']['properties'].keys()) == ['number']
-        assert schema['properties']['nested']['required'] == ['number']
+        assert schema['properties']['nested']['$ref'] == '#/components/schemas/Nested'
+        nested = components['Nested']
+        assert list(nested['properties'].keys()) == ['number']
+        assert nested['required'] == ['number']
 
     def test_list_response_body_generation(self):
         """Test that an array schema is returned for list views."""

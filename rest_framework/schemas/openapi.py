@@ -197,10 +197,8 @@ class AutoSchema(ViewInspector):
         if not isinstance(serializer, serializers.Serializer):
             return {}
 
-        component_name = self.get_component_name(serializer)
-
-        content = self.map_serializer(serializer)
-        return {component_name: content}
+        _, components = self.map_serializer(serializer)
+        return components
 
     def _to_camel_case(self, snake_str):
         components = snake_str.split('_')
@@ -365,24 +363,24 @@ class AutoSchema(ViewInspector):
             return {
                 'type': 'array',
                 'items': self.map_serializer(field.child)
-            }
+            }, {}
         if isinstance(field, serializers.Serializer):
-            data = self.map_serializer(field)
-            data['type'] = 'object'
-            return data
+            data, components = self.map_serializer(field)
+            return data, components
 
         # Related fields.
         if isinstance(field, serializers.ManyRelatedField):
+            items, components = self.map_field(field.child_relation)
             return {
                 'type': 'array',
-                'items': self.map_field(field.child_relation)
-            }
+                'items': items
+            }, components
         if isinstance(field, serializers.PrimaryKeyRelatedField):
             model = getattr(field.queryset, 'model', None)
             if model is not None:
                 model_field = model._meta.pk
                 if isinstance(model_field, models.AutoField):
-                    return {'type': 'integer'}
+                    return {'type': 'integer'}, {}
 
         # ChoiceFields (single and multiple).
         # Q:
@@ -392,33 +390,35 @@ class AutoSchema(ViewInspector):
             return {
                 'type': 'array',
                 'items': self.map_choicefield(field)
-            }
+            }, {}
 
         if isinstance(field, serializers.ChoiceField):
-            return self.map_choicefield(field)
+            return self.map_choicefield(field), {}
 
         # ListField.
         if isinstance(field, serializers.ListField):
+            components = {}
             mapping = {
                 'type': 'array',
                 'items': {},
             }
             if not isinstance(field.child, _UnvalidatedField):
-                mapping['items'] = self.map_field(field.child)
-            return mapping
+                items, components = self.map_field(field.child)
+                mapping['items'] = items
+            return mapping, components
 
         # DateField and DateTimeField type is string
         if isinstance(field, serializers.DateField):
             return {
                 'type': 'string',
                 'format': 'date',
-            }
+            }, {}
 
         if isinstance(field, serializers.DateTimeField):
             return {
                 'type': 'string',
                 'format': 'date-time',
-            }
+            }, {}
 
         # "Formats such as "email", "uuid", and so on, MAY be used even though undefined by this specification."
         # see: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#data-types
@@ -427,19 +427,19 @@ class AutoSchema(ViewInspector):
             return {
                 'type': 'string',
                 'format': 'email'
-            }
+            }, {}
 
         if isinstance(field, serializers.URLField):
             return {
                 'type': 'string',
                 'format': 'uri'
-            }
+            }, {}
 
         if isinstance(field, serializers.UUIDField):
             return {
                 'type': 'string',
                 'format': 'uuid'
-            }
+            }, {}
 
         if isinstance(field, serializers.IPAddressField):
             content = {
@@ -447,7 +447,7 @@ class AutoSchema(ViewInspector):
             }
             if field.protocol != 'both':
                 content['format'] = field.protocol
-            return content
+            return content, {}
 
         if isinstance(field, serializers.DecimalField):
             if getattr(field, 'coerce_to_string', api_settings.COERCE_DECIMAL_TO_STRING):
@@ -466,14 +466,14 @@ class AutoSchema(ViewInspector):
                 content['maximum'] = int(field.max_whole_digits * '9') + 1
                 content['minimum'] = -content['maximum']
             self._map_min_max(field, content)
-            return content
+            return content, {}
 
         if isinstance(field, serializers.FloatField):
             content = {
                 'type': 'number',
             }
             self._map_min_max(field, content)
-            return content
+            return content, {}
 
         if isinstance(field, serializers.IntegerField):
             content = {
@@ -483,13 +483,13 @@ class AutoSchema(ViewInspector):
             # 2147483647 is max for int32_size, so we use int64 for format
             if int(content.get('maximum', 0)) > 2147483647 or int(content.get('minimum', 0)) > 2147483647:
                 content['format'] = 'int64'
-            return content
+            return content, {}
 
         if isinstance(field, serializers.FileField):
             return {
                 'type': 'string',
                 'format': 'binary'
-            }
+            }, {}
 
         # Simplest cases, default to 'string' type:
         FIELD_CLASS_SCHEMA_TYPE = {
@@ -498,7 +498,7 @@ class AutoSchema(ViewInspector):
             serializers.DictField: 'object',
             serializers.HStoreField: 'object',
         }
-        return {'type': FIELD_CLASS_SCHEMA_TYPE.get(field.__class__, 'string')}
+        return {'type': FIELD_CLASS_SCHEMA_TYPE.get(field.__class__, 'string')}, {}
 
     def _map_min_max(self, field, content):
         if field.max_value:
@@ -516,6 +516,9 @@ class AutoSchema(ViewInspector):
         except AttributeError:
             pass
 
+        component_name = self.get_component_name(serializer)
+        components = {}
+
         for field in serializer.fields.values():
             if isinstance(field, serializers.HiddenField):
                 continue
@@ -523,7 +526,8 @@ class AutoSchema(ViewInspector):
             if field.required:
                 required.append(field.field_name)
 
-            schema = self.map_field(field)
+            schema, subcomponents = self.map_field(field)
+            components.update(subcomponents)
             if field.read_only:
                 schema['readOnly'] = True
             if field.write_only:
@@ -544,8 +548,9 @@ class AutoSchema(ViewInspector):
         }
         if required:
             result['required'] = required
+        components[component_name] = result
 
-        return result
+        return {'$ref': '#/components/schemas/%s' % component_name}, components
 
     def map_field_validators(self, field, schema):
         """
