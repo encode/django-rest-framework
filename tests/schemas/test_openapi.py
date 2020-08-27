@@ -353,6 +353,35 @@ class TestOperationIntrospection(TestCase):
         assert list(nested['properties'].keys()) == ['number']
         assert nested['required'] == ['number']
 
+    def test_response_body_list_serializer(self):
+        path = '/'
+        method = 'POST'
+
+        class NestedSerializer(serializers.Serializer):
+            number = serializers.IntegerField()
+            text = serializers.CharField()
+
+        class ItemSerializer(serializers.ListSerializer):
+            child = NestedSerializer()
+
+        class MainSerializer(serializers.Serializer):
+            main = ItemSerializer()
+
+        class View(generics.GenericAPIView):
+            serializer_class = MainSerializer
+
+        view = create_view(
+            View,
+            method,
+            create_request(path),
+        )
+        inspector = AutoSchema()
+        inspector.view = view
+        responses = inspector.get_responses(path, method)
+        assert responses['201']['content']['application/json']['schema']['$ref'] == '#/components/schemas/Main'
+        components = inspector.get_components(path, method)
+        assert sorted(list(components.keys())) == ['Main', 'Nested']
+
     def test_list_response_body_generation(self):
         """Test that an array schema is returned for list views."""
         path = '/'

@@ -360,10 +360,11 @@ class AutoSchema(ViewInspector):
 
         # Nested Serializers, `many` or not.
         if isinstance(field, serializers.ListSerializer):
+            ref, components = self.map_serializer(field.child)
             return {
                 'type': 'array',
-                'items': self.map_serializer(field.child)
-            }, {}
+                'items': ref
+            }, components
         if isinstance(field, serializers.Serializer):
             data, components = self.map_serializer(field)
             return data, components
