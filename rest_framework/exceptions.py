@@ -93,10 +93,10 @@ class ErrorDetail(str):
     def __repr__(self):
         if self.params:
             return 'ErrorDetail(string=%r, code=%r, params=%s)' % (
-            str(self),
-            self.code,
-            self.params
-        )
+                str(self),
+                self.code,
+                self.params
+            )
 
         return 'ErrorDetail(string=%r, code=%r)' % (
             str(self),
