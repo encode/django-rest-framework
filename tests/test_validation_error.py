@@ -12,17 +12,17 @@ factory = APIRequestFactory()
 
 class ExampleSerializer(serializers.Serializer):
     char = serializers.CharField()
-    integer = serializers.IntegerField()
+    integer = serializers.IntegerField(min_value=1, required=False)
 
 
 class ErrorView(APIView):
     def get(self, request, *args, **kwargs):
-        ExampleSerializer(data={}).is_valid(raise_exception=True)
+        ExampleSerializer(data={"integer": 0}).is_valid(raise_exception=True)
 
 
 @api_view(['GET'])
 def error_view(request):
-    ExampleSerializer(data={}).is_valid(raise_exception=True)
+    ExampleSerializer(data={"integer": 0}).is_valid(raise_exception=True)
 
 
 class TestValidationErrorWithFullDetails(TestCase):
@@ -41,8 +41,13 @@ class TestValidationErrorWithFullDetails(TestCase):
                 'code': 'required',
             }],
             'integer': [{
-                'message': 'This field is required.',
-                'code': 'required'
+                'message': 'Ensure this value is greater than or equal to 1.',
+                'code': 'min_value',
+                'params': {
+                    'limit_value': 1,
+                    'show_value': 0,
+                    'value': 0
+                }
             }],
         }
 
@@ -78,7 +83,7 @@ class TestValidationErrorWithCodes(TestCase):
 
         self.expected_response_data = {
             'char': ['required'],
-            'integer': ['required'],
+            'integer': ['min_value'],
         }
 
     def tearDown(self):

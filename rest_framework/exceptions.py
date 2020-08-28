@@ -38,7 +38,8 @@ def _get_error_details(data, default_code=None):
 
     text = force_str(data)
     code = getattr(data, 'code', default_code)
-    return ErrorDetail(text, code)
+    params = getattr(data, 'params', tuple())
+    return ErrorDetail(text, code, params)
 
 
 def _get_codes(detail):
@@ -54,10 +55,16 @@ def _get_full_details(detail):
         return [_get_full_details(item) for item in detail]
     elif isinstance(detail, dict):
         return {key: _get_full_details(value) for key, value in detail.items()}
-    return {
+
+    _base = {
         'message': detail,
         'code': detail.code
     }
+    params = getattr(detail, "params", None)
+
+    if params:
+        _base.update({"params": params})
+    return _base
 
 
 class ErrorDetail(str):
@@ -65,10 +72,12 @@ class ErrorDetail(str):
     A string-like object that can additionally have a code.
     """
     code = None
+    params = None
 
-    def __new__(cls, string, code=None):
+    def __new__(cls, string, code=None, params=None):
         self = super().__new__(cls, string)
         self.code = code
+        self.params = params
         return self
 
     def __eq__(self, other):
@@ -82,10 +91,12 @@ class ErrorDetail(str):
         return not self.__eq__(other)
 
     def __repr__(self):
-        return 'ErrorDetail(string=%r, code=%r)' % (
+        base = 'ErrorDetail(string=%r, code=%r' % (
             str(self),
             self.code,
         )
+
+        return base + ', params=%r)' % self.params if self.params else base + ')'
 
     def __hash__(self):
         return hash(str(self))
@@ -105,7 +116,6 @@ class APIException(Exception):
             detail = self.default_detail
         if code is None:
             code = self.default_code
-
         self.detail = _get_error_details(detail, code)
 
     def __str__(self):
@@ -141,6 +151,7 @@ class ValidationError(APIException):
     default_code = 'invalid'
 
     def __init__(self, detail=None, code=None):
+        print(detail, code)
         if detail is None:
             detail = self.default_detail
         if code is None:

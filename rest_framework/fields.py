@@ -236,12 +236,14 @@ def get_error_detail(exc_info):
     except AttributeError:
         return [
             ErrorDetail((error.message % error.params) if error.params else error.message,
-                        code=error.code if error.code else code)
+                        code=error.code if error.code else code,
+                        params=error.params)
             for error in exc_info.error_list]
     return {
         k: [
             ErrorDetail((error.message % error.params) if error.params else error.message,
-                        code=error.code if error.code else code)
+                        code=error.code if error.code else code,
+                        params=error.params)
             for error in errors
         ] for k, errors in error_dict.items()
     }
@@ -599,6 +601,7 @@ class Field:
                     raise
                 errors.extend(exc.detail)
             except DjangoValidationError as exc:
+                print("YOOOOOOOOOO", exc, exc.code, exc.params)
                 errors.extend(get_error_detail(exc))
         if errors:
             raise ValidationError(errors)
