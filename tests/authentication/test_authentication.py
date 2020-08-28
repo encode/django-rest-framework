@@ -397,6 +397,10 @@ class TokenAuthTests(BaseTokenAuthTests, TestCase):
         key = token.generate_key()
         assert isinstance(key, str)
 
+    def test_generate_key_accessible_as_classmethod(self):
+        key = self.model.generate_key()
+        assert isinstance(key, str)
+
     def test_token_login_json(self):
         """Ensure token login view using JSON POST works."""
         client = APIClient(enforce_csrf_checks=True)

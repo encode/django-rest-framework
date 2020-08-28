@@ -32,6 +32,7 @@ class Token(models.Model):
             self.key = self.generate_key()
         return super().save(*args, **kwargs)
 
+    @classmethod
     def generate_key(self):
         return binascii.hexlify(os.urandom(20)).decode()
 
