@@ -512,11 +512,6 @@ class AutoSchema(ViewInspector):
         required = []
         properties = {}
 
-        try:
-            return serializer.get_object_openapi_schema(autoschema=self)
-        except AttributeError:
-            pass
-
         component_name = self.get_component_name(serializer)
         components = {}
 
