@@ -297,13 +297,18 @@ class OrderingFilter(BaseFilterBackend):
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
         assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
+
+        # display aliases
+        ordering_choices = [fields[0] for fields in super().get_valid_fields(None, view)]
+
         return [
             coreapi.Field(
                 name=self.ordering_param,
                 required=False,
                 location='query',
-                schema=coreschema.String(
+                schema=coreschema.Enum(
                     title=force_str(self.ordering_title),
+                    enum=ordering_choices,
                     description=force_str(self.ordering_description)
                 )
             )
