@@ -601,7 +601,6 @@ class Field:
                     raise
                 errors.extend(exc.detail)
             except DjangoValidationError as exc:
-                print("YOOOOOOOOOO", exc, exc.code, exc.params)
                 errors.extend(get_error_detail(exc))
         if errors:
             raise ValidationError(errors)
