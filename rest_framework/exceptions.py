@@ -91,12 +91,17 @@ class ErrorDetail(str):
         return not self.__eq__(other)
 
     def __repr__(self):
-        base = 'ErrorDetail(string=%r, code=%r' % (
+        if self.params:
+            return 'ErrorDetail(string=%r, code=%r, params=%s)' % (
+            str(self),
+            self.code,
+            self.params
+        )
+
+        return 'ErrorDetail(string=%r, code=%r)' % (
             str(self),
             self.code,
         )
-
-        return base + ', params=%r)' % self.params if self.params else base + ')'
 
     def __hash__(self):
         return hash(str(self))
