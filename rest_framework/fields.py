@@ -775,6 +775,8 @@ class CharField(Field):
         self.trim_whitespace = kwargs.pop('trim_whitespace', True)
         self.max_length = kwargs.pop('max_length', None)
         self.min_length = kwargs.pop('min_length', None)
+        self.from_case = kwargs.pop('from_case', None)
+        self.to_case = kwargs.pop('to_case', None)
         super().__init__(**kwargs)
         if self.max_length is not None:
             message = lazy_format(self.error_messages['max_length'], max_length=self.max_length)
@@ -808,7 +810,59 @@ class CharField(Field):
         return value.strip() if self.trim_whitespace else value
 
     def to_representation(self, value):
-        return str(value)
+        value = str(value)
+        if self.to_case is None:
+            return value
+
+        return self.get_string_transformation(self.from_case, self.to_case, value)
+
+    @classmethod
+    def get_string_transformation(cls, from_case: str, to_case: str, value: str):
+        words = getattr(cls, f'{from_case}_case_split')(value)
+
+        return getattr(cls, f'{to_case}_case_representation')(words)
+    
+    @staticmethod
+    def camel_case_split(value: str):
+        matches = re.finditer('.+?(?:(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])|$)', value)
+        return [m.group(0).lower() for m in matches]
+    
+    @staticmethod
+    def kebab_case_split(value: str):
+        words = value.split('-')
+        return [w.lower() for w in words]
+    
+    @staticmethod
+    def snake_case_split(value: str):
+        words = value.split('_')
+        return [w.lower() for w in words]
+    
+    @staticmethod
+    def train_case_split(value: str):
+        words = value.split('-')
+        return [w.lower() for w in words]
+    
+    @staticmethod
+    def camel_case_representation(words: list):
+        result = [w.capitalize() for w in words[1:]]
+        result.insert(0, words[0])
+
+        return ''.join(result)
+    
+    @staticmethod
+    def kebab_case_representation(words: list):
+        return '-'.join(words)
+    
+    @staticmethod
+    def snake_case_representation(words: list):
+        print(words)
+        return '_'.join(words)
+    
+    @staticmethod
+    def train_case_representation(words: list):
+        words = [w.capitalize() for w in words]
+        return '-'.join(words)
+    
 
 
 class EmailField(CharField):
