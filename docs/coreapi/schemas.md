@@ -412,7 +412,7 @@ return the schema.
 **urls.py:**
 
     urlpatterns = [
-        url('/', schema_view),
+        path('', schema_view),
         ...
     ]
 
