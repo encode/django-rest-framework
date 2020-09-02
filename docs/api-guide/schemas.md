@@ -313,6 +313,11 @@ Computes the component's name from the serializer.
 
 You may see warnings if your API has duplicate component names. If so you can override `get_component_name()` or pass the `component_name` `__init__()` kwarg (see below) to provide different names.
 
+#### `get_reference()`
+
+Returns a reference to the serializer component. This may be useful if you override `get_schema()`.
+
+
 #### `map_serializer()`
 
 Maps serializers to their OpenAPI representations.
