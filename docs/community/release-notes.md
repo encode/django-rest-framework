@@ -36,6 +36,33 @@ You can determine your currently installed version using `pip show`:
 
 ## 3.11.x series
 
+### 3.12.0
+
+* Add `--file` option to `generateschema` command. [#7130]
+* Support `tags` for OpenAPI schema generation. See [the schema docs](https://www.django-rest-framework.org/api-guide/schemas/#grouping-operations-with-tags). [#7184]
+* Support customizing the operation ID for schema generation. See [the schema docs](https://www.django-rest-framework.org/api-guide/schemas/#operationid). [#7190]
+* Support OpenAPI components for schema generation. See [the schema docs](https://www.django-rest-framework.org/api-guide/schemas/#components). [#7124]
+* Add `__repr__` for Request instances. [#7239]
+* UTF-8 decoding with Latin-1 fallback for basic auth credentials. [#7193]
+* CharField treats surrogate characters as a validation failure. [#7026]
+* Don't include callables as default values in schemas. [#7105]
+* Improve `ListField` schema output to include all available child information. [#7137]
+* Allow `default=False` to be included for `BooleanField` schema outputs. [#7165]
+* Include `"type"` information in `ChoiceField` schema outputs. [#7161]
+* Include `"type": "object"` on schema objects. [#7169]
+* Fix schema generation for `ObtainAuthToken` view. [#7211]
+* Default status code of 201 on schema output for POST requests. [#7206]
+* Use camelCase for operation IDs in schema output. [#7208]
+* Warn if duplicate operation IDs exist in schema output. [#7207]
+* Disable YAML aliases for OpenAPI schema outputs. [#7131]
+* HTTP `HEAD` requests now set `self.action` correctly on a ViewSet instance. [#7223]
+* Return a valid OpenAPI schema for the case where no API schema paths exist. [#7125]
+* Include tests in package distribution. [#7145]
+
+---
+
+## 3.11.x series
+
 ### 3.11.0
 
 **Date**: 12th December 2019
