@@ -175,8 +175,13 @@ class RelatedField(Field):
                 value = attribute_instance.serializable_value(self.source_attrs[-1])
                 if is_simple_callable(value):
                     # Handle edge case where the relationship `source` argument
-                    # points to a `get_relationship()` method on the model
-                    value = value().pk
+                    # points to a `get_relationship()` method on the model.
+                    value = value()
+
+                # Handle edge case where relationship `source` argument points
+                # to an instance instead of a pk (e.g., a `@property`).
+                value = getattr(value, 'pk', value)
+
                 return PKOnlyObject(pk=value)
             except AttributeError:
                 pass
