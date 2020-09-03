@@ -46,6 +46,7 @@ You can determine your currently installed version using `pip show`:
 * Add support for Django 3.1's database-agnositic `JSONField`. [#7467]
 * `SearchFilter` now supports nested search on `JSONField` and `HStoreField` model fields. [#7121]
 * `SearchFilter` now supports searching on `annotate()` fields. [#6240]
+* The authtoken model no longer exposes the `pk` in the admin URL. [#7341]
 * Add `__repr__` for Request instances. [#7239]
 * UTF-8 decoding with Latin-1 fallback for basic auth credentials. [#7193]
 * CharField treats surrogate characters as a validation failure. [#7026]
