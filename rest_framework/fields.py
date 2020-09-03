@@ -1758,6 +1758,7 @@ class JSONField(Field):
     def __init__(self, *args, **kwargs):
         self.binary = kwargs.pop('binary', False)
         self.encoder = kwargs.pop('encoder', None)
+        self.decoder = kwargs.pop('decoder', None)
         super().__init__(*args, **kwargs)
 
     def get_value(self, dictionary):
@@ -1777,7 +1778,7 @@ class JSONField(Field):
             if self.binary or getattr(data, 'is_json_string', False):
                 if isinstance(data, bytes):
                     data = data.decode()
-                return json.loads(data)
+                return json.loads(data, cls=self.decoder)
             else:
                 json.dumps(data, cls=self.encoder)
         except (TypeError, ValueError):

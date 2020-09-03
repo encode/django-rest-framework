@@ -884,6 +884,8 @@ class ModelSerializer(Serializer):
         models.GenericIPAddressField: IPAddressField,
         models.FilePathField: FilePathField,
     }
+    if hasattr(models, 'JSONField'):
+        serializer_field_mapping[models.JSONField] = JSONField
     if postgres_fields:
         serializer_field_mapping[postgres_fields.HStoreField] = HStoreField
         serializer_field_mapping[postgres_fields.ArrayField] = ListField
@@ -1242,10 +1244,13 @@ class ModelSerializer(Serializer):
             # `allow_blank` is only valid for textual fields.
             field_kwargs.pop('allow_blank', None)
 
-        if postgres_fields and isinstance(model_field, postgres_fields.JSONField):
+        is_django_jsonfield = hasattr(models, 'JSONField') and isinstance(model_field, models.JSONField)
+        if (postgres_fields and isinstance(model_field, postgres_fields.JSONField)) or is_django_jsonfield:
             # Populate the `encoder` argument of `JSONField` instances generated
-            # for the PostgreSQL specific `JSONField`.
+            # for the model `JSONField`.
             field_kwargs['encoder'] = getattr(model_field, 'encoder', None)
+            if is_django_jsonfield:
+                field_kwargs['decoder'] = getattr(model_field, 'decoder', None)
 
         if postgres_fields and isinstance(model_field, postgres_fields.ArrayField):
             # Populate the `child` argument on `ListField` instances generated

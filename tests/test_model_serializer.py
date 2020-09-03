@@ -7,6 +7,7 @@ an appropriate set of serializer fields for each case.
 """
 import datetime
 import decimal
+import json  # noqa
 import sys
 import tempfile
 from collections import OrderedDict
@@ -478,6 +479,7 @@ class TestPosgresFieldsMapping(TestCase):
         """)
         self.assertEqual(repr(TestSerializer()), expected)
 
+    @pytest.mark.skipif(hasattr(models, 'JSONField'), reason='has models.JSONField')
     def test_json_field(self):
         class JSONFieldModel(models.Model):
             json_field = postgres_fields.JSONField()
@@ -492,6 +494,30 @@ class TestPosgresFieldsMapping(TestCase):
             TestSerializer():
                 json_field = JSONField(encoder=None, style={'base_template': 'textarea.html'})
                 json_field_with_encoder = JSONField(encoder=<class 'django.core.serializers.json.DjangoJSONEncoder'>, style={'base_template': 'textarea.html'})
+        """)
+        self.assertEqual(repr(TestSerializer()), expected)
+
+
+class CustomJSONDecoder(json.JSONDecoder):
+    pass
+
+
+@pytest.mark.skipif(not hasattr(models, 'JSONField'), reason='no models.JSONField')
+class TestDjangoJSONFieldMapping(TestCase):
+    def test_json_field(self):
+        class JSONFieldModel(models.Model):
+            json_field = models.JSONField()
+            json_field_with_encoder = models.JSONField(encoder=DjangoJSONEncoder, decoder=CustomJSONDecoder)
+
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = JSONFieldModel
+                fields = ['json_field', 'json_field_with_encoder']
+
+        expected = dedent("""
+            TestSerializer():
+                json_field = JSONField(decoder=None, encoder=None, style={'base_template': 'textarea.html'})
+                json_field_with_encoder = JSONField(decoder=<class 'tests.test_model_serializer.CustomJSONDecoder'>, encoder=<class 'django.core.serializers.json.DjangoJSONEncoder'>, style={'base_template': 'textarea.html'})
         """)
         self.assertEqual(repr(TestSerializer()), expected)
 
