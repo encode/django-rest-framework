@@ -42,7 +42,8 @@ You can determine your currently installed version using `pip show`:
 * Support `tags` for OpenAPI schema generation. See [the schema docs](https://www.django-rest-framework.org/api-guide/schemas/#grouping-operations-with-tags). [#7184]
 * Support customizing the operation ID for schema generation. See [the schema docs](https://www.django-rest-framework.org/api-guide/schemas/#operationid). [#7190]
 * Support OpenAPI components for schema generation. See [the schema docs](https://www.django-rest-framework.org/api-guide/schemas/#components). [#7124]
-* The following methods on `AutoSchema` become public API: `get_path_parameters`, `get_pagination_parameters`, `get_filter_parameters`, `get_request_body`, `get_responses`, `get_serializer`, `get_paginator`, `map_serializer`, `map_field`, `map_choice_field`, `map_field_validators`, `allows_filters`.
+* The following methods on `AutoSchema` become public API: `get_path_parameters`, `get_pagination_parameters`, `get_filter_parameters`, `get_request_body`, `get_responses`, `get_serializer`, `get_paginator`, `map_serializer`, `map_field`, `map_choice_field`, `map_field_validators`, `allows_filters`. See [the schema docs](https://www.django-rest-framework.org/api-guide/schemas/#autoschema)
+* Add support for Django 3.1's database-agnositic `JSONField`. [#7467]
 * `SearchFilter` now supports nested search on `JSONField` and `HStoreField` model fields. [#7121]
 * `SearchFilter` now supports searching on `annotate()` fields. [#6240]
 * Add `__repr__` for Request instances. [#7239]
@@ -70,6 +71,12 @@ You can determine your currently installed version using `pip show`:
 * HTTP `HEAD` requests now set `self.action` correctly on a ViewSet instance. [#7223]
 * Return a valid OpenAPI schema for the case where no API schema paths exist. [#7125]
 * Include tests in package distribution. [#7145]
+* Allow type checkers to support annotations like `ModelSerializer[Author]`. [#7385]
+* Don't include invalid `charset=None` portion in the request `Content-Type` header when using APIClient. [#7400]
+* Fix `\Z`/`\z` tokens in OpenAPI regexs. [#7389]
+* Fix `PrimaryKeyRelatedField` and `HyperlinkedRelatedField` when source field is actually a property. [#7142]
+* `Token.generate_key` is now a class method. [#7502]
+* `@action` warns if method is wrapped in a decorator that does not preserve information using `@functools.wraps`. [#7098]
 
 ---
 
