@@ -2,6 +2,7 @@
 Pagination serializers determine the structure of the output that should
 be used for paginated responses.
 """
+import warnings
 from base64 import b64decode, b64encode
 from collections import OrderedDict, namedtuple
 from urllib import parse
@@ -12,6 +13,7 @@ from django.template import loader
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
 
+from rest_framework import RemovedInDRF314Warning
 from rest_framework.compat import coreapi, coreschema
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
@@ -149,6 +151,8 @@ class BasePagination:
 
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
+        if coreapi is not None:
+            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.14', RemovedInDRF314Warning)
         return []
 
     def get_schema_operation_parameters(self, view):
@@ -307,6 +311,8 @@ class PageNumberPagination(BasePagination):
 
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
+        if coreapi is not None:
+            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.14', RemovedInDRF314Warning)
         assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
         fields = [
             coreapi.Field(
@@ -525,6 +531,8 @@ class LimitOffsetPagination(BasePagination):
 
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
+        if coreapi is not None:
+            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.14', RemovedInDRF314Warning)
         assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
         return [
             coreapi.Field(
@@ -924,6 +932,8 @@ class CursorPagination(BasePagination):
 
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
+        if coreapi is not None:
+            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.14', RemovedInDRF314Warning)
         assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
         fields = [
             coreapi.Field(
