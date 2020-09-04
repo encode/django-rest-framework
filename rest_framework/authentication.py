@@ -49,6 +49,32 @@ class BaseAuthentication:
         """
         pass
 
+    #: Name of openapi security scheme. Override if you want to customize it.
+    openapi_security_scheme_name = None
+
+    @classmethod
+    def openapi_security_scheme(cls):
+        """
+        Override this to return an Open API Specification `securityScheme object
+        <http://spec.openapis.org/oas/v3.0.3#security-scheme-object>`_
+        """
+        return {}
+
+    @classmethod
+    def openapi_security_requirement(cls, view, method):
+        """
+        Override this to return an Open API Specification `security requirement object
+        <http://spec.openapis.org/oas/v3.0.3#security-requirement-object>`_
+
+        :param view: used to find view attributes used by a permission class or None for root-level
+        :param method: used to distinguish among method-specific permissions or None for root-level
+        :return:list: [security requirement objects]
+        """
+        # At this point, none of the built-in DRF authentication classes fill in the
+        # requirement list:  OAuth2/OIDC are the only security types that currently uses the list
+        # (for scopes). See http://spec.openapis.org/oas/v3.0.3#patterned-fields-2.
+        return [{}]
+
 
 class BasicAuthentication(BaseAuthentication):
     """
@@ -108,6 +134,22 @@ class BasicAuthentication(BaseAuthentication):
     def authenticate_header(self, request):
         return 'Basic realm="%s"' % self.www_authenticate_realm
 
+    openapi_security_scheme_name = 'basicAuth'
+
+    @classmethod
+    def openapi_security_scheme(cls):
+        return {
+            cls.openapi_security_scheme_name: {
+                'type': 'http',
+                'scheme': 'basic',
+                'description': 'Basic Authentication'
+            }
+        }
+
+    @classmethod
+    def openapi_security_requirement(cls, view, method):
+        return [{cls.openapi_security_scheme_name: []}]
+
 
 class SessionAuthentication(BaseAuthentication):
     """
@@ -146,6 +188,23 @@ class SessionAuthentication(BaseAuthentication):
         if reason:
             # CSRF failed, bail with explicit error message
             raise exceptions.PermissionDenied('CSRF Failed: %s' % reason)
+
+    openapi_security_scheme_name = 'sessionAuth'
+
+    @classmethod
+    def openapi_security_scheme(cls):
+        return {
+            cls.openapi_security_scheme_name: {
+                'type': 'apiKey',
+                'in': 'cookie',
+                'name': 'JSESSIONID',
+                'description': 'Session authentication'
+            }
+        }
+
+    @classmethod
+    def openapi_security_requirement(cls, view, method):
+        return [{cls.openapi_security_scheme_name: []}]
 
 
 class TokenAuthentication(BaseAuthentication):
@@ -210,6 +269,23 @@ class TokenAuthentication(BaseAuthentication):
     def authenticate_header(self, request):
         return self.keyword
 
+    openapi_security_scheme_name = 'tokenAuth'
+
+    @classmethod
+    def openapi_security_scheme(cls):
+        return {
+            cls.openapi_security_scheme_name: {
+                'type': 'http',
+                'in': 'header',
+                'name': 'Authorization',  # Authorization: token ...
+                'description': 'Token authentication'
+            }
+        }
+
+    @classmethod
+    def openapi_security_requirement(cls, view, method):
+        return [{cls.openapi_security_scheme_name: []}]
+
 
 class RemoteUserAuthentication(BaseAuthentication):
     """
@@ -230,3 +306,20 @@ class RemoteUserAuthentication(BaseAuthentication):
         user = authenticate(request=request, remote_user=request.META.get(self.header))
         if user and user.is_active:
             return (user, None)
+
+    openapi_security_scheme_name = 'remoteUserAuth'
+
+    @classmethod
+    def openapi_security_scheme(cls):
+        return {
+            cls.openapi_security_scheme_name: {
+                'type': 'http',
+                'in': 'header',
+                'name': 'REMOTE_USER',
+                'description': 'Remote User authentication'
+            }
+        }
+
+    @classmethod
+    def openapi_security_requirement(cls, view, method):
+        return [{cls.openapi_security_scheme_name: []}]

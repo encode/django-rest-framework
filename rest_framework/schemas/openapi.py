@@ -70,6 +70,14 @@ class SchemaGenerator(BaseSchemaGenerator):
         """
         self._initialise_endpoints()
         components_schemas = {}
+        security_schemes_schemas = {}
+        root_security_requirements = []
+
+        if api_settings.DEFAULT_AUTHENTICATION_CLASSES:
+            for auth_class in api_settings.DEFAULT_AUTHENTICATION_CLASSES:
+                req = auth_class.openapi_security_requirement(None, None)
+                if req:
+                    root_security_requirements += req
 
         # Iterate endpoints generating per method path operations.
         paths = {}
@@ -80,6 +88,7 @@ class SchemaGenerator(BaseSchemaGenerator):
 
             operation = view.schema.get_operation(path, method)
             components = view.schema.get_components(path, method)
+
             for k in components.keys():
                 if k not in components_schemas:
                     continue
@@ -88,6 +97,16 @@ class SchemaGenerator(BaseSchemaGenerator):
                 warnings.warn('Schema component "{}" has been overriden with a different value.'.format(k))
 
             components_schemas.update(components)
+
+            security_schemes = view.schema.get_security_schemes(path, method)
+            for k in security_schemes.keys():
+                if k not in security_schemes_schemas:
+                    continue
+                if security_schemes_schemas[k] == security_schemes[k]:
+                    continue
+                warnings.warn('Security scheme component "{}" has been overriden with a different '
+                              'value.'.format(k))
+            security_schemes_schemas.update(security_schemes)
 
             # Normalise path for any provided mount url.
             if path.startswith('/'):
@@ -110,6 +129,14 @@ class SchemaGenerator(BaseSchemaGenerator):
             schema['components'] = {
                 'schemas': components_schemas
             }
+
+        if len(security_schemes_schemas) > 0:
+            if 'components' not in schema:
+                schema['components'] = {}
+            schema['components']['securitySchemes'] = security_schemes_schemas
+
+        if len(root_security_requirements) > 0:
+            schema['security'] = root_security_requirements
 
         return schema
 
@@ -146,6 +173,9 @@ class AutoSchema(ViewInspector):
 
         operation['operationId'] = self.get_operation_id(path, method)
         operation['description'] = self.get_description(path, method)
+        security = self.get_security_requirements(path, method)
+        if security is not None:
+            operation['security'] = security
 
         parameters = []
         parameters += self.get_path_parameters(path, method)
@@ -712,6 +742,34 @@ class AutoSchema(ViewInspector):
             path = path[1:]
 
         return [path.split('/')[0].replace('_', '-')]
+
+    def get_security_schemes(self, path, method):
+        """
+        Get components.schemas.securitySchemes required by this path.
+        returns dict of securitySchemes.
+        """
+        schemes = {}
+        for auth_class in self.view.authentication_classes:
+            if hasattr(auth_class, 'openapi_security_scheme'):
+                schemes.update(auth_class.openapi_security_scheme())
+        return schemes
+
+    def get_security_requirements(self, path, method):
+        """
+        Get Security Requirement Object list for this operation.
+        Returns a list of security requirement objects based on the view's authentication classes
+        unless this view's authentication classes are the same as the root-level defaults.
+        """
+        # references the securityScheme names described above in get_security_schemes()
+        security = []
+        if self.view.authentication_classes == api_settings.DEFAULT_AUTHENTICATION_CLASSES:
+            return None
+        for auth_class in self.view.authentication_classes:
+            if hasattr(auth_class, 'openapi_security_requirement'):
+                req = auth_class.openapi_security_requirement(self.view, method)
+                if req:
+                    security += req
+        return security
 
     def _get_path_parameters(self, path, method):
         warnings.warn(

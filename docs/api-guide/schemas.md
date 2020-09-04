@@ -389,6 +389,26 @@ differentiate between request and response objects.
 By default returns `get_serializer()` but can be overridden to
 differentiate between request and response objects.
 
+#### `get_security_schemes()`
+
+Generates the OpenAPI `securitySchemes` components based on:
+- Your default `authentication_classes` (`settings.DEFAULT_AUTHENTICATION_CLASSES`)
+- Per-view non-default `authentication_classes`
+
+These are generated using the authentication classes' `openapi_security_scheme()` class method. If you
+extend `BaseAuthentication` with your own authentication class, you can add this class method to return
+the appropriate security scheme object.
+
+#### `get_security_requirements()`
+
+Root-level security requirements (the top-level `security` object) are generated based on the
+default authentication classes.  Operation-level security requirements are generated only if the given view's 
+`authentication_classes` differ from the defaults. 
+
+These are generated using the authentication classes' `openapi_security_requirement()` class
+method. If you extended `BaseAuthentication` with your own authentication class, you can add this
+class method to return the appropriate list of security requirements objects.
+
 ### `AutoSchema.__init__()` kwargs
 
 `AutoSchema` provides a number of `__init__()` kwargs that can be used for

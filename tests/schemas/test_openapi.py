@@ -8,6 +8,7 @@ from django.urls import path
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import filters, generics, pagination, routers, serializers
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.compat import uritemplate
 from rest_framework.parsers import JSONParser, MultiPartParser
@@ -1235,5 +1236,51 @@ class TestGenerator(TestCase):
         ]
         generator = SchemaGenerator(patterns=url_patterns)
         schema = generator.get_schema(request=create_request('/'))
-        assert 'components' not in schema
+        assert 'schemas' not in schema['components']
         assert 'content' not in schema['paths']['/example/']['delete']['responses']['204']
+
+    def test_default_root_security_schemes(self):
+        patterns = [
+            path('^example/?$', views.ExampleAutoSchemaComponentName.as_view()),
+        ]
+
+        generator = SchemaGenerator(patterns=patterns)
+
+        request = create_request('/')
+        schema = generator.get_schema(request=request)
+        assert 'security' in schema
+        assert {'sessionAuth': []} in schema['security']
+        assert {'basicAuth': []} in schema['security']
+        assert 'security' not in schema['paths']['/example/']['get']
+
+    @override_settings(REST_FRAMEWORK={'DEFAULT_AUTHENTICATION_CLASSES': None})
+    def test_no_default_root_security_schemes(self):
+        patterns = [
+            path('^example/?$', views.ExampleAutoSchemaComponentName.as_view()),
+        ]
+
+        generator = SchemaGenerator(patterns=patterns)
+
+        request = create_request('/')
+        schema = generator.get_schema(request=request)
+        assert 'security' not in schema
+
+    def test_operation_security_schemes(self):
+        class MyExample(views.ExampleAutoSchemaComponentName):
+            authentication_classes = [TokenAuthentication]
+
+        patterns = [
+            path('^example/?$', MyExample.as_view()),
+        ]
+
+        generator = SchemaGenerator(patterns=patterns)
+
+        request = create_request('/')
+        schema = generator.get_schema(request=request)
+        assert 'security' in schema
+        assert {'sessionAuth': []} in schema['security']
+        assert {'basicAuth': []} in schema['security']
+        get_operation = schema['paths']['/example/']['get']
+        assert 'security' in get_operation
+        assert {'tokenAuth': []} in get_operation['security']
+        assert len(get_operation['security']) == 1
