@@ -2,7 +2,6 @@ import base64
 import unittest
 from unittest import mock
 
-import django
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, Group, Permission, User
 from django.db import models
@@ -247,12 +246,6 @@ class BasicPermModel(models.Model):
 
     class Meta:
         app_label = 'tests'
-
-        if django.VERSION < (2, 1):
-            permissions = (
-                ('view_basicpermmodel', 'Can view basic perm model'),
-                # add, change, delete built in to django
-            )
 
 
 class BasicPermSerializer(serializers.ModelSerializer):
