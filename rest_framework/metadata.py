@@ -6,8 +6,6 @@ some fairly ad-hoc information about the view.
 Future implementations might use JSON schema or other definitions in order
 to return this information in a more standardized way.
 """
-from collections import OrderedDict
-
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.utils.encoding import force_str
@@ -59,7 +57,7 @@ class SimpleMetadata(BaseMetadata):
     })
 
     def determine_metadata(self, request, view):
-        metadata = OrderedDict()
+        metadata = {}
         metadata['name'] = view.get_view_name()
         metadata['description'] = view.get_view_description()
         metadata['renders'] = [renderer.media_type for renderer in view.renderer_classes]
@@ -106,7 +104,7 @@ class SimpleMetadata(BaseMetadata):
             # If this is a `ListSerializer` then we want to examine the
             # underlying child serializer instance instead.
             serializer = serializer.child
-        return OrderedDict([
+        return dict([
             (field_name, self.get_field_info(field))
             for field_name, field in serializer.fields.items()
             if not isinstance(field, serializers.HiddenField)
@@ -117,7 +115,7 @@ class SimpleMetadata(BaseMetadata):
         Given an instance of a serializer field, return a dictionary
         of metadata about it.
         """
-        field_info = OrderedDict()
+        field_info = {}
         field_info['type'] = self.label_lookup[field]
         field_info['required'] = getattr(field, 'required', False)
 

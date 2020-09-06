@@ -14,7 +14,7 @@ For example, you might have a `urls.py` that looks something like this:
     urlpatterns = router.urls
 """
 import itertools
-from collections import OrderedDict, namedtuple
+from collections import namedtuple
 
 from django.core.exceptions import ImproperlyConfigured
 from django.urls import NoReverseMatch, re_path
@@ -279,7 +279,7 @@ class APIRootView(views.APIView):
 
     def get(self, request, *args, **kwargs):
         # Return a plain {"name": "hyperlink"} response.
-        ret = OrderedDict()
+        ret = {}
         namespace = request.resolver_match.namespace
         for key, url_name in self.api_root_dict.items():
             if namespace:
@@ -323,7 +323,7 @@ class DefaultRouter(SimpleRouter):
         """
         Return a basic root view.
         """
-        api_root_dict = OrderedDict()
+        api_root_dict = {}
         list_name = self.routes[0].name
         for prefix, viewset, basename in self.registry:
             api_root_dict[prefix] = list_name.format(basename=basename)

@@ -1,5 +1,4 @@
 import re
-from collections import OrderedDict
 
 from django import template
 from django.template import loader
@@ -49,7 +48,7 @@ def with_location(fields, location):
 @register.simple_tag
 def form_for_link(link):
     import coreschema
-    properties = OrderedDict([
+    properties = dict([
         (field.name, field.schema or coreschema.String())
         for field in link.fields
     ])
@@ -272,7 +271,7 @@ def schema_links(section, sec_key=None):
             links.update(new_links)
 
     if sec_key is not None:
-        new_links = OrderedDict()
+        new_links = {}
         for link_key, link in links.items():
             new_key = NESTED_FORMAT % (sec_key, link_key)
             new_links.update({new_key: link})

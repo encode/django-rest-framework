@@ -16,7 +16,6 @@ automatically.
     router.register(r'users', UserViewSet, 'user')
     urlpatterns = router.urls
 """
-from collections import OrderedDict
 from functools import update_wrapper
 from inspect import getmembers
 
@@ -183,7 +182,7 @@ class ViewSetMixin:
 
         This method will noop if `detail` was not provided as a view initkwarg.
         """
-        action_urls = OrderedDict()
+        action_urls = {}
 
         # exit early if `detail` has not been provided
         if self.detail is None:

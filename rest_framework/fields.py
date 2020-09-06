@@ -6,7 +6,6 @@ import inspect
 import re
 import uuid
 import warnings
-from collections import OrderedDict
 from collections.abc import Mapping
 
 from django.conf import settings
@@ -142,7 +141,7 @@ def to_choices_dict(choices):
     # choices = [1, 2, 3]
     # choices = [(1, 'First'), (2, 'Second'), (3, 'Third')]
     # choices = [('Category', ((1, 'First'), (2, 'Second'))), (3, 'Third')]
-    ret = OrderedDict()
+    ret = {}
     for choice in choices:
         if not isinstance(choice, (list, tuple)):
             # single choice
@@ -165,7 +164,7 @@ def flatten_choices_dict(choices):
     flatten_choices_dict({1: '1st', 2: '2nd'}) -> {1: '1st', 2: '2nd'}
     flatten_choices_dict({'Group': {1: '1st', 2: '2nd'}}) -> {1: '1st', 2: '2nd'}
     """
-    ret = OrderedDict()
+    ret = {}
     for key, value in choices.items():
         if isinstance(value, dict):
             # grouped choices (category, sub choices)
@@ -1662,7 +1661,7 @@ class ListField(Field):
 
     def run_child_validation(self, data):
         result = []
-        errors = OrderedDict()
+        errors = {}
 
         for idx, item in enumerate(data):
             try:
@@ -1724,7 +1723,7 @@ class DictField(Field):
 
     def run_child_validation(self, data):
         result = {}
-        errors = OrderedDict()
+        errors = {}
 
         for key, value in data.items():
             key = str(key)

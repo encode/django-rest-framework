@@ -3,7 +3,7 @@ Pagination serializers determine the structure of the output that should
 be used for paginated responses.
 """
 from base64 import b64decode, b64encode
-from collections import OrderedDict, namedtuple
+from collections import namedtuple
 from urllib import parse
 
 from django.core.paginator import InvalidPage
@@ -218,12 +218,12 @@ class PageNumberPagination(BasePagination):
         return list(self.page)
 
     def get_paginated_response(self, data):
-        return Response(OrderedDict([
-            ('count', self.page.paginator.count),
-            ('next', self.get_next_link()),
-            ('previous', self.get_previous_link()),
-            ('results', data)
-        ]))
+        return Response({
+            'count': self.page.paginator.count,
+            'next': self.get_next_link(),
+            'previous': self.get_previous_link(),
+            'results': data,
+        })
 
     def get_paginated_response_schema(self, schema):
         return {
@@ -391,12 +391,12 @@ class LimitOffsetPagination(BasePagination):
         return list(queryset[self.offset:self.offset + self.limit])
 
     def get_paginated_response(self, data):
-        return Response(OrderedDict([
-            ('count', self.count),
-            ('next', self.get_next_link()),
-            ('previous', self.get_previous_link()),
-            ('results', data)
-        ]))
+        return Response({
+            'count': self.count,
+            'next': self.get_next_link(),
+            'previous': self.get_previous_link(),
+            'results': data,
+        })
 
     def get_paginated_response_schema(self, schema):
         return {
@@ -889,11 +889,11 @@ class CursorPagination(BasePagination):
         return str(attr)
 
     def get_paginated_response(self, data):
-        return Response(OrderedDict([
-            ('next', self.get_next_link()),
-            ('previous', self.get_previous_link()),
-            ('results', data)
-        ]))
+        return Response({
+            'next': self.get_next_link(),
+            'previous': self.get_previous_link(),
+            'results': data,
+        })
 
     def get_paginated_response_schema(self, schema):
         return {

@@ -1,5 +1,4 @@
 import sys
-from collections import OrderedDict
 from urllib import parse
 
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
@@ -199,7 +198,7 @@ class RelatedField(Field):
         if cutoff is not None:
             queryset = queryset[:cutoff]
 
-        return OrderedDict([
+        return dict([
             (
                 self.to_representation(item),
                 self.display_value(item)

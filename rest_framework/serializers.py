@@ -13,7 +13,7 @@ response content is handled by parsers and renderers.
 import copy
 import inspect
 import traceback
-from collections import OrderedDict, defaultdict
+from collections import defaultdict
 from collections.abc import Mapping
 
 from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured
@@ -302,7 +302,7 @@ class SerializerMetaclass(type):
             for name, f in base._declared_fields.items() if name not in known
         ]
 
-        return OrderedDict(base_fields + fields)
+        return dict(base_fields + fields)
 
     def __new__(cls, name, bases, attrs):
         attrs['_declared_fields'] = cls._get_declared_fields(bases, attrs)
@@ -387,16 +387,16 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
         if hasattr(self, 'initial_data'):
             # initial_data may not be a valid type
             if not isinstance(self.initial_data, Mapping):
-                return OrderedDict()
+                return {}
 
-            return OrderedDict([
+            return dict([
                 (field_name, field.get_value(self.initial_data))
                 for field_name, field in self.fields.items()
                 if (field.get_value(self.initial_data) is not empty) and
                 not field.read_only
             ])
 
-        return OrderedDict([
+        return dict([
             (field.field_name, field.get_initial())
             for field in self.fields.values()
             if not field.read_only
@@ -435,7 +435,7 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
             if (field.read_only) and (field.default != empty) and (field.source != '*') and ('.' not in field.source)
         ]
 
-        defaults = OrderedDict()
+        defaults = {}
         for field in fields:
             try:
                 default = field.get_default()
@@ -468,8 +468,8 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
                 api_settings.NON_FIELD_ERRORS_KEY: [message]
             }, code='invalid')
 
-        ret = OrderedDict()
-        errors = OrderedDict()
+        ret = {}
+        errors = {}
         fields = self._writable_fields
 
         for field in fields:
@@ -497,7 +497,7 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
         """
         Object instance -> Dict of primitive datatypes.
         """
-        ret = OrderedDict()
+        ret = {}
         fields = self._readable_fields
 
         for field in fields:
@@ -1040,7 +1040,7 @@ class ModelSerializer(Serializer):
         )
 
         # Determine the fields that should be included on the serializer.
-        fields = OrderedDict()
+        fields = {}
 
         for field_name in field_names:
             # If the field is explicitly declared on the class then use that.
@@ -1517,13 +1517,13 @@ class ModelSerializer(Serializer):
         # which may map onto a model field. Any dotted field name lookups
         # cannot map to a field, and must be a traversal, so we're not
         # including those.
-        field_sources = OrderedDict(
+        field_sources = dict(
             (field.field_name, field.source) for field in self._writable_fields
             if (field.source != '*') and ('.' not in field.source)
         )
 
         # Special Case: Add read_only fields with defaults.
-        field_sources.update(OrderedDict(
+        field_sources.update(dict(
             (field.field_name, field.source) for field in self.fields.values()
             if (field.read_only) and (field.default != empty) and (field.source != '*') and ('.' not in field.source)
         ))

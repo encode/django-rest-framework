@@ -1,4 +1,3 @@
-from collections import OrderedDict
 from collections.abc import MutableMapping
 
 from django.utils.encoding import force_str
@@ -6,7 +5,7 @@ from django.utils.encoding import force_str
 from rest_framework.utils import json
 
 
-class ReturnDict(OrderedDict):
+class ReturnDict(dict):
     """
     Return object from `serializer.data` for the `Serializer` class.
     Includes a backlink to the serializer instance for renderers
@@ -138,7 +137,7 @@ class BindingDict(MutableMapping):
 
     def __init__(self, serializer):
         self.serializer = serializer
-        self.fields = OrderedDict()
+        self.fields = {}
 
     def __setitem__(self, key, field):
         self.fields[key] = field
