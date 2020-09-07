@@ -80,7 +80,7 @@ def _get_displayed_page_numbers(current, final):
 
     # Now sort the page numbers and drop anything outside the limits.
     included = [
-        idx for idx in sorted(list(included))
+        idx for idx in sorted(included)
         if 0 < idx <= final
     ]
 

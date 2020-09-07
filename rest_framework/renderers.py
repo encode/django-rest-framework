@@ -329,7 +329,7 @@ class HTMLFormRenderer(BaseRenderer):
         if isinstance(field._field, serializers.HiddenField):
             return ''
 
-        style = dict(self.default_style[field])
+        style = self.default_style[field].copy()
         style.update(field.style)
         if 'template_pack' not in style:
             style['template_pack'] = parent_style.get('template_pack', self.template_pack)
