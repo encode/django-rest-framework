@@ -456,7 +456,6 @@ class TestSchemaGenerator(TestCase):
 
 
 @unittest.skipUnless(coreapi, 'coreapi is not installed')
-@unittest.skipUnless(path, 'needs Django 2')
 @override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema'})
 class TestSchemaGeneratorDjango2(TestCase):
     def setUp(self):

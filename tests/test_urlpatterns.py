@@ -1,4 +1,3 @@
-import unittest
 from collections import namedtuple
 
 from django.conf.urls import include, url
@@ -66,7 +65,6 @@ class FormatSuffixTests(TestCase):
         ]
         self._test_trailing_slash(urlpatterns)
 
-    @unittest.skipUnless(path, 'needs Django 2')
     def test_trailing_slash_django2(self):
         urlpatterns = [
             path('test/', dummy_view),
@@ -87,14 +85,12 @@ class FormatSuffixTests(TestCase):
         ]
         self._test_format_suffix(urlpatterns)
 
-    @unittest.skipUnless(path, 'needs Django 2')
     def test_format_suffix_django2(self):
         urlpatterns = [
             path('test', dummy_view),
         ]
         self._test_format_suffix(urlpatterns)
 
-    @unittest.skipUnless(path, 'needs Django 2')
     def test_format_suffix_django2_args(self):
         urlpatterns = [
             path('convtest/<int:pk>', dummy_view),
@@ -124,7 +120,6 @@ class FormatSuffixTests(TestCase):
         ]
         self._test_default_args(urlpatterns)
 
-    @unittest.skipUnless(path, 'needs Django 2')
     def test_default_args_django2(self):
         urlpatterns = [
             path('test', dummy_view, {'foo': 'bar'}),
@@ -148,7 +143,6 @@ class FormatSuffixTests(TestCase):
         ]
         self._test_included_urls(urlpatterns)
 
-    @unittest.skipUnless(path, 'needs Django 2')
     def test_included_urls_django2(self):
         nested_patterns = [
             path('path', dummy_view)
@@ -158,7 +152,6 @@ class FormatSuffixTests(TestCase):
         ]
         self._test_included_urls(urlpatterns)
 
-    @unittest.skipUnless(path, 'needs Django 2')
     def test_included_urls_django2_mixed(self):
         nested_patterns = [
             path('path', dummy_view)
@@ -168,7 +161,6 @@ class FormatSuffixTests(TestCase):
         ]
         self._test_included_urls(urlpatterns)
 
-    @unittest.skipUnless(path, 'needs Django 2')
     def test_included_urls_django2_mixed_args(self):
         nested_patterns = [
             path('path/<int:child>', dummy_view),
@@ -216,7 +208,6 @@ class FormatSuffixTests(TestCase):
         ]
         self._test_allowed_formats(urlpatterns)
 
-    @unittest.skipUnless(path, 'needs Django 2')
     def test_allowed_formats_django2(self):
         urlpatterns = [
             path('test', dummy_view),

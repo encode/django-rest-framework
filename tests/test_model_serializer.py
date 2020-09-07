@@ -12,7 +12,6 @@ import sys
 import tempfile
 from collections import OrderedDict
 
-import django
 import pytest
 from django.core.exceptions import ImproperlyConfigured
 from django.core.serializers.json import DjangoJSONEncoder
@@ -63,7 +62,7 @@ class RegularFieldsModel(models.Model):
     email_field = models.EmailField(max_length=100)
     float_field = models.FloatField()
     integer_field = models.IntegerField()
-    null_boolean_field = models.NullBooleanField()
+    null_boolean_field = models.BooleanField(null=True, default=False)
     positive_integer_field = models.PositiveIntegerField()
     positive_small_integer_field = models.PositiveSmallIntegerField()
     slug_field = models.SlugField(max_length=100)
@@ -217,25 +216,6 @@ class TestRegularFieldMappings(TestCase):
                 text_choices_field = ChoiceField(choices=(('red', 'Red'), ('blue', 'Blue'), ('green', 'Green')))
         """)
         self.assertEqual(repr(TestSerializer()), expected)
-
-    # merge this into test_regular_fields / RegularFieldsModel when
-    # Django 2.1 is the minimum supported version
-    @pytest.mark.skipif(django.VERSION < (2, 1), reason='Django version < 2.1')
-    def test_nullable_boolean_field(self):
-        class NullableBooleanModel(models.Model):
-            field = models.BooleanField(null=True, default=False)
-
-        class NullableBooleanSerializer(serializers.ModelSerializer):
-            class Meta:
-                model = NullableBooleanModel
-                fields = ['field']
-
-        expected = dedent("""
-            NullableBooleanSerializer():
-                field = BooleanField(allow_null=True, required=False)
-        """)
-
-        self.assertEqual(repr(NullableBooleanSerializer()), expected)
 
     def test_nullable_boolean_field_choices(self):
         class NullableBooleanChoicesModel(models.Model):
