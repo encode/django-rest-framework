@@ -21,6 +21,9 @@ matrix:
       - { python: "3.8", env: DJANGO=3.1 }
       - { python: "3.8", env: DJANGO=master }
 
+      - { python: "3.9-dev", env: DJANGO=3.1 }
+      - { python: "3.9-dev", env: DJANGO=master }
+
       - { python: "3.8", env: TOXENV=base }
       - { python: "3.8", env: TOXENV=lint }
       - { python: "3.8", env: TOXENV=docs }
