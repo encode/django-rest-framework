@@ -40,7 +40,7 @@ You can determine your currently installed version using `pip show`:
 
 * Add `--file` option to `generateschema` command. [#7130]
 * Support `tags` for OpenAPI schema generation. See [the schema docs](https://www.django-rest-framework.org/api-guide/schemas/#grouping-operations-with-tags). [#7184]
-* Support customizing the operation ID for schema generation. See [the schema docs](https://www.django-rest-framework.org/api-guide/schemas/#operationid). [#7190]
+* Support customising the operation ID for schema generation. See [the schema docs](https://www.django-rest-framework.org/api-guide/schemas/#operationid). [#7190]
 * Support OpenAPI components for schema generation. See [the schema docs](https://www.django-rest-framework.org/api-guide/schemas/#components). [#7124]
 * The following methods on `AutoSchema` become public API: `get_path_parameters`, `get_pagination_parameters`, `get_filter_parameters`, `get_request_body`, `get_responses`, `get_serializer`, `get_paginator`, `map_serializer`, `map_field`, `map_choice_field`, `map_field_validators`, `allows_filters`. See [the schema docs](https://www.django-rest-framework.org/api-guide/schemas/#autoschema)
 * Add support for Django 3.1's database-agnositic `JSONField`. [#7467]
