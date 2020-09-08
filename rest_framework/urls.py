@@ -6,7 +6,7 @@ your API requires authentication:
 
     urlpatterns = [
         ...
-        url(r'^auth/', include('rest_framework.urls'))
+        path('auth/', include('rest_framework.urls'))
     ]
 
 You should make sure your authentication settings include `SessionAuthentication`.

@@ -1,6 +1,6 @@
 import pytest
-from django.conf.urls import include, url
 from django.test import override_settings
+from django.urls import include, path, re_path
 
 from rest_framework import serializers, status, versioning
 from rest_framework.decorators import APIView
@@ -144,14 +144,14 @@ class TestRequestVersion:
 
 class TestURLReversing(URLPatternsTestCase, APITestCase):
     included = [
-        url(r'^namespaced/$', dummy_view, name='another'),
-        url(r'^example/(?P<pk>\d+)/$', dummy_pk_view, name='example-detail')
+        path('namespaced/', dummy_view, name='another'),
+        path('example/<int:pk>/', dummy_pk_view, name='example-detail')
     ]
 
     urlpatterns = [
-        url(r'^v1/', include((included, 'v1'), namespace='v1')),
-        url(r'^another/$', dummy_view, name='another'),
-        url(r'^(?P<version>[v1|v2]+)/another/$', dummy_view, name='another'),
+        path('v1/', include((included, 'v1'), namespace='v1')),
+        path('another/', dummy_view, name='another'),
+        re_path(r'^(?P<version>[v1|v2]+)/another/$', dummy_view, name='another'),
     ]
 
     def test_reverse_unversioned(self):
@@ -310,12 +310,12 @@ class TestAllowedAndDefaultVersion:
 
 class TestHyperlinkedRelatedField(URLPatternsTestCase, APITestCase):
     included = [
-        url(r'^namespaced/(?P<pk>\d+)/$', dummy_pk_view, name='namespaced'),
+        path('namespaced/<int:pk>/', dummy_pk_view, name='namespaced'),
     ]
 
     urlpatterns = [
-        url(r'^v1/', include((included, 'v1'), namespace='v1')),
-        url(r'^v2/', include((included, 'v2'), namespace='v2'))
+        path('v1/', include((included, 'v1'), namespace='v1')),
+        path('v2/', include((included, 'v2'), namespace='v2'))
     ]
 
     def setUp(self):
@@ -342,17 +342,17 @@ class TestHyperlinkedRelatedField(URLPatternsTestCase, APITestCase):
 
 class TestNamespaceVersioningHyperlinkedRelatedFieldScheme(URLPatternsTestCase, APITestCase):
     nested = [
-        url(r'^namespaced/(?P<pk>\d+)/$', dummy_pk_view, name='nested'),
+        path('namespaced/<int:pk>/', dummy_pk_view, name='nested'),
     ]
     included = [
-        url(r'^namespaced/(?P<pk>\d+)/$', dummy_pk_view, name='namespaced'),
-        url(r'^nested/', include((nested, 'nested-namespace'), namespace='nested-namespace'))
+        path('namespaced/<int:pk>/', dummy_pk_view, name='namespaced'),
+        path('nested/', include((nested, 'nested-namespace'), namespace='nested-namespace'))
     ]
 
     urlpatterns = [
-        url(r'^v1/', include((included, 'restframeworkv1'), namespace='v1')),
-        url(r'^v2/', include((included, 'restframeworkv2'), namespace='v2')),
-        url(r'^non-api/(?P<pk>\d+)/$', dummy_pk_view, name='non-api-view')
+        path('v1/', include((included, 'restframeworkv1'), namespace='v1')),
+        path('v2/', include((included, 'restframeworkv2'), namespace='v2')),
+        path('non-api/<int:pk>/', dummy_pk_view, name='non-api-view')
     ]
 
     def _create_field(self, view_name, version):

@@ -43,11 +43,12 @@ To add a dynamically generated schema view to your API, use `get_schema_view`.
 
 ```python
 from rest_framework.schemas import get_schema_view
+from django.urls import path
 
 schema_view = get_schema_view(title="Example API")
 
 urlpatterns = [
-    url('^schema$', schema_view),
+    path('schema', schema_view),
     ...
 ]
 ```
@@ -292,7 +293,7 @@ The simplest way to include a schema in your project is to use the
     schema_view = get_schema_view(title="Server Monitoring API")
 
     urlpatterns = [
-        url('^$', schema_view),
+        path('', schema_view),
         ...
     ]
 
@@ -358,7 +359,7 @@ List of url patterns to limit the schema introspection to. If you only want the 
 to be exposed in the schema:
 
     schema_url_patterns = [
-        url(r'^api/', include('myproject.api.urls')),
+        path('api/', include('myproject.api.urls')),
     ]
 
     schema_view = get_schema_view(
@@ -411,7 +412,7 @@ return the schema.
 **urls.py:**
 
     urlpatterns = [
-        url('/', schema_view),
+        path('', schema_view),
         ...
     ]
 

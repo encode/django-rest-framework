@@ -1,8 +1,7 @@
 from collections import namedtuple
 
-from django.conf.urls import include, url
 from django.test import TestCase
-from django.urls import Resolver404, URLResolver, path, re_path
+from django.urls import Resolver404, URLResolver, include, path, re_path
 from django.urls.resolvers import RegexPattern
 
 from rest_framework.test import APIRequestFactory
@@ -61,7 +60,7 @@ class FormatSuffixTests(TestCase):
 
     def test_trailing_slash(self):
         urlpatterns = [
-            url(r'^test/$', dummy_view),
+            path('test/', dummy_view),
         ]
         self._test_trailing_slash(urlpatterns)
 
@@ -81,7 +80,7 @@ class FormatSuffixTests(TestCase):
 
     def test_format_suffix(self):
         urlpatterns = [
-            url(r'^test$', dummy_view),
+            path('test', dummy_view),
         ]
         self._test_format_suffix(urlpatterns)
 
@@ -116,7 +115,7 @@ class FormatSuffixTests(TestCase):
 
     def test_default_args(self):
         urlpatterns = [
-            url(r'^test$', dummy_view, {'foo': 'bar'}),
+            path('test', dummy_view, {'foo': 'bar'}),
         ]
         self._test_default_args(urlpatterns)
 
@@ -136,15 +135,6 @@ class FormatSuffixTests(TestCase):
 
     def test_included_urls(self):
         nested_patterns = [
-            url(r'^path$', dummy_view)
-        ]
-        urlpatterns = [
-            url(r'^test/', include(nested_patterns), {'foo': 'bar'}),
-        ]
-        self._test_included_urls(urlpatterns)
-
-    def test_included_urls_django2(self):
-        nested_patterns = [
             path('path', dummy_view)
         ]
         urlpatterns = [
@@ -152,44 +142,35 @@ class FormatSuffixTests(TestCase):
         ]
         self._test_included_urls(urlpatterns)
 
-    def test_included_urls_django2_mixed(self):
-        nested_patterns = [
-            path('path', dummy_view)
-        ]
-        urlpatterns = [
-            url('^test/', include(nested_patterns), {'foo': 'bar'}),
-        ]
-        self._test_included_urls(urlpatterns)
-
-    def test_included_urls_django2_mixed_args(self):
+    def test_included_urls_mixed(self):
         nested_patterns = [
             path('path/<int:child>', dummy_view),
-            url('^url/(?P<child>[0-9]+)$', dummy_view)
+            re_path(r'^re_path/(?P<child>[0-9]+)$', dummy_view)
         ]
         urlpatterns = [
-            url('^purl/(?P<parent>[0-9]+)/', include(nested_patterns), {'foo': 'bar'}),
+            re_path(r'^pre_path/(?P<parent>[0-9]+)/', include(nested_patterns), {'foo': 'bar'}),
             path('ppath/<int:parent>/', include(nested_patterns), {'foo': 'bar'}),
         ]
         test_paths = [
-            # parent url() nesting child path()
-            URLTestPath('/purl/87/path/42', (), {'parent': '87', 'child': 42, 'foo': 'bar', }),
-            URLTestPath('/purl/87/path/42.api', (), {'parent': '87', 'child': 42, 'foo': 'bar', 'format': 'api'}),
-            URLTestPath('/purl/87/path/42.asdf', (), {'parent': '87', 'child': 42, 'foo': 'bar', 'format': 'asdf'}),
+            # parent re_path() nesting child path()
+            URLTestPath('/pre_path/87/path/42', (), {'parent': '87', 'child': 42, 'foo': 'bar', }),
+            URLTestPath('/pre_path/87/path/42.api', (), {'parent': '87', 'child': 42, 'foo': 'bar', 'format': 'api'}),
+            URLTestPath('/pre_path/87/path/42.asdf', (), {'parent': '87', 'child': 42, 'foo': 'bar', 'format': 'asdf'}),
 
-            # parent path() nesting child url()
-            URLTestPath('/ppath/87/url/42', (), {'parent': 87, 'child': '42', 'foo': 'bar', }),
-            URLTestPath('/ppath/87/url/42.api', (), {'parent': 87, 'child': '42', 'foo': 'bar', 'format': 'api'}),
-            URLTestPath('/ppath/87/url/42.asdf', (), {'parent': 87, 'child': '42', 'foo': 'bar', 'format': 'asdf'}),
+            # parent path() nesting child re_path()
+            URLTestPath('/ppath/87/re_path/42', (), {'parent': 87, 'child': '42', 'foo': 'bar', }),
+            URLTestPath('/ppath/87/re_path/42.api', (), {'parent': 87, 'child': '42', 'foo': 'bar', 'format': 'api'}),
+            URLTestPath('/ppath/87/re_path/42.asdf', (), {'parent': 87, 'child': '42', 'foo': 'bar', 'format': 'asdf'}),
 
             # parent path() nesting child path()
             URLTestPath('/ppath/87/path/42', (), {'parent': 87, 'child': 42, 'foo': 'bar', }),
             URLTestPath('/ppath/87/path/42.api', (), {'parent': 87, 'child': 42, 'foo': 'bar', 'format': 'api'}),
             URLTestPath('/ppath/87/path/42.asdf', (), {'parent': 87, 'child': 42, 'foo': 'bar', 'format': 'asdf'}),
 
-            # parent url() nesting child url()
-            URLTestPath('/purl/87/url/42', (), {'parent': '87', 'child': '42', 'foo': 'bar', }),
-            URLTestPath('/purl/87/url/42.api', (), {'parent': '87', 'child': '42', 'foo': 'bar', 'format': 'api'}),
-            URLTestPath('/purl/87/url/42.asdf', (), {'parent': '87', 'child': '42', 'foo': 'bar', 'format': 'asdf'}),
+            # parent re_path() nesting child re_path()
+            URLTestPath('/pre_path/87/re_path/42', (), {'parent': '87', 'child': '42', 'foo': 'bar', }),
+            URLTestPath('/pre_path/87/re_path/42.api', (), {'parent': '87', 'child': '42', 'foo': 'bar', 'format': 'api'}),
+            URLTestPath('/pre_path/87/re_path/42.asdf', (), {'parent': '87', 'child': '42', 'foo': 'bar', 'format': 'asdf'}),
         ]
         self._resolve_urlpatterns(urlpatterns, test_paths)
 
@@ -202,13 +183,13 @@ class FormatSuffixTests(TestCase):
         ]
         self._resolve_urlpatterns(urlpatterns, test_paths, allowed=allowed_formats)
 
-    def test_allowed_formats(self):
+    def test_allowed_formats_re_path(self):
         urlpatterns = [
-            url('^test$', dummy_view),
+            re_path(r'^test$', dummy_view),
         ]
         self._test_allowed_formats(urlpatterns)
 
-    def test_allowed_formats_django2(self):
+    def test_allowed_formats_path(self):
         urlpatterns = [
             path('test', dummy_view),
         ]

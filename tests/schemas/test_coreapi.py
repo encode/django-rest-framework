@@ -1,11 +1,10 @@
 import unittest
 
 import pytest
-from django.conf.urls import include, url
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.test import TestCase, override_settings
-from django.urls import path
+from django.urls import include, path
 
 from rest_framework import (
     filters, generics, pagination, permissions, serializers
@@ -145,8 +144,8 @@ with override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.s
 router = DefaultRouter()
 router.register('example', ExampleViewSet, basename='example')
 urlpatterns = [
-    url(r'^$', schema_view),
-    url(r'^', include(router.urls))
+    path('', schema_view),
+    path('', include(router.urls))
 ]
 
 
@@ -407,9 +406,9 @@ class ExampleDetailView(APIView):
 class TestSchemaGenerator(TestCase):
     def setUp(self):
         self.patterns = [
-            url(r'^example/?$', views.ExampleListView.as_view()),
-            url(r'^example/(?P<pk>\d+)/?$', views.ExampleDetailView.as_view()),
-            url(r'^example/(?P<pk>\d+)/sub/?$', views.ExampleDetailView.as_view()),
+            path('example/', views.ExampleListView.as_view()),
+            path('example/<int:pk>/', views.ExampleDetailView.as_view()),
+            path('example/<int:pk>/sub/', views.ExampleDetailView.as_view()),
         ]
 
     def test_schema_for_regular_views(self):
@@ -513,9 +512,9 @@ class TestSchemaGeneratorDjango2(TestCase):
 class TestSchemaGeneratorNotAtRoot(TestCase):
     def setUp(self):
         self.patterns = [
-            url(r'^api/v1/example/?$', views.ExampleListView.as_view()),
-            url(r'^api/v1/example/(?P<pk>\d+)/?$', views.ExampleDetailView.as_view()),
-            url(r'^api/v1/example/(?P<pk>\d+)/sub/?$', views.ExampleDetailView.as_view()),
+            path('api/v1/example/', views.ExampleListView.as_view()),
+            path('api/v1/example/<int:pk>/', views.ExampleDetailView.as_view()),
+            path('api/v1/example/<int:pk>/sub/', views.ExampleDetailView.as_view()),
         ]
 
     def test_schema_for_regular_views(self):
@@ -569,7 +568,7 @@ class TestSchemaGeneratorWithMethodLimitedViewSets(TestCase):
         router = DefaultRouter()
         router.register('example1', MethodLimitedViewSet, basename='example1')
         self.patterns = [
-            url(r'^', include(router.urls))
+            path('', include(router.urls))
         ]
 
     def test_schema_for_regular_views(self):
@@ -635,8 +634,8 @@ class TestSchemaGeneratorWithRestrictedViewSets(TestCase):
         router.register('example1', Http404ExampleViewSet, basename='example1')
         router.register('example2', PermissionDeniedExampleViewSet, basename='example2')
         self.patterns = [
-            url('^example/?$', views.ExampleListView.as_view()),
-            url(r'^', include(router.urls))
+            path('example/', views.ExampleListView.as_view()),
+            path('', include(router.urls))
         ]
 
     def test_schema_for_regular_views(self):
@@ -679,7 +678,7 @@ class ForeignKeySourceView(generics.CreateAPIView):
 class TestSchemaGeneratorWithForeignKey(TestCase):
     def setUp(self):
         self.patterns = [
-            url(r'^example/?$', ForeignKeySourceView.as_view()),
+            path('example/', ForeignKeySourceView.as_view()),
         ]
 
     def test_schema_for_regular_views(self):
@@ -725,7 +724,7 @@ class ManyToManySourceView(generics.CreateAPIView):
 class TestSchemaGeneratorWithManyToMany(TestCase):
     def setUp(self):
         self.patterns = [
-            url(r'^example/?$', ManyToManySourceView.as_view()),
+            path('example/', ManyToManySourceView.as_view()),
         ]
 
     def test_schema_for_regular_views(self):
@@ -1041,9 +1040,9 @@ with override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.s
 class SchemaGenerationExclusionTests(TestCase):
     def setUp(self):
         self.patterns = [
-            url('^excluded-cbv/$', ExcludedAPIView.as_view()),
-            url('^excluded-fbv/$', excluded_fbv),
-            url('^included-fbv/$', included_fbv),
+            path('excluded-cbv/', ExcludedAPIView.as_view()),
+            path('excluded-fbv/', excluded_fbv),
+            path('included-fbv/', included_fbv),
         ]
 
     def test_schema_generator_excludes_correctly(self):
@@ -1136,8 +1135,8 @@ class TestURLNamingCollisions(TestCase):
             pass
 
         patterns = [
-            url(r'^test', simple_fbv),
-            url(r'^test/list/', simple_fbv),
+            path('test', simple_fbv),
+            path('test/list/', simple_fbv),
         ]
 
         generator = SchemaGenerator(title='Naming Colisions', patterns=patterns)
@@ -1173,14 +1172,14 @@ class TestURLNamingCollisions(TestCase):
 
     def test_manually_routing_generic_view(self):
         patterns = [
-            url(r'^test', NamingCollisionView.as_view()),
-            url(r'^test/retrieve/', NamingCollisionView.as_view()),
-            url(r'^test/update/', NamingCollisionView.as_view()),
+            path('test', NamingCollisionView.as_view()),
+            path('test/retrieve/', NamingCollisionView.as_view()),
+            path('test/update/', NamingCollisionView.as_view()),
 
             # Fails with method names:
-            url(r'^test/get/', NamingCollisionView.as_view()),
-            url(r'^test/put/', NamingCollisionView.as_view()),
-            url(r'^test/delete/', NamingCollisionView.as_view()),
+            path('test/get/', NamingCollisionView.as_view()),
+            path('test/put/', NamingCollisionView.as_view()),
+            path('test/delete/', NamingCollisionView.as_view()),
         ]
 
         generator = SchemaGenerator(title='Naming Colisions', patterns=patterns)
@@ -1196,7 +1195,7 @@ class TestURLNamingCollisions(TestCase):
 
     def test_from_router(self):
         patterns = [
-            url(r'from-router', include(naming_collisions_router.urls)),
+            path('from-router', include(naming_collisions_router.urls)),
         ]
 
         generator = SchemaGenerator(title='Naming Colisions', patterns=patterns)
@@ -1228,8 +1227,8 @@ class TestURLNamingCollisions(TestCase):
 
     def test_url_under_same_key_not_replaced(self):
         patterns = [
-            url(r'example/(?P<pk>\d+)/$', BasicNamingCollisionView.as_view()),
-            url(r'example/(?P<slug>\w+)/$', BasicNamingCollisionView.as_view()),
+            path('example/<int:pk>/', BasicNamingCollisionView.as_view()),
+            path('example/<str:slug>/', BasicNamingCollisionView.as_view()),
         ]
 
         generator = SchemaGenerator(title='Naming Colisions', patterns=patterns)
@@ -1245,8 +1244,8 @@ class TestURLNamingCollisions(TestCase):
             pass
 
         patterns = [
-            url(r'^test/list/', simple_fbv),
-            url(r'^test/(?P<pk>\d+)/list/', simple_fbv),
+            path('test/list/', simple_fbv),
+            path('test/<int:pk>/list/', simple_fbv),
         ]
 
         generator = SchemaGenerator(title='Naming Colisions', patterns=patterns)
