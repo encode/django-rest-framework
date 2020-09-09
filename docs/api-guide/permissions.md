@@ -312,6 +312,11 @@ The [Django REST Framework API Key][djangorestframework-api-key] package provide
 
 The [Django Rest Framework Role Filters][django-rest-framework-role-filters] package provides simple filtering over multiple types of roles.
 
+## Django Rest Framework PSQ
+
+The [Django Rest Framework PSQ][drf-psq] package is an extension that gives support for having action-based **permission_classes**, **serializer_class**, and **queryset** dependent on permission-based rules.
+
+
 [cite]: https://developer.apple.com/library/mac/#documentation/security/Conceptual/AuthenticationAndAuthorizationGuide/Authorization/Authorization.html
 [authentication]: authentication.md
 [throttling]: throttling.md
@@ -328,3 +333,4 @@ The [Django Rest Framework Role Filters][django-rest-framework-role-filters] pac
 [django-rest-framework-role-filters]: https://github.com/allisson/django-rest-framework-role-filters
 [django-rest-framework-guardian]: https://github.com/rpkilby/django-rest-framework-guardian
 [drf-access-policy]: https://github.com/rsinger86/drf-access-policy
+[drf-psq]: https://github.com/drf-psq/drf-psq

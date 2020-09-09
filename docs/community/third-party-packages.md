@@ -198,6 +198,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [rest_condition][rest-condition] - Another extension for building complex permissions in a simple and convenient way.
 * [dry-rest-permissions][dry-rest-permissions] - Provides a simple way to define permissions for individual api actions.
 * [drf-access-policy][drf-access-policy] - Declarative and flexible permissions inspired by AWS' IAM policies.
+* [drf-psq][drf-psq] - An extension that gives support for having action-based **permission_classes**, **serializer_class**, and **queryset** dependent on permission-based rules.
 
 ### Serializers
 
@@ -360,3 +361,4 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [djangorestframework-features]: https://github.com/cloudcode-hungary/django-rest-framework-features/
 [django-elasticsearch-dsl-drf]: https://github.com/barseghyanartur/django-elasticsearch-dsl-drf
 [django-api-client]: https://github.com/rhenter/django-api-client
+[drf-psq]: https://github.com/drf-psq/drf-psq
