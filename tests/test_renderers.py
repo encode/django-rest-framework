@@ -633,6 +633,9 @@ class BrowsableAPIRendererTests(URLPatternsTestCase):
     class AuthExampleViewSet(ExampleViewSet):
         permission_classes = [permissions.IsAuthenticated]
 
+    class SimpleSerializer(serializers.Serializer):
+        name = serializers.CharField()
+
     router = SimpleRouter()
     router.register('examples', ExampleViewSet, basename='example')
     router.register('auth-examples', AuthExampleViewSet, basename='auth-example')
@@ -640,6 +643,62 @@ class BrowsableAPIRendererTests(URLPatternsTestCase):
 
     def setUp(self):
         self.renderer = BrowsableAPIRenderer()
+        self.renderer.accepted_media_type = ''
+        self.renderer.renderer_context = {}
+
+    def test_render_form_for_serializer(self):
+        with self.subTest('Serializer'):
+            serializer = BrowsableAPIRendererTests.SimpleSerializer(data={'name': 'Name'})
+            form = self.renderer.render_form_for_serializer(serializer)
+            assert isinstance(form, str), 'Must return form for serializer'
+
+        with self.subTest('ListSerializer'):
+            list_serializer = BrowsableAPIRendererTests.SimpleSerializer(data=[{'name': 'Name'}], many=True)
+            form = self.renderer.render_form_for_serializer(list_serializer)
+            assert form is None, 'Must not return form for list serializer'
+
+    def test_get_raw_data_form(self):
+        with self.subTest('Serializer'):
+            class DummyGenericViewsetLike(APIView):
+                def get_serializer(self, **kwargs):
+                    return BrowsableAPIRendererTests.SimpleSerializer(**kwargs)
+
+                def get(self, request):
+                    response = Response()
+                    response.view = self
+                    return response
+
+                post = get
+
+            view = DummyGenericViewsetLike.as_view()
+            _request = APIRequestFactory().get('/')
+            request = Request(_request)
+            response = view(_request)
+            view = response.view
+
+            raw_data_form = self.renderer.get_raw_data_form({'name': 'Name'}, view, 'POST', request)
+            assert raw_data_form['_content'].initial == '{\n    "name": ""\n}'
+
+        with self.subTest('ListSerializer'):
+            class DummyGenericViewsetLike(APIView):
+                def get_serializer(self, **kwargs):
+                    return BrowsableAPIRendererTests.SimpleSerializer(many=True, **kwargs)  # returns ListSerializer
+
+                def get(self, request):
+                    response = Response()
+                    response.view = self
+                    return response
+
+                post = get
+
+            view = DummyGenericViewsetLike.as_view()
+            _request = APIRequestFactory().get('/')
+            request = Request(_request)
+            response = view(_request)
+            view = response.view
+
+            raw_data_form = self.renderer.get_raw_data_form([{'name': 'Name'}], view, 'POST', request)
+            assert raw_data_form['_content'].initial == '[\n    {\n        "name": ""\n    }\n]'
 
     def test_get_description_returns_empty_string_for_401_and_403_statuses(self):
         assert self.renderer.get_description({}, status_code=401) == ''
