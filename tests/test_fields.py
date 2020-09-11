@@ -1170,23 +1170,23 @@ class TestQuantizedValueForDecimal(TestCase):
         assert value == expected_digit_tuple
 
 
-class TestNormalizedValueDecimalField(TestCase):
+class TestNormalizedOutputValueDecimalField(TestCase):
     """
     Test that we get the expected behavior of on DecimalField when normalize=True
     """
 
     def test_normalize_output(self):
-        field = serializers.DecimalField(max_digits=4, decimal_places=3, normalize=True)
+        field = serializers.DecimalField(max_digits=4, decimal_places=3, normalize_output=True)
         output = field.to_representation(Decimal('1.000'))
         assert output == '1'
 
     def test_non_normalize_output(self):
-        field = serializers.DecimalField(max_digits=4, decimal_places=3, normalize=False)
+        field = serializers.DecimalField(max_digits=4, decimal_places=3, normalize_output=False)
         output = field.to_representation(Decimal('1.000'))
         assert output == '1.000'
 
     def test_normalize_coeherce_to_string(self):
-        field = serializers.DecimalField(max_digits=4, decimal_places=3, normalize=True, coerce_to_string=False)
+        field = serializers.DecimalField(max_digits=4, decimal_places=3, normalize_output=True, coerce_to_string=False)
         output = field.to_representation(Decimal('1.000'))
         assert output == Decimal('1')
 
