@@ -149,7 +149,7 @@ To use `DjangoFilterBackend`, first install `django-filter`.
 
     pip install django-filter
 
-Then add `django_filters` to Django's `INSTALLED_APPS`:
+Then add `'django_filters'` to Django's `INSTALLED_APPS`:
 
     INSTALLED_APPS = [
         ...
