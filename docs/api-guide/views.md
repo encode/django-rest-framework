@@ -169,7 +169,7 @@ To override the default settings, REST framework provides a set of additional de
     from rest_framework.throttling import UserRateThrottle
 
     class OncePerDayUserThrottle(UserRateThrottle):
-            rate = '1/day'
+        rate = '1/day'
 
     @api_view(['GET'])
     @throttle_classes([OncePerDayUserThrottle])
