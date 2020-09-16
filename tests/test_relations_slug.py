@@ -2,7 +2,8 @@ from django.test import TestCase
 
 from rest_framework import serializers
 from tests.models import (
-    ForeignKeySource, ForeignKeyTarget, NullableForeignKeySource
+    ForeignKeySource, ForeignKeyTarget, NullableForeignKeySource,
+    NullableOneToOneSource, OneToOneTarget
 )
 
 
@@ -38,6 +39,30 @@ class NullableForeignKeySourceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = NullableForeignKeySource
+        fields = '__all__'
+
+
+class NullableOneToOneSourceSerializer(serializers.ModelSerializer):
+    target = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=OneToOneTarget.objects.all(),
+        allow_null=True
+    )
+
+    class Meta:
+        model = NullableOneToOneSource
+        fields = '__all__'
+
+
+class OneToOneTargetSerializer(serializers.ModelSerializer):
+    nullable_source = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=NullableOneToOneSource.objects.all(),
+        allow_null=True
+    )
+
+    class Meta:
+        model = OneToOneTarget
         fields = '__all__'
 
 
@@ -285,3 +310,49 @@ class SlugNullableForeignKeyTests(TestCase):
             {'id': 3, 'name': 'source-3', 'target': None}
         ]
         assert serializer.data == expected
+
+
+class SlugNullableOneToOneTests(TestCase):
+    def setUp(self):
+        target = OneToOneTarget(name='target-1')
+        target.save()
+        source = NullableOneToOneSource(name='source-1', target=None)
+        source.save()
+
+    def test_one_to_one_correctly_updated(self):
+        data = {'id': 1, 'name': 'source-1', 'target': 'target-1'}
+        instance = NullableOneToOneSource.objects.get(pk=1)
+
+        serializer = NullableOneToOneSourceSerializer(instance, data=data)
+        assert serializer.is_valid()
+        serializer.save()
+
+        assert serializer.data == data
+
+        # also check if the data has been saved to the database
+        instance.refresh_from_db()
+        assert instance.target.name == "target-1"
+
+        # see if the reverse relation was updated
+        instance = OneToOneTarget.objects.get(pk=1)
+        serializer = OneToOneTargetSerializer(instance)
+        assert serializer.data['nullable_source'] == 'source-1'
+
+    def test_one_to_one_reverse_correctly_updated(self):
+        data = {'id': 1, 'name': 'target-1', 'nullable_source': 'source-1'}
+        instance = OneToOneTarget.objects.get(pk=1)
+
+        serializer = OneToOneTargetSerializer(instance, data=data)
+        assert serializer.is_valid()
+        serializer.save()
+
+        # the serializer says it updated the nullable_source field
+        assert serializer.data == data
+        assert serializer.data['nullable_source'] == 'source-1'
+
+        # and it even says the instance is there:
+        assert serializer.instance.nullable_source
+
+        # but it was not saved in the database
+        instance.refresh_from_db()
+        assert instance.nullable_source
