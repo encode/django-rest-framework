@@ -63,7 +63,7 @@ class OneToOneTargetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OneToOneTarget
-        fields = '__all__'
+        fields = ["id", "name", "nullable_source"]
 
 
 # TODO: M2M Tests, FKTests (Non-nullable), One2One
