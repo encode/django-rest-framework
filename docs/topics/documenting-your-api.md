@@ -142,6 +142,16 @@ This also translates into a very useful interactive documentation viewer in the 
 
 ![Screenshot - drf-yasg][image-drf-yasg]
 
+#### drf-spectacular - Sane and flexible OpenAPI 3.0 schema generation for Django REST framework
+
+[drf-spectacular][drf-spectacular] is a [OpenAPI 3][open-api] schema generation tool with explicit focus on extensibility,
+customizability and client generation. Usage patterns are very similar to [drf-yasg][drf-yasg].
+
+It aims to extract as much schema information as possible, while providing decorators and extensions for easy
+customization. There is explicit support for [swagger-codegen][swagger], [SwaggerUI][swagger-ui] and [Redoc][redoc],
+i18n, versioning, authentication, polymorphism (dynamic requests and responses), query/path/header parameters,
+documentation and more. Several popular plugins for DRF are supported out-of-the-box as well.
+
 ---
 
 ## Self describing APIs
@@ -216,6 +226,7 @@ To implement a hypermedia API you'll need to decide on an appropriate media type
 [image-self-describing-api]: ../img/self-describing.png
 
 [drf-yasg]: https://github.com/axnsan12/drf-yasg/
+[drf-spectacular]: https://github.com/tfranzel/drf-spectacular/
 [markdown]: https://daringfireball.net/projects/markdown/syntax
 [open-api]: https://openapis.org/
 [redoc]: https://github.com/Rebilly/ReDoc
