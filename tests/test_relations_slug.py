@@ -350,9 +350,30 @@ class SlugNullableOneToOneTests(TestCase):
         assert serializer.data == data
         assert serializer.data['nullable_source'] == 'source-1'
 
-        # and it even says the instance is there:
-        assert serializer.instance.nullable_source
+        # and it says the instance is a NullableOneToOneSource
+        assert isinstance(
+            serializer.instance.nullable_source, NullableOneToOneSource)
 
-        # but it was not saved in the database
+        # make sure it was really updated in the database
+        instance.refresh_from_db()
+        assert instance.nullable_source
+
+    def test_one_to_one_reverse_correctly_created(self):
+        data = {'id': 2, 'name': 'target-2', 'nullable_source': 'source-1'}
+
+        serializer = OneToOneTargetSerializer(data=data)
+        assert serializer.is_valid()
+        serializer.save()
+
+        # the serializer says it updated the nullable_source field
+        assert serializer.data == data
+        assert serializer.data['nullable_source'] == 'source-1'
+
+        # and it says the instance is a NullableOneToOneSource
+        assert isinstance(
+            serializer.instance.nullable_source, NullableOneToOneSource)
+
+        # make sure it was really updated in the database
+        instance = OneToOneTarget.objects.get(pk=2)
         instance.refresh_from_db()
         assert instance.nullable_source
