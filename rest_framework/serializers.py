@@ -929,11 +929,16 @@ class ModelSerializer(Serializer):
         # Remove many-to-many relationships from validated_data.
         # They are not valid arguments to the default `.create()` method,
         # as they require that the instance has already been saved.
+        # Collect the reverse fields too so we can save them after the
+        # instance is created
         info = model_meta.get_field_info(ModelClass)
         many_to_many = {}
+        reverse = []
         for field_name, relation_info in info.relations.items():
             if relation_info.to_many and (field_name in validated_data):
                 many_to_many[field_name] = validated_data.pop(field_name)
+            elif relation_info.reverse and (field_name in validated_data):
+                reverse.append(field_name)
 
         try:
             instance = ModelClass._default_manager.create(**validated_data)
@@ -963,6 +968,11 @@ class ModelSerializer(Serializer):
                 field = getattr(instance, field_name)
                 field.set(value)
 
+        # Save the reverse relations
+        if reverse:
+            for field_name in reverse:
+                getattr(instance, field_name).save()
+
         return instance
 
     def update(self, instance, validated_data):
@@ -979,6 +989,10 @@ class ModelSerializer(Serializer):
                 m2m_fields.append((attr, value))
             else:
                 setattr(instance, attr, value)
+                # 'value' is the corresponding instance from the
+                # reverse relation, let's save it
+                if attr in info.relations and info.relations[attr].reverse:
+                    value.save()
 
         instance.save()
 
