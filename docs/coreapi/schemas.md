@@ -828,10 +828,17 @@ A short description of the meaning and intended usage of the input field.
 [drf-yasg][drf-yasg] generates [OpenAPI][open-api] documents suitable for code generation - nested schemas,
 named models, response bodies, enum/pattern/min/max validators, form parameters, etc.
 
+
+## drf-spectacular - Sane and flexible OpenAPI 3.0 schema generation for Django REST framework
+
+[drf-spectacular][drf-spectacular] is a [OpenAPI 3][open-api] schema generation tool with explicit focus on extensibility,
+customizability and client generation. It's usage patterns are very similar to [drf-yasg][drf-yasg].
+
 [cite]: https://blog.heroku.com/archives/2014/1/8/json_schema_for_heroku_platform_api
 [coreapi]: https://www.coreapi.org/
 [corejson]: https://www.coreapi.org/specification/encoding/#core-json-encoding
 [drf-yasg]: https://github.com/axnsan12/drf-yasg/
+[drf-spectacular]: https://github.com/tfranzel/drf-spectacular/
 [open-api]: https://openapis.org/
 [json-hyperschema]: https://json-schema.org/latest/json-schema-hypermedia.html
 [api-blueprint]: https://apiblueprint.org/
