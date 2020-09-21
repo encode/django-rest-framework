@@ -102,7 +102,7 @@ class JSONRenderer(BaseRenderer):
             separators = INDENT_SEPARATORS
 
         ret = json.dumps(
-            data, cls=self.encoder_class,
+            data,
             indent=indent, ensure_ascii=self.ensure_ascii,
             allow_nan=not self.strict, separators=separators
         )

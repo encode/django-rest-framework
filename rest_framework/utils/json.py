@@ -9,7 +9,7 @@ handled by users at the renderer and parser layer.
 from __future__ import absolute_import
 
 import functools
-import json  # noqa
+import ujson as json  # noqa
 
 
 def strict_constant(o):
