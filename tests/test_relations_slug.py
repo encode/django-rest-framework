@@ -19,6 +19,18 @@ class ForeignKeyTargetSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class NullableForeignKeyTargetSerializer(serializers.ModelSerializer):
+    nullable_sources = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=NullableForeignKeySource.objects.all(),
+        many=True
+    )
+
+    class Meta:
+        model = ForeignKeyTarget
+        fields = '__all__'
+
+
 class ForeignKeySourceSerializer(serializers.ModelSerializer):
     target = serializers.SlugRelatedField(
         slug_field='name',
@@ -310,6 +322,42 @@ class SlugNullableForeignKeyTests(TestCase):
             {'id': 3, 'name': 'source-3', 'target': None}
         ]
         assert serializer.data == expected
+
+    def test_foreign_key_reverse_relation_correctly_updated(self):
+        # source 3 has no target yet
+        data = {'id': 1, 'name': 'target-1', 'nullable_sources': ['source-3']}
+        instance = ForeignKeyTarget.objects.get(pk=1)
+
+        serializer = NullableForeignKeyTargetSerializer(instance, data=data)
+        assert serializer.is_valid()
+        serializer.save()
+
+        # the serializer says it updated the sources field
+        assert serializer.data == data
+        assert serializer.data['nullable_sources'] == ['source-3']
+
+        # make sure it was really updated in the database
+        instance.refresh_from_db()
+        assert instance.nullable_sources.exists()
+        assert instance.nullable_sources.first().name == 'source-3'
+
+    def test_foreign_key_reverse_relation_correctly_created(self):
+        # source 3 has no target yet
+        data = {'id': 2, 'name': 'target-2', 'nullable_sources': ['source-3']}
+
+        serializer = NullableForeignKeyTargetSerializer(data=data)
+        assert serializer.is_valid()
+        serializer.save()
+
+        # the serializer says it updated the sources field
+        assert serializer.data == data
+        assert serializer.data['nullable_sources'] == ['source-3']
+
+        # make sure it was really updated in the database
+        instance = ForeignKeyTarget.objects.get(pk=2)
+        instance.refresh_from_db()
+        assert instance.nullable_sources.exists()
+        assert instance.nullable_sources.first().name == 'source-3'
 
 
 class SlugNullableOneToOneTests(TestCase):
