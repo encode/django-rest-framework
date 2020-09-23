@@ -418,7 +418,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         if render_style == 'binary':
             return '[%d bytes of binary content]' % len(content)
 
-        return content
+        return content.decode('utf-8') if isinstance(content, bytes) else content
 
     def show_form_for_method(self, view, method, request, obj):
         """
