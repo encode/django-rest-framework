@@ -933,12 +933,12 @@ class ModelSerializer(Serializer):
         # instance is created
         info = model_meta.get_field_info(ModelClass)
         many_to_many = {}
-        reverse = []
+        reverse = {}
         for field_name, relation_info in info.relations.items():
             if relation_info.to_many and (field_name in validated_data):
                 many_to_many[field_name] = validated_data.pop(field_name)
             elif relation_info.reverse and (field_name in validated_data):
-                reverse.append(field_name)
+                reverse[field_name] = validated_data[field_name]
 
         try:
             instance = ModelClass._default_manager.create(**validated_data)
@@ -970,8 +970,9 @@ class ModelSerializer(Serializer):
 
         # Save the reverse relations
         if reverse:
-            for field_name in reverse:
-                getattr(instance, field_name).save()
+            for field_name, value in reverse.items():
+                setattr(instance, field_name, value)
+                value.save()
 
         return instance
 
