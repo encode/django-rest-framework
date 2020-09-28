@@ -1,5 +1,9 @@
-body {
-    padding-top: 70px;
+html {
+    /* csslint ignore:start */
+    /* The nav header is 3.5rem high, plus 20px for the margin-top of the
+       main container. */
+    scroll-padding-top: calc(3.5rem + 20px);
+    /* csslint ignore:end */
 }
 
 /* Replacement for `body { background-attachment: fixed; }`, which has
@@ -18,20 +22,15 @@ body::before {
 }
 
 body > .container {
+    margin-top: 20px;
     min-height: 400px;
 }
 
-ul.nav .main {
-    font-weight: bold;
-}
-
-.col-md-3 {
-    padding-left: 0;
-    z-index: 1;
-}
-
-.col-md-9 {
-    padding-bottom: 100px;
+.navbar.fixed-top { /* csslint allow: adjoining-classes */
+    /* csslint ignore:start */
+    position: -webkit-sticky;
+    position: sticky;
+    /* csslint ignore:end */
 }
 
 .source-links {
@@ -47,19 +46,6 @@ ul.nav .main {
     border: 1px solid #ddd;
     border-radius: 4px;
     margin: 20px auto 30px auto;
-}
-
-/*
- * The code below adds some padding to the top of the current anchor target so
- * that, when navigating to it, the header isn't hidden by the navbar at the
- * top.
- */
-:target::before {
-    content: "";
-    display: block;
-    margin-top: -75px;
-    height: 75px;
-    pointer-events: none;
 }
 
 h1 {
@@ -99,11 +85,12 @@ code {
 }
 
 pre code {
+    display: block;
     background: transparent;
     border: none;
     white-space: pre;
     word-wrap: normal;
-    font-family: monospace,serif;
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     font-size: 12px;
 }
 
@@ -143,22 +130,45 @@ footer {
  * sections of docs content.
  */
 
-/* By default it's not affixed in mobile views, so undo that */
 .bs-sidebar.affix { /* csslint allow: adjoining-classes */
-    position: static;
+    /* csslint ignore:start */
+    position: -webkit-sticky;
+    position: sticky;
+    /* csslint ignore:end */
+    /* The nav header is 3.5rem high, plus 20px for the margin-top of the
+       main container. */
+    top: calc(3.5rem + 20px);
 }
 
-.bs-sidebar.well { /* csslint allow: adjoining-classes */
+.bs-sidebar.card { /* csslint allow: adjoining-classes */
     padding: 0;
     max-height: 90%;
     overflow-y: auto;
 }
 
+/* Toggle (vertically flip) sidebar collapse icon */
+.bs-sidebar .navbar-toggler span {
+    -moz-transform: scale(1, -1);
+    -webkit-transform: scale(1, -1);
+    -o-transform: scale(1, -1);
+    -ms-transform: scale(1, -1);
+    transform: scale(1, -1);
+}
+
+.bs-sidebar .navbar-toggler.collapsed span { /* csslint allow: adjoining-classes */
+    -moz-transform: scale(1, 1);
+    -webkit-transform: scale(1, 1);
+    -o-transform: scale(1, 1);
+    -ms-transform: scale(1, 1);
+    transform: scale(1, 1);
+}
+
 /* First level of nav */
-.bs-sidenav {
+.bs-sidebar > .navbar-collapse > .nav {
     padding-top:    10px;
     padding-bottom: 10px;
     border-radius: 5px;
+    width: 100%;
 }
 
 /* All levels of nav */
@@ -172,62 +182,24 @@ footer {
     text-decoration: none;
     border-right: 1px solid;
 }
-.bs-sidebar .nav > .active > a,
-.bs-sidebar .nav > .active:hover > a,
-.bs-sidebar .nav > .active:focus > a {
+.bs-sidebar .nav > li > a.active,
+.bs-sidebar .nav > li > a.active:hover,
+.bs-sidebar .nav > li > a.active:focus {
     font-weight: bold;
     background-color: transparent;
     border-right: 1px solid;
 }
 
-/* Nav: second level (shown on .active) */
-.bs-sidebar .nav .nav {
-    display: none; /* Hide by default, but at >768px, show it */
-    margin-bottom: 8px;
-}
-.bs-sidebar .nav .nav > li > a {
-    padding-top:    3px;
-    padding-bottom: 3px;
-    padding-left: 30px;
-    font-size: 90%;
+.bs-sidebar .nav .nav .nav {
+    margin-left: 1em;
 }
 
-/* Show and affix the side nav when space allows it */
-@media (min-width: 992px) {
-    /* Workaround a Safari bug when zooming to < 100%
-       https://github.com/mkdocs/mkdocs/issues/1050 */
-    .col-md-9 {
-        box-sizing: border-box;  /* csslint allow: box-sizing */
-        padding-left: 25%;
-        width: 100%;
-    }
-    .bs-sidebar .nav > .active > ul {
-        display: block;
-    }
-    /* Widen the fixed sidebar */
-    .bs-sidebar.affix, /* csslint allow: adjoining-classes */
-    .bs-sidebar.affix-bottom { /* csslint allow: adjoining-classes */
-        width: 213px;
-    }
-    .bs-sidebar.affix { /* csslint allow: adjoining-classes */
-        position: fixed; /* Undo the static from mobile first approach */
-        top: 80px;
-    }
-    .bs-sidebar.affix-bottom { /* csslint allow: adjoining-classes */
-        position: absolute; /* Undo the static from mobile first approach */
-    }
-    .bs-sidebar.affix-bottom .bs-sidenav, /* csslint allow: adjoining-classes */
-    .bs-sidebar.affix .bs-sidenav { /* csslint allow: adjoining-classes */
-        margin-top: 0;
-        margin-bottom: 0;
-    }
+.bs-sidebar .nav > li > a {
+    font-weight: bold;
 }
-@media (min-width: 1200px) {
-    /* Widen the fixed sidebar again */
-    .bs-sidebar.affix-bottom, /* csslint allow: adjoining-classes */
-    .bs-sidebar.affix { /* csslint allow: adjoining-classes */
-        width: 263px;
-    }
+
+.bs-sidebar .nav .nav > li > a {
+    font-weight: normal;
 }
 
 .headerlink {
@@ -274,26 +246,25 @@ h1:hover .headerlink, h2:hover .headerlink, h3:hover .headerlink, h4:hover .head
     text-align: left;
 }
 
-
-.dropdown-submenu {
-    position: relative;
+@media (max-width: 991.98px) {
+    .navbar-collapse.show { /* csslint allow: adjoining-classes */
+        overflow-y: auto;
+        max-height: calc(100vh - 3.5rem);
+    }
 }
 
-.dropdown-submenu>.dropdown-menu {
-    top: 0;
-    left: 100%;
-    margin-top: -6px;
-    margin-left: -1px;
-    -webkit-border-radius: 0 6px 6px 6px;
-    -moz-border-radius: 0 6px 6px;
-    border-radius: 0 6px 6px 6px;
+.dropdown-item.open { /* csslint allow: adjoining-classes */
+    color: #fff;
+    background-color: #2FA4E7;
 }
 
-.dropdown-submenu:hover>.dropdown-menu {
-    display: block;
+.dropdown-submenu > .dropdown-menu {
+    margin: 0 0 0 1.5rem;
+    padding: 0;
+    border-width: 0;
 }
 
-.dropdown-submenu>a:after {
+.dropdown-submenu > a::after {
     display: block;
     content: " ";
     float: right;
@@ -307,18 +278,36 @@ h1:hover .headerlink, h2:hover .headerlink, h3:hover .headerlink, h4:hover .head
     margin-right: -10px;
 }
 
-.dropdown-submenu:hover>a:after {
+.dropdown-submenu:hover > a::after {
     border-left-color: #fff;
 }
 
-.dropdown-submenu.pull-left { /* csslint allow: adjoining-classes */
-    float: none;
-}
+@media (min-width: 992px) {
+    .dropdown-menu {
+        overflow-y: auto;
+        max-height: calc(100vh - 3.5rem);
+    }
 
-.dropdown-submenu.pull-left>.dropdown-menu { /* csslint allow: adjoining-classes */
-    left: -100%;
-    margin-left: 10px;
-    -webkit-border-radius: 6px 0 6px 6px;
-    -moz-border-radius: 6px 0 6px 6px;
-    border-radius: 6px 0 6px 6px;
+    .dropdown-submenu {
+        position: relative;
+    }
+
+    .dropdown-submenu > .dropdown-menu {
+        /* csslint ignore:start */
+        position: fixed !important;
+        /* csslint ignore:end */
+        margin-top: -9px;
+        margin-left: -2px;
+        border-width: 1px;
+        padding: 0.5rem 0;
+    }
+
+    .dropdown-submenu.pull-left { /* csslint allow: adjoining-classes */
+        float: none;
+    }
+
+    .dropdown-submenu.pull-left > .dropdown-menu { /* csslint allow: adjoining-classes */
+        left: -100%;
+        margin-left: 10px;
+    }
 }

@@ -294,6 +294,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../community/3.12-announcement/">3.12 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../community/3.11-announcement/">3.11 Announcement</a>
                   </li>
                   
@@ -575,7 +579,7 @@ class Track(models.Model):
 </code></pre>
 <h2 id="stringrelatedfield"><a class="toclink" href="#stringrelatedfield">StringRelatedField</a></h2>
 <p><code>StringRelatedField</code> may be used to represent the target of the relationship using its <code>__str__</code> method.</p>
-<p>For example, the following serializer.</p>
+<p>For example, the following serializer:</p>
 <pre><code>class AlbumSerializer(serializers.ModelSerializer):
     tracks = serializers.StringRelatedField(many=True)
 
@@ -583,7 +587,7 @@ class Track(models.Model):
         model = Album
         fields = ['album_name', 'artist', 'tracks']
 </code></pre>
-<p>Would serialize to the following representation.</p>
+<p>Would serialize to the following representation:</p>
 <pre><code>{
     'album_name': 'Things We Lost In The Fire',
     'artist': 'Low',
@@ -773,7 +777,7 @@ class AlbumSerializer(serializers.ModelSerializer):
 }
 </code></pre>
 <h2 id="writable-nested-serializers"><a class="toclink" href="#writable-nested-serializers">Writable nested serializers</a></h2>
-<p>By default nested serializers are read-only. If you want to support write-operations to a nested serializer field you'll need to create <code>create()</code> and/or <code>update()</code> methods in order to explicitly specify how the child relationships should be saved.</p>
+<p>By default nested serializers are read-only. If you want to support write-operations to a nested serializer field you'll need to create <code>create()</code> and/or <code>update()</code> methods in order to explicitly specify how the child relationships should be saved:</p>
 <pre><code>class TrackSerializer(serializers.ModelSerializer):
     class Meta:
         model = Track
@@ -817,7 +821,7 @@ output representation should be generated from the model instance.</p>
 <p>If you want to implement a read-write relational field, you must also implement the <code>.to_internal_value(self, data)</code> method.</p>
 <p>To provide a dynamic queryset based on the <code>context</code>, you can also override <code>.get_queryset(self)</code> instead of specifying <code>.queryset</code> on the class or when initializing the field.</p>
 <h2 id="example_1"><a class="toclink" href="#example_1">Example</a></h2>
-<p>For example, we could define a relational field to serialize a track to a custom string representation, using its ordering, title, and duration.</p>
+<p>For example, we could define a relational field to serialize a track to a custom string representation, using its ordering, title, and duration:</p>
 <pre><code>import time
 
 class TrackListingField(serializers.RelatedField):
@@ -832,7 +836,7 @@ class AlbumSerializer(serializers.ModelSerializer):
         model = Album
         fields = ['album_name', 'artist', 'tracks']
 </code></pre>
-<p>This custom field would then serialize to the following representation.</p>
+<p>This custom field would then serialize to the following representation:</p>
 <pre><code>{
     'album_name': 'Sometimes I Wish We Were an Eagle',
     'artist': 'Bill Callahan',
@@ -966,7 +970,7 @@ class Note(models.Model):
     text = models.CharField(max_length=1000)
     tags = GenericRelation(TaggedItem)
 </code></pre>
-<p>We could define a custom field that could be used to serialize tagged instances, using the type of each instance to determine how it should be serialized.</p>
+<p>We could define a custom field that could be used to serialize tagged instances, using the type of each instance to determine how it should be serialized:</p>
 <pre><code>class TaggedObjectRelatedField(serializers.RelatedField):
     """
     A custom field to use for the `tagged_object` generic relationship.

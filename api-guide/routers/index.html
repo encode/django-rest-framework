@@ -294,6 +294,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../community/3.12-announcement/">3.12 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../community/3.11-announcement/">3.11 Announcement</a>
                   </li>
                   
@@ -527,27 +531,27 @@ router.register(r'users', UserViewSet)
 router.register(r'accounts', AccountViewSet)
 
 urlpatterns = [
-    url(r'^forgot-password/$', ForgotPasswordFormView.as_view()),
+    path('forgot-password/', ForgotPasswordFormView.as_view()),
 ]
 
 urlpatterns += router.urls
 </code></pre>
 <p>Alternatively you can use Django's <code>include</code> function, like so...</p>
 <pre><code>urlpatterns = [
-    url(r'^forgot-password/$', ForgotPasswordFormView.as_view()),
-    url(r'^', include(router.urls)),
+    path('forgot-password', ForgotPasswordFormView.as_view()),
+    path('', include(router.urls)),
 ]
 </code></pre>
 <p>You may use <code>include</code> with an application namespace:</p>
 <pre><code>urlpatterns = [
-    url(r'^forgot-password/$', ForgotPasswordFormView.as_view()),
-    url(r'^api/', include((router.urls, 'app_name'))),
+    path('forgot-password/', ForgotPasswordFormView.as_view()),
+    path('api/', include((router.urls, 'app_name'))),
 ]
 </code></pre>
 <p>Or both an application and instance namespace:</p>
 <pre><code>urlpatterns = [
-    url(r'^forgot-password/$', ForgotPasswordFormView.as_view()),
-    url(r'^api/', include((router.urls, 'app_name'), namespace='instance_name')),
+    path('forgot-password/', ForgotPasswordFormView.as_view()),
+    path('api/', include((router.urls, 'app_name'), namespace='instance_name')),
 ]
 </code></pre>
 <p>See Django's <a href="https://docs.djangoproject.com/en/1.11/topics/http/urls/#url-namespaces">URL namespaces docs</a> and the <a href="https://docs.djangoproject.com/en/2.0/ref/urls/#include"><code>include</code> API reference</a> for more details.</p>

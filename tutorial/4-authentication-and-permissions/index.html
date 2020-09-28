@@ -294,6 +294,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../community/3.12-announcement/">3.12 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../community/3.11-announcement/">3.11 Announcement</a>
                   </li>
                   
@@ -561,7 +565,7 @@ path('users/&lt;int:pk&gt;/', views.UserDetail.as_view()),
 <p>If you open a browser and navigate to the browsable API at the moment, you'll find that you're no longer able to create new code snippets.  In order to do so we'd need to be able to login as a user.</p>
 <p>We can add a login view for use with the browsable API, by editing the URLconf in our project-level <code>urls.py</code> file.</p>
 <p>Add the following import at the top of the file:</p>
-<pre><code>from django.conf.urls import include
+<pre><code>from django.urls import path, include
 </code></pre>
 <p>And, at the end of the file, add a pattern to include the login and logout views for the browsable API.</p>
 <pre><code>urlpatterns += [

@@ -294,6 +294,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../community/3.12-announcement/">3.12 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../community/3.11-announcement/">3.11 Announcement</a>
                   </li>
                   
@@ -544,7 +548,7 @@ class PurchaseList(generics.ListAPIView):
 <h2 id="filtering-against-the-url"><a class="toclink" href="#filtering-against-the-url">Filtering against the URL</a></h2>
 <p>Another style of filtering might involve restricting the queryset based on some part of the URL.</p>
 <p>For example if your URL config contained an entry like this:</p>
-<pre><code>url('^purchases/(?P&lt;username&gt;.+)/$', PurchaseList.as_view()),
+<pre><code>re_path('^purchases/(?P&lt;username&gt;.+)/$', PurchaseList.as_view()),
 </code></pre>
 <p>You could then write a view that returned a purchase queryset filtered by the username portion of the URL:</p>
 <pre><code>class PurchaseList(generics.ListAPIView):
@@ -623,8 +627,15 @@ class UserListView(generics.ListAPIView):
 <h2 id="djangofilterbackend"><a class="toclink" href="#djangofilterbackend">DjangoFilterBackend</a></h2>
 <p>The <a href="https://django-filter.readthedocs.io/en/latest/index.html"><code>django-filter</code></a> library includes a <code>DjangoFilterBackend</code> class which
 supports highly customizable field filtering for REST framework.</p>
-<p>To use <code>DjangoFilterBackend</code>, first install <code>django-filter</code>. Then add <code>django_filters</code> to Django's <code>INSTALLED_APPS</code></p>
+<p>To use <code>DjangoFilterBackend</code>, first install <code>django-filter</code>.</p>
 <pre><code>pip install django-filter
+</code></pre>
+<p>Then add <code>'django_filters'</code> to Django's <code>INSTALLED_APPS</code>:</p>
+<pre><code>INSTALLED_APPS = [
+    ...
+    'django_filters',
+    ...
+]
 </code></pre>
 <p>You should now either add the filter backend to your settings:</p>
 <pre><code>REST_FRAMEWORK = {

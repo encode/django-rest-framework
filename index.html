@@ -294,6 +294,10 @@
                   </li>
                   
                   <li >
+                    <a href="community/3.12-announcement/">3.12 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="community/3.11-announcement/">3.11 Announcement</a>
                   </li>
                   
@@ -549,8 +553,8 @@ continued development by <strong><a href="community/funding/">signing up for a p
 <h2 id="requirements"><a class="toclink" href="#requirements">Requirements</a></h2>
 <p>REST framework requires the following:</p>
 <ul>
-<li>Python (3.5, 3.6, 3.7, 3.8)</li>
-<li>Django (2.2, 3.0)</li>
+<li>Python (3.5, 3.6, 3.7, 3.8, 3.9)</li>
+<li>Django (2.2, 3.0, 3.1)</li>
 </ul>
 <p>We <strong>highly recommend</strong> and only officially support the latest patch release of
 each Python and Django series.</p>
@@ -580,7 +584,7 @@ pip install django-filter  # Filtering support
 <p>If you're intending to use the browsable API you'll probably also want to add REST framework's login and logout views.  Add the following to your root <code>urls.py</code> file.</p>
 <pre><code>urlpatterns = [
     ...
-    url(r'^api-auth/', include('rest_framework.urls'))
+    path('api-auth/', include('rest_framework.urls'))
 ]
 </code></pre>
 <p>Note that the URL path can be whatever you want.</p>

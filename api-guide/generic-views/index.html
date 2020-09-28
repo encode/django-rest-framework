@@ -294,6 +294,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../community/3.12-announcement/">3.12 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../community/3.11-announcement/">3.11 Announcement</a>
                   </li>
                   
@@ -575,7 +579,7 @@ class UserList(generics.ListCreateAPIView):
         return Response(serializer.data)
 </code></pre>
 <p>For very simple cases you might want to pass through any class attributes using the <code>.as_view()</code> method.  For example, your URLconf might include something like the following entry:</p>
-<pre><code>url(r'^/users/', ListCreateAPIView.as_view(queryset=User.objects.all(), serializer_class=UserSerializer), name='user-list')
+<pre><code>path('users/', ListCreateAPIView.as_view(queryset=User.objects.all(), serializer_class=UserSerializer), name='user-list')
 </code></pre>
 <hr />
 <h1 id="api-reference"><a class="toclink" href="#api-reference">API Reference</a></h1>

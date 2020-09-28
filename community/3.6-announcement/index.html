@@ -294,6 +294,10 @@
                   </li>
                   
                   <li >
+                    <a href="../3.12-announcement/">3.12 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../3.11-announcement/">3.11 Announcement</a>
                   </li>
                   
@@ -508,7 +512,7 @@ API_DESCRIPTION = '...'
 
 urlpatterns = [
     ...
-    url(r'^docs/', include_docs_urls(title=API_TITLE, description=API_DESCRIPTION))
+    path('docs/', include_docs_urls(title=API_TITLE, description=API_DESCRIPTION))
 ]
 </code></pre>
 <p>Once installed you should see something a little like this:</p>

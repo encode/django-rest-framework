@@ -294,6 +294,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../community/3.12-announcement/">3.12 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../community/3.11-announcement/">3.11 Announcement</a>
                   </li>
                   
@@ -664,7 +668,7 @@ for user in User.objects.all():
 <p>When using <code>TokenAuthentication</code>, you may want to provide a mechanism for clients to obtain a token given the username and password.  REST framework provides a built-in view to provide this behavior.  To use it, add the <code>obtain_auth_token</code> view to your URLconf:</p>
 <pre><code>from rest_framework.authtoken import views
 urlpatterns += [
-    url(r'^api-token-auth/', views.obtain_auth_token)
+    path('api-token-auth/', views.obtain_auth_token)
 ]
 </code></pre>
 <p>Note that the URL part of the pattern can be whatever you want to use.</p>
@@ -696,7 +700,7 @@ class CustomAuthToken(ObtainAuthToken):
 </code></pre>
 <p>And in your <code>urls.py</code>:</p>
 <pre><code>urlpatterns += [
-    url(r'^api-token-auth/', CustomAuthToken.as_view())
+    path('api-token-auth/', CustomAuthToken.as_view())
 ]
 </code></pre>
 <h5 id="with-django-admin"><a class="toclink" href="#with-django-admin">With Django admin</a></h5>

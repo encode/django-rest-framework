@@ -294,6 +294,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../community/3.12-announcement/">3.12 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../community/3.11-announcement/">3.11 Announcement</a>
                   </li>
                   
@@ -495,6 +499,10 @@
                       <a href="#django-rest-framework-role-filters">Django Rest Framework Role Filters</a>
                     </li>
                   
+                    <li>
+                      <a href="#django-rest-framework-psq">Django Rest Framework PSQ</a>
+                    </li>
+                  
                 
 
                   <div class="promo">
@@ -690,18 +698,18 @@ class CustomerAccessPermission(permissions.BasePermission):
          ...
 </code></pre>
 <h2 id="examples"><a class="toclink" href="#examples">Examples</a></h2>
-<p>The following is an example of a permission class that checks the incoming request's IP address against a blacklist, and denies the request if the IP has been blacklisted.</p>
+<p>The following is an example of a permission class that checks the incoming request's IP address against a blocklist, and denies the request if the IP has been blocked.</p>
 <pre><code>from rest_framework import permissions
 
-class BlacklistPermission(permissions.BasePermission):
+class BlocklistPermission(permissions.BasePermission):
     """
-    Global permission check for blacklisted IPs.
+    Global permission check for blocked IPs.
     """
 
     def has_permission(self, request, view):
         ip_addr = request.META['REMOTE_ADDR']
-        blacklisted = Blacklist.objects.filter(ip_addr=ip_addr).exists()
-        return not blacklisted
+        blocked = Blocklist.objects.filter(ip_addr=ip_addr).exists()
+        return not blocked
 </code></pre>
 <p>As well as global permissions, that are run against all incoming requests, you can also create object-level permissions, that are only run against operations that affect a particular object instance.  For example:</p>
 <pre><code>class IsOwnerOrReadOnly(permissions.BasePermission):
@@ -731,13 +739,15 @@ class BlacklistPermission(permissions.BasePermission):
 <h2 id="rest-condition"><a class="toclink" href="#rest-condition">REST Condition</a></h2>
 <p>The <a href="https://github.com/caxap/rest_condition">REST Condition</a> package is another extension for building complex permissions in a simple and convenient way. The extension allows you to combine permissions with logical operators.</p>
 <h2 id="dry-rest-permissions"><a class="toclink" href="#dry-rest-permissions">DRY Rest Permissions</a></h2>
-<p>The <a href="https://github.com/Helioscene/dry-rest-permissions">DRY Rest Permissions</a> package provides the ability to define different permissions for individual default and custom actions. This package is made for apps with permissions that are derived from relationships defined in the app's data model. It also supports permission checks being returned to a client app through the API's serializer. Additionally it supports adding permissions to the default and custom list actions to restrict the data they retrieve per user.</p>
+<p>The <a href="https://github.com/FJNR-inc/dry-rest-permissions">DRY Rest Permissions</a> package provides the ability to define different permissions for individual default and custom actions. This package is made for apps with permissions that are derived from relationships defined in the app's data model. It also supports permission checks being returned to a client app through the API's serializer. Additionally it supports adding permissions to the default and custom list actions to restrict the data they retrieve per user.</p>
 <h2 id="django-rest-framework-roles"><a class="toclink" href="#django-rest-framework-roles">Django Rest Framework Roles</a></h2>
 <p>The <a href="https://github.com/computer-lab/django-rest-framework-roles">Django Rest Framework Roles</a> package makes it easier to parameterize your API over multiple types of users.</p>
 <h2 id="django-rest-framework-api-key"><a class="toclink" href="#django-rest-framework-api-key">Django REST Framework API Key</a></h2>
 <p>The <a href="https://florimondmanca.github.io/djangorestframework-api-key/">Django REST Framework API Key</a> package provides permissions classes, models and helpers to add API key authorization to your API. It can be used to authorize internal or third-party backends and services (i.e. <em>machines</em>) which do not have a user account. API keys are stored securely using Django's password hashing infrastructure, and they can be viewed, edited and revoked at anytime in the Django admin.</p>
 <h2 id="django-rest-framework-role-filters"><a class="toclink" href="#django-rest-framework-role-filters">Django Rest Framework Role Filters</a></h2>
 <p>The <a href="https://github.com/allisson/django-rest-framework-role-filters">Django Rest Framework Role Filters</a> package provides simple filtering over multiple types of roles.</p>
+<h2 id="django-rest-framework-psq"><a class="toclink" href="#django-rest-framework-psq">Django Rest Framework PSQ</a></h2>
+<p>The <a href="https://github.com/drf-psq/drf-psq">Django Rest Framework PSQ</a> package is an extension that gives support for having action-based <strong>permission_classes</strong>, <strong>serializer_class</strong>, and <strong>queryset</strong> dependent on permission-based rules.</p>
             
 
           </div> <!--/span-->

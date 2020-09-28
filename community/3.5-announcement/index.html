@@ -294,6 +294,10 @@
                   </li>
                   
                   <li >
+                    <a href="../3.12-announcement/">3.12 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../3.11-announcement/">3.11 Announcement</a>
                   </li>
                   
@@ -521,7 +525,7 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
-    url(r'^swagger/$', schema_view),
+    path('swagger/', schema_view),
     ...
 ]
 </code></pre>
@@ -618,8 +622,8 @@ from my_project.routers import router
 schema_view = get_schema_view(title='Example API')
 
 urlpatterns = [
-    url('^$', schema_view),
-    url(r'^', include(router.urls)),
+    path('', schema_view),
+    path('', include(router.urls)),
 ]
 </code></pre>
 <h3 id="schema-path-representations"><a class="toclink" href="#schema-path-representations">Schema path representations</a></h3>

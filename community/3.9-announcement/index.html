@@ -294,6 +294,10 @@
                   </li>
                   
                   <li >
+                    <a href="../3.12-announcement/">3.12 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../3.11-announcement/">3.11 Announcement</a>
                   </li>
                   
@@ -505,6 +509,7 @@ the schema into your repository.</li>
 <p>Here's an example of adding an OpenAPI schema to the URL conf:</p>
 <pre><code class="python">from rest_framework.schemas import get_schema_view
 from rest_framework.renderers import JSONOpenAPIRenderer
+from django.urls import path
 
 schema_view = get_schema_view(
     title='Server Monitoring API',
@@ -513,7 +518,7 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
-    url('^schema.json$', schema_view),
+    path('schema.json', schema_view),
     ...
 ]
 </code></pre>

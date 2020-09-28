@@ -294,6 +294,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../community/3.12-announcement/">3.12 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../community/3.11-announcement/">3.11 Announcement</a>
                   </li>
                   
@@ -460,9 +464,9 @@ used all the time.</p>
 from blog import views
 
 urlpatterns = [
-    url(r'^/$', views.apt_root),
-    url(r'^comments/$', views.comment_list),
-    url(r'^comments/(?P&lt;pk&gt;[0-9]+)/$', views.comment_detail)
+    path('', views.apt_root),
+    path('comments/', views.comment_list),
+    path('comments/&lt;int:pk&gt;/', views.comment_detail)
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'html'])

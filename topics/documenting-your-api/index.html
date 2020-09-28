@@ -294,6 +294,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../community/3.12-announcement/">3.12 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../community/3.11-announcement/">3.11 Announcement</a>
                   </li>
                   
@@ -553,6 +557,13 @@ response bodies, enum/pattern/min/max validators, form parameters, etc. - and to
 generation tools like <code>swagger-codegen</code>.</p>
 <p>This also translates into a very useful interactive documentation viewer in the form of <code>swagger-ui</code>:</p>
 <p><img alt="Screenshot - drf-yasg" src="../../img/drf-yasg.png" /></p>
+<h4 id="drf-spectacular-sane-and-flexible-openapi-30-schema-generation-for-django-rest-framework"><a class="toclink" href="#drf-spectacular-sane-and-flexible-openapi-30-schema-generation-for-django-rest-framework">drf-spectacular - Sane and flexible OpenAPI 3.0 schema generation for Django REST framework</a></h4>
+<p><a href="https://github.com/tfranzel/drf-spectacular/">drf-spectacular</a> is a <a href="https://openapis.org/">OpenAPI 3</a> schema generation tool with explicit focus on extensibility,
+customizability and client generation. Usage patterns are very similar to <a href="https://github.com/axnsan12/drf-yasg/">drf-yasg</a>.</p>
+<p>It aims to extract as much schema information as possible, while providing decorators and extensions for easy
+customization. There is explicit support for <a href="https://swagger.io/">swagger-codegen</a>, <a href="https://swagger.io/tools/swagger-ui/">SwaggerUI</a> and <a href="https://github.com/Rebilly/ReDoc">Redoc</a>,
+i18n, versioning, authentication, polymorphism (dynamic requests and responses), query/path/header parameters,
+documentation and more. Several popular plugins for DRF are supported out-of-the-box as well.</p>
 <hr />
 <h2 id="self-describing-apis"><a class="toclink" href="#self-describing-apis">Self describing APIs</a></h2>
 <p>The browsable API that REST framework provides makes it possible for your API to be entirely self describing.  The documentation for each API endpoint can be provided simply by visiting the URL in your browser.</p>

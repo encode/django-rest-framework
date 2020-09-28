@@ -294,6 +294,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../community/3.12-announcement/">3.12 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../community/3.11-announcement/">3.11 Announcement</a>
                   </li>
                   
@@ -529,7 +533,7 @@ class ListUsers(APIView):
 <h2 id="dispatch-methods"><a class="toclink" href="#dispatch-methods">Dispatch methods</a></h2>
 <p>The following methods are called directly by the view's <code>.dispatch()</code> method.
 These perform any actions that need to occur before or after calling the handler methods such as <code>.get()</code>, <code>.post()</code>, <code>put()</code>, <code>patch()</code> and <code>.delete()</code>.</p>
-<h3 id="initialself-request-42args-kwargs"><a class="toclink" href="#initialself-request-42args-kwargs">.initial(self, request, *args, **kwargs)</a></h3>
+<h3 id="initialself-request-args-kwargs"><a class="toclink" href="#initialself-request-args-kwargs">.initial(self, request, *args, **kwargs)</a></h3>
 <p>Performs any actions that need to occur before the handler method gets called.
 This method is used to enforce permissions and throttling, and perform content negotiation.</p>
 <p>You won't typically need to override this method.</p>
@@ -537,10 +541,10 @@ This method is used to enforce permissions and throttling, and perform content n
 <p>Any exception thrown by the handler method will be passed to this method, which either returns a <code>Response</code> instance, or re-raises the exception.</p>
 <p>The default implementation handles any subclass of <code>rest_framework.exceptions.APIException</code>, as well as Django's <code>Http404</code> and <code>PermissionDenied</code> exceptions, and returns an appropriate error response.</p>
 <p>If you need to customize the error responses your API returns you should subclass this method.</p>
-<h3 id="initialize_requestself-request-42args-kwargs"><a class="toclink" href="#initialize_requestself-request-42args-kwargs">.initialize_request(self, request, *args, **kwargs)</a></h3>
+<h3 id="initialize_requestself-request-args-kwargs"><a class="toclink" href="#initialize_requestself-request-args-kwargs">.initialize_request(self, request, *args, **kwargs)</a></h3>
 <p>Ensures that the request object that is passed to the handler method is an instance of <code>Request</code>, rather than the usual Django <code>HttpRequest</code>.</p>
 <p>You won't typically need to override this method.</p>
-<h3 id="finalize_responseself-request-response-42args-kwargs"><a class="toclink" href="#finalize_responseself-request-response-42args-kwargs">.finalize_response(self, request, response, *args, **kwargs)</a></h3>
+<h3 id="finalize_responseself-request-response-args-kwargs"><a class="toclink" href="#finalize_responseself-request-response-args-kwargs">.finalize_response(self, request, response, *args, **kwargs)</a></h3>
 <p>Ensures that any <code>Response</code> object returned from the handler method will be rendered into the correct content type, as determined by the content negotiation.</p>
 <p>You won't typically need to override this method.</p>
 <hr />

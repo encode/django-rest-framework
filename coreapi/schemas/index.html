@@ -294,6 +294,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../community/3.12-announcement/">3.12 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../community/3.11-announcement/">3.11 Announcement</a>
                   </li>
                   
@@ -503,6 +507,10 @@
                       <a href="#drf-yasg-yet-another-swagger-generator">drf-yasg - Yet Another Swagger Generator</a>
                     </li>
                   
+                    <li>
+                      <a href="#drf-spectacular-sane-and-flexible-openapi-30-schema-generation-for-django-rest-framework">drf-spectacular - Sane and flexible OpenAPI 3.0 schema generation for Django REST framework</a>
+                    </li>
+                  
                 
 
                   <div class="promo">
@@ -589,11 +597,12 @@ with each new release, or serve the API schema from your site's static media.</p
 <h3 id="adding-a-view-with-get_schema_view"><a class="toclink" href="#adding-a-view-with-get_schema_view">Adding a view with <code>get_schema_view</code></a></h3>
 <p>To add a dynamically generated schema view to your API, use <code>get_schema_view</code>.</p>
 <pre><code class="python">from rest_framework.schemas import get_schema_view
+from django.urls import path
 
 schema_view = get_schema_view(title=&quot;Example API&quot;)
 
 urlpatterns = [
-    url('^schema$', schema_view),
+    path('schema', schema_view),
     ...
 ]
 </code></pre>
@@ -798,7 +807,7 @@ exactly what you need.</p>
 schema_view = get_schema_view(title="Server Monitoring API")
 
 urlpatterns = [
-    url('^$', schema_view),
+    path('', schema_view),
     ...
 ]
 </code></pre>
@@ -852,7 +861,7 @@ schema_view = get_schema_view(
 <p>List of url patterns to limit the schema introspection to. If you only want the <code>myproject.api</code> urls
 to be exposed in the schema:</p>
 <pre><code>schema_url_patterns = [
-    url(r'^api/', include('myproject.api.urls')),
+    path('api/', include('myproject.api.urls')),
 ]
 
 schema_view = get_schema_view(
@@ -893,7 +902,7 @@ def schema_view(request):
 </code></pre>
 <p><strong>urls.py:</strong></p>
 <pre><code>urlpatterns = [
-    url('/', schema_view),
+    path('', schema_view),
     ...
 ]
 </code></pre>
@@ -1190,6 +1199,9 @@ Valid only if a <code>location="body"</code> field is included on the <code>Link
 <h2 id="drf-yasg-yet-another-swagger-generator"><a class="toclink" href="#drf-yasg-yet-another-swagger-generator">drf-yasg - Yet Another Swagger Generator</a></h2>
 <p><a href="https://github.com/axnsan12/drf-yasg/">drf-yasg</a> generates <a href="https://openapis.org/">OpenAPI</a> documents suitable for code generation - nested schemas,
 named models, response bodies, enum/pattern/min/max validators, form parameters, etc.</p>
+<h2 id="drf-spectacular-sane-and-flexible-openapi-30-schema-generation-for-django-rest-framework"><a class="toclink" href="#drf-spectacular-sane-and-flexible-openapi-30-schema-generation-for-django-rest-framework">drf-spectacular - Sane and flexible OpenAPI 3.0 schema generation for Django REST framework</a></h2>
+<p><a href="https://github.com/tfranzel/drf-spectacular/">drf-spectacular</a> is a <a href="https://openapis.org/">OpenAPI 3</a> schema generation tool with explicit focus on extensibility,
+customizability and client generation. It's usage patterns are very similar to <a href="https://github.com/axnsan12/drf-yasg/">drf-yasg</a>.</p>
             
 
           </div> <!--/span-->

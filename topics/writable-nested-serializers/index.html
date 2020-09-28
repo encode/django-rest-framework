@@ -294,6 +294,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../community/3.12-announcement/">3.12 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../community/3.11-announcement/">3.11 Announcement</a>
                   </li>
                   
@@ -432,7 +436,7 @@
 <p>Although flat data structures serve to properly delineate between the individual entities in your service, there are cases where it may be more appropriate or convenient to use nested data structures.</p>
 <p>Nested data structures are easy enough to work with if they're read-only - simply nest your serializer classes and you're good to go.  However, there are a few more subtleties to using writable nested serializers, due to the dependencies between the various model instances, and the need to save or delete multiple instances in a single action.</p>
 <h2 id="one-to-many-data-structures"><a class="toclink" href="#one-to-many-data-structures">One-to-many data structures</a></h2>
-<p><em>Example of a <strong>read-only</strong> nested serializer.  Nothing complex to worry about here.</em></p>
+<p><em>Example of a </em><em>read-only</em><em> nested serializer.  Nothing complex to worry about here.</em></p>
 <pre><code>class ToDoItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = ToDoItem
