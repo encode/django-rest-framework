@@ -36,11 +36,58 @@ You can determine your currently installed version using `pip show`:
 
 ## 3.11.x series
 
+### 3.12.0
+
+* Add `--file` option to `generateschema` command. [#7130]
+* Support `tags` for OpenAPI schema generation. See [the schema docs](https://www.django-rest-framework.org/api-guide/schemas/#grouping-operations-with-tags). [#7184]
+* Support customising the operation ID for schema generation. See [the schema docs](https://www.django-rest-framework.org/api-guide/schemas/#operationid). [#7190]
+* Support OpenAPI components for schema generation. See [the schema docs](https://www.django-rest-framework.org/api-guide/schemas/#components). [#7124]
+* The following methods on `AutoSchema` become public API: `get_path_parameters`, `get_pagination_parameters`, `get_filter_parameters`, `get_request_body`, `get_responses`, `get_serializer`, `get_paginator`, `map_serializer`, `map_field`, `map_choice_field`, `map_field_validators`, `allows_filters`. See [the schema docs](https://www.django-rest-framework.org/api-guide/schemas/#autoschema)
+* Add support for Django 3.1's database-agnositic `JSONField`. [#7467]
+* `SearchFilter` now supports nested search on `JSONField` and `HStoreField` model fields. [#7121]
+* `SearchFilter` now supports searching on `annotate()` fields. [#6240]
+* The authtoken model no longer exposes the `pk` in the admin URL. [#7341]
+* Add `__repr__` for Request instances. [#7239]
+* UTF-8 decoding with Latin-1 fallback for basic auth credentials. [#7193]
+* CharField treats surrogate characters as a validation failure. [#7026]
+* Don't include callables as default values in schemas. [#7105]
+* Improve `ListField` schema output to include all available child information. [#7137]
+* Allow `default=False` to be included for `BooleanField` schema outputs. [#7165]
+* Include `"type"` information in `ChoiceField` schema outputs. [#7161]
+* Include `"type": "object"` on schema objects. [#7169]
+* Don't include component in schema output for DELETE requests. [#7229]
+* Fix schema types for `DecimalField`. [#7254]
+* Fix schema generation for `ObtainAuthToken` view. [#7211]
+* Support passing `context=...` to view `.get_serializer()` methods. [#7298]
+* Pass custom code to `PermissionDenied` if permission class has one set. [#7306]
+* Include "example" in schema pagination output. [#7275]
+* Default status code of 201 on schema output for POST requests. [#7206]
+* Use camelCase for operation IDs in schema output. [#7208]
+* Warn if duplicate operation IDs exist in schema output. [#7207]
+* Improve handling of decimal type when mapping `ChoiceField` to a schema output. [#7264]
+* Disable YAML aliases for OpenAPI schema outputs. [#7131]
+* Fix action URL names for APIs included under a namespaced URL. [#7287]
+* Update jQuery version from 3.4 to 3.5. [#7313]
+* Fix `UniqueTogether` handling when serializer fields use `source=...`. [#7143]
+* HTTP `HEAD` requests now set `self.action` correctly on a ViewSet instance. [#7223]
+* Return a valid OpenAPI schema for the case where no API schema paths exist. [#7125]
+* Include tests in package distribution. [#7145]
+* Allow type checkers to support annotations like `ModelSerializer[Author]`. [#7385]
+* Don't include invalid `charset=None` portion in the request `Content-Type` header when using APIClient. [#7400]
+* Fix `\Z`/`\z` tokens in OpenAPI regexs. [#7389]
+* Fix `PrimaryKeyRelatedField` and `HyperlinkedRelatedField` when source field is actually a property. [#7142]
+* `Token.generate_key` is now a class method. [#7502]
+* `@action` warns if method is wrapped in a decorator that does not preserve information using `@functools.wraps`. [#7098]
+
+---
+
+## 3.11.x series
+
 ### 3.11.0
 
 **Date**: 12th December 2019
 
-* Drop `.set_context` API [in favour of a `requires_context` marker](../3.11-announcement#validator-default-context).
+* Drop `.set_context` API [in favour of a `requires_context` marker](3.11-announcement.md#validator-default-context).
 * Changed default widget for TextField with choices to select box. [#6892][gh6892]
 * Supported nested writes on non-relational fields, such as JSONField. [#6916][gh6916]
 * Include request/response media types in OpenAPI schemas, based on configured parsers/renderers. [#6865][gh6865]
