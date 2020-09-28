@@ -36,6 +36,12 @@ You can determine your currently installed version using `pip show`:
 
 ## 3.11.x series
 
+### 3.12.1
+
+Date: 28th September 2020
+
+* Add `TokenProxy` migration. [#7557]
+
 ### 3.12.0
 
 Date: 28th September 2020
