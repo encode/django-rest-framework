@@ -27,6 +27,7 @@ matrix:
       - { python: "3.8", env: TOXENV=base }
       - { python: "3.8", env: TOXENV=lint }
       - { python: "3.8", env: TOXENV=docs }
+      - { python: "3.8", env: TOXENV=checks }
 
       - python: "3.8"
         env: TOXENV=dist
