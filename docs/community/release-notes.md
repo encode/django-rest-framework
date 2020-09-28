@@ -38,6 +38,8 @@ You can determine your currently installed version using `pip show`:
 
 ### 3.12.0
 
+Date: 28th September 2020
+
 * Add `--file` option to `generateschema` command. [#7130]
 * Support `tags` for OpenAPI schema generation. See [the schema docs](https://www.django-rest-framework.org/api-guide/schemas/#grouping-operations-with-tags). [#7184]
 * Support customising the operation ID for schema generation. See [the schema docs](https://www.django-rest-framework.org/api-guide/schemas/#operationid). [#7190]
