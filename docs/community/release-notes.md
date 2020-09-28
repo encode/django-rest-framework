@@ -34,7 +34,7 @@ You can determine your currently installed version using `pip show`:
 
 ---
 
-## 3.11.x series
+## 3.12.x series
 
 ### 3.12.1
 
