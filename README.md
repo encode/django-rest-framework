@@ -1,4 +1,4 @@
-# [Django REST framework][docs]
+# [Django REST Framework][docs]
 
 [![build-status-image]][travis]
 [![coverage-status-image]][codecov]
