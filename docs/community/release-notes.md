@@ -91,6 +91,18 @@ Date: 28th September 2020
 
 ## 3.11.x series
 
+### 3.11.2
+
+**Date**: 30th September 2020
+
+* **Security**: Drop `urlize_quoted_links` template tag in favour of Django's built-in `urlize`. Removes a XSS vulnerability for some kinds of content in the browsable API.
+
+### 3.11.1
+
+**Date**: 5th August 2020
+
+* Fix compat with Django 3.1
+
 ### 3.11.0
 
 **Date**: 12th December 2019
