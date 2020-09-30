@@ -749,7 +749,7 @@ class NullBooleanField(BooleanField):
         warnings.warn(
             "The `NullBooleanField` is deprecated and will be removed starting "
             "with 3.14. Instead use the `BooleanField` field and set "
-            "`null=True` which does the same thing.",
+            "`allow_null=True` which does the same thing.",
             RemovedInDRF314Warning, stacklevel=2
         )
 
