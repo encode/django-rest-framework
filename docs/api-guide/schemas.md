@@ -181,7 +181,7 @@ dictionary For example you might wish to add terms of service to the [top-level
 
 ```
 class TOSSchemaGenerator(SchemaGenerator):
-    def get_schema(self):
+    def get_schema(self, *args, **kwargs):
         schema = super().get_schema()
         schema["info"]["termsOfService"] = "https://example.com/tos.html"
         return schema
