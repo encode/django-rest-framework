@@ -141,6 +141,15 @@ Using the mixin classes we've rewritten the views to use slightly less code than
     class SnippetDetail(generics.RetrieveUpdateDestroyAPIView):
         queryset = Snippet.objects.all()
         serializer_class = SnippetSerializer
+    
+    class SnippetUpdate(generics.UpdateAPIView):
+        queryset = Snippet.objects.all()
+        serializer_class = SnippetSerializer
+        
+    class SnippetDestroy(generics.DestroyAPIView):
+        queryset = Snippet.objects.all()
+        serializer_class = SnippetSerializer
+
 
 Wow, that's pretty concise.  We've gotten a huge amount for free, and our code looks like good, clean, idiomatic Django.
 
