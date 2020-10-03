@@ -101,7 +101,7 @@ Want your Django REST Framework talk/tutorial/article to be added to our website
 [django-rest-framework-course]: https://teamtreehouse.com/library/django-rest-framework
 [pycon-uk-2016]: https://www.youtube.com/watch?v=FjmiGh7OqVg
 [django-under-hood-2014]: https://www.youtube.com/watch?v=3cSsbe-tA0E
-[integrating-pandas-drf-and-bokeh]: https://machinalis.com/blog/pandas-django-rest-framework-bokeh/
+[integrating-pandas-drf-and-bokeh]: https://machinalis28.rssing.com/chan-63624552/latest.php#item5
 [controlling-uncertainty-on-web-apps-and-apis]: https://machinalis.com/blog/controlling-uncertainty-on-web-applications-and-apis/
 [full-text-search-in-drf]: https://machinalis.com/blog/full-text-search-on-django-rest-framework/
 [oauth2-authentication-with-drf]: https://machinalis.com/blog/oauth2-authentication/
