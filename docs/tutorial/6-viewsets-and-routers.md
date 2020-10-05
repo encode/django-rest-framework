@@ -16,7 +16,7 @@ First of all let's refactor our `UserList` and `UserDetail` views into a single 
 
     class UserViewSet(viewsets.ReadOnlyModelViewSet):
         """
-        This viewset automatically provides `list` and `detail` actions.
+        This viewset automatically provides `list` and `retrieve` actions.
         """
         queryset = User.objects.all()
         serializer_class = UserSerializer
