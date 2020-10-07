@@ -69,6 +69,7 @@ class RegularFieldsModel(models.Model):
     small_integer_field = models.SmallIntegerField()
     text_field = models.TextField(max_length=100)
     file_field = models.FileField(max_length=100)
+    optional_file_field = models.FileField(max_length=100, blank=True, null=True)
     time_field = models.TimeField()
     url_field = models.URLField(max_length=100)
     custom_field = CustomField()
@@ -189,6 +190,7 @@ class TestRegularFieldMappings(TestCase):
                 small_integer_field = IntegerField()
                 text_field = CharField(max_length=100, style={'base_template': 'textarea.html'})
                 file_field = FileField(max_length=100)
+                optional_file_field = FileField(allow_null=True, max_length=100, required=False)
                 time_field = TimeField()
                 url_field = URLField(max_length=100)
                 custom_field = ModelField(model_field=<tests.test_model_serializer.CustomField: custom_field>)
@@ -360,6 +362,14 @@ class TestRegularFieldMappings(TestCase):
                 fields = '__all__'
 
         ExampleSerializer()
+
+    def test_optional_file_field(self):
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = RegularFieldsModel
+                fields = ('auto_field', 'optional_file_field')
+
+        assert TestSerializer(data={}).is_valid()
 
 
 class TestDurationFieldMapping(TestCase):
