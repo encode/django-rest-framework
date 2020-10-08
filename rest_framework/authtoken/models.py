@@ -2,6 +2,7 @@ import binascii
 import os
 
 from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -40,14 +41,31 @@ class Token(models.Model):
         return self.key
 
 
-class TokenProxy(Token):
-    """
-    Proxy mapping pk to user pk for use in admin.
-    """
-    @property
-    def pk(self):
-        return self.user.pk
+if 'rest_framework.authtoken' in settings.INSTALLED_APPS:
+    class TokenProxy(Token):
+        """
+        Proxy mapping pk to user pk for use in admin.
+        """
+        @property
+        def pk(self):
+            return self.user.pk
 
-    class Meta:
-        proxy = True
-        verbose_name = "token"
+        class Meta:
+            proxy = True
+            verbose_name = "token"
+else:
+    def improperly_configured(*args, **kwargs):
+        raise ImproperlyConfigured(
+            '"rest_framework.authtoken" must be in your '
+            'settings.INSTALLED_APPS to use the Token or TokenProxy model.')
+
+    # throw improperly_configured when accessing TokenProxy.objects
+    class Descriptor:
+        def __get__(self, obj, type=None):
+            improperly_configured()
+
+    class TokenProxy:
+        def __init__(self, *args, **kwargs):
+            improperly_configured()
+
+        objects = Descriptor()
