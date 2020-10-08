@@ -14,6 +14,7 @@ from collections import OrderedDict
 
 import pytest
 from django.core.exceptions import ImproperlyConfigured
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.validators import (
     MaxValueValidator, MinLengthValidator, MinValueValidator
@@ -370,6 +371,36 @@ class TestRegularFieldMappings(TestCase):
                 fields = ('auto_field', 'optional_file_field')
 
         assert TestSerializer(data={}).is_valid()
+
+    def test_optional_file_field__instance(self):
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = RegularFieldsModel
+                fields = ('auto_field', 'optional_file_field')
+
+        test_instance = RegularFieldsModel(
+            big_integer_field=1,
+            char_field="test",
+            comma_separated_integer_field="1,000",
+            date_field="2020-01-01",
+            datetime_field="2020-01-01T00:00",
+            decimal_field=1.2,
+            email_field="test@test.com",
+            float_field=1.2,
+            integer_field=1,
+            positive_integer_field=1,
+            positive_small_integer_field=1,
+            slug_field="abc",
+            small_integer_field=1,
+            text_field="test",
+            file_field=SimpleUploadedFile(name="test.csv", content=b"stuff"),
+            time_field="00:00",
+            url_field="https://example.com",
+            custom_field=None,
+        )
+        assert TestSerializer(
+            data={"optional_file_field": test_instance.optional_file_field},
+        ).is_valid()
 
 
 class TestDurationFieldMapping(TestCase):
