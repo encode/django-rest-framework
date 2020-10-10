@@ -257,8 +257,9 @@ class PrimaryKeyRelatedField(RelatedField):
     def to_internal_value(self, data):
         if self.pk_field is not None:
             data = self.pk_field.to_internal_value(data)
+        queryset = self.get_queryset()
         try:
-            return self.get_queryset().get(pk=data)
+            return queryset.get(pk=data)
         except ObjectDoesNotExist:
             self.fail('does_not_exist', pk_value=data)
         except (TypeError, ValueError):
@@ -454,8 +455,9 @@ class SlugRelatedField(RelatedField):
         super().__init__(**kwargs)
 
     def to_internal_value(self, data):
+        queryset = self.get_queryset()
         try:
-            return self.get_queryset().get(**{self.slug_field: data})
+            return queryset.get(**{self.slug_field: data})
         except ObjectDoesNotExist:
             self.fail('does_not_exist', slug_name=self.slug_field, value=smart_str(data))
         except (TypeError, ValueError):
