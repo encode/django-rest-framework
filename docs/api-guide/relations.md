@@ -337,7 +337,7 @@ output representation should be generated from the model instance.
 
 To implement a custom relational field, you should override `RelatedField`, and implement the `.to_representation(self, value)` method. This method takes the target of the field as the `value` argument, and should return the representation that should be used to serialize the target. The `value` argument will typically be a model instance.
 
-If you want to implement a read-write relational field, you must also implement the `.to_internal_value(self, data)` method.
+If you want to implement a read-write relational field, you must also implement the [`.to_internal_value(self, data)` method][to_internal_value].
 
 To provide a dynamic queryset based on the `context`, you can also override `.get_queryset(self)` instead of specifying `.queryset` on the class or when initializing the field.
 
@@ -605,3 +605,4 @@ The [rest-framework-generic-relations][drf-nested-relations] library provides re
 [drf-nested-relations]: https://github.com/Ian-Foote/rest-framework-generic-relations
 [django-intermediary-manytomany]: https://docs.djangoproject.com/en/2.2/topics/db/models/#intermediary-manytomany
 [dealing-with-nested-objects]: https://www.django-rest-framework.org/api-guide/serializers/#dealing-with-nested-objects
+[to_internal_value]: https://www.django-rest-framework.org/api-guide/serializers/#to_internal_valueself-data
