@@ -5,7 +5,7 @@ from urllib import parse
 from django.db import models
 from django.utils.encoding import force_str
 
-from rest_framework import RemovedInDRF314Warning, exceptions, serializers
+from rest_framework import RemovedInDRF315Warning, exceptions, serializers
 from rest_framework.compat import coreapi, coreschema, uritemplate
 from rest_framework.settings import api_settings
 
@@ -119,7 +119,7 @@ class SchemaGenerator(BaseSchemaGenerator):
     def __init__(self, title=None, url=None, description=None, patterns=None, urlconf=None, version=None):
         assert coreapi, '`coreapi` must be installed for schema support.'
         if coreapi is not None:
-            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.14', RemovedInDRF314Warning)
+            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.15', RemovedInDRF315Warning)
         assert coreschema, '`coreschema` must be installed for schema support.'
 
         super(SchemaGenerator, self).__init__(title, url, description, patterns, urlconf)
@@ -350,7 +350,7 @@ class AutoSchema(ViewInspector):
         """
         super(AutoSchema, self).__init__()
         if coreapi is not None:
-            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.14', RemovedInDRF314Warning)
+            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.15', RemovedInDRF315Warning)
         if manual_fields is None:
             manual_fields = []
         self._manual_fields = manual_fields
@@ -593,7 +593,7 @@ class ManualSchema(ViewInspector):
         """
         super(ManualSchema, self).__init__()
         if coreapi is not None:
-            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.14', RemovedInDRF314Warning)
+            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.15', RemovedInDRF315Warning)
         assert all(isinstance(f, coreapi.Field) for f in fields), "`fields` must be a list of coreapi.Field instances"
         self._fields = fields
         self._description = description
@@ -616,5 +616,5 @@ class ManualSchema(ViewInspector):
 def is_enabled():
     """Is CoreAPI Mode enabled?"""
     if coreapi is not None:
-        warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.14', RemovedInDRF314Warning)
+        warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.15', RemovedInDRF315Warning)
     return issubclass(api_settings.DEFAULT_SCHEMA_CLASS, AutoSchema)

@@ -7,7 +7,7 @@ from django.test import TestCase, override_settings
 from django.urls import include, path
 
 from rest_framework import (
-    RemovedInDRF314Warning, filters, generics, pagination, permissions,
+    RemovedInDRF315Warning, filters, generics, pagination, permissions,
     serializers
 )
 from rest_framework.compat import coreapi, coreschema
@@ -1384,42 +1384,42 @@ def test_schema_handles_exception():
 
 @pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
 def test_coreapi_deprecation():
-    with pytest.warns(RemovedInDRF314Warning):
+    with pytest.warns(RemovedInDRF315Warning):
         SchemaGenerator()
 
-    with pytest.warns(RemovedInDRF314Warning):
+    with pytest.warns(RemovedInDRF315Warning):
         AutoSchema()
 
-    with pytest.warns(RemovedInDRF314Warning):
+    with pytest.warns(RemovedInDRF315Warning):
         ManualSchema({})
 
-    with pytest.warns(RemovedInDRF314Warning):
+    with pytest.warns(RemovedInDRF315Warning):
         deprecated_filter = OrderingFilter()
         deprecated_filter.get_schema_fields({})
 
-    with pytest.warns(RemovedInDRF314Warning):
+    with pytest.warns(RemovedInDRF315Warning):
         deprecated_filter = BaseFilterBackend()
         deprecated_filter.get_schema_fields({})
 
-    with pytest.warns(RemovedInDRF314Warning):
+    with pytest.warns(RemovedInDRF315Warning):
         deprecated_filter = SearchFilter()
         deprecated_filter.get_schema_fields({})
 
-    with pytest.warns(RemovedInDRF314Warning):
+    with pytest.warns(RemovedInDRF315Warning):
         paginator = BasePagination()
         paginator.get_schema_fields({})
 
-    with pytest.warns(RemovedInDRF314Warning):
+    with pytest.warns(RemovedInDRF315Warning):
         paginator = PageNumberPagination()
         paginator.get_schema_fields({})
 
-    with pytest.warns(RemovedInDRF314Warning):
+    with pytest.warns(RemovedInDRF315Warning):
         paginator = LimitOffsetPagination()
         paginator.get_schema_fields({})
 
-    with pytest.warns(RemovedInDRF314Warning):
+    with pytest.warns(RemovedInDRF315Warning):
         paginator = CursorPagination()
         paginator.get_schema_fields({})
 
-    with pytest.warns(RemovedInDRF314Warning):
+    with pytest.warns(RemovedInDRF315Warning):
         is_enabled()

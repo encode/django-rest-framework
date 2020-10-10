@@ -13,7 +13,7 @@ from django.template import loader
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
 
-from rest_framework import RemovedInDRF314Warning
+from rest_framework import RemovedInDRF315Warning
 from rest_framework.compat import coreapi, coreschema, distinct
 from rest_framework.settings import api_settings
 
@@ -32,7 +32,7 @@ class BaseFilterBackend:
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
         if coreapi is not None:
-            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.14', RemovedInDRF314Warning)
+            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.15', RemovedInDRF315Warning)
         assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
         return []
 
@@ -151,7 +151,7 @@ class SearchFilter(BaseFilterBackend):
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
         if coreapi is not None:
-            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.14', RemovedInDRF314Warning)
+            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.15', RemovedInDRF315Warning)
         assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
         return [
             coreapi.Field(
@@ -303,7 +303,7 @@ class OrderingFilter(BaseFilterBackend):
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
         if coreapi is not None:
-            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.14', RemovedInDRF314Warning)
+            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.15', RemovedInDRF315Warning)
         assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
         return [
             coreapi.Field(
