@@ -1,3 +1,4 @@
+import pytest
 from django.test import TestCase
 
 from rest_framework.compat import apply_markdown
@@ -30,36 +31,7 @@ indented
 
 # If markdown is installed we also test it's working
 # (and that our wrapped forces '=' to h2 and '-' to h3)
-MARKED_DOWN_HILITE = """
-<div class="highlight"><pre><span></span><span \
-class="p">[{</span><br />    <span class="nt">&quot;alpha&quot;</span><span\
- class="p">:</span> <span class="mi">1</span><span class="p">,</span><br />\
-    <span class="nt">&quot;beta: &quot;</span><span class="err">this</span>\
- <span class="err">is</span> <span class="err">a</span> <span class="err">\
-string&quot;</span><br /><span class="p">}]</span><br /></pre></div>
-
-<p><br /></p>"""
-
-MARKED_DOWN_NOT_HILITE = """
-<p><code>json
-[{
-    "alpha": 1,
-    "beta: "this is a string"
-}]</code></p>"""
-
-# We support markdown < 2.1 and markdown >= 2.1
-MARKED_DOWN_lt_21 = """<h2>an example docstring</h2>
-<ul>
-<li>list</li>
-<li>list</li>
-</ul>
-<h3>another header</h3>
-<pre><code>code block
-</code></pre>
-<p>indented</p>
-<h2 id="hash_style_header">hash style header</h2>%s"""
-
-MARKED_DOWN_gte_21 = """<h2 id="an-example-docstring">an example docstring</h2>
+MARKED_DOWN_HILITE = """<h2 id="an-example-docstring">an example docstring</h2>
 <ul>
 <li>list</li>
 <li>list</li>
@@ -68,7 +40,15 @@ MARKED_DOWN_gte_21 = """<h2 id="an-example-docstring">an example docstring</h2>
 <pre><code>code block
 </code></pre>
 <p>indented</p>
-<h2 id="hash-style-header">hash style header</h2>%s"""
+<h2 id="hash-style-header">hash style header</h2>
+<div class="highlight"><pre><span></span><span class="p">[{</span><br />\
+    <span class="nt">&quot;alpha&quot;</span><span class="p">:</span>\
+ <span class="mi">1</span><span class="p">,</span><br />\
+    <span class="nt">&quot;beta: &quot;</span><span class="err">this\
+</span> <span class="err">is</span> <span class="err">a</span> \
+<span class="err">string&quot;</span><br /><span class="p">}]</span>\
+<br /></pre></div>
+<p><br /></p>"""
 
 
 class TestViewNamesAndDescriptions(TestCase):
@@ -165,23 +145,12 @@ class TestViewNamesAndDescriptions(TestCase):
 
         assert MockView().get_view_description() == 'a gettext string'
 
+    @pytest.mark.skipif(not apply_markdown, reason="Markdown is not installed")
     def test_markdown(self):
         """
         Ensure markdown to HTML works as expected.
         """
-        if apply_markdown:
-            md_applied = apply_markdown(DESCRIPTION)
-            gte_21_match = (
-                md_applied == (
-                    MARKED_DOWN_gte_21 % MARKED_DOWN_HILITE) or
-                md_applied == (
-                    MARKED_DOWN_gte_21 % MARKED_DOWN_NOT_HILITE))
-            lt_21_match = (
-                md_applied == (
-                    MARKED_DOWN_lt_21 % MARKED_DOWN_HILITE) or
-                md_applied == (
-                    MARKED_DOWN_lt_21 % MARKED_DOWN_NOT_HILITE))
-            assert gte_21_match or lt_21_match
+        assert apply_markdown(DESCRIPTION) == MARKED_DOWN_HILITE
 
 
 def test_dedent_tabs():
