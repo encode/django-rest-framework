@@ -10,7 +10,9 @@ from rest_framework import filters, generics, pagination, routers, serializers
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.compat import uritemplate
 from rest_framework.parsers import JSONParser, MultiPartParser
-from rest_framework.renderers import JSONRenderer, OpenAPIRenderer
+from rest_framework.renderers import (
+    BaseRenderer, BrowsableAPIRenderer, JSONRenderer, OpenAPIRenderer
+)
 from rest_framework.request import Request
 from rest_framework.schemas.openapi import AutoSchema, SchemaGenerator
 
@@ -507,9 +509,16 @@ class TestOperationIntrospection(TestCase):
         path = '/{id}/'
         method = 'GET'
 
+        class CustomBrowsableAPIRenderer(BrowsableAPIRenderer):
+            media_type = 'image/jpeg'  # that's a wild API renderer
+
+        class TextRenderer(BaseRenderer):
+            media_type = 'text/plain'
+            format = 'text'
+
         class View(generics.CreateAPIView):
             serializer_class = views.ExampleSerializer
-            renderer_classes = [JSONRenderer]
+            renderer_classes = [JSONRenderer, TextRenderer, BrowsableAPIRenderer, CustomBrowsableAPIRenderer]
 
         view = create_view(
             View,
@@ -524,8 +533,8 @@ class TestOperationIntrospection(TestCase):
         # schema support is there
         success_response = responses['200']
 
-        assert len(success_response['content'].keys()) == 1
-        assert 'application/json' in success_response['content']
+        # Check that the API renderers aren't included, but custom renderers are
+        assert set(success_response['content']) == {'application/json', 'text/plain'}
 
     def test_openapi_yaml_rendering_without_aliases(self):
         renderer = OpenAPIRenderer()
