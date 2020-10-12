@@ -1,3 +1,5 @@
+import sys
+
 import pytest
 from django.test import TestCase
 
@@ -31,7 +33,7 @@ indented
 
 # If markdown is installed we also test it's working
 # (and that our wrapped forces '=' to h2 and '-' to h3)
-MARKED_DOWN_HILITE = """<h2 id="an-example-docstring">an example docstring</h2>
+MARKDOWN_BASE = """<h2 id="an-example-docstring">an example docstring</h2>
 <ul>
 <li>list</li>
 <li>list</li>
@@ -40,7 +42,9 @@ MARKED_DOWN_HILITE = """<h2 id="an-example-docstring">an example docstring</h2>
 <pre><code>code block
 </code></pre>
 <p>indented</p>
-<h2 id="hash-style-header">hash style header</h2>
+<h2 id="hash-style-header">hash style header</h2>%s"""
+
+MARKDOWN_gte_33 = """
 <div class="highlight"><pre><span></span><span class="p">[{</span><br />\
     <span class="nt">&quot;alpha&quot;</span><span class="p">:</span>\
  <span class="mi">1</span><span class="p">,</span><br />\
@@ -48,6 +52,17 @@ MARKED_DOWN_HILITE = """<h2 id="an-example-docstring">an example docstring</h2>
 </span> <span class="err">is</span> <span class="err">a</span> \
 <span class="err">string&quot;</span><br /><span class="p">}]</span>\
 <br /></pre></div>
+<p><br /></p>"""
+
+MARKDOWN_lt_33 = """
+<div class="highlight"><pre><span></span><span class="p">[{</span><br />\
+    <span class="nt">&quot;alpha&quot;</span><span class="p">:</span>\
+ <span class="mi">1</span><span class="p">,</span><br />\
+    <span class="nt">&quot;beta: &quot;</span><span class="err">this\
+</span> <span class="err">is</span> <span class="err">a</span>\
+ <span class="err">string&quot;</span><br /><span class="p">}]</span>\
+<br /></pre></div>
+
 <p><br /></p>"""
 
 
@@ -150,7 +165,11 @@ class TestViewNamesAndDescriptions(TestCase):
         """
         Ensure markdown to HTML works as expected.
         """
-        assert apply_markdown(DESCRIPTION) == MARKED_DOWN_HILITE
+        # Markdown 3.3 is only supported on Python 3.6 and higher
+        if sys.version_info >= (3, 6):
+            assert apply_markdown(DESCRIPTION) == MARKDOWN_BASE % MARKDOWN_gte_33
+        else:
+            assert apply_markdown(DESCRIPTION) == MARKDOWN_BASE % MARKDOWN_lt_33
 
 
 def test_dedent_tabs():
