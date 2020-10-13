@@ -36,6 +36,14 @@ You can determine your currently installed version using `pip show`:
 
 ## 3.12.x series
 
+### 3.12.2
+
+Date: 13th October 2020
+
+* Fix issue if `rest_framework.authtoken.models` is imported, but `rest_framework.authtoken` is not in INSTALLED_APPS. [#7571]
+* Ignore subclasses of BrowsableAPIRenderer in OpenAPI schema. [#7497]
+* Narrower exception catching in serilizer fields, to ensure that any errors in broken `get_queryset()` methods are not masked. [#7480]
+
 ### 3.12.1
 
 Date: 28th September 2020
