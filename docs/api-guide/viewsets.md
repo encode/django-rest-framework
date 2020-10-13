@@ -179,7 +179,7 @@ The `action` decorator will route `GET` requests by default, but may also accept
            ...
 
 
-The decorator allows you to override any viewset-level `*_classes` such as `render_classes` or `permission_classes`:
+The decorator allows you to override any viewset-level configuration such as `permission_classes`, `serializer_class`, `filter_backends`...:
 
         @action(detail=True, methods=['post'], permission_classes=[IsAdminOrIsSelf])
         def set_password(self, request, pk=None):
