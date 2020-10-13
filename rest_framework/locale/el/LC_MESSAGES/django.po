@@ -125,7 +125,7 @@ msgstr "Δε βρέθηκε."
 
 #: exceptions.py:109
 msgid "Method \"{method}\" not allowed."
-msgstr "Η μέθοδος \"{method\"} δεν επιτρέπεται."
+msgstr "Η μέθοδος \"{method}\" δεν επιτρέπεται."
 
 #: exceptions.py:120
 msgid "Could not satisfy the request Accept header."
