@@ -171,11 +171,6 @@ A more complete example of extra actions:
             serializer = self.get_serializer(recent_users, many=True)
             return Response(serializer.data)
 
-The decorator can additionally take extra arguments that will be set for the routed view only.  For example:
-
-        @action(detail=True, methods=['post'], permission_classes=[IsAdminOrIsSelf])
-        def set_password(self, request, pk=None):
-           ...
 
 The `action` decorator will route `GET` requests by default, but may also accept other HTTP methods by setting the `methods` argument.  For example:
 
@@ -183,7 +178,14 @@ The `action` decorator will route `GET` requests by default, but may also accept
         def unset_password(self, request, pk=None):
            ...
 
-The two new actions will then be available at the urls `^users/{pk}/set_password/$` and `^users/{pk}/unset_password/$`
+
+The decorator allows you to override any viewset-level configuration such as `permission_classes`, `serializer_class`, `filter_backends`...:
+
+        @action(detail=True, methods=['post'], permission_classes=[IsAdminOrIsSelf])
+        def set_password(self, request, pk=None):
+           ...
+
+The two new actions will then be available at the urls `^users/{pk}/set_password/$` and `^users/{pk}/unset_password/$`. Use the `url_path` and `url_name` parameters to change the URL segement and the reverse URL name of the action.
 
 To view all extra actions, call the `.get_extra_actions()` method.
 
