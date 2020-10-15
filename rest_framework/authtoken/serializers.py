@@ -4,6 +4,11 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
 
+class UserSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    username = serializers.CharField(max_length=100)
+
+
 class AuthTokenSerializer(serializers.Serializer):
     username = serializers.CharField(
         label=_("Username"),
