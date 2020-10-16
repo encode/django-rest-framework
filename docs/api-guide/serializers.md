@@ -527,6 +527,21 @@ You can add extra fields to a `ModelSerializer` or override the default fields b
 
 Extra fields can correspond to any property or callable on the model.
 
+## Specifying field classes
+
+In order to override the field class only, and still get the field kwargs set dynamically, you may use the `field_classes`
+Meta option.
+
+    class AccountSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Account
+            fields = ['account_name']
+            field_classes = {'account_name': AccountNameField}
+
+Note that the field class that you use needs to support whatever kwargs the serializer determines to use for this field.
+Typically, you want your custom field class to inherit from the appropriate built in field class.
+For example, the custom `AccountNameField` could inherit from the built in `CharField`.
+
 ## Specifying read only fields
 
 You may wish to specify multiple fields as read-only. Instead of adding each field explicitly with the `read_only=True` attribute, you may use the shortcut Meta option, `read_only_fields`.

@@ -271,6 +271,26 @@ class TestRegularFieldMappings(TestCase):
         """)
         self.assertEqual(repr(TestSerializer()), expected)
 
+    def test_field_classes(self):
+        """
+        Ensure `field_classes` do override the field class.
+        """
+        class CustomCharField(serializers.CharField):
+            pass
+
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = RegularFieldsModel
+                fields = ('auto_field', 'char_field')
+                field_classes = {'char_field': CustomCharField}
+
+        expected = dedent("""
+            TestSerializer():
+                auto_field = IntegerField(read_only=True)
+                char_field = CustomCharField(max_length=100)
+        """)
+        self.assertEqual(repr(TestSerializer()), expected)
+
     def test_extra_field_kwargs(self):
         """
         Ensure `extra_kwargs` are passed to generated fields.

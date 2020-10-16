@@ -1054,6 +1054,11 @@ class ModelSerializer(Serializer):
                 source, info, model, depth
             )
 
+            # Override field_class by classes defined in `Meta.field_classes`.
+            field_class = self.get_field_class(
+                source, info, model, field_class
+            )
+
             # Include any kwargs defined in `Meta.extra_kwargs`
             field_kwargs = self.include_extra_kwargs(
                 field_kwargs, extra_field_kwargs
@@ -1318,6 +1323,17 @@ class ModelSerializer(Serializer):
             'Field name `%s` is not valid for model `%s`.' %
             (field_name, model_class.__name__)
         )
+
+    def get_field_class(self, field_name, info, model_class, field_class):
+        """
+        Get field class from 'field_classes', or use the default.
+        """
+        field_classes = getattr(self.Meta, 'field_classes', {})
+
+        if field_name in field_classes:
+            return field_classes[field_name]
+
+        return field_class
 
     def include_extra_kwargs(self, kwargs, extra_kwargs):
         """
