@@ -53,16 +53,18 @@ class AND:
         self.op2 = op2
 
     def has_permission(self, request, view):
-        return (
-            self.op1.has_permission(request, view) and
-            self.op2.has_permission(request, view)
-        )
+        hasperm1 = self.op1.has_permission(request, view)
+        if not hasperm1:
+            return hasperm1
+        hasperm2 = self.op2.has_permission(request, view)
+        return hasperm1 if hasperm2 is NotImplemented else hasperm2
 
     def has_object_permission(self, request, view, obj):
-        return (
-            self.op1.has_object_permission(request, view, obj) and
-            self.op2.has_object_permission(request, view, obj)
-        )
+        hasperm1 = self.op1.has_object_permission(request, view, obj)
+        if not hasperm1:
+            return hasperm1
+        hasperm2 = self.op2.has_object_permission(request, view, obj)
+        return hasperm1 if hasperm2 is NotImplemented else hasperm2
 
 
 class OR:
@@ -71,16 +73,18 @@ class OR:
         self.op2 = op2
 
     def has_permission(self, request, view):
-        return (
-            self.op1.has_permission(request, view) or
-            self.op2.has_permission(request, view)
-        )
+        hasperm1 = self.op1.has_permission(request, view)
+        if hasperm1 and hasperm1 is not NotImplemented:
+            return hasperm1
+        hasperm2 = self.op2.has_permission(request, view)
+        return hasperm1 if hasperm2 is NotImplemented else hasperm2
 
     def has_object_permission(self, request, view, obj):
-        return (
-            self.op1.has_object_permission(request, view, obj) or
-            self.op2.has_object_permission(request, view, obj)
-        )
+        hasperm1 = self.op1.has_object_permission(request, view, obj)
+        if hasperm1 and hasperm1 is not NotImplemented:
+            return hasperm1
+        hasperm2 = self.op2.has_object_permission(request, view, obj)
+        return hasperm1 if hasperm2 is NotImplemented else hasperm2
 
 
 class NOT:
@@ -88,10 +92,12 @@ class NOT:
         self.op1 = op1
 
     def has_permission(self, request, view):
-        return not self.op1.has_permission(request, view)
+        hasperm = self.op1.has_permission(request, view)
+        return hasperm if hasperm is NotImplemented else not hasperm
 
     def has_object_permission(self, request, view, obj):
-        return not self.op1.has_object_permission(request, view, obj)
+        hasperm = self.op1.has_object_permission(request, view, obj)
+        return hasperm if hasperm is NotImplemented else not hasperm
 
 
 class BasePermissionMetaclass(OperationHolderMixin, type):
@@ -107,13 +113,13 @@ class BasePermission(metaclass=BasePermissionMetaclass):
         """
         Return `True` if permission is granted, `False` otherwise.
         """
-        return True
+        return NotImplemented
 
     def has_object_permission(self, request, view, obj):
         """
         Return `True` if permission is granted, `False` otherwise.
         """
-        return True
+        return NotImplemented
 
 
 class AllowAny(BasePermission):
@@ -220,7 +226,7 @@ class DjangoModelPermissions(BasePermission):
         # Workaround to ensure DjangoModelPermissions are not applied
         # to the root view when using DefaultRouter.
         if getattr(view, '_ignore_model_permissions', False):
-            return True
+            return super().has_permission(request, view)
 
         if not request.user or (
            not request.user.is_authenticated and self.authenticated_users_only):
