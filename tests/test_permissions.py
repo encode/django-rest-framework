@@ -677,3 +677,21 @@ class PermissionsCompositionTests(TestCase):
                 assert hasperm is False
                 assert mock_deny.call_count == 1
                 mock_allow.assert_not_called()
+
+    def test_has_permission_not_implemented(self):
+        request = factory.get('/1', format='json')
+        request.user = self.user
+        composed_perm = ~BasicObjectPerm
+        assert composed_perm().has_permission(request, None) is NotImplemented
+        assert composed_perm().has_object_permission(request, None, None) is True
+
+    def test_has_object_permission_not_implemented(self):
+        request = factory.get('/1', format='json')
+        request.user = self.user
+        composed_perm = (
+            permissions.IsAdminUser |
+            BasicObjectPerm
+        )
+        assert composed_perm().has_permission(request, None) is False
+        assert composed_perm().has_object_permission(request, None, None) is False
+
