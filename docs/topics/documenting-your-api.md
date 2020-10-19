@@ -130,8 +130,8 @@ There are a number of mature third-party packages for providing API documentatio
 
 #### drf-yasg - Yet Another Swagger Generator
 
-[drf-yasg][drf-yasg] is a [Swagger][swagger] generation tool implemented without using the schema generation provided
-by Django Rest Framework.
+[drf-yasg2][drf-yasg2] (an active fork of [drf-yasg][drf-yasg]) is a [Swagger][swagger] generation tool 
+implemented without using the schema generation provided by Django Rest Framework.
 
 It aims to implement as much of the [OpenAPI][open-api] specification as possible - nested schemas, named models,
 response bodies, enum/pattern/min/max validators, form parameters, etc. - and to generate documents usable with code
@@ -145,7 +145,7 @@ This also translates into a very useful interactive documentation viewer in the 
 #### drf-spectacular - Sane and flexible OpenAPI 3.0 schema generation for Django REST framework
 
 [drf-spectacular][drf-spectacular] is a [OpenAPI 3][open-api] schema generation tool with explicit focus on extensibility,
-customizability and client generation. Usage patterns are very similar to [drf-yasg][drf-yasg].
+customizability and client generation. Usage patterns are very similar to [drf-yasg2][drf-yasg2].
 
 It aims to extract as much schema information as possible, while providing decorators and extensions for easy
 customization. There is explicit support for [swagger-codegen][swagger], [SwaggerUI][swagger-ui] and [Redoc][redoc],
@@ -226,6 +226,7 @@ To implement a hypermedia API you'll need to decide on an appropriate media type
 [image-self-describing-api]: ../img/self-describing.png
 
 [drf-yasg]: https://github.com/axnsan12/drf-yasg/
+[drf-yasg2]: https://github.com/JoelLefkowitz/drf-yasg
 [drf-spectacular]: https://github.com/tfranzel/drf-spectacular/
 [markdown]: https://daringfireball.net/projects/markdown/syntax
 [open-api]: https://openapis.org/
