@@ -35,10 +35,7 @@ def _divide_with_ceil(a, b):
     """
     Returns 'a' divided by 'b', with any remainder rounded up.
     """
-    if a % b:
-        return (a // b) + 1
-
-    return a // b
+    return (a + b - 1) // b
 
 
 def _get_displayed_page_numbers(current, final):
