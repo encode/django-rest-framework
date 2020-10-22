@@ -226,10 +226,17 @@ class OrderingFilter(BaseFilterBackend):
             )
             raise ImproperlyConfigured(msg % self.__class__.__name__)
 
+        model_field_names = [field.name for field in queryset.model._meta.fields]
+
         return [
             (field.source.replace('.', '__') or field_name, field.label)
             for field_name, field in serializer_class(context=context).fields.items()
-            if not getattr(field, 'write_only', False) and not field.source == '*'
+            if (
+                not getattr(field, 'write_only', False) and
+                not field.source == '*' and (
+                    field_name in model_field_names or field.source in model_field_names
+                )
+            )
         ]
 
     def get_valid_fields(self, queryset, view, context={}):
