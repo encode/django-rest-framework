@@ -432,6 +432,13 @@ There are currently two forks of this project.
 
 [drfpasswordless][drfpasswordless] adds (Medium, Square Cash inspired) passwordless support to Django REST Framework's own TokenAuthentication scheme. Users log in and sign up with a token sent to a contact point like an email address or a mobile number.
 
+## Django-Rest-Durin
+
+[Django-Rest-Durin][django-rest-durin] is built with the idea to have one library that does token auth for multiple Web/CLI/Mobile API clients via one interface but allows different token configuration for each API Client that consumes the API. It provides support for multiple tokens per user via custom models, views, permissions that work with Django-Rest-Framework. The token expiration time can be different per API client and is customizable via the Django Admin Interface.
+
+More information can be found in the [Documentation](https://django-rest-durin.readthedocs.io/en/latest/index.html).
+
+
 [cite]: https://jacobian.org/writing/rest-worst-practices/
 [http401]: https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2
 [http403]: https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.4
@@ -466,3 +473,4 @@ There are currently two forks of this project.
 [django-rest-framework-social-oauth2]: https://github.com/PhilipGarnero/django-rest-framework-social-oauth2
 [django-rest-knox]: https://github.com/James1345/django-rest-knox
 [drfpasswordless]: https://github.com/aaronn/django-rest-framework-passwordless
+[django-rest-durin]: https://github.com/eshaan7/django-rest-durin
