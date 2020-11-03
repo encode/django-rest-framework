@@ -1,5 +1,6 @@
 from unittest import mock
 
+import pytest
 from django.test import TestCase, override_settings
 from django.urls import path
 
@@ -8,6 +9,7 @@ from rest_framework.routers import SimpleRouter
 from rest_framework.serializers import ModelSerializer
 from rest_framework.utils import json
 from rest_framework.utils.breadcrumbs import get_breadcrumbs
+from rest_framework.utils.field_mapping import ClassLookupDict
 from rest_framework.utils.formatting import lazy_format
 from rest_framework.utils.urls import remove_query_param, replace_query_param
 from rest_framework.views import APIView
@@ -267,3 +269,15 @@ class LazyFormatTests(TestCase):
         assert message.format.call_count == 1
         str(formatted)
         assert message.format.call_count == 1
+
+
+class ClassLookupDictTests(TestCase):
+    def test_type_annotation(self):
+        assert ClassLookupDict[int, int] is not ClassLookupDict
+
+    def test_need_multiple_type_params_when_hinting_class(self):
+        with pytest.raises(TypeError):
+            ClassLookupDict[None]
+
+        with pytest.raises(TypeError):
+            ClassLookupDict[None, None, None]

@@ -1,9 +1,10 @@
 import sys
 from collections import OrderedDict
+from typing import Any, Generic, TypeVar
 from urllib import parse
 
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
-from django.db.models import Manager
+from django.db.models import Manager, Model
 from django.db.models.query import QuerySet
 from django.urls import NoReverseMatch, Resolver404, get_script_prefix, resolve
 from django.utils.encoding import smart_str, uri_to_iri
@@ -85,8 +86,12 @@ MANY_RELATION_KWARGS = (
     'html_cutoff', 'html_cutoff_text'
 )
 
+_MT = TypeVar("_MT", bound=Model)
+_DT = TypeVar("_DT")  # Data Type
+_PT = TypeVar("_PT")  # Primitive Type
 
-class RelatedField(Field):
+
+class RelatedField(Generic[_MT, _DT, _PT], Field[_MT, _DT, _PT, Any]):
     queryset = None
     html_cutoff = None
     html_cutoff_text = None

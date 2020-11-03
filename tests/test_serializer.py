@@ -209,8 +209,19 @@ class TestSerializer:
         sys.version_info < (3, 7),
         reason="subscriptable classes requires Python 3.7 or higher",
     )
-    def test_serializer_is_subscriptable(self):
-        assert serializers.Serializer is serializers.Serializer["foo"]
+    def test_type_annotation(self):
+        assert serializers.Serializer is not serializers.Serializer["foo"]
+
+    @pytest.mark.skipif(
+        sys.version_info > (3, 5),
+        reason="generic meta class behaviour changed from 3.5 to 3.7",
+    )
+    def test_type_annotation_pre_36(self):
+        """
+        This class does NOT inherit directly from Generic, so adding type hints to it
+        should not yield a different class.
+        """
+        assert serializers.Serializer[int] is not serializers.Serializer
 
 
 class TestValidateMethod:
@@ -321,6 +332,28 @@ class TestBaseSerializer:
             {'id': 1, 'name': 'tom', 'domain': 'example.com'},
             {'id': 2, 'name': 'ann', 'domain': 'example.com'}
         ]
+
+    @pytest.mark.skipif(
+        sys.version_info < (3, 7),
+        reason="generic meta class behaviour changed from 3.5 to 3.7",
+    )
+    def test_type_annotation(self):
+        """
+        This class does NOT inherit directly from Generic, so adding type hints to it
+        should not yield a different class.
+        """
+        assert serializers.BaseSerializer[int] is not serializers.BaseSerializer
+
+    @pytest.mark.skipif(
+        sys.version_info > (3, 5),
+        reason="generic meta class behaviour changed from 3.5 to 3.7",
+    )
+    def test_type_annotation_pre_36(self):
+        """
+        This class does NOT inherit directly from Generic, so adding type hints to it
+        should not yield a different class.
+        """
+        assert serializers.BaseSerializer[int] is not serializers.BaseSerializer
 
 
 class TestStarredSource:
@@ -740,3 +773,27 @@ class TestDeclaredFieldInheritance:
             'f4': serializers.CharField,
             'f5': serializers.CharField,
         }
+
+
+class TestModelSerializer:
+    @pytest.mark.skipif(
+        sys.version_info < (3, 7),
+        reason="generic meta class behaviour changed from 3.5 to 3.7",
+    )
+    def test_type_annotation(self):
+        """
+        This class does NOT inherit directly from Generic, so adding type hints to it
+        should not yield a different class.
+        """
+        assert serializers.ModelSerializer[int] is not serializers.ModelSerializer
+
+    @pytest.mark.skipif(
+        sys.version_info > (3, 5),
+        reason="generic meta class behaviour changed from 3.5 to 3.7",
+    )
+    def test_type_annotation_pre_36(self):
+        """
+        This class does NOT inherit directly from Generic, so adding type hints to it
+        should not yield a different class.
+        """
+        assert serializers.ModelSerializer[int] is not serializers.ModelSerializer

@@ -11,7 +11,7 @@ from django.test import TestCase
 
 from rest_framework.exceptions import ParseError
 from rest_framework.parsers import (
-    FileUploadParser, FormParser, JSONParser, MultiPartParser
+    DataAndFiles, FileUploadParser, FormParser, JSONParser, MultiPartParser
 )
 from rest_framework.request import Request
 from rest_framework.test import APIRequestFactory
@@ -176,3 +176,19 @@ class TestPOSTAccessed(TestCase):
         with pytest.raises(RawPostDataException):
             request.POST
             request.data
+
+
+class TestDataAndFiles:
+    def test_type_annotation(self):
+        """
+        This class inherits directly from Generic, so adding type hints to it should
+        yield a different class.
+        """
+        assert DataAndFiles[int, int] is not DataAndFiles
+
+    def test_need_multiple_type_params_when_hinting_class(self):
+        with pytest.raises(TypeError):
+            DataAndFiles[int]
+
+        with pytest.raises(TypeError):
+            DataAndFiles[int, int, int]

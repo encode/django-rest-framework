@@ -62,7 +62,18 @@ class TestListSerializer:
         reason="subscriptable classes requires Python 3.7 or higher",
     )
     def test_list_serializer_is_subscriptable(self):
-        assert serializers.ListSerializer is serializers.ListSerializer["foo"]
+        assert serializers.ListSerializer is not serializers.ListSerializer["foo"]
+
+    @pytest.mark.skipif(
+        sys.version_info > (3, 5),
+        reason="generic meta class behaviour changed from 3.5 to 3.7",
+    )
+    def test_type_annotation_pre_36(self):
+        """
+        This class does NOT inherit directly from Generic, so adding type hints to it
+        should not yield a different class.
+        """
+        assert serializers.ListSerializer[int] is not serializers.ListSerializer
 
 
 class TestListSerializerContainingNestedSerializer:

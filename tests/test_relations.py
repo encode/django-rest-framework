@@ -376,3 +376,18 @@ class TestHyperlink:
         upkled = pickle.loads(pickle.dumps(self.default_hyperlink))
         assert upkled == self.default_hyperlink
         assert upkled.name == self.default_hyperlink.name
+
+
+class TestRelatedField:
+    def test_type_annotation(self):
+        assert relations.RelatedField[int, int, int] is not relations.RelatedField
+
+    def test_multiple_type_params_needed_when_hinting_class(self):
+        with pytest.raises(TypeError):
+            relations.RelatedField[int]
+
+        with pytest.raises(TypeError):
+            relations.RelatedField[int, int]
+
+        with pytest.raises(TypeError):
+            relations.RelatedField[int, int, int, int]

@@ -5,6 +5,7 @@ They give us a generic way of being able to handle various media types
 on the request, such as form content or json encoded data.
 """
 import codecs
+from typing import Generic, TypeVar
 from urllib import parse
 
 from django.conf import settings
@@ -21,8 +22,11 @@ from rest_framework.exceptions import ParseError
 from rest_framework.settings import api_settings
 from rest_framework.utils import json
 
+_Data = TypeVar("_Data")
+_Files = TypeVar("_Files")
 
-class DataAndFiles:
+
+class DataAndFiles(Generic[_Data, _Files]):
     def __init__(self, data, files):
         self.data = data
         self.files = files

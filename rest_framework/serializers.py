@@ -12,9 +12,11 @@ response content is handled by parsers and renderers.
 """
 import copy
 import inspect
+import sys
 import traceback
 from collections import OrderedDict, defaultdict
 from collections.abc import Mapping
+from typing import Any, Generic, TypeVar
 
 from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured
 from django.core.exceptions import ValidationError as DjangoValidationError
@@ -66,6 +68,13 @@ from rest_framework.fields import (  # NOQA # isort:skip
 )
 from rest_framework.relations import Hyperlink, PKOnlyObject  # NOQA # isort:skip
 
+if sys.version_info < (3, 7):
+    from typing import GenericMeta
+else:
+    class GenericMeta(type):
+        pass
+
+
 # We assume that 'validators' are intended for the child serializer,
 # rather than the parent serializer.
 LIST_SERIALIZER_KWARGS = (
@@ -79,8 +88,10 @@ ALL_FIELDS = '__all__'
 
 # BaseSerializer
 # --------------
+_IN = TypeVar("_IN")  # Instance Type
 
-class BaseSerializer(Field):
+
+class BaseSerializer(Generic[_IN], Field[Any, Any, Any, _IN]):
     """
     The BaseSerializer class provides a minimal class which may be used
     for writing custom serializer implementations.
@@ -120,10 +131,6 @@ class BaseSerializer(Field):
         if kwargs.pop('many', False):
             return cls.many_init(*args, **kwargs)
         return super().__new__(cls, *args, **kwargs)
-
-    # Allow type checkers to make serializers generic.
-    def __class_getitem__(cls, *args, **kwargs):
-        return cls
 
     @classmethod
     def many_init(cls, *args, **kwargs):
@@ -268,7 +275,7 @@ class BaseSerializer(Field):
 # Serializer & ListSerializer classes
 # -----------------------------------
 
-class SerializerMetaclass(type):
+class SerializerMetaclass(GenericMeta):
     """
     This metaclass sets a dictionary named `_declared_fields` on the class.
 
@@ -301,9 +308,9 @@ class SerializerMetaclass(type):
 
         return OrderedDict(base_fields + fields)
 
-    def __new__(cls, name, bases, attrs):
+    def __new__(cls, name, bases, attrs, *args, **kwargs):
         attrs['_declared_fields'] = cls._get_declared_fields(bases, attrs)
-        return super().__new__(cls, name, bases, attrs)
+        return super().__new__(cls, name, bases, attrs, *args, **kwargs)
 
 
 def as_serializer_error(exc):
@@ -332,7 +339,7 @@ def as_serializer_error(exc):
     }
 
 
-class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
+class Serializer(BaseSerializer[_IN], metaclass=SerializerMetaclass):
     default_error_messages = {
         'invalid': _('Invalid data. Expected a dictionary, but got {datatype}.')
     }
@@ -562,7 +569,7 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
 # There's some replication of `ListField` here,
 # but that's probably better than obfuscating the call hierarchy.
 
-class ListSerializer(BaseSerializer):
+class ListSerializer(BaseSerializer[_IN]):
     child = None
     many = True
 
@@ -836,7 +843,10 @@ def raise_errors_on_nested_writes(method_name, serializer, validated_data):
     )
 
 
-class ModelSerializer(Serializer):
+_MT = TypeVar("_MT", bound=models.Model)  # Model Type
+
+
+class ModelSerializer(Serializer[_MT]):
     """
     A `ModelSerializer` is just a regular `Serializer`, except that:
 

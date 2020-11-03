@@ -14,7 +14,7 @@ from django.utils.timezone import activate, deactivate, override, utc
 import rest_framework
 from rest_framework import exceptions, serializers
 from rest_framework.fields import (
-    BuiltinSignatureError, DjangoImageField, is_simple_callable
+    BuiltinSignatureError, DjangoImageField, Field, is_simple_callable
 )
 
 # Tests for helper functions.
@@ -2380,3 +2380,21 @@ class TestValidationErrorCode:
                 ),
             ]
         }
+
+
+class TestField:
+    def test_type_annotation(self):
+        assert Field[int, int, int, int] is not Field
+
+    def test_multiple_type_params_needed_when_hinting_class(self):
+        with pytest.raises(TypeError):
+            Field[int]
+
+        with pytest.raises(TypeError):
+            Field[int, int]
+
+        with pytest.raises(TypeError):
+            Field[int, int, int]
+
+        with pytest.raises(TypeError):
+            Field[int, int, int, int, int]

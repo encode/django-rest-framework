@@ -3,6 +3,7 @@ Helper functions for mapping model fields to a dictionary of default
 keyword arguments that should be used for their equivalent serializer fields.
 """
 import inspect
+from typing import Generic, TypeVar
 
 from django.core import validators
 from django.db import models
@@ -16,7 +17,11 @@ NUMERIC_FIELD_TYPES = (
 )
 
 
-class ClassLookupDict:
+_K = TypeVar("_K", bound=type)
+_V = TypeVar("_V")
+
+
+class ClassLookupDict(Generic[_K, _V]):
     """
     Takes a dictionary with classes as keys.
     Lookups against this object will traverses the object's inheritance

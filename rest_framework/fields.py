@@ -8,6 +8,7 @@ import uuid
 import warnings
 from collections import OrderedDict
 from collections.abc import Mapping
+from typing import Generic, TypeVar
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -308,8 +309,13 @@ MISSING_ERROR_MESSAGE = (
     'not exist in the `error_messages` dictionary.'
 )
 
+_IN = TypeVar("_IN")  # Instance Type
+_VT = TypeVar("_VT")  # Value Type
+_DT = TypeVar("_DT")  # Data Type
+_RP = TypeVar("_RP")  # Representation Type
 
-class Field:
+
+class Field(Generic[_VT, _DT, _RP, _IN]):
     _creation_counter = 0
 
     default_error_messages = {
