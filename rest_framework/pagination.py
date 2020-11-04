@@ -198,7 +198,7 @@ class PageNumberPagination(BasePagination):
             return None
 
         paginator = self.django_paginator_class(queryset, page_size)
-        page_number = request.query_params.get(self.page_query_param, 1)
+        page_number = self.get_page(request)
         if page_number in self.last_page_strings:
             page_number = paginator.num_pages
 
@@ -263,6 +263,12 @@ class PageNumberPagination(BasePagination):
                 pass
 
         return self.page_size
+
+    def get_page(self, request):
+        return _positive_int(
+            request.query_params.get(self.page_query_param, 1),
+            strict=True,
+        )
 
     def get_next_link(self):
         if not self.page.has_next():
