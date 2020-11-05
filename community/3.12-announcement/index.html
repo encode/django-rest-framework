@@ -511,11 +511,10 @@ in the URL path.</p>
 </tbody>
 </table>
 <p>The tags used for a particular view may also be overridden...</p>
-<pre><code class="python">class MyOrders(APIView):
+<pre><code class="language-python">class MyOrders(APIView):
     schema = AutoSchema(tags=['users', 'orders'])
     ...
 </code></pre>
-
 <p>See <a href="https://www.django-rest-framework.org/api-guide/schemas/#grouping-operations-with-tags">the schema documentation</a> for more information.</p>
 <h2 id="customizing-the-operation-id"><a class="toclink" href="#customizing-the-operation-id">Customizing the operation ID.</a></h2>
 <p>REST framework automatically determines operation IDs to use in OpenAPI
@@ -529,10 +528,9 @@ and response objects. This is in contrast with the previous approach, which
 fully expanded the request and response bodies for each operation.</p>
 <p>The names used for a component default to using the serializer class name, <a href="https://www.django-rest-framework.org/api-guide/schemas/#components">but
 may be overridden if needed</a>...</p>
-<pre><code class="python">class MyOrders(APIView):
+<pre><code class="language-python">class MyOrders(APIView):
    schema = AutoSchema(component_name=&quot;OrderDetails&quot;)
 </code></pre>
-
 <h2 id="more-public-api"><a class="toclink" href="#more-public-api">More Public API</a></h2>
 <p>Many methods on the <code>AutoSchema</code> class have now been promoted to public API,
 allowing you to more fully customize the schema generation. The following methods
@@ -564,7 +562,7 @@ classes will correctly map the model field.</p>
 <p>The class now supports nested search within <code>JSONField</code> and <code>HStoreField</code>, using
 the double underscore notation for traversing which element of the field the
 search should apply to.</p>
-<pre><code class="python">class SitesSearchView(generics.ListAPIView):
+<pre><code class="language-python">class SitesSearchView(generics.ListAPIView):
     &quot;&quot;&quot;
     An API view to return a list of archaeological sites, optionally filtered
     by a search against the site name or location. (Location searches are
@@ -575,11 +573,10 @@ search should apply to.</p>
     filter_backends = [filters.SearchFilter]
     search_fields = ['site_name', 'location__region', 'location__country']
 </code></pre>
-
 <h3 id="searches-against-annotate-fields"><a class="toclink" href="#searches-against-annotate-fields">Searches against annotate fields</a></h3>
 <p>Django allows querysets to create additional virtual fields, using the <code>.annotate</code>
 method. We now support searching against annotate fields.</p>
-<pre><code class="python">class PublisherSearchView(generics.ListAPIView):
+<pre><code class="language-python">class PublisherSearchView(generics.ListAPIView):
     &quot;&quot;&quot;
     Search for publishers, optionally filtering the search against the average
     rating of all their books.
@@ -589,7 +586,6 @@ method. We now support searching against annotate fields.</p>
     filter_backends = [filters.SearchFilter]
     search_fields = ['avg_rating']
 </code></pre>
-
 <hr />
 <h2 id="funding"><a class="toclink" href="#funding">Funding</a></h2>
 <p>REST framework is a <em>collaboratively funded project</em>. If you use
@@ -606,7 +602,6 @@ continued development by <strong><a href="../funding/">signing up for a paid pla
     <li><a href="https://lightsonsoftware.com" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/lightson-dark.png)">Lights On Software</a></li>
     <li><a href="https://retool.com/?utm_source=djangorest&utm_medium=sponsorship" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/retool-sidebar.png)">Retool</a></li>
 </ul>
-
 <div style="clear: both; padding-bottom: 20px;"></div>
 
 <p><em>Many thanks to all our <a href="https://fund.django-rest-framework.org/topics/funding/#our-sponsors">wonderful sponsors</a>, and in particular to our premium backers, <a href="https://getsentry.com/welcome/">Sentry</a>, <a href="https://getstream.io/?utm_source=drf&amp;utm_medium=banner&amp;utm_campaign=drf">Stream</a>, <a href="https://software.esg-usa.com/">ESG</a>, <a href="https://rollbar.com/?utm_source=django&amp;utm_medium=sponsorship&amp;utm_campaign=freetrial">Rollbar</a>, <a href="https://cadre.com">Cadre</a>, <a href="https://hubs.ly/H0f30Lf0">Kloudless</a>, <a href="https://lightsonsoftware.com">Lights On Software</a>, and <a href="https://retool.com/?utm_source=djangorest&amp;utm_medium=sponsorship">Retool</a>.</em></p>

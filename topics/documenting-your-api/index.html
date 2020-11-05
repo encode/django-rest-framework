@@ -458,7 +458,7 @@ dynamic <code>SchemaView</code> endpoint.</p>
 <p>Assuming you've followed the example from the schemas documentation for routing
 a dynamic <code>SchemaView</code>, a minimal Django template for using Swagger UI might be
 this:</p>
-<pre><code class="html">&lt;!DOCTYPE html&gt;
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
 &lt;html&gt;
   &lt;head&gt;
     &lt;title&gt;Swagger&lt;/title&gt;
@@ -487,10 +487,9 @@ this:</p>
   &lt;/body&gt;
 &lt;/html&gt;
 </code></pre>
-
 <p>Save this in your templates folder as <code>swagger-ui.html</code>. Then route a
 <code>TemplateView</code> in your project's URL conf:</p>
-<pre><code class="python">from django.views.generic import TemplateView
+<pre><code class="language-python">from django.views.generic import TemplateView
 
 urlpatterns = [
     # ...
@@ -502,13 +501,12 @@ urlpatterns = [
     ), name='swagger-ui'),
 ]
 </code></pre>
-
 <p>See the <a href="https://swagger.io/tools/swagger-ui/">Swagger UI documentation</a> for advanced usage.</p>
 <h3 id="a-minimal-example-with-redoc"><a class="toclink" href="#a-minimal-example-with-redoc">A minimal example with ReDoc.</a></h3>
 <p>Assuming you've followed the example from the schemas documentation for routing
 a dynamic <code>SchemaView</code>, a minimal Django template for using ReDoc might be
 this:</p>
-<pre><code class="html">&lt;!DOCTYPE html&gt;
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
 &lt;html&gt;
   &lt;head&gt;
     &lt;title&gt;ReDoc&lt;/title&gt;
@@ -530,10 +528,9 @@ this:</p>
   &lt;/body&gt;
 &lt;/html&gt;
 </code></pre>
-
 <p>Save this in your templates folder as <code>redoc.html</code>. Then route a <code>TemplateView</code>
 in your project's URL conf:</p>
-<pre><code class="python">from django.views.generic import TemplateView
+<pre><code class="language-python">from django.views.generic import TemplateView
 
 urlpatterns = [
     # ...
@@ -545,7 +542,6 @@ urlpatterns = [
     ), name='redoc'),
 ]
 </code></pre>
-
 <p>See the <a href="https://github.com/Rebilly/ReDoc">ReDoc documentation</a> for advanced usage.</p>
 <h2 id="third-party-packages"><a class="toclink" href="#third-party-packages">Third party packages</a></h2>
 <p>There are a number of mature third-party packages for providing API documentation.</p>
@@ -585,7 +581,7 @@ documentation and more. Several popular plugins for DRF are supported out-of-the
     [ref]: http://example.com/activating-accounts
     """
 </code></pre>
-<p>Note that when using viewsets the basic docstring is used for all generated views.  To provide descriptions for each view, such as for the list and retrieve views, use docstring sections as described in <a href="../api-guide/schemas/#examples">Schemas as documentation: Examples</a>.</p>
+<p>Note that when using viewsets the basic docstring is used for all generated views.  To provide descriptions for each view, such as for the list and retrieve views, use docstring sections as described in <a href="../../api-guide/schemas/#examples">Schemas as documentation: Examples</a>.</p>
 <h4 id="the-options-method"><a class="toclink" href="#the-options-method">The <code>OPTIONS</code> method</a></h4>
 <p>REST framework APIs also support programmatically accessible descriptions, using the <code>OPTIONS</code> HTTP method.  A view will respond to an <code>OPTIONS</code> request with metadata including the name, description, and the various media types it accepts and responds with.</p>
 <p>When using the generic views, any <code>OPTIONS</code> requests will additionally respond with metadata regarding any <code>POST</code> or <code>PUT</code> actions available, describing which fields are on the serializer.</p>
@@ -599,7 +595,7 @@ documentation and more. Several popular plugins for DRF are supported out-of-the
     data.pop('description')
     return data
 </code></pre>
-<p>See <a href="../api-guide/metadata/">the Metadata docs</a> for more details.</p>
+<p>See <a href="../../api-guide/metadata/">the Metadata docs</a> for more details.</p>
 <hr />
 <h2 id="the-hypermedia-approach"><a class="toclink" href="#the-hypermedia-approach">The hypermedia approach</a></h2>
 <p>To be fully RESTful an API should present its available actions as hypermedia controls in the responses that it sends.</p>

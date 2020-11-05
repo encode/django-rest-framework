@@ -429,12 +429,11 @@
 <p>See the <a href="/community/3.10-announcement.md">Version 3.10 Release Announcement</a> for more details.</p>
 <hr />
 <p>You can continue to use CoreAPI schemas by setting the appropriate default schema class:</p>
-<pre><code class="python"># In settings.py
+<pre><code class="language-python"># In settings.py
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
 }
 </code></pre>
-
 <p>Under-the-hood, any subclass of <code>coreapi.AutoSchema</code> here will trigger use of the old CoreAPI schemas.
 <strong>Otherwise</strong> you will automatically be opted-in to the new OpenAPI schemas.</p>
 <p>All CoreAPI related code will be removed in Django REST Framework v3.12. Switch to OpenAPI schemas by then.</p>

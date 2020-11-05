@@ -586,9 +586,8 @@ can render the schema into the commonly used YAML-based OpenAPI format.</p>
 <p>There are two different ways you can serve a schema description for your API.</p>
 <h3 id="generating-a-schema-with-the-generateschema-management-command"><a class="toclink" href="#generating-a-schema-with-the-generateschema-management-command">Generating a schema with the <code>generateschema</code> management command</a></h3>
 <p>To generate a static API schema, use the <code>generateschema</code> management command.</p>
-<pre><code class="shell">$ python manage.py generateschema &gt; schema.yml
+<pre><code class="language-shell">$ python manage.py generateschema &gt; schema.yml
 </code></pre>
-
 <p>Once you've generated a schema in this way you can annotate it with any
 additional information that cannot be automatically inferred by the schema
 generator.</p>
@@ -596,7 +595,7 @@ generator.</p>
 with each new release, or serve the API schema from your site's static media.</p>
 <h3 id="adding-a-view-with-get_schema_view"><a class="toclink" href="#adding-a-view-with-get_schema_view">Adding a view with <code>get_schema_view</code></a></h3>
 <p>To add a dynamically generated schema view to your API, use <code>get_schema_view</code>.</p>
-<pre><code class="python">from rest_framework.schemas import get_schema_view
+<pre><code class="language-python">from rest_framework.schemas import get_schema_view
 from django.urls import path
 
 schema_view = get_schema_view(title=&quot;Example API&quot;)
@@ -606,7 +605,6 @@ urlpatterns = [
     ...
 ]
 </code></pre>
-
 <p>See below <a href="#the-get_schema_view-shortcut">for more details</a> on customizing a
 dynamically generated schema view.</p>
 <h2 id="internal-schema-representation"><a class="toclink" href="#internal-schema-representation">Internal schema representation</a></h2>
@@ -1076,7 +1074,7 @@ that do not expect a request body.</p>
 <h3 id="get_manual_fieldsself-path-method"><a class="toclink" href="#get_manual_fieldsself-path-method">get_manual_fields(self, path, method)</a></h3>
 <p>Return a list of <code>coreapi.Field()</code> instances to be added to or replace generated fields. Defaults to (optional) <code>manual_fields</code> passed to <code>AutoSchema</code> constructor.</p>
 <p>May be overridden to customise manual fields by <code>path</code> or <code>method</code>. For example, a per-method adjustment may look like this:</p>
-<pre><code class="python">def get_manual_fields(self, path, method):
+<pre><code class="language-python">def get_manual_fields(self, path, method):
     &quot;&quot;&quot;Example adding per-method fields.&quot;&quot;&quot;
 
     extra_fields = []
@@ -1088,7 +1086,6 @@ that do not expect a request body.</p>
     manual_fields = super().get_manual_fields(path, method)
     return manual_fields + extra_fields
 </code></pre>
-
 <h3 id="update_fieldsfields-update_with"><a class="toclink" href="#update_fieldsfields-update_with">update_fields(fields, update_with)</a></h3>
 <p>Utility <code>staticmethod</code>. Encapsulates logic to add or replace fields from a list
 by <code>Field.name</code>. May be overridden to adjust replacement criteria.</p>

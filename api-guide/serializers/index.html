@@ -844,7 +844,7 @@ class GameRecord(serializers.Serializer):
 <p>For more information see the <a href="../validators/">validators documentation</a>.</p>
 <h2 id="accessing-the-initial-data-and-instance"><a class="toclink" href="#accessing-the-initial-data-and-instance">Accessing the initial data and instance</a></h2>
 <p>When passing an initial object or queryset to a serializer instance, the object will be made available as <code>.instance</code>. If no initial object is passed then the <code>.instance</code> attribute will be <code>None</code>.</p>
-<p>When passing data to a serializer instance, the unmodified data will be made available as <code>.initial_data</code>. If the data keyword argument is not passed then the <code>.initial_data</code> attribute will not exist.</p>
+<p>When passing data to a serializer instance, the unmodified data will be made available as <code>.initial_data</code>. If the <code>data</code> keyword argument is not passed then the <code>.initial_data</code> attribute will not exist.</p>
 <h2 id="partial-updates"><a class="toclink" href="#partial-updates">Partial updates</a></h2>
 <p>By default, serializers must be passed values for all required fields or they will raise validation errors. You can use the <code>partial</code> argument in order to allow partial updates.</p>
 <pre><code># Update `comment` with partial data

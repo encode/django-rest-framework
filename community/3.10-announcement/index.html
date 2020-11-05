@@ -477,12 +477,11 @@
 <p>If you're currently using the CoreAPI schemas, you'll need to make sure to
 update your REST framework settings to include <code>DEFAULT_SCHEMA_CLASS</code> explicitly.</p>
 <p><strong>settings.py</strong>:</p>
-<pre><code class="python">REST_FRAMEWORK = {
+<pre><code class="language-python">REST_FRAMEWORK = {
   ...
   'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
 }
 </code></pre>
-
 <p>You'll still be able to keep using CoreAPI schemas, API docs, and client for the
 foreseeable future. We'll aim to ensure that the CoreAPI schema generator remains
 available as a third party package, even once it has eventually been removed
@@ -496,7 +495,7 @@ command.</p>
 <p>Alternately, to have the project serve an API schema, use the <code>get_schema_view()</code>
 shortcut.</p>
 <p>In your <code>urls.py</code>:</p>
-<pre><code class="python">from rest_framework.schemas import get_schema_view
+<pre><code class="language-python">from rest_framework.schemas import get_schema_view
 
 urlpatterns = [
     # ...
@@ -510,7 +509,6 @@ urlpatterns = [
     # ...
 ]
 </code></pre>
-
 <h3 id="customization"><a class="toclink" href="#customization">Customization</a></h3>
 <p>For customizations that you want to apply across the entire API, you can subclass <code>rest_framework.schemas.openapi.SchemaGenerator</code> and provide it as an argument
 to the <code>generateschema</code> command or <code>get_schema_view()</code> helper function.</p>
@@ -552,7 +550,6 @@ continued development by <strong><a href="../funding/">signing up for a paid pla
     <li><a href="https://hubs.ly/H0f30Lf0" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/kloudless-plus-text.png)">Kloudless</a></li>
     <li><a href="https://lightsonsoftware.com" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/lightson-dark.png)">Lights On Software</a></li>
 </ul>
-
 <div style="clear: both; padding-bottom: 20px;"></div>
 
 <p><em>Many thanks to all our <a href="https://fund.django-rest-framework.org/topics/funding/#our-sponsors">wonderful sponsors</a>, and in particular to our premium backers, <a href="https://getsentry.com/welcome/">Sentry</a>, <a href="https://getstream.io/?utm_source=drf&amp;utm_medium=banner&amp;utm_campaign=drf">Stream</a>, <a href="https://software.esg-usa.com/">ESG</a>, <a href="https://rollbar.com/?utm_source=django&amp;utm_medium=sponsorship&amp;utm_campaign=freetrial">Rollbar</a>, <a href="https://cadre.com">Cadre</a>, <a href="https://hubs.ly/H0f30Lf0">Kloudless</a>, and <a href="https://lightsonsoftware.com">Lights On Software</a>.</em></p>

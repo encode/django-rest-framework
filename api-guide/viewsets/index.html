@@ -630,21 +630,21 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(recent_users, many=True)
         return Response(serializer.data)
 </code></pre>
-<p>The decorator can additionally take extra arguments that will be set for the routed view only.  For example:</p>
-<pre><code>    @action(detail=True, methods=['post'], permission_classes=[IsAdminOrIsSelf])
-    def set_password(self, request, pk=None):
-       ...
-</code></pre>
 <p>The <code>action</code> decorator will route <code>GET</code> requests by default, but may also accept other HTTP methods by setting the <code>methods</code> argument.  For example:</p>
 <pre><code>    @action(detail=True, methods=['post', 'delete'])
     def unset_password(self, request, pk=None):
        ...
 </code></pre>
-<p>The two new actions will then be available at the urls <code>^users/{pk}/set_password/$</code> and <code>^users/{pk}/unset_password/$</code></p>
+<p>The decorator allows you to override any viewset-level configuration such as <code>permission_classes</code>, <code>serializer_class</code>, <code>filter_backends</code>...:</p>
+<pre><code>    @action(detail=True, methods=['post'], permission_classes=[IsAdminOrIsSelf])
+    def set_password(self, request, pk=None):
+       ...
+</code></pre>
+<p>The two new actions will then be available at the urls <code>^users/{pk}/set_password/$</code> and <code>^users/{pk}/unset_password/$</code>. Use the <code>url_path</code> and <code>url_name</code> parameters to change the URL segement and the reverse URL name of the action.</p>
 <p>To view all extra actions, call the <code>.get_extra_actions()</code> method.</p>
 <h3 id="routing-additional-http-methods-for-extra-actions"><a class="toclink" href="#routing-additional-http-methods-for-extra-actions">Routing additional HTTP methods for extra actions</a></h3>
 <p>Extra actions can map additional HTTP methods to separate <code>ViewSet</code> methods. For example, the above password set/unset methods could be consolidated into a single route. Note that additional mappings do not accept arguments.</p>
-<pre><code class="python">    @action(detail=True, methods=['put'], name='Change Password')
+<pre><code class="language-python">    @action(detail=True, methods=['put'], name='Change Password')
     def password(self, request, pk=None):
         &quot;&quot;&quot;Update the user's password.&quot;&quot;&quot;
         ...
@@ -654,20 +654,17 @@ class UserViewSet(viewsets.ModelViewSet):
         &quot;&quot;&quot;Delete the user's password.&quot;&quot;&quot;
         ...
 </code></pre>
-
 <h2 id="reversing-action-urls"><a class="toclink" href="#reversing-action-urls">Reversing action URLs</a></h2>
 <p>If you need to get the URL of an action, use the <code>.reverse_action()</code> method. This is a convenience wrapper for <code>reverse()</code>, automatically passing the view's <code>request</code> object and prepending the <code>url_name</code> with the <code>.basename</code> attribute.</p>
 <p>Note that the <code>basename</code> is provided by the router during <code>ViewSet</code> registration. If you are not using a router, then you must provide the <code>basename</code> argument to the <code>.as_view()</code> method.</p>
 <p>Using the example from the previous section:</p>
-<pre><code class="python">&gt;&gt;&gt; view.reverse_action('set-password', args=['1'])
+<pre><code class="language-python">&gt;&gt;&gt; view.reverse_action('set-password', args=['1'])
 'http://localhost:8000/api/users/1/set_password'
 </code></pre>
-
 <p>Alternatively, you can use the <code>url_name</code> attribute set by the <code>@action</code> decorator.</p>
-<pre><code class="python">&gt;&gt;&gt; view.reverse_action(view.set_password.url_name, args=['1'])
+<pre><code class="language-python">&gt;&gt;&gt; view.reverse_action(view.set_password.url_name, args=['1'])
 'http://localhost:8000/api/users/1/set_password'
 </code></pre>
-
 <p>The <code>url_name</code> argument for <code>.reverse_action()</code> should match the same argument to the <code>@action</code> decorator. Additionally, this method can be used to reverse the default actions, such as <code>list</code> and <code>create</code>.</p>
 <hr />
 <h1 id="api-reference"><a class="toclink" href="#api-reference">API Reference</a></h1>

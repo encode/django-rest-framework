@@ -483,9 +483,8 @@ can interact with your API.</p>
 </ul>
 <h3 id="generating-a-static-schema-with-the-generateschema-management-command"><a class="toclink" href="#generating-a-static-schema-with-the-generateschema-management-command">Generating a static schema with the <code>generateschema</code> management command</a></h3>
 <p>If your schema is static, you can use the <code>generateschema</code> management command:</p>
-<pre><code class="bash">./manage.py generateschema --file openapi-schema.yml
+<pre><code class="language-bash">./manage.py generateschema --file openapi-schema.yml
 </code></pre>
-
 <p>Once you've generated a schema in this way you can annotate it with any
 additional information that cannot be automatically inferred by the schema
 generator.</p>
@@ -497,7 +496,7 @@ values, for example, you can route a <code>SchemaView</code> that will generate 
 your schema on demand.</p>
 <p>To route a <code>SchemaView</code>, use the <code>get_schema_view()</code> helper.</p>
 <p>In <code>urls.py</code>:</p>
-<pre><code class="python">from rest_framework.schemas import get_schema_view
+<pre><code class="language-python">from rest_framework.schemas import get_schema_view
 
 urlpatterns = [
     # ...
@@ -512,7 +511,6 @@ urlpatterns = [
     # ...
 ]
 </code></pre>
-
 <h4 id="get_schema_view"><a class="toclink" href="#get_schema_view"><code>get_schema_view()</code></a></h4>
 <p>The <code>get_schema_view()</code> helper takes the following keyword arguments:</p>
 <ul>
@@ -567,9 +565,8 @@ schema_view = get_schema_view(
 </ul>
 <h2 id="schemagenerator"><a class="toclink" href="#schemagenerator">SchemaGenerator</a></h2>
 <p><strong>Schema-level customization</strong></p>
-<pre><code class="python">from rest_framework.schemas.openapi import SchemaGenerator
+<pre><code class="language-python">from rest_framework.schemas.openapi import SchemaGenerator
 </code></pre>
-
 <p><code>SchemaGenerator</code> is a class that walks a list of routed URL patterns, requests
 the schema for each view and collates the resulting OpenAPI schema.</p>
 <p>Typically you won't need to instantiate <code>SchemaGenerator</code> yourself, but you can
@@ -600,17 +597,15 @@ per-user permissions to the resulting schema generation.</p>
 dictionary For example you might wish to add terms of service to the <a href="https://swagger.io/specification/#infoObject">top-level
 <code>info</code> object</a>:</p>
 <pre><code>class TOSSchemaGenerator(SchemaGenerator):
-    def get_schema(self):
-        schema = super().get_schema()
+    def get_schema(self, *args, **kwargs):
+        schema = super().get_schema(*args, **kwargs)
         schema[&quot;info&quot;][&quot;termsOfService&quot;] = &quot;https://example.com/tos.html&quot;
         return schema
 </code></pre>
-
 <h2 id="autoschema"><a class="toclink" href="#autoschema">AutoSchema</a></h2>
 <p><strong>Per-View Customization</strong></p>
-<pre><code class="python">from rest_framework.schemas.openapi import AutoSchema
+<pre><code class="language-python">from rest_framework.schemas.openapi import AutoSchema
 </code></pre>
-
 <p>By default, view introspection is performed by an <code>AutoSchema</code> instance
 accessible via the <code>schema</code> attribute on <code>APIView</code>.</p>
 <pre><code>auto_schema = some_view.schema
@@ -624,10 +619,9 @@ and path:</p>
   the endpoint, including path and query parameters for pagination, filtering,
   and so on.</li>
 </ul>
-<pre><code class="python">components = auto_schema.get_components(...)
+<pre><code class="language-python">components = auto_schema.get_components(...)
 operation = auto_schema.get_operation(...)
 </code></pre>
-
 <p>In compiling the schema, <code>SchemaGenerator</code> calls <code>get_components()</code> and
 <code>get_operation()</code> for each view, allowed method, and path.</p>
 <hr />
@@ -644,7 +638,7 @@ field APIs.</p>
 <p>Keeping with this pattern, try not to let schema logic leak into your own
 views, serializers, or fields when customizing the schema generation. You might
 be tempted to do something like this:</p>
-<pre><code class="python">class CustomSchema(AutoSchema):
+<pre><code class="language-python">class CustomSchema(AutoSchema):
     &quot;&quot;&quot;
     AutoSchema subclass using schema_extra_info on the view.
     &quot;&quot;&quot;
@@ -654,13 +648,12 @@ class CustomView(APIView):
     schema = CustomSchema()
     schema_extra_info = ... some extra info ...
 </code></pre>
-
 <p>Here, the <code>AutoSchema</code> subclass goes looking for <code>schema_extra_info</code> on the
 view. This is <em>OK</em> (it doesn't actually hurt) but it means you'll end up with
 your schema logic spread out in a number of different places.</p>
 <p>Instead try to subclass <code>AutoSchema</code> such that the <code>extra_info</code> doesn't leak
 out into the view:</p>
-<pre><code class="python">class BaseSchema(AutoSchema):
+<pre><code class="language-python">class BaseSchema(AutoSchema):
     &quot;&quot;&quot;
     AutoSchema subclass that knows how to use extra_info.
     &quot;&quot;&quot;
@@ -672,14 +665,13 @@ class CustomSchema(BaseSchema):
 class CustomView(APIView):
     schema = CustomSchema()
 </code></pre>
-
 <p>This style is slightly more verbose but maintains the encapsulation of the
 schema related code. It's more <em>cohesive</em> in the <em>parlance</em>. It'll keep the
 rest of your API code more tidy.</p>
 <p>If an option applies to many view classes, rather than creating a specific
 subclass per-view, you may find it more convenient to allow specifying the
 option as an <code>__init__()</code> kwarg to your base <code>AutoSchema</code> subclass:</p>
-<pre><code class="python">class CustomSchema(BaseSchema):
+<pre><code class="language-python">class CustomSchema(BaseSchema):
     def __init__(self, **kwargs):
         # store extra_info for later
         self.extra_info = kwargs.pop(&quot;extra_info&quot;)
@@ -690,7 +682,6 @@ class CustomView(APIView):
         extra_info=... some extra info ...
     )
 </code></pre>
-
 <p>This saves you having to create a custom subclass per-view for a commonly used option.</p>
 <p>Not all <code>AutoSchema</code> methods expose related  <code>__init__()</code> kwargs, but those for
 the more commonly needed options do.</p>
@@ -714,7 +705,7 @@ serializer-level fields.</p>
 <p>Maps individual serializer fields to their schema representation. The base implementation
 will handle the default fields that Django REST Framework provides.</p>
 <p>For <code>SerializerMethodField</code> instances, for which the schema is unknown, or custom field subclasses you should override <code>map_field()</code> to generate the correct schema:</p>
-<pre><code class="python">class CustomSchema(AutoSchema):
+<pre><code class="language-python">class CustomSchema(AutoSchema):
     &quot;&quot;&quot;Extension of ``AutoSchema`` to add support for custom field schemas.&quot;&quot;&quot;
 
     def map_field(self, field):
@@ -722,7 +713,6 @@ will handle the default fields that Django REST Framework provides.</p>
         # ...
         return super().map_field(field)
 </code></pre>
-
 <p>Authors of third-party packages should aim to provide an <code>AutoSchema</code> subclass,
 and a mixin, overriding <code>map_field()</code> so that users can easily generate schemas
 for their custom fields.</p>
@@ -766,7 +756,6 @@ common customizations, if the default generated values are not appropriate.</p>
     )
     ...
 </code></pre>
-
 <p>Assuming a <code>Pet</code> model and <code>PetSerializer</code> serializer, the kwargs in this
 example are probably not needed. Often, though, you'll need to pass the kwargs
 if you have multiple view targeting the same model, or have multiple views with

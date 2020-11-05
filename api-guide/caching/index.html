@@ -442,7 +442,7 @@ provided in Django.</p>
 decorators with class based views. This can be used with
 other cache decorators such as <a href="https://docs.djangoproject.com/en/dev/topics/cache/#the-per-view-cache"><code>cache_page</code></a> and
 <a href="https://docs.djangoproject.com/en/dev/topics/http/decorators/#django.views.decorators.vary.vary_on_cookie"><code>vary_on_cookie</code></a>.</p>
-<pre><code class="python">from django.utils.decorators import method_decorator
+<pre><code class="language-python">from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_cookie
 
@@ -474,7 +474,6 @@ class PostView(APIView):
         }
         return Response(content)
 </code></pre>
-
 <p><strong>NOTE:</strong> The <a href="https://docs.djangoproject.com/en/dev/topics/cache/#the-per-view-cache"><code>cache_page</code></a> decorator only caches the
 <code>GET</code> and <code>HEAD</code> responses with status 200.</p>
             

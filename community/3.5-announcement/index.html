@@ -494,7 +494,6 @@ we strongly encourage you to invest in its continued development by
     <li><a href="https://getstream.io/?utm_source=drf&utm_medium=banner&utm_campaign=drf" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/stream-130.png)">Stream</a></li>
     <li><a href="https://www.machinalis.com/#services" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/Machinalis130.png)">Machinalis</a></li>
 </ul>
-
 <div style="clear: both; padding-bottom: 20px;"></div>
 
 <p><em>Many thanks to all our <a href="https://fund.django-rest-framework.org/topics/funding/#our-sponsors">sponsors</a>, and in particular to our premium backers, <a href="https://www.rover.com/careers/">Rover</a>, <a href="https://sentry.io/welcome/">Sentry</a>, <a href="https://getstream.io/?utm_source=drf&amp;utm_medium=banner&amp;utm_campaign=drf">Stream</a>, and <a href="https://www.machinalis.com/#services">Machinalis</a>.</em></p>
@@ -516,7 +515,7 @@ you to <a href="../api-guide/schemas/#schemas-as-documentation">use the schema d
 <p>Include the schema view in your URL conf:</p>
 </li>
 </ul>
-<pre><code class="py">from rest_framework.schemas import get_schema_view
+<pre><code class="language-py">from rest_framework.schemas import get_schema_view
 from rest_framework_swagger.renderers import OpenAPIRenderer, SwaggerUIRenderer
 
 schema_view = get_schema_view(
@@ -529,7 +528,6 @@ urlpatterns = [
     ...
 ]
 </code></pre>
-
 <p>There have been a large number of fixes to the schema generation. These should
 resolve issues for anyone using the latest version of the <code>django-rest-swagger</code>
 package.</p>

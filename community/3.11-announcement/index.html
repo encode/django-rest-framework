@@ -475,7 +475,7 @@ include:</p>
 </ul>
 <p>In this example view operation descriptions for the <code>get</code> and <code>post</code> methods will
 be extracted from the class docstring:</p>
-<pre><code class="python">class DocStringExampleListView(APIView):
+<pre><code class="language-python">class DocStringExampleListView(APIView):
 &quot;&quot;&quot;
 get: A description of my GET operation.
 post: A description of my POST operation.
@@ -488,7 +488,6 @@ post: A description of my POST operation.
     def post(self, request, *args, **kwargs):
         ...
 </code></pre>
-
 <h2 id="validator-default-context"><a class="toclink" href="#validator-default-context">Validator / Default Context</a></h2>
 <p>In some circumstances a Validator class or a Default class may need to access the serializer field with which it is called, or the <code>.context</code> with which the serializer was instantiated. In particular:</p>
 <ul>
@@ -499,21 +498,19 @@ post: A description of my POST operation.
 <p>Instead, validators or defaults which require the serializer context, should include a <code>requires_context = True</code> attribute on the class.</p>
 <p>The <code>__call__</code> method should then include an additional <code>serializer_field</code> argument.</p>
 <p>Validator implementations will look like this:</p>
-<pre><code class="python">class CustomValidator:
+<pre><code class="language-python">class CustomValidator:
     requires_context = True
 
     def __call__(self, value, serializer_field):
         ...
 </code></pre>
-
 <p>Default implementations will look like this:</p>
-<pre><code class="python">class CustomDefault:
+<pre><code class="language-python">class CustomDefault:
     requires_context = True
 
     def __call__(self, serializer_field):
         ...
 </code></pre>
-
 <hr />
 <h2 id="funding"><a class="toclink" href="#funding">Funding</a></h2>
 <p>REST framework is a <em>collaboratively funded project</em>. If you use
@@ -530,7 +527,6 @@ continued development by <strong><a href="../funding/">signing up for a paid pla
     <li><a href="https://lightsonsoftware.com" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/lightson-dark.png)">Lights On Software</a></li>
     <li><a href="https://retool.com/?utm_source=djangorest&utm_medium=sponsorship" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/retool-sidebar.png)">Retool</a></li>
 </ul>
-
 <div style="clear: both; padding-bottom: 20px;"></div>
 
 <p><em>Many thanks to all our <a href="https://fund.django-rest-framework.org/topics/funding/#our-sponsors">wonderful sponsors</a>, and in particular to our premium backers, <a href="https://getsentry.com/welcome/">Sentry</a>, <a href="https://getstream.io/?utm_source=drf&amp;utm_medium=banner&amp;utm_campaign=drf">Stream</a>, <a href="https://software.esg-usa.com/">ESG</a>, <a href="https://rollbar.com/?utm_source=django&amp;utm_medium=sponsorship&amp;utm_campaign=freetrial">Rollbar</a>, <a href="https://cadre.com">Cadre</a>, <a href="https://hubs.ly/H0f30Lf0">Kloudless</a>, <a href="https://lightsonsoftware.com">Lights On Software</a>, and <a href="https://retool.com/?utm_source=djangorest&amp;utm_medium=sponsorship">Retool</a>.</em></p>

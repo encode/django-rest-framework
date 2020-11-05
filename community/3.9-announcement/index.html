@@ -491,7 +491,6 @@
     <li><a href="https://loadimpact.com/?utm_campaign=Sponsorship%20links&utm_source=drf&utm_medium=drf" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/load-impact.png)">Load Impact</a></li>
     <li><a href="https://hubs.ly/H0f30Lf0" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/kloudless.png)">Kloudless</a></li>
 </ul>
-
 <div style="clear: both; padding-bottom: 20px;"></div>
 
 <p><em>Many thanks to all our <a href="https://fund.django-rest-framework.org/topics/funding/#our-sponsors">wonderful sponsors</a>, and in particular to our premium backers, <a href="https://www.rover.com/careers/">Rover</a>, <a href="https://sentry.io/welcome/">Sentry</a>, <a href="https://getstream.io/?utm_source=drf&amp;utm_medium=banner&amp;utm_campaign=drf">Stream</a>, <a href="https://auklet.io/">Auklet</a>, <a href="https://rollbar.com">Rollbar</a>, <a href="https://cadre.com">Cadre</a>, <a href="https://loadimpact.com/?utm_campaign=Sponsorship%20links&amp;utm_source=drf&amp;utm_medium=drf">Load Impact</a>, and <a href="https://hubs.ly/H0f30Lf0">Kloudless</a>.</em></p>
@@ -507,7 +506,7 @@ option if it is selected via HTTP content negotiation.</li>
 the schema into your repository.</li>
 </ul>
 <p>Here's an example of adding an OpenAPI schema to the URL conf:</p>
-<pre><code class="python">from rest_framework.schemas import get_schema_view
+<pre><code class="language-python">from rest_framework.schemas import get_schema_view
 from rest_framework.renderers import JSONOpenAPIRenderer
 from django.urls import path
 
@@ -522,32 +521,27 @@ urlpatterns = [
     ...
 ]
 </code></pre>
-
 <p>And here's how you can use the <code>generateschema</code> management command:</p>
-<pre><code class="shell">$ python manage.py generateschema --format openapi &gt; schema.yml
+<pre><code class="language-shell">$ python manage.py generateschema --format openapi &gt; schema.yml
 </code></pre>
-
 <p>There's lots of different tooling that you can use for working with OpenAPI
 schemas. One option that we're working on is the <a href="https://docs.apistar.com/">API Star</a>
 command line tool.</p>
 <p>You can use <code>apistar</code> to validate your API schema:</p>
-<pre><code class="shell">$ apistar validate --path schema.json --format openapi
+<pre><code class="language-shell">$ apistar validate --path schema.json --format openapi
 ✓ Valid OpenAPI schema.
 </code></pre>
-
 <p>Or to build API documentation:</p>
-<pre><code class="shell">$ apistar docs --path schema.json --format openapi
+<pre><code class="language-shell">$ apistar docs --path schema.json --format openapi
 ✓ Documentation built at &quot;build/index.html&quot;.
 </code></pre>
-
 <p>API Star also includes a <a href="https://docs.apistar.com/client-library/">dynamic client library</a>
 that uses an API schema to automatically provide a client library interface for making requests.</p>
 <h2 id="composable-permission-classes"><a class="toclink" href="#composable-permission-classes">Composable permission classes</a></h2>
 <p>You can now compose permission classes using the and/or operators, <code>&amp;</code> and <code>|</code>.</p>
 <p>For example...</p>
-<pre><code class="python">permission_classes = [IsAuthenticated &amp; (ReadOnly | IsAdmin)]
+<pre><code class="language-python">permission_classes = [IsAuthenticated &amp; (ReadOnly | IsAdmin)]
 </code></pre>
-
 <p>If you're using custom permission classes then make sure that you are subclassing
 from <code>BasePermission</code> in order to enable this support.</p>
 <h2 id="viewset-extra-actions-available-in-the-browsable-api"><a class="toclink" href="#viewset-extra-actions-available-in-the-browsable-api">ViewSet <em>Extra Actions</em> available in the Browsable API</a></h2>
