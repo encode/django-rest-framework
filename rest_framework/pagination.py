@@ -265,8 +265,12 @@ class PageNumberPagination(BasePagination):
         return self.page_size
 
     def get_page_number(self, request):
-        # This can be negative to mean 'pages from the end'.
-        return int(request.query_params.get(self.page_query_param, 1))
+        # This can be negative to mean 'pages from the end'.  Invalid values
+        # are ignored, and the default is page 1.
+        try:
+            return int(request.query_params.get(self.page_query_param, 1))
+        except ValueError:
+            return 1
 
     def get_next_link(self):
         if not self.page.has_next():
