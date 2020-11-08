@@ -2026,7 +2026,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 [gh5376]: https://github.com/encode/django-rest-framework/issues/5376
 [gh5422]: https://github.com/encode/django-rest-framework/issues/5422
 [gh3732]: https://github.com/encode/django-rest-framework/issues/3732
-[djangodocs-set-timezone]: https://docs.djangoproject.com/en/1.11/topics/i18n/timezones/#default-time-zone-and-current-time-zone
+[djangodocs-set-timezone]: https://docs.djangoproject.com/en/3.1/topics/i18n/timezones/#default-time-zone-and-current-time-zone
 [gh5273]: https://github.com/encode/django-rest-framework/issues/5273
 [gh5440]: https://github.com/encode/django-rest-framework/issues/5440
 [gh5265]: https://github.com/encode/django-rest-framework/issues/5265
