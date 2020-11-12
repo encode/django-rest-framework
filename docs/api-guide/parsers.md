@@ -73,7 +73,7 @@ Or, if you're using the `@api_view` decorator with function based views.
 
 ## JSONParser
 
-Parses `JSON` request content.
+Parses `JSON` request content. `request.data` will be populated with a dictionary of data.
 
 **.media_type**: `application/json`
 
