@@ -1003,8 +1003,7 @@ class TestGenerator(TestCase):
         schema = generator.get_schema(request=request)
         ret = JSONOpenAPIRenderer().render(schema)
 
-        expected_start = b'{\n  "openapi": '
-        assert expected_start == ret[:len(expected_start)]
+        assert b'"openapi": "' in ret
         assert b'"default": "0.0"' in ret
 
     def test_schema_with_no_paths(self):
