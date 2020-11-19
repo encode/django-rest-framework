@@ -149,7 +149,7 @@ class ModelPermissionsIntegrationTests(TestCase):
         response = root_view(request, pk='1')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('actions', response.data)
-        self.assertEqual(list(response.data['actions']), ['POST'])
+        self.assertEqual(sorted(list(response.data['actions'])), ['GET', 'POST'])
 
         request = factory.options(
             '/1',
@@ -158,7 +158,7 @@ class ModelPermissionsIntegrationTests(TestCase):
         response = instance_view(request, pk='1')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('actions', response.data)
-        self.assertEqual(list(response.data['actions']), ['PUT'])
+        self.assertEqual(sorted(list(response.data['actions'])), ['GET', 'PUT'])
 
     def test_options_disallowed(self):
         request = factory.options(
@@ -167,7 +167,7 @@ class ModelPermissionsIntegrationTests(TestCase):
         )
         response = root_view(request, pk='1')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertNotIn('actions', response.data)
+        self.assertEqual(list(response.data['actions']), ['GET'])
 
         request = factory.options(
             '/1',
@@ -175,7 +175,7 @@ class ModelPermissionsIntegrationTests(TestCase):
         )
         response = instance_view(request, pk='1')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertNotIn('actions', response.data)
+        self.assertEqual(list(response.data['actions']), ['GET'])
 
     def test_options_updateonly(self):
         request = factory.options(
@@ -184,7 +184,7 @@ class ModelPermissionsIntegrationTests(TestCase):
         )
         response = root_view(request, pk='1')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertNotIn('actions', response.data)
+        self.assertEqual(list(response.data['actions']), ['GET'])
 
         request = factory.options(
             '/1',
@@ -193,7 +193,7 @@ class ModelPermissionsIntegrationTests(TestCase):
         response = instance_view(request, pk='1')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('actions', response.data)
-        self.assertEqual(list(response.data['actions']), ['PUT'])
+        self.assertEqual(sorted(list(response.data['actions'])), ['GET', 'PUT'])
 
     def test_empty_view_does_not_assert(self):
         request = factory.get('/1', HTTP_AUTHORIZATION=self.permitted_credentials)
