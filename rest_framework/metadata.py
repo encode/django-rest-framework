@@ -73,10 +73,13 @@ class SimpleMetadata(BaseMetadata):
     def determine_actions(self, request, view):
         """
         For generic class based views we return information about
-        the fields that are accepted for 'PUT' and 'POST' methods.
+        the fields that are accepted for 'PUT' and 'POST' methods,
+        or the choice fields that may be available for use as query
+        parameters with the 'GET' method.
         """
         actions = {}
-        for method in {'PUT', 'POST'} & set(view.allowed_methods):
+        metadata = None
+        for method in {'GET', 'PUT', 'POST'} & set(view.allowed_methods):
             view.request = clone_request(request, method)
             try:
                 # Test global permissions
@@ -90,8 +93,17 @@ class SimpleMetadata(BaseMetadata):
             else:
                 # If user has appropriate permissions for the view, include
                 # appropriate metadata about the fields that should be supplied.
-                serializer = view.get_serializer()
-                actions[method] = self.get_serializer_info(serializer)
+                if not metadata:
+                    serializer = view.get_serializer()
+                    metadata = self.get_serializer_info(serializer)
+                if method == 'GET':
+                    filtered_metadata = {}
+                    for field_name, field_info in metadata.items():
+                        if 'choices' in field_info:
+                            filtered_metadata[field_name] = {'choices': field_info['choices']}
+                    actions[method] = filtered_metadata
+                else:
+                    actions[method] = metadata
             finally:
                 view.request = request
 
