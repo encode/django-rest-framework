@@ -8,6 +8,7 @@ from django.http import Http404
 from django.http.response import HttpResponseBase
 from django.utils.cache import cc_delim_re, patch_vary_headers
 from django.utils.encoding import smart_str
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
@@ -92,11 +93,15 @@ def exception_handler(exc, context):
 
         if isinstance(exc.detail, (list, dict)):
             data = exc.detail
+            reason = _('See response body for full details')
         else:
-            data = {'detail': exc.detail}
+            data = {"detail": exc.detail}
+            reason = str(exc.detail)
+        if isinstance(exc.detail, list) and len(exc.detail) == 1:
+            reason = exc.detail[0]
 
         set_rollback()
-        return Response(data, status=exc.status_code, headers=headers)
+        return Response(data, status=exc.status_code, headers=headers, reason=reason)
 
     return None
 

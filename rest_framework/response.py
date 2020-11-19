@@ -17,9 +17,16 @@ class Response(SimpleTemplateResponse):
     arbitrary media types.
     """
 
-    def __init__(self, data=None, status=None,
-                 template_name=None, headers=None,
-                 exception=False, content_type=None):
+    def __init__(
+        self,
+        data=None,
+        status=None,
+        template_name=None,
+        headers=None,
+        exception=False,
+        content_type=None,
+        reason=None,
+    ):
         """
         Alters the init arguments slightly.
         For example, drop 'template_name', and instead use 'data'.
@@ -41,6 +48,8 @@ class Response(SimpleTemplateResponse):
         self.template_name = template_name
         self.exception = exception
         self.content_type = content_type
+        if reason:
+            self.reason_phrase = "{} ({})".format(self.status_text, reason)
 
         if headers:
             for name, value in headers.items():

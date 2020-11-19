@@ -32,6 +32,7 @@ class MockTextMediaRenderer(BaseRenderer):
 
 DUMMYSTATUS = status.HTTP_200_OK
 DUMMYCONTENT = 'dummycontent'
+DUMMYREASON = 'dummyreason'
 
 
 def RENDERER_A_SERIALIZER(x):
@@ -76,6 +77,12 @@ class MockViewSettingContentType(APIView):
 
     def get(self, request, **kwargs):
         return Response(DUMMYCONTENT, status=DUMMYSTATUS, content_type='setbyview')
+
+
+class MockViewSettingReason(APIView):
+
+    def get(self, request, **kwargs):
+        return Response(DUMMYCONTENT, status=DUMMYSTATUS, reason=DUMMYREASON)
 
 
 class JSONView(APIView):
@@ -125,7 +132,8 @@ urlpatterns = [
     path('html1', HTMLView1.as_view()),
     path('html_new_model', HTMLNewModelView.as_view()),
     path('html_new_model_viewset', include(new_model_viewset_router.urls)),
-    path('restframework', include('rest_framework.urls', namespace='rest_framework'))
+    path('restframework', include('rest_framework.urls', namespace='rest_framework')),
+    path('with_reason', MockViewSettingReason.as_view())
 ]
 
 
@@ -283,3 +291,14 @@ class Issue807Tests(TestCase):
         self.assertEqual(resp['Content-Type'], 'text/html; charset=utf-8')
         # self.assertContains(resp, 'Text comes here')
         # self.assertContains(resp, 'Text description.')
+
+
+@override_settings(ROOT_URLCONF='tests.test_response')
+class ReasonPhraseTests(TestCase):
+    def test_reason_is_set(self):
+        resp = self.client.get('/with_reason')
+        self.assertEqual("OK ({})".format(DUMMYREASON), resp.reason_phrase)
+
+    def test_reason_phrase_with_no_reason(self):
+        resp = self.client.get('/')
+        self.assertEqual("OK", resp.reason_phrase)

@@ -1,9 +1,11 @@
 import copy
+import re
 
 from django.test import TestCase
 
 from rest_framework import status
 from rest_framework.decorators import api_view
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.settings import APISettings, api_settings
 from rest_framework.test import APIRequestFactory
@@ -12,6 +14,9 @@ from rest_framework.views import APIView
 factory = APIRequestFactory()
 
 JSON_ERROR = 'JSON parse error - Expecting value:'
+STATUS_CODE_400 = 'Bad Request'
+REASON_PHRASE_RE = r"{} \({}.*\)".format(STATUS_CODE_400, JSON_ERROR)
+VALIDATION_ERROR = "Data isn't valid!"
 
 
 class BasicView(APIView):
@@ -39,6 +44,11 @@ class ErrorView(APIView):
         raise Exception
 
 
+class ValidationErrorView(APIView):
+    def get(self, request, *args, **kwargs):
+        raise ValidationError(VALIDATION_ERROR)
+
+
 def custom_handler(exc, context):
     if isinstance(exc, SyntaxError):
         return Response({'error': 'SyntaxError'}, status=400)
@@ -57,6 +67,11 @@ def error_view(request):
     raise Exception
 
 
+@api_view(['GET'])
+def validation_error_view(request):
+    raise ValidationError(VALIDATION_ERROR)
+
+
 def sanitise_json_error(error_dict):
     """
     Exact contents of JSON error messages depend on the installed version
@@ -69,31 +84,43 @@ def sanitise_json_error(error_dict):
 
 
 class ClassBasedViewIntegrationTests(TestCase):
-    def setUp(self):
-        self.view = BasicView.as_view()
 
     def test_400_parse_error(self):
         request = factory.post('/', 'f00bar', content_type='application/json')
-        response = self.view(request)
+        response = BasicView.as_view()(request)
         expected = {
             'detail': JSON_ERROR
         }
         assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert re.match(REASON_PHRASE_RE, response.reason_phrase)
         assert sanitise_json_error(response.data) == expected
+
+    def test_400_validation_error(self):
+        request = factory.get('/')
+        response = ValidationErrorView.as_view()(request)
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.reason_phrase == "{} ({})".format(STATUS_CODE_400, VALIDATION_ERROR)
+        assert response.data == [VALIDATION_ERROR]
 
 
 class FunctionBasedViewIntegrationTests(TestCase):
-    def setUp(self):
-        self.view = basic_view
 
     def test_400_parse_error(self):
         request = factory.post('/', 'f00bar', content_type='application/json')
-        response = self.view(request)
+        response = basic_view(request)
         expected = {
             'detail': JSON_ERROR
         }
         assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert re.match(REASON_PHRASE_RE, response.reason_phrase)
         assert sanitise_json_error(response.data) == expected
+
+    def test_400_validation_error(self):
+        request = factory.get('/')
+        response = validation_error_view(request)
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.reason_phrase == "{} ({})".format(STATUS_CODE_400, VALIDATION_ERROR)
+        assert response.data == [VALIDATION_ERROR]
 
 
 class TestCustomExceptionHandler(TestCase):
