@@ -60,8 +60,8 @@ using the `APIView` class-based views.
 
         def get(self, request, format=None):
             content = {
-                'user': unicode(request.user),  # `django.contrib.auth.User` instance.
-                'auth': unicode(request.auth),  # None
+                'user': str(request.user),  # `django.contrib.auth.User` instance.
+                'auth': str(request.auth),  # None
             }
             return Response(content)
 
@@ -72,8 +72,8 @@ Or, if you're using the `@api_view` decorator with function based views.
     @permission_classes([IsAuthenticated])
     def example_view(request, format=None):
         content = {
-            'user': unicode(request.user),  # `django.contrib.auth.User` instance.
-            'auth': unicode(request.auth),  # None
+            'user': str(request.user),  # `django.contrib.auth.User` instance.
+            'auth': str(request.auth),  # None
         }
         return Response(content)
 
