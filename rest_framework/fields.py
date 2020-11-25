@@ -467,7 +467,7 @@ class Field:
                 )
             )
             raise type(exc)(msg)
-        except (KeyError, AttributeError) as exc:
+        except (AttributeError, KeyError) as exc:
             if self.default is not empty:
                 return self.get_default()
             if self.allow_null:
