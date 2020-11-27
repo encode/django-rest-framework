@@ -1,9 +1,9 @@
 import unittest
 
-from django.conf.urls import url
 from django.db import connection, connections, transaction
 from django.http import Http404
 from django.test import TestCase, TransactionTestCase, override_settings
+from django.urls import path
 
 from rest_framework import status
 from rest_framework.exceptions import APIException
@@ -44,7 +44,7 @@ class NonAtomicAPIExceptionView(APIView):
 
 
 urlpatterns = (
-    url(r'^$', NonAtomicAPIExceptionView.as_view()),
+    path('', NonAtomicAPIExceptionView.as_view()),
 )
 
 

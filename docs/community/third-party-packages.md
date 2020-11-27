@@ -198,6 +198,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [rest_condition][rest-condition] - Another extension for building complex permissions in a simple and convenient way.
 * [dry-rest-permissions][dry-rest-permissions] - Provides a simple way to define permissions for individual api actions.
 * [drf-access-policy][drf-access-policy] - Declarative and flexible permissions inspired by AWS' IAM policies.
+* [drf-psq][drf-psq] - An extension that gives support for having action-based **permission_classes**, **serializer_class**, and **queryset** dependent on permission-based rules.
 
 ### Serializers
 
@@ -240,7 +241,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 
 * [djangorestframework-csv][djangorestframework-csv] - Provides CSV renderer support.
 * [djangorestframework-jsonapi][djangorestframework-jsonapi] - Provides a parser, renderer, serializers, and other tools to help build an API that is compliant with the jsonapi.org spec.
-* [drf_ujson][drf_ujson] - Implements JSON rendering using the UJSON package.
+* [drf_ujson2][drf_ujson2] - Implements JSON rendering using the UJSON package.
 * [rest-pandas][rest-pandas] - Pandas DataFrame-powered renderers including Excel, CSV, and SVG formats.
 * [djangorestframework-rapidjson][djangorestframework-rapidjson] - Provides rapidjson support with parser and renderer.
 
@@ -274,6 +275,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [drf-viewset-profiler][drf-viewset-profiler] - Lib to profile all methods from a viewset line by line.
 * [djangorestframework-features][djangorestframework-features] - Advanced schema generation and more based on named features.
 * [django-elasticsearch-dsl-drf][django-elasticsearch-dsl-drf] - Integrate Elasticsearch DSL with Django REST framework. Package provides views, serializers, filter backends, pagination and other handy add-ons.
+* [django-api-client][django-api-client] - DRF client that groups the Endpoint response, for use in CBVs and FBV as if you were working with Django's Native Models..
 
 [cite]: http://www.software-ecosystems.com/Software_Ecosystems/Ecosystems.html
 [cookiecutter]: https://github.com/jpadilla/cookiecutter-django-rest-framework
@@ -313,7 +315,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [djangorestframework-msgpack]: https://github.com/juanriaza/django-rest-framework-msgpack
 [djangorestframework-camel-case]: https://github.com/vbabiy/djangorestframework-camel-case
 [djangorestframework-csv]: https://github.com/mjumbewu/django-rest-framework-csv
-[drf_ujson]: https://github.com/gizmag/drf-ujson-renderer
+[drf_ujson2]: https://github.com/Amertz08/drf_ujson2
 [rest-pandas]: https://github.com/wq/django-rest-pandas
 [djangorestframework-rapidjson]: https://github.com/allisson/django-rest-framework-rapidjson
 [djangorestframework-chain]: https://github.com/philipn/django-rest-framework-chain
@@ -358,3 +360,5 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [drf-viewset-profiler]: https://github.com/fvlima/drf-viewset-profiler
 [djangorestframework-features]: https://github.com/cloudcode-hungary/django-rest-framework-features/
 [django-elasticsearch-dsl-drf]: https://github.com/barseghyanartur/django-elasticsearch-dsl-drf
+[django-api-client]: https://github.com/rhenter/django-api-client
+[drf-psq]: https://github.com/drf-psq/drf-psq

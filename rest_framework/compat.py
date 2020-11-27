@@ -96,8 +96,8 @@ except ImportError:
 
 try:
     import pygments
-    from pygments.lexers import get_lexer_by_name, TextLexer
     from pygments.formatters import HtmlFormatter
+    from pygments.lexers import TextLexer, get_lexer_by_name
 
     def pygments_highlight(text, lang, style):
         lexer = get_lexer_by_name(lang, stripall=False)
@@ -121,8 +121,9 @@ if markdown is not None and pygments is not None:
     # starting from this blogpost and modified to support current markdown extensions API
     # https://zerokspot.com/weblog/2008/06/18/syntax-highlighting-in-markdown-with-pygments/
 
-    from markdown.preprocessors import Preprocessor
     import re
+
+    from markdown.preprocessors import Preprocessor
 
     class CodeBlockPreprocessor(Preprocessor):
         pattern = re.compile(

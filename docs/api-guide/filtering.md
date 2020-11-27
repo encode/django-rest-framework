@@ -45,7 +45,7 @@ Another style of filtering might involve restricting the queryset based on some 
 
 For example if your URL config contained an entry like this:
 
-    url('^purchases/(?P<username>.+)/$', PurchaseList.as_view()),
+    re_path('^purchases/(?P<username>.+)/$', PurchaseList.as_view()),
 
 You could then write a view that returned a purchase queryset filtered by the username portion of the URL:
 
@@ -145,9 +145,17 @@ Note that you can use both an overridden `.get_queryset()` and generic filtering
 The [`django-filter`][django-filter-docs] library includes a `DjangoFilterBackend` class which
 supports highly customizable field filtering for REST framework.
 
-To use `DjangoFilterBackend`, first install `django-filter`. Then add `django_filters` to Django's `INSTALLED_APPS`
+To use `DjangoFilterBackend`, first install `django-filter`.
 
     pip install django-filter
+
+Then add `'django_filters'` to Django's `INSTALLED_APPS`:
+
+    INSTALLED_APPS = [
+        ...
+        'django_filters',
+        ...
+    ]
 
 You should now either add the filter backend to your settings:
 

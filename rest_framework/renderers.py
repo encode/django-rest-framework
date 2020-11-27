@@ -329,7 +329,7 @@ class HTMLFormRenderer(BaseRenderer):
         if isinstance(field._field, serializers.HiddenField):
             return ''
 
-        style = dict(self.default_style[field])
+        style = self.default_style[field].copy()
         style.update(field.style)
         if 'template_pack' not in style:
             style['template_pack'] = parent_style.get('template_pack', self.template_pack)
@@ -418,7 +418,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         if render_style == 'binary':
             return '[%d bytes of binary content]' % len(content)
 
-        return content
+        return content.decode('utf-8') if isinstance(content, bytes) else content
 
     def show_form_for_method(self, view, method, request, obj):
         """
@@ -856,8 +856,8 @@ class DocumentationRenderer(BaseRenderer):
         return {
             'document': data,
             'langs': self.languages,
-            'lang_htmls': ["rest_framework/docs/langs/%s.html" % l for l in self.languages],
-            'lang_intro_htmls': ["rest_framework/docs/langs/%s-intro.html" % l for l in self.languages],
+            'lang_htmls': ["rest_framework/docs/langs/%s.html" % language for language in self.languages],
+            'lang_intro_htmls': ["rest_framework/docs/langs/%s-intro.html" % language for language in self.languages],
             'code_style': pygments_css(self.code_style),
             'request': request
         }

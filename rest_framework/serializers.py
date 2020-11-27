@@ -115,7 +115,7 @@ class BaseSerializer(Field):
         super().__init__(**kwargs)
 
     def __new__(cls, *args, **kwargs):
-        # We override this method in order to automagically create
+        # We override this method in order to automatically create
         # `ListSerializer` classes instead when `many=True` is set.
         if kwargs.pop('many', False):
             return cls.many_init(*args, **kwargs)
@@ -194,10 +194,7 @@ class BaseSerializer(Field):
             "inspect 'serializer.validated_data' instead. "
         )
 
-        validated_data = dict(
-            list(self.validated_data.items()) +
-            list(kwargs.items())
-        )
+        validated_data = {**self.validated_data, **kwargs}
 
         if self.instance is not None:
             self.instance = self.update(self.instance, validated_data)
@@ -699,8 +696,7 @@ class ListSerializer(BaseSerializer):
         )
 
         validated_data = [
-            dict(list(attrs.items()) + list(kwargs.items()))
-            for attrs in self.validated_data
+            {**attrs, **kwargs} for attrs in self.validated_data
         ]
 
         if self.instance is not None:
@@ -884,6 +880,8 @@ class ModelSerializer(Serializer):
         models.GenericIPAddressField: IPAddressField,
         models.FilePathField: FilePathField,
     }
+    if hasattr(models, 'JSONField'):
+        serializer_field_mapping[models.JSONField] = JSONField
     if postgres_fields:
         serializer_field_mapping[postgres_fields.HStoreField] = HStoreField
         serializer_field_mapping[postgres_fields.ArrayField] = ListField
@@ -1242,10 +1240,13 @@ class ModelSerializer(Serializer):
             # `allow_blank` is only valid for textual fields.
             field_kwargs.pop('allow_blank', None)
 
-        if postgres_fields and isinstance(model_field, postgres_fields.JSONField):
+        is_django_jsonfield = hasattr(models, 'JSONField') and isinstance(model_field, models.JSONField)
+        if (postgres_fields and isinstance(model_field, postgres_fields.JSONField)) or is_django_jsonfield:
             # Populate the `encoder` argument of `JSONField` instances generated
-            # for the PostgreSQL specific `JSONField`.
+            # for the model `JSONField`.
             field_kwargs['encoder'] = getattr(model_field, 'encoder', None)
+            if is_django_jsonfield:
+                field_kwargs['decoder'] = getattr(model_field, 'decoder', None)
 
         if postgres_fields and isinstance(model_field, postgres_fields.ArrayField):
             # Populate the `child` argument on `ListField` instances generated
@@ -1405,7 +1406,7 @@ class ModelSerializer(Serializer):
         # so long as all the field names are included on the serializer.
         for parent_class in [model] + list(model._meta.parents):
             for unique_together_list in parent_class._meta.unique_together:
-                if set(field_names).issuperset(set(unique_together_list)):
+                if set(field_names).issuperset(unique_together_list):
                     unique_constraint_names |= set(unique_together_list)
 
         # Now we have all the field names that have uniqueness constraints
@@ -1536,7 +1537,7 @@ class ModelSerializer(Serializer):
         for parent_class in model_class_inheritance_tree:
             for unique_together in parent_class._meta.unique_together:
                 # Skip if serializer does not map to all unique together sources
-                if not set(source_map).issuperset(set(unique_together)):
+                if not set(source_map).issuperset(unique_together):
                     continue
 
                 for source in unique_together:

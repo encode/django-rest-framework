@@ -38,7 +38,7 @@ Might receive an error response indicating that the `DELETE` method is not allow
 
 Validation errors are handled slightly differently, and will include the field names as the keys in the response. If the validation error was not specific to a particular field then it will use the "non_field_errors" key, or whatever string value has been set for the `NON_FIELD_ERRORS_KEY` setting.
 
-Any example validation error might look like this:
+An example validation error might look like this:
 
     HTTP/1.1 400 Bad Request
     Content-Type: application/json

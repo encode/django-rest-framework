@@ -60,8 +60,8 @@ using the `APIView` class-based views.
 
         def get(self, request, format=None):
             content = {
-                'user': unicode(request.user),  # `django.contrib.auth.User` instance.
-                'auth': unicode(request.auth),  # None
+                'user': str(request.user),  # `django.contrib.auth.User` instance.
+                'auth': str(request.auth),  # None
             }
             return Response(content)
 
@@ -72,8 +72,8 @@ Or, if you're using the `@api_view` decorator with function based views.
     @permission_classes([IsAuthenticated])
     def example_view(request, format=None):
         content = {
-            'user': unicode(request.user),  # `django.contrib.auth.User` instance.
-            'auth': unicode(request.auth),  # None
+            'user': str(request.user),  # `django.contrib.auth.User` instance.
+            'auth': str(request.auth),  # None
         }
         return Response(content)
 
@@ -199,7 +199,7 @@ When using `TokenAuthentication`, you may want to provide a mechanism for client
 
     from rest_framework.authtoken import views
     urlpatterns += [
-        url(r'^api-token-auth/', views.obtain_auth_token)
+        path('api-token-auth/', views.obtain_auth_token)
     ]
 
 Note that the URL part of the pattern can be whatever you want to use.
@@ -238,7 +238,7 @@ For example, you may return additional user information beyond the `token` value
 And in your `urls.py`:
 
     urlpatterns += [
-        url(r'^api-token-auth/', CustomAuthToken.as_view())
+        path('api-token-auth/', CustomAuthToken.as_view())
     ]
 
 

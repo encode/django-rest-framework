@@ -16,9 +16,8 @@ For example, you might have a `urls.py` that looks something like this:
 import itertools
 from collections import OrderedDict, namedtuple
 
-from django.conf.urls import url
 from django.core.exceptions import ImproperlyConfigured
-from django.urls import NoReverseMatch
+from django.urls import NoReverseMatch, re_path
 
 from rest_framework import views
 from rest_framework.response import Response
@@ -265,7 +264,7 @@ class SimpleRouter(BaseRouter):
 
                 view = viewset.as_view(mapping, **initkwargs)
                 name = route.name.format(basename=basename)
-                ret.append(url(regex, view, name=name))
+                ret.append(re_path(regex, view, name=name))
 
         return ret
 
@@ -340,7 +339,7 @@ class DefaultRouter(SimpleRouter):
 
         if self.include_root_view:
             view = self.get_api_root_view(api_urls=urls)
-            root_url = url(r'^$', view, name=self.root_view_name)
+            root_url = re_path(r'^$', view, name=self.root_view_name)
             urls.append(root_url)
 
         if self.include_format_suffixes:

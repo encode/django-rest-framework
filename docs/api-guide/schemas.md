@@ -114,7 +114,7 @@ The `get_schema_view()` helper takes the following keyword arguments:
   only want the `myproject.api` urls to be exposed in the schema:
 
         schema_url_patterns = [
-            url(r'^api/', include('myproject.api.urls')),
+            path('api/', include('myproject.api.urls')),
         ]
 
         schema_view = get_schema_view(
@@ -181,8 +181,8 @@ dictionary For example you might wish to add terms of service to the [top-level
 
 ```
 class TOSSchemaGenerator(SchemaGenerator):
-    def get_schema(self):
-        schema = super().get_schema()
+    def get_schema(self, *args, **kwargs):
+        schema = super().get_schema(*args, **kwargs)
         schema["info"]["termsOfService"] = "https://example.com/tos.html"
         return schema
 ```

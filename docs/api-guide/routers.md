@@ -63,7 +63,7 @@ For example, you can append `router.urls` to a list of existing views...
     router.register(r'accounts', AccountViewSet)
 
     urlpatterns = [
-        url(r'^forgot-password/$', ForgotPasswordFormView.as_view()),
+        path('forgot-password/', ForgotPasswordFormView.as_view()),
     ]
 
     urlpatterns += router.urls
@@ -71,22 +71,22 @@ For example, you can append `router.urls` to a list of existing views...
 Alternatively you can use Django's `include` function, like so...
 
     urlpatterns = [
-        url(r'^forgot-password/$', ForgotPasswordFormView.as_view()),
-        url(r'^', include(router.urls)),
+        path('forgot-password', ForgotPasswordFormView.as_view()),
+        path('', include(router.urls)),
     ]
 
 You may use `include` with an application namespace:
 
     urlpatterns = [
-        url(r'^forgot-password/$', ForgotPasswordFormView.as_view()),
-        url(r'^api/', include((router.urls, 'app_name'))),
+        path('forgot-password/', ForgotPasswordFormView.as_view()),
+        path('api/', include((router.urls, 'app_name'))),
     ]
 
 Or both an application and instance namespace:
 
     urlpatterns = [
-        url(r'^forgot-password/$', ForgotPasswordFormView.as_view()),
-        url(r'^api/', include((router.urls, 'app_name'), namespace='instance_name')),
+        path('forgot-password/', ForgotPasswordFormView.as_view()),
+        path('api/', include((router.urls, 'app_name'), namespace='instance_name')),
     ]
 
 See Django's [URL namespaces docs][url-namespace-docs] and the [`include` API reference][include-api-reference] for more details.

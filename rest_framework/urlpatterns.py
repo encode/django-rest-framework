@@ -1,5 +1,4 @@
-from django.conf.urls import include, url
-from django.urls import URLResolver, path, register_converter
+from django.urls import URLResolver, include, path, re_path, register_converter
 from django.urls.resolvers import RoutePattern
 
 from rest_framework.settings import api_settings
@@ -52,7 +51,7 @@ def apply_suffix_patterns(urlpatterns, suffix_pattern, suffix_required, suffix_r
                 route = str(urlpattern.pattern)
                 new_pattern = path(route, include((patterns, app_name), namespace), kwargs)
             else:
-                new_pattern = url(regex, include((patterns, app_name), namespace), kwargs)
+                new_pattern = re_path(regex, include((patterns, app_name), namespace), kwargs)
 
             ret.append(new_pattern)
         else:
@@ -72,7 +71,7 @@ def apply_suffix_patterns(urlpatterns, suffix_pattern, suffix_required, suffix_r
                 route = str(urlpattern.pattern).rstrip('$').rstrip('/') + suffix_route
                 new_pattern = path(route, view, kwargs, name)
             else:
-                new_pattern = url(regex, view, kwargs, name)
+                new_pattern = re_path(regex, view, kwargs, name)
 
             ret.append(new_pattern)
 

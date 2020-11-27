@@ -73,6 +73,8 @@ class ErrorDetail(str):
 
     def __eq__(self, other):
         r = super().__eq__(other)
+        if r is NotImplemented:
+            return NotImplemented
         try:
             return r and self.code == other.code
         except AttributeError:

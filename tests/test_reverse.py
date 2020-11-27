@@ -1,6 +1,5 @@
-from django.conf.urls import url
 from django.test import TestCase, override_settings
-from django.urls import NoReverseMatch
+from django.urls import NoReverseMatch, path
 
 from rest_framework.reverse import reverse
 from rest_framework.test import APIRequestFactory
@@ -13,7 +12,7 @@ def null_view(request):
 
 
 urlpatterns = [
-    url(r'^view$', null_view, name='view'),
+    path('view', null_view, name='view'),
 ]
 
 

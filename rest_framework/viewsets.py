@@ -33,6 +33,15 @@ def _is_extra_action(attr):
     return hasattr(attr, 'mapping') and isinstance(attr.mapping, MethodMapper)
 
 
+def _check_attr_name(func, name):
+    assert func.__name__ == name, (
+        'Expected function (`{func.__name__}`) to match its attribute name '
+        '(`{name}`). If using a decorator, ensure the inner function is '
+        'decorated with `functools.wraps`, or that `{func.__name__}.__name__` '
+        'is otherwise set to `{name}`.').format(func=func, name=name)
+    return func
+
+
 class ViewSetMixin:
     """
     This is the magic.
@@ -164,7 +173,9 @@ class ViewSetMixin:
         """
         Get the methods that are marked as an extra ViewSet `@action`.
         """
-        return [method for _, method in getmembers(cls, _is_extra_action)]
+        return [_check_attr_name(method, name)
+                for name, method
+                in getmembers(cls, _is_extra_action)]
 
     def get_extra_action_url_map(self):
         """

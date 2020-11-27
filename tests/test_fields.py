@@ -669,7 +669,7 @@ class TestBooleanField(FieldValues):
         for input_value in inputs:
             with pytest.raises(serializers.ValidationError) as exc_info:
                 field.run_validation(input_value)
-            expected = ['Must be a valid boolean.'.format(input_value)]
+            expected = ['Must be a valid boolean.']
             assert exc_info.value.detail == expected
 
 
@@ -697,7 +697,7 @@ class TestNullBooleanField(TestBooleanField):
         None: None,
         'other': True
     }
-    field = serializers.NullBooleanField()
+    field = serializers.BooleanField(allow_null=True)
 
 
 class TestNullableBooleanField(TestNullBooleanField):
