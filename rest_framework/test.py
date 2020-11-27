@@ -234,9 +234,9 @@ class APIRequestFactory(DjangoRequestFactory):
             method, path, data, content_type, secure, **extra)
 
     def request(self, **kwargs):
-        request = super().request(**kwargs)
-        request._dont_enforce_csrf_checks = not self.enforce_csrf_checks
-        return request
+        response = super().request(**kwargs)
+        response._dont_enforce_csrf_checks = not self.enforce_csrf_checks
+        return response
 
 
 class ForceAuthClientHandler(ClientHandler):
