@@ -118,7 +118,8 @@ class SchemaGenerator(BaseSchemaGenerator):
 
 class AutoSchema(ViewInspector):
 
-    def __init__(self, tags=None, operation_id_base=None, component_name=None):
+    def __init__(self, tags=None, operation_id_base=None, component_name=None, domain='api.example.org',
+                 protocol='http'):
         """
         :param operation_id_base: user-defined name in operationId. If empty, it will be deducted from the Model/Serializer/View name.
         :param component_name: user-defined component's name. If empty, it will be deducted from the Serializer's class name.
@@ -128,6 +129,8 @@ class AutoSchema(ViewInspector):
         self._tags = tags
         self.operation_id_base = operation_id_base
         self.component_name = component_name
+        self.domain = domain
+        self.protocol = protocol
         super().__init__()
 
     request_media_types = []
@@ -683,7 +686,12 @@ class AutoSchema(ViewInspector):
             }
             paginator = self.get_paginator()
             if paginator:
-                response_schema = paginator.get_paginated_response_schema(response_schema)
+                response_schema = paginator.get_paginated_response_schema(
+                    response_schema,
+                    url=path,
+                    domain=self.get_schema_domain(),
+                    protocol=self.get_schema_protocol()
+                )
         else:
             response_schema = item_schema
         status_code = '201' if method == 'POST' else '200'
@@ -712,6 +720,12 @@ class AutoSchema(ViewInspector):
             path = path[1:]
 
         return [path.split('/')[0].replace('_', '-')]
+
+    def get_schema_domain(self):
+        return self.domain
+
+    def get_schema_protocol(self):
+        return self.protocol
 
     def _get_path_parameters(self, path, method):
         warnings.warn(

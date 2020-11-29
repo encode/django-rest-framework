@@ -405,26 +405,22 @@ class TestOperationIntrospection(TestCase):
         path = '/'
         method = 'GET'
 
-        class Pagination(pagination.BasePagination):
-            def get_paginated_response_schema(self, schema):
-                return {
-                    'type': 'object',
-                    'item': schema,
-                }
-
         class ItemSerializer(serializers.Serializer):
             text = serializers.CharField()
 
         class View(generics.GenericAPIView):
             serializer_class = ItemSerializer
-            pagination_class = Pagination
+            pagination_class = pagination.PageNumberPagination
 
         view = create_view(
             View,
             method,
             create_request(path),
         )
-        inspector = AutoSchema()
+        inspector = AutoSchema(
+            domain='www.django-rest-framework.org',
+            protocol='https'
+        )
         inspector.view = view
 
         responses = inspector.get_responses(path, method)
@@ -435,10 +431,25 @@ class TestOperationIntrospection(TestCase):
                     'application/json': {
                         'schema': {
                             'type': 'object',
-                            'item': {
-                                'type': 'array',
-                                'items': {
-                                    '$ref': '#/components/schemas/Item'
+                            'properties': {
+                                'next': {
+                                    'example': 'https://www.django-rest-framework.org/?page=4',
+                                    'format': 'uri',
+                                    'nullable': True,
+                                    'type': 'string'
+                                },
+                                'previous': {
+                                    'example': 'https://www.django-rest-framework.org/?page=2',
+                                    'format': 'uri',
+                                    'nullable': True,
+                                    'type': 'string'
+                                },
+                                'count': {'example': 123, 'type': 'integer'},
+                                'results': {
+                                    'type': 'array',
+                                    'items': {
+                                        '$ref': '#/components/schemas/Item'
+                                    },
                                 },
                             },
                         },
@@ -583,7 +594,7 @@ class TestOperationIntrospection(TestCase):
         method = 'GET'
 
         class Pagination(pagination.BasePagination):
-            def get_paginated_response_schema(self, schema):
+            def get_paginated_response_schema(self, schema, url='/accounts/', domain='api.example.org', protocol='http'):
                 return {
                     'type': 'object',
                     'item': schema,
