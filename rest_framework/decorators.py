@@ -69,6 +69,7 @@ def api_view(http_method_names=None):
 
         WrappedAPIView.permission_classes = getattr(func, 'permission_classes',
                                                     APIView.permission_classes)
+        WrappedAPIView.queryset = getattr(func, 'queryset', APIView.permission_classes)
 
         WrappedAPIView.schema = getattr(func, 'schema',
                                         APIView.schema)
@@ -106,9 +107,11 @@ def throttle_classes(throttle_classes):
     return decorator
 
 
-def permission_classes(permission_classes):
+def permission_classes(permission_classes, queryset=None):
     def decorator(func):
         func.permission_classes = permission_classes
+        if queryset is not None:
+            func.queryset = queryset
         return func
     return decorator
 
