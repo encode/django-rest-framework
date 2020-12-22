@@ -187,7 +187,7 @@ We can now access our API, both from the command-line, using tools like `curl`..
 
 Or using the [httpie][httpie], command line tool...
 
-    bash: http -a admin:password123 http://127.0.0.1:8000/users/
+    bash: http --follow -a admin:password123 http://127.0.0.1:8000/users/
 
     HTTP/1.1 200 OK
     ...
