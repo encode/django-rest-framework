@@ -14,7 +14,7 @@ from django.utils.timezone import activate, deactivate, override, utc
 import rest_framework
 from rest_framework import exceptions, serializers
 from rest_framework.fields import (
-    BuiltinSignatureError, DjangoImageField, is_simple_callable
+    BuiltinSignatureError, DjangoImageField, is_simple_callable, set_value
 )
 
 # Tests for helper functions.
@@ -2380,3 +2380,65 @@ class TestValidationErrorCode:
                 ),
             ]
         }
+
+
+# Tests for set_value function
+# ----------------------------
+
+class TestSetValue:
+
+    def test_no_keys(self):
+        """
+        If no keys are provided, but a dict as value, add the dicts
+        """
+        d = {'a': 1}
+        set_value(d, [], {'b': 2})
+        assert d == {'a': 1, 'b': 2}
+
+    def test_one_key(self):
+        """
+        If a key + value provided, add the value to the dict with key
+        """
+        d = {'a': 1}
+        set_value(d, ['x'], 2)
+        assert d == {'a': 1, 'x': 2}
+
+    def test_many_keys(self):
+        """
+        With many keys, add the item to the in-most dict
+        """
+        d = {'a': 1}
+        set_value(d, ['x', 'y'], 2)
+        assert d == {'a': 1, 'x': {'y': 2}}
+
+    def test_many_keys_existing(self):
+        """
+        With many keys with existing in-built dict
+        """
+        d = {'a': 1, 'x': {'a': 2}}
+        set_value(d, ['x', 'y'], 3)
+        assert d == {'a': 1, 'x': {'a': 2, 'y': 3}}
+
+    def test_conflicting_keys(self):
+        """
+        If a value exists where a key will be added, use a blank key for old value
+        """
+        d = {'a': 1, 'x': 2}
+        set_value(d, ['x', 'y'], 3)
+        assert d == {'a': 1, 'x': {'': 2, 'y': 3}}
+
+    def test_reverse_conflict(self):
+        """
+        If a dict exists and a value is to be added, add it as blank key
+        """
+        d = {'a': 1, 'x': {'y': 2}}
+        set_value(d, ['x'], 3)
+        assert d == {'a': 1, 'x': {'y': 2, '': 3}}
+
+    def test_overwrite_conflict(self):
+        """
+        If a newer final value comes, replace with the older
+        """
+        d = {'a': 1, 'x': 2}
+        set_value(d, ['x'], 3)
+        assert d == {'a': 1, 'x': 3}

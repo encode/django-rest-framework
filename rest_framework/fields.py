@@ -125,9 +125,14 @@ def set_value(dictionary, keys, value):
     for key in keys[:-1]:
         if key not in dictionary:
             dictionary[key] = {}
+        elif type(dictionary[key]) is not dict:
+            dictionary[key] = {'': dictionary[key]}
         dictionary = dictionary[key]
 
-    dictionary[keys[-1]] = value
+    if keys[-1] in dictionary and type(dictionary[keys[-1]]) is dict:
+        dictionary[keys[-1]][''] = value
+    else:
+        dictionary[keys[-1]] = value
 
 
 def to_choices_dict(choices):
