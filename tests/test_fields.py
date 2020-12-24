@@ -15,7 +15,8 @@ from django.utils.timezone import activate, deactivate, override, utc
 import rest_framework
 from rest_framework import exceptions, serializers
 from rest_framework.fields import (
-    BuiltinSignatureError, CurrentUserDefault, DjangoImageField, is_simple_callable
+    BuiltinSignatureError, CurrentUserDefault, DjangoImageField,
+    ValueFromContext, is_simple_callable
 )
 
 # Tests for helper functions.
@@ -2407,3 +2408,27 @@ class TestCurrentUserDefault:
         with pytest.raises(KeyError) as exc_info:
             serializer.is_valid()
         assert str(exc_info.value) == "'request'"
+
+
+class ValueFromContextSerializer(serializers.Serializer):
+    vocalization = serializers.HiddenField(default=ValueFromContext("vocalization"))
+
+
+class TestValueFromContext:
+    def test_context_set(self):
+        serializer = ValueFromContextSerializer(data={}, context={"vocalization": "meow"})
+        serializer.is_valid()
+        field = serializer.fields["vocalization"]
+        assert field.get_default() == "meow"
+
+    def test_context_set_none(self):
+        serializer = ValueFromContextSerializer(data={}, context={"vocalization": None})
+        serializer.is_valid()
+        field = serializer.fields["vocalization"]
+        assert field.get_default() is None
+
+    def test_missing_context(self):
+        serializer = ValueFromContextSerializer(data={}, context={})
+        with pytest.raises(KeyError) as exc_info:
+            serializer.is_valid()
+        assert str(exc_info.value) == "'vocalization'"

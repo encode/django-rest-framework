@@ -283,14 +283,25 @@ class CreateOnlyDefault:
         return '%s(%s)' % (self.__class__.__name__, repr(self.default))
 
 
-class CurrentUserDefault:
+class ValueFromContext:
     requires_context = True
 
+    def __init__(self, context_name):
+        self.context_name = context_name
+
     def __call__(self, serializer_field):
-        return serializer_field.context['request'].user
+        return serializer_field.context[self.context_name]
 
     def __repr__(self):
-        return '%s()' % self.__class__.__name__
+        return "%s()" % self.__class__.__name__
+
+
+class CurrentUserDefault(ValueFromContext):
+    def __init__(self, *args, **kwargs):
+        super().__init__(context_name="request")
+
+    def __call__(self, serializer_field):
+        return super().__call__(serializer_field).user
 
 
 class SkipField(Exception):
