@@ -3,6 +3,7 @@ import os
 import re
 import uuid
 from decimal import ROUND_DOWN, ROUND_UP, Decimal
+from types import SimpleNamespace
 
 import pytest
 import pytz
@@ -14,7 +15,7 @@ from django.utils.timezone import activate, deactivate, override, utc
 import rest_framework
 from rest_framework import exceptions, serializers
 from rest_framework.fields import (
-    BuiltinSignatureError, DjangoImageField, is_simple_callable
+    BuiltinSignatureError, CurrentUserDefault, DjangoImageField, is_simple_callable
 )
 
 # Tests for helper functions.
@@ -2380,3 +2381,29 @@ class TestValidationErrorCode:
                 ),
             ]
         }
+
+
+class CurrentUserDefaultSerializer(serializers.Serializer):
+    user = serializers.HiddenField(default=CurrentUserDefault())
+
+
+class TestCurrentUserDefault:
+    def test_user_set_when_set_to_value(self):
+        request = SimpleNamespace(user="hello")
+        serializer = CurrentUserDefaultSerializer(data={}, context={"request": request})
+        serializer.is_valid()
+        field = serializer.fields["user"]
+        assert field.get_default() == "hello"
+
+    def test_user_when_set_to_none(self):
+        request = SimpleNamespace(user=None)
+        serializer = CurrentUserDefaultSerializer(data={}, context={"request": request})
+        serializer.is_valid()
+        field = serializer.fields["user"]
+        assert field.get_default() is None
+
+    def test_when_request_missing(self):
+        serializer = CurrentUserDefaultSerializer(data={}, context={})
+        with pytest.raises(KeyError) as exc_info:
+            serializer.is_valid()
+        assert str(exc_info.value) == "'request'"
