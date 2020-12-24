@@ -183,6 +183,16 @@ A default class that can be used to represent the current user. In order to use 
         default=serializers.CurrentUserDefault()
     )
 
+#### ValueFromContext
+
+CurrentUserDefault is an example of extracting a value from context and setting a hidden field to this value.  This pattern resurfaces in a number of contexts related to hidden fields, and you may wish to insert something other than user, such as a parent object who's ID was extracted from the URL as part of view processing.  Simply pass in the value to extract from the context:
+
+    parent = serializers.HiddenField(
+        default=serializers.ValueFromContext("parent_object")
+    )
+
+In the event that there is nested data inside the context that you need to extract, you can override ValueFromContext's call method.
+
 #### CreateOnlyDefault
 
 A default class that can be used to *only set a default argument during create operations*. During updates the field is omitted.
