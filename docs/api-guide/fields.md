@@ -48,7 +48,7 @@ Defaults to `True`.
 
 If set, this gives the default value that will be used for the field if no input value is supplied. If not set the default behaviour is to not populate the attribute at all.
 
-The `default` is not applied during partial update operations. In the partial update case only fields that are provided in the incoming data will have a validated value returned.
+The `default` is not applied during partial update operations, unless `set_default_if_partial` is set to True. In the typical path partial update case only fields that are provided in the incoming data will have a validated value returned.
 
 May be set to a function or other callable, in which case the value will be evaluated each time it is used. When called, it will receive no arguments. If the callable has a `requires_context = True` attribute, then the serializer field will be passed as an argument.
 
@@ -67,6 +67,12 @@ For example:
 When serializing the instance, default will be used if the object attribute or dictionary key is not present in the instance.
 
 Note that setting a `default` value implies that the field is not required. Including both the `default` and `required` keyword arguments is invalid and will raise an error.
+
+### set_default_if_partial
+
+The `default` is not applied during partial update operations, unless `set_default_if_partial` is set to True.  If set to True, the partial update will include the default value.  Otherwise, partial updates will only apply to fields provided in the incoming data.  
+
+Note: This parameter is particularly useful for HiddenInput's with default values.
 
 ### `allow_null`
 
@@ -542,7 +548,7 @@ For example, if `has_expired` was a property on the `Account` model, then the fo
 
 ## HiddenField
 
-A field class that does not take a value based on user input, but instead takes its value from a default value or callable.
+A field class that does not take a value based on user input, but instead takes its value from a default value or callable.  In the case of a partial update, the `default` value will not be applied unless `set_default_on_partial` is set to True for this field.
 
 **Signature**: `HiddenField()`
 

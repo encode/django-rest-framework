@@ -307,6 +307,7 @@ MISSING_ERROR_MESSAGE = (
     'ValidationError raised by `{class_name}`, but error key `{key}` does '
     'not exist in the `error_messages` dictionary.'
 )
+NO_DEFAULT_SET_ON_PARTIAL = 'May not enforce set_default_on_partial without setting a default value'
 
 
 class Field:
@@ -323,7 +324,7 @@ class Field:
     def __init__(self, read_only=False, write_only=False,
                  required=None, default=empty, initial=empty, source=None,
                  label=None, help_text=None, style=None,
-                 error_messages=None, validators=None, allow_null=False):
+                 error_messages=None, validators=None, allow_null=False, set_default_on_partial=False):
         self._creation_counter = Field._creation_counter
         Field._creation_counter += 1
 
@@ -336,6 +337,7 @@ class Field:
         assert not (read_only and required), NOT_READ_ONLY_REQUIRED
         assert not (required and default is not empty), NOT_REQUIRED_DEFAULT
         assert not (read_only and self.__class__ == Field), USE_READONLYFIELD
+        assert not (default is empty and set_default_on_partial), NO_DEFAULT_SET_ON_PARTIAL
 
         self.read_only = read_only
         self.write_only = write_only
@@ -347,6 +349,7 @@ class Field:
         self.help_text = help_text
         self.style = {} if style is None else style
         self.allow_null = allow_null
+        self.set_default_on_partial = set_default_on_partial
 
         if self.default_empty_html is not empty:
             if default is not empty:
@@ -498,8 +501,11 @@ class Field:
         raise `SkipField`, indicating that no value should be set in the
         validated data for this field.
         """
-        if self.default is empty or getattr(self.root, 'partial', False):
-            # No default, or this is a partial update.
+        if self.default is empty or all([
+            getattr(self.root, 'partial', False),
+            not getattr(self.root, "set_default_on_partial", False)
+        ]):
+            # No default, or this is a partial update where defaults are not set.
             raise SkipField()
         if callable(self.default):
             if hasattr(self.default, 'set_context'):

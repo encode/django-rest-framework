@@ -610,6 +610,18 @@ class TestDefaultInclusions:
         assert serializer.validated_data == {'integer': 456}
         assert serializer.errors == {}
 
+    def test_default_should_be_included_on_partial_update_when_set_default_on_partial_true(self):
+        class ExampleSerializer(serializers.Serializer):
+            char = serializers.CharField(default='abc', set_default_on_partial=True)
+            integer = serializers.IntegerField()
+            float = serializers.FloatField(required=False)
+
+        instance = MockObject(char='def', integer=123, float=4.2)
+        serializer = ExampleSerializer(instance, data={'integer': 456})
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'char': 'abc', 'integer': 456}
+        assert serializer.errors == {}
+
 
 class TestSerializerValidationWithCompiledRegexField:
     def setup(self):
