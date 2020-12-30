@@ -18,6 +18,7 @@ from collections import OrderedDict, namedtuple
 
 from django.core.exceptions import ImproperlyConfigured
 from django.urls import NoReverseMatch, re_path
+from django.views.generic.base import View
 
 from rest_framework import views
 from rest_framework.response import Response
@@ -262,7 +263,13 @@ class SimpleRouter(BaseRouter):
                     'detail': route.detail,
                 })
 
-                view = viewset.as_view(mapping, **initkwargs)
+                if isinstance(viewset, ViewSet) or isinstance(viewset, View):
+                    # `viewset` is either a REST Framework `ViewSet`
+                    #   or a Django class-based view.
+                    view = viewset.as_view(mapping, **initkwargs)
+                else:
+                    # assume that `viewset` is a Django view function
+                    view = viewset
                 name = route.name.format(basename=basename)
                 ret.append(re_path(regex, view, name=name))
 
