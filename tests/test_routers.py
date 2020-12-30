@@ -179,13 +179,15 @@ class TestRootView(URLPatternsTestCase, TestCase):
     urlpatterns = [
         path('non-namespaced/', include(namespaced_router.urls)),
         path('namespaced/', include((namespaced_router.urls, 'namespaced'), namespace='namespaced')),
-        path('/django-views/', include(django_view_router.urls)),
+        path('django-views/', include(django_view_router.urls)),
     ]
     
     def test_django_views(self):
         response = self.client.get('/django-views/')
         # assert response.data == {""}
-        assert False, response.data
+        print('urld', django_view_router.urls)
+        print('rd', response.data)
+        assert False
 
     def test_retrieve_namespaced_root(self):
         response = self.client.get('/namespaced/')
