@@ -151,7 +151,7 @@ class SimpleRouter(BaseRouter):
         # converting to list as iterables are good for one pass, known host needs to be checked again and again for
         # different functions.
         known_actions = list(flatten([route.mapping.values() for route in self.routes if isinstance(route, Route)]))
-        extra_actions = viewset.get_extra_actions()
+        extra_actions = viewset.get_extra_actions() if isinstance(viewset, ViewSet) else []
 
         # checking action names against the known actions list
         not_allowed = [
