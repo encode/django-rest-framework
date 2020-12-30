@@ -27,7 +27,7 @@ Here's an example of a simple URL conf, that uses `SimpleRouter`.
 There are two mandatory arguments to the `register()` method:
 
 * `prefix` - The URL prefix to use for this set of routes.
-* `viewset` - The viewset class.
+* `viewset` - The view handler: either a REST Framework `ViewSet`, REST Framework `APIView`, Django `View`, or Django view function. If you provide a class (as opposed to a Django view function), make sure to only provide the class; don't instantiate the class.
 
 Optionally, you may also specify an additional argument:
 
