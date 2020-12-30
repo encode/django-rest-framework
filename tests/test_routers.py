@@ -5,6 +5,8 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.test import TestCase, override_settings
 from django.urls import include, path, resolve, reverse
+from django.http import HttpResponse
+from django.views import View
 
 from rest_framework import permissions, serializers, viewsets
 from rest_framework.decorators import action
@@ -45,6 +47,15 @@ class KWargedNoteViewSet(viewsets.ModelViewSet):
 class MockViewSet(viewsets.ModelViewSet):
     queryset = None
     serializer_class = None
+
+
+class MockView(View):
+    def get(self, request):
+        return HttpResponse('result')
+    
+
+def mock_view(request):
+    return HttpResponse('result')
 
 
 class EmptyPrefixSerializer(serializers.HyperlinkedModelSerializer):
@@ -89,6 +100,10 @@ empty_prefix_router.register(r'', EmptyPrefixViewSet, basename='empty_prefix')
 
 regex_url_path_router = SimpleRouter()
 regex_url_path_router.register(r'', RegexUrlPathViewSet, basename='regex')
+
+django_view_router = DefaultRouter()
+django_view_router.register(r'example1', MockView, basename='example1')
+django_view_router.register(r'example2', mock_view, basename='example2')
 
 
 class BasicViewSet(viewsets.ViewSet):
@@ -164,7 +179,13 @@ class TestRootView(URLPatternsTestCase, TestCase):
     urlpatterns = [
         path('non-namespaced/', include(namespaced_router.urls)),
         path('namespaced/', include((namespaced_router.urls, 'namespaced'), namespace='namespaced')),
+        path('/django-views/', include(django_view_router.urls)),
     ]
+    
+    def test_django_views(self):
+        response = self.client.get('/django-views/')
+        # assert response.data == {""}
+        assert False, response.data
 
     def test_retrieve_namespaced_root(self):
         response = self.client.get('/namespaced/')
