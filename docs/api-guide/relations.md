@@ -35,12 +35,12 @@ For example, the following serializer would lead to a database hit each time eva
             fields = ['album_name', 'artist', 'tracks']
     
     # For each album object, tracks should be fetched from database
-    qs=Album.objects.all()
+    qs = Album.objects.all()
     print(AlbumSerializer(qs, many=True).data)
 
 If `AlbumSerializer` is used to serialize a fairly large queryset with `many=True` then it could be a serious performance problem. Optimizing the queryset passed to `AlbumSerializer` with:
 
-    qs=Album.objects.prefetch_related('tracks')
+    qs = Album.objects.prefetch_related('tracks')
     # No additional database hits required
     print(AlbumSerializer(qs, many=True).data)
 
