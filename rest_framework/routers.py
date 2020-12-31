@@ -27,7 +27,7 @@ from rest_framework.schemas import SchemaGenerator
 from rest_framework.schemas.views import SchemaView
 from rest_framework.settings import api_settings
 from rest_framework.urlpatterns import format_suffix_patterns
-from rest_framework.viewsets import ViewSet
+from rest_framework.viewsets import ViewSetMixin
 
 Route = namedtuple('Route', ['url', 'mapping', 'name', 'detail', 'initkwargs'])
 DynamicRoute = namedtuple('DynamicRoute', ['url', 'name', 'detail', 'initkwargs'])
@@ -148,9 +148,13 @@ class SimpleRouter(BaseRouter):
 
         Returns a list of the Route namedtuple.
         """
-        if not isinstance(viewset, ViewSet):
+        # use `issubclass` and not `isinstance` because `viewset` may be an
+        #   uninstantiated class.
+        if not issubclass(viewset, ViewSetMixin):
+            if issubclass(viewset, View):
+                return [viewset.as_view(), ]
             # `viewset` is not a REST Framework ViewSet,
-            # so we can't dynamically generate any routes
+            #   so we can't dynamically generate any routes
             return [viewset, ]
 
         # converting to list as iterables are good for one pass, known host needs to be checked again and again for
@@ -282,7 +286,7 @@ class SimpleRouter(BaseRouter):
                     name = route.name.format(basename=basename)
                     django_path = re_path(regex, view, name=name)
                 else:
-                    django_path = path(prefix, view, name=basename)
+                    django_path = path(prefix, view, name=prefix)
 
                 ret.append(django_path)
 
@@ -306,7 +310,7 @@ class APIRootView(views.APIView):
                 url_name = namespace + ':' + url_name
             try:
                 ret[key] = reverse(
-                    url_name,
+                    key,
                     args=args,
                     kwargs=kwargs,
                     request=request,
