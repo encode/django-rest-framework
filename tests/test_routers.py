@@ -184,10 +184,10 @@ class TestRootView(URLPatternsTestCase, TestCase):
     
     def test_django_views(self):
         response = self.client.get('/django-views/')
-        # assert response.data == {""}
-        print('urld', django_view_router.urls)
-        print('rd', response.data)
-        assert False
+        assert response.data == {
+            "example1": "http://testserver/django-views/example1",
+            "example2": "http://testserver/django-views/example2",
+        }
 
     def test_retrieve_namespaced_root(self):
         response = self.client.get('/namespaced/')
