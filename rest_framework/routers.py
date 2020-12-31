@@ -309,11 +309,11 @@ class APIRootView(views.APIView):
         # Return a plain {"name": "hyperlink"} response.
         ret = OrderedDict()
         namespace = request.resolver_match.namespace
+        reverse_dict = get_resolver().reverse_dict
         for key, url_name in self.api_root_dict.items():
             if namespace:
                 url_name = namespace + ':' + url_name
             try:
-                reverse_dict = get_resolver().reverse_dict
                 if reverse_dict.get(url_name):
                     # REST Framework view
                     view_name = url_name
