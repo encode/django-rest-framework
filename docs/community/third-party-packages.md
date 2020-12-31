@@ -190,6 +190,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [django-rest-auth][django-rest-auth] - Provides a set of REST API endpoints for registration, authentication (including social media authentication), password reset, retrieve and update user details, etc.
 * [drf-oidc-auth][drf-oidc-auth] - Implements OpenID Connect token authentication for DRF.
 * [drfpasswordless][drfpasswordless] - Adds (Medium, Square Cash inspired) passwordless logins and signups via email and mobile numbers.
+* [django-rest-authemail][django-rest-authemail] - Provides a RESTful API for user signup and authentication using email addresses.
 
 ### Permissions
 
@@ -362,3 +363,4 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [django-elasticsearch-dsl-drf]: https://github.com/barseghyanartur/django-elasticsearch-dsl-drf
 [django-api-client]: https://github.com/rhenter/django-api-client
 [drf-psq]: https://github.com/drf-psq/drf-psq
+[django-rest-authemail]: https://github.com/celiao/django-rest-authemail
