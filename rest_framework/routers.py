@@ -20,6 +20,7 @@ from inspect import isclass
 from django.core.exceptions import ImproperlyConfigured
 from django.urls import NoReverseMatch, re_path, path
 from django.views.generic.base import View
+from django.urls import get_resolver
 
 from rest_framework import views
 from rest_framework.response import Response
@@ -312,8 +313,18 @@ class APIRootView(views.APIView):
             if namespace:
                 url_name = namespace + ':' + url_name
             try:
+                reverse_dict = get_resolver().reverse_dict
+                if reverse_dict.get(url_name):
+                    # REST Framework view
+                    view_name = url_name
+                elif reverse_dict.get(key):
+                    # Django view
+                    view_name = key
+                else:
+                    continue
+
                 ret[key] = reverse(
-                    key,
+                    view_name,
                     args=args,
                     kwargs=kwargs,
                     request=request,
