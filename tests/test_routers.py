@@ -104,6 +104,7 @@ regex_url_path_router.register(r'', RegexUrlPathViewSet, basename='regex')
 django_view_router = DefaultRouter()
 django_view_router.register(r'example1', MockView, basename='example1')
 django_view_router.register(r'example2', mock_view, basename='example2')
+django_view_router.register(r'example3', MockViewSet, basename='example3')
 
 
 class BasicViewSet(viewsets.ViewSet):
@@ -187,6 +188,7 @@ class TestRootView(URLPatternsTestCase, TestCase):
         assert response.data == {
             "example1": "http://testserver/django-views/example1",
             "example2": "http://testserver/django-views/example2",
+            "example3": "http://testserver/django-views/example3",
         }
 
     def test_retrieve_namespaced_root(self):
