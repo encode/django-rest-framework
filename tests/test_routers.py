@@ -188,7 +188,7 @@ class TestRootView(URLPatternsTestCase, TestCase):
         assert response.data == {
             "example1": "http://testserver/django-views/example1",
             "example2": "http://testserver/django-views/example2",
-            "example3": "http://testserver/django-views/example3",
+            "example3": "http://testserver/django-views/example3/",
         }
 
     def test_retrieve_namespaced_root(self):
