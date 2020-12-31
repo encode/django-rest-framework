@@ -15,6 +15,7 @@ For example, you might have a `urls.py` that looks something like this:
 """
 import itertools
 from collections import OrderedDict, namedtuple
+from inspect import isclass
 
 from django.core.exceptions import ImproperlyConfigured
 from django.urls import NoReverseMatch, re_path, path
@@ -150,11 +151,13 @@ class SimpleRouter(BaseRouter):
         """
         # use `issubclass` and not `isinstance` because `viewset` may be an
         #   uninstantiated class.
-        if not issubclass(viewset, ViewSetMixin):
-            if issubclass(viewset, View):
-                return [viewset.as_view(), ]
+        is_viewset = issubclass(viewset, ViewSetMixin) if isclass(viewset) else False
+        if not is_viewset:
             # `viewset` is not a REST Framework ViewSet,
             #   so we can't dynamically generate any routes
+            is_cbv = issubclass(viewset, View) if isclass(viewset) else False
+            if is_cbv:
+                return [viewset.as_view(), ]
             return [viewset, ]
 
         # converting to list as iterables are good for one pass, known host needs to be checked again and again for
