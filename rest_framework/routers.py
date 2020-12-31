@@ -17,7 +17,7 @@ import itertools
 from collections import OrderedDict, namedtuple
 
 from django.core.exceptions import ImproperlyConfigured
-from django.urls import NoReverseMatch, re_path
+from django.urls import NoReverseMatch, re_path, path
 from django.views.generic.base import View
 
 from rest_framework import views
@@ -148,10 +148,15 @@ class SimpleRouter(BaseRouter):
 
         Returns a list of the Route namedtuple.
         """
+        if not isinstance(viewset, ViewSet):
+            # `viewset` is not a REST Framework ViewSet,
+            # so we can't dynamically generate any routes
+            return [viewset, ]
+
         # converting to list as iterables are good for one pass, known host needs to be checked again and again for
         # different functions.
         known_actions = list(flatten([route.mapping.values() for route in self.routes if isinstance(route, Route)]))
-        extra_actions = viewset.get_extra_actions() if isinstance(viewset, ViewSet) else []
+        extra_actions = viewset.get_extra_actions()
 
         # checking action names against the known actions list
         not_allowed = [
@@ -239,40 +244,47 @@ class SimpleRouter(BaseRouter):
 
             for route in routes:
 
-                # Only actions which actually exist on the viewset will be bound
-                mapping = self.get_method_map(viewset, route.mapping)
-                if not mapping:
-                    continue
-
-                # Build the url pattern
-                regex = route.url.format(
-                    prefix=prefix,
-                    lookup=lookup,
-                    trailing_slash=self.trailing_slash
-                )
-
-                # If there is no prefix, the first part of the url is probably
-                #   controlled by project's urls.py and the router is in an app,
-                #   so a slash in the beginning will (A) cause Django to give
-                #   warnings and (B) generate URLS that will require using '//'.
-                if not prefix and regex[:2] == '^/':
-                    regex = '^' + regex[2:]
-
-                initkwargs = route.initkwargs.copy()
-                initkwargs.update({
-                    'basename': basename,
-                    'detail': route.detail,
-                })
-
-                if isinstance(viewset, ViewSet) or isinstance(viewset, View):
-                    # `viewset` is either a REST Framework `ViewSet`
-                    #   or a Django class-based view.
+                if isinstance(viewset, View):
+                    # `viewset` is a Django CBV. REST Frameworks `ViewSet`s
+                    #   are included in this if-statement because `ViewSet`s
+                    #   subclass `APIView`, which subclasses `View`.
                     view = viewset.as_view(mapping, **initkwargs)
                 else:
                     # assume that `viewset` is a Django view function
                     view = viewset
-                name = route.name.format(basename=basename)
-                ret.append(re_path(regex, view, name=name))
+
+                if isinstance(route, Route):
+                    # Only actions which actually exist on the viewset will be bound
+                    mapping = self.get_method_map(viewset, route.mapping)
+                    if not mapping:
+                        continue
+
+                    # Build the url pattern
+                    regex = route.url.format(
+                        prefix=prefix,
+                        lookup=lookup,
+                        trailing_slash=self.trailing_slash
+                    )
+
+                    # If there is no prefix, the first part of the url is probably
+                    #   controlled by project's urls.py and the router is in an app,
+                    #   so a slash in the beginning will (A) cause Django to give
+                    #   warnings and (B) generate URLS that will require using '//'.
+                    if not prefix and regex[:2] == '^/':
+                        regex = '^' + regex[2:]
+
+                    initkwargs = route.initkwargs.copy()
+                    initkwargs.update({
+                        'basename': basename,
+                        'detail': route.detail,
+                    })
+
+                    name = route.name.format(basename=basename)
+                    django_path = re_path(regex, view, name=name)
+                else:
+                    django_path = path(prefix, view, name=basename)
+
+                ret.append(django_path)
 
         return ret
 
