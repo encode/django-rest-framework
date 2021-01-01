@@ -152,11 +152,12 @@ class SimpleRouter(BaseRouter):
         """
         # use `issubclass` and not `isinstance` because `viewset` may be an
         #   uninstantiated class.
-        is_viewset = issubclass(viewset, ViewSetMixin) if isclass(viewset) else False
+        is_cls = isclass(viewset)
+        is_viewset = is_cls and issubclass(viewset, ViewSetMixin)
         if not is_viewset:
             # `viewset` is not a REST Framework ViewSet,
             #   so we can't dynamically generate any routes
-            is_cbv = issubclass(viewset, View) if isclass(viewset) else False
+            is_cbv = is_cls and issubclass(viewset, View)
             if is_cbv:
                 return [viewset.as_view(), ]
             return [viewset, ]
@@ -256,41 +257,38 @@ class SimpleRouter(BaseRouter):
                     # `viewset` is a Django CBV. REST Frameworks `ViewSet`s
                     #   are included in this if-statement because `ViewSet`s
                     #   subclass `APIView`, which subclasses `View`.
-                    view = viewset.as_view(mapping, **initkwargs)
-                else:
-                    # assume that `viewset` is a Django view function
-                    view = viewset
-
-                if isinstance(route, Route):
+                    
                     # Only actions which actually exist on the viewset will be bound
                     mapping = self.get_method_map(viewset, route.mapping)
                     if not mapping:
                         continue
-
-                    # Build the url pattern
-                    regex = route.url.format(
-                        prefix=prefix,
-                        lookup=lookup,
-                        trailing_slash=self.trailing_slash
-                    )
-
-                    # If there is no prefix, the first part of the url is probably
-                    #   controlled by project's urls.py and the router is in an app,
-                    #   so a slash in the beginning will (A) cause Django to give
-                    #   warnings and (B) generate URLS that will require using '//'.
-                    if not prefix and regex[:2] == '^/':
-                        regex = '^' + regex[2:]
-
-                    initkwargs = route.initkwargs.copy()
-                    initkwargs.update({
-                        'basename': basename,
-                        'detail': route.detail,
-                    })
-
-                    name = route.name.format(basename=basename)
-                    django_path = re_path(regex, view, name=name)
+                    view = viewset.as_view(mapping, **initkwargs)
                 else:
-                    django_path = path(prefix, view, name=prefix)
+                    # assume that `viewset` is a Django view
+                    view = viewset
+
+                # Build the url pattern
+                regex = route.url.format(
+                    prefix=prefix,
+                    lookup=lookup,
+                    trailing_slash=self.trailing_slash
+                )
+
+                # If there is no prefix, the first part of the url is probably
+                #   controlled by project's urls.py and the router is in an app,
+                #   so a slash in the beginning will (A) cause Django to give
+                #   warnings and (B) generate URLS that will require using '//'.
+                if not prefix and regex[:2] == '^/':
+                    regex = '^' + regex[2:]
+
+                initkwargs = route.initkwargs.copy()
+                initkwargs.update({
+                    'basename': basename,
+                    'detail': route.detail,
+                })
+
+                name = route.name.format(basename=basename)
+                django_path = re_path(regex, view, name=name)
 
                 ret.append(django_path)
 
