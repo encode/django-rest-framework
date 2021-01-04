@@ -15,6 +15,7 @@ For example, you might have a `urls.py` that looks something like this:
 """
 import itertools
 from collections import OrderedDict, namedtuple
+from importlib import import_module
 
 from django.core.exceptions import ImproperlyConfigured
 from django.urls import NoReverseMatch, re_path
@@ -49,6 +50,20 @@ class BaseRouter:
     def __init__(self):
         self.registry = []
 
+    @classmethod
+    def _include(cls, module, router_name="router"):
+        """
+        Allow to import router object from another app
+        """
+        router_module = import_module(module)
+
+        router = getattr(router_module, router_name)
+
+        if not isinstance(router, cls):
+            raise ValueError("The router should be an instance (direct or indirect) of BaseRouter")
+
+        return router
+
     def register(self, prefix, viewset, basename=None):
         if basename is None:
             basename = self.get_default_basename(viewset)
@@ -57,6 +72,40 @@ class BaseRouter:
         # invalidate the urls cache
         if hasattr(self, '_urls'):
             del self._urls
+
+    def extend(self, prefix, router):
+        """
+        Extend the routes with url routes from the router of the module passed.
+
+        Example:
+            from django.urls import path, include
+            from rest_framework import routers
+
+            router = routers.DefaultRouter()
+
+            router.extend('products', routers.include('project.products.urls'))  # using include
+
+            from .users.urls import router as users_router
+            router.extend('users', users_router)  # manually importing the router
+
+
+            urlpatterns = [
+                path("api/", include(router.urls))
+            ]
+
+        You can avoid naming collisions with `django.urls` include function using named imports
+        or importing the whole routers module:
+            >>> from rest_framework.routers import include as router_include
+            >>> from rest_framework import routers
+        """
+        if not prefix.endswith("/"):
+            # TODO: warn or not the user to put an ending forward slash
+            prefix += "/"
+
+        for old_prefix, viewset, basename in router.registry:
+            new_prefix = prefix + old_prefix
+
+            self.register(new_prefix, viewset, basename)
 
     def get_default_basename(self, viewset):
         """
@@ -76,6 +125,9 @@ class BaseRouter:
         if not hasattr(self, '_urls'):
             self._urls = self.get_urls()
         return self._urls
+
+
+include = BaseRouter._include
 
 
 class SimpleRouter(BaseRouter):
