@@ -169,7 +169,7 @@ This permission is suitable if you want to your API to allow read permissions to
 
 ## DjangoModelPermissions
 
-This permission class ties into Django's standard `django.contrib.auth` [model permissions][contribauth].  This permission must only be applied to views that have a `.queryset` property set. Authorization will only be granted if the user *is authenticated* and has the *relevant model permissions* assigned.
+This permission class ties into Django's standard `django.contrib.auth` [model permissions][contribauth].  This permission must only be applied to views that have a `.queryset` property or `get_queryset()` method. Authorization will only be granted if the user *is authenticated* and has the *relevant model permissions* assigned.
 
 * `POST` requests require the user to have the `add` permission on the model.
 * `PUT` and `PATCH` requests require the user to have the `change` permission on the model.
@@ -178,12 +178,6 @@ This permission class ties into Django's standard `django.contrib.auth` [model p
 The default behaviour can also be overridden to support custom model permissions.  For example, you might want to include a `view` model permission for `GET` requests.
 
 To use custom model permissions, override `DjangoModelPermissions` and set the `.perms_map` property.  Refer to the source code for details.
-
-#### Using with views that do not include a `queryset` attribute.
-
-If you're using this permission with a view that uses an overridden `get_queryset()` method there may not be a `queryset` attribute on the view. In this case we suggest also marking the view with a sentinel queryset, so that this class can determine the required permissions. For example:
-
-    queryset = User.objects.none()  # Required for DjangoModelPermissions
 
 ## DjangoModelPermissionsOrAnonReadOnly
 
