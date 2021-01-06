@@ -2,6 +2,7 @@ from django.test import TestCase
 
 from rest_framework import serializers, status
 from rest_framework.decorators import api_view
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.test import APIRequestFactory
@@ -99,3 +100,12 @@ class TestValidationErrorWithCodes(TestCase):
         response = view(request)
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.data == self.expected_response_data
+
+
+class TestValidationErrorConvertsTuplesToLists(TestCase):
+    def test_validation_error_details(self):
+        error = ValidationError(detail=('message1', 'message2'))
+        assert isinstance(error.detail, list)
+        assert len(error.detail) == 2
+        assert str(error.detail[0]) == 'message1'
+        assert str(error.detail[1]) == 'message2'
