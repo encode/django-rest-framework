@@ -225,6 +225,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 
 * [django-rest-multiple-models][django-rest-multiple-models] - Provides a generic view (and mixin) for sending multiple serialized models and/or querysets via a single API request.
 * [drf-typed-views][drf-typed-views] - Use Python type annotations to validate/deserialize request parameters. Inspired by API Star, Hug and FastAPI.
+* [rest-framework-actions][rest-framework-actions] - Provides control over each action in ViewSets. Serializers per action, method.
 
 ### Routers
 
@@ -362,3 +363,4 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [django-elasticsearch-dsl-drf]: https://github.com/barseghyanartur/django-elasticsearch-dsl-drf
 [django-api-client]: https://github.com/rhenter/django-api-client
 [drf-psq]: https://github.com/drf-psq/drf-psq
+[rest-framework-actions]: https://github.com/AlexisMunera98/rest-framework-actions
