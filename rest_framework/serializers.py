@@ -905,13 +905,13 @@ class ModelSerializer(Serializer):
         """
         We have a bit of extra checking around this in order to provide
         descriptive messages when something goes wrong, but this method is
-        essentially just:
+        essentially just::
 
             return ExampleModel.objects.create(**validated_data)
 
         If there are many to many fields present on the instance then they
         cannot be set until the model is instantiated, in which case the
-        implementation is like so:
+        implementation is like so::
 
             example_relationship = validated_data.pop('example_relationship')
             instance = ExampleModel.objects.create(**validated_data)
