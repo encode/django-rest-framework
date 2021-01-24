@@ -77,7 +77,6 @@ Let's take a look at a quick example of using REST framework to build a simple m
 
 Startup up a new project like so...
 
-    pip install django
     pip install djangorestframework
     django-admin startproject example .
     ./manage.py migrate
