@@ -375,6 +375,16 @@ operationIds.
 In order to work around this, you can override `get_operation_id_base()` to
 provide a different base for name part of the ID.
 
+#### `is_valid_serializer()`
+
+Returns true if a serializer instance will produce a valid component schema 
+for describing request and response bodies. The default behavior is to return
+'True' for any Serializer instance.
+
+If you have a custom subclass of BaseSerializer which is capable of producing
+a component schema, you can use that component schema by overrideing this method
+(along with `map_serializer()`).
+
 ### `AutoSchema.__init__()` kwargs
 
 `AutoSchema` provides a number of `__init__()` kwargs that can be used for

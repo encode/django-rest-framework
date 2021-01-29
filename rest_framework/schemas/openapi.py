@@ -194,7 +194,7 @@ class AutoSchema(ViewInspector):
 
         serializer = self.get_serializer(path, method)
 
-        if not isinstance(serializer, serializers.Serializer):
+        if not self.is_valid_serializer(serializer):
             return {}
 
         component_name = self.get_component_name(serializer)
@@ -626,7 +626,7 @@ class AutoSchema(ViewInspector):
 
         serializer = self.get_serializer(path, method)
 
-        if not isinstance(serializer, serializers.Serializer):
+        if not self.is_valid_serializer(serializer):
             item_schema = {}
         else:
             item_schema = self._get_reference(serializer)
@@ -650,7 +650,7 @@ class AutoSchema(ViewInspector):
 
         serializer = self.get_serializer(path, method)
 
-        if not isinstance(serializer, serializers.Serializer):
+        if not self.is_valid_serializer(serializer):
             item_schema = {}
         else:
             item_schema = self._get_reference(serializer)
@@ -691,6 +691,10 @@ class AutoSchema(ViewInspector):
             path = path[1:]
 
         return [path.split('/')[0].replace('_', '-')]
+
+    def is_valid_serializer(self, serializer):
+        # return True if the serializer produces a valid component schema
+        return isinstance(serializer, serializers.Serializer)
 
     def _get_path_parameters(self, path, method):
         warnings.warn(
