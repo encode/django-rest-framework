@@ -8,6 +8,7 @@
 # Bashar Al-Abdulhadi, 2016-2017
 # Eyad Toma <d.eyad.t@gmail.com>, 2015,2017
 # zak zak <zakaria.bendifallah@gmail.com>, 2020
+# Elayan Hamamrah <elayan.hr@gmail.com>, 2021
 msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
