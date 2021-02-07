@@ -179,12 +179,12 @@ msgstr "لا يمكن لهذا الحقل ان يكون فارغاً."
 #: fields.py:768 fields.py:1881
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} characters."
-msgstr "تأكد ان الحقل لا يزيد عن {max_length} محرف."
+msgstr "تأكد ان الحقل لا يزيد عن {max_length} حرف."
 
 #: fields.py:769
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} characters."
-msgstr "تأكد ان الحقل {min_length} محرف على الاقل."
+msgstr "تأكد ان الحقل {min_length} حرف على الاقل."
 
 #: fields.py:816
 msgid "Enter a valid email address."
@@ -340,7 +340,7 @@ msgstr "الملف الذي تم إرساله فارغ."
 #, python-brace-format
 msgid ""
 "Ensure this filename has at most {max_length} characters (it has {length})."
-msgstr "تأكد ان اسم الملف لا يحوي أكثر من {max_length} محرف (الإسم المرسل يحوي {length} محرف)."
+msgstr "تأكد ان اسم الملف لا يحوي أكثر من {max_length} حرف (الإسم المرسل يحوي {length} حرف)."
 
 #: fields.py:1566
 msgid ""
