@@ -190,11 +190,6 @@ For support please see the [REST framework discussion group][group], try the  `#
 
 For priority support please sign up for a [professional or premium sponsorship plan](https://fund.django-rest-framework.org/topics/funding/).
 
-For updates on REST framework development, you may also want to follow [the author][twitter] on Twitter.
-
-<a style="padding-top: 10px" href="https://twitter.com/_tomchristie" class="twitter-follow-button" data-show-count="false">Follow @_tomchristie</a>
-<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
-
 ## Security
 
 If you believe you’ve found something in Django REST framework which has security implications, please **do not raise the issue in a public forum**.
