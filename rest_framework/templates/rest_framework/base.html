@@ -290,7 +290,7 @@
       <script>
         window.drf = {
           csrfHeaderName: "{{ csrf_header_name|default:'X-CSRFToken' }}",
-          csrfToken: "{% if request %}{{ csrf_token }}{% endif %}"
+          csrfToken: "{% if request %}{% if post_form or put_form %}{{ csrf_token }}{% endif %}{% endif %}"
         };
       </script>
       <script src="{% static "rest_framework/js/jquery-3.5.1.min.js" %}"></script>
