@@ -1,10 +1,11 @@
+import importlib
 from io import StringIO
 
 import pytest
 from django.contrib.admin import site
 from django.contrib.auth.models import User
 from django.core.management import CommandError, call_command
-from django.test import TestCase
+from django.test import TestCase, modify_settings
 
 from rest_framework.authtoken.admin import TokenAdmin
 from rest_framework.authtoken.management.commands.drf_create_token import \
@@ -20,6 +21,14 @@ class AuthTokenTests(TestCase):
         self.site = site
         self.user = User.objects.create_user(username='test_user')
         self.token = Token.objects.create(key='test token', user=self.user)
+
+    def test_authtoken_can_be_imported_when_not_included_in_installed_apps(self):
+        import rest_framework.authtoken.models
+        with modify_settings(INSTALLED_APPS={'remove': 'rest_framework.authtoken'}):
+            importlib.reload(rest_framework.authtoken.models)
+        # Set the proxy and abstract properties back to the version,
+        # where authtoken is among INSTALLED_APPS.
+        importlib.reload(rest_framework.authtoken.models)
 
     def test_model_admin_displayed_fields(self):
         mock_request = object()

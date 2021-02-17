@@ -58,7 +58,6 @@ def get_detail_view_name(model):
     that refer to instances of the model.
     """
     return '%(model_name)s-detail' % {
-        'app_label': model._meta.app_label,
         'model_name': model._meta.object_name.lower()
     }
 
@@ -92,7 +91,8 @@ def get_field_kwargs(field_name, model_field):
         kwargs['allow_unicode'] = model_field.allow_unicode
 
     if isinstance(model_field, models.TextField) and not model_field.choices or \
-            (postgres_fields and isinstance(model_field, postgres_fields.JSONField)):
+            (postgres_fields and isinstance(model_field, postgres_fields.JSONField)) or \
+            (hasattr(models, 'JSONField') and isinstance(model_field, models.JSONField)):
         kwargs['style'] = {'base_template': 'textarea.html'}
 
     if isinstance(model_field, models.AutoField) or not model_field.editable:

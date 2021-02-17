@@ -1,6 +1,6 @@
-from django.conf.urls import url
 from django.db import models
 from django.test import TestCase, override_settings
+from django.urls import path
 
 from rest_framework import serializers
 from rest_framework.renderers import JSONRenderer
@@ -29,7 +29,7 @@ def dummy_view(request):
 
 
 urlpatterns = [
-    url(r'^example/(?P<pk>[0-9]+)/$', dummy_view, name='example-detail'),
+    path('example/<int:pk>/', dummy_view, name='example-detail'),
 ]
 
 

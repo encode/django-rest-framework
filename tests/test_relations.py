@@ -2,9 +2,9 @@ import uuid
 
 import pytest
 from _pytest.monkeypatch import MonkeyPatch
-from django.conf.urls import url
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.test import override_settings
+from django.urls import re_path
 from django.utils.datastructures import MultiValueDict
 
 from rest_framework import relations, serializers
@@ -146,7 +146,7 @@ class TestProxiedPrimaryKeyRelatedField(APISimpleTestCase):
 
 
 urlpatterns = [
-    url(r'^example/(?P<name>.+)/$', lambda: None, name='example'),
+    re_path(r'^example/(?P<name>.+)/$', lambda: None, name='example'),
 ]
 
 

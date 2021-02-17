@@ -161,7 +161,7 @@ Each key in the dictionary will be the field name, and the values will be lists 
 
 When deserializing a list of items, errors will be returned as a list of dictionaries representing each of the deserialized items.
 
-#### Raising an exception on invalid data
+#### Raising an exception on invalid data
 
 The `.is_valid()` method takes an optional `raise_exception` flag that will cause it to raise a `serializers.ValidationError` exception if there are validation errors.
 
@@ -251,7 +251,7 @@ For more information see the [validators documentation](validators.md).
 
 When passing an initial object or queryset to a serializer instance, the object will be made available as `.instance`. If no initial object is passed then the `.instance` attribute will be `None`.
 
-When passing data to a serializer instance, the unmodified data will be made available as `.initial_data`. If the data keyword argument is not passed then the `.initial_data` attribute will not exist.
+When passing data to a serializer instance, the unmodified data will be made available as `.initial_data`. If the `data` keyword argument is not passed then the `.initial_data` attribute will not exist.
 
 ## Partial updates
 
@@ -282,7 +282,7 @@ If a nested representation may optionally accept the `None` value you should pas
         content = serializers.CharField(max_length=200)
         created = serializers.DateTimeField()
 
-Similarly if a nested representation should be a list of items, you should pass the `many=True` flag to the nested serialized.
+Similarly if a nested representation should be a list of items, you should pass the `many=True` flag to the nested serializer.
 
     class CommentSerializer(serializers.Serializer):
         user = UserSerializer(required=False)
@@ -595,7 +595,7 @@ Normally if a `ModelSerializer` does not generate the fields you need by default
 
 ### `.serializer_field_mapping`
 
-A mapping of Django model classes to REST framework serializer classes. You can override this mapping to alter the default serializer classes that should be used for each model class.
+A mapping of Django model fields to REST framework serializer fields. You can override this mapping to alter the default serializer fields that should be used for each model field.
 
 ### `.serializer_related_field`
 

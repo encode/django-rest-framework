@@ -5,7 +5,6 @@ import os.path
 import tempfile
 
 import pytest
-from django.conf.urls import url
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.middleware import AuthenticationMiddleware
 from django.contrib.auth.models import User
@@ -13,6 +12,7 @@ from django.contrib.sessions.middleware import SessionMiddleware
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http.request import RawPostDataException
 from django.test import TestCase, override_settings
+from django.urls import path
 
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
@@ -153,9 +153,9 @@ class FileUploadView(APIView):
 
 
 urlpatterns = [
-    url(r'^$', MockView.as_view()),
-    url(r'^echo/$', EchoView.as_view()),
-    url(r'^upload/$', FileUploadView.as_view())
+    path('', MockView.as_view()),
+    path('echo/', EchoView.as_view()),
+    path('upload/', FileUploadView.as_view())
 ]
 
 
@@ -205,8 +205,12 @@ class TestUserSetter(TestCase):
         # available to login and logout functions
         self.wrapped_request = factory.get('/')
         self.request = Request(self.wrapped_request)
-        SessionMiddleware().process_request(self.wrapped_request)
-        AuthenticationMiddleware().process_request(self.wrapped_request)
+
+        def dummy_get_response(request):  # pragma: no cover
+            return None
+
+        SessionMiddleware(dummy_get_response).process_request(self.wrapped_request)
+        AuthenticationMiddleware(dummy_get_response).process_request(self.wrapped_request)
 
         User.objects.create_user('ringo', 'starr@thebeatles.com', 'yellow')
         self.user = authenticate(username='ringo', password='yellow')

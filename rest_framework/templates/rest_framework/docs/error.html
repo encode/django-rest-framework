@@ -48,7 +48,7 @@ being applied unexpectedly?</p>
 when including the docs urls:</p>
 
 <pre>
-   url(r'^docs/', include_docs_urls(title='Your API',
+   path('docs/', include_docs_urls(title='Your API',
                                     authentication_classes=[],
                                     permission_classes=[])),
 </pre>

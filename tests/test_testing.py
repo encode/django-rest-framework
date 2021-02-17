@@ -1,9 +1,9 @@
 from io import BytesIO
 
-from django.conf.urls import url
 from django.contrib.auth.models import User
 from django.shortcuts import redirect
 from django.test import TestCase, override_settings
+from django.urls import path
 
 from rest_framework import fields, serializers
 from rest_framework.decorators import api_view
@@ -47,10 +47,10 @@ def post_view(request):
 
 
 urlpatterns = [
-    url(r'^view/$', view),
-    url(r'^session-view/$', session_view),
-    url(r'^redirect-view/$', redirect_view),
-    url(r'^post-view/$', post_view)
+    path('view/', view),
+    path('session-view/', session_view),
+    path('redirect-view/', redirect_view),
+    path('post-view/', post_view)
 ]
 
 
@@ -284,7 +284,7 @@ class TestAPIRequestFactory(TestCase):
 
 class TestUrlPatternTestCase(URLPatternsTestCase):
     urlpatterns = [
-        url(r'^$', view),
+        path('', view),
     ]
 
     @classmethod

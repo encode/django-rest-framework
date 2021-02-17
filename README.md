@@ -22,13 +22,11 @@ The initial aim is to provide a single full-time position on REST framework.
 [![][sentry-img]][sentry-url]
 [![][stream-img]][stream-url]
 [![][rollbar-img]][rollbar-url]
-[![][cadre-img]][cadre-url]
-[![][kloudless-img]][kloudless-url]
 [![][esg-img]][esg-url]
-[![][lightson-img]][lightson-url]
 [![][retool-img]][retool-url]
+[![][bitio-img]][bitio-url]
 
-Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Sentry][sentry-url], [Stream][stream-url], [Rollbar][rollbar-url], [Cadre][cadre-url], [Kloudless][kloudless-url], [ESG][esg-url], [Lights On Software][lightson-url], and [Retool][retool-url].
+Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Sentry][sentry-url], [Stream][stream-url], [Rollbar][rollbar-url], [ESG][esg-url], [Retool][retool-url], and [bit.io][bitio-url].
 
 ---
 
@@ -54,8 +52,8 @@ There is a live example API for testing purposes, [available here][sandbox].
 
 # Requirements
 
-* Python (3.5, 3.6, 3.7, 3.8)
-* Django (2.2, 3.0)
+* Python (3.5, 3.6, 3.7, 3.8, 3.9)
+* Django (2.2, 3.0, 3.1)
 
 We **highly recommend** and only officially support the latest patch release of
 each Python and Django series.
@@ -191,25 +189,19 @@ Please see the [security policy][security-policy].
 [funding]: https://fund.django-rest-framework.org/topics/funding/
 [sponsors]: https://fund.django-rest-framework.org/topics/funding/#our-sponsors
 
-[rover-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/rover-readme.png
 [sentry-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/sentry-readme.png
 [stream-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/stream-readme.png
 [rollbar-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/rollbar-readme.png
-[cadre-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/cadre-readme.png
-[load-impact-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/load-impact-readme.png
-[kloudless-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/kloudless-readme.png
 [esg-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/esg-readme.png
-[lightson-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/lightson-readme.png
 [retool-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/retool-readme.png
+[bitio-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/bitio-readme.png
 
 [sentry-url]: https://getsentry.com/welcome/
 [stream-url]: https://getstream.io/try-the-api/?utm_source=drf&utm_medium=banner&utm_campaign=drf
 [rollbar-url]: https://rollbar.com/?utm_source=django&utm_medium=sponsorship&utm_campaign=freetrial
-[cadre-url]: https://cadre.com/
-[kloudless-url]: https://hubs.ly/H0f30Lf0
 [esg-url]: https://software.esg-usa.com/
-[lightson-url]: https://lightsonsoftware.com
 [retool-url]: https://retool.com/?utm_source=djangorest&utm_medium=sponsorship
+[bitio-url]: https://bit.io/jobs?utm_source=DRF&utm_medium=sponsor&utm_campaign=DRF_sponsorship
 
 [oauth1-section]: https://www.django-rest-framework.org/api-guide/authentication/#django-rest-framework-oauth
 [oauth2-section]: https://www.django-rest-framework.org/api-guide/authentication/#django-oauth-toolkit

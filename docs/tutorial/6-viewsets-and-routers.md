@@ -2,7 +2,7 @@
 
 REST framework includes an abstraction for dealing with `ViewSets`, that allows the developer to concentrate on modeling the state and interactions of the API, and leave the URL construction to be handled automatically, based on common conventions.
 
-`ViewSet` classes are almost the same thing as `View` classes, except that they provide operations such as `read`, or `update`, and not method handlers such as `get` or `put`.
+`ViewSet` classes are almost the same thing as `View` classes, except that they provide operations such as `retrieve`, or `update`, and not method handlers such as `get` or `put`.
 
 A `ViewSet` class is only bound to a set of method handlers at the last moment, when it is instantiated into a set of views, typically by using a `Router` class which handles the complexities of defining the URL conf for you.
 
@@ -16,7 +16,7 @@ First of all let's refactor our `UserList` and `UserDetail` views into a single 
 
     class UserViewSet(viewsets.ReadOnlyModelViewSet):
         """
-        This viewset automatically provides `list` and `detail` actions.
+        This viewset automatically provides `list` and `retrieve` actions.
         """
         queryset = User.objects.all()
         serializer_class = UserSerializer
@@ -27,6 +27,7 @@ Next we're going to replace the `SnippetList`, `SnippetDetail` and `SnippetHighl
 
     from rest_framework.decorators import action
     from rest_framework.response import Response
+    from rest_framework import permissions
 
     class SnippetViewSet(viewsets.ModelViewSet):
         """

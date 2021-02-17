@@ -1,5 +1,5 @@
-from django.conf.urls import include, url
 from django.test import TestCase, override_settings
+from django.urls import include, path, re_path
 
 from rest_framework import generics, routers, serializers, status, viewsets
 from rest_framework.parsers import JSONParser
@@ -117,15 +117,15 @@ new_model_viewset_router.register(r'', HTMLNewModelViewSet)
 
 
 urlpatterns = [
-    url(r'^setbyview$', MockViewSettingContentType.as_view(renderer_classes=[RendererA, RendererB, RendererC])),
-    url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderer_classes=[RendererA, RendererB, RendererC])),
-    url(r'^$', MockView.as_view(renderer_classes=[RendererA, RendererB, RendererC])),
-    url(r'^html$', HTMLView.as_view()),
-    url(r'^json$', JSONView.as_view()),
-    url(r'^html1$', HTMLView1.as_view()),
-    url(r'^html_new_model$', HTMLNewModelView.as_view()),
-    url(r'^html_new_model_viewset', include(new_model_viewset_router.urls)),
-    url(r'^restframework', include('rest_framework.urls', namespace='rest_framework'))
+    path('setbyview', MockViewSettingContentType.as_view(renderer_classes=[RendererA, RendererB, RendererC])),
+    re_path(r'^.*\.(?P<format>.+)$', MockView.as_view(renderer_classes=[RendererA, RendererB, RendererC])),
+    path('', MockView.as_view(renderer_classes=[RendererA, RendererB, RendererC])),
+    path('html', HTMLView.as_view()),
+    path('json', JSONView.as_view()),
+    path('html1', HTMLView1.as_view()),
+    path('html_new_model', HTMLNewModelView.as_view()),
+    path('html_new_model_viewset', include(new_model_viewset_router.urls)),
+    path('restframework', include('rest_framework.urls', namespace='rest_framework'))
 ]
 
 
