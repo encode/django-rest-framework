@@ -743,16 +743,17 @@ class TestOperationIntrospection(TestCase):
                         'type': 'string'
                     }
                 },
-             'required': ['text'],
-             'type': 'object'
+                'required': ['text'],
+                'type': 'object'
             },
             'Response': {
                 'properties': {
                     'text': {
-                        'type': 'boolean'}
-                    },
-              'required': ['text'],
-              'type': 'object'
+                        'type': 'boolean'
+                    }
+                },
+                'required': ['text'],
+                'type': 'object'
             }
         }
 
