@@ -163,6 +163,33 @@ class TestNestedBoundField:
             rendered_packed = ''.join(rendered.split())
             assert rendered_packed == expected_packed
 
+    def test_rendering_nested_fields_with_not_mappable_value(self):
+        from rest_framework.renderers import HTMLFormRenderer
+
+        class Nested(serializers.Serializer):
+            text_field = serializers.CharField()
+
+        class ExampleSerializer(serializers.Serializer):
+            nested = Nested()
+
+        serializer = ExampleSerializer(data={'nested': 1})
+        assert not serializer.is_valid()
+        renderer = HTMLFormRenderer()
+        for field in serializer:
+            rendered = renderer.render_field(field, {})
+            expected_packed = (
+                '<fieldset>'
+                '<legend>Nested</legend>'
+                '<divclass="form-group">'
+                '<label>Textfield</label>'
+                '<inputname="nested.text_field"class="form-control"type="text"value="">'
+                '</div>'
+                '</fieldset>'
+            )
+
+            rendered_packed = ''.join(rendered.split())
+            assert rendered_packed == expected_packed
+
 
 class TestJSONBoundField:
     def test_as_form_fields(self):
