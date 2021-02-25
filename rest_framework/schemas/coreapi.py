@@ -198,7 +198,11 @@ class SchemaGenerator(BaseSchemaGenerator):
 
         if is_custom_action(action):
             # Custom action, eg "/users/{pk}/activate/", "/users/active/"
-            if len(view.action_map) > 1:
+            mapped_methods = {
+                # Don't count head mapping, e.g. not part of the schema
+                method for method in view.action_map if method != 'head'
+            }
+            if len(mapped_methods) > 1:
                 action = self.default_mapping[method.lower()]
                 if action in self.coerce_method_names:
                     action = self.coerce_method_names[action]
