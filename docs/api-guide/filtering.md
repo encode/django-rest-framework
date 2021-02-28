@@ -226,6 +226,7 @@ The search behavior may be restricted by prepending various characters to the `s
 * '=' Exact matches.
 * '@' Full-text search.  (Currently only supported Django's [PostgreSQL backend](https://docs.djangoproject.com/en/dev/ref/contrib/postgres/search/).)
 * '$' Regex search.
+* '&' Accent-insensitive search.  (Currently only supported Django's [PostgreSQL backend](https://docs.djangoproject.com/en/dev/ref/contrib/postgres/lookups/#unaccent).)
 
 For example:
 
