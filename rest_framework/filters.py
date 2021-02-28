@@ -45,6 +45,7 @@ class SearchFilter(BaseFilterBackend):
         '=': 'iexact',
         '@': 'search',
         '$': 'iregex',
+        '&': 'unaccent',
     }
     search_title = _('Search')
     search_description = _('A search term.')
