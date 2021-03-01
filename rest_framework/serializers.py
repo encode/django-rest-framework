@@ -900,6 +900,35 @@ class ModelSerializer(Serializer):
     # "HTTP 201 Created" responses.
     url_field_name = None
 
+    def set_meta_fields(self,lst):
+        try:
+            del self.Meta.exclude
+        except Exception as e:
+            pass
+
+        try:    
+            self.Meta.fields.extend(lst)
+        except Exception as e:
+            self.Meta.fields = lst
+        
+        self.Meta.fields = list(set(self.Meta.fields))
+    
+    def get_meta_fields(self):
+        return self.Meta.fields
+    
+    def set_meta_exclude(self,lst):
+        try:
+            del self.Meta.fields
+        except Exception as e:
+            pass
+        
+        try:
+            self.Meta.exclude.extends(lst)
+        except Exception as e:
+            self.Meta.exclude = lst
+
+        self.Meta.exclude = list(set(self.Meta.exclude))
+
     # Default `create` and `update` behavior...
     def create(self, validated_data):
         """
