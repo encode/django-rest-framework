@@ -357,7 +357,7 @@ The following third party packages are also available.
 
 ## Django OAuth Toolkit
 
-The [Django OAuth Toolkit][django-oauth-toolkit] package provides OAuth 2.0 support and works with Python 3.4+. The package is maintained by [Evonove][evonove] and uses the excellent [OAuthLib][oauthlib].  The package is well documented, and well supported and is currently our **recommended package for OAuth 2.0 support**.
+The [Django OAuth Toolkit][django-oauth-toolkit] package provides OAuth 2.0 support and works with Python 3.4+. The package is maintained by [jazzband][jazzband] and uses the excellent [OAuthLib][oauthlib].  The package is well documented, and well supported and is currently our **recommended package for OAuth 2.0 support**.
 
 #### Installation & configuration
 
@@ -448,7 +448,7 @@ There are currently two forks of this project.
 [djangorestframework-digestauth]: https://github.com/juanriaza/django-rest-framework-digestauth
 [oauth-1.0a]: https://oauth.net/core/1.0a/
 [django-oauth-toolkit]: https://github.com/evonove/django-oauth-toolkit
-[evonove]: https://github.com/evonove/
+[jazzband]: https://github.com/jazzband/
 [oauthlib]: https://github.com/idan/oauthlib
 [djangorestframework-simplejwt]: https://github.com/davesque/django-rest-framework-simplejwt
 [etoccalino]: https://github.com/etoccalino/
