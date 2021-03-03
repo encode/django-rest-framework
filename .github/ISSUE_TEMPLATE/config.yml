@@ -2,4 +2,6 @@ contact_links:
 - name: Discussions
   url: https://github.com/encode/django-rest-framework/discussions
   about: >
-    The "Discussions" forum is where you want to be headed too. Please only raise an issue if you've been advised to do so after discussion. Thank you! 🙏
+    The "Discussions" forum is where you want to be headed too.
+    Please only raise an issue if you've been advised to do so after discussion.
+    Thank you! 🙏
