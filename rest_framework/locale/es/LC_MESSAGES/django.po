@@ -119,7 +119,7 @@ msgstr "Credenciales de autenticación incorrectas."
 
 #: exceptions.py:173
 msgid "Authentication credentials were not provided."
-msgstr "Las credenciales de autenticación no se proveyeron."
+msgstr "Las credenciales de autenticación no fueron suministradas."
 
 #: exceptions.py:179
 msgid "You do not have permission to perform this action."
