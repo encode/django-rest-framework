@@ -43,6 +43,14 @@ class NonTimeThrottle(BaseThrottle):
         return False
 
 
+class CustomDetailThrottle(BaseThrottle):
+    def allow_request(self, request, view):
+        return False
+
+    def wait(self):
+        return None, 'custom detail'
+
+
 class MockView_DoubleThrottling(APIView):
     throttle_classes = (User3SecRateThrottle, User6MinRateThrottle,)
 
@@ -52,6 +60,13 @@ class MockView_DoubleThrottling(APIView):
 
 class MockView(APIView):
     throttle_classes = (User3SecRateThrottle,)
+
+    def get(self, request):
+        return Response('foo')
+
+
+class MockView_CustomDetail(APIView):
+    throttle_classes = (CustomDetailThrottle,)
 
     def get(self, request):
         return Response('foo')
@@ -87,6 +102,15 @@ class ThrottlingTests(TestCase):
         for dummy in range(4):
             response = MockView.as_view()(request)
         assert response.status_code == 429
+
+    def test_requests_are_throttled_custom_detail(self):
+        """
+        Ensure request rate is limited
+        """
+        request = self.factory.get('/')
+        response = MockView_CustomDetail.as_view()(request)
+        assert response.status_code == 429
+        assert response.data == {'detail': 'custom detail'}
 
     def set_throttle_timer(self, view, value):
         """
