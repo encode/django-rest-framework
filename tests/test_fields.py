@@ -1019,13 +1019,49 @@ class TestMinMaxIntegerField(FieldValues):
         3: 3,
     }
     invalid_inputs = {
-        0: ['Ensure this value is greater than or equal to 1.'],
-        4: ['Ensure this value is less than or equal to 3.'],
-        '0': ['Ensure this value is greater than or equal to 1.'],
-        '4': ['Ensure this value is less than or equal to 3.'],
+        0: ['Ensure this value is in the range between 1 and 3.'],
+        4: ['Ensure this value is in the range between 1 and 3.'],
+        '0': ['Ensure this value is in the range between 1 and 3.'],
+        '4': ['Ensure this value is in the range between 1 and 3.'],
     }
     outputs = {}
     field = serializers.IntegerField(min_value=1, max_value=3)
+
+
+class TestMinIntegerField(FieldValues):
+    """
+    Valid and invalid values for `IntegerField` with min limit.
+    """
+    valid_inputs = {
+        '1': 1,
+        '3': 3,
+        1: 1,
+        3: 3,
+    }
+    invalid_inputs = {
+        0: ['Ensure this value is greater than or equal to 1.'],
+        '0': ['Ensure this value is greater than or equal to 1.'],
+    }
+    outputs = {}
+    field = serializers.IntegerField(min_value=1)
+
+
+class TestMaxIntegerField(FieldValues):
+    """
+    Valid and invalid values for `IntegerField` with max limit.
+    """
+    valid_inputs = {
+        '1': 1,
+        '3': 3,
+        1: 1,
+        3: 3,
+    }
+    invalid_inputs = {
+        4: ['Ensure this value is less than or equal to 3.'],
+        '4': ['Ensure this value is less than or equal to 3.'],
+    }
+    outputs = {}
+    field = serializers.IntegerField(max_value=3)
 
 
 class TestFloatField(FieldValues):
@@ -1067,13 +1103,53 @@ class TestMinMaxFloatField(FieldValues):
         3.0: 3.0,
     }
     invalid_inputs = {
-        0.9: ['Ensure this value is greater than or equal to 1.'],
-        3.1: ['Ensure this value is less than or equal to 3.'],
-        '0.0': ['Ensure this value is greater than or equal to 1.'],
-        '3.1': ['Ensure this value is less than or equal to 3.'],
+        0.9: ['Ensure this value is in the range between 1 and 3.'],
+        3.1: ['Ensure this value is in the range between 1 and 3.'],
+        '0.0': ['Ensure this value is in the range between 1 and 3.'],
+        '3.1': ['Ensure this value is in the range between 1 and 3.'],
     }
     outputs = {}
     field = serializers.FloatField(min_value=1, max_value=3)
+
+
+class TestMinFloatField(FieldValues):
+    """
+    Valid and invalid values for `FloatField` with min limit.
+    """
+    valid_inputs = {
+        '1': 1,
+        '3': 3,
+        1: 1,
+        3: 3,
+        1.0: 1.0,
+        3.0: 3.0,
+    }
+    invalid_inputs = {
+        0.9: ['Ensure this value is greater than or equal to 1.'],
+        '0.0': ['Ensure this value is greater than or equal to 1.'],
+    }
+    outputs = {}
+    field = serializers.FloatField(min_value=1)
+
+
+class TestMaxFloatField(FieldValues):
+    """
+    Valid and invalid values for `FloatField` with max limit.
+    """
+    valid_inputs = {
+        '1': 1,
+        '3': 3,
+        1: 1,
+        3: 3,
+        1.0: 1.0,
+        3.0: 3.0,
+    }
+    invalid_inputs = {
+        3.1: ['Ensure this value is less than or equal to 3.'],
+        '3.1': ['Ensure this value is less than or equal to 3.'],
+    }
+    outputs = {}
+    field = serializers.FloatField(max_value=3)
 
 
 class TestDecimalField(FieldValues):
@@ -1124,13 +1200,49 @@ class TestMinMaxDecimalField(FieldValues):
         '20.0': Decimal('20.0'),
     }
     invalid_inputs = {
-        '9.9': ['Ensure this value is greater than or equal to 10.'],
-        '20.1': ['Ensure this value is less than or equal to 20.'],
+        '9.9': ['Ensure this value is in the range between 10 and 20.'],
+        '20.1': ['Ensure this value is in the range between 10 and 20.'],
     }
     outputs = {}
     field = serializers.DecimalField(
         max_digits=3, decimal_places=1,
         min_value=10, max_value=20
+    )
+
+
+class TestMinDecimalField(FieldValues):
+    """
+    Valid and invalid values for `DecimalField` with min limit.
+    """
+    valid_inputs = {
+        '10.0': Decimal('10.0'),
+        '20.0': Decimal('20.0'),
+    }
+    invalid_inputs = {
+        '9.9': ['Ensure this value is greater than or equal to 10.'],
+    }
+    outputs = {}
+    field = serializers.DecimalField(
+        max_digits=3, decimal_places=1,
+        min_value=10
+    )
+
+
+class TestMaxDecimalField(FieldValues):
+    """
+    Valid and invalid values for `DecimalField` with max limit.
+    """
+    valid_inputs = {
+        '10.0': Decimal('10.0'),
+        '20.0': Decimal('20.0'),
+    }
+    invalid_inputs = {
+        '20.1': ['Ensure this value is less than or equal to 20.'],
+    }
+    outputs = {}
+    field = serializers.DecimalField(
+        max_digits=3, decimal_places=1,
+        max_value=20
     )
 
 
@@ -1536,12 +1648,43 @@ class TestMinMaxDurationField(FieldValues):
         86401: datetime.timedelta(days=1, seconds=1),
     }
     invalid_inputs = {
-        3600: ['Ensure this value is greater than or equal to 1 day, 0:00:00.'],
-        '4 08:32:01.000123': ['Ensure this value is less than or equal to 4 days, 0:00:00.'],
-        '3600': ['Ensure this value is greater than or equal to 1 day, 0:00:00.'],
+        3600: ['Ensure this value is in the range between 1 day, 0:00:00 and 4 days, 0:00:00.'],
+        '4 08:32:01.000123': ['Ensure this value is in the range between 1 day, 0:00:00 and 4 days, 0:00:00.'],
+        '3600': ['Ensure this value is in the range between 1 day, 0:00:00 and 4 days, 0:00:00.'],
     }
     outputs = {}
     field = serializers.DurationField(min_value=datetime.timedelta(days=1), max_value=datetime.timedelta(days=4))
+
+
+class TestMinDurationField(FieldValues):
+    """
+    Valid and invalid values for `DurationField` with min limit.
+    """
+    valid_inputs = {
+        '3 08:32:01.000123': datetime.timedelta(days=3, hours=8, minutes=32, seconds=1, microseconds=123),
+        86401: datetime.timedelta(days=1, seconds=1),
+    }
+    invalid_inputs = {
+        3600: ['Ensure this value is greater than or equal to 1 day, 0:00:00.'],
+        '3600': ['Ensure this value is greater than or equal to 1 day, 0:00:00.'],
+    }
+    outputs = {}
+    field = serializers.DurationField(min_value=datetime.timedelta(days=1))
+
+
+class TestMaxDurationField(FieldValues):
+    """
+    Valid and invalid values for `DurationField` with max limit.
+    """
+    valid_inputs = {
+        '3 08:32:01.000123': datetime.timedelta(days=3, hours=8, minutes=32, seconds=1, microseconds=123),
+        86401: datetime.timedelta(days=1, seconds=1),
+    }
+    invalid_inputs = {
+        '4 08:32:01.000123': ['Ensure this value is less than or equal to 4 days, 0:00:00.'],
+    }
+    outputs = {}
+    field = serializers.DurationField(max_value=datetime.timedelta(days=4))
 
 
 class TestDurationField(FieldValues):
@@ -1989,14 +2132,41 @@ class TestEmptyListField(FieldValues):
     field = serializers.ListField(child=serializers.IntegerField(), allow_empty=False)
 
 
-class TestListFieldLengthLimit(FieldValues):
+class TestListFieldMinMaxLengthLimit(FieldValues):
+    """
+    Valid and invalid values for `ListField` with min and max limits.
+    """
     valid_inputs = ()
     invalid_inputs = [
-        ((0, 1), ['Ensure this field has at least 3 elements.']),
-        ((0, 1, 2, 3, 4, 5), ['Ensure this field has no more than 4 elements.']),
+        ((0, 1), ['Ensure this field has at least 3 and no more than 4 elements.']),
+        ((0, 1, 2, 3, 4, 5), ['Ensure this field has at least 3 and no more than 4 elements.']),
     ]
     outputs = ()
     field = serializers.ListField(child=serializers.IntegerField(), min_length=3, max_length=4)
+
+
+class TestListFieldMinLengthLimit(FieldValues):
+    """
+    Valid and invalid values for `ListField` with min limit.
+    """
+    valid_inputs = ()
+    invalid_inputs = [
+        ((0, 1), ['Ensure this field has at least 3 elements.']),
+    ]
+    outputs = ()
+    field = serializers.ListField(child=serializers.IntegerField(), min_length=3)
+
+
+class TestListFieldMaxLengthLimit(FieldValues):
+    """
+    Valid and invalid values for `ListField` with max limit.
+    """
+    valid_inputs = ()
+    invalid_inputs = [
+        ((0, 1, 2, 3, 4, 5), ['Ensure this field has no more than 4 elements.']),
+    ]
+    outputs = ()
+    field = serializers.ListField(child=serializers.IntegerField(), max_length=4)
 
 
 class TestUnvalidatedListField(FieldValues):
