@@ -23,7 +23,7 @@ from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
 from django.test import TestCase
 
-from rest_framework import serializers
+from rest_framework import serializers, fields
 from rest_framework.compat import postgres_fields
 
 from .models import NestedForeignKeySource
@@ -558,6 +558,18 @@ class TestRelationalFieldMappings(TestCase):
                 through = PrimaryKeyRelatedField(many=True, read_only=True)
         """)
         self.assertEqual(repr(TestSerializer()), expected)
+
+    def test_manual_pk_relation_will_customize_queryset_repr_to_avoid_execute_it(self):
+        queryset = ForeignKeyTargetModel.objects.all()
+
+        class TestSerializer(serializers.Serializer):
+            field = serializers.PrimaryKeyRelatedField(queryset=queryset)
+
+        expected = dedent("""
+            TestSerializer():
+                field = PrimaryKeyRelatedField(queryset='{}')
+        """)
+        self.assertEqual(repr(TestSerializer()), expected.format(queryset.query))
 
     def test_nested_relations(self):
         class TestSerializer(serializers.ModelSerializer):

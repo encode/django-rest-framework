@@ -23,9 +23,16 @@ def manager_repr(value):
     return repr(value)
 
 
+def queryset_repr(queryset):
+    return "{}".format(queryset.query)
+
+
 def smart_repr(value):
     if isinstance(value, models.Manager):
         return manager_repr(value)
+
+    if isinstance(value, models.QuerySet):
+        value = queryset_repr(value)
 
     if isinstance(value, Promise) and value._delegate_text:
         value = force_str(value)
