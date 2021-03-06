@@ -23,7 +23,7 @@ from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
 from django.test import TestCase
 
-from rest_framework import serializers, fields
+from rest_framework import serializers
 from rest_framework.compat import postgres_fields
 
 from .models import NestedForeignKeySource
