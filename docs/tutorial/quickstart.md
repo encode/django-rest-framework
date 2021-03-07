@@ -22,7 +22,7 @@ Create a new Django project named `tutorial`, then start a new app called `quick
     django-admin startproject tutorial .  # Note the trailing '.' character
     cd tutorial
     django-admin startapp quickstart
-    cd ..
+    
 
 The project layout should look like:
 
