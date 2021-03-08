@@ -37,6 +37,15 @@ class ManyToManySource(RESTFrameworkModel):
 class ForeignKeyTarget(RESTFrameworkModel):
     name = models.CharField(max_length=100)
 
+    def get_first_source(self):
+        """Used for testing related field against a callable."""
+        return self.sources.all().order_by('pk')[0]
+
+    @property
+    def first_source(self):
+        """Used for testing related field against a property."""
+        return self.sources.all().order_by('pk')[0]
+
 
 class UUIDForeignKeyTarget(RESTFrameworkModel):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4)

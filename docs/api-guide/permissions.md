@@ -231,7 +231,7 @@ If you need to test if a request is a read operation or a write operation, you s
 
 ---
 
-Custom permissions will raise a `PermissionDenied` exception if the test fails. To change the error message associated with the exception, implement a `message` attribute directly on your custom permission. Otherwise the `default_detail` attribute from `PermissionDenied` will be used.
+Custom permissions will raise a `PermissionDenied` exception if the test fails. To change the error message associated with the exception, implement a `message` attribute directly on your custom permission. Otherwise the `default_detail` attribute from `PermissionDenied` will be used. Similarly, to change the code identifier associated with the exception, implement a `code` attribute directly on your custom permission - otherwise the `default_code` attribute from `PermissionDenied` will be used.
 
     from rest_framework import permissions
 
@@ -243,19 +243,19 @@ Custom permissions will raise a `PermissionDenied` exception if the test fails. 
 
 ## Examples
 
-The following is an example of a permission class that checks the incoming request's IP address against a blacklist, and denies the request if the IP has been blacklisted.
+The following is an example of a permission class that checks the incoming request's IP address against a blocklist, and denies the request if the IP has been blocked.
 
     from rest_framework import permissions
 
-    class BlacklistPermission(permissions.BasePermission):
+    class BlocklistPermission(permissions.BasePermission):
         """
-        Global permission check for blacklisted IPs.
+        Global permission check for blocked IPs.
         """
 
         def has_permission(self, request, view):
             ip_addr = request.META['REMOTE_ADDR']
-            blacklisted = Blacklist.objects.filter(ip_addr=ip_addr).exists()
-            return not blacklisted
+            blocked = Blocklist.objects.filter(ip_addr=ip_addr).exists()
+            return not blocked
 
 As well as global permissions, that are run against all incoming requests, you can also create object-level permissions, that are only run against operations that affect a particular object instance.  For example:
 
@@ -312,6 +312,11 @@ The [Django REST Framework API Key][djangorestframework-api-key] package provide
 
 The [Django Rest Framework Role Filters][django-rest-framework-role-filters] package provides simple filtering over multiple types of roles.
 
+## Django Rest Framework PSQ
+
+The [Django Rest Framework PSQ][drf-psq] package is an extension that gives support for having action-based **permission_classes**, **serializer_class**, and **queryset** dependent on permission-based rules.
+
+
 [cite]: https://developer.apple.com/library/mac/#documentation/security/Conceptual/AuthenticationAndAuthorizationGuide/Authorization/Authorization.html
 [authentication]: authentication.md
 [throttling]: throttling.md
@@ -322,9 +327,10 @@ The [Django Rest Framework Role Filters][django-rest-framework-role-filters] pac
 [filtering]: filtering.md
 [composed-permissions]: https://github.com/niwibe/djangorestframework-composed-permissions
 [rest-condition]: https://github.com/caxap/rest_condition
-[dry-rest-permissions]: https://github.com/Helioscene/dry-rest-permissions
+[dry-rest-permissions]: https://github.com/FJNR-inc/dry-rest-permissions
 [django-rest-framework-roles]: https://github.com/computer-lab/django-rest-framework-roles
 [djangorestframework-api-key]: https://florimondmanca.github.io/djangorestframework-api-key/
 [django-rest-framework-role-filters]: https://github.com/allisson/django-rest-framework-role-filters
 [django-rest-framework-guardian]: https://github.com/rpkilby/django-rest-framework-guardian
 [drf-access-policy]: https://github.com/rsinger86/drf-access-policy
+[drf-psq]: https://github.com/drf-psq/drf-psq

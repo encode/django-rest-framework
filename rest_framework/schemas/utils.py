@@ -4,7 +4,7 @@ utils.py        # Shared helper functions
 See schemas.__init__.py for package overview.
 """
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from rest_framework.mixins import RetrieveModelMixin
 

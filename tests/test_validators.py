@@ -301,6 +301,92 @@ class TestUniquenessTogetherValidation(TestCase):
             ]
         }
 
+    def test_read_only_fields_with_default_and_source(self):
+        class ReadOnlySerializer(serializers.ModelSerializer):
+            name = serializers.CharField(source='race_name', default='test', read_only=True)
+
+            class Meta:
+                model = UniquenessTogetherModel
+                fields = ['name', 'position']
+                validators = [
+                    UniqueTogetherValidator(
+                        queryset=UniquenessTogetherModel.objects.all(),
+                        fields=['name', 'position']
+                    )
+                ]
+
+        serializer = ReadOnlySerializer(data={'position': 1})
+        assert serializer.is_valid(raise_exception=True)
+
+    def test_writeable_fields_with_source(self):
+        class WriteableSerializer(serializers.ModelSerializer):
+            name = serializers.CharField(source='race_name')
+
+            class Meta:
+                model = UniquenessTogetherModel
+                fields = ['name', 'position']
+                validators = [
+                    UniqueTogetherValidator(
+                        queryset=UniquenessTogetherModel.objects.all(),
+                        fields=['name', 'position']
+                    )
+                ]
+
+        serializer = WriteableSerializer(data={'name': 'test', 'position': 1})
+        assert serializer.is_valid(raise_exception=True)
+
+        # Validation error should use seriazlier field name, not source
+        serializer = WriteableSerializer(data={'position': 1})
+        assert not serializer.is_valid()
+        assert serializer.errors == {
+            'name': [
+                'This field is required.'
+            ]
+        }
+
+    def test_default_validator_with_fields_with_source(self):
+        class TestSerializer(serializers.ModelSerializer):
+            name = serializers.CharField(source='race_name')
+
+            class Meta:
+                model = UniquenessTogetherModel
+                fields = ['name', 'position']
+
+        serializer = TestSerializer()
+        expected = dedent("""
+            TestSerializer():
+                name = CharField(source='race_name')
+                position = IntegerField()
+                class Meta:
+                    validators = [<UniqueTogetherValidator(queryset=UniquenessTogetherModel.objects.all(), fields=('name', 'position'))>]
+        """)
+        assert repr(serializer) == expected
+
+    def test_default_validator_with_multiple_fields_with_same_source(self):
+        class TestSerializer(serializers.ModelSerializer):
+            name = serializers.CharField(source='race_name')
+            other_name = serializers.CharField(source='race_name')
+
+            class Meta:
+                model = UniquenessTogetherModel
+                fields = ['name', 'other_name', 'position']
+
+        serializer = TestSerializer(data={
+            'name': 'foo',
+            'other_name': 'foo',
+            'position': 1,
+        })
+        with pytest.raises(AssertionError) as excinfo:
+            serializer.is_valid()
+
+        expected = (
+            "Unable to create `UniqueTogetherValidator` for "
+            "`UniquenessTogetherModel.race_name` as `TestSerializer` has "
+            "multiple fields (name, other_name) that map to this model field. "
+            "Either remove the extra fields, or override `Meta.validators` "
+            "with a `UniqueTogetherValidator` using the desired field names.")
+        assert str(excinfo.value) == expected
+
     def test_allow_explict_override(self):
         """
         Ensure validators can be explicitly removed..
@@ -359,10 +445,10 @@ class TestUniquenessTogetherValidation(TestCase):
 
         data = {'race_name': 'bar'}
         queryset = MockQueryset()
+        serializer = UniquenessTogetherSerializer(instance=self.instance)
         validator = UniqueTogetherValidator(queryset, fields=('race_name',
                                                               'position'))
-        validator.instance = self.instance
-        validator.filter_queryset(attrs=data, queryset=queryset)
+        validator.filter_queryset(attrs=data, queryset=queryset, serializer=serializer)
         assert queryset.called_with == {'race_name': 'bar', 'position': 1}
 
 
@@ -586,4 +672,6 @@ class ValidatorsTests(TestCase):
         validator = BaseUniqueForValidator(queryset=object(), field='foo',
                                            date_field='bar')
         with pytest.raises(NotImplementedError):
-            validator.filter_queryset(attrs=None, queryset=None)
+            validator.filter_queryset(
+                attrs=None, queryset=None, field_name='', date_field_name=''
+            )

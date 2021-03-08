@@ -14,15 +14,12 @@ For example, you might have a `urls.py` that looks something like this:
     urlpatterns = router.urls
 """
 import itertools
-import warnings
 from collections import OrderedDict, namedtuple
 
-from django.conf.urls import url
 from django.core.exceptions import ImproperlyConfigured
-from django.urls import NoReverseMatch
-from django.utils.deprecation import RenameMethodsBase
+from django.urls import NoReverseMatch, re_path
 
-from rest_framework import RemovedInDRF311Warning, views
+from rest_framework import views
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.schemas import SchemaGenerator
@@ -38,9 +35,7 @@ def escape_curly_brackets(url_path):
     """
     Double brackets in regex of url_path for escape string formatting
     """
-    if ('{' and '}') in url_path:
-        url_path = url_path.replace('{', '{{').replace('}', '}}')
-    return url_path
+    return url_path.replace('{', '{{').replace('}', '}}')
 
 
 def flatten(list_of_lists):
@@ -50,27 +45,11 @@ def flatten(list_of_lists):
     return itertools.chain(*list_of_lists)
 
 
-class RenameRouterMethods(RenameMethodsBase):
-    renamed_methods = (
-        ('get_default_base_name', 'get_default_basename', RemovedInDRF311Warning),
-    )
-
-
-class BaseRouter(metaclass=RenameRouterMethods):
+class BaseRouter:
     def __init__(self):
         self.registry = []
 
-    def register(self, prefix, viewset, basename=None, base_name=None):
-        if base_name is not None:
-            msg = "The `base_name` argument is pending deprecation in favor of `basename`."
-            warnings.warn(msg, RemovedInDRF311Warning, 2)
-
-        assert not (basename and base_name), (
-            "Do not provide both the `basename` and `base_name` arguments.")
-
-        if basename is None:
-            basename = base_name
-
+    def register(self, prefix, viewset, basename=None):
         if basename is None:
             basename = self.get_default_basename(viewset)
         self.registry.append((prefix, viewset, basename))
@@ -285,7 +264,7 @@ class SimpleRouter(BaseRouter):
 
                 view = viewset.as_view(mapping, **initkwargs)
                 name = route.name.format(basename=basename)
-                ret.append(url(regex, view, name=name))
+                ret.append(re_path(regex, view, name=name))
 
         return ret
 
@@ -360,7 +339,7 @@ class DefaultRouter(SimpleRouter):
 
         if self.include_root_view:
             view = self.get_api_root_view(api_urls=urls)
-            root_url = url(r'^$', view, name=self.root_view_name)
+            root_url = re_path(r'^$', view, name=self.root_view_name)
             urls.append(root_url)
 
         if self.include_format_suffixes:

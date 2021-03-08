@@ -10,9 +10,9 @@ from django.conf import settings
 from django.contrib.admindocs.views import simplify_regex
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
+from django.urls import URLPattern, URLResolver
 
 from rest_framework import exceptions
-from rest_framework.compat import URLPattern, URLResolver, get_original_route
 from rest_framework.request import clone_request
 from rest_framework.settings import api_settings
 from rest_framework.utils.model_meta import _get_pk
@@ -79,7 +79,7 @@ class EndpointEnumerator:
         api_endpoints = []
 
         for pattern in patterns:
-            path_regex = prefix + get_original_route(pattern)
+            path_regex = prefix + str(pattern.pattern)
             if isinstance(pattern, URLPattern):
                 path = self.get_path_from_regex(path_regex)
                 callback = pattern.callback
@@ -143,7 +143,7 @@ class EndpointEnumerator:
         return [method for method in methods if method not in ('OPTIONS', 'HEAD')]
 
 
-class BaseSchemaGenerator(object):
+class BaseSchemaGenerator:
     endpoint_inspector_cls = EndpointEnumerator
 
     # 'pk' isn't great as an externally exposed name for an identifier,
@@ -151,7 +151,7 @@ class BaseSchemaGenerator(object):
     # Set by 'SCHEMA_COERCE_PATH_PK'.
     coerce_path_pk = None
 
-    def __init__(self, title=None, url=None, description=None, patterns=None, urlconf=None):
+    def __init__(self, title=None, url=None, description=None, patterns=None, urlconf=None, version=None):
         if url and not url.endswith('/'):
             url += '/'
 
@@ -161,6 +161,7 @@ class BaseSchemaGenerator(object):
         self.urlconf = urlconf
         self.title = title
         self.description = description
+        self.version = version
         self.url = url
         self.endpoints = None
 

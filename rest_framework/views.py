@@ -3,11 +3,11 @@ Provides an APIView class that is the base of all views in REST framework.
 """
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
-from django.db import connection, models, transaction
+from django.db import connections, models
 from django.http import Http404
 from django.http.response import HttpResponseBase
 from django.utils.cache import cc_delim_re, patch_vary_headers
-from django.utils.encoding import smart_text
+from django.utils.encoding import smart_str
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
@@ -56,16 +56,16 @@ def get_view_description(view, html=False):
     if description is None:
         description = view.__class__.__doc__ or ''
 
-    description = formatting.dedent(smart_text(description))
+    description = formatting.dedent(smart_str(description))
     if html:
         return formatting.markup_description(description)
     return description
 
 
 def set_rollback():
-    atomic_requests = connection.settings_dict.get('ATOMIC_REQUESTS', False)
-    if atomic_requests and connection.in_atomic_block:
-        transaction.set_rollback(True)
+    for db in connections.all():
+        if db.settings_dict['ATOMIC_REQUESTS'] and db.in_atomic_block:
+            db.set_rollback(True)
 
 
 def exception_handler(exc, context):
@@ -166,13 +166,13 @@ class APIView(View):
         """
         raise exceptions.MethodNotAllowed(request.method)
 
-    def permission_denied(self, request, message=None):
+    def permission_denied(self, request, message=None, code=None):
         """
         If request is not permitted, determine what kind of exception to raise.
         """
         if request.authenticators and not request.successful_authenticator:
             raise exceptions.NotAuthenticated()
-        raise exceptions.PermissionDenied(detail=message)
+        raise exceptions.PermissionDenied(detail=message, code=code)
 
     def throttled(self, request, wait):
         """
@@ -331,7 +331,9 @@ class APIView(View):
         for permission in self.get_permissions():
             if not permission.has_permission(request, self):
                 self.permission_denied(
-                    request, message=getattr(permission, 'message', None)
+                    request,
+                    message=getattr(permission, 'message', None),
+                    code=getattr(permission, 'code', None)
                 )
 
     def check_object_permissions(self, request, obj):
@@ -342,7 +344,9 @@ class APIView(View):
         for permission in self.get_permissions():
             if not permission.has_object_permission(request, self, obj):
                 self.permission_denied(
-                    request, message=getattr(permission, 'message', None)
+                    request,
+                    message=getattr(permission, 'message', None),
+                    code=getattr(permission, 'code', None)
                 )
 
     def check_throttles(self, request):

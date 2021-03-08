@@ -137,7 +137,7 @@ We can add a login view for use with the browsable API, by editing the URLconf i
 
 Add the following import at the top of the file:
 
-    from django.conf.urls import include
+    from django.urls import path, include
 
 And, at the end of the file, add a pattern to include the login and logout views for the browsable API.
 

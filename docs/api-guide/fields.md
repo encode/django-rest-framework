@@ -50,9 +50,21 @@ If set, this gives the default value that will be used for the field if no input
 
 The `default` is not applied during partial update operations. In the partial update case only fields that are provided in the incoming data will have a validated value returned.
 
-May be set to a function or other callable, in which case the value will be evaluated each time it is used. When called, it will receive no arguments. If the callable has a `set_context` method, that will be called each time before getting the value with the field instance as only argument. This works the same way as for [validators](validators.md#using-set_context).
+May be set to a function or other callable, in which case the value will be evaluated each time it is used. When called, it will receive no arguments. If the callable has a `requires_context = True` attribute, then the serializer field will be passed as an argument.
 
-When serializing the instance, default will be used if the the object attribute or dictionary key is not present in the instance.
+For example:
+
+    class CurrentUserDefault:
+        """
+        May be applied as a `default=...` value on a serializer field.
+        Returns the current user.
+        """
+        requires_context = True
+
+        def __call__(self, serializer_field):
+            return serializer_field.context['request'].user
+
+When serializing the instance, default will be used if the object attribute or dictionary key is not present in the instance.
 
 Note that setting a `default` value implies that the field is not required. Including both the `default` and `required` keyword arguments is invalid and will raise an error.
 
@@ -359,7 +371,7 @@ Corresponds to `django.db.models.fields.TimeField`
 * `format` - A string representing the output format.  If not specified, this defaults to the same value as the `TIME_FORMAT` settings key, which will be `'iso-8601'` unless set. Setting to a format string indicates that `to_representation` return values should be coerced to string output. Format strings are described below. Setting this value to `None` indicates that Python `time` objects should be returned by `to_representation`. In this case the time encoding will be determined by the renderer.
 * `input_formats` - A list of strings representing the input formats which may be used to parse the date.  If not specified, the `TIME_INPUT_FORMATS` setting will be used, which defaults to `['iso-8601']`.
 
-#### `TimeField` format strings
+#### `TimeField` format strings
 
 Format strings may either be [Python strftime formats][strftime] which explicitly specify the format, or the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style times should be used. (eg `'12:34:56.000000'`)
 
@@ -583,9 +595,7 @@ If you want to create a custom field, you'll need to subclass `Field` and then o
 
 The `.to_representation()` method is called to convert the initial datatype into a primitive, serializable datatype.
 
-The `to_internal_value()` method is called to restore a primitive datatype into its internal python representation. This method should raise a `serializers.ValidationError` if the data is invalid.
-
-Note that the `WritableField` class that was present in version 2.x no longer exists. You should subclass `Field` and override `to_internal_value()` if the field supports data input.
+The `.to_internal_value()` method is called to restore a primitive datatype into its internal python representation. This method should raise a `serializers.ValidationError` if the data is invalid.
 
 ## Examples
 
@@ -593,7 +603,7 @@ Note that the `WritableField` class that was present in version 2.x no longer ex
 
 Let's look at an example of serializing a class that represents an RGB color value:
 
-    class Color(object):
+    class Color:
         """
         A color represented in the RGB colorspace.
         """
@@ -713,7 +723,7 @@ the coordinate pair:
             fields = ['label', 'coordinates']
 
 Note that this example doesn't handle validation. Partly for that reason, in a
-real project, the coordinate nesting might be better handled with a nested serialiser
+real project, the coordinate nesting might be better handled with a nested serializer
 using `source='*'`, with two `IntegerField` instances, each with their own `source`
 pointing to the relevant field.
 
@@ -746,7 +756,7 @@ suitable for updating our target object. With `source='*'`, the return from
                      ('y_coordinate', 4),
                      ('x_coordinate', 3)])
 
-For completeness lets do the same thing again but with the nested serialiser
+For completeness lets do the same thing again but with the nested serializer
 approach suggested above:
 
     class NestedCoordinateSerializer(serializers.Serializer):
@@ -768,14 +778,14 @@ declarations. It's our `NestedCoordinateSerializer` that takes `source='*'`.
 Our new `DataPointSerializer` exhibits the same behaviour as the custom field
 approach.
 
-Serialising:
+Serializing:
 
     >>> out_serializer = DataPointSerializer(instance)
     >>> out_serializer.data
     ReturnDict([('label', 'testing'),
                 ('coordinates', OrderedDict([('x', 1), ('y', 2)]))])
 
-Deserialising:
+Deserializing:
 
     >>> in_serializer = DataPointSerializer(data=data)
     >>> in_serializer.is_valid()
@@ -802,8 +812,8 @@ But we also get the built-in validation for free:
                  {'x': ['A valid integer is required.'],
                   'y': ['A valid integer is required.']})])
 
-For this reason, the nested serialiser approach would be the first to try. You
-would use the custom field approach when the nested serialiser becomes infeasible
+For this reason, the nested serializer approach would be the first to try. You
+would use the custom field approach when the nested serializer becomes infeasible
 or overly complex.
 
 

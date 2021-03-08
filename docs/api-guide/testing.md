@@ -221,7 +221,7 @@ If you're using `RequestsClient` you'll want to ensure that test setup, and resu
 ## Headers & Authentication
 
 Custom headers and authentication credentials can be provided in the same way
-as [when using a standard `requests.Session` instance](http://docs.python-requests.org/en/master/user/advanced/#session-objects).
+as [when using a standard `requests.Session` instance][session_objects].
 
     from requests.auth import HTTPBasicAuth
 
@@ -414,3 +414,4 @@ For example, to add support for using `format='html'` in test requests, you migh
 [requestfactory]: https://docs.djangoproject.com/en/stable/topics/testing/advanced/#django.test.client.RequestFactory
 [configuration]: #configuration
 [refresh_from_db_docs]: https://docs.djangoproject.com/en/1.11/ref/models/instances/#django.db.models.Model.refresh_from_db
+[session_objects]: https://requests.readthedocs.io/en/master/user/advanced/#session-objects

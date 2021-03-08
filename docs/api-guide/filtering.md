@@ -45,7 +45,7 @@ Another style of filtering might involve restricting the queryset based on some 
 
 For example if your URL config contained an entry like this:
 
-    url('^purchases/(?P<username>.+)/$', PurchaseList.as_view()),
+    re_path('^purchases/(?P<username>.+)/$', PurchaseList.as_view()),
 
 You could then write a view that returned a purchase queryset filtered by the username portion of the URL:
 
@@ -145,9 +145,17 @@ Note that you can use both an overridden `.get_queryset()` and generic filtering
 The [`django-filter`][django-filter-docs] library includes a `DjangoFilterBackend` class which
 supports highly customizable field filtering for REST framework.
 
-To use `DjangoFilterBackend`, first install `django-filter`. Then add `django_filters` to Django's `INSTALLED_APPS`
+To use `DjangoFilterBackend`, first install `django-filter`.
 
     pip install django-filter
+
+Then add `'django_filters'` to Django's `INSTALLED_APPS`:
+
+    INSTALLED_APPS = [
+        ...
+        'django_filters',
+        ...
+    ]
 
 You should now either add the filter backend to your settings:
 
@@ -205,6 +213,10 @@ This will allow the client to filter the items in the list by making queries suc
 You can also perform a related lookup on a ForeignKey or ManyToManyField with the lookup API double-underscore notation:
 
     search_fields = ['username', 'email', 'profile__profession']
+    
+For [JSONField][JSONField] and [HStoreField][HStoreField] fields you can filter based on nested values within the data structure using the same double-underscore notation:
+
+    search_fields = ['data__breed', 'data__owner__other_pets__0__name']
 
 By default, searches will use case-insensitive partial matches.  The search parameter may contain multiple search terms, which should be whitespace and/or comma separated.  If multiple search terms are used then objects will be returned in the list only if all the provided terms are matched.
 
@@ -212,7 +224,7 @@ The search behavior may be restricted by prepending various characters to the `s
 
 * '^' Starts-with search.
 * '=' Exact matches.
-* '@' Full-text search.  (Currently only supported Django's MySQL backend.)
+* '@' Full-text search.  (Currently only supported Django's [PostgreSQL backend](https://docs.djangoproject.com/en/dev/ref/contrib/postgres/search/).)
 * '$' Regex search.
 
 For example:
@@ -360,3 +372,5 @@ The [djangorestframework-word-filter][django-rest-framework-word-search-filter] 
 [django-rest-framework-word-search-filter]: https://github.com/trollknurr/django-rest-framework-word-search-filter
 [django-url-filter]: https://github.com/miki725/django-url-filter
 [drf-url-filter]: https://github.com/manjitkumar/drf-url-filters
+[HStoreField]: https://docs.djangoproject.com/en/3.0/ref/contrib/postgres/fields/#hstorefield
+[JSONField]: https://docs.djangoproject.com/en/3.0/ref/contrib/postgres/fields/#jsonfield

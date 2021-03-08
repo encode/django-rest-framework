@@ -182,14 +182,19 @@ def import_from_string(val, setting_name):
 
 class APISettings:
     """
-    A settings object, that allows API settings to be accessed as properties.
-    For example:
+    A settings object that allows REST Framework settings to be accessed as
+    properties. For example:
 
         from rest_framework.settings import api_settings
         print(api_settings.DEFAULT_RENDERER_CLASSES)
 
     Any setting with string import paths will be automatically resolved
     and return the class, rather than the string literal.
+
+    Note:
+    This is an internal class that is only compatible with settings namespaced
+    under the REST_FRAMEWORK name. It is not intended to be used by 3rd-party
+    apps, and test helpers like `override_settings` may not work as expected.
     """
     def __init__(self, user_settings=None, defaults=None, import_strings=None):
         if user_settings:

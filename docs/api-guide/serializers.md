@@ -21,7 +21,7 @@ Let's start by creating a simple object we can use for example purposes:
 
     from datetime import datetime
 
-    class Comment(object):
+    class Comment:
         def __init__(self, email, content, created=None):
             self.email = email
             self.content = content
@@ -161,7 +161,7 @@ Each key in the dictionary will be the field name, and the values will be lists 
 
 When deserializing a list of items, errors will be returned as a list of dictionaries representing each of the deserialized items.
 
-#### Raising an exception on invalid data
+#### Raising an exception on invalid data
 
 The `.is_valid()` method takes an optional `raise_exception` flag that will cause it to raise a `serializers.ValidationError` exception if there are validation errors.
 
@@ -238,10 +238,12 @@ Serializer classes can also include reusable validators that are applied to the 
 
         class Meta:
             # Each room only has one event per day.
-            validators = UniqueTogetherValidator(
-                queryset=Event.objects.all(),
-                fields=['room_number', 'date']
-            )
+            validators = [
+                UniqueTogetherValidator(
+                    queryset=Event.objects.all(),
+                    fields=['room_number', 'date']
+                )
+            ]
 
 For more information see the [validators documentation](validators.md).
 
@@ -249,7 +251,7 @@ For more information see the [validators documentation](validators.md).
 
 When passing an initial object or queryset to a serializer instance, the object will be made available as `.instance`. If no initial object is passed then the `.instance` attribute will be `None`.
 
-When passing data to a serializer instance, the unmodified data will be made available as `.initial_data`. If the data keyword argument is not passed then the `.initial_data` attribute will not exist.
+When passing data to a serializer instance, the unmodified data will be made available as `.initial_data`. If the `data` keyword argument is not passed then the `.initial_data` attribute will not exist.
 
 ## Partial updates
 
@@ -280,7 +282,7 @@ If a nested representation may optionally accept the `None` value you should pas
         content = serializers.CharField(max_length=200)
         created = serializers.DateTimeField()
 
-Similarly if a nested representation should be a list of items, you should pass the `many=True` flag to the nested serialized.
+Similarly if a nested representation should be a list of items, you should pass the `many=True` flag to the nested serializer.
 
     class CommentSerializer(serializers.Serializer):
         user = UserSerializer(required=False)
@@ -333,7 +335,7 @@ Here's an example for an `.update()` method on our previous `UserSerializer` cla
         def update(self, instance, validated_data):
             profile_data = validated_data.pop('profile')
             # Unless the application properly enforces that this field is
-            # always set, the follow could raise a `DoesNotExist`, which
+            # always set, the following could raise a `DoesNotExist`, which
             # would need to be handled.
             profile = instance.profile
 
@@ -382,8 +384,8 @@ This manager class now more nicely encapsulates that user instances and profile 
     def create(self, validated_data):
         return User.objects.create(
             username=validated_data['username'],
-            email=validated_data['email']
-            is_premium_member=validated_data['profile']['is_premium_member']
+            email=validated_data['email'],
+            is_premium_member=validated_data['profile']['is_premium_member'],
             has_support_contract=validated_data['profile']['has_support_contract']
         )
 
@@ -593,7 +595,7 @@ Normally if a `ModelSerializer` does not generate the fields you need by default
 
 ### `.serializer_field_mapping`
 
-A mapping of Django model classes to REST framework serializer classes. You can override this mapping to alter the default serializer classes that should be used for each model class.
+A mapping of Django model fields to REST framework serializer fields. You can override this mapping to alter the default serializer fields that should be used for each model field.
 
 ### `.serializer_related_field`
 
@@ -887,10 +889,10 @@ To implement a read-only serializer using the `BaseSerializer` class, we just ne
 It's simple to create a read-only serializer for converting `HighScore` instances into primitive data types.
 
     class HighScoreSerializer(serializers.BaseSerializer):
-        def to_representation(self, obj):
+        def to_representation(self, instance):
             return {
-                'score': obj.score,
-                'player_name': obj.player_name
+                'score': instance.score,
+                'player_name': instance.player_name
             }
 
 We can now use this class to serialize single `HighScore` instances:
@@ -945,10 +947,10 @@ Here's a complete example of our previous `HighScoreSerializer`, that's been upd
                 'player_name': player_name
             }
 
-        def to_representation(self, obj):
+        def to_representation(self, instance):
             return {
-                'score': obj.score,
-                'player_name': obj.player_name
+                'score': instance.score,
+                'player_name': instance.player_name
             }
 
         def create(self, validated_data):
@@ -965,10 +967,10 @@ The following class is an example of a generic serializer that can handle coerci
         A read-only serializer that coerces arbitrary complex objects
         into primitive representations.
         """
-        def to_representation(self, obj):
+        def to_representation(self, instance):
             output = {}
-            for attribute_name in dir(obj):
-                attribute = getattr(obj, attribute_name)
+            for attribute_name in dir(instance):
+                attribute = getattr(instance, attribute_name)
                 if attribute_name.startswith('_'):
                     # Ignore private attributes.
                     pass
@@ -1010,11 +1012,11 @@ Some reasons this might be useful include...
 
 The signatures for these methods are as follows:
 
-#### `.to_representation(self, obj)`
+#### `.to_representation(self, instance)`
 
 Takes the object instance that requires serialization, and should return a primitive representation. Typically this means returning a structure of built-in Python datatypes. The exact types that can be handled will depend on the render classes you have configured for your API.
 
-May be overridden in order modify the representation style. For example:
+May be overridden in order to modify the representation style. For example:
 
     def to_representation(self, instance):
         """Convert `username` to lowercase."""
@@ -1176,6 +1178,11 @@ The [html-json-forms][html-json-forms] package provides an algorithm and seriali
 
 The [drf-writable-nested][drf-writable-nested] package provides writable nested model serializer which allows to create/update models with nested related data.
 
+## DRF Encrypt Content
+
+The [drf-encrypt-content][drf-encrypt-content] package helps you encrypt your data, serialized through ModelSerializer. It also contains some helper functions. Which helps you to encrypt your data. 
+
+
 [cite]: https://groups.google.com/d/topic/django-users/sVFaOfQi4wY/discussion
 [relations]: relations.md
 [model-managers]: https://docs.djangoproject.com/en/stable/topics/db/managers/
@@ -1197,3 +1204,4 @@ The [drf-writable-nested][drf-writable-nested] package provides writable nested 
 [drf-serializer-extensions]: https://github.com/evenicoulddoit/django-rest-framework-serializer-extensions
 [djangorestframework-queryfields]: https://djangorestframework-queryfields.readthedocs.io/
 [drf-writable-nested]: https://github.com/beda-software/drf-writable-nested
+[drf-encrypt-content]: https://github.com/oguzhancelikarslan/drf-encrypt-content

@@ -198,6 +198,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [rest_condition][rest-condition] - Another extension for building complex permissions in a simple and convenient way.
 * [dry-rest-permissions][dry-rest-permissions] - Provides a simple way to define permissions for individual api actions.
 * [drf-access-policy][drf-access-policy] - Declarative and flexible permissions inspired by AWS' IAM policies.
+* [drf-psq][drf-psq] - An extension that gives support for having action-based **permission_classes**, **serializer_class**, and **queryset** dependent on permission-based rules.
 
 ### Serializers
 
@@ -211,6 +212,8 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [djangorestframework-queryfields][djangorestframework-queryfields] - Serializer mixin allowing clients to control which fields will be sent in the API response.
 * [drf-flex-fields][drf-flex-fields] - Serializer providing dynamic field expansion and sparse field sets via URL parameters.
 * [drf-action-serializer][drf-action-serializer] - Serializer providing per-action fields config for use with ViewSets to prevent having to write multiple serializers.
+* [djangorestframework-dataclasses][djangorestframework-dataclasses] - Serializer providing automatic field generation for Python dataclasses, like the built-in ModelSerializer does for models.
+* [django-restql][django-restql] - Turn your REST API into a GraphQL like API(It allows clients to control which fields will be sent in a response, uses GraphQL like syntax, supports read and write on both flat and nested fields).
 
 ### Serializer fields
 
@@ -220,8 +223,8 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 
 ### Views
 
-* [djangorestframework-bulk][djangorestframework-bulk] - Implements generic view mixins as well as some common concrete generic views to allow to apply bulk operations via API requests.
 * [django-rest-multiple-models][django-rest-multiple-models] - Provides a generic view (and mixin) for sending multiple serialized models and/or querysets via a single API request.
+* [drf-typed-views][drf-typed-views] - Use Python type annotations to validate/deserialize request parameters. Inspired by API Star, Hug and FastAPI.
 
 ### Routers
 
@@ -238,7 +241,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 
 * [djangorestframework-csv][djangorestframework-csv] - Provides CSV renderer support.
 * [djangorestframework-jsonapi][djangorestframework-jsonapi] - Provides a parser, renderer, serializers, and other tools to help build an API that is compliant with the jsonapi.org spec.
-* [drf_ujson][drf_ujson] - Implements JSON rendering using the UJSON package.
+* [drf_ujson2][drf_ujson2] - Implements JSON rendering using the UJSON package.
 * [rest-pandas][rest-pandas] - Pandas DataFrame-powered renderers including Excel, CSV, and SVG formats.
 * [djangorestframework-rapidjson][djangorestframework-rapidjson] - Provides rapidjson support with parser and renderer.
 
@@ -252,8 +255,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 ### Misc
 
 * [cookiecutter-django-rest][cookiecutter-django-rest] - A cookiecutter template that takes care of the setup and configuration so you can focus on making your REST apis awesome.
-* [djangorestrelationalhyperlink][djangorestrelationalhyperlink] - A hyperlinked serialiser that can can be used to alter relationships via hyperlinks, but otherwise like a hyperlink model serializer.
-* [django-rest-swagger][django-rest-swagger] - An API documentation generator for Swagger UI.
+* [djangorestrelationalhyperlink][djangorestrelationalhyperlink] - A hyperlinked serializer that can can be used to alter relationships via hyperlinks, but otherwise like a hyperlink model serializer.
 * [django-rest-framework-proxy][django-rest-framework-proxy] - Proxy to redirect incoming request to another API server.
 * [gaiarestframework][gaiarestframework] - Utils for django-rest-framework
 * [drf-extensions][drf-extensions] - A collection of custom extensions
@@ -270,6 +272,10 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [django-rest-framework-condition][django-rest-framework-condition] - Decorators for managing HTTP cache headers for Django REST framework (ETag and Last-modified).
 * [django-rest-witchcraft][django-rest-witchcraft] - Provides DRF integration with SQLAlchemy with SQLAlchemy model serializers/viewsets and a bunch of other goodies
 * [djangorestframework-mvt][djangorestframework-mvt] - An extension for creating views that serve Postgres data as Map Box Vector Tiles.
+* [drf-viewset-profiler][drf-viewset-profiler] - Lib to profile all methods from a viewset line by line.
+* [djangorestframework-features][djangorestframework-features] - Advanced schema generation and more based on named features.
+* [django-elasticsearch-dsl-drf][django-elasticsearch-dsl-drf] - Integrate Elasticsearch DSL with Django REST framework. Package provides views, serializers, filter backends, pagination and other handy add-ons.
+* [django-api-client][django-api-client] - DRF client that groups the Endpoint response, for use in CBVs and FBV as if you were working with Django's Native Models..
 
 [cite]: http://www.software-ecosystems.com/Software_Ecosystems/Ecosystems.html
 [cookiecutter]: https://github.com/jpadilla/cookiecutter-django-rest-framework
@@ -303,19 +309,17 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [djangorestframework-hstore]: https://github.com/djangonauts/django-rest-framework-hstore
 [drf-compound-fields]: https://github.com/estebistec/drf-compound-fields
 [django-extra-fields]: https://github.com/Hipo/drf-extra-fields
-[djangorestframework-bulk]: https://github.com/miki725/django-rest-framework-bulk
 [django-rest-multiple-models]: https://github.com/MattBroach/DjangoRestMultipleModels
 [drf-nested-routers]: https://github.com/alanjds/drf-nested-routers
 [wq.db.rest]: https://wq.io/docs/about-rest
 [djangorestframework-msgpack]: https://github.com/juanriaza/django-rest-framework-msgpack
 [djangorestframework-camel-case]: https://github.com/vbabiy/djangorestframework-camel-case
 [djangorestframework-csv]: https://github.com/mjumbewu/django-rest-framework-csv
-[drf_ujson]: https://github.com/gizmag/drf-ujson-renderer
+[drf_ujson2]: https://github.com/Amertz08/drf_ujson2
 [rest-pandas]: https://github.com/wq/django-rest-pandas
 [djangorestframework-rapidjson]: https://github.com/allisson/django-rest-framework-rapidjson
 [djangorestframework-chain]: https://github.com/philipn/django-rest-framework-chain
 [djangorestrelationalhyperlink]: https://github.com/fredkingham/django_rest_model_hyperlink_serializers_project
-[django-rest-swagger]: https://github.com/marcgibbons/django-rest-swagger
 [django-rest-framework-proxy]: https://github.com/eofs/django-rest-framework-proxy
 [gaiarestframework]: https://github.com/AppsFuel/gaiarestframework
 [drf-extensions]: https://github.com/chibisov/drf-extensions
@@ -325,7 +329,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [django-versatileimagefield-drf-docs]:https://django-versatileimagefield.readthedocs.io/en/latest/drf_integration.html
 [drf-tracking]: https://github.com/aschn/drf-tracking
 [django-rest-framework-braces]: https://github.com/dealertrack/django-rest-framework-braces
-[dry-rest-permissions]: https://github.com/Helioscene/dry-rest-permissions
+[dry-rest-permissions]: https://github.com/FJNR-inc/dry-rest-permissions
 [django-url-filter]: https://github.com/miki725/django-url-filter
 [drf-url-filter]: https://github.com/manjitkumar/drf-url-filters
 [cookiecutter-django-rest]:  https://github.com/agconti/cookiecutter-django-rest
@@ -347,6 +351,14 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [django-rest-witchcraft]: https://github.com/shosca/django-rest-witchcraft
 [drf-access-policy]: https://github.com/rsinger86/drf-access-policy
 [drf-flex-fields]: https://github.com/rsinger86/drf-flex-fields
+[drf-typed-views]: https://github.com/rsinger86/drf-typed-views
 [drf-action-serializer]: https://github.com/gregschmit/drf-action-serializer
+[djangorestframework-dataclasses]: https://github.com/oxan/djangorestframework-dataclasses
+[django-restql]: https://github.com/yezyilomo/django-restql
 [djangorestframework-mvt]: https://github.com/corteva/djangorestframework-mvt
 [django-rest-framework-guardian]: https://github.com/rpkilby/django-rest-framework-guardian
+[drf-viewset-profiler]: https://github.com/fvlima/drf-viewset-profiler
+[djangorestframework-features]: https://github.com/cloudcode-hungary/django-rest-framework-features/
+[django-elasticsearch-dsl-drf]: https://github.com/barseghyanartur/django-elasticsearch-dsl-drf
+[django-api-client]: https://github.com/rhenter/django-api-client
+[drf-psq]: https://github.com/drf-psq/drf-psq

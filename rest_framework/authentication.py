@@ -74,7 +74,11 @@ class BasicAuthentication(BaseAuthentication):
             raise exceptions.AuthenticationFailed(msg)
 
         try:
-            auth_parts = base64.b64decode(auth[1]).decode(HTTP_HEADER_ENCODING).partition(':')
+            try:
+                auth_decoded = base64.b64decode(auth[1]).decode('utf-8')
+            except UnicodeDecodeError:
+                auth_decoded = base64.b64decode(auth[1]).decode('latin-1')
+            auth_parts = auth_decoded.partition(':')
         except (TypeError, UnicodeDecodeError, binascii.Error):
             msg = _('Invalid basic header. Credentials not correctly base64 encoded.')
             raise exceptions.AuthenticationFailed(msg)
@@ -132,7 +136,10 @@ class SessionAuthentication(BaseAuthentication):
         """
         Enforce CSRF validation for session based authentication.
         """
-        check = CSRFCheck()
+        def dummy_get_response(request):  # pragma: no cover
+            return None
+
+        check = CSRFCheck(dummy_get_response)
         # populates request.META['CSRF_COOKIE'], which is used in process_view()
         check.process_request(request)
         reason = check.process_view(request, None, (), {})

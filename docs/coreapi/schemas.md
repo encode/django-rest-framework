@@ -43,11 +43,12 @@ To add a dynamically generated schema view to your API, use `get_schema_view`.
 
 ```python
 from rest_framework.schemas import get_schema_view
+from django.urls import path
 
 schema_view = get_schema_view(title="Example API")
 
 urlpatterns = [
-    url('^schema$', schema_view),
+    path('schema', schema_view),
     ...
 ]
 ```
@@ -191,7 +192,7 @@ each view, allowed method and path.)
 **Note**: For basic `APIView` subclasses, default introspection is essentially
 limited to the URL kwarg path parameters. For `GenericAPIView`
 subclasses, which includes all the provided class based views, `AutoSchema` will
-attempt to introspect serialiser, pagination and filter fields, as well as
+attempt to introspect serializer, pagination and filter fields, as well as
 provide richer path field descriptions. (The key hooks here are the relevant
 `GenericAPIView` attributes and methods: `get_serializer`, `pagination_class`,
 `filter_backends` and so on.)
@@ -292,7 +293,7 @@ The simplest way to include a schema in your project is to use the
     schema_view = get_schema_view(title="Server Monitoring API")
 
     urlpatterns = [
-        url('^$', schema_view),
+        path('', schema_view),
         ...
     ]
 
@@ -358,7 +359,7 @@ List of url patterns to limit the schema introspection to. If you only want the 
 to be exposed in the schema:
 
     schema_url_patterns = [
-        url(r'^api/', include('myproject.api.urls')),
+        path('api/', include('myproject.api.urls')),
     ]
 
     schema_view = get_schema_view(
@@ -411,7 +412,7 @@ return the schema.
 **urls.py:**
 
     urlpatterns = [
-        url('/', schema_view),
+        path('', schema_view),
         ...
     ]
 
@@ -827,10 +828,17 @@ A short description of the meaning and intended usage of the input field.
 [drf-yasg][drf-yasg] generates [OpenAPI][open-api] documents suitable for code generation - nested schemas,
 named models, response bodies, enum/pattern/min/max validators, form parameters, etc.
 
+
+## drf-spectacular - Sane and flexible OpenAPI 3.0 schema generation for Django REST framework
+
+[drf-spectacular][drf-spectacular] is a [OpenAPI 3][open-api] schema generation tool with explicit focus on extensibility,
+customizability and client generation. It's usage patterns are very similar to [drf-yasg][drf-yasg].
+
 [cite]: https://blog.heroku.com/archives/2014/1/8/json_schema_for_heroku_platform_api
 [coreapi]: https://www.coreapi.org/
 [corejson]: https://www.coreapi.org/specification/encoding/#core-json-encoding
 [drf-yasg]: https://github.com/axnsan12/drf-yasg/
+[drf-spectacular]: https://github.com/tfranzel/drf-spectacular/
 [open-api]: https://openapis.org/
 [json-hyperschema]: https://json-schema.org/latest/json-schema-hypermedia.html
 [api-blueprint]: https://apiblueprint.org/

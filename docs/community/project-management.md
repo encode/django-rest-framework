@@ -195,7 +195,6 @@ If `@tomchristie` ceases to participate in the project then `@j4mie` has respons
 
 The following issues still need to be addressed:
 
-* [Consider moving the repo into a proper GitHub organization][github-org].
 * Ensure `@jamie` has back-up access to the `django-rest-framework.org` domain setup and admin.
 * Document ownership of the [live example][sandbox] API.
 * Document ownership of the [mailing list][mailing-list] and IRC channel.
@@ -206,6 +205,5 @@ The following issues still need to be addressed:
 [transifex-project]: https://www.transifex.com/projects/p/django-rest-framework/
 [transifex-client]: https://pypi.org/project/transifex-client/
 [translation-memory]: http://docs.transifex.com/guides/tm#let-tm-automatically-populate-translations
-[github-org]: https://github.com/encode/django-rest-framework/issues/2162
 [sandbox]: https://restframework.herokuapp.com/
 [mailing-list]: https://groups.google.com/forum/#!forum/django-rest-framework

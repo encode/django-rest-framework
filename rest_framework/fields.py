@@ -5,6 +5,7 @@ import functools
 import inspect
 import re
 import uuid
+import warnings
 from collections import OrderedDict
 from collections.abc import Mapping
 
@@ -13,7 +14,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.validators import (
     EmailValidator, MaxLengthValidator, MaxValueValidator, MinLengthValidator,
-    MinValueValidator, RegexValidator, URLValidator, ip_address_validators
+    MinValueValidator, ProhibitNullCharactersValidator, RegexValidator,
+    URLValidator, ip_address_validators
 )
 from django.forms import FilePathField as DjangoFilePathField
 from django.forms import ImageField as DjangoImageField
@@ -22,19 +24,21 @@ from django.utils.dateparse import (
     parse_date, parse_datetime, parse_duration, parse_time
 )
 from django.utils.duration import duration_string
-from django.utils.encoding import is_protected_type, smart_text
+from django.utils.encoding import is_protected_type, smart_str
 from django.utils.formats import localize_input, sanitize_separators
 from django.utils.ipv6 import clean_ipv6_address
 from django.utils.timezone import utc
 from django.utils.translation import gettext_lazy as _
 from pytz.exceptions import InvalidTimeError
 
-from rest_framework import ISO_8601
-from rest_framework.compat import ProhibitNullCharactersValidator
+from rest_framework import (
+    ISO_8601, RemovedInDRF313Warning, RemovedInDRF314Warning
+)
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, humanize_datetime, json, representation
 from rest_framework.utils.formatting import lazy_format
+from rest_framework.validators import ProhibitSurrogateCharactersValidator
 
 
 class empty:
@@ -249,19 +253,30 @@ class CreateOnlyDefault:
     for create operations, but that do not return any value for update
     operations.
     """
+    requires_context = True
+
     def __init__(self, default):
         self.default = default
 
-    def set_context(self, serializer_field):
-        self.is_update = serializer_field.parent.instance is not None
-        if callable(self.default) and hasattr(self.default, 'set_context') and not self.is_update:
-            self.default.set_context(serializer_field)
-
-    def __call__(self):
-        if self.is_update:
+    def __call__(self, serializer_field):
+        is_update = serializer_field.parent.instance is not None
+        if is_update:
             raise SkipField()
         if callable(self.default):
-            return self.default()
+            if hasattr(self.default, 'set_context'):
+                warnings.warn(
+                    "Method `set_context` on defaults is deprecated and will "
+                    "no longer be called starting with 3.13. Instead set "
+                    "`requires_context = True` on the class, and accept the "
+                    "context as an additional argument.",
+                    RemovedInDRF313Warning, stacklevel=2
+                )
+                self.default.set_context(self)
+
+            if getattr(self.default, 'requires_context', False):
+                return self.default(serializer_field)
+            else:
+                return self.default()
         return self.default
 
     def __repr__(self):
@@ -269,11 +284,10 @@ class CreateOnlyDefault:
 
 
 class CurrentUserDefault:
-    def set_context(self, serializer_field):
-        self.user = serializer_field.context['request'].user
+    requires_context = True
 
-    def __call__(self):
-        return self.user
+    def __call__(self, serializer_field):
+        return serializer_field.context['request'].user
 
     def __repr__(self):
         return '%s()' % self.__class__.__name__
@@ -489,8 +503,20 @@ class Field:
             raise SkipField()
         if callable(self.default):
             if hasattr(self.default, 'set_context'):
+                warnings.warn(
+                    "Method `set_context` on defaults is deprecated and will "
+                    "no longer be called starting with 3.13. Instead set "
+                    "`requires_context = True` on the class, and accept the "
+                    "context as an additional argument.",
+                    RemovedInDRF313Warning, stacklevel=2
+                )
                 self.default.set_context(self)
-            return self.default()
+
+            if getattr(self.default, 'requires_context', False):
+                return self.default(self)
+            else:
+                return self.default()
+
         return self.default
 
     def validate_empty_values(self, data):
@@ -551,10 +577,20 @@ class Field:
         errors = []
         for validator in self.validators:
             if hasattr(validator, 'set_context'):
+                warnings.warn(
+                    "Method `set_context` on validators is deprecated and will "
+                    "no longer be called starting with 3.13. Instead set "
+                    "`requires_context = True` on the class, and accept the "
+                    "context as an additional argument.",
+                    RemovedInDRF313Warning, stacklevel=2
+                )
                 validator.set_context(self)
 
             try:
-                validator(value)
+                if getattr(validator, 'requires_context', False):
+                    validator(value, self)
+                else:
+                    validator(value)
             except ValidationError as exc:
                 # If the validation error contains a mapping of fields to
                 # errors then simply raise it immediately rather than
@@ -572,8 +608,11 @@ class Field:
         Transform the *incoming* primitive data into a native value.
         """
         raise NotImplementedError(
-            '{cls}.to_internal_value() must be implemented.'.format(
-                cls=self.__class__.__name__
+            '{cls}.to_internal_value() must be implemented for field '
+            '{field_name}. If you do not need to support write operations '
+            'you probably want to subclass `ReadOnlyField` instead.'.format(
+                cls=self.__class__.__name__,
+                field_name=self.field_name,
             )
         )
 
@@ -582,9 +621,7 @@ class Field:
         Transform the *outgoing* native value into primitive data.
         """
         raise NotImplementedError(
-            '{cls}.to_representation() must be implemented for field '
-            '{field_name}. If you do not need to support write operations '
-            'you probably want to subclass `ReadOnlyField` instead.'.format(
+            '{cls}.to_representation() must be implemented for field {field_name}.'.format(
                 cls=self.__class__.__name__,
                 field_name=self.field_name,
             )
@@ -705,54 +742,21 @@ class BooleanField(Field):
         return bool(value)
 
 
-class NullBooleanField(Field):
-    default_error_messages = {
-        'invalid': _('Must be a valid boolean.')
-    }
+class NullBooleanField(BooleanField):
     initial = None
-    TRUE_VALUES = {
-        't', 'T',
-        'y', 'Y', 'yes', 'YES',
-        'true', 'True', 'TRUE',
-        'on', 'On', 'ON',
-        '1', 1,
-        True
-    }
-    FALSE_VALUES = {
-        'f', 'F',
-        'n', 'N', 'no', 'NO',
-        'false', 'False', 'FALSE',
-        'off', 'Off', 'OFF',
-        '0', 0, 0.0,
-        False
-    }
-    NULL_VALUES = {'null', 'Null', 'NULL', '', None}
 
     def __init__(self, **kwargs):
+        warnings.warn(
+            "The `NullBooleanField` is deprecated and will be removed starting "
+            "with 3.14. Instead use the `BooleanField` field and set "
+            "`allow_null=True` which does the same thing.",
+            RemovedInDRF314Warning, stacklevel=2
+        )
+
         assert 'allow_null' not in kwargs, '`allow_null` is not a valid option.'
         kwargs['allow_null'] = True
+
         super().__init__(**kwargs)
-
-    def to_internal_value(self, data):
-        try:
-            if data in self.TRUE_VALUES:
-                return True
-            elif data in self.FALSE_VALUES:
-                return False
-            elif data in self.NULL_VALUES:
-                return None
-        except TypeError:  # Input is an unhashable type
-            pass
-        self.fail('invalid', input=data)
-
-    def to_representation(self, value):
-        if value in self.NULL_VALUES:
-            return None
-        if value in self.TRUE_VALUES:
-            return True
-        elif value in self.FALSE_VALUES:
-            return False
-        return bool(value)
 
 
 # String types...
@@ -781,9 +785,8 @@ class CharField(Field):
             self.validators.append(
                 MinLengthValidator(self.min_length, message=message))
 
-        # ProhibitNullCharactersValidator is None on Django < 2.0
-        if ProhibitNullCharactersValidator is not None:
-            self.validators.append(ProhibitNullCharactersValidator())
+        self.validators.append(ProhibitNullCharactersValidator())
+        self.validators.append(ProhibitSurrogateCharactersValidator())
 
     def run_validation(self, data=empty):
         # Test for the empty string here so that it does not get validated,
@@ -1049,7 +1052,7 @@ class DecimalField(Field):
         instance.
         """
 
-        data = smart_text(data).strip()
+        data = smart_str(data).strip()
 
         if self.localize:
             data = sanitize_separators(data)
@@ -1062,9 +1065,7 @@ class DecimalField(Field):
         except decimal.DecimalException:
             self.fail('invalid')
 
-        # Check for NaN. It is the only value that isn't equal to itself,
-        # so we can use this to identify NaN values.
-        if value != value:
+        if value.is_nan():
             self.fail('invalid')
 
         # Check for infinity and negative infinity.
@@ -1757,6 +1758,7 @@ class JSONField(Field):
     def __init__(self, *args, **kwargs):
         self.binary = kwargs.pop('binary', False)
         self.encoder = kwargs.pop('encoder', None)
+        self.decoder = kwargs.pop('decoder', None)
         super().__init__(*args, **kwargs)
 
     def get_value(self, dictionary):
@@ -1764,8 +1766,8 @@ class JSONField(Field):
             # When HTML form input is used, mark up the input
             # as being a JSON string, rather than a JSON primitive.
             class JSONString(str):
-                def __new__(self, value):
-                    ret = str.__new__(self, value)
+                def __new__(cls, value):
+                    ret = str.__new__(cls, value)
                     ret.is_json_string = True
                     return ret
             return JSONString(dictionary[self.field_name])
@@ -1776,7 +1778,7 @@ class JSONField(Field):
             if self.binary or getattr(data, 'is_json_string', False):
                 if isinstance(data, bytes):
                     data = data.decode()
-                return json.loads(data)
+                return json.loads(data, cls=self.decoder)
             else:
                 json.dumps(data, cls=self.encoder)
         except (TypeError, ValueError):
@@ -1857,14 +1859,9 @@ class SerializerMethodField(Field):
         super().__init__(**kwargs)
 
     def bind(self, field_name, parent):
-        # In order to enforce a consistent style, we error if a redundant
-        # 'method_name' argument has been used. For example:
-        # my_field = serializer.SerializerMethodField(method_name='get_my_field')
-        default_method_name = 'get_{field_name}'.format(field_name=field_name)
-
-        # The method name should default to `get_{field_name}`.
+        # The method name defaults to `get_{field_name}`.
         if self.method_name is None:
-            self.method_name = default_method_name
+            self.method_name = 'get_{field_name}'.format(field_name=field_name)
 
         super().bind(field_name, parent)
 

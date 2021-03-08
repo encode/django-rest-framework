@@ -2,74 +2,8 @@
 The `compat` module provides support for backwards compatibility with older
 versions of Django/Python, and compatibility wrappers around optional packages.
 """
-import sys
-
 from django.conf import settings
 from django.views.generic import View
-
-try:
-    from django.urls import (  # noqa
-        URLPattern,
-        URLResolver,
-    )
-except ImportError:
-    # Will be removed in Django 2.0
-    from django.urls import (  # noqa
-        RegexURLPattern as URLPattern,
-        RegexURLResolver as URLResolver,
-    )
-
-try:
-    from django.core.validators import ProhibitNullCharactersValidator  # noqa
-except ImportError:
-    ProhibitNullCharactersValidator = None
-
-
-def get_original_route(urlpattern):
-    """
-    Get the original route/regex that was typed in by the user into the path(), re_path() or url() directive. This
-    is in contrast with get_regex_pattern below, which for RoutePattern returns the raw regex generated from the path().
-    """
-    if hasattr(urlpattern, 'pattern'):
-        # Django 2.0
-        return str(urlpattern.pattern)
-    else:
-        # Django < 2.0
-        return urlpattern.regex.pattern
-
-
-def get_regex_pattern(urlpattern):
-    """
-    Get the raw regex out of the urlpattern's RegexPattern or RoutePattern. This is always a regular expression,
-    unlike get_original_route above.
-    """
-    if hasattr(urlpattern, 'pattern'):
-        # Django 2.0
-        return urlpattern.pattern.regex.pattern
-    else:
-        # Django < 2.0
-        return urlpattern.regex.pattern
-
-
-def is_route_pattern(urlpattern):
-    if hasattr(urlpattern, 'pattern'):
-        # Django 2.0
-        from django.urls.resolvers import RoutePattern
-        return isinstance(urlpattern.pattern, RoutePattern)
-    else:
-        # Django < 2.0
-        return False
-
-
-def make_url_resolver(regex, urlpatterns):
-    try:
-        # Django 2.0
-        from django.urls.resolvers import RegexPattern
-        return URLResolver(RegexPattern(regex), urlpatterns)
-
-    except ImportError:
-        # Django < 2.0
-        return URLResolver(regex, urlpatterns)
 
 
 def unicode_http_header(value):
@@ -162,8 +96,8 @@ except ImportError:
 
 try:
     import pygments
-    from pygments.lexers import get_lexer_by_name, TextLexer
     from pygments.formatters import HtmlFormatter
+    from pygments.lexers import TextLexer, get_lexer_by_name
 
     def pygments_highlight(text, lang, style):
         lexer = get_lexer_by_name(lang, stripall=False)
@@ -187,8 +121,9 @@ if markdown is not None and pygments is not None:
     # starting from this blogpost and modified to support current markdown extensions API
     # https://zerokspot.com/weblog/2008/06/18/syntax-highlighting-in-markdown-with-pygments/
 
-    from markdown.preprocessors import Preprocessor
     import re
+
+    from markdown.preprocessors import Preprocessor
 
     class CodeBlockPreprocessor(Preprocessor):
         pattern = re.compile(
@@ -217,22 +152,8 @@ else:
         return False
 
 
-# Django 1.x url routing syntax. Remove when dropping Django 1.11 support.
-try:
-    from django.urls import include, path, re_path, register_converter  # noqa
-except ImportError:
-    from django.conf.urls import include, url # noqa
-    path = None
-    register_converter = None
-    re_path = url
-
-
 # `separators` argument to `json.dumps()` differs between 2.x and 3.x
 # See: https://bugs.python.org/issue22767
 SHORT_SEPARATORS = (',', ':')
 LONG_SEPARATORS = (', ', ': ')
 INDENT_SEPARATORS = (',', ': ')
-
-
-# Version Constants.
-PY36 = sys.version_info >= (3, 6)

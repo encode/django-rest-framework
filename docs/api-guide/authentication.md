@@ -60,8 +60,8 @@ using the `APIView` class-based views.
 
         def get(self, request, format=None):
             content = {
-                'user': unicode(request.user),  # `django.contrib.auth.User` instance.
-                'auth': unicode(request.auth),  # None
+                'user': str(request.user),  # `django.contrib.auth.User` instance.
+                'auth': str(request.auth),  # None
             }
             return Response(content)
 
@@ -72,8 +72,8 @@ Or, if you're using the `@api_view` decorator with function based views.
     @permission_classes([IsAuthenticated])
     def example_view(request, format=None):
         content = {
-            'user': unicode(request.user),  # `django.contrib.auth.User` instance.
-            'auth': unicode(request.auth),  # None
+            'user': str(request.user),  # `django.contrib.auth.User` instance.
+            'auth': str(request.auth),  # None
         }
         return Response(content)
 
@@ -199,7 +199,7 @@ When using `TokenAuthentication`, you may want to provide a mechanism for client
 
     from rest_framework.authtoken import views
     urlpatterns += [
-        url(r'^api-token-auth/', views.obtain_auth_token)
+        path('api-token-auth/', views.obtain_auth_token)
     ]
 
 Note that the URL part of the pattern can be whatever you want to use.
@@ -238,7 +238,7 @@ For example, you may return additional user information beyond the `token` value
 And in your `urls.py`:
 
     urlpatterns += [
-        url(r'^api-token-auth/', CustomAuthToken.as_view())
+        path('api-token-auth/', CustomAuthToken.as_view())
     ]
 
 
@@ -304,7 +304,7 @@ If successfully authenticated, `RemoteUserAuthentication` provides the following
 Consult your web server's documentation for information about configuring an authentication method, e.g.:
 
 * [Apache Authentication How-To](https://httpd.apache.org/docs/2.4/howto/auth.html)
-* [NGINX (Restricting Access)](https://www.nginx.com/resources/admin-guide/#restricting_access)
+* [NGINX (Restricting Access)](https://docs.nginx.com/nginx/admin-guide/security-controls/configuring-http-basic-authentication/)
 
 
 # Custom authentication
@@ -357,7 +357,7 @@ The following third party packages are also available.
 
 ## Django OAuth Toolkit
 
-The [Django OAuth Toolkit][django-oauth-toolkit] package provides OAuth 2.0 support and works with Python 3.4+. The package is maintained by [Evonove][evonove] and uses the excellent [OAuthLib][oauthlib].  The package is well documented, and well supported and is currently our **recommended package for OAuth 2.0 support**.
+The [Django OAuth Toolkit][django-oauth-toolkit] package provides OAuth 2.0 support and works with Python 3.4+. The package is maintained by [jazzband][jazzband] and uses the excellent [OAuthLib][oauthlib].  The package is well documented, and well supported and is currently our **recommended package for OAuth 2.0 support**.
 
 #### Installation & configuration
 
@@ -410,9 +410,15 @@ HTTP Signature (currently a [IETF draft][http-signature-ietf-draft]) provides a 
 
 [Djoser][djoser] library provides a set of views to handle basic actions such as registration, login, logout, password reset and account activation. The package works with a custom user model and it uses token based authentication. This is a ready to use REST implementation of Django authentication system.
 
-## django-rest-auth
+## django-rest-auth / dj-rest-auth
 
-[Django-rest-auth][django-rest-auth] library provides a set of REST API endpoints for registration, authentication (including social media authentication), password reset, retrieve and update user details, etc. By having these API endpoints, your client apps such as AngularJS, iOS, Android, and others can communicate to your Django backend site independently via REST APIs for user management.
+This library provides a set of REST API endpoints for registration, authentication (including social media authentication), password reset, retrieve and update user details, etc. By having these API endpoints, your client apps such as AngularJS, iOS, Android, and others can communicate to your Django backend site independently via REST APIs for user management.
+
+
+There are currently two forks of this project.
+
+* [Django-rest-auth][django-rest-auth] is the original project, [but is not currently receiving updates](https://github.com/Tivix/django-rest-auth/issues/568).
+* [Dj-rest-auth][dj-rest-auth] is a newer fork of the project.
 
 ## django-rest-framework-social-oauth2
 
@@ -442,7 +448,7 @@ HTTP Signature (currently a [IETF draft][http-signature-ietf-draft]) provides a 
 [djangorestframework-digestauth]: https://github.com/juanriaza/django-rest-framework-digestauth
 [oauth-1.0a]: https://oauth.net/core/1.0a/
 [django-oauth-toolkit]: https://github.com/evonove/django-oauth-toolkit
-[evonove]: https://github.com/evonove/
+[jazzband]: https://github.com/jazzband/
 [oauthlib]: https://github.com/idan/oauthlib
 [djangorestframework-simplejwt]: https://github.com/davesque/django-rest-framework-simplejwt
 [etoccalino]: https://github.com/etoccalino/
@@ -456,6 +462,7 @@ HTTP Signature (currently a [IETF draft][http-signature-ietf-draft]) provides a 
 [mac]: https://tools.ietf.org/html/draft-hammer-oauth-v2-mac-token-05
 [djoser]: https://github.com/sunscrapers/djoser
 [django-rest-auth]: https://github.com/Tivix/django-rest-auth
+[dj-rest-auth]: https://github.com/jazzband/dj-rest-auth
 [django-rest-framework-social-oauth2]: https://github.com/PhilipGarnero/django-rest-framework-social-oauth2
 [django-rest-knox]: https://github.com/James1345/django-rest-knox
 [drfpasswordless]: https://github.com/aaronn/django-rest-framework-passwordless

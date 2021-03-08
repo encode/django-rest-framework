@@ -101,7 +101,7 @@ Default: `'rest_framework.negotiation.DefaultContentNegotiation'`
 
 A view inspector class that will be used for schema generation.
 
-Default: `'rest_framework.schemas.AutoSchema'`
+Default: `'rest_framework.schemas.openapi.AutoSchema'`
 
 ---
 

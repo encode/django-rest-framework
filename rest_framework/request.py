@@ -143,9 +143,9 @@ class Request:
 
     Kwargs:
         - request(HttpRequest). The original request instance.
-        - parsers_classes(list/tuple). The parsers to use for parsing the
+        - parsers(list/tuple). The parsers to use for parsing the
           request content.
-        - authentication_classes(list/tuple). The authentications used to try
+        - authenticators(list/tuple). The authenticators used to try
           authenticating the request's user.
     """
 
@@ -178,6 +178,13 @@ class Request:
         if force_user is not None or force_token is not None:
             forced_auth = ForcedAuthentication(force_user, force_token)
             self.authenticators = (forced_auth,)
+
+    def __repr__(self):
+        return '<%s.%s: %s %r>' % (
+            self.__class__.__module__,
+            self.__class__.__name__,
+            self.method,
+            self.get_full_path())
 
     def _default_negotiator(self):
         return api_settings.DEFAULT_CONTENT_NEGOTIATION_CLASS()

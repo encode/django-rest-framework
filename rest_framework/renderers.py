@@ -16,7 +16,6 @@ from django.core.exceptions import ImproperlyConfigured
 from django.core.paginator import Page
 from django.http.multipartparser import parse_header
 from django.template import engines, loader
-from django.test.client import encode_multipart
 from django.urls import NoReverseMatch
 from django.utils.html import mark_safe
 
@@ -330,7 +329,7 @@ class HTMLFormRenderer(BaseRenderer):
         if isinstance(field._field, serializers.HiddenField):
             return ''
 
-        style = dict(self.default_style[field])
+        style = self.default_style[field].copy()
         style.update(field.style)
         if 'template_pack' not in style:
             style['template_pack'] = parent_style.get('template_pack', self.template_pack)
@@ -419,7 +418,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         if render_style == 'binary':
             return '[%d bytes of binary content]' % len(content)
 
-        return content
+        return content.decode('utf-8') if isinstance(content, bytes) else content
 
     def show_form_for_method(self, view, method, request, obj):
         """
@@ -857,8 +856,8 @@ class DocumentationRenderer(BaseRenderer):
         return {
             'document': data,
             'langs': self.languages,
-            'lang_htmls': ["rest_framework/docs/langs/%s.html" % l for l in self.languages],
-            'lang_intro_htmls': ["rest_framework/docs/langs/%s-intro.html" % l for l in self.languages],
+            'lang_htmls': ["rest_framework/docs/langs/%s.html" % language for language in self.languages],
+            'lang_intro_htmls': ["rest_framework/docs/langs/%s-intro.html" % language for language in self.languages],
             'code_style': pygments_css(self.code_style),
             'request': request
         }
@@ -902,6 +901,8 @@ class MultiPartRenderer(BaseRenderer):
     BOUNDARY = 'BoUnDaRyStRiNg'
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
+        from django.test.client import encode_multipart
+
         if hasattr(data, 'items'):
             for key, value in data.items():
                 assert not isinstance(value, dict), (
@@ -1052,7 +1053,11 @@ class OpenAPIRenderer(BaseRenderer):
         assert yaml, 'Using OpenAPIRenderer, but `pyyaml` is not installed.'
 
     def render(self, data, media_type=None, renderer_context=None):
-        return yaml.dump(data, default_flow_style=False, sort_keys=False).encode('utf-8')
+        # disable yaml advanced feature 'alias' for clean, portable, and readable output
+        class Dumper(yaml.Dumper):
+            def ignore_aliases(self, data):
+                return True
+        return yaml.dump(data, default_flow_style=False, sort_keys=False, Dumper=Dumper).encode('utf-8')
 
 
 class JSONOpenAPIRenderer(BaseRenderer):

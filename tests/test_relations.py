@@ -2,9 +2,9 @@ import uuid
 
 import pytest
 from _pytest.monkeypatch import MonkeyPatch
-from django.conf.urls import url
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.test import override_settings
+from django.urls import re_path
 from django.utils.datastructures import MultiValueDict
 
 from rest_framework import relations, serializers
@@ -145,14 +145,18 @@ class TestProxiedPrimaryKeyRelatedField(APISimpleTestCase):
         assert representation == self.instance.pk.int
 
 
-@override_settings(ROOT_URLCONF=[
-    url(r'^example/(?P<name>.+)/$', lambda: None, name='example'),
-])
+urlpatterns = [
+    re_path(r'^example/(?P<name>.+)/$', lambda: None, name='example'),
+]
+
+
+@override_settings(ROOT_URLCONF='tests.test_relations')
 class TestHyperlinkedRelatedField(APISimpleTestCase):
     def setUp(self):
         self.queryset = MockQueryset([
             MockObject(pk=1, name='foobar'),
             MockObject(pk=2, name='bazABCqux'),
+            MockObject(pk=2, name='bazABC qux'),
         ])
         self.field = serializers.HyperlinkedRelatedField(
             view_name='example',
@@ -190,6 +194,10 @@ class TestHyperlinkedRelatedField(APISimpleTestCase):
     def test_hyperlinked_related_lookup_url_encoded_exists(self):
         instance = self.field.to_internal_value('http://example.org/example/baz%41%42%43qux/')
         assert instance is self.queryset.items[1]
+
+    def test_hyperlinked_related_lookup_url_space_encoded_exists(self):
+        instance = self.field.to_internal_value('http://example.org/example/bazABC%20qux/')
+        assert instance is self.queryset.items[2]
 
     def test_hyperlinked_related_lookup_does_not_exist(self):
         with pytest.raises(serializers.ValidationError) as excinfo:
@@ -251,7 +259,7 @@ class TestHyperlinkedIdentityField(APISimpleTestCase):
     def test_improperly_configured(self):
         """
         If a matching view cannot be reversed with the given instance,
-        the the user has misconfigured something, as the URL conf and the
+        the user has misconfigured something, as the URL conf and the
         hyperlinked field do not match.
         """
         self.field.reverse = fail_reverse

@@ -45,7 +45,7 @@ For more complex cases you might also want to override various methods on the vi
 
 For very simple cases you might want to pass through any class attributes using the `.as_view()` method.  For example, your URLconf might include something like the following entry:
 
-    url(r'^/users/', ListCreateAPIView.as_view(queryset=User.objects.all(), serializer_class=UserSerializer), name='user-list')
+    path('users/', ListCreateAPIView.as_view(queryset=User.objects.all(), serializer_class=UserSerializer), name='user-list')
 
 ---
 
@@ -174,8 +174,6 @@ You can also use these hooks to provide additional validation, by raising a `Val
         if queryset.exists():
             raise ValidationError('You have already signed up')
         serializer.save(user=self.request.user)
-
-**Note**: These methods replace the old-style version 2.x `pre_save`, `post_save`, `pre_delete` and `post_delete` methods, which are no longer available.
 
 **Other methods**:
 
@@ -321,7 +319,7 @@ Often you'll want to use the existing generic views, but use some slightly custo
 
 For example, if you need to lookup objects based on multiple fields in the URL conf, you could create a mixin class like the following:
 
-    class MultipleFieldLookupMixin(object):
+    class MultipleFieldLookupMixin:
         """
         Apply this mixin to any view or viewset to get multiple field filtering
         based on a `lookup_fields` attribute, instead of the default single field filtering.
@@ -378,10 +376,6 @@ If you need to generic PUT-as-create behavior you may want to include something 
 
 The following third party packages provide additional generic view implementations.
 
-## Django REST Framework bulk
-
-The [django-rest-framework-bulk package][django-rest-framework-bulk] implements generic view mixins as well as some common concrete generic views to allow to apply bulk operations via API requests.
-
 ## Django Rest Multiple Models
 
 [Django Rest Multiple Models][django-rest-multiple-models] provides a generic view (and mixin) for sending multiple serialized models and/or querysets via a single API request.
@@ -394,5 +388,4 @@ The [django-rest-framework-bulk package][django-rest-framework-bulk] implements 
 [RetrieveModelMixin]: #retrievemodelmixin
 [UpdateModelMixin]: #updatemodelmixin
 [DestroyModelMixin]: #destroymodelmixin
-[django-rest-framework-bulk]: https://github.com/miki725/django-rest-framework-bulk
 [django-rest-multiple-models]: https://github.com/MattBroach/DjangoRestMultipleModels
