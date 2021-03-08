@@ -222,7 +222,7 @@ By default this exception results in a response with the HTTP status code "429 T
 The `ValidationError` exception is slightly different from the other `APIException` classes:
 
 * The `detail` argument is mandatory, not optional.
-* The `detail` argument may be a list or dictionary of error details, and may also be a nested data structure.
+* The `detail` argument may be a list or dictionary of error details, and may also be a nested data structure. By using a dictionary, you can specify field-level errors while performing object-level validation in the `validate()` method of a serializer. For example. `raise serializers.ValidationError({'name': 'Please enter a valid name.'})`
 * By convention you should import the serializers module and use a fully qualified `ValidationError` style, in order to differentiate it from Django's built-in validation error. For example. `raise serializers.ValidationError('This field must be an integer value.')`
 
 The `ValidationError` class should be used for serializer and field validation, and by validator classes. It is also raised when calling `serializer.is_valid` with the `raise_exception` keyword argument:
