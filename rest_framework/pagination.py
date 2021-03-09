@@ -327,7 +327,6 @@ class LimitOffsetPagination(BasePagination):
             return None
 
         self.count = self.get_count(queryset)
-
         self.offset = self.get_offset(request)
         self.request = request
         if self.count > self.limit and self.template is not None:
