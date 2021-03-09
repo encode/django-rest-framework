@@ -1090,6 +1090,9 @@ class TestDecimalField(FieldValues):
         '2E+1': Decimal('20'),
     }
     invalid_inputs = (
+        (None, ["This field may not be null."]),
+        ('', ["A valid number is required."]),
+        (' ', ["A valid number is required."]),
         ('abc', ["A valid number is required."]),
         (Decimal('Nan'), ["A valid number is required."]),
         (Decimal('Snan'), ["A valid number is required."]),
@@ -1113,6 +1116,32 @@ class TestDecimalField(FieldValues):
         Decimal('0.04'): '0.0'
     }
     field = serializers.DecimalField(max_digits=3, decimal_places=1)
+
+
+class TestAllowNullDecimalField(FieldValues):
+    valid_inputs = {
+        None: None,
+        '': None,
+        ' ': None,
+    }
+    invalid_inputs = {}
+    outputs = {
+        None: '',
+    }
+    field = serializers.DecimalField(max_digits=3, decimal_places=1, allow_null=True)
+
+
+class TestAllowNullNoStringCoercionDecimalField(FieldValues):
+    valid_inputs = {
+        None: None,
+        '': None,
+        ' ': None,
+    }
+    invalid_inputs = {}
+    outputs = {
+        None: None,
+    }
+    field = serializers.DecimalField(max_digits=3, decimal_places=1, allow_null=True, coerce_to_string=False)
 
 
 class TestMinMaxDecimalField(FieldValues):

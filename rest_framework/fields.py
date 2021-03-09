@@ -1063,6 +1063,9 @@ class DecimalField(Field):
         try:
             value = decimal.Decimal(data)
         except decimal.DecimalException:
+            if data == '' and self.allow_null:
+                return None
+
             self.fail('invalid')
 
         if value.is_nan():
@@ -1111,6 +1114,12 @@ class DecimalField(Field):
 
     def to_representation(self, value):
         coerce_to_string = getattr(self, 'coerce_to_string', api_settings.COERCE_DECIMAL_TO_STRING)
+
+        if value is None:
+            if coerce_to_string:
+                return ''
+            else:
+                return None
 
         if not isinstance(value, decimal.Decimal):
             value = decimal.Decimal(str(value).strip())
