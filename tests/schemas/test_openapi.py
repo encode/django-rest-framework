@@ -11,7 +11,8 @@ from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.compat import uritemplate
 from rest_framework.parsers import JSONParser, MultiPartParser
 from rest_framework.renderers import (
-    BaseRenderer, BrowsableAPIRenderer, JSONRenderer, OpenAPIRenderer
+    BaseRenderer, BrowsableAPIRenderer, JSONOpenAPIRenderer, JSONRenderer,
+    OpenAPIRenderer
 )
 from rest_framework.request import Request
 from rest_framework.schemas.openapi import AutoSchema, SchemaGenerator
@@ -991,6 +992,19 @@ class TestGenerator(TestCase):
 
         assert 'openapi' in schema
         assert 'paths' in schema
+
+    def test_schema_rendering_to_json(self):
+        patterns = [
+            path('example/', views.ExampleGenericAPIView.as_view()),
+        ]
+        generator = SchemaGenerator(patterns=patterns)
+
+        request = create_request('/')
+        schema = generator.get_schema(request=request)
+        ret = JSONOpenAPIRenderer().render(schema)
+
+        assert b'"openapi": "' in ret
+        assert b'"default": "0.0"' in ret
 
     def test_schema_with_no_paths(self):
         patterns = []
