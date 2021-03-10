@@ -453,7 +453,7 @@ For example, using the "Django REST framework JWT" package
 
     function loginUser(username, password) {
         let action = ["api-token-auth", "obtain-token"];
-        let params = {username: "example", email: "example@example.com"};
+        let params = {username: username, password: password};
         client.action(schema, action, params).then(function(result) {
             // On success, instantiate an authenticated client.
             let auth = window.coreapi.auth.TokenAuthentication({
