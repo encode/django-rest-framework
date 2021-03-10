@@ -215,6 +215,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [drf-action-serializer][drf-action-serializer] - Serializer providing per-action fields config for use with ViewSets to prevent having to write multiple serializers.
 * [djangorestframework-dataclasses][djangorestframework-dataclasses] - Serializer providing automatic field generation for Python dataclasses, like the built-in ModelSerializer does for models.
 * [django-restql][django-restql] - Turn your REST API into a GraphQL like API(It allows clients to control which fields will be sent in a response, uses GraphQL like syntax, supports read and write on both flat and nested fields).
+* [graphwrap][graphwrap] - Transform your REST API into a fully compliant GraphQL API with just two lines of code. Leverages [Graphene-Django](https://docs.graphene-python.org/projects/django/en/latest/) to dynamically build, at runtime, a GraphQL ObjectType for each view in your API.
 
 ### Serializer fields
 
@@ -364,3 +365,4 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [django-api-client]: https://github.com/rhenter/django-api-client
 [drf-psq]: https://github.com/drf-psq/drf-psq
 [django-rest-authemail]: https://github.com/celiao/django-rest-authemail
+[graphwrap]: https://github.com/PaulGilmartin/graph_wrap
