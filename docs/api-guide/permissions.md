@@ -116,7 +116,7 @@ Or, if you're using the `@api_view` decorator with function based views.
         }
         return Response(content)
 
-__Note:__ when you set new permission classes through class attribute or decorators you're telling the view to ignore the default list set over the __settings.py__ file.
+__Note:__ when you set new permission classes via the class attribute or decorators you're telling the view to ignore the default list set in the __settings.py__ file.
 
 Provided they inherit from `rest_framework.permissions.BasePermission`, permissions can be composed using standard Python bitwise operators. For example, `IsAuthenticatedOrReadOnly` could be written:
 
