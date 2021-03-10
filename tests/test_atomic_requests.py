@@ -134,6 +134,41 @@ class DBTransactionAPIExceptionTests(TestCase):
     connection.features.uses_savepoints,
     "'atomic' requires transactions and savepoints."
 )
+class MultiDBTransactionAPIExceptionTests(TestCase):
+    databases = '__all__'
+
+    def setUp(self):
+        self.view = APIExceptionView.as_view()
+        connections.databases['default']['ATOMIC_REQUESTS'] = True
+        connections.databases['secondary']['ATOMIC_REQUESTS'] = True
+
+    def tearDown(self):
+        connections.databases['default']['ATOMIC_REQUESTS'] = False
+        connections.databases['secondary']['ATOMIC_REQUESTS'] = False
+
+    def test_api_exception_rollback_transaction(self):
+        """
+        Transaction is rollbacked by our transaction atomic block.
+        """
+        request = factory.post('/')
+        num_queries = 4 if connection.features.can_release_savepoints else 3
+        with self.assertNumQueries(num_queries):
+            # 1 - begin savepoint
+            # 2 - insert
+            # 3 - rollback savepoint
+            # 4 - release savepoint
+            with transaction.atomic(), transaction.atomic(using='secondary'):
+                response = self.view(request)
+                assert transaction.get_rollback()
+                assert transaction.get_rollback(using='secondary')
+        assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
+        assert BasicModel.objects.count() == 0
+
+
+@unittest.skipUnless(
+    connection.features.uses_savepoints,
+    "'atomic' requires transactions and savepoints."
+)
 @override_settings(ROOT_URLCONF='tests.test_atomic_requests')
 class NonAtomicDBTransactionAPIExceptionTests(TransactionTestCase):
     def setUp(self):
