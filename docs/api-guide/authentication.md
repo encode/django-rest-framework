@@ -357,7 +357,7 @@ The following third party packages are also available.
 
 ## Django OAuth Toolkit
 
-The [Django OAuth Toolkit][django-oauth-toolkit] package provides OAuth 2.0 support and works with Python 3.4+. The package is maintained by [Evonove][evonove] and uses the excellent [OAuthLib][oauthlib].  The package is well documented, and well supported and is currently our **recommended package for OAuth 2.0 support**.
+The [Django OAuth Toolkit][django-oauth-toolkit] package provides OAuth 2.0 support and works with Python 3.4+. The package is maintained by [jazzband][jazzband] and uses the excellent [OAuthLib][oauthlib].  The package is well documented, and well supported and is currently our **recommended package for OAuth 2.0 support**.
 
 #### Installation & configuration
 
@@ -432,6 +432,10 @@ There are currently two forks of this project.
 
 [drfpasswordless][drfpasswordless] adds (Medium, Square Cash inspired) passwordless support to Django REST Framework's own TokenAuthentication scheme. Users log in and sign up with a token sent to a contact point like an email address or a mobile number.
 
+## django-rest-authemail
+
+[django-rest-authemail][django-rest-authemail] provides a RESTful API interface for user signup and authentication. Email addresses are used for authentication, rather than usernames.  API endpoints are available for signup, signup email verification, login, logout, password reset, password reset verification, email change, email change verification, password change, and user detail.  A fully-functional example project and detailed instructions are included.
+
 [cite]: https://jacobian.org/writing/rest-worst-practices/
 [http401]: https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2
 [http403]: https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.4
@@ -448,7 +452,7 @@ There are currently two forks of this project.
 [djangorestframework-digestauth]: https://github.com/juanriaza/django-rest-framework-digestauth
 [oauth-1.0a]: https://oauth.net/core/1.0a/
 [django-oauth-toolkit]: https://github.com/evonove/django-oauth-toolkit
-[evonove]: https://github.com/evonove/
+[jazzband]: https://github.com/jazzband/
 [oauthlib]: https://github.com/idan/oauthlib
 [djangorestframework-simplejwt]: https://github.com/davesque/django-rest-framework-simplejwt
 [etoccalino]: https://github.com/etoccalino/
@@ -466,3 +470,4 @@ There are currently two forks of this project.
 [django-rest-framework-social-oauth2]: https://github.com/PhilipGarnero/django-rest-framework-social-oauth2
 [django-rest-knox]: https://github.com/James1345/django-rest-knox
 [drfpasswordless]: https://github.com/aaronn/django-rest-framework-passwordless
+[django-rest-authemail]: https://github.com/celiao/django-rest-authemail

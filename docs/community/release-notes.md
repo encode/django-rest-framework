@@ -177,6 +177,8 @@ Date: 28th September 2020
 * Don't strict disallow redundant `SerializerMethodField` field name arguments.
 * Don't render extra actions in browable API if not authenticated.
 * Strip null characters from search parameters.
+* Deprecate the `detail_route` decorator in favor of `action`, which accepts a `detail` bool. Use `@action(detail=True)` instead. [gh6687]
+* Deprecate the `list_route` decorator in favor of `action`, which accepts a `detail` bool. Use `@action(detail=False)` instead. [gh6687]
 
 ## 3.9.x series
 
@@ -2270,6 +2272,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 <!-- 3.10.0 -->
 [gh6680]: https://github.com/encode/django-rest-framework/issues/6680
 [gh6317]: https://github.com/encode/django-rest-framework/issues/6317
+[gh6687]: https://github.com/encode/django-rest-framework/issues/6687
 
 <!-- 3.11.0 -->
 [gh6892]: https://github.com/encode/django-rest-framework/issues/6892

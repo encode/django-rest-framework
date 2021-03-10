@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from collections.abc import MutableMapping
+from collections.abc import Mapping, MutableMapping
 
 from django.utils.encoding import force_str
 
@@ -101,7 +101,7 @@ class NestedBoundField(BoundField):
     """
 
     def __init__(self, field, value, errors, prefix=''):
-        if value is None or value == '':
+        if value is None or value == '' or not isinstance(value, Mapping):
             value = {}
         super().__init__(field, value, errors, prefix)
 
