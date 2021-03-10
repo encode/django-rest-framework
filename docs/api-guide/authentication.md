@@ -436,6 +436,12 @@ There are currently two forks of this project.
 
 [django-rest-authemail][django-rest-authemail] provides a RESTful API interface for user signup and authentication. Email addresses are used for authentication, rather than usernames.  API endpoints are available for signup, signup email verification, login, logout, password reset, password reset verification, email change, email change verification, password change, and user detail.  A fully-functional example project and detailed instructions are included.
 
+## Django-Rest-Durin
+
+[Django-Rest-Durin][django-rest-durin] is built with the idea to have one library that does token auth for multiple Web/CLI/Mobile API clients via one interface but allows different token configuration for each API Client that consumes the API. It provides support for multiple tokens per user via custom models, views, permissions that work with Django-Rest-Framework. The token expiration time can be different per API client and is customizable via the Django Admin Interface.
+
+More information can be found in the [Documentation](https://django-rest-durin.readthedocs.io/en/latest/index.html).
+
 [cite]: https://jacobian.org/writing/rest-worst-practices/
 [http401]: https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2
 [http403]: https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.4
@@ -471,3 +477,4 @@ There are currently two forks of this project.
 [django-rest-knox]: https://github.com/James1345/django-rest-knox
 [drfpasswordless]: https://github.com/aaronn/django-rest-framework-passwordless
 [django-rest-authemail]: https://github.com/celiao/django-rest-authemail
+[django-rest-durin]: https://github.com/eshaan7/django-rest-durin
