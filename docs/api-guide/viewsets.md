@@ -152,7 +152,7 @@ A more complete example of extra actions:
             user = self.get_object()
             serializer = PasswordSerializer(data=request.data)
             if serializer.is_valid():
-                user.set_password(serializer.data['password'])
+                user.set_password(serializer.validated_data['password'])
                 user.save()
                 return Response({'status': 'password set'})
             else:

@@ -103,6 +103,16 @@ Unlike other renderers, the data passed to the `Response` does not need to be se
 
 The TemplateHTMLRenderer will create a `RequestContext`, using the `response.data` as the context dict, and determine a template name to use to render the context.
 
+---
+
+**Note:** When used with a view that makes use of a serializer the `Response` sent for rendering may not be a dictionay and will need to be wrapped in a dict before returning to allow the TemplateHTMLRenderer to render it. For example:
+
+```
+response.data = {'results': response.data}
+```
+
+---
+
 The template name is determined by (in order of preference):
 
 1. An explicit `template_name` argument passed to the response.

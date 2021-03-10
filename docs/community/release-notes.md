@@ -36,6 +36,14 @@ You can determine your currently installed version using `pip show`:
 
 ## 3.12.x series
 
+### 3.12.2
+
+Date: 13th October 2020
+
+* Fix issue if `rest_framework.authtoken.models` is imported, but `rest_framework.authtoken` is not in INSTALLED_APPS. [#7571]
+* Ignore subclasses of BrowsableAPIRenderer in OpenAPI schema. [#7497]
+* Narrower exception catching in serilizer fields, to ensure that any errors in broken `get_queryset()` methods are not masked. [#7480]
+
 ### 3.12.1
 
 Date: 28th September 2020
@@ -169,6 +177,8 @@ Date: 28th September 2020
 * Don't strict disallow redundant `SerializerMethodField` field name arguments.
 * Don't render extra actions in browable API if not authenticated.
 * Strip null characters from search parameters.
+* Deprecate the `detail_route` decorator in favor of `action`, which accepts a `detail` bool. Use `@action(detail=True)` instead. [gh6687]
+* Deprecate the `list_route` decorator in favor of `action`, which accepts a `detail` bool. Use `@action(detail=False)` instead. [gh6687]
 
 ## 3.9.x series
 
@@ -2262,6 +2272,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 <!-- 3.10.0 -->
 [gh6680]: https://github.com/encode/django-rest-framework/issues/6680
 [gh6317]: https://github.com/encode/django-rest-framework/issues/6317
+[gh6687]: https://github.com/encode/django-rest-framework/issues/6687
 
 <!-- 3.11.0 -->
 [gh6892]: https://github.com/encode/django-rest-framework/issues/6892

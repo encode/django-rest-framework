@@ -282,7 +282,7 @@ If a nested representation may optionally accept the `None` value you should pas
         content = serializers.CharField(max_length=200)
         created = serializers.DateTimeField()
 
-Similarly if a nested representation should be a list of items, you should pass the `many=True` flag to the nested serialized.
+Similarly if a nested representation should be a list of items, you should pass the `many=True` flag to the nested serializer.
 
     class CommentSerializer(serializers.Serializer):
         user = UserSerializer(required=False)

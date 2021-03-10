@@ -20,7 +20,7 @@ def _get_error_details(data, default_code=None):
     Descend into a nested data structure, forcing any
     lazy translation strings or strings into `ErrorDetail`.
     """
-    if isinstance(data, list):
+    if isinstance(data, (list, tuple)):
         ret = [
             _get_error_details(item, default_code) for item in data
         ]
@@ -150,7 +150,9 @@ class ValidationError(APIException):
 
         # For validation failures, we may collect many errors together,
         # so the details should always be coerced to a list if not already.
-        if not isinstance(detail, dict) and not isinstance(detail, list):
+        if isinstance(detail, tuple):
+            detail = list(detail)
+        elif not isinstance(detail, dict) and not isinstance(detail, list):
             detail = [detail]
 
         self.detail = _get_error_details(detail, code)

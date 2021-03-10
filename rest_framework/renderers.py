@@ -1063,7 +1063,8 @@ class OpenAPIRenderer(BaseRenderer):
 class JSONOpenAPIRenderer(BaseRenderer):
     media_type = 'application/vnd.oai.openapi+json'
     charset = None
+    encoder_class = encoders.JSONEncoder
     format = 'openapi-json'
 
     def render(self, data, media_type=None, renderer_context=None):
-        return json.dumps(data, indent=2).encode('utf-8')
+        return json.dumps(data, cls=self.encoder_class, indent=2).encode('utf-8')

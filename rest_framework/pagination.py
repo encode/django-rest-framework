@@ -198,7 +198,7 @@ class PageNumberPagination(BasePagination):
             return None
 
         paginator = self.django_paginator_class(queryset, page_size)
-        page_number = request.query_params.get(self.page_query_param, 1)
+        page_number = self.get_page_number(request)
         if page_number in self.last_page_strings:
             page_number = paginator.num_pages
 
@@ -216,6 +216,9 @@ class PageNumberPagination(BasePagination):
 
         self.request = request
         return list(self.page)
+
+    def get_page_number(self, request):
+        return request.query_params.get(self.page_query_param, 1)
 
     def get_paginated_response(self, data):
         return Response(OrderedDict([
@@ -376,11 +379,11 @@ class LimitOffsetPagination(BasePagination):
     template = 'rest_framework/pagination/numbers.html'
 
     def paginate_queryset(self, queryset, request, view=None):
-        self.count = self.get_count(queryset)
         self.limit = self.get_limit(request)
         if self.limit is None:
             return None
 
+        self.count = self.get_count(queryset)
         self.offset = self.get_offset(request)
         self.request = request
         if self.count > self.limit and self.template is not None:
