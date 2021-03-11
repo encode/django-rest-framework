@@ -20,11 +20,11 @@ matrix:
       - { python: "3.8", env: DJANGO=3.0 }
       - { python: "3.8", env: DJANGO=3.1 }
       - { python: "3.8", env: DJANGO=3.2 }
-      - { python: "3.8", env: DJANGO=master }
+      - { python: "3.8", env: DJANGO=main }
 
       - { python: "3.9", env: DJANGO=3.1 }
       - { python: "3.9", env: DJANGO=3.2 }
-      - { python: "3.9", env: DJANGO=master }
+      - { python: "3.9", env: DJANGO=main }
 
       - { python: "3.8", env: TOXENV=base }
       - { python: "3.8", env: TOXENV=lint }
@@ -39,7 +39,7 @@ matrix:
           - tox  # test sdist
 
     allow_failures:
-      - env: DJANGO=master
+      - env: DJANGO=main
       - env: DJANGO=3.2
 
 install:
