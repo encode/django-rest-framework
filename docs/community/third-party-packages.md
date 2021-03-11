@@ -220,7 +220,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 ### Serializer fields
 
 * [drf-compound-fields][drf-compound-fields] - Provides "compound" serializer fields, such as lists of simple values.
-* [django-extra-fields][django-extra-fields] - Provides extra serializer fields.
+* [drf-extra-fields][drf-extra-fields] - Provides extra serializer fields.
 * [django-versatileimagefield][django-versatileimagefield] - Provides a drop-in replacement for Django's stock `ImageField` that makes it easy to serve images in multiple sizes/renditions from a single field. For DRF-specific implementation docs, [click here][django-versatileimagefield-drf-docs].
 
 ### Views
@@ -311,7 +311,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [djangorestframework-gis]: https://github.com/djangonauts/django-rest-framework-gis
 [djangorestframework-hstore]: https://github.com/djangonauts/django-rest-framework-hstore
 [drf-compound-fields]: https://github.com/estebistec/drf-compound-fields
-[django-extra-fields]: https://github.com/Hipo/drf-extra-fields
+[drf-extra-fields]: https://github.com/Hipo/drf-extra-fields
 [django-rest-multiple-models]: https://github.com/MattBroach/DjangoRestMultipleModels
 [drf-nested-routers]: https://github.com/alanjds/drf-nested-routers
 [wq.db.rest]: https://wq.io/docs/about-rest
