@@ -172,6 +172,10 @@ Date: 28th September 2020
 * Use `user.get_username` in templates, in preference to `user.username`.
 * Fix for cursor pagination issue that could occur after object deletions.
 * Fix for nullable fields with `source="*"`
+
+  **Possible backwards compatibility break** if you were previously relying on these fields to skip validation when
+  receiving `None`, you will need to override your field's `to_internal_value` to short-circuit values of `None`
+  to avoid any validation rules
 * Always apply all throttle classes during throttling checks.
 * Updates to jQuery and Markdown dependencies.
 * Don't strict disallow redundant `SerializerMethodField` field name arguments.
