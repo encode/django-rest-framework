@@ -80,3 +80,11 @@ pre {
 #filtersModal .modal-body h2 {
     margin-top: 0
 }
+
+#filtersModal .list-group-item .glyphicon-plus[data-plus-ordering] {
+    visibility: hidden;
+}
+
+#filtersModal .list-group-item:hover .glyphicon-plus[data-plus-ordering] {
+    visibility: visible;
+}

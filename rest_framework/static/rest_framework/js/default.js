@@ -41,6 +41,12 @@ $(document).ready(function() {
     $('.form-switcher a:first').tab('show');
   }
 
+  // add onclick to ordering plus and minus glyph
+  $('#filtersModal span[data-plus-ordering]').click(function(e) {
+    var glyph = $(e.target);
+    glyph.closest('a.list-group-item').attr('href', glyph.attr('data-plus-ordering'));
+  });
+
   $(window).on('load', function() {
     $('#errorModal').modal('show');
   });

@@ -10,6 +10,7 @@ from django.utils.safestring import mark_safe
 
 from rest_framework.compat import apply_markdown, pygments_highlight
 from rest_framework.renderers import HTMLFormRenderer
+from rest_framework.utils.urls import remove_query_param as _remove_query_param
 from rest_framework.utils.urls import replace_query_param
 
 register = template.Library()
@@ -152,6 +153,16 @@ def add_query_param(request, key, val):
     iri = request.get_full_path()
     uri = iri_to_uri(iri)
     return escape(replace_query_param(uri, key, val))
+
+
+@register.simple_tag
+def remove_query_param(request, key):
+    """
+    Remove a query parameter from the current request url, and return the new url.
+    """
+    iri = request.get_full_path()
+    uri = iri_to_uri(iri)
+    return escape(_remove_query_param(uri, key))
 
 
 @register.filter

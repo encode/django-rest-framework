@@ -276,7 +276,8 @@ class OrderingFilter(BaseFilterBackend):
 
     def get_template_context(self, request, queryset, view):
         current = self.get_ordering(request, queryset, view)
-        current = None if not current else current[0]
+        if not current:
+            current = None
         options = []
         context = {
             'request': request,
@@ -284,10 +285,35 @@ class OrderingFilter(BaseFilterBackend):
             'param': self.ordering_param,
         }
         for key, label in self.get_valid_fields(queryset, view, context):
-            options.append((key, '%s - %s' % (label, _('ascending'))))
-            options.append(('-' + key, '%s - %s' % (label, _('descending'))))
+            options.append((key, '%s - %s' % (label, _('ascending')), *self.plus_key(current, key)))
+            options.append(('-' + key, '%s - %s' % (label, _('descending')), *self.plus_key(current, '-' + key)))
         context['options'] = options
         return context
+
+    @staticmethod
+    def plus_key(current, key):
+        priority = None
+        plus_key = None
+        if current:
+            if len(current) > 1:
+                try:
+                    priority = current.index(key) + 1
+                except ValueError:
+                    pass
+
+            for_plus = current.copy()
+            if key in for_plus:
+                # for click on minus
+                for_plus.remove(key)
+            else:
+                # for click on plus - rearrange sort priorities
+                # remove key or -key
+                for_plus = [k for k in for_plus if k.lstrip('-') != key.lstrip('-')]
+                for_plus.append(key)
+            if for_plus:
+                plus_key = ','.join(for_plus)
+
+        return priority, plus_key
 
     def to_html(self, request, queryset, view):
         template = loader.get_template(self.template)

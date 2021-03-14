@@ -712,6 +712,45 @@ class OrderingFilterTests(TestCase):
             view(request)
 
 
+class OrderingFilterPlusGlyphTests(TestCase):
+    def setUp(self):
+        self.filter = filters.OrderingFilter()
+
+    def test_no_ordering_defined(self):
+        self.assertEqual((None, None), self.filter.plus_key(None, 'id'))
+        self.assertEqual((None, None), self.filter.plus_key(None, '-id'))
+
+    def test_one_ordering_param_same_key(self):
+        # there is no priority output at all
+        self.assertEqual((None, None), self.filter.plus_key(['id'], 'id'))
+        self.assertEqual((None, None), self.filter.plus_key(['-id'], '-id'))
+
+        self.assertEqual((None, '-id'), self.filter.plus_key(['id'], '-id'))
+        self.assertEqual((None, 'id'), self.filter.plus_key(['-id'], 'id'))
+
+    def test_one_ordering_param_different_key(self):
+        # there is no priority output at all
+        self.assertEqual((None, 'id,slug'), self.filter.plus_key(['id'], 'slug'))
+        self.assertEqual((None, 'id,-slug'), self.filter.plus_key(['id'], '-slug'))
+
+        self.assertEqual((None, '-id,slug'), self.filter.plus_key(['-id'], 'slug'))
+        self.assertEqual((None, '-id,-slug'), self.filter.plus_key(['-id'], '-slug'))
+
+    def test_two_ordering_param_exist_key(self):
+        self.assertEqual((1, 'slug'), self.filter.plus_key(['id', 'slug'], 'id'))
+        self.assertEqual((None, 'slug,-id'), self.filter.plus_key(['id', 'slug'], '-id'))
+
+        self.assertEqual((2, 'id'), self.filter.plus_key(['id', 'slug'], 'slug'))
+        self.assertEqual((None, 'id,-slug'), self.filter.plus_key(['id', 'slug'], '-slug'))
+
+        self.assertEqual((None, 'id,-slug'), self.filter.plus_key(['id', 'slug'], '-slug'))
+        self.assertEqual((2, 'id'), self.filter.plus_key(['id', 'slug'], 'slug'))
+
+    def test_two_ordering_param_other_key(self):
+        self.assertEqual((None, 'id,slug,author'), self.filter.plus_key(['id', 'slug'], 'author'))
+        self.assertEqual((None, 'id,slug,-author'), self.filter.plus_key(['id', 'slug'], '-author'))
+
+
 class SensitiveOrderingFilterModel(models.Model):
     username = models.CharField(max_length=20)
     password = models.CharField(max_length=100)
