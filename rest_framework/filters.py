@@ -275,33 +275,39 @@ class OrderingFilter(BaseFilterBackend):
         return queryset
 
     def get_template_context(self, request, queryset, view):
-        current = self.get_ordering(request, queryset, view)
-        if not current:
-            current = None
+        # current and options should be deleted with the next major update
+        currents = self.get_ordering(request, queryset, view)
+        current = None if not currents else currents[0]
         options = []
+        options_plus = []
         context = {
             'request': request,
             'current': current,
+            'currents': currents,
             'param': self.ordering_param,
         }
         for key, label in self.get_valid_fields(queryset, view, context):
-            options.append((key, '%s - %s' % (label, _('ascending')), *self.plus_key(current, key)))
-            options.append(('-' + key, '%s - %s' % (label, _('descending')), *self.plus_key(current, '-' + key)))
+            for sign, order_label in [('', _('ascending')), ('-', _('descending'))]:
+                item = (sign + key, '%s - %s' % (label, order_label))
+                options.append(item)
+                options_plus.append(item + self.plus_key(currents, sign + key))
+
         context['options'] = options
+        context['options_plus'] = options_plus
         return context
 
     @staticmethod
-    def plus_key(current, key):
+    def plus_key(currents, key):
         priority = None
         plus_key = None
-        if current:
-            if len(current) > 1:
+        if currents:
+            if len(currents) > 1:
                 try:
-                    priority = current.index(key) + 1
+                    priority = currents.index(key) + 1
                 except ValueError:
                     pass
 
-            for_plus = current.copy()
+            for_plus = currents.copy()
             if key in for_plus:
                 # for click on minus
                 for_plus.remove(key)

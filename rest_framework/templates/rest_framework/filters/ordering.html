@@ -2,8 +2,8 @@
 {% load i18n %}
 <h2>{% trans "Ordering" %}</h2>
 <div class="list-group">
-    {% for key, label, priority, plus_key in options %}
-        {% if key in current %}
+    {% for key, label, priority, plus_key in options_plus %}
+        {% if key in currents %}
             <a href="{% add_query_param request param key %}" class="list-group-item active">
                 <span class="glyphicon glyphicon-minus" style="float: right" aria-hidden="true"
                       data-plus-ordering="{% if plus_key %}{% add_query_param request param plus_key %}{% else %}{% remove_query_param request param %}{% endif %}"></span>
@@ -14,7 +14,7 @@
             </a>
         {% else %}
             <a href="{% add_query_param request param key %}" class="list-group-item">
-                {% if current %}
+                {% if currents %}
                     <span class="glyphicon glyphicon-plus" style="float: right" aria-hidden="true"
                           data-plus-ordering="{% add_query_param request param plus_key %}"></span>
                 {% endif %}

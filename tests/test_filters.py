@@ -6,12 +6,15 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.db.models import CharField, Transform
 from django.db.models.functions import Concat, Upper
+from django.template import Context, Template
 from django.test import TestCase
 from django.test.utils import override_settings
 
 from rest_framework import filters, generics, serializers
 from rest_framework.compat import coreschema
+from rest_framework.request import Request
 from rest_framework.test import APIRequestFactory
+from rest_framework.viewsets import ViewSet
 
 factory = APIRequestFactory()
 
@@ -712,43 +715,97 @@ class OrderingFilterTests(TestCase):
             view(request)
 
 
+class OrderingViewSet(ViewSet):
+    ordering_fields = [
+        ('id', 'ID'),
+        ('slug', 'Slug'),
+        ('author', 'Author'),
+    ]
+
+
+oldOrderingTemplate = Template("""
+{% load rest_framework %}
+{% load i18n %}
+<h2>{% trans "Ordering" %}</h2>
+<div class="list-group">
+    {% for key, label in options %}
+        {% if key == current %}
+            <a href="{% add_query_param request param key %}" class="list-group-item active">
+                <span class="glyphicon glyphicon-ok" style="float: right" aria-hidden="true"></span> {{ label }}
+            </a>
+        {% else %}
+            <a href="{% add_query_param request param key %}" class="list-group-item">{{ label }}</a>
+        {% endif %}
+    {% endfor %}
+</div>
+""")
+
+
 class OrderingFilterPlusGlyphTests(TestCase):
-    def setUp(self):
-        self.filter = filters.OrderingFilter()
+    def create_objects(self, currents):
+        self.ordering_filter = filters.OrderingFilter()
+        self.request = Request(factory.get('/', {'ordering': ','.join(currents)} if currents else None))
+        self.view = OrderingViewSet()
+
+    def assertPlusResult(self, currents, expected):
+        self.create_objects(currents)
+
+        context = self.ordering_filter.get_template_context(self.request, None, self.view)
+        for key, expected_prio_and_plus_key in expected.items():
+            prio_and_plus_key = [x[2:] for x in context['options_plus'] if x[0] == key][0]
+            self.assertEqual(prio_and_plus_key, expected_prio_and_plus_key)
+
+        self.assertOldTemplateWillRenderProperly(context)
+
+    def assertOldTemplateWillRenderProperly(self, context_dict):
+        context = Context(context_dict)
+        result = oldOrderingTemplate.render(context)
+
+        for key, label in context_dict['options']:
+            self.assertIn('ordering=' + key, result)
+            self.assertIn(label, result)
+
+        if context_dict['current']:
+            self.assertIn('class="glyphicon glyphicon-ok"', result)
 
     def test_no_ordering_defined(self):
-        self.assertEqual((None, None), self.filter.plus_key(None, 'id'))
-        self.assertEqual((None, None), self.filter.plus_key(None, '-id'))
+        current_ordering = None
+        expected = {
+            'id': (None, None),
+            '-id': (None, None),
+        }
+        self.assertPlusResult(current_ordering, expected)
 
-    def test_one_ordering_param_same_key(self):
-        # there is no priority output at all
-        self.assertEqual((None, None), self.filter.plus_key(['id'], 'id'))
-        self.assertEqual((None, None), self.filter.plus_key(['-id'], '-id'))
+    def test_one_ordering_param(self):
+        current_ordering = ['id']
+        expected = {
+            'id': (None, None),
+            '-id': (None, '-id'),
+            'slug': (None, 'id,slug'),
+            '-slug': (None, 'id,-slug'),
+        }
+        self.assertPlusResult(current_ordering, expected)
 
-        self.assertEqual((None, '-id'), self.filter.plus_key(['id'], '-id'))
-        self.assertEqual((None, 'id'), self.filter.plus_key(['-id'], 'id'))
+        current_ordering = ['-id']
+        expected = {
+            'id': (None, 'id'),
+            '-id': (None, None),
+            'slug': (None, '-id,slug'),
+            '-slug': (None, '-id,-slug'),
+        }
+        self.assertPlusResult(current_ordering, expected)
 
-    def test_one_ordering_param_different_key(self):
-        # there is no priority output at all
-        self.assertEqual((None, 'id,slug'), self.filter.plus_key(['id'], 'slug'))
-        self.assertEqual((None, 'id,-slug'), self.filter.plus_key(['id'], '-slug'))
-
-        self.assertEqual((None, '-id,slug'), self.filter.plus_key(['-id'], 'slug'))
-        self.assertEqual((None, '-id,-slug'), self.filter.plus_key(['-id'], '-slug'))
-
-    def test_two_ordering_param_exist_key(self):
-        self.assertEqual((1, 'slug'), self.filter.plus_key(['id', 'slug'], 'id'))
-        self.assertEqual((None, 'slug,-id'), self.filter.plus_key(['id', 'slug'], '-id'))
-
-        self.assertEqual((2, 'id'), self.filter.plus_key(['id', 'slug'], 'slug'))
-        self.assertEqual((None, 'id,-slug'), self.filter.plus_key(['id', 'slug'], '-slug'))
-
-        self.assertEqual((None, 'id,-slug'), self.filter.plus_key(['id', 'slug'], '-slug'))
-        self.assertEqual((2, 'id'), self.filter.plus_key(['id', 'slug'], 'slug'))
-
-    def test_two_ordering_param_other_key(self):
-        self.assertEqual((None, 'id,slug,author'), self.filter.plus_key(['id', 'slug'], 'author'))
-        self.assertEqual((None, 'id,slug,-author'), self.filter.plus_key(['id', 'slug'], '-author'))
+    def test_two_ordering_params(self):
+        current_ordering = ['id', 'slug']
+        expected = {
+            'id': (1, 'slug'),
+            '-id': (None, 'slug,-id'),
+            'slug': (2, 'id'),
+            '-slug': (None, 'id,-slug'),
+            'author': (None, 'id,slug,author'),
+            '-author': (None, 'id,slug,-author'),
+        }
+        self.assertPlusResult(current_ordering, expected)
 
 
 class SensitiveOrderingFilterModel(models.Model):
