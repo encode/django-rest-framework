@@ -1764,6 +1764,9 @@ class JSONField(Field):
         'invalid': _('Value must be valid JSON.')
     }
 
+    # Workaround for isinstance calls when importing the field isn't possible
+    _is_jsonfield = True
+
     def __init__(self, *args, **kwargs):
         self.binary = kwargs.pop('binary', False)
         self.encoder = kwargs.pop('encoder', None)
