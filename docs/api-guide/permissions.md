@@ -70,6 +70,8 @@ For performance reasons the generic views will not automatically apply object le
 
 Often when you're using object level permissions you'll also want to [filter the queryset][filtering] appropriately, to ensure that users only have visibility onto instances that they are permitted to view.
 
+Because the `get_object()` method is not called, object level permissions from the `has_object_permission()` method **are not applied** when creating objects. In order to restrict object creation you need to implement the permission check either in your Serializer class or override the `perform_create()` method of your ViewSet class.
+
 ## Setting the permission policy
 
 The default permission policy may be set globally, using the `DEFAULT_PERMISSION_CLASSES` setting.  For example.
@@ -271,6 +273,30 @@ As well as global permissions, that are run against all incoming requests, you c
 Note that the generic views will check the appropriate object level permissions, but if you're writing your own custom views, you'll need to make sure you check the object level permission checks yourself.  You can do so by calling `self.check_object_permissions(request, obj)` from the view once you have the object instance.  This call will raise an appropriate `APIException` if any object-level permission checks fail, and will otherwise simply return.
 
 Also note that the generic views will only check the object-level permissions for views that retrieve a single model instance.  If you require object-level filtering of list views, you'll need to filter the queryset separately.  See the [filtering documentation][filtering] for more details.
+
+# Overview of access restriction methods
+
+REST framework offers three different methods to customize access restrictions on a case-by-case basis. These apply in different scenarios and have different effects and limitations.
+
+ * `queryset`/`get_queryset()`: Limits the general visibility of existing objects from the database. The queryset limits which objects will be listed and which objects can be modified or deleted. The `get_queryset()` method can apply different querysets based on the current action.
+ * `permission_classes`/`get_permissions()`: General permission checks based on the current action, request and targeted object. Object level permissions can only be applied to retrieve, modify and deletion actions. Permission checks for list and create will be applied to the entire object type. (In case of list: subject to restrictions in the queryset.)
+ * `serializer_class`/`get_serializer()`: Instance level restrictions that apply to all objects on input and output. The serializer may have access to the request context. The `get_serializer()` method can apply different serializers based on the current action.
+
+The following table lists the access restriction methods and the level of control they offer over which actions.
+
+|                                    | `queryset` | `permission_classes` | `serializer_class` |
+|------------------------------------|------------|----------------------|--------------------|
+| Action: list                       | global     | no                   | object-level*      |
+| Action: create                     | no         | global               | object-level       |
+| Action: retrieve                   | global     | object-level         | object-level       |
+| Action: update                     | global     | object-level         | object-level       |
+| Action: partial_update             | global     | object-level         | object-level       |
+| Action: destroy                    | global     | object-level         | no                 |
+| Can reference action in decision   | no**       | yes                  | no**               |
+| Can reference request in decision  | no**       | yes                  | yes                |
+
+ \* A Serializer class should not raise PermissionDenied in a list action, or the entire list would not be returned. <br>
+ \** The `get_*()` methods have access to the current view and can return different Serializer or QuerySet instances based on the request or action.
 
 ---
 
