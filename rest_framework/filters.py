@@ -226,10 +226,20 @@ class OrderingFilter(BaseFilterBackend):
             )
             raise ImproperlyConfigured(msg % self.__class__.__name__)
 
+        model_class = queryset.model
+        model_property_names = [
+            # 'pk' is a property added in Django's Model class, however it is valid for ordering.
+            attr for attr in dir(model_class) if isinstance(getattr(model_class, attr), property) and attr != 'pk'
+        ]
+
         return [
             (field.source.replace('.', '__') or field_name, field.label)
             for field_name, field in serializer_class(context=context).fields.items()
-            if not getattr(field, 'write_only', False) and not field.source == '*'
+            if (
+                not getattr(field, 'write_only', False) and
+                not field.source == '*' and
+                field.source not in model_property_names
+            )
         ]
 
     def get_valid_fields(self, queryset, view, context={}):
