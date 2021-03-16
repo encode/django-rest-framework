@@ -143,7 +143,7 @@ We can change the default list style to use pagination, by modifying our `tutori
 
 Note that settings in REST framework are all namespaced into a single dictionary setting, named `REST_FRAMEWORK`, which helps keep them well separated from your other project settings.
 
-We could also customize the pagination style if we needed too, but in this case we'll just stick with the default.
+We could also customize the pagination style if we needed to, but in this case we'll just stick with the default.
 
 ## Browsing the API
 
