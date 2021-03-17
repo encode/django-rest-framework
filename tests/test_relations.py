@@ -107,6 +107,12 @@ class TestPrimaryKeyRelatedField(APISimpleTestCase):
         msg = excinfo.value.detail[0]
         assert msg == 'Incorrect type. Expected pk value, received BadType.'
 
+    def test_pk_related_lookup_bool(self):
+        with pytest.raises(serializers.ValidationError) as excinfo:
+            self.field.to_internal_value(True)
+        msg = excinfo.value.detail[0]
+        assert msg == 'Incorrect type. Expected pk value, received bool.'
+
     def test_pk_representation(self):
         representation = self.field.to_representation(self.instance)
         assert representation == self.instance.pk

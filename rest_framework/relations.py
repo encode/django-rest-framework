@@ -259,6 +259,8 @@ class PrimaryKeyRelatedField(RelatedField):
             data = self.pk_field.to_internal_value(data)
         queryset = self.get_queryset()
         try:
+            if isinstance(data, bool):
+                raise TypeError
             return queryset.get(pk=data)
         except ObjectDoesNotExist:
             self.fail('does_not_exist', pk_value=data)
