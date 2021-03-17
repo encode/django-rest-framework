@@ -1,5 +1,7 @@
 # Pytest for running the tests.
+
 pytest>=6.2.1,<6.3
 pytest-django>=4.1.0,<4.2
-pytest-cov>=2.7.1
 six>=1.14.0
+pytest-cov>=2.10.1
+

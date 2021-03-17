@@ -3,7 +3,7 @@ Provides an APIView class that is the base of all views in REST framework.
 """
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
-from django.db import connection, models, transaction
+from django.db import connections, models
 from django.http import Http404
 from django.http.response import HttpResponseBase
 from django.utils.cache import cc_delim_re, patch_vary_headers
@@ -63,9 +63,9 @@ def get_view_description(view, html=False):
 
 
 def set_rollback():
-    atomic_requests = connection.settings_dict.get('ATOMIC_REQUESTS', False)
-    if atomic_requests and connection.in_atomic_block:
-        transaction.set_rollback(True)
+    for db in connections.all():
+        if db.settings_dict['ATOMIC_REQUESTS'] and db.in_atomic_block:
+            db.set_rollback(True)
 
 
 def exception_handler(exc, context):

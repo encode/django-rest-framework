@@ -202,7 +202,7 @@ You can modify the response behavior to `OPTIONS` requests by overriding the `op
         meta = self.metadata_class()
         data = meta.determine_metadata(request, self)
         data.pop('description')
-        return data
+        return Response(data=data, status=status.HTTP_200_OK)
 
 See [the Metadata docs][metadata-docs] for more details.
 

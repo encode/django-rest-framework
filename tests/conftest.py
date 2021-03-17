@@ -24,6 +24,10 @@ def pytest_configure(config):
             'default': {
                 'ENGINE': 'django.db.backends.sqlite3',
                 'NAME': ':memory:'
+            },
+            'secondary': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': ':memory:'
             }
         },
         SITE_ID=1,

@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from collections.abc import MutableMapping
+from collections.abc import Mapping, MutableMapping
 
 from django.utils.encoding import force_str
 
@@ -87,7 +87,12 @@ class JSONBoundField(BoundField):
         # value will be a JSONString, rather than a JSON primitive.
         if not getattr(value, 'is_json_string', False):
             try:
-                value = json.dumps(self.value, sort_keys=True, indent=4)
+                value = json.dumps(
+                    self.value,
+                    sort_keys=True,
+                    indent=4,
+                    separators=(',', ': '),
+                )
             except (TypeError, ValueError):
                 pass
         return self.__class__(self._field, value, self.errors, self._prefix)
@@ -101,7 +106,7 @@ class NestedBoundField(BoundField):
     """
 
     def __init__(self, field, value, errors, prefix=''):
-        if value is None or value == '':
+        if value is None or value == '' or not isinstance(value, Mapping):
             value = {}
         super().__init__(field, value, errors, prefix)
 
@@ -115,6 +120,8 @@ class NestedBoundField(BoundField):
         error = self.errors.get(key) if isinstance(self.errors, dict) else None
         if hasattr(field, 'fields'):
             return NestedBoundField(field, value, error, prefix=self.name + '.')
+        elif getattr(field, '_is_jsonfield', False):
+            return JSONBoundField(field, value, error, prefix=self.name + '.')
         return BoundField(field, value, error, prefix=self.name + '.')
 
     def as_form_field(self):

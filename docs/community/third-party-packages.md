@@ -190,6 +190,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [django-rest-auth][django-rest-auth] - Provides a set of REST API endpoints for registration, authentication (including social media authentication), password reset, retrieve and update user details, etc.
 * [drf-oidc-auth][drf-oidc-auth] - Implements OpenID Connect token authentication for DRF.
 * [drfpasswordless][drfpasswordless] - Adds (Medium, Square Cash inspired) passwordless logins and signups via email and mobile numbers.
+* [django-rest-authemail][django-rest-authemail] - Provides a RESTful API for user signup and authentication using email addresses.
 
 ### Permissions
 
@@ -214,17 +215,19 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [drf-action-serializer][drf-action-serializer] - Serializer providing per-action fields config for use with ViewSets to prevent having to write multiple serializers.
 * [djangorestframework-dataclasses][djangorestframework-dataclasses] - Serializer providing automatic field generation for Python dataclasses, like the built-in ModelSerializer does for models.
 * [django-restql][django-restql] - Turn your REST API into a GraphQL like API(It allows clients to control which fields will be sent in a response, uses GraphQL like syntax, supports read and write on both flat and nested fields).
+* [graphwrap][graphwrap] - Transform your REST API into a fully compliant GraphQL API with just two lines of code. Leverages [Graphene-Django](https://docs.graphene-python.org/projects/django/en/latest/) to dynamically build, at runtime, a GraphQL ObjectType for each view in your API.
 
 ### Serializer fields
 
 * [drf-compound-fields][drf-compound-fields] - Provides "compound" serializer fields, such as lists of simple values.
-* [django-extra-fields][django-extra-fields] - Provides extra serializer fields.
+* [drf-extra-fields][drf-extra-fields] - Provides extra serializer fields.
 * [django-versatileimagefield][django-versatileimagefield] - Provides a drop-in replacement for Django's stock `ImageField` that makes it easy to serve images in multiple sizes/renditions from a single field. For DRF-specific implementation docs, [click here][django-versatileimagefield-drf-docs].
 
 ### Views
 
 * [django-rest-multiple-models][django-rest-multiple-models] - Provides a generic view (and mixin) for sending multiple serialized models and/or querysets via a single API request.
 * [drf-typed-views][drf-typed-views] - Use Python type annotations to validate/deserialize request parameters. Inspired by API Star, Hug and FastAPI.
+* [rest-framework-actions][rest-framework-actions] - Provides control over each action in ViewSets. Serializers per action, method.
 
 ### Routers
 
@@ -308,7 +311,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [djangorestframework-gis]: https://github.com/djangonauts/django-rest-framework-gis
 [djangorestframework-hstore]: https://github.com/djangonauts/django-rest-framework-hstore
 [drf-compound-fields]: https://github.com/estebistec/drf-compound-fields
-[django-extra-fields]: https://github.com/Hipo/drf-extra-fields
+[drf-extra-fields]: https://github.com/Hipo/drf-extra-fields
 [django-rest-multiple-models]: https://github.com/MattBroach/DjangoRestMultipleModels
 [drf-nested-routers]: https://github.com/alanjds/drf-nested-routers
 [wq.db.rest]: https://wq.io/docs/about-rest
@@ -362,3 +365,6 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [django-elasticsearch-dsl-drf]: https://github.com/barseghyanartur/django-elasticsearch-dsl-drf
 [django-api-client]: https://github.com/rhenter/django-api-client
 [drf-psq]: https://github.com/drf-psq/drf-psq
+[django-rest-authemail]: https://github.com/celiao/django-rest-authemail
+[graphwrap]: https://github.com/PaulGilmartin/graph_wrap
+[rest-framework-actions]: https://github.com/AlexisMunera98/rest-framework-actions
