@@ -2,8 +2,6 @@
 *.db
 *~
 .*
-*.py.bak
-
 
 /site/
 /htmlcov/
