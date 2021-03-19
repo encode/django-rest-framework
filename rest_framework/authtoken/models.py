@@ -46,7 +46,7 @@ class TokenProxy(Token):
     """
     @property
     def pk(self):
-        return self.user.pk
+        return self.user_id
 
     class Meta:
         proxy = 'rest_framework.authtoken' in settings.INSTALLED_APPS
