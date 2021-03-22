@@ -1,3 +1,4 @@
+import inspect
 import re
 import warnings
 from collections import OrderedDict
@@ -359,6 +360,16 @@ class AutoSchema(ViewInspector):
         return mapping
 
     def map_field(self, field):
+        if isinstance(field, serializers.SerializerMethodField) and field.parent and field.method_name:
+            return_type = inspect.signature(
+                getattr(field.parent, field.method_name)
+            ).return_annotation
+            if issubclass(return_type, bool):
+                return {'type': 'boolean'}
+            if issubclass(return_type, float):
+                return {'type': 'number'}
+            if issubclass(return_type, int):
+                return {'type': 'integer'}
 
         # Nested Serializers, `many` or not.
         if isinstance(field, serializers.ListSerializer):

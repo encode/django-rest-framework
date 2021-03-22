@@ -54,6 +54,25 @@ class TestFieldMapping(TestCase):
         uuid1 = uuid.uuid4()
         uuid2 = uuid.uuid4()
         inspector = AutoSchema()
+
+        class TestSerializer(serializers.Serializer):
+            unannotated = serializers.SerializerMethodField()
+            annotated_int = serializers.SerializerMethodField()
+            annotated_float = serializers.SerializerMethodField()
+            annotated_bool = serializers.SerializerMethodField()
+
+            def get_unannotated(self):
+                return 'blub'
+
+            def get_annotated_int(self) -> int:
+                return 1
+
+            def get_annotated_float(self) -> float:
+                return 1.0
+
+            def get_annotated_bool(self) -> bool:
+                return True
+
         cases = [
             (serializers.ListField(), {'items': {}, 'type': 'array'}),
             (serializers.ListField(child=serializers.BooleanField()), {'items': {'type': 'boolean'}, 'type': 'array'}),
@@ -83,6 +102,11 @@ class TestFieldMapping(TestCase):
                 {'items': {'enum': [1, 2, 3], 'type': 'integer'}, 'type': 'array'}),
             (serializers.IntegerField(min_value=2147483648),
              {'type': 'integer', 'minimum': 2147483648, 'format': 'int64'}),
+            (serializers.SerializerMethodField(), {'type': 'string'}),
+            (TestSerializer().fields['unannotated'], {'type': 'string'}),
+            (TestSerializer().fields['annotated_int'], {'type': 'integer'}),
+            (TestSerializer().fields['annotated_float'], {'type': 'number'}),
+            (TestSerializer().fields['annotated_bool'], {'type': 'boolean'}),
         ]
         for field, mapping in cases:
             with self.subTest(field=field):
