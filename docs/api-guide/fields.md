@@ -583,6 +583,7 @@ The serializer method referred to by the `method_name` argument should accept a 
 
         class Meta:
             model = User
+            fields = '__all__'
 
         def get_days_since_joined(self, obj):
             return (now() - obj.date_joined).days
