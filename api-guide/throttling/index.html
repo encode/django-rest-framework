@@ -517,10 +517,19 @@ class ExampleView(APIView):
         }
         return Response(content)
 </code></pre>
-<p>Or, if you're using the <code>@api_view</code> decorator with function based views.</p>
+<p>If you're using the <code>@api_view</code> decorator with function based views you can use the following decorator.</p>
 <pre><code>@api_view(['GET'])
 @throttle_classes([UserRateThrottle])
 def example_view(request, format=None):
+    content = {
+        'status': 'request was permitted'
+    }
+    return Response(content)
+</code></pre>
+<p>It's also possible to set throttle classes for routes that are created using the <code>@action</code> decorator.
+Throttle classes set in this way will override any viewset level class settings.</p>
+<pre><code>@action(detail=True, methods=["post"], throttle_classes=[UserRateThrottle])
+def example_adhoc_method(request, pk=None):
     content = {
         'status': 'request was permitted'
     }

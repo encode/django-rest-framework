@@ -441,7 +441,7 @@
 <p>Supporting internationalization is not optional. It must be a core feature.</p>
 <p>&mdash; <a href="https://youtu.be/Wa0VfS2q94Y">Jannis Leidel, speaking at Django Under the Hood, 2015</a>.</p>
 </blockquote>
-<p>REST framework ships with translatable error messages. You can make these appear in your language enabling <a href="https://docs.djangoproject.com/en/1.7/topics/i18n/translation">Django's standard translation mechanisms</a>.</p>
+<p>REST framework ships with translatable error messages. You can make these appear in your language enabling <a href="https://docs.djangoproject.com/en/stable/topics/i18n/translation">Django's standard translation mechanisms</a>.</p>
 <p>Doing so will allow you to:</p>
 <ul>
 <li>Select a language other than English as the default, using the standard <code>LANGUAGE_CODE</code> Django setting.</li>
@@ -490,14 +490,14 @@ Host: example.org
 <li>Your project includes custom error messages, which are not part of REST framework's default translation strings.</li>
 </ul>
 <h4 id="translating-a-new-language-locally"><a class="toclink" href="#translating-a-new-language-locally">Translating a new language locally</a></h4>
-<p>This guide assumes you are already familiar with how to translate a Django app.  If you're not, start by reading <a href="https://docs.djangoproject.com/en/1.7/topics/i18n/translation">Django's translation docs</a>.</p>
+<p>This guide assumes you are already familiar with how to translate a Django app.  If you're not, start by reading <a href="https://docs.djangoproject.com/en/stable/topics/i18n/translation">Django's translation docs</a>.</p>
 <p>If you're translating a new language you'll need to translate the existing REST framework error messages:</p>
 <ol>
 <li>
-<p>Make a new folder where you want to store the internationalization resources. Add this path to your <a href="https://docs.djangoproject.com/en/1.7/ref/settings/#std:setting-LOCALE_PATHS"><code>LOCALE_PATHS</code></a> setting.</p>
+<p>Make a new folder where you want to store the internationalization resources. Add this path to your <a href="https://docs.djangoproject.com/en/stable/ref/settings/#std:setting-LOCALE_PATHS"><code>LOCALE_PATHS</code></a> setting.</p>
 </li>
 <li>
-<p>Now create a subfolder for the language you want to translate. The folder should be named using <a href="https://docs.djangoproject.com/en/1.7/topics/i18n/#term-locale-name">locale name</a> notation. For example: <code>de</code>, <code>pt_BR</code>, <code>es_AR</code>.</p>
+<p>Now create a subfolder for the language you want to translate. The folder should be named using <a href="https://docs.djangoproject.com/en/stable/topics/i18n/#term-locale-name">locale name</a> notation. For example: <code>de</code>, <code>pt_BR</code>, <code>es_AR</code>.</p>
 </li>
 <li>
 <p>Now copy the <a href="https://raw.githubusercontent.com/encode/django-rest-framework/master/rest_framework/locale/en_US/LC_MESSAGES/django.po">base translations file</a> from the REST framework source code into your translations folder.</p>
@@ -516,7 +516,7 @@ available for Django to use. You should see a message like <code>processing file
 <p>If you're only translating custom error messages that exist inside your project codebase you don't need to copy the REST framework source <code>django.po</code> file into a <code>LOCALE_PATHS</code> folder, and can instead simply run Django's standard <code>makemessages</code> process.</p>
 <h2 id="how-the-language-is-determined"><a class="toclink" href="#how-the-language-is-determined">How the language is determined</a></h2>
 <p>If you want to allow per-request language preferences you'll need to include <code>django.middleware.locale.LocaleMiddleware</code> in your <code>MIDDLEWARE_CLASSES</code> setting.</p>
-<p>You can find more information on how the language preference is determined in the <a href="https://docs.djangoproject.com/en/1.7/topics/i18n/translation/#how-django-discovers-language-preference">Django documentation</a>. For reference, the method is:</p>
+<p>You can find more information on how the language preference is determined in the <a href="https://docs.djangoproject.com/en/stable/topics/i18n/translation/#how-django-discovers-language-preference">Django documentation</a>. For reference, the method is:</p>
 <ol>
 <li>First, it looks for the language prefix in the requested URL.</li>
 <li>Failing that, it looks for the <code>LANGUAGE_SESSION_KEY</code> key in the current user’s session.</li>

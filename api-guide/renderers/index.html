@@ -643,6 +643,11 @@ def user_count_view(request, format=None):
 <p>Renders data to HTML, using Django's standard template rendering.
 Unlike other renderers, the data passed to the <code>Response</code> does not need to be serialized.  Also, unlike other renderers, you may want to include a <code>template_name</code> argument when creating the <code>Response</code>.</p>
 <p>The TemplateHTMLRenderer will create a <code>RequestContext</code>, using the <code>response.data</code> as the context dict, and determine a template name to use to render the context.</p>
+<hr />
+<p><strong>Note:</strong> When used with a view that makes use of a serializer the <code>Response</code> sent for rendering may not be a dictionay and will need to be wrapped in a dict before returning to allow the TemplateHTMLRenderer to render it. For example:</p>
+<pre><code>response.data = {'results': response.data}
+</code></pre>
+<hr />
 <p>The template name is determined by (in order of preference):</p>
 <ol>
 <li>An explicit <code>template_name</code> argument passed to the response.</li>

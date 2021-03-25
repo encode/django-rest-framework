@@ -467,6 +467,12 @@
                   
                 
                   <li class="main">
+                    <a href="#overview-of-access-restriction-methods">Overview of access restriction methods</a>
+                  </li>
+
+                  
+                
+                  <li class="main">
                     <a href="#third-party-packages">Third party packages</a>
                   </li>
 
@@ -569,6 +575,7 @@ permissions</em></a> section (below).</p>
 <h4 id="limitations-of-object-level-permissions"><a class="toclink" href="#limitations-of-object-level-permissions">Limitations of object level permissions</a></h4>
 <p>For performance reasons the generic views will not automatically apply object level permissions to each instance in a queryset when returning a list of objects.</p>
 <p>Often when you're using object level permissions you'll also want to <a href="../filtering/">filter the queryset</a> appropriately, to ensure that users only have visibility onto instances that they are permitted to view.</p>
+<p>Because the <code>get_object()</code> method is not called, object level permissions from the <code>has_object_permission()</code> method <strong>are not applied</strong> when creating objects. In order to restrict object creation you need to implement the permission check either in your Serializer class or override the <code>perform_create()</code> method of your ViewSet class.</p>
 <h2 id="setting-the-permission-policy"><a class="toclink" href="#setting-the-permission-policy">Setting the permission policy</a></h2>
 <p>The default permission policy may be set globally, using the <code>DEFAULT_PERMISSION_CLASSES</code> setting.  For example.</p>
 <pre><code>REST_FRAMEWORK = {
@@ -610,7 +617,7 @@ def example_view(request, format=None):
     }
     return Response(content)
 </code></pre>
-<p><strong>Note:</strong> when you set new permission classes through class attribute or decorators you're telling the view to ignore the default list set over the <strong>settings.py</strong> file.</p>
+<p><strong>Note:</strong> when you set new permission classes via the class attribute or decorators you're telling the view to ignore the default list set in the <strong>settings.py</strong> file.</p>
 <p>Provided they inherit from <code>rest_framework.permissions.BasePermission</code>, permissions can be composed using standard Python bitwise operators. For example, <code>IsAuthenticatedOrReadOnly</code> could be written:</p>
 <pre><code>from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS
 from rest_framework.response import Response
@@ -645,7 +652,7 @@ class ExampleView(APIView):
 <p>The <code>IsAuthenticatedOrReadOnly</code> will allow authenticated users to perform any request.  Requests for unauthorised users will only be permitted if the request method is one of the "safe" methods; <code>GET</code>, <code>HEAD</code> or <code>OPTIONS</code>.</p>
 <p>This permission is suitable if you want to your API to allow read permissions to anonymous users, and only allow write permissions to authenticated users.</p>
 <h2 id="djangomodelpermissions"><a class="toclink" href="#djangomodelpermissions">DjangoModelPermissions</a></h2>
-<p>This permission class ties into Django's standard <code>django.contrib.auth</code> <a href="https://docs.djangoproject.com/en/stable/topics/auth/customizing/#custom-permissions">model permissions</a>.  This permission must only be applied to views that have a <code>.queryset</code> property set. Authorization will only be granted if the user <em>is authenticated</em> and has the <em>relevant model permissions</em> assigned.</p>
+<p>This permission class ties into Django's standard <code>django.contrib.auth</code> <a href="https://docs.djangoproject.com/en/stable/topics/auth/customizing/#custom-permissions">model permissions</a>.  This permission must only be applied to views that have a <code>.queryset</code> property or <code>get_queryset()</code> method. Authorization will only be granted if the user <em>is authenticated</em> and has the <em>relevant model permissions</em> assigned.</p>
 <ul>
 <li><code>POST</code> requests require the user to have the <code>add</code> permission on the model.</li>
 <li><code>PUT</code> and <code>PATCH</code> requests require the user to have the <code>change</code> permission on the model.</li>
@@ -653,10 +660,6 @@ class ExampleView(APIView):
 </ul>
 <p>The default behaviour can also be overridden to support custom model permissions.  For example, you might want to include a <code>view</code> model permission for <code>GET</code> requests.</p>
 <p>To use custom model permissions, override <code>DjangoModelPermissions</code> and set the <code>.perms_map</code> property.  Refer to the source code for details.</p>
-<h4 id="using-with-views-that-do-not-include-a-queryset-attribute"><a class="toclink" href="#using-with-views-that-do-not-include-a-queryset-attribute">Using with views that do not include a <code>queryset</code> attribute.</a></h4>
-<p>If you're using this permission with a view that uses an overridden <code>get_queryset()</code> method there may not be a <code>queryset</code> attribute on the view. In this case we suggest also marking the view with a sentinel queryset, so that this class can determine the required permissions. For example:</p>
-<pre><code>queryset = User.objects.none()  # Required for DjangoModelPermissions
-</code></pre>
 <h2 id="djangomodelpermissionsoranonreadonly"><a class="toclink" href="#djangomodelpermissionsoranonreadonly">DjangoModelPermissionsOrAnonReadOnly</a></h2>
 <p>Similar to <code>DjangoModelPermissions</code>, but also allows unauthenticated users to have read-only access to the API.</p>
 <h2 id="djangoobjectpermissions"><a class="toclink" href="#djangoobjectpermissions">DjangoObjectPermissions</a></h2>
@@ -729,6 +732,76 @@ class BlocklistPermission(permissions.BasePermission):
 </code></pre>
 <p>Note that the generic views will check the appropriate object level permissions, but if you're writing your own custom views, you'll need to make sure you check the object level permission checks yourself.  You can do so by calling <code>self.check_object_permissions(request, obj)</code> from the view once you have the object instance.  This call will raise an appropriate <code>APIException</code> if any object-level permission checks fail, and will otherwise simply return.</p>
 <p>Also note that the generic views will only check the object-level permissions for views that retrieve a single model instance.  If you require object-level filtering of list views, you'll need to filter the queryset separately.  See the <a href="../filtering/">filtering documentation</a> for more details.</p>
+<h1 id="overview-of-access-restriction-methods"><a class="toclink" href="#overview-of-access-restriction-methods">Overview of access restriction methods</a></h1>
+<p>REST framework offers three different methods to customize access restrictions on a case-by-case basis. These apply in different scenarios and have different effects and limitations.</p>
+<ul>
+<li><code>queryset</code>/<code>get_queryset()</code>: Limits the general visibility of existing objects from the database. The queryset limits which objects will be listed and which objects can be modified or deleted. The <code>get_queryset()</code> method can apply different querysets based on the current action.</li>
+<li><code>permission_classes</code>/<code>get_permissions()</code>: General permission checks based on the current action, request and targeted object. Object level permissions can only be applied to retrieve, modify and deletion actions. Permission checks for list and create will be applied to the entire object type. (In case of list: subject to restrictions in the queryset.)</li>
+<li><code>serializer_class</code>/<code>get_serializer()</code>: Instance level restrictions that apply to all objects on input and output. The serializer may have access to the request context. The <code>get_serializer()</code> method can apply different serializers based on the current action.</li>
+</ul>
+<p>The following table lists the access restriction methods and the level of control they offer over which actions.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><code>queryset</code></th>
+<th><code>permission_classes</code></th>
+<th><code>serializer_class</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Action: list</td>
+<td>global</td>
+<td>no</td>
+<td>object-level*</td>
+</tr>
+<tr>
+<td>Action: create</td>
+<td>no</td>
+<td>global</td>
+<td>object-level</td>
+</tr>
+<tr>
+<td>Action: retrieve</td>
+<td>global</td>
+<td>object-level</td>
+<td>object-level</td>
+</tr>
+<tr>
+<td>Action: update</td>
+<td>global</td>
+<td>object-level</td>
+<td>object-level</td>
+</tr>
+<tr>
+<td>Action: partial_update</td>
+<td>global</td>
+<td>object-level</td>
+<td>object-level</td>
+</tr>
+<tr>
+<td>Action: destroy</td>
+<td>global</td>
+<td>object-level</td>
+<td>no</td>
+</tr>
+<tr>
+<td>Can reference action in decision</td>
+<td>no**</td>
+<td>yes</td>
+<td>no**</td>
+</tr>
+<tr>
+<td>Can reference request in decision</td>
+<td>no**</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<p>* A Serializer class should not raise PermissionDenied in a list action, or the entire list would not be returned. <br>
+ ** The <code>get_*()</code> methods have access to the current view and can return different Serializer or QuerySet instances based on the request or action.</p>
 <hr />
 <h1 id="third-party-packages"><a class="toclink" href="#third-party-packages">Third party packages</a></h1>
 <p>The following third party packages are also available.</p>

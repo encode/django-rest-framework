@@ -574,7 +574,7 @@ class PurchaseList(generics.ListAPIView):
         by filtering against a `username` query parameter in the URL.
         """
         queryset = Purchase.objects.all()
-        username = self.request.query_params.get('username', None)
+        username = self.request.query_params.get('username')
         if username is not None:
             queryset = queryset.filter(purchaser__username=username)
         return queryset

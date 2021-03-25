@@ -529,7 +529,7 @@ Content-Length: 42
 {"detail": "Method 'DELETE' not allowed."}
 </code></pre>
 <p>Validation errors are handled slightly differently, and will include the field names as the keys in the response. If the validation error was not specific to a particular field then it will use the "non_field_errors" key, or whatever string value has been set for the <code>NON_FIELD_ERRORS_KEY</code> setting.</p>
-<p>Any example validation error might look like this:</p>
+<p>An example validation error might look like this:</p>
 <pre><code>HTTP/1.1 400 Bad Request
 Content-Type: application/json
 Content-Length: 94
@@ -654,7 +654,7 @@ dictionary of items:</p>
 <p>The <code>ValidationError</code> exception is slightly different from the other <code>APIException</code> classes:</p>
 <ul>
 <li>The <code>detail</code> argument is mandatory, not optional.</li>
-<li>The <code>detail</code> argument may be a list or dictionary of error details, and may also be a nested data structure.</li>
+<li>The <code>detail</code> argument may be a list or dictionary of error details, and may also be a nested data structure. By using a dictionary, you can specify field-level errors while performing object-level validation in the <code>validate()</code> method of a serializer. For example. <code>raise serializers.ValidationError({'name': 'Please enter a valid name.'})</code></li>
 <li>By convention you should import the serializers module and use a fully qualified <code>ValidationError</code> style, in order to differentiate it from Django's built-in validation error. For example. <code>raise serializers.ValidationError('This field must be an integer value.')</code></li>
 </ul>
 <p>The <code>ValidationError</code> class should be used for serializer and field validation, and by validator classes. It is also raised when calling <code>serializer.is_valid</code> with the <code>raise_exception</code> keyword argument:</p>

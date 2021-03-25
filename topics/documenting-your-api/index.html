@@ -593,7 +593,7 @@ documentation and more. Several popular plugins for DRF are supported out-of-the
     meta = self.metadata_class()
     data = meta.determine_metadata(request, self)
     data.pop('description')
-    return data
+    return Response(data=data, status=status.HTTP_200_OK)
 </code></pre>
 <p>See <a href="../../api-guide/metadata/">the Metadata docs</a> for more details.</p>
 <hr />

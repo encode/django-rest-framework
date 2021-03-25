@@ -868,7 +868,7 @@ class CommentSerializer(serializers.Serializer):
     content = serializers.CharField(max_length=200)
     created = serializers.DateTimeField()
 </code></pre>
-<p>Similarly if a nested representation should be a list of items, you should pass the <code>many=True</code> flag to the nested serialized.</p>
+<p>Similarly if a nested representation should be a list of items, you should pass the <code>many=True</code> flag to the nested serializer.</p>
 <pre><code>class CommentSerializer(serializers.Serializer):
     user = UserSerializer(required=False)
     edits = EditItemSerializer(many=True)  # A nested list of 'edit' items.

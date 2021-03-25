@@ -518,6 +518,21 @@
 <hr />
 <h2 id="312x-series"><a class="toclink" href="#312x-series">3.12.x series</a></h2>
 <h3 id="3122"><a class="toclink" href="#3122">3.12.2</a></h3>
+<p>Date: 25th March 2021</p>
+<ul>
+<li>Properly handle ATOMIC_REQUESTS when multiple database configurations are used. [#7739]</li>
+<li>Bypass <code>COUNT</code> query when <code>LimitOffsetPagination</code> is configured but pagination params are not included on the request. [#6098]</li>
+<li>Respect <code>allow_null=True</code> on <code>DecimalField</code>. [#7718]</li>
+<li>Allow title cased <code>"Yes"</code>/<code>"No"</code> values with <code>BooleanField</code>. [#7739]</li>
+<li>Add <code>PageNumberPagination.get_page_number()</code> method for overriding behavior. [#7652]</li>
+<li>Fixed rendering of timedelta values in OpenAPI schemas, when present as default, min, or max fields. [#7641]</li>
+<li>Render JSONFields with indentation in browsable API forms. [#6243]</li>
+<li>Remove unnecessary database query in admin Token views. [#7852]</li>
+<li>Raise validation errors when bools are passed to <code>PrimaryKeyRelatedField</code> fields, instead of casting to ints. [#7597]</li>
+<li>Don't include model properties as automatically generated ordering fields with <code>OrderingFilter</code>. [#7609]</li>
+<li>Use <code>deque</code> instead of <code>list</code> for tracking throttling <code>.history</code>. [#7849]</li>
+</ul>
+<h3 id="3122_1"><a class="toclink" href="#3122_1">3.12.2</a></h3>
 <p>Date: 13th October 2020</p>
 <ul>
 <li>Fix issue if <code>rest_framework.authtoken.models</code> is imported, but <code>rest_framework.authtoken</code> is not in INSTALLED_APPS. [#7571]</li>
@@ -645,6 +660,8 @@
 <li>Don't strict disallow redundant <code>SerializerMethodField</code> field name arguments.</li>
 <li>Don't render extra actions in browable API if not authenticated.</li>
 <li>Strip null characters from search parameters.</li>
+<li>Deprecate the <code>detail_route</code> decorator in favor of <code>action</code>, which accepts a <code>detail</code> bool. Use <code>@action(detail=True)</code> instead. <a href="https://github.com/encode/django-rest-framework/issues/6687">gh6687</a></li>
+<li>Deprecate the <code>list_route</code> decorator in favor of <code>action</code>, which accepts a <code>detail</code> bool. Use <code>@action(detail=False)</code> instead. <a href="https://github.com/encode/django-rest-framework/issues/6687">gh6687</a></li>
 </ul>
 <h2 id="39x-series"><a class="toclink" href="#39x-series">3.9.x series</a></h2>
 <h3 id="394"><a class="toclink" href="#394">3.9.4</a></h3>

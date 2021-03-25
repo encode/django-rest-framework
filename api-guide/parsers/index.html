@@ -558,7 +558,7 @@ def example_view(request, format=None):
 <hr />
 <h1 id="api-reference"><a class="toclink" href="#api-reference">API Reference</a></h1>
 <h2 id="jsonparser"><a class="toclink" href="#jsonparser">JSONParser</a></h2>
-<p>Parses <code>JSON</code> request content.</p>
+<p>Parses <code>JSON</code> request content. <code>request.data</code> will be populated with a dictionary of data.</p>
 <p><strong>.media_type</strong>: <code>application/json</code></p>
 <h2 id="formparser"><a class="toclink" href="#formparser">FormParser</a></h2>
 <p>Parses HTML form content.  <code>request.data</code> will be populated with a <code>QueryDict</code> of data.</p>

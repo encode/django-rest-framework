@@ -503,6 +503,14 @@
                       <a href="#drfpasswordless">drfpasswordless</a>
                     </li>
                   
+                    <li>
+                      <a href="#django-rest-authemail">django-rest-authemail</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#django-rest-durin">Django-Rest-Durin</a>
+                    </li>
+                  
                 
 
                   <div class="promo">
@@ -564,8 +572,8 @@ class ExampleView(APIView):
 
     def get(self, request, format=None):
         content = {
-            'user': unicode(request.user),  # `django.contrib.auth.User` instance.
-            'auth': unicode(request.auth),  # None
+            'user': str(request.user),  # `django.contrib.auth.User` instance.
+            'auth': str(request.auth),  # None
         }
         return Response(content)
 </code></pre>
@@ -575,8 +583,8 @@ class ExampleView(APIView):
 @permission_classes([IsAuthenticated])
 def example_view(request, format=None):
     content = {
-        'user': unicode(request.user),  # `django.contrib.auth.User` instance.
-        'auth': unicode(request.auth),  # None
+        'user': str(request.user),  # `django.contrib.auth.User` instance.
+        'auth': str(request.auth),  # None
     }
     return Response(content)
 </code></pre>
@@ -784,7 +792,7 @@ class ExampleAuthentication(authentication.BaseAuthentication):
 <h1 id="third-party-packages"><a class="toclink" href="#third-party-packages">Third party packages</a></h1>
 <p>The following third party packages are also available.</p>
 <h2 id="django-oauth-toolkit"><a class="toclink" href="#django-oauth-toolkit">Django OAuth Toolkit</a></h2>
-<p>The <a href="https://github.com/evonove/django-oauth-toolkit">Django OAuth Toolkit</a> package provides OAuth 2.0 support and works with Python 3.4+. The package is maintained by <a href="https://github.com/evonove/">Evonove</a> and uses the excellent <a href="https://github.com/idan/oauthlib">OAuthLib</a>.  The package is well documented, and well supported and is currently our <strong>recommended package for OAuth 2.0 support</strong>.</p>
+<p>The <a href="https://github.com/evonove/django-oauth-toolkit">Django OAuth Toolkit</a> package provides OAuth 2.0 support and works with Python 3.4+. The package is maintained by <a href="https://github.com/jazzband/">jazzband</a> and uses the excellent <a href="https://github.com/idan/oauthlib">OAuthLib</a>.  The package is well documented, and well supported and is currently our <strong>recommended package for OAuth 2.0 support</strong>.</p>
 <h4 id="installation-configuration"><a class="toclink" href="#installation-configuration">Installation &amp; configuration</a></h4>
 <p>Install using <code>pip</code>.</p>
 <pre><code>pip install django-oauth-toolkit
@@ -831,6 +839,11 @@ REST_FRAMEWORK = {
 <p><a href="https://github.com/James1345/django-rest-knox">Django-rest-knox</a> library provides models and views to handle token based authentication in a more secure and extensible way than the built-in TokenAuthentication scheme - with Single Page Applications and Mobile clients in mind. It provides per-client tokens, and views to generate them when provided some other authentication (usually basic authentication), to delete the token (providing a server enforced logout) and to delete all tokens (logs out all clients that a user is logged into).</p>
 <h2 id="drfpasswordless"><a class="toclink" href="#drfpasswordless">drfpasswordless</a></h2>
 <p><a href="https://github.com/aaronn/django-rest-framework-passwordless">drfpasswordless</a> adds (Medium, Square Cash inspired) passwordless support to Django REST Framework's own TokenAuthentication scheme. Users log in and sign up with a token sent to a contact point like an email address or a mobile number.</p>
+<h2 id="django-rest-authemail"><a class="toclink" href="#django-rest-authemail">django-rest-authemail</a></h2>
+<p><a href="https://github.com/celiao/django-rest-authemail">django-rest-authemail</a> provides a RESTful API interface for user signup and authentication. Email addresses are used for authentication, rather than usernames.  API endpoints are available for signup, signup email verification, login, logout, password reset, password reset verification, email change, email change verification, password change, and user detail.  A fully-functional example project and detailed instructions are included.</p>
+<h2 id="django-rest-durin"><a class="toclink" href="#django-rest-durin">Django-Rest-Durin</a></h2>
+<p><a href="https://github.com/eshaan7/django-rest-durin">Django-Rest-Durin</a> is built with the idea to have one library that does token auth for multiple Web/CLI/Mobile API clients via one interface but allows different token configuration for each API Client that consumes the API. It provides support for multiple tokens per user via custom models, views, permissions that work with Django-Rest-Framework. The token expiration time can be different per API client and is customizable via the Django Admin Interface.</p>
+<p>More information can be found in the <a href="https://django-rest-durin.readthedocs.io/en/latest/index.html">Documentation</a>.</p>
             
 
           </div> <!--/span-->

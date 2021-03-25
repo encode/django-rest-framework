@@ -611,7 +611,7 @@ class UserViewSet(viewsets.ModelViewSet):
         user = self.get_object()
         serializer = PasswordSerializer(data=request.data)
         if serializer.is_valid():
-            user.set_password(serializer.data['password'])
+            user.set_password(serializer.validated_data['password'])
             user.save()
             return Response({'status': 'password set'})
         else:
@@ -640,7 +640,7 @@ class UserViewSet(viewsets.ModelViewSet):
     def set_password(self, request, pk=None):
        ...
 </code></pre>
-<p>The two new actions will then be available at the urls <code>^users/{pk}/set_password/$</code> and <code>^users/{pk}/unset_password/$</code>. Use the <code>url_path</code> and <code>url_name</code> parameters to change the URL segement and the reverse URL name of the action.</p>
+<p>The two new actions will then be available at the urls <code>^users/{pk}/set_password/$</code> and <code>^users/{pk}/unset_password/$</code>. Use the <code>url_path</code> and <code>url_name</code> parameters to change the URL segment and the reverse URL name of the action.</p>
 <p>To view all extra actions, call the <code>.get_extra_actions()</code> method.</p>
 <h3 id="routing-additional-http-methods-for-extra-actions"><a class="toclink" href="#routing-additional-http-methods-for-extra-actions">Routing additional HTTP methods for extra actions</a></h3>
 <p>Extra actions can map additional HTTP methods to separate <code>ViewSet</code> methods. For example, the above password set/unset methods could be consolidated into a single route. Note that additional mappings do not accept arguments.</p>
