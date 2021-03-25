@@ -36,7 +36,7 @@ You can determine your currently installed version using `pip show`:
 
 ## 3.12.x series
 
-### 3.12.2
+### 3.12.3
 
 Date: 25th March 2021
 
