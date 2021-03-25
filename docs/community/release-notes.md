@@ -38,6 +38,22 @@ You can determine your currently installed version using `pip show`:
 
 ### 3.12.2
 
+Date: 25th March 2021
+
+* Properly handle ATOMIC_REQUESTS when multiple database configurations are used. [#7739]
+* Bypass `COUNT` query when `LimitOffsetPagination` is configured but pagination params are not included on the request. [#6098]
+* Respect `allow_null=True` on `DecimalField`. [#7718]
+* Allow title cased `"Yes"`/`"No"` values with `BooleanField`. [#7739]
+* Add `PageNumberPagination.get_page_number()` method for overriding behavior. [#7652]
+* Fixed rendering of timedelta values in OpenAPI schemas, when present as default, min, or max fields. [#7641]
+* Render JSONFields with indentation in browsable API forms. [#6243]
+* Remove unnecessary database query in admin Token views. [#7852]
+* Raise validation errors when bools are passed to `PrimaryKeyRelatedField` fields, instead of casting to ints. [#7597]
+* Don't include model properties as automatically generated ordering fields with `OrderingFilter`. [#7609]
+* Use `deque` instead of `list` for tracking throttling `.history`. [#7849]
+
+### 3.12.2
+
 Date: 13th October 2020
 
 * Fix issue if `rest_framework.authtoken.models` is imported, but `rest_framework.authtoken` is not in INSTALLED_APPS. [#7571]
