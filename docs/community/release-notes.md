@@ -40,7 +40,7 @@ You can determine your currently installed version using `pip show`:
 
 Date: 26th March 2021
 
-* Revert use of `deque` instead of `list` for tracking throttling `.history`. (Due to incompatibility with DjangoRedis cache backend.) [#7849]
+* Revert use of `deque` instead of `list` for tracking throttling `.history`. (Due to incompatibility with DjangoRedis cache backend. See #7870) [#7872]
 
 ### 3.12.3
 
