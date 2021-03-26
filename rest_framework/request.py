@@ -316,7 +316,7 @@ class Request:
             'application/x-www-form-urlencoded',
             'multipart/form-data'
         )
-        return any([parser.media_type in form_media for parser in self.parsers])
+        return any(parser.media_type in form_media for parser in self.parsers)
 
     def _parse(self):
         """

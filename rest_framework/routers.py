@@ -290,7 +290,7 @@ class APIRootView(views.APIView):
                     args=args,
                     kwargs=kwargs,
                     request=request,
-                    format=kwargs.get('format', None)
+                    format=kwargs.get('format')
                 )
             except NoReverseMatch:
                 # Don't bail out if eg. no list routes exist, only detail routes.
