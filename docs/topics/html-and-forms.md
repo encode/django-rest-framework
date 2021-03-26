@@ -215,6 +215,7 @@ select.html | `ChoiceField` or relational field types | hide_label
 radio.html | `ChoiceField` or relational field types | inline, hide_label
 select_multiple.html | `MultipleChoiceField` or relational fields with `many=True` | hide_label
 checkbox_multiple.html | `MultipleChoiceField` or relational fields with `many=True` | inline, hide_label
-checkbox.html | `BooleanField` | hide_label
+checkbox.html | `BooleanField` with `allow_null=False` | hide_label
+select_boolean.html | `BooleanField` with `allow_null=True` | hide_label
 fieldset.html | Nested serializer | hide_label
 list_fieldset.html | `ListField` or nested serializer with `many=True` |   hide_label

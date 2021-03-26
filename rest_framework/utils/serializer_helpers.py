@@ -76,7 +76,10 @@ class BoundField:
         )
 
     def as_form_field(self):
-        value = '' if (self.value is None or self.value is False) else self.value
+        if getattr(self._field, '_is_nullable_boolean_field', False):
+            value = '' if self.value is None else self.value
+        else:
+            value = '' if (self.value is None or self.value is False) else self.value
         return self.__class__(self._field, value, self.errors, self._prefix)
 
 
@@ -129,6 +132,8 @@ class NestedBoundField(BoundField):
         for key, value in self.value.items():
             if isinstance(value, (list, dict)):
                 values[key] = value
+            elif getattr(self.fields[key], '_is_nullable_boolean_field', False):
+                values[key] = '' if value is None else value
             else:
                 values[key] = '' if (value is None or value is False) else force_str(value)
         return self.__class__(self._field, values, self.errors, self._prefix)

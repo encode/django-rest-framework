@@ -1,3 +1,4 @@
+import pytest
 from django.http import QueryDict
 
 from rest_framework import serializers
@@ -59,11 +60,13 @@ class TestSimpleBoundField:
     def test_as_form_fields(self):
         class ExampleSerializer(serializers.Serializer):
             bool_field = serializers.BooleanField()
+            nullable_bool_field = serializers.BooleanField(allow_null=True)
             null_field = serializers.IntegerField(allow_null=True)
 
-        serializer = ExampleSerializer(data={'bool_field': False, 'null_field': None})
+        serializer = ExampleSerializer(data={'bool_field': False, 'nullable_bool_field': False, 'null_field': None})
         assert serializer.is_valid()
         assert serializer['bool_field'].as_form_field().value == ''
+        assert serializer['nullable_bool_field'].as_form_field().value is False
         assert serializer['null_field'].as_form_field().value == ''
 
     def test_rendering_boolean_field(self):
@@ -87,6 +90,55 @@ class TestSimpleBoundField:
             '</div>'
             '</div>'
         )
+        rendered_packed = ''.join(rendered.split())
+        assert rendered_packed == expected_packed
+
+    @pytest.mark.parametrize('bool_field_value', [True, False, None])
+    def test_rendering_nullable_boolean_field(self, bool_field_value):
+        from rest_framework.renderers import HTMLFormRenderer
+
+        class ExampleSerializer(serializers.Serializer):
+            bool_field = serializers.BooleanField(
+                allow_null=True,
+                style={'base_template': 'select_boolean.html', 'template_pack': 'rest_framework/vertical'})
+
+        serializer = ExampleSerializer(data={'bool_field': bool_field_value})
+        assert serializer.is_valid()
+        renderer = HTMLFormRenderer()
+        rendered = renderer.render_field(serializer['bool_field'], {})
+        if bool_field_value is True:
+            expected_packed = (
+                '<divclass="form-group">'
+                '<label>Boolfield</label>'
+                '<selectclass="form-control"name="bool_field">'
+                '<optionvalue="">Unknown</option>'
+                '<optionvalue="True"selected>Yes</option>'
+                '<optionvalue="False">No</option>'
+                '</select>'
+                '</div>'
+            )
+        elif bool_field_value is False:
+            expected_packed = (
+                '<divclass="form-group">'
+                '<label>Boolfield</label>'
+                '<selectclass="form-control"name="bool_field">'
+                '<optionvalue="">Unknown</option>'
+                '<optionvalue="True">Yes</option>'
+                '<optionvalue="False"selected>No</option>'
+                '</select>'
+                '</div>'
+            )
+        elif bool_field_value is None:
+            expected_packed = (
+                '<divclass="form-group">'
+                '<label>Boolfield</label>'
+                '<selectclass="form-control"name="bool_field">'
+                '<optionvalue=""selected>Unknown</option>'
+                '<optionvalue="True">Yes</option>'
+                '<optionvalue="False">No</option>'
+                '</select>'
+                '</div>'
+            )
         rendered_packed = ''.join(rendered.split())
         assert rendered_packed == expected_packed
 
@@ -120,6 +172,7 @@ class TestNestedBoundField:
     def test_as_form_fields(self):
         class Nested(serializers.Serializer):
             bool_field = serializers.BooleanField()
+            nullable_bool_field = serializers.BooleanField(allow_null=True)
             null_field = serializers.IntegerField(allow_null=True)
             json_field = serializers.JSONField()
             custom_json_field = CustomJSONField()
@@ -129,12 +182,13 @@ class TestNestedBoundField:
 
         serializer = ExampleSerializer(
             data={'nested': {
-                'bool_field': False, 'null_field': None,
+                'bool_field': False, 'nullable_bool_field': False, 'null_field': None,
                 'json_field': {'bool_item': True, 'number': 1, 'text_item': 'text'},
                 'custom_json_field': {'bool_item': True, 'number': 1, 'text_item': 'text'},
             }})
         assert serializer.is_valid()
         assert serializer['nested']['bool_field'].as_form_field().value == ''
+        assert serializer['nested']['nullable_bool_field'].as_form_field().value is False
         assert serializer['nested']['null_field'].as_form_field().value == ''
         assert serializer['nested']['json_field'].as_form_field().value == '''{
     "bool_item": true,

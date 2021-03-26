@@ -1,0 +1,25 @@
+
+<div class="form-group">
+  {% if field.label %}
+    <label class="col-sm-2 control-label {% if style.hide_label %}sr-only{% endif %}">
+      {{ field.label }}
+    </label>
+  {% endif %}
+
+  <div class="col-sm-10">
+    <select class="form-control" name="{{ field.name }}">
+        {% for select in field.iter_options %}
+            <option value="{{ select.value }}" {% if select.value == field.value %}selected{% endif %}>{{ select.display_text }}</option>
+        {% endfor %}
+    </select>
+    {% if field.errors %}
+      {% for error in field.errors %}
+        <span class="help-block">{{ error }}</span>
+      {% endfor %}
+    {% endif %}
+
+    {% if field.help_text %}
+      <span class="help-block">{{ field.help_text|safe }}</span>
+    {% endif %}
+  </div>
+</div>

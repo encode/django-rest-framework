@@ -720,6 +720,10 @@ class BooleanField(Field):
     }
     NULL_VALUES = {'null', 'Null', 'NULL', '', None}
 
+    @property
+    def _is_nullable_boolean_field(self):
+        return self.allow_null
+
     def to_internal_value(self, data):
         try:
             if data in self.TRUE_VALUES:
@@ -740,6 +744,14 @@ class BooleanField(Field):
         if value in self.NULL_VALUES and self.allow_null:
             return None
         return bool(value)
+
+    def iter_options(self):
+        choices = {
+            "": _("Unknown"),
+            True: _("Yes"),
+            False: _("No"),
+        }
+        return iter_options(choices)
 
 
 class NullBooleanField(BooleanField):

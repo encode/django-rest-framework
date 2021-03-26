@@ -364,6 +364,8 @@ class TestBooleanHTMLInput:
         """
         HTML checkboxes do not send any value, but should be treated
         as `False` by BooleanField.
+        Note: BooleanFields are rendered as HTML checkboxes
+        only if allow_null=False.
         """
         class TestSerializer(serializers.Serializer):
             archived = serializers.BooleanField()
@@ -376,6 +378,8 @@ class TestBooleanHTMLInput:
         """
         HTML checkboxes do not send any value, but should be treated
         as `False` by BooleanField, even if the field is required=False.
+        Note: BooleanFields are rendered as HTML checkboxes
+        only if allow_null=False.
         """
         class TestSerializer(serializers.Serializer):
             archived = serializers.BooleanField(required=False)
@@ -383,6 +387,22 @@ class TestBooleanHTMLInput:
         serializer = TestSerializer(data=QueryDict(''))
         assert serializer.is_valid()
         assert serializer.validated_data == {'archived': False}
+
+    @pytest.mark.parametrize(('select_option_value', 'expected_internal_value'), (('', None), ('True', True), ('False', False)))
+    def test_nullable_boolean_html(self, select_option_value, expected_internal_value):
+        """
+        If allow_null=True, BooleanField is rendered as HTML select element
+        containing three option elements with values '', 'True', and 'False'.
+        If option value=False selected, the internal value False is expected.
+        If option value=True selected, the internal value True is expected.
+        If option value= (the empty string) selected, the internal value None is expected.
+        """
+        class TestSerializer(serializers.Serializer):
+            archived = serializers.BooleanField(allow_null=True)
+
+        serializer = TestSerializer(data=QueryDict('archived={}'.format(select_option_value)))
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'archived': expected_internal_value}
 
 
 class TestHTMLInput:
