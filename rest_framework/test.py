@@ -124,7 +124,7 @@ if coreapi is not None:
         def __init__(self, *args, **kwargs):
             self._session = RequestsClient()
             kwargs['transports'] = [coreapi.transports.HTTPTransport(session=self.session)]
-            return super().__init__(*args, **kwargs)
+            super().__init__(*args, **kwargs)
 
         @property
         def session(self):

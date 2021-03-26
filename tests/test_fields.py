@@ -640,8 +640,7 @@ class TestBooleanField(FieldValues):
         '0': False,
         1: True,
         0: False,
-        True: True,
-        False: False,
+
     }
     invalid_inputs = {
         'foo': ['Must be a valid boolean.'],
@@ -654,8 +653,6 @@ class TestBooleanField(FieldValues):
         '0': False,
         1: True,
         0: False,
-        True: True,
-        False: False,
         'other': True
     }
     field = serializers.BooleanField()
@@ -988,8 +985,6 @@ class TestIntegerField(FieldValues):
         '0': 0,
         1: 1,
         0: 0,
-        1.0: 1,
-        0.0: 0,
         '1.0': 1
     }
     invalid_inputs = {
@@ -1002,8 +997,7 @@ class TestIntegerField(FieldValues):
         '0': 0,
         1: 1,
         0: 0,
-        1.0: 1,
-        0.0: 0
+
     }
     field = serializers.IntegerField()
 
@@ -1037,8 +1031,7 @@ class TestFloatField(FieldValues):
         '0': 0.0,
         1: 1.0,
         0: 0.0,
-        1.0: 1.0,
-        0.0: 0.0,
+
     }
     invalid_inputs = {
         'abc': ["A valid number is required."]
@@ -1048,8 +1041,7 @@ class TestFloatField(FieldValues):
         '0': 0.0,
         1: 1.0,
         0: 0.0,
-        1.0: 1.0,
-        0.0: 0.0,
+
     }
     field = serializers.FloatField()
 
@@ -1063,8 +1055,7 @@ class TestMinMaxFloatField(FieldValues):
         '3': 3,
         1: 1,
         3: 3,
-        1.0: 1.0,
-        3.0: 3.0,
+
     }
     invalid_inputs = {
         0.9: ['Ensure this value is greater than or equal to 1.'],

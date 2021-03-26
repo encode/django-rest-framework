@@ -206,7 +206,7 @@ def format_value(value):
     if value is None or isinstance(value, bool):
         return mark_safe('<code>%s</code>' % {True: 'true', False: 'false', None: 'null'}[value])
     elif isinstance(value, list):
-        if any([isinstance(item, (list, dict)) for item in value]):
+        if any(isinstance(item, (list, dict)) for item in value):
             template = loader.get_template('rest_framework/admin/list_value.html')
         else:
             template = loader.get_template('rest_framework/admin/simple_list_value.html')
@@ -285,7 +285,7 @@ def schema_links(section, sec_key=None):
 def add_nested_class(value):
     if isinstance(value, dict):
         return 'class=nested'
-    if isinstance(value, list) and any([isinstance(item, (list, dict)) for item in value]):
+    if isinstance(value, list) and any(isinstance(item, (list, dict)) for item in value):
         return 'class=nested'
     return ''
 
