@@ -36,6 +36,12 @@ You can determine your currently installed version using `pip show`:
 
 ## 3.12.x series
 
+### 3.12.4
+
+Date: 26th March 2021
+
+* Revert use of `deque` instead of `list` for tracking throttling `.history`. (Due to incompatibility with DjangoRedis cache backend. See #7870) [#7872]
+
 ### 3.12.3
 
 Date: 25th March 2021
