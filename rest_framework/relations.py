@@ -104,11 +104,11 @@ class RelatedField(Field):
             self.html_cutoff_text or _(api_settings.HTML_SELECT_CUTOFF_TEXT)
         )
         if not method_overridden('get_queryset', RelatedField, self):
-            assert self.queryset is not None or kwargs.get('read_only', None), (
+            assert self.queryset is not None or kwargs.get('read_only'), (
                 'Relational field must provide a `queryset` argument, '
                 'override `get_queryset`, or set read_only=`True`.'
             )
-        assert not (self.queryset is not None and kwargs.get('read_only', None)), (
+        assert not (self.queryset is not None and kwargs.get('read_only')), (
             'Relational fields should not provide a `queryset` argument, '
             'when setting read_only=`True`.'
         )
@@ -339,7 +339,7 @@ class HyperlinkedRelatedField(RelatedField):
         return self.reverse(view_name, kwargs=kwargs, request=request, format=format)
 
     def to_internal_value(self, data):
-        request = self.context.get('request', None)
+        request = self.context.get('request')
         try:
             http_prefix = data.startswith(('http:', 'https:'))
         except AttributeError:
@@ -382,7 +382,7 @@ class HyperlinkedRelatedField(RelatedField):
         )
 
         request = self.context['request']
-        format = self.context.get('format', None)
+        format = self.context.get('format')
 
         # By default use whatever format is given for the current context
         # unless the target is a different type to the source.
