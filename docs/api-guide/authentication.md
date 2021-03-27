@@ -1,6 +1,6 @@
 ---
 source:
-    - authentication.py
+  - authentication.py
 ---
 
 # Authentication
@@ -9,11 +9,11 @@ source:
 >
 > &mdash; Jacob Kaplan-Moss, ["REST worst practices"][cite]
 
-Authentication is the mechanism of associating an incoming request with a set of identifying credentials, such as the user the request came from, or the token that it was signed with.  The [permission] and [throttling] policies can then use those credentials to determine if the request should be permitted.
+Authentication is the mechanism of associating an incoming request with a set of identifying credentials, such as the user the request came from, or the token that it was signed with. The [permission] and [throttling] policies can then use those credentials to determine if the request should be permitted.
 
 REST framework provides a number of authentication schemes out of the box, and also allows you to implement custom schemes.
 
-Authentication is always run at the very start of the view, before the permission and throttling checks occur, and before any other code is allowed to proceed.
+Authentication always runs at the very start of the view, before the permission and throttling checks occur, and before any other code is allowed to proceed.
 
 The `request.user` property will typically be set to an instance of the `contrib.auth` package's `User` class.
 
@@ -29,7 +29,7 @@ For information on how to setup the permission polices for your API please see t
 
 ## How authentication is determined
 
-The authentication schemes are always defined as a list of classes.  REST framework will attempt to authenticate with each class in the list, and will set `request.user` and `request.auth` using the return value of the first class that successfully authenticates.
+The authentication schemes are always defined as a list of classes. REST framework will attempt to authenticate with each class in the list, and will set `request.user` and `request.auth` using the return value of the first class that successfully authenticates.
 
 If no class authenticates, `request.user` will be set to an instance of `django.contrib.auth.models.AnonymousUser`, and `request.auth` will be set to `None`.
 
@@ -37,7 +37,7 @@ The value of `request.user` and `request.auth` for unauthenticated requests can 
 
 ## Setting the authentication scheme
 
-The default authentication schemes may be set globally, using the `DEFAULT_AUTHENTICATION_CLASSES` setting.  For example.
+The default authentication schemes may be set globally, using the `DEFAULT_AUTHENTICATION_CLASSES` setting. For example.
 
     REST_FRAMEWORK = {
         'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -81,12 +81,12 @@ Or, if you're using the `@api_view` decorator with function based views.
 
 When an unauthenticated request is denied permission there are two different error codes that may be appropriate.
 
-* [HTTP 401 Unauthorized][http401]
-* [HTTP 403 Permission Denied][http403]
+- [HTTP 401 Unauthorized][http401]
+- [HTTP 403 Permission Denied][http403]
 
-HTTP 401 responses must always include a `WWW-Authenticate` header, that instructs the client how to authenticate.  HTTP 403 responses do not include the `WWW-Authenticate` header.
+HTTP 401 responses must always include a `WWW-Authenticate` header, that instructs the client how to authenticate. HTTP 403 responses do not include the `WWW-Authenticate` header.
 
-The kind of response that will be used depends on the authentication scheme.  Although multiple authentication schemes may be in use, only one scheme may be used to determine the type of response.  **The first authentication class set on the view is used when determining the type of response**.
+The kind of response that will be used depends on the authentication scheme. Although multiple authentication schemes may be in use, only one scheme may be used to determine the type of response. **The first authentication class set on the view is used when determining the type of response**.
 
 Note that when a request may successfully authenticate, but still be denied permission to perform the request, in which case a `403 Permission Denied` response will always be used, regardless of the authentication scheme.
 
@@ -94,7 +94,7 @@ Note that when a request may successfully authenticate, but still be denied perm
 
 Note that if deploying to [Apache using mod_wsgi][mod_wsgi_official], the authorization header is not passed through to a WSGI application by default, as it is assumed that authentication will be handled by Apache, rather than at an application level.
 
-If you are deploying to Apache, and using any non-session based authentication, you will need to explicitly configure mod_wsgi to pass the required headers through to the application.  This can be done by specifying the `WSGIPassAuthorization` directive in the appropriate context and setting it to `'On'`.
+If you are deploying to Apache, and using any non-session based authentication, you will need to explicitly configure mod_wsgi to pass the required headers through to the application. This can be done by specifying the `WSGIPassAuthorization` directive in the appropriate context and setting it to `'On'`.
 
     # this can go in either server config, virtual host, directory or .htaccess
     WSGIPassAuthorization On
@@ -105,22 +105,22 @@ If you are deploying to Apache, and using any non-session based authentication, 
 
 ## BasicAuthentication
 
-This authentication scheme uses [HTTP Basic Authentication][basicauth], signed against a user's username and password.  Basic authentication is generally only appropriate for testing.
+This authentication scheme uses [HTTP Basic Authentication][basicauth], signed against a user's username and password. Basic authentication is generally only appropriate for testing.
 
 If successfully authenticated, `BasicAuthentication` provides the following credentials.
 
-* `request.user` will be a Django `User` instance.
-* `request.auth` will be `None`.
+- `request.user` will be a Django `User` instance.
+- `request.auth` will be `None`.
 
-Unauthenticated responses that are denied permission will result in an `HTTP 401 Unauthorized` response with an appropriate WWW-Authenticate header.  For example:
+Unauthenticated responses that are denied permission will result in an `HTTP 401 Unauthorized` response with an appropriate WWW-Authenticate header. For example:
 
     WWW-Authenticate: Basic realm="api"
 
-**Note:** If you use `BasicAuthentication` in production you must ensure that your API is only available over `https`.  You should also ensure that your API clients will always re-request the username and password at login, and will never store those details to persistent storage.
+**Note:** If you use `BasicAuthentication` in production you must ensure that your API is only available over `https`. You should also ensure that your API clients will always re-request the username and password at login, and will never store those details to persistent storage.
 
 ## TokenAuthentication
 
-This authentication scheme uses a simple token-based HTTP Authentication scheme.  Token authentication is appropriate for client-server setups, such as native desktop and mobile clients.
+This authentication scheme uses a simple token-based HTTP Authentication scheme. Token authentication is appropriate for client-server setups, such as native desktop and mobile clients.
 
 To use the `TokenAuthentication` scheme you'll need to [configure the authentication classes](#setting-the-authentication-scheme) to include `TokenAuthentication`, and additionally include `rest_framework.authtoken` in your `INSTALLED_APPS` setting:
 
@@ -142,7 +142,7 @@ You'll also need to create tokens for your users.
     token = Token.objects.create(user=...)
     print(token.key)
 
-For clients to authenticate, the token key should be included in the `Authorization` HTTP header.  The key should be prefixed by the string literal "Token", with whitespace separating the two strings.  For example:
+For clients to authenticate, the token key should be included in the `Authorization` HTTP header. The key should be prefixed by the string literal "Token", with whitespace separating the two strings. For example:
 
     Authorization: Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b
 
@@ -150,14 +150,14 @@ For clients to authenticate, the token key should be included in the `Authorizat
 
 If successfully authenticated, `TokenAuthentication` provides the following credentials.
 
-* `request.user` will be a Django `User` instance.
-* `request.auth` will be a `rest_framework.authtoken.models.Token` instance.
+- `request.user` will be a Django `User` instance.
+- `request.auth` will be a `rest_framework.authtoken.models.Token` instance.
 
-Unauthenticated responses that are denied permission will result in an `HTTP 401 Unauthorized` response with an appropriate WWW-Authenticate header.  For example:
+Unauthenticated responses that are denied permission will result in an `HTTP 401 Unauthorized` response with an appropriate WWW-Authenticate header. For example:
 
     WWW-Authenticate: Token
 
-The `curl` command line tool may be useful for testing token authenticated APIs.  For example:
+The `curl` command line tool may be useful for testing token authenticated APIs. For example:
 
     curl -X GET http://127.0.0.1:8000/api/example/ -H 'Authorization: Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b'
 
@@ -195,7 +195,7 @@ If you've already created some users, you can generate tokens for all existing u
 
 ##### By exposing an api endpoint
 
-When using `TokenAuthentication`, you may want to provide a mechanism for clients to obtain a token given the username and password.  REST framework provides a built-in view to provide this behavior.  To use it, add the `obtain_auth_token` view to your URLconf:
+When using `TokenAuthentication`, you may want to provide a mechanism for clients to obtain a token given the username and password. REST framework provides a built-in view to provide this behavior. To use it, add the `obtain_auth_token` view to your URLconf:
 
     from rest_framework.authtoken import views
     urlpatterns += [
@@ -210,7 +210,7 @@ The `obtain_auth_token` view will return a JSON response when valid `username` a
 
 Note that the default `obtain_auth_token` view explicitly uses JSON requests and responses, rather than using default renderer and parser classes in your settings.
 
-By default there are no permissions or throttling applied to the  `obtain_auth_token` view. If you do wish to apply throttling you'll need to override the view class,
+By default there are no permissions or throttling applied to the `obtain_auth_token` view. If you do wish to apply throttling you'll need to override the view class,
 and include them using the `throttle_classes` attribute.
 
 If you need a customized version of the `obtain_auth_token` view, you can do so by subclassing the `ObtainAuthToken` view class, and using that in your url conf instead.
@@ -241,7 +241,6 @@ And in your `urls.py`:
         path('api-token-auth/', CustomAuthToken.as_view())
     ]
 
-
 ##### With Django admin
 
 It is also possible to create Tokens manually through admin interface. In case you are using a large user base, we recommend that you monkey patch the `TokenAdmin` class to customize it to your needs, more specifically by declaring the `user` field as `raw_field`.
@@ -251,7 +250,6 @@ It is also possible to create Tokens manually through admin interface. In case y
     from rest_framework.authtoken.admin import TokenAdmin
 
     TokenAdmin.raw_id_fields = ['user']
-
 
 #### Using Django manage.py command
 
@@ -267,24 +265,22 @@ In case you want to regenerate the token (for example if it has been compromised
 
     ./manage.py drf_create_token -r <username>
 
-
 ## SessionAuthentication
 
-This authentication scheme uses Django's default session backend for authentication.  Session authentication is appropriate for AJAX clients that are running in the same session context as your website.
+This authentication scheme uses Django's default session backend for authentication. Session authentication is appropriate for AJAX clients that are running in the same session context as your website.
 
 If successfully authenticated, `SessionAuthentication` provides the following credentials.
 
-* `request.user` will be a Django `User` instance.
-* `request.auth` will be `None`.
+- `request.user` will be a Django `User` instance.
+- `request.auth` will be `None`.
 
 Unauthenticated responses that are denied permission will result in an `HTTP 403 Forbidden` response.
 
-If you're using an AJAX style API with SessionAuthentication, you'll need to make sure you include a valid CSRF token for any "unsafe" HTTP method calls, such as `PUT`, `PATCH`, `POST` or `DELETE` requests.  See the [Django CSRF documentation][csrf-ajax] for more details.
+If you're using an AJAX style API with SessionAuthentication, you'll need to make sure you include a valid CSRF token for any "unsafe" HTTP method calls, such as `PUT`, `PATCH`, `POST` or `DELETE` requests. See the [Django CSRF documentation][csrf-ajax] for more details.
 
 **Warning**: Always use Django's standard login view when creating login pages. This will ensure your login views are properly protected.
 
 CSRF validation in REST framework works slightly differently to standard Django due to the need to support both session and non-session based authentication to the same views. This means that only authenticated requests require CSRF tokens, and anonymous requests may be sent without CSRF tokens. This behaviour is not suitable for login views, which should always have CSRF validation applied.
-
 
 ## RemoteUserAuthentication
 
@@ -298,27 +294,26 @@ already exist. To change this and other behaviour, consult the
 
 If successfully authenticated, `RemoteUserAuthentication` provides the following credentials:
 
-* `request.user` will be a Django `User` instance.
-* `request.auth` will be `None`.
+- `request.user` will be a Django `User` instance.
+- `request.auth` will be `None`.
 
 Consult your web server's documentation for information about configuring an authentication method, e.g.:
 
-* [Apache Authentication How-To](https://httpd.apache.org/docs/2.4/howto/auth.html)
-* [NGINX (Restricting Access)](https://docs.nginx.com/nginx/admin-guide/security-controls/configuring-http-basic-authentication/)
-
+- [Apache Authentication How-To](https://httpd.apache.org/docs/2.4/howto/auth.html)
+- [NGINX (Restricting Access)](https://docs.nginx.com/nginx/admin-guide/security-controls/configuring-http-basic-authentication/)
 
 # Custom authentication
 
-To implement a custom authentication scheme, subclass `BaseAuthentication` and override the `.authenticate(self, request)` method.  The method should return a two-tuple of `(user, auth)` if authentication succeeds, or `None` otherwise.
+To implement a custom authentication scheme, subclass `BaseAuthentication` and override the `.authenticate(self, request)` method. The method should return a two-tuple of `(user, auth)` if authentication succeeds, or `None` otherwise.
 
 In some circumstances instead of returning `None`, you may want to raise an `AuthenticationFailed` exception from the `.authenticate()` method.
 
 Typically the approach you should take is:
 
-* If authentication is not attempted, return `None`.  Any other authentication schemes also in use will still be checked.
-* If authentication is attempted but fails, raise a `AuthenticationFailed` exception.  An error response will be returned immediately, regardless of any permissions checks, and without checking any other authentication schemes.
+- If authentication is not attempted, return `None`. Any other authentication schemes also in use will still be checked.
+- If authentication is attempted but fails, raise a `AuthenticationFailed` exception. An error response will be returned immediately, regardless of any permissions checks, and without checking any other authentication schemes.
 
-You *may* also override the `.authenticate_header(self, request)` method.  If implemented, it should return a string that will be used as the value of the `WWW-Authenticate` header in a `HTTP 401 Unauthorized` response.
+You _may_ also override the `.authenticate_header(self, request)` method. If implemented, it should return a string that will be used as the value of the `WWW-Authenticate` header in a `HTTP 401 Unauthorized` response.
 
 If the `.authenticate_header()` method is not overridden, the authentication scheme will return `HTTP 403 Forbidden` responses when an unauthenticated request is denied access.
 
@@ -332,7 +327,7 @@ If the `.authenticate_header()` method is not overridden, the authentication sch
 
 The following example will authenticate any incoming request as the user given by the username in a custom request header named 'X-USERNAME'.
 
-	from django.contrib.auth.models import User
+    from django.contrib.auth.models import User
     from rest_framework import authentication
     from rest_framework import exceptions
 
@@ -357,7 +352,7 @@ The following third party packages are also available.
 
 ## Django OAuth Toolkit
 
-The [Django OAuth Toolkit][django-oauth-toolkit] package provides OAuth 2.0 support and works with Python 3.4+. The package is maintained by [jazzband][jazzband] and uses the excellent [OAuthLib][oauthlib].  The package is well documented, and well supported and is currently our **recommended package for OAuth 2.0 support**.
+The [Django OAuth Toolkit][django-oauth-toolkit] package provides OAuth 2.0 support and works with Python 3.4+. The package is maintained by [jazzband][jazzband] and uses the excellent [OAuthLib][oauthlib]. The package is well documented, and well supported and is currently our **recommended package for OAuth 2.0 support**.
 
 #### Installation & configuration
 
@@ -414,11 +409,10 @@ HTTP Signature (currently a [IETF draft][http-signature-ietf-draft]) provides a 
 
 This library provides a set of REST API endpoints for registration, authentication (including social media authentication), password reset, retrieve and update user details, etc. By having these API endpoints, your client apps such as AngularJS, iOS, Android, and others can communicate to your Django backend site independently via REST APIs for user management.
 
-
 There are currently two forks of this project.
 
-* [Django-rest-auth][django-rest-auth] is the original project, [but is not currently receiving updates](https://github.com/Tivix/django-rest-auth/issues/568).
-* [Dj-rest-auth][dj-rest-auth] is a newer fork of the project.
+- [Django-rest-auth][django-rest-auth] is the original project, [but is not currently receiving updates](https://github.com/Tivix/django-rest-auth/issues/568).
+- [Dj-rest-auth][dj-rest-auth] is a newer fork of the project.
 
 ## django-rest-framework-social-oauth2
 
@@ -434,7 +428,7 @@ There are currently two forks of this project.
 
 ## django-rest-authemail
 
-[django-rest-authemail][django-rest-authemail] provides a RESTful API interface for user signup and authentication. Email addresses are used for authentication, rather than usernames.  API endpoints are available for signup, signup email verification, login, logout, password reset, password reset verification, email change, email change verification, password change, and user detail.  A fully-functional example project and detailed instructions are included.
+[django-rest-authemail][django-rest-authemail] provides a RESTful API interface for user signup and authentication. Email addresses are used for authentication, rather than usernames. API endpoints are available for signup, signup email verification, login, logout, password reset, password reset verification, email change, email change verification, password change, and user detail. A fully-functional example project and detailed instructions are included.
 
 ## Django-Rest-Durin
 
