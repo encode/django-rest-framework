@@ -214,7 +214,7 @@ msgstr "Введите корректный URL."
 
 #: fields.py:867
 msgid "Must be a valid UUID."
-msgstr ""
+msgstr "UUID должен быть валидным."
 
 #: fields.py:903
 msgid "Enter a valid IPv4 or IPv6 address."
