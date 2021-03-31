@@ -621,6 +621,12 @@ class CursorPagination(BasePagination):
         else:
             (offset, reverse, current_position) = self.cursor
 
+        # Cursor pagination always enforces an ordering.
+        if reverse:
+            queryset = queryset.order_by(*_reverse_ordering(self.ordering))
+        else:
+            queryset = queryset.order_by(*self.ordering)
+
         # If we have a cursor with a fixed position then filter by that.
         if current_position is not None:
             current_position_list = json.loads(current_position)
@@ -644,18 +650,22 @@ class CursorPagination(BasePagination):
                         **{(order_attr + "__gt"): position}
                     )
 
-            filter_list = []
+            filter_list = [q_objects_compare[self.ordering[0]]]
+
+            ordering = self.ordering
+
             # starting with the second field
-            for i in range(len(self.ordering)):
+            for i in range(len(ordering)):
                 # The first operands need to be equals
                 # the last operands need to be gt
-                equals = list(self.ordering[:i+2])
+                equals = list(ordering[:i+2])
                 greater_than_q = q_objects_compare[equals.pop()]
                 sub_filters = [q_objects_equals[e] for e in equals]
                 sub_filters.append(greater_than_q)
                 filter_list.append(reduce(operator.and_, sub_filters))
 
-            queryset = queryset.filter(reduce(operator.or_, filter_list))
+            q_object = reduce(operator.or_, filter_list)
+            queryset = queryset.filter(q_object)
 
         # If we have an offset cursor then offset the entire page by that amount.
         # We also always fetch an extra item in order to determine if there is a
@@ -866,7 +876,7 @@ class CursorPagination(BasePagination):
 
         # Always include a unique key to order by
         if not {f"-{pk_name}", pk_name, "pk", "-pk"} & set(ordering):
-            ordering = ordering + (pk_name,)
+            ordering = tuple(ordering) + (pk_name,)
 
         return tuple(ordering)
 
@@ -923,7 +933,7 @@ class CursorPagination(BasePagination):
 
             fields.append(str(attr))
 
-        return json.dumps(fields).encode()
+        return json.dumps(fields)
 
     def get_paginated_response(self, data):
         return Response(OrderedDict([
