@@ -10,7 +10,7 @@ class RESTFrameworkModel(models.Model):
     """
 
     class Meta:
-        app_label = 'tests'
+        app_label = "tests"
         abstract = True
 
 
@@ -119,3 +119,11 @@ class OneToOnePKSource(RESTFrameworkModel):
     target = models.OneToOneField(
         OneToOneTarget, primary_key=True,
         related_name='required_source', on_delete=models.CASCADE)
+
+
+class ExamplePaginationModel(models.Model):
+    # Don't use an auto field because we can't reset
+    # sequences and that's needed for this test
+    id = models.IntegerField(primary_key=True)
+    field = models.IntegerField()
+    timestamp = models.IntegerField()
