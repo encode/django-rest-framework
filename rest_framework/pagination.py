@@ -2,7 +2,6 @@
 Pagination serializers determine the structure of the output that should
 be used for paginated responses.
 """
-import json
 import operator
 
 from base64 import b64decode, b64encode
@@ -21,6 +20,7 @@ from rest_framework.compat import coreapi, coreschema
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
+from rest_framework.utils import json
 from rest_framework.utils.urls import remove_query_param, replace_query_param
 
 

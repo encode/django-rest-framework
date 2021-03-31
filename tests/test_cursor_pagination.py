@@ -1,11 +1,9 @@
 import base64
 import itertools
-import re
 from base64 import b64encode
 from urllib import parse
 
 import pytest
-from django.db import models
 from rest_framework import generics
 from rest_framework.pagination import Cursor, CursorPagination
 from rest_framework.filters import OrderingFilter
@@ -41,12 +39,11 @@ def create_cursor(offset, reverse, position):
 
 
 def decode_cursor(response):
-    
     links = {
         'next': response.data.get('next'),
         'prev': response.data.get('prev'),
     }
-    
+
     cursors = {}
 
     for rel, link in links.items():
@@ -84,9 +81,11 @@ def decode_cursor(response):
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("page_size,offset", [
-    (6, 2), (2, 6), (5, 3), (3, 5), (5, 5)
-],
+@pytest.mark.parametrize(
+    "page_size,offset",
+    [
+        (6, 2), (2, 6), (5, 3), (3, 5), (5, 5)
+    ],
     ids=[
         'page_size_divisor_of_offset',
         'page_size_multiple_of_offset',
@@ -179,7 +178,7 @@ def test_filtered_items_are_paginated(page_size, offset):
 
     while next_cursor:
         assert (
-            expected_result[position : position + len(response.data['results'])] == response.data['results']
+            expected_result[position: position + len(response.data['results'])] == response.data['results']
         )
         position += len(response.data['results'])
         response = _request(*next_cursor)
@@ -190,7 +189,7 @@ def test_filtered_items_are_paginated(page_size, offset):
 
     while prev_cursor:
         assert (
-            expected_result[position - len(response.data['results']) : position] == response.data['results']
+            expected_result[position - len(response.data['results']): position] == response.data['results']
         )
         position -= len(response.data['results'])
         response = _request(*prev_cursor)

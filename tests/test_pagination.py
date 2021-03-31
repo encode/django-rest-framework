@@ -4,7 +4,6 @@ import re
 import operator
 
 from unittest.mock import Mock
-from functools import reduce
 
 from django.core.paginator import Paginator as DjangoPaginator
 from django.db.models.query_utils import Q
@@ -34,7 +33,6 @@ class MockQuerySet:
             q_object = Q(**kwargs)
 
         query = self._q_object_to_expression(q_object)
-        res = query(self.items[0])
 
         return MockQuerySet([
             item for item in self.items
@@ -48,14 +46,13 @@ class MockQuerySet:
 
             for param in ordering:
                 if param.startswith('-'):
-                    ordering_params.append(0 - getattr(item,param[1:]))
+                    ordering_params.append(0 - getattr(item, param[1:]))
                 else:
-                    ordering_params.append(getattr(item,param))
+                    ordering_params.append(getattr(item, param))
 
             return tuple(ordering_params)
 
         return MockQuerySet(list(sorted(self.items, key=_ordering_callable)))
-
 
     def __getitem__(self, sliced):
         return self.items[sliced]
@@ -73,10 +70,13 @@ class MockQuerySet:
         def _parse(_q_object):
             _statements = []
 
-
             for child in _q_object.children:
                 if isinstance(child, Q):
-                    return [lambda item: operator_map[child.connector](l(item) for l in _parse(child))]
+                    return [
+                        lambda item: operator_map[child.connector](
+                            lmbda(item) for lmbda in _parse(child)
+                        )
+                    ]
 
                 match = self._operator_match.match(child[0]).groupdict()
                 field, field_op = match['field'], match['operator']
@@ -87,12 +87,15 @@ class MockQuerySet:
                     field_op = operator_map[field_op]
 
                 value = child[1]
-                
+
                 _statements.append(lambda item: field_op(getattr(item, field), int(value)))
 
             return _statements
 
-        return lambda item: operator_map[q_object.connector](l(item) for l in _parse(q_object))
+        return lambda item: operator_map[q_object.connector](
+            lmbda(item) for lmbda in _parse(q_object)
+        )
+
 
 class TestPaginationIntegration:
     """
@@ -733,7 +736,7 @@ class CursorPaginationTestsMixin:
 
         (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
 
-        #assert previous == [4, 4, 4, 5, 6]  # Paging artifact
+        # assert previous == [4, 4, 4, 5, 6]  # Paging artifact
         assert current == [7, 7, 7, 7, 7]
         assert next == [7, 7, 7, 8, 9]
 
@@ -893,7 +896,7 @@ class CursorPaginationTestsMixin:
 
         (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
 
-        #assert previous == [4, 4, 4, 5, 6]  # Paging artifact
+        # assert previous == [4, 4, 4, 5, 6]  # Paging artifact
         assert current == [7, 7, 7, 7, 7]
         assert next == [7, 7, 7, 8, 9]
 
@@ -919,7 +922,7 @@ class CursorPaginationTestsMixin:
 
         assert previous == [4, 4, 5, 6, 7]
         assert current == [7, 7, 7, 7, 7]
-        #assert next == [8, 9, 9, 9, 9]  # Paging artifact
+        # assert next == [8, 9, 9, 9, 9]  # Paging artifact
 
         (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
 
@@ -1156,7 +1159,6 @@ class TestCursorPaginationWithValueQueryset(CursorPaginationTestsMixin, TestCase
         assert next is None
         assert previous_url is not None
         assert next_url is None
-
 
 
 def test_get_displayed_page_numbers():
