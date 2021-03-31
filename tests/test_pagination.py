@@ -1,21 +1,20 @@
-import pytest
-import re
 import operator
-
+import re
 from unittest.mock import Mock
 
+import pytest
 from django.core.paginator import Paginator as DjangoPaginator
-from django.db.models.query_utils import Q
 from django.db import models
+from django.db.models.query_utils import Q
 from django.test import TestCase
 
 from rest_framework import (
     exceptions, filters, generics, pagination, serializers, status
 )
-from rest_framework.utils import json
 from rest_framework.pagination import PAGE_BREAK, PageLink
 from rest_framework.request import Request
 from rest_framework.test import APIRequestFactory
+from rest_framework.utils import json
 
 factory = APIRequestFactory()
 

@@ -3,18 +3,17 @@ Pagination serializers determine the structure of the output that should
 be used for paginated responses.
 """
 import operator
-
 from base64 import b64decode, b64encode
 from collections import OrderedDict, namedtuple
-from urllib import parse
 from functools import reduce
+from urllib import parse
 
 from django.core.paginator import InvalidPage
 from django.core.paginator import Paginator as DjangoPaginator
+from django.db.models.query import Q
 from django.template import loader
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
-from django.db.models.query import Q
 
 from rest_framework.compat import coreapi, coreschema
 from rest_framework.exceptions import NotFound

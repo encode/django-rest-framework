@@ -4,14 +4,15 @@ from base64 import b64encode
 from urllib import parse
 
 import pytest
+
 from rest_framework import generics
-from rest_framework.pagination import Cursor, CursorPagination
 from rest_framework.filters import OrderingFilter
+from rest_framework.pagination import Cursor, CursorPagination
 from rest_framework.permissions import AllowAny
 from rest_framework.serializers import ModelSerializer
 from rest_framework.test import APIRequestFactory
-from .models import ExamplePaginationModel
 
+from .models import ExamplePaginationModel
 
 factory = APIRequestFactory()
 
