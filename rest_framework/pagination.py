@@ -658,7 +658,7 @@ class CursorPagination(BasePagination):
             for i in range(len(ordering)):
                 # The first operands need to be equals
                 # the last operands need to be gt
-                equals = list(ordering[:i+2])
+                equals = list(ordering[:i + 2])
                 greater_than_q = q_objects_compare[equals.pop()]
                 sub_filters = [q_objects_equals[e] for e in equals]
                 sub_filters.append(greater_than_q)

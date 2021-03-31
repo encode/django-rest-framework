@@ -1,5 +1,4 @@
 import pytest
-import json
 import re
 import operator
 
@@ -13,6 +12,7 @@ from django.test import TestCase
 from rest_framework import (
     exceptions, filters, generics, pagination, serializers, status
 )
+from rest_framework.utils import json
 from rest_framework.pagination import PAGE_BREAK, PageLink
 from rest_framework.request import Request
 from rest_framework.test import APIRequestFactory
