@@ -875,7 +875,7 @@ class CursorPagination(BasePagination):
         pk_name = queryset.model._meta.pk.name
 
         # Always include a unique key to order by
-        if not {f"-{pk_name}", pk_name, "pk", "-pk"} & set(ordering):
+        if not {"-{}".format(pk_name), pk_name, "pk", "-pk"} & set(ordering):
             ordering = tuple(ordering) + (pk_name,)
 
         return tuple(ordering)
