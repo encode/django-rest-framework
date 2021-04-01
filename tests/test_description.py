@@ -26,7 +26,7 @@ indented
 ``` json
 [{
     "alpha": 1,
-    "beta: "this is a string"
+    "beta": "this is a string"
 }]
 ```"""
 
@@ -48,20 +48,18 @@ MARKDOWN_gte_33 = """
 <div class="highlight"><pre><span></span><span class="p">[{</span><br />\
     <span class="nt">&quot;alpha&quot;</span><span class="p">:</span>\
  <span class="mi">1</span><span class="p">,</span><br />\
-    <span class="nt">&quot;beta: &quot;</span><span class="err">this\
-</span> <span class="err">is</span> <span class="err">a</span> \
-<span class="err">string&quot;</span><br /><span class="p">}]</span>\
-<br /></pre></div>
+    <span class="nt">&quot;beta&quot;</span><span class="p">:</span>\
+ <span class="s2">&quot;this is a string&quot;</span><br />\
+<span class="p">}]</span><br /></pre></div>
 <p><br /></p>"""
 
 MARKDOWN_lt_33 = """
 <div class="highlight"><pre><span></span><span class="p">[{</span><br />\
     <span class="nt">&quot;alpha&quot;</span><span class="p">:</span>\
  <span class="mi">1</span><span class="p">,</span><br />\
-    <span class="nt">&quot;beta: &quot;</span><span class="err">this\
-</span> <span class="err">is</span> <span class="err">a</span>\
- <span class="err">string&quot;</span><br /><span class="p">}]</span>\
-<br /></pre></div>
+    <span class="nt">&quot;beta&quot;</span><span class="p">:</span>\
+ <span class="s2">&quot;this is a string&quot;</span><br />\
+<span class="p">}]</span><br /></pre></div>
 
 <p><br /></p>"""
 
@@ -112,7 +110,7 @@ class TestViewNamesAndDescriptions(TestCase):
             ``` json
             [{
                 "alpha": 1,
-                "beta: "this is a string"
+                "beta": "this is a string"
             }]
             ```"""
 
