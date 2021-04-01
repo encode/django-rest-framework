@@ -235,7 +235,7 @@ class TestSource:
 class TestReadOnly:
     def setup(self):
         class TestSerializer(serializers.Serializer):
-            read_only = serializers.ReadOnlyField(default="789")
+            read_only = serializers.ReadOnlyField(default=789)
             writable = serializers.IntegerField()
         self.Serializer = TestSerializer
 
@@ -248,16 +248,16 @@ class TestReadOnly:
 
     def test_validate_read_only(self):
         """
-        Read-only serializers.should not be included in validation.
+        Read-only fields default value should be included in validation.
         """
         data = {'read_only': 123, 'writable': 456}
         serializer = self.Serializer(data=data)
         assert serializer.is_valid()
-        assert serializer.validated_data == {'writable': 456}
+        assert serializer.validated_data == {'read_only': 789, 'writable': 456}
 
     def test_serialize_read_only(self):
         """
-        Read-only serializers.should be serialized.
+        Read-only fields should be serialized.
         """
         instance = {'read_only': 123, 'writable': 456}
         serializer = self.Serializer(instance)
