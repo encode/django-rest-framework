@@ -306,6 +306,35 @@ class TestNestedWriteErrors(TestCase):
         )
 
 
+class TestNestedWriteReadonlyDefault(TestCase):
+    def test_nested_serializer_readonly_default(self):
+        profile_obj = NestedWriteProfile.objects.create(address='52 festive road')
+
+        class ProfileSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = NestedWriteProfile
+                fields = ['address']
+
+        class NestedProfileSerializer(serializers.ModelSerializer):
+            profile = ProfileSerializer(read_only=True, default=lambda: profile_obj)
+
+            class Meta:
+                model = NestedWritePerson
+                fields = ['profile']
+
+        serializer = NestedProfileSerializer(data={})
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'profile': profile_obj}
+        nested = serializer.save()
+        assert nested.profile == profile_obj
+
+        serializer = NestedProfileSerializer(data={'profile': {'address': '123 fake street'}})
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'profile': profile_obj}
+        serializer.save()
+        assert nested.profile == profile_obj
+
+
 if postgres_fields:
     class NonRelationalPersonModel(models.Model):
         """Model declaring a postgres JSONField"""

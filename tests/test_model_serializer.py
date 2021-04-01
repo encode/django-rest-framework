@@ -1333,3 +1333,18 @@ class Issue6751Test(TestCase):
         serializer.save()
 
         self.assertEqual(instance.char_field, 'value changed by signal')
+
+
+class TestReadonlyDefault(TestCase):
+    def test_readonly_default(self):
+        class TestSerializer(serializers.ModelSerializer):
+            char_field = serializers.CharField(read_only=True, default='default')
+
+            class Meta:
+                model = OneFieldModel
+                fields = ('char_field',)
+
+        serializer = TestSerializer(data={})
+        serializer.is_valid()
+        instance = serializer.save()
+        assert instance.char_field == 'default'

@@ -488,6 +488,7 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
         if errors:
             raise ValidationError(errors)
 
+        ret.update(self._read_only_defaults())
         return ret
 
     def to_representation(self, instance):
