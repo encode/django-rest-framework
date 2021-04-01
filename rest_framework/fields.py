@@ -1,6 +1,7 @@
 import copy
 import datetime
 import decimal
+import distutils.util
 import functools
 import inspect
 import re
@@ -702,43 +703,31 @@ class BooleanField(Field):
     }
     default_empty_html = False
     initial = False
-    TRUE_VALUES = {
-        't', 'T',
-        'y', 'Y', 'yes', 'Yes', 'YES',
-        'true', 'True', 'TRUE',
-        'on', 'On', 'ON',
-        '1', 1,
-        True
-    }
-    FALSE_VALUES = {
-        'f', 'F',
-        'n', 'N', 'no', 'No', 'NO',
-        'false', 'False', 'FALSE',
-        'off', 'Off', 'OFF',
-        '0', 0, 0.0,
-        False
-    }
     NULL_VALUES = {'null', 'Null', 'NULL', '', None}
 
     def to_internal_value(self, data):
         try:
-            if data in self.TRUE_VALUES:
-                return True
-            elif data in self.FALSE_VALUES:
-                return False
-            elif data in self.NULL_VALUES and self.allow_null:
+            if data in self.NULL_VALUES and self.allow_null:
                 return None
+            elif isinstance(data, str):
+                try:
+                    return bool(distutils.util.strtobool(data))
+                except ValueError:
+                    pass
+            else:
+                return data
         except TypeError:  # Input is an unhashable type
             pass
         self.fail('invalid', input=data)
 
     def to_representation(self, value):
-        if value in self.TRUE_VALUES:
-            return True
-        elif value in self.FALSE_VALUES:
-            return False
         if value in self.NULL_VALUES and self.allow_null:
             return None
+        elif isinstance(value, str):
+            try:
+                return bool(distutils.util.strtobool(value))
+            except ValueError:
+                pass
         return bool(value)
 
 
