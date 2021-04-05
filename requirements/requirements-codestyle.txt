@@ -1,7 +1,6 @@
 # PEP8 code linting, which we run on all commits.
-flake8==3.8.3
-flake8-tidy-imports==4.1.0
-pycodestyle==2.6.0
+flake8>=3.8.4,<3.9
+flake8-tidy-imports>=4.1.0,<4.2
 
 # Sort and lint imports
-isort==5.4.2
+isort>=5.6.2,<6.0

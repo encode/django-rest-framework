@@ -1,8 +1,7 @@
 from django.test import TestCase
 
 from rest_framework.status import (
-    is_client_error, is_informational, is_redirect, is_server_error,
-    is_success
+    is_client_error, is_informational, is_redirect, is_server_error, is_success
 )
 
 
