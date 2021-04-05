@@ -49,5 +49,5 @@ class TokenProxy(Token):
 
     class Meta:
         proxy = 'rest_framework.authtoken' in settings.INSTALLED_APPS
-        abstract = 'rest_framework.authtoken' not in settings.INSTALLED_APPS
+        abstract = not proxy
         verbose_name = "token"
