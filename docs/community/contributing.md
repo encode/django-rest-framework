@@ -59,7 +59,7 @@ username instead of YOUR-USERNAME:
 See GitHub's [_Fork a Repo_][how-to-fork] Guide for more help.
 
 Changes should broadly follow the [PEP 8][pep-8] style conventions, and we recommend you set up your editor to automatically indicate non-conforming styles.
-You can check conformance each time you commit using the [pre-commit](https://pre-commit.com/) hooks, which we also run on CI.
+You can check your contributions against these conventions each time you commit using the [pre-commit](https://pre-commit.com/) hooks, which we also run on CI.
 To set them up, first ensure you have the pre-commit tool installed, for example:
 
     python -m pip install pre-commit
