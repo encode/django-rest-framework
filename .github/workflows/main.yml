@@ -42,8 +42,7 @@ jobs:
     - name: Run tox targets for ${{ matrix.python-version }}
       run: |
         ENV_PREFIX=$(tr -C -d "0-9" <<< "${{ matrix.python-version }}")
-        TOXENV=$(tox --listenvs | grep "^py$ENV_PREFIX" | tr '\n' ',')
-        tox
+        TOXENV=$(tox --listenvs | grep "^py$ENV_PREFIX" | tr '\n' ',') tox
 
     - name: Run extra tox targets
       if: ${{ matrix.python-version == '3.9' }}
