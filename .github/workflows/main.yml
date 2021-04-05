@@ -34,7 +34,7 @@ jobs:
           ${{ runner.os }}-pip-
 
     - name: Upgrade packaging tools
-      run: python -m pip install --upgrade pip setuptools virtualenv
+      run: python -m pip install --upgrade pip setuptools virtualenv wheel
 
     - name: Install dependencies
       run: python -m pip install --upgrade codecov tox
