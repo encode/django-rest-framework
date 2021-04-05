@@ -16,5 +16,5 @@ MANIFEST
 coverage.*
 
 !.gitignore
+!.pre-commit-config.yaml
 !.travis.yml
-!.isort.cfg
