@@ -48,6 +48,5 @@ class TokenProxy(Token):
         return self.user_id
 
     class Meta:
-        proxy = 'rest_framework.authtoken' in settings.INSTALLED_APPS
-        abstract = not proxy
+        proxy = not Token._meta.abstract
         verbose_name = "token"
