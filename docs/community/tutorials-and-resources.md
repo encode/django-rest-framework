@@ -95,7 +95,7 @@ Want your Django REST Framework talk/tutorial/article to be added to our website
 [ember-and-django-part 1-video]: http://www.neckbeardrepublic.com/screencasts/ember-and-django-part-1
 [django-rest-framework-part-1-video]: http://www.neckbeardrepublic.com/screencasts/django-rest-framework-part-1
 [web-api-performance-profiling-django-rest-framework]: https://www.dabapps.com/blog/api-performance-profiling-django-rest-framework/
-[api-development-with-django-and-django-rest-framework]: https://bnotions.com/api-development-with-django-and-django-rest-framework/
+[api-development-with-django-and-django-rest-framework]: https://bnotions.com/news-and-insights/api-development-with-django-and-django-rest-framework/
 [cdrf.co]:http://www.cdrf.co
 [medium-django-rest-framework]: https://medium.com/django-rest-framework
 [django-rest-framework-course]: https://teamtreehouse.com/library/django-rest-framework
