@@ -1,6 +1,6 @@
 # [Django REST framework][docs]
 
-[![build-status-image]][travis]
+[![build-status-image]][build-status]
 [![coverage-status-image]][codecov]
 [![pypi-version]][pypi]
 
@@ -176,8 +176,8 @@ You may also want to [follow the author on Twitter][twitter].
 
 Please see the [security policy][security-policy].
 
-[build-status-image]: https://secure.travis-ci.org/encode/django-rest-framework.svg?branch=master
-[travis]: https://travis-ci.org/encode/django-rest-framework?branch=master
+[build-status-image]: https://github.com/encode/django-rest-framework/actions/workflows/main.yml/badge.svg
+[build-status]: https://github.com/encode/django-rest-framework/actions/workflows/main.yml
 [coverage-status-image]: https://img.shields.io/codecov/c/github/encode/django-rest-framework/master.svg
 [codecov]: https://codecov.io/github/encode/django-rest-framework?branch=master
 [pypi-version]: https://img.shields.io/pypi/v/djangorestframework.svg

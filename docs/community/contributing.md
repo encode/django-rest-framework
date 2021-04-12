@@ -119,11 +119,11 @@ GitHub's documentation for working on pull requests is [available here][pull-req
 
 Always run the tests before submitting pull requests, and ideally run `tox` in order to check that your modifications are compatible on all supported versions of Python and Django.
 
-Once you've made a pull request take a look at the Travis build status in the GitHub interface and make sure the tests are running as you'd expect.
+Once you've made a pull request take a look at the build status in the GitHub interface and make sure the tests are running as you'd expect.
 
-![Travis status][travis-status]
+![Build status][build-status]
 
-*Above: Travis build notifications*
+*Above: build notifications*
 
 ## Managing compatibility issues
 
@@ -206,7 +206,7 @@ If you want to draw attention to a note or warning, use a pair of enclosing line
 [so-filter]: https://stackexchange.com/filters/66475/rest-framework
 [issues]: https://github.com/encode/django-rest-framework/issues?state=open
 [pep-8]: https://www.python.org/dev/peps/pep-0008/
-[travis-status]: ../img/travis-status.png
+[build-status]: ../img/build-status.png
 [pull-requests]: https://help.github.com/articles/using-pull-requests
 [tox]: https://tox.readthedocs.io/en/latest/
 [markdown]: https://daringfireball.net/projects/markdown/basics

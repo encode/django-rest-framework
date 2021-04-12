@@ -152,8 +152,6 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [cookiecutter]: https://github.com/jpadilla/cookiecutter-django-rest-framework
 [new-repo]: https://github.com/new
 [create-a-repo]: https://help.github.com/articles/create-a-repo/
-[travis-ci]: https://travis-ci.org
-[travis-profile]: https://travis-ci.org/profile
 [pypi-register]: https://pypi.org/account/register/
 [semver]: https://semver.org/
 [tox-docs]: https://tox.readthedocs.io/en/latest/
