@@ -81,20 +81,20 @@
               <fieldset>
                 {% if api_settings.URL_FORMAT_OVERRIDE %}
                   <div class="btn-group">
-                    <button class="btn btn-primary" data-toggle="tooltip" href="{{ request.get_full_path }}" rel="nofollow" title="Make a GET request on the {{ name }} resource">GET</button>
-                    <button class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" data-toggle-second="tooltip" title="Specify a format for the GET request">
+                    <button class="btn btn-primary" data-bs-toggle="tooltip" href="{{ request.get_full_path }}" rel="nofollow" title="Make a GET request on the {{ name }} resource">GET</button>
+                    <button class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" data-bs-toggle-second="tooltip" title="Specify a format for the GET request">
                       <span class="sr-only">Toggle Dropdown</span>
                     </button>
                     <ul class="dropdown-menu">
                       {% for format in available_formats %}
                         <li>
-                          <a class="dropdown-item" data-toggle="tooltip" href="{% add_query_param request api_settings.URL_FORMAT_OVERRIDE format %}" rel="nofollow" title="Make a GET request on the {{ name }} resource with the format set to `{{ format }}`">{{ format }}</a>
+                          <a class="dropdown-item" data-bs-toggle="tooltip" href="{% add_query_param request api_settings.URL_FORMAT_OVERRIDE format %}" rel="nofollow" title="Make a GET request on the {{ name }} resource with the format set to `{{ format }}`">{{ format }}</a>
                         </li>
                       {% endfor %}
                     </ul>
                   </div>
                 {% else %}
-                  <a class="btn btn-primary" data-toggle="tooltip" href="{{ request.get_full_path }}" rel="nofollow" title="Make a GET request on the {{ name }} resource">GET</a>
+                  <a class="btn btn-primary" data-bs-toggle="tooltip" href="{{ request.get_full_path }}" rel="nofollow" title="Make a GET request on the {{ name }} resource">GET</a>
                 {% endif %}
               </fieldset>
             </form>
@@ -102,12 +102,12 @@
 
           {% if options_form %}
             <form class="button-form" action="{{ request.get_full_path }}" data-method="OPTIONS">
-              <button class="btn btn-primary" data-toggle="tooltip" title="Make an OPTIONS request on the {{ name }} resource">OPTIONS</button>
+              <button class="btn btn-primary" data-bs-toggle="tooltip" title="Make an OPTIONS request on the {{ name }} resource">OPTIONS</button>
             </form>
           {% endif %}
 
           {% if delete_form %}
-            <button class="btn btn-danger button-form" data-toggle="tooltip" title="Make a DELETE request on the {{ name }} resource" data-toggle="modal" data-target="#deleteModal">DELETE</button>
+            <button class="btn btn-danger button-form" data-bs-toggle="tooltip" title="Make a DELETE request on the {{ name }} resource" data-bs-toggle="modal" data-bs-target="#deleteModal">DELETE</button>
 
             <!-- Delete Modal -->
             <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -129,7 +129,7 @@
 
           {% if extra_actions %}
             <div class="dropdown" style="float: right; margin-right: 10px">
-              <button class="btn btn-info dropdown-toggle" id="extra-actions-menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <button class="btn btn-info dropdown-toggle" id="extra-actions-menu" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 {% trans "Extra Actions" %}
               </button>
               <ul class="dropdown-menu" aria-labelledby="extra-actions-menu">
@@ -141,7 +141,7 @@
           {% endif %}
 
           {% if filter_form %}
-            <button data-toggle="modal" data-target="#filtersModal" class="btn btn-outline-secondary button-form">
+            <button data-bs-toggle="modal" data-bs-target="#filtersModal" class="btn btn-outline-secondary button-form">
               <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-wrench" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" d="M.102 2.223A3.004 3.004 0 0 0 3.78 5.897l6.341 6.252A3.003 3.003 0 0 0 13 16a3 3 0 1 0-.851-5.878L5.897 3.781A3.004 3.004 0 0 0 2.223.1l2.141 2.142L4 4l-1.757.364L.102 2.223zm13.37 9.019L13 11l-.471.242-.529.026-.287.445-.445.287-.026.529L11 13l.242.471.026.529.445.287.287.445.529.026L13 15l.471-.242.529-.026.287-.445.445-.287.026-.529L15 13l-.242-.471-.026-.529-.445-.287-.287-.445-.529-.026z"/>
               </svg>
@@ -186,10 +186,10 @@
                   {% if post_form %}
                     <ul class="nav nav-tabs justify-content-end" role="tablist">
                       <li class="nav-item" role="presentation">
-                        <a class="nav-link active" name='html-tab' href="#post-object-form" data-toggle="tab" role="tab">HTML form</a>
+                        <a class="nav-link active" name='html-tab' href="#post-object-form" data-bs-toggle="tab" role="tab">HTML form</a>
                       </li>
                       <li class="nav-item" role="presentation">
-                        <a class="nav-link" name='raw-tab' href="#post-generic-content-form" data-toggle="tab" role="tab">Raw data</a>
+                        <a class="nav-link" name='raw-tab' href="#post-generic-content-form" data-bs-toggle="tab" role="tab">Raw data</a>
                       </li>
                     </ul>
                   {% endif %}
@@ -203,7 +203,7 @@
                               {% csrf_token %}
                               {{ post_form }}
                               <div class="form-actions">
-                                <button class="btn btn-primary" data-toggle="tooltip" title="Make a POST request on the {{ name }} resource">POST</button>
+                                <button class="btn btn-primary" data-bs-toggle="tooltip" title="Make a POST request on the {{ name }} resource">POST</button>
                               </div>
                             </fieldset>
                           </form>
@@ -217,7 +217,7 @@
                           <fieldset>
                             {% include "rest_framework/raw_data_form.html" %}
                             <div class="form-actions">
-                              <button class="btn btn-primary" data-toggle="tooltip" title="Make a POST request on the {{ name }} resource">POST</button>
+                              <button class="btn btn-primary" data-bs-toggle="tooltip" title="Make a POST request on the {{ name }} resource">POST</button>
                             </div>
                           </fieldset>
                         </form>
@@ -232,10 +232,10 @@
                   {% if put_form %}
                     <ul class="nav nav-tabs justify-content-end" role="tablist">
                       <li class="nav-item" role="presentation">
-                        <a class="nav-link active" name='html-tab' href="#put-object-form" data-toggle="tab" role="tab">HTML form</a>
+                        <a class="nav-link active" name='html-tab' href="#put-object-form" data-bs-toggle="tab" role="tab">HTML form</a>
                       </li>
                       <li class="nav-item" role="presentation">
-                        <a class="nav-link" name='raw-tab' href="#put-generic-content-form" data-toggle="tab" role="tab">Raw data</a>
+                        <a class="nav-link" name='raw-tab' href="#put-generic-content-form" data-bs-toggle="tab" role="tab">Raw data</a>
                       </li>
                     </ul>
                   {% endif %}
@@ -247,7 +247,7 @@
                           <fieldset>
                             {{ put_form }}
                             <div class="form-actions">
-                              <button class="btn btn-primary" data-toggle="tooltip" title="Make a PUT request on the {{ name }} resource">PUT</button>
+                              <button class="btn btn-primary" data-bs-toggle="tooltip" title="Make a PUT request on the {{ name }} resource">PUT</button>
                             </div>
                           </fieldset>
                         </form>
@@ -261,10 +261,10 @@
                             {% include "rest_framework/raw_data_form.html" %}
                             <div class="form-actions">
                               {% if raw_data_put_form %}
-                                <button class="btn btn-primary" data-toggle="tooltip" title="Make a PUT request on the {{ name }} resource">PUT</button>
+                                <button class="btn btn-primary" data-bs-toggle="tooltip" title="Make a PUT request on the {{ name }} resource">PUT</button>
                               {% endif %}
                               {% if raw_data_patch_form %}
-                              <button data-method="PATCH" class="btn btn-primary" data-toggle="tooltip" title="Make a PATCH request on the {{ name }} resource">PATCH</button>
+                              <button data-method="PATCH" class="btn btn-primary" data-bs-toggle="tooltip" title="Make a PATCH request on the {{ name }} resource">PATCH</button>
                                 {% endif %}
                             </div>
                           </fieldset>
@@ -304,7 +304,7 @@
       </script>
       <! -- enable tooltips -->
       <script type="text/javascript">
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="tooltip"], [data-toggle-second="tooltip"]'))
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"], [data-bs-toggle-second="tooltip"]'))
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
          return new bootstrap.Tooltip(tooltipTriggerEl)
         })

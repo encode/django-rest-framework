@@ -8,8 +8,8 @@
           <a class="repo-link btn btn-inverse btn-small {% if not page.previous_page %}disabled{% endif %}" rel="prev" {% if page.previous_page %}href="{{ page.previous_page.url|url }}"{% endif %}>
             <i class="icon-arrow-left icon-white"></i> Previous
           </a>
-          <a id="search_modal_show" class="repo-link btn btn-inverse btn-small" href="#mkdocs_search_modal" data-toggle="modal" data-target="#mkdocs_search_modal"><i class="icon-search icon-white"></i> Search</a>
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+          <a id="search_modal_show" class="repo-link btn btn-inverse btn-small" href="#mkdocs_search_modal" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal"><i class="icon-search icon-white"></i> Search</a>
+          <a class="btn btn-navbar" data-bs-toggle="collapse" data-bs-target=".nav-collapse">
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
@@ -21,7 +21,7 @@
             <ul class="nav navbar-nav">
               {% for nav_item in nav %} {% if nav_item.children %}
               <li class="dropdown{% if nav_item.active %} active{% endif %}">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ nav_item.title }} <b class="caret"></b></a>
+                <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">{{ nav_item.title }} <b class="caret"></b></a>
                 <ul class="dropdown-menu">
                   {% for nav_item in nav_item.children %}
                   <li {% if nav_item.active %}class="active" {% endif %}>

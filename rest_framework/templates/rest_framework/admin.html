@@ -73,7 +73,7 @@
               <form id="get-form" class="float-right">
                 <fieldset>
                   <div class="dropdown format-selection">
-                    <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                    <button class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
                       Format
                     </button>
                     <ul class="dropdown-menu">
@@ -93,7 +93,7 @@
             {% endif %}
 
             {% if post_form %}
-              <button type="button" class="button-form btn btn-primary" data-toggle="modal" data-target="#createModal">
+              <button type="button" class="button-form btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
                 <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-file-plus mb-1" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                   <path fill-rule="evenodd" d="M4 1h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2zm0 1a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H4z"/>
                   <path fill-rule="evenodd" d="M8 5.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V10a.5.5 0 0 1-1 0V8.5H6a.5.5 0 0 1 0-1h1.5V6a.5.5 0 0 1 .5-.5z"/>
@@ -103,7 +103,7 @@
             {% endif %}
 
             {% if put_form %}
-              <button type="button" class="button-form btn btn-primary" data-toggle="modal" data-target="#editModal">
+              <button type="button" class="button-form btn btn-primary" data-bs-toggle="modal" data-bs-target="#editModal">
                 <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-pencil mb-1" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                   <path fill-rule="evenodd" d="M11.293 1.293a1 1 0 0 1 1.414 0l2 2a1 1 0 0 1 0 1.414l-9 9a1 1 0 0 1-.39.242l-3 1a1 1 0 0 1-1.266-1.265l1-3a1 1 0 0 1 .242-.391l9-9zM12 2l2 2-9 9-3 1 1-3 9-9z"/>
                   <path fill-rule="evenodd" d="M12.146 6.354l-2.5-2.5.708-.708 2.5 2.5-.707.708zM3 10v.5a.5.5 0 0 0 .5.5H4v.5a.5.5 0 0 0 .5.5H5v.5a.5.5 0 0 0 .5.5H6v-1.5a.5.5 0 0 0-.5-.5H5v-.5a.5.5 0 0 0-.5-.5H3z"/>
@@ -126,7 +126,7 @@
 
             {% if extra_actions %}
               <div class="dropdown" style="float: right; margin-right: 10px">
-                <button class="btn btn-info dropdown-toggle" id="extra-actions-menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                <button class="btn btn-info dropdown-toggle" id="extra-actions-menu" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                   {% trans "Extra Actions" %}
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="extra-actions-menu">
@@ -138,7 +138,7 @@
             {% endif %}
 
             {% if filter_form %}
-              <button data-toggle="modal" data-target="#filtersModal" class="btn btn-outline-secondary button-form">
+              <button data-bs-toggle="modal" data-bs-target="#filtersModal" class="btn btn-outline-secondary button-form">
                 <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-wrench mb-1" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                   <path fill-rule="evenodd" d="M.102 2.223A3.004 3.004 0 0 0 3.78 5.897l6.341 6.252A3.003 3.003 0 0 0 13 16a3 3 0 1 0-.851-5.878L5.897 3.781A3.004 3.004 0 0 0 2.223.1l2.141 2.142L4 4l-1.757.364L.102 2.223zm13.37 9.019L13 11l-.471.242-.529.026-.287.445-.445.287-.026.529L11 13l.242.471.026.529.445.287.287.445.529.026L13 15l.471-.242.529-.026.287-.445.445-.287.026-.529L15 13l-.242-.471-.026-.529-.445-.287-.287-.445-.529-.026z"/>
                 </svg>
@@ -188,7 +188,7 @@
           <div class="modal-content">
             <div class="modal-header">
               <h4 class="modal-title" id="myModalLabel">Create</h4>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             </div>
             <form action="{{ request.get_full_path }}" method="POST" enctype="multipart/form-data" class="form-horizontal" novalidate>
               <div class="modal-body">
@@ -198,7 +198,7 @@
                 </fieldset>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="submit" class="btn btn-primary">Save</button>
               </div>
             </form>
@@ -212,7 +212,7 @@
           <div class="modal-content">
             <div class="modal-header">
               <h4 class="modal-title" id="myModalLabel">Edit</h4>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             </div>
             <form action="{{ request.get_full_path }}" data-method="PUT" enctype="multipart/form-data" class="form-horizontal" novalidate>
               <div class="modal-body">
@@ -221,7 +221,7 @@
                 </fieldset>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="submit" class="btn btn-primary">Save</button>
               </div>
             </form>
@@ -236,7 +236,7 @@
             <div class="modal-content">
               <div class="modal-header">
                 <h4 class="modal-title" id="myModalLabel">{{ error_title }}</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
               </div>
               <form action="{{ request.get_full_path }}" data-method="{{ request.method }}" enctype="multipart/form-data" class="form-horizontal" novalidate>
                 <div class="modal-body">
@@ -245,7 +245,7 @@
                   </fieldset>
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                   <button type="submit" class="btn btn-primary">Save</button>
                 </div>
               </form>

@@ -2,14 +2,14 @@
 <div class="sidebar">
     <h3 class="brand"><a href="#">{{ document.title }}</a></h3>
 
-    <svg data-toggle="collapse" data-target="#menu-content" width="2.5em" height="2.5em" viewBox="0 0 16 16" class="toggle-btn bi bi-three-dots-vertical" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <svg data-bs-toggle="collapse" data-bs-target="#menu-content" width="2.5em" height="2.5em" viewBox="0 0 16 16" class="toggle-btn bi bi-three-dots-vertical" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
       <path fill-rule="evenodd" d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
     </svg>
     <div class="menu-list">
         <ul id="menu-content" class="menu-content collapse out">
             {% if document|data %}
             {% for section_key, section in document|data|items %}
-            <li data-toggle="collapse" data-target="#{{ section_key }}-dropdown" class="collapsed">
+            <li data-bs-toggle="collapse" data-bs-target="#{{ section_key }}-dropdown" class="collapsed">
                 <a class="d-flex align-items-center">
                   <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="mr-2 ml-2 bi bi-bullseye" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
@@ -42,7 +42,7 @@
         </ul>
 
         <ul class="menu-list menu-list-bottom">
-            <li data-toggle="collapse" data-target="#auth-control" class="collapsed">
+            <li data-bs-toggle="collapse" data-bs-target="#auth-control" class="collapsed">
                 <a>
                   <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="mb-1 mr-2 ml-3 bi bi-person-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd" d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
@@ -53,12 +53,12 @@
             </li>
             <ul class="sub-menu collapse out" id="auth-control">
                 <li {% if not user.is_authenticated %}class="active"{% endif %}><a data-auth="none" href="#">none</a></li>
-                <li><a data-auth="token" data-toggle="modal" data-target="#auth_token_modal" href="#">token</a></li>
-                <li><a data-auth="basic" data-toggle="modal" data-target="#auth_basic_modal" href="#">basic</a></li>
-                <li {% if user.is_authenticated %}class="active"{% endif %}><a data-auth="session" data-toggle="modal" data-target="#auth_session_modal" href="#">session</a></li>
+                <li><a data-auth="token" data-bs-toggle="modal" data-bs-target="#auth_token_modal" href="#">token</a></li>
+                <li><a data-auth="basic" data-bs-toggle="modal" data-bs-target="#auth_basic_modal" href="#">basic</a></li>
+                <li {% if user.is_authenticated %}class="active"{% endif %}><a data-auth="session" data-bs-toggle="modal" data-bs-target="#auth_session_modal" href="#">session</a></li>
             </ul>
 
-            <li data-toggle="collapse" data-target="#language-control" class="collapsed">
+            <li data-bs-toggle="collapse" data-bs-target="#language-control" class="collapsed">
                 <a>
                   <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="mb-1 ml-3 mr-2 bi bi-code-slash" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd" d="M4.854 4.146a.5.5 0 0 1 0 .708L1.707 8l3.147 3.146a.5.5 0 0 1-.708.708l-3.5-3.5a.5.5 0 0 1 0-.708l3.5-3.5a.5.5 0 0 1 .708 0zm6.292 0a.5.5 0 0 0 0 .708L14.293 8l-3.147 3.146a.5.5 0 0 0 .708.708l3.5-3.5a.5.5 0 0 0 0-.708l-3.5-3.5a.5.5 0 0 0-.708 0zm-.999-3.124a.5.5 0 0 1 .33.625l-4 13a.5.5 0 0 1-.955-.294l4-13a.5.5 0 0 1 .625-.33z"/>

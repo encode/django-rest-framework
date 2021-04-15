@@ -131,7 +131,7 @@ def optional_logout(request, user):
         return mark_safe(snippet)
 
     snippet = """<li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" id="navbarDropdown" role="button" data-toggle="dropdown">
+        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
             {user}
         </a>
         <ul class="dropdown-menu">
