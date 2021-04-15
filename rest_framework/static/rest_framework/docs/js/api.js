@@ -84,8 +84,8 @@ $(function () {
     $('#selected-language').text(language)
 
     var $codeBlocks = $('pre.highlight')
-    $codeBlocks.not('[data-language="' + language + '"]').addClass('hide')
-    $codeBlocks.filter('[data-language="' + language + '"]').removeClass('hide')
+    $codeBlocks.not('[data-language="' + language + '"]').addClass('d-none')
+    $codeBlocks.filter('[data-language="' + language + '"]').removeClass('d-none')
   })
 
   // API Explorer
@@ -169,7 +169,7 @@ $(function () {
 
     function responseCallback (response, responseText) {
       // Display the 'Data'/'Raw' control.
-      $toggleView.removeClass('hide')
+      $toggleView.removeClass('d-none')
 
       // Fill in the "200 OK" display.
       $responseStatusCode.removeClass('label-success').removeClass('label-danger')
@@ -179,7 +179,7 @@ $(function () {
         $responseStatusCode.addClass('label-danger')
       }
       $responseStatusCode.text(response.status)
-      $meta.removeClass('hide')
+      $meta.removeClass('d-none')
 
       // Fill in the Raw HTTP response display.
       var panelText = 'HTTP/1.1 ' + response.status + ' ' + response.statusText + '\n'
@@ -222,25 +222,25 @@ $(function () {
     var client = new coreapi.Client(options)
     client.action(schema, key, params).then(function (data) {
       var response = JSON.stringify(data, null, 2)
-      $requestAwaiting.addClass('hide')
-      $responseRaw.addClass('hide')
-      $responseData.addClass('hide').text('').jsonView(response)
+      $requestAwaiting.addClass('d-none')
+      $responseRaw.addClass('d-none')
+      $responseData.addClass('d-none').text('').jsonView(response)
 
       if (responseDisplay === 'data') {
-        $responseData.removeClass('hide')
+        $responseData.removeClass('d-none')
       } else {
-        $responseRaw.removeClass('hide')
+        $responseRaw.removeClass('d-none')
       }
     }).catch(function (error) {
       var response = JSON.stringify(error.content, null, 2)
-      $requestAwaiting.addClass('hide')
-      $responseRaw.addClass('hide')
-      $responseData.addClass('hide').text('').jsonView(response)
+      $requestAwaiting.addClass('d-none')
+      $responseRaw.addClass('d-none')
+      $responseData.addClass('d-none').text('').jsonView(response)
 
       if (responseDisplay === 'data') {
-        $responseData.removeClass('hide')
+        $responseData.removeClass('d-none')
       } else {
-        $responseRaw.removeClass('hide')
+        $responseRaw.removeClass('d-none')
       }
     })
   })
@@ -256,11 +256,11 @@ $(function () {
     $(this).removeClass('btn-default').addClass('btn-info').siblings().removeClass('btn-info')
 
     if (responseDisplay === 'raw') {
-      $modalResponseRaw.removeClass('hide')
-      $modalResponseData.addClass('hide')
+      $modalResponseRaw.removeClass('d-none')
+      $modalResponseData.addClass('d-none')
     } else {
-      $modalResponseData.removeClass('hide')
-      $modalResponseRaw.addClass('hide')
+      $modalResponseData.removeClass('d-none')
+      $modalResponseRaw.addClass('d-none')
     }
   })
 
@@ -287,7 +287,7 @@ $(function () {
     $selectedAuthentication.text('token')
     $authControl.find("[data-auth]").closest('li').removeClass('active')
     $authControl.find("[data-auth='token']").closest('li').addClass('active')
-    $authTokenModal.modal('hide')
+    $authTokenModal.modal('d-none')
   })
 
   // Authentication: basic
@@ -304,7 +304,7 @@ $(function () {
     $selectedAuthentication.text('basic')
     $authControl.find("[data-auth]").closest('li').removeClass('active')
     $authControl.find("[data-auth='basic']").closest('li').addClass('active')
-    $authBasicModal.modal('hide')
+    $authBasicModal.modal('d-none')
   })
 
   // Authentication: session
@@ -316,6 +316,6 @@ $(function () {
     $selectedAuthentication.text('session')
     $authControl.find("[data-auth]").closest('li').removeClass('active')
     $authControl.find("[data-auth='session']").closest('li').addClass('active')
-    $authSessionModal.modal('hide')
+    $authSessionModal.modal('d-none')
   })
 })

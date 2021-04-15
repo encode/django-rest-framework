@@ -49,7 +49,7 @@
                 $('#auth-control').children().removeClass('active');
                 $('#auth-control').find("[data-auth='session']").closest('li').addClass('active');
             {% endif %}
-	    $('pre.highlight').filter('[data-language="{{ langs | first }}"]').removeClass('hide');
+	    $('pre.highlight').filter('[data-language="{{ langs | first }}"]').removeClass('d-none');
         </script>
     </body>
 </html>
