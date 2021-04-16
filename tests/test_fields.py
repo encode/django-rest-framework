@@ -1485,7 +1485,7 @@ class TestNaiveDayLightSavingTimeTimeZoneDateTimeField(FieldValues):
     }
     outputs = {}
 
-    class MockTimezone:
+    class MockTimezone(pytz.BaseTzInfo):
         @staticmethod
         def localize(value, is_dst):
             raise pytz.InvalidTimeError()
