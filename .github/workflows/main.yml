@@ -37,12 +37,10 @@ jobs:
       run: python -m pip install --upgrade pip setuptools virtualenv wheel
 
     - name: Install dependencies
-      run: python -m pip install --upgrade codecov tox
+      run: python -m pip install --upgrade codecov tox tox-py
 
     - name: Run tox targets for ${{ matrix.python-version }}
-      run: |
-        ENV_PREFIX=$(tr -C -d "0-9" <<< "${{ matrix.python-version }}")
-        TOXENV=$(tox --listenvs | grep "^py$ENV_PREFIX" | tr '\n' ',') tox
+      run: tox --py current
 
     - name: Run extra tox targets
       if: ${{ matrix.python-version == '3.9' }}
