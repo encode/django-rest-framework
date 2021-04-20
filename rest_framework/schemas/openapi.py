@@ -192,15 +192,22 @@ class AutoSchema(ViewInspector):
         if method.lower() == 'delete':
             return {}
 
-        serializer = self.get_serializer(path, method)
+        request_serializer = self.get_request_serializer(path, method)
+        response_serializer = self.get_response_serializer(path, method)
 
-        if not isinstance(serializer, serializers.Serializer):
-            return {}
+        components = {}
 
-        component_name = self.get_component_name(serializer)
+        if isinstance(request_serializer, serializers.Serializer):
+            component_name = self.get_component_name(request_serializer)
+            content = self.map_serializer(request_serializer)
+            components.setdefault(component_name, content)
 
-        content = self.map_serializer(serializer)
-        return {component_name: content}
+        if isinstance(response_serializer, serializers.Serializer):
+            component_name = self.get_component_name(response_serializer)
+            content = self.map_serializer(response_serializer)
+            components.setdefault(component_name, content)
+
+        return components
 
     def _to_camel_case(self, snake_str):
         components = snake_str.split('_')
@@ -615,6 +622,20 @@ class AutoSchema(ViewInspector):
                           .format(view.__class__.__name__, method, path))
             return None
 
+    def get_request_serializer(self, path, method):
+        """
+        Override this method if your view uses a different serializer for
+        handling request body.
+        """
+        return self.get_serializer(path, method)
+
+    def get_response_serializer(self, path, method):
+        """
+        Override this method if your view uses a different serializer for
+        populating response data.
+        """
+        return self.get_serializer(path, method)
+
     def _get_reference(self, serializer):
         return {'$ref': '#/components/schemas/{}'.format(self.get_component_name(serializer))}
 
@@ -624,7 +645,7 @@ class AutoSchema(ViewInspector):
 
         self.request_media_types = self.map_parsers(path, method)
 
-        serializer = self.get_serializer(path, method)
+        serializer = self.get_request_serializer(path, method)
 
         if not isinstance(serializer, serializers.Serializer):
             item_schema = {}
@@ -648,7 +669,7 @@ class AutoSchema(ViewInspector):
 
         self.response_media_types = self.map_renderers(path, method)
 
-        serializer = self.get_serializer(path, method)
+        serializer = self.get_response_serializer(path, method)
 
         if not isinstance(serializer, serializers.Serializer):
             item_schema = {}

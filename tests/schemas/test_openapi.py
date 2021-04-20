@@ -712,6 +712,91 @@ class TestOperationIntrospection(TestCase):
         operationId = inspector.get_operation_id(path, method)
         assert operationId == 'listItem'
 
+    def test_different_request_response_objects(self):
+        class RequestSerializer(serializers.Serializer):
+            text = serializers.CharField()
+
+        class ResponseSerializer(serializers.Serializer):
+            text = serializers.BooleanField()
+
+        class CustomSchema(AutoSchema):
+            def get_request_serializer(self, path, method):
+                return RequestSerializer()
+
+            def get_response_serializer(self, path, method):
+                return ResponseSerializer()
+
+        path = '/'
+        method = 'POST'
+        view = create_view(
+            views.ExampleGenericAPIView,
+            method,
+            create_request(path),
+        )
+        inspector = CustomSchema()
+        inspector.view = view
+
+        components = inspector.get_components(path, method)
+        assert components == {
+            'Request': {
+                'properties': {
+                    'text': {
+                        'type': 'string'
+                    }
+                },
+                'required': ['text'],
+                'type': 'object'
+            },
+            'Response': {
+                'properties': {
+                    'text': {
+                        'type': 'boolean'
+                    }
+                },
+                'required': ['text'],
+                'type': 'object'
+            }
+        }
+
+        operation = inspector.get_operation(path, method)
+        assert operation == {
+            'operationId': 'createExample',
+            'description': '',
+            'parameters': [],
+            'requestBody': {
+                'content': {
+                    'application/json': {
+                        'schema': {
+                            '$ref': '#/components/schemas/Request'
+                        }
+                    },
+                    'application/x-www-form-urlencoded': {
+                        'schema': {
+                            '$ref': '#/components/schemas/Request'
+                        }
+                    },
+                    'multipart/form-data': {
+                        'schema': {
+                            '$ref': '#/components/schemas/Request'
+                        }
+                    }
+                }
+            },
+            'responses': {
+                '201': {
+                    'content': {
+                        'application/json': {
+                            'schema': {
+                                '$ref': '#/components/schemas/Response'
+                            }
+                        }
+                    },
+                    'description': ''
+                }
+            },
+            'tags': ['']
+        }
+
     def test_repeat_operation_ids(self):
         router = routers.SimpleRouter()
         router.register('account', views.ExampleGenericViewSet, basename="account")
