@@ -439,7 +439,13 @@ class LimitOffsetPagination(BasePagination):
             except (KeyError, ValueError):
                 pass
 
-        return self.default_limit
+        return self.get_lower_of_max_or_default_limit()
+
+    def get_lower_of_max_or_default_limit(self):
+        try:
+            return min(self.max_limit, self.default_limit)
+        except TypeError:
+            return self.default_limit
 
     def get_offset(self, request):
         try:
