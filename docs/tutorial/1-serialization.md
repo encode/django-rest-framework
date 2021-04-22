@@ -17,7 +17,7 @@ The tutorial is fairly in-depth, so you should probably get a cookie and a cup o
 Before we do anything else we'll create a new virtual environment, using [venv]. This will make sure our package configuration is kept nicely isolated from any other projects we're working on.
 
     python3 -m venv env
-    source env/bin/activate
+    source env/bin/activate # On Windows use `env\Scripts\activate`
 
 Now that we're inside a virtual environment, we can install our package requirements.
 
@@ -186,6 +186,9 @@ In the same way that Django provides both `Form` classes and `ModelForm` classes
 Let's look at refactoring our serializer using the `ModelSerializer` class.
 Open the file `snippets/serializers.py` again, and replace the `SnippetSerializer` class with the following.
 
+    from rest_framework import serializers
+    from snippets.models import Snippet
+    
     class SnippetSerializer(serializers.ModelSerializer):
         class Meta:
             model = Snippet
@@ -304,18 +307,11 @@ Quit out of the shell...
 
     python manage.py runserver
 
-    Validating models...
-
-    0 errors found
-    Django version 1.11, using settings 'tutorial.settings'
-    Development server is running at http://127.0.0.1:8000/
-    Quit the server with CONTROL-C.
-
 In another terminal window, we can test the server.
 
-We can test our API using [curl][curl] or [httpie][httpie]. Httpie is a user friendly http client that's written in Python. Let's install that.
+We can test our API using [curl][curl] or [HTTPie][HTTPie]. HTTPie is a user friendly http client that's written in Python. Let's install that.
 
-You can install httpie using pip:
+You can install HTTPie using pip:
 
     pip install httpie
 
@@ -374,5 +370,5 @@ We'll see how we can start to improve things in [part 2 of the tutorial][tut-2].
 [sandbox]: https://restframework.herokuapp.com/
 [venv]: https://docs.python.org/3/library/venv.html
 [tut-2]: 2-requests-and-responses.md
-[httpie]: https://github.com/jakubroztocil/httpie#installation
+[HTTPie]: https://github.com/jakubroztocil/httpie#installation
 [curl]: https://curl.haxx.se/
