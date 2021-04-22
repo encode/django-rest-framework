@@ -42,6 +42,7 @@ The project layout should look like:
     ./tutorial/quickstart/models.py
     ./tutorial/quickstart/tests.py
     ./tutorial/quickstart/views.py
+    ./tutorial/asgi.py
     ./tutorial/settings.py
     ./tutorial/urls.py
     ./tutorial/wsgi.py
@@ -55,6 +56,10 @@ Now sync your database for the first time:
 We'll also create an initial user named `admin` with a password of `password123`. We'll authenticate as that user later in our example.
 
     python manage.py createsuperuser --email admin@example.com --username admin
+    
+We'll also create a second user named `tom`.
+
+    python manage.py createuser --email tom@example.com --username tom
 
 Once you've set up a database and the initial user is created and ready to go, open up the app's directory and we'll get coding...
 
