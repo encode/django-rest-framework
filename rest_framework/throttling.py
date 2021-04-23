@@ -60,7 +60,7 @@ class SimpleRateThrottle(BaseThrottle):
     Previous request information used for throttling is stored in the cache.
     """
     cache = default_cache
-    timer = time.time
+    timer = staticmethod(time.time)
     cache_format = 'throttle_%(scope)s_%(ident)s'
     scope = None
     THROTTLE_RATES = api_settings.DEFAULT_THROTTLE_RATES
