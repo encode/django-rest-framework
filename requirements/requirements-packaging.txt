@@ -5,4 +5,4 @@ wheel>=0.35.1,<0.36
 twine>=3.2.0,<3.3
 
 # Transifex client for managing translation resources.
-transifex-clien>=0.13.12,<0.14
+transifex-client>=0.13.12,<0.14
