@@ -712,7 +712,7 @@ class ListSerializer(BaseSerializer):
 
         return self.instance
 
-    def is_valid(self, raise_exception=False):
+    def is_valid(self, *, raise_exception=False):
         # This implementation is the same as the default,
         # except that we use lists, rather than dicts, as the empty case.
         assert hasattr(self, 'initial_data'), (
