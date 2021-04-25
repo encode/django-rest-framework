@@ -209,7 +209,7 @@ class BaseSerializer(Field):
 
         return self.instance
 
-    def is_valid(self, raise_exception=False):
+    def is_valid(self, *, raise_exception=False):
         assert hasattr(self, 'initial_data'), (
             'Cannot call `.is_valid()` as no `data=` keyword argument was '
             'passed when instantiating the serializer instance.'
