@@ -200,9 +200,9 @@ class TestNestedBoundField:
             rendered = renderer.render_field(field, {})
             expected_packed = (
                 '<fieldset>'
-                '<legend>Nested</legend>'
-                '<divclass="form-group">'
-                '<label>Textfield</label>'
+                '<labelclass="form-label">Nested</label>'
+                '<divclass="mb-3">'
+                '<labelclass="form-label">Textfield</label>'
                 '<inputname="nested.text_field"class="form-control"type="text"value="">'
                 '</div>'
                 '</fieldset>'
