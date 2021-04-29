@@ -76,7 +76,7 @@ There are a wide range of resources available for learning and using Django REST
 * [Chatbot Using Django REST Framework + api.ai + Slack — Part 1/3][chatbot-using-drf-part1]
 * [New Django Admin with DRF and EmberJS... What are the News?][new-django-admin-with-drf-and-emberjs]
 * [Blog posts about Django REST Framework][medium-django-rest-framework]
-* [Implementing Rest APIs With Embedded Privacy] [doordash-implementing-rest-apis]
+* [Implementing Rest APIs With Embedded Privacy][doordash-implementing-rest-apis]
 
 ### Documentations
 * [Classy Django REST Framework][cdrf.co]
