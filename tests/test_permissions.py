@@ -528,6 +528,12 @@ class PermissionsCompositionTests(TestCase):
             self.password
         )
         self.client.login(username=self.username, password=self.password)
+        self.admin_user = User.objects.create_user(
+            'paul',
+            'mccartney@thebeatles.com',
+            'password',
+            is_staff=True,
+        )
 
     def test_and_false(self):
         request = factory.get('/1', format='json')
@@ -685,7 +691,7 @@ class PermissionsCompositionTests(TestCase):
         assert composed_perm().has_permission(request, None) is NotImplemented
         assert composed_perm().has_object_permission(request, None, None) is True
 
-    def test_has_object_permission_not_implemented(self):
+    def test_has_object_permission_not_implemented_false(self):
         request = factory.get('/1', format='json')
         request.user = self.user
         composed_perm = (
@@ -695,3 +701,12 @@ class PermissionsCompositionTests(TestCase):
         assert composed_perm().has_permission(request, None) is False
         assert composed_perm().has_object_permission(request, None, None) is False
 
+    def test_has_object_permission_not_implemented_true(self):
+        request = factory.get('/1', format='json')
+        request.user = self.admin_user
+        composed_perm = (
+            permissions.IsAdminUser |
+            BasicObjectPerm
+        )
+        assert composed_perm().has_permission(request, None) is True
+        assert composed_perm().has_object_permission(request, None, None) is True
