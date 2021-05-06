@@ -81,9 +81,13 @@ class OR:
 
     def has_object_permission(self, request, view, obj):
         hasperm1 = self.op1.has_object_permission(request, view, obj)
+        if hasperm1 is NotImplemented:
+            hasperm1 = self.op1.has_permission(request, view)
         if hasperm1 and hasperm1 is not NotImplemented:
             return hasperm1
         hasperm2 = self.op2.has_object_permission(request, view, obj)
+        if hasperm2 is NotImplemented:
+            hasperm2 = self.op2.has_permission(request, view)
         return hasperm1 if hasperm2 is NotImplemented else hasperm2
 
 
