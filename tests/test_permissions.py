@@ -698,7 +698,7 @@ class PermissionsCompositionTests(TestCase):
             permissions.IsAdminUser |
             BasicObjectPerm
         )
-        assert composed_perm().has_permission(request, None) is False
+        assert composed_perm().has_permission(request, None) is NotImplemented
         assert composed_perm().has_object_permission(request, None, None) is False
 
     def test_has_object_permission_not_implemented_true(self):
