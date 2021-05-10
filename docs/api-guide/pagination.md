@@ -218,10 +218,10 @@ To set these attributes you should override the `CursorPagination` class, and th
 
 # Custom pagination styles
 
-To create a custom pagination serializer class you should subclass `pagination.BasePagination` and override the `paginate_queryset(self, queryset, request, view=None)` and `get_paginated_response(self, data)` methods:
+To create a custom pagination serializer class, you should inherit the subclass `pagination.BasePagination`, override the `paginate_queryset(self, queryset, request, view=None)`, and `get_paginated_response(self, data)` methods:
 
-* The `paginate_queryset` method is passed the initial queryset and should return an iterable object that contains only the data in the requested page.
-* The `get_paginated_response` method is passed the serialized page data and should return a `Response` instance.
+* The `paginate_queryset` method is passed to the initial queryset and should return an iterable object. That object contains only the data in the requested page.
+* The `get_paginated_response` method is passed to the serialized page data and should return a `Response` instance.
 
 Note that the `paginate_queryset` method may set state on the pagination instance, that may later be used by the `get_paginated_response` method.
 
