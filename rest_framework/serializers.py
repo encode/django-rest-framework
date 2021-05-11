@@ -837,21 +837,20 @@ def raise_errors_on_nested_writes(method_name, serializer, validated_data):
 
 
 class ModelSerializerMetaclass(SerializerMetaclass):
-    def __new__(cls, *args, **kwargs):
-        name, bases, namespace = args
+    def __new__(cls, name, bases, attrs):
         if name not in ("ModelSerializer","HyperlinkedModelSerializer"):
-            cls._check_meta(name, namespace)
-
-        return super().__new__(cls, *args, **kwargs)
+            cls._check_meta(name, attrs)
+        attrs['_declared_fields'] = cls._get_declared_fields(bases, attrs)
+        return super().__new__(cls, name, bases, attrs)
 
     @classmethod
-    def _check_meta(cls, name, namespace):
-        assert namespace["Meta"], (
+    def _check_meta(cls, name, attrs):
+        assert "Meta" in attrs, (
             'Class {serializer_class} missing "Meta" attribute'.format(
                 serializer_class=name
             )
         )
-        assert namespace["Meta"].model, (
+        assert hasattr(attrs["Meta"], "model"), (
             'Class {serializer_class} missing "Meta.model" attribute'.format(
                 serializer_class=name
             )
