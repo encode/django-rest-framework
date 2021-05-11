@@ -836,7 +836,29 @@ def raise_errors_on_nested_writes(method_name, serializer, validated_data):
     )
 
 
-class ModelSerializer(Serializer):
+class ModelSerializerMetaclass(SerializerMetaclass):
+    def __new__(cls, *args, **kwargs):
+        name, bases, namespace = args
+        if name not in ("ModelSerializer","HyperlinkedModelSerializer"):
+            cls._check_meta(name, namespace)
+
+        return super().__new__(cls, *args, **kwargs)
+
+    @classmethod
+    def _check_meta(cls, name, namespace):
+        assert namespace["Meta"], (
+            'Class {serializer_class} missing "Meta" attribute'.format(
+                serializer_class=name
+            )
+        )
+        assert namespace["Meta"].model, (
+            'Class {serializer_class} missing "Meta.model" attribute'.format(
+                serializer_class=name
+            )
+        )
+
+
+class ModelSerializer(Serializer, metaclass=ModelSerializerMetaclass):
     """
     A `ModelSerializer` is just a regular `Serializer`, except that:
 
@@ -1001,16 +1023,6 @@ class ModelSerializer(Serializer):
         if self.url_field_name is None:
             self.url_field_name = api_settings.URL_FIELD_NAME
 
-        assert hasattr(self, 'Meta'), (
-            'Class {serializer_class} missing "Meta" attribute'.format(
-                serializer_class=self.__class__.__name__
-            )
-        )
-        assert hasattr(self.Meta, 'model'), (
-            'Class {serializer_class} missing "Meta.model" attribute'.format(
-                serializer_class=self.__class__.__name__
-            )
-        )
         if model_meta.is_abstract_model(self.Meta.model):
             raise ValueError(
                 'Cannot use ModelSerializer with Abstract Models.'
