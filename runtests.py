@@ -20,6 +20,8 @@ def is_class(string):
 
 
 if __name__ == "__main__":
+    pytest_args = None
+
     if len(sys.argv) > 1:
         pytest_args = sys.argv[1:]
         first_arg = pytest_args[0]
