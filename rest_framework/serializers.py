@@ -936,7 +936,7 @@ class ModelSerializer(Serializer):
                 many_to_many[field_name] = validated_data.pop(field_name)
 
         try:
-            instance = ModelClass._default_manager.create(**validated_data)
+            instance = perform_create(ModelClass, validated_data)
         except TypeError:
             tb = traceback.format_exc()
             msg = (
@@ -964,6 +964,9 @@ class ModelSerializer(Serializer):
                 field.set(value)
 
         return instance
+    
+    def perform_create(ModelClass, validated_data):
+        return ModelClass._default_manager.create(**validated_data)
 
     def update(self, instance, validated_data):
         raise_errors_on_nested_writes('update', self, validated_data)
@@ -980,7 +983,7 @@ class ModelSerializer(Serializer):
             else:
                 setattr(instance, attr, value)
 
-        instance.save()
+        perform_update(instance)
 
         # Note that many-to-many fields are set after updating instance.
         # Setting m2m fields triggers signals which could potentially change
@@ -991,6 +994,9 @@ class ModelSerializer(Serializer):
 
         return instance
 
+    def perform_update(instance):
+        instance.save()
+    
     # Determine the fields to apply...
 
     def get_fields(self):
