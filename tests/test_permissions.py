@@ -1,8 +1,6 @@
 import base64
-import unittest
 from unittest import mock
 
-from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, Group, Permission, User
 from django.db import models
 from django.test import TestCase
@@ -14,6 +12,7 @@ from rest_framework import (
 )
 from rest_framework.routers import DefaultRouter
 from rest_framework.test import APIRequestFactory
+from tests.authentication.backends import assign_perm
 from tests.models import BasicModel
 
 factory = APIRequestFactory()
@@ -299,14 +298,11 @@ class GetQuerysetObjectPermissionInstanceView(generics.RetrieveUpdateDestroyAPIV
 get_queryset_object_permissions_view = GetQuerysetObjectPermissionInstanceView.as_view()
 
 
-@unittest.skipUnless('guardian' in settings.INSTALLED_APPS, 'django-guardian not installed')
 class ObjectPermissionsIntegrationTests(TestCase):
     """
     Integration tests for the object level permissions API.
     """
     def setUp(self):
-        from guardian.shortcuts import assign_perm
-
         # create users
         create = User.objects.create_user
         users = {
@@ -320,14 +316,13 @@ class ObjectPermissionsIntegrationTests(TestCase):
         everyone = Group.objects.create(name='everyone')
         model_name = BasicPermModel._meta.model_name
         app_label = BasicPermModel._meta.app_label
-        f = '{}_{}'.format
+        f = '{}.{}_{}'.format
         perms = {
-            'view': f('view', model_name),
-            'change': f('change', model_name),
-            'delete': f('delete', model_name)
+            'view': f(app_label, 'view', model_name),
+            'change': f(app_label, 'change', model_name),
+            'delete': f(app_label, 'delete', model_name)
         }
         for perm in perms.values():
-            perm = '{}.{}'.format(app_label, perm)
             assign_perm(perm, everyone)
         everyone.user_set.add(*users.values())
 

@@ -19,6 +19,10 @@ def pytest_configure(config):
     from django.conf import settings
 
     settings.configure(
+        AUTHENTICATION_BACKENDS=(
+            'django.contrib.auth.backends.ModelBackend',
+            'tests.authentication.backends.ObjectPermissionBackend',
+        ),
         DEBUG_PROPAGATE_EXCEPTIONS=True,
         DATABASES={
             'default': {
@@ -69,21 +73,6 @@ def pytest_configure(config):
             'django.contrib.auth.hashers.MD5PasswordHasher',
         ),
     )
-
-    # guardian is optional
-    try:
-        import guardian  # NOQA
-    except ImportError:
-        pass
-    else:
-        settings.ANONYMOUS_USER_ID = -1
-        settings.AUTHENTICATION_BACKENDS = (
-            'django.contrib.auth.backends.ModelBackend',
-            'guardian.backends.ObjectPermissionBackend',
-        )
-        settings.INSTALLED_APPS += (
-            'guardian',
-        )
 
     if config.getoption('--no-pkgroot'):
         sys.path.pop(0)
