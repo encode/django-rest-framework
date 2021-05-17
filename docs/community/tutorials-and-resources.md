@@ -95,18 +95,18 @@ Want your Django REST Framework talk/tutorial/article to be added to our website
 [ember-and-django-part 1-video]: http://www.neckbeardrepublic.com/screencasts/ember-and-django-part-1
 [django-rest-framework-part-1-video]: http://www.neckbeardrepublic.com/screencasts/django-rest-framework-part-1
 [web-api-performance-profiling-django-rest-framework]: https://www.dabapps.com/blog/api-performance-profiling-django-rest-framework/
-[api-development-with-django-and-django-rest-framework]: https://bnotions.com/api-development-with-django-and-django-rest-framework/
+[api-development-with-django-and-django-rest-framework]: https://bnotions.com/news-and-insights/api-development-with-django-and-django-rest-framework/
 [cdrf.co]:http://www.cdrf.co
 [medium-django-rest-framework]: https://medium.com/django-rest-framework
 [django-rest-framework-course]: https://teamtreehouse.com/library/django-rest-framework
 [pycon-uk-2016]: https://www.youtube.com/watch?v=FjmiGh7OqVg
 [django-under-hood-2014]: https://www.youtube.com/watch?v=3cSsbe-tA0E
-[integrating-pandas-drf-and-bokeh]: https://machinalis.com/blog/pandas-django-rest-framework-bokeh/
-[controlling-uncertainty-on-web-apps-and-apis]: https://machinalis.com/blog/controlling-uncertainty-on-web-applications-and-apis/
-[full-text-search-in-drf]: https://machinalis.com/blog/full-text-search-on-django-rest-framework/
-[oauth2-authentication-with-drf]: https://machinalis.com/blog/oauth2-authentication/
-[nested-resources-with-drf]: https://machinalis.com/blog/nested-resources-with-django/
-[image-fields-with-drf]: https://machinalis.com/blog/image-fields-with-django-rest-framework/
+[integrating-pandas-drf-and-bokeh]: https://web.archive.org/web/20180104205117/http://machinalis.com/blog/pandas-django-rest-framework-bokeh/
+[controlling-uncertainty-on-web-apps-and-apis]: https://web.archive.org/web/20180104205043/https://machinalis.com/blog/controlling-uncertainty-on-web-applications-and-apis/
+[full-text-search-in-drf]: https://web.archive.org/web/20180104205059/http://machinalis.com/blog/full-text-search-on-django-rest-framework/
+[oauth2-authentication-with-drf]: https://web.archive.org/web/20180104205054/http://machinalis.com/blog/oauth2-authentication/
+[nested-resources-with-drf]: https://web.archive.org/web/20180104205109/http://machinalis.com/blog/nested-resources-with-django/
+[image-fields-with-drf]: https://web.archive.org/web/20180104205048/http://machinalis.com/blog/image-fields-with-django-rest-framework/
 [chatbot-using-drf-part1]: https://chatbotslife.com/chatbot-using-django-rest-framework-api-ai-slack-part-1-3-69c7e38b7b1e#.g2aceuncf
 [new-django-admin-with-drf-and-emberjs]: https://blog.levit.be/new-django-admin-with-emberjs-what-are-the-news/
 [drf-schema]: https://drf-schema-adapter.readthedocs.io/en/latest/

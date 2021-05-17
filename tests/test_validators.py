@@ -7,8 +7,7 @@ from django.test import TestCase
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.validators import (
-    BaseUniqueForValidator, UniqueTogetherValidator, UniqueValidator,
-    qs_exists
+    BaseUniqueForValidator, UniqueTogetherValidator, UniqueValidator, qs_exists
 )
 
 

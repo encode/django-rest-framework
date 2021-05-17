@@ -60,8 +60,8 @@ using the `APIView` class-based views.
 
         def get(self, request, format=None):
             content = {
-                'user': unicode(request.user),  # `django.contrib.auth.User` instance.
-                'auth': unicode(request.auth),  # None
+                'user': str(request.user),  # `django.contrib.auth.User` instance.
+                'auth': str(request.auth),  # None
             }
             return Response(content)
 
@@ -72,8 +72,8 @@ Or, if you're using the `@api_view` decorator with function based views.
     @permission_classes([IsAuthenticated])
     def example_view(request, format=None):
         content = {
-            'user': unicode(request.user),  # `django.contrib.auth.User` instance.
-            'auth': unicode(request.auth),  # None
+            'user': str(request.user),  # `django.contrib.auth.User` instance.
+            'auth': str(request.auth),  # None
         }
         return Response(content)
 
@@ -357,7 +357,7 @@ The following third party packages are also available.
 
 ## Django OAuth Toolkit
 
-The [Django OAuth Toolkit][django-oauth-toolkit] package provides OAuth 2.0 support and works with Python 3.4+. The package is maintained by [Evonove][evonove] and uses the excellent [OAuthLib][oauthlib].  The package is well documented, and well supported and is currently our **recommended package for OAuth 2.0 support**.
+The [Django OAuth Toolkit][django-oauth-toolkit] package provides OAuth 2.0 support and works with Python 3.4+. The package is maintained by [jazzband][jazzband] and uses the excellent [OAuthLib][oauthlib].  The package is well documented, and well supported and is currently our **recommended package for OAuth 2.0 support**.
 
 #### Installation & configuration
 
@@ -432,6 +432,16 @@ There are currently two forks of this project.
 
 [drfpasswordless][drfpasswordless] adds (Medium, Square Cash inspired) passwordless support to Django REST Framework's own TokenAuthentication scheme. Users log in and sign up with a token sent to a contact point like an email address or a mobile number.
 
+## django-rest-authemail
+
+[django-rest-authemail][django-rest-authemail] provides a RESTful API interface for user signup and authentication. Email addresses are used for authentication, rather than usernames.  API endpoints are available for signup, signup email verification, login, logout, password reset, password reset verification, email change, email change verification, password change, and user detail.  A fully-functional example project and detailed instructions are included.
+
+## Django-Rest-Durin
+
+[Django-Rest-Durin][django-rest-durin] is built with the idea to have one library that does token auth for multiple Web/CLI/Mobile API clients via one interface but allows different token configuration for each API Client that consumes the API. It provides support for multiple tokens per user via custom models, views, permissions that work with Django-Rest-Framework. The token expiration time can be different per API client and is customizable via the Django Admin Interface.
+
+More information can be found in the [Documentation](https://django-rest-durin.readthedocs.io/en/latest/index.html).
+
 [cite]: https://jacobian.org/writing/rest-worst-practices/
 [http401]: https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2
 [http403]: https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.4
@@ -448,7 +458,7 @@ There are currently two forks of this project.
 [djangorestframework-digestauth]: https://github.com/juanriaza/django-rest-framework-digestauth
 [oauth-1.0a]: https://oauth.net/core/1.0a/
 [django-oauth-toolkit]: https://github.com/evonove/django-oauth-toolkit
-[evonove]: https://github.com/evonove/
+[jazzband]: https://github.com/jazzband/
 [oauthlib]: https://github.com/idan/oauthlib
 [djangorestframework-simplejwt]: https://github.com/davesque/django-rest-framework-simplejwt
 [etoccalino]: https://github.com/etoccalino/
@@ -466,3 +476,5 @@ There are currently two forks of this project.
 [django-rest-framework-social-oauth2]: https://github.com/PhilipGarnero/django-rest-framework-social-oauth2
 [django-rest-knox]: https://github.com/James1345/django-rest-knox
 [drfpasswordless]: https://github.com/aaronn/django-rest-framework-passwordless
+[django-rest-authemail]: https://github.com/celiao/django-rest-authemail
+[django-rest-durin]: https://github.com/eshaan7/django-rest-durin

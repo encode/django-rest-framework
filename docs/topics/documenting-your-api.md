@@ -202,7 +202,7 @@ You can modify the response behavior to `OPTIONS` requests by overriding the `op
         meta = self.metadata_class()
         data = meta.determine_metadata(request, self)
         data.pop('description')
-        return data
+        return Response(data=data, status=status.HTTP_200_OK)
 
 See [the Metadata docs][metadata-docs] for more details.
 
@@ -219,8 +219,8 @@ To implement a hypermedia API you'll need to decide on an appropriate media type
 [cite]: https://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
 
 [hypermedia-docs]: rest-hypermedia-hateoas.md
-[metadata-docs]: ../api-guide/metadata/
-[schemas-examples]: ../api-guide/schemas/#examples
+[metadata-docs]: ../api-guide/metadata.md
+[schemas-examples]: ../api-guide/schemas.md#examples
 
 [image-drf-yasg]: ../img/drf-yasg.png
 [image-self-describing-api]: ../img/self-describing.png

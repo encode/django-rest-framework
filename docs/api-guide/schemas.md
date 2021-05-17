@@ -181,8 +181,8 @@ dictionary For example you might wish to add terms of service to the [top-level
 
 ```
 class TOSSchemaGenerator(SchemaGenerator):
-    def get_schema(self):
-        schema = super().get_schema()
+    def get_schema(self, *args, **kwargs):
+        schema = super().get_schema(*args, **kwargs)
         schema["info"]["termsOfService"] = "https://example.com/tos.html"
         return schema
 ```
@@ -380,6 +380,20 @@ operationIds.
 In order to work around this, you can override `get_operation_id_base()` to
 provide a different base for name part of the ID.
 
+#### `get_serializer()`
+
+If the view has implemented `get_serializer()`, returns the result.
+
+#### `get_request_serializer()`
+
+By default returns `get_serializer()` but can be overridden to
+differentiate between request and response objects.
+
+#### `get_response_serializer()`
+
+By default returns `get_serializer()` but can be overridden to
+differentiate between request and response objects.
+
 ### `AutoSchema.__init__()` kwargs
 
 `AutoSchema` provides a number of `__init__()` kwargs that can be used for
@@ -412,6 +426,7 @@ If your views have related customizations that are needed frequently, you can
 create a base `AutoSchema` subclass for your project that takes additional
 `__init__()` kwargs to save subclassing `AutoSchema` for each view.
 
+[cite]: https://blog.heroku.com/archives/2014/1/8/json_schema_for_heroku_platform_api
 [openapi]: https://github.com/OAI/OpenAPI-Specification
 [openapi-specification-extensions]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#specification-extensions
 [openapi-operation]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#operationObject

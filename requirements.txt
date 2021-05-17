@@ -9,5 +9,4 @@
 -r requirements/requirements-optionals.txt
 -r requirements/requirements-testing.txt
 -r requirements/requirements-documentation.txt
--r requirements/requirements-codestyle.txt
 -r requirements/requirements-packaging.txt

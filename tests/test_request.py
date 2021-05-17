@@ -205,8 +205,12 @@ class TestUserSetter(TestCase):
         # available to login and logout functions
         self.wrapped_request = factory.get('/')
         self.request = Request(self.wrapped_request)
-        SessionMiddleware().process_request(self.wrapped_request)
-        AuthenticationMiddleware().process_request(self.wrapped_request)
+
+        def dummy_get_response(request):  # pragma: no cover
+            return None
+
+        SessionMiddleware(dummy_get_response).process_request(self.wrapped_request)
+        AuthenticationMiddleware(dummy_get_response).process_request(self.wrapped_request)
 
         User.objects.create_user('ringo', 'starr@thebeatles.com', 'yellow')
         self.user = authenticate(username='ringo', password='yellow')

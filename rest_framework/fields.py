@@ -704,7 +704,7 @@ class BooleanField(Field):
     initial = False
     TRUE_VALUES = {
         't', 'T',
-        'y', 'Y', 'yes', 'YES',
+        'y', 'Y', 'yes', 'Yes', 'YES',
         'true', 'True', 'TRUE',
         'on', 'On', 'ON',
         '1', 1,
@@ -712,7 +712,7 @@ class BooleanField(Field):
     }
     FALSE_VALUES = {
         'f', 'F',
-        'n', 'N', 'no', 'NO',
+        'n', 'N', 'no', 'No', 'NO',
         'false', 'False', 'FALSE',
         'off', 'Off', 'OFF',
         '0', 0, 0.0,
@@ -749,7 +749,7 @@ class NullBooleanField(BooleanField):
         warnings.warn(
             "The `NullBooleanField` is deprecated and will be removed starting "
             "with 3.14. Instead use the `BooleanField` field and set "
-            "`null=True` which does the same thing.",
+            "`allow_null=True` which does the same thing.",
             RemovedInDRF314Warning, stacklevel=2
         )
 
@@ -1063,6 +1063,9 @@ class DecimalField(Field):
         try:
             value = decimal.Decimal(data)
         except decimal.DecimalException:
+            if data == '' and self.allow_null:
+                return None
+
             self.fail('invalid')
 
         if value.is_nan():
@@ -1111,6 +1114,12 @@ class DecimalField(Field):
 
     def to_representation(self, value):
         coerce_to_string = getattr(self, 'coerce_to_string', api_settings.COERCE_DECIMAL_TO_STRING)
+
+        if value is None:
+            if coerce_to_string:
+                return ''
+            else:
+                return None
 
         if not isinstance(value, decimal.Decimal):
             value = decimal.Decimal(str(value).strip())
@@ -1754,6 +1763,9 @@ class JSONField(Field):
     default_error_messages = {
         'invalid': _('Value must be valid JSON.')
     }
+
+    # Workaround for isinstance calls when importing the field isn't possible
+    _is_jsonfield = True
 
     def __init__(self, *args, **kwargs):
         self.binary = kwargs.pop('binary', False)

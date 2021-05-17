@@ -7,8 +7,10 @@ ______ _____ _____ _____    __
 \_| \_\____/\____/  \_/   |_| |_|  \__,_|_| |_| |_|\___| \_/\_/ \___/|_|  |_|\_|
 """
 
+import django
+
 __title__ = 'Django REST framework'
-__version__ = '3.12.1'
+__version__ = '3.12.4'
 __author__ = 'Tom Christie'
 __license__ = 'BSD 3-Clause'
 __copyright__ = 'Copyright 2011-2019 Encode OSS Ltd'
@@ -22,7 +24,9 @@ HTTP_HEADER_ENCODING = 'iso-8859-1'
 # Default datetime input and output formats
 ISO_8601 = 'iso-8601'
 
-default_app_config = 'rest_framework.apps.RestFrameworkConfig'
+
+if django.VERSION < (3, 2):
+    default_app_config = 'rest_framework.apps.RestFrameworkConfig'
 
 
 class RemovedInDRF313Warning(DeprecationWarning):

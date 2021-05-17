@@ -54,11 +54,19 @@ To start developing on Django REST framework, first create a Fork from the
 Then clone your fork. The clone command will look like this, with your GitHub
 username instead of YOUR-USERNAME:
 
-    git clone https://github.com/YOUR-USERNAME/Spoon-Knife
+    git clone https://github.com/YOUR-USERNAME/django-rest-framework
 
 See GitHub's [_Fork a Repo_][how-to-fork] Guide for more help.
 
 Changes should broadly follow the [PEP 8][pep-8] style conventions, and we recommend you set up your editor to automatically indicate non-conforming styles.
+You can check your contributions against these conventions each time you commit using the [pre-commit](https://pre-commit.com/) hooks, which we also run on CI.
+To set them up, first ensure you have the pre-commit tool installed, for example:
+
+    python -m pip install pre-commit
+
+Then run:
+
+    pre-commit install
 
 ## Testing
 
@@ -78,18 +86,6 @@ To run the tests, clone the repository, and then:
 Run using a more concise output style.
 
     ./runtests.py -q
-
-Run the tests using a more concise output style, no coverage, no flake8.
-
-    ./runtests.py --fast
-
-Don't run the flake8 code linting.
-
-    ./runtests.py --nolint
-
-Only run the flake8 code linting, don't run the tests.
-
-    ./runtests.py --lintonly
 
 Run the tests for a given test case.
 
@@ -123,11 +119,11 @@ GitHub's documentation for working on pull requests is [available here][pull-req
 
 Always run the tests before submitting pull requests, and ideally run `tox` in order to check that your modifications are compatible on all supported versions of Python and Django.
 
-Once you've made a pull request take a look at the Travis build status in the GitHub interface and make sure the tests are running as you'd expect.
+Once you've made a pull request take a look at the build status in the GitHub interface and make sure the tests are running as you'd expect.
 
-![Travis status][travis-status]
+![Build status][build-status]
 
-*Above: Travis build notifications*
+*Above: build notifications*
 
 ## Managing compatibility issues
 
@@ -210,7 +206,7 @@ If you want to draw attention to a note or warning, use a pair of enclosing line
 [so-filter]: https://stackexchange.com/filters/66475/rest-framework
 [issues]: https://github.com/encode/django-rest-framework/issues?state=open
 [pep-8]: https://www.python.org/dev/peps/pep-0008/
-[travis-status]: ../img/travis-status.png
+[build-status]: ../img/build-status.png
 [pull-requests]: https://help.github.com/articles/using-pull-requests
 [tox]: https://tox.readthedocs.io/en/latest/
 [markdown]: https://daringfireball.net/projects/markdown/basics

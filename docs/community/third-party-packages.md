@@ -14,142 +14,9 @@ We aim to make creating third party packages as easy as possible, whilst keeping
 
 If you have an idea for a new feature please consider how it may be packaged as a Third Party Package. We're always happy to discuss ideas on the [Mailing List][discussion-group].
 
-## How to create a Third Party Package
+## Creating a Third Party Package
 
-### Creating your package
-
-You can use [this cookiecutter template][cookiecutter] for creating reusable Django REST Framework packages quickly. Cookiecutter creates projects from project templates. While optional, this cookiecutter template includes best practices from Django REST framework and other packages, as well as a Travis CI configuration, Tox configuration, and a sane setup.py for easy PyPI registration/distribution.
-
-Note: Let us know if you have an alternate cookiecutter package so we can also link to it.
-
-#### Running the initial cookiecutter command
-
-To run the initial cookiecutter command, you'll first need to install the Python `cookiecutter` package.
-
-    $ pip install cookiecutter
-
-Once `cookiecutter` is installed just run the following to create a new project.
-
-    $ cookiecutter gh:jpadilla/cookiecutter-django-rest-framework
-
-You'll be prompted for some questions, answer them, then it'll create your Python package in the current working directory based on those values.
-
-    full_name (default is "Your full name here")? Johnny Appleseed
-    email (default is "you@example.com")? jappleseed@example.com
-    github_username (default is "yourname")? jappleseed
-    pypi_project_name (default is "dj-package")? djangorestframework-custom-auth
-    repo_name (default is "dj-package")? django-rest-framework-custom-auth
-    app_name (default is "djpackage")? custom_auth
-    project_short_description (default is "Your project description goes here")?
-    year (default is "2014")?
-    version (default is "0.1.0")?
-
-#### Getting it onto GitHub
-
-To put your project up on GitHub, you'll need a repository for it to live in. You can create a new repository [here][new-repo]. If you need help, check out the [Create A Repo][create-a-repo] article on GitHub.
-
-
-#### Adding to Travis CI
-
-We recommend using [Travis CI][travis-ci], a hosted continuous integration service which integrates well with GitHub and is free for public repositories.
-
-To get started with Travis CI, [sign in][travis-ci] with your GitHub account. Once you're signed in, go to your [profile page][travis-profile] and enable the service hook for the repository you want.
-
-If you use the cookiecutter template, your project will already contain a `.travis.yml` file which Travis CI will use to build your project and run tests.  By default, builds are triggered every time you push to your repository or create Pull Request.
-
-#### Uploading to PyPI
-
-Once you've got at least a prototype working and tests running, you should publish it on PyPI to allow others to install it via `pip`.
-
-You must [register][pypi-register] an account before publishing to PyPI.
-
-To register your package on PyPI run the following command.
-
-    $ python setup.py register
-
-If this is the first time publishing to PyPI, you'll be prompted to login.
-
-Note: Before publishing you'll need to make sure you have the latest pip that supports `wheel` as well as install the `wheel` package.
-
-    $ pip install --upgrade pip
-    $ pip install wheel
-
-After this, every time you want to release a new version on PyPI just run the following command.
-
-    $ python setup.py publish
-    You probably want to also tag the version now:
-        git tag -a {0} -m 'version 0.1.0'
-        git push --tags
-
-After releasing a new version to PyPI, it's always a good idea to tag the version and make available as a GitHub Release.
-
-We recommend to follow [Semantic Versioning][semver] for your package's versions.
-
-### Development
-
-#### Version requirements
-
-The cookiecutter template assumes a set of supported versions will be provided for Python and Django. Make sure you correctly update your requirements, docs, `tox.ini`, `.travis.yml`, and `setup.py` to match the set of versions you wish to support.
-
-#### Tests
-
-The cookiecutter template includes a `runtests.py` which uses the `pytest` package as a test runner.
-
-Before running, you'll need to install a couple test requirements.
-
-    $ pip install -r requirements.txt
-
-Once requirements installed, you can run `runtests.py`.
-
-    $ ./runtests.py
-
-Run using a more concise output style.
-
-    $ ./runtests.py -q
-
-Run the tests using a more concise output style, no coverage, no flake8.
-
-    $ ./runtests.py --fast
-
-Don't run the flake8 code linting.
-
-    $ ./runtests.py --nolint
-
-Only run the flake8 code linting, don't run the tests.
-
-    $ ./runtests.py --lintonly
-
-Run the tests for a given test case.
-
-    $ ./runtests.py MyTestCase
-
-Run the tests for a given test method.
-
-    $ ./runtests.py MyTestCase.test_this_method
-
-Shorter form to run the tests for a given test method.
-
-    $ ./runtests.py test_this_method
-
-To run your tests against multiple versions of Python as different versions of requirements such as Django we recommend using `tox`. [Tox][tox-docs] is a generic virtualenv management and test command line tool.
-
-First, install `tox` globally.
-
-    $ pip install tox
-
-To run `tox`, just simply run:
-
-    $ tox
-
-To run a particular `tox` environment:
-
-    $ tox -e envlist
-
-`envlist` is a comma-separated value to that specifies the environments to run tests against. To view a list of all possible test environments, run:
-
-    $ tox -l
-
-#### Version compatibility
+### Version compatibility
 
 Sometimes, in order to ensure your code works on various different versions of Django, Python or third party libraries, you'll need to run slightly different code depending on the environment. Any code that branches in this way should be isolated into a `compat.py` module, and should provide a single common interface that the rest of the codebase can use.
 
@@ -190,6 +57,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [django-rest-auth][django-rest-auth] - Provides a set of REST API endpoints for registration, authentication (including social media authentication), password reset, retrieve and update user details, etc.
 * [drf-oidc-auth][drf-oidc-auth] - Implements OpenID Connect token authentication for DRF.
 * [drfpasswordless][drfpasswordless] - Adds (Medium, Square Cash inspired) passwordless logins and signups via email and mobile numbers.
+* [django-rest-authemail][django-rest-authemail] - Provides a RESTful API for user signup and authentication using email addresses.
 
 ### Permissions
 
@@ -214,17 +82,19 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [drf-action-serializer][drf-action-serializer] - Serializer providing per-action fields config for use with ViewSets to prevent having to write multiple serializers.
 * [djangorestframework-dataclasses][djangorestframework-dataclasses] - Serializer providing automatic field generation for Python dataclasses, like the built-in ModelSerializer does for models.
 * [django-restql][django-restql] - Turn your REST API into a GraphQL like API(It allows clients to control which fields will be sent in a response, uses GraphQL like syntax, supports read and write on both flat and nested fields).
+* [graphwrap][graphwrap] - Transform your REST API into a fully compliant GraphQL API with just two lines of code. Leverages [Graphene-Django](https://docs.graphene-python.org/projects/django/en/latest/) to dynamically build, at runtime, a GraphQL ObjectType for each view in your API.
 
 ### Serializer fields
 
 * [drf-compound-fields][drf-compound-fields] - Provides "compound" serializer fields, such as lists of simple values.
-* [django-extra-fields][django-extra-fields] - Provides extra serializer fields.
+* [drf-extra-fields][drf-extra-fields] - Provides extra serializer fields.
 * [django-versatileimagefield][django-versatileimagefield] - Provides a drop-in replacement for Django's stock `ImageField` that makes it easy to serve images in multiple sizes/renditions from a single field. For DRF-specific implementation docs, [click here][django-versatileimagefield-drf-docs].
 
 ### Views
 
 * [django-rest-multiple-models][django-rest-multiple-models] - Provides a generic view (and mixin) for sending multiple serialized models and/or querysets via a single API request.
 * [drf-typed-views][drf-typed-views] - Use Python type annotations to validate/deserialize request parameters. Inspired by API Star, Hug and FastAPI.
+* [rest-framework-actions][rest-framework-actions] - Provides control over each action in ViewSets. Serializers per action, method.
 
 ### Routers
 
@@ -276,13 +146,12 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [djangorestframework-features][djangorestframework-features] - Advanced schema generation and more based on named features.
 * [django-elasticsearch-dsl-drf][django-elasticsearch-dsl-drf] - Integrate Elasticsearch DSL with Django REST framework. Package provides views, serializers, filter backends, pagination and other handy add-ons.
 * [django-api-client][django-api-client] - DRF client that groups the Endpoint response, for use in CBVs and FBV as if you were working with Django's Native Models..
+* [fast-drf] - A model based library for making API development faster and easier.
 
 [cite]: http://www.software-ecosystems.com/Software_Ecosystems/Ecosystems.html
 [cookiecutter]: https://github.com/jpadilla/cookiecutter-django-rest-framework
 [new-repo]: https://github.com/new
 [create-a-repo]: https://help.github.com/articles/create-a-repo/
-[travis-ci]: https://travis-ci.org
-[travis-profile]: https://travis-ci.org/profile
 [pypi-register]: https://pypi.org/account/register/
 [semver]: https://semver.org/
 [tox-docs]: https://tox.readthedocs.io/en/latest/
@@ -308,7 +177,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [djangorestframework-gis]: https://github.com/djangonauts/django-rest-framework-gis
 [djangorestframework-hstore]: https://github.com/djangonauts/django-rest-framework-hstore
 [drf-compound-fields]: https://github.com/estebistec/drf-compound-fields
-[django-extra-fields]: https://github.com/Hipo/drf-extra-fields
+[drf-extra-fields]: https://github.com/Hipo/drf-extra-fields
 [django-rest-multiple-models]: https://github.com/MattBroach/DjangoRestMultipleModels
 [drf-nested-routers]: https://github.com/alanjds/drf-nested-routers
 [wq.db.rest]: https://wq.io/docs/about-rest
@@ -362,3 +231,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [django-elasticsearch-dsl-drf]: https://github.com/barseghyanartur/django-elasticsearch-dsl-drf
 [django-api-client]: https://github.com/rhenter/django-api-client
 [drf-psq]: https://github.com/drf-psq/drf-psq
+[django-rest-authemail]: https://github.com/celiao/django-rest-authemail
+[graphwrap]: https://github.com/PaulGilmartin/graph_wrap
+[rest-framework-actions]: https://github.com/AlexisMunera98/rest-framework-actions
+[fast-drf]: https://github.com/iashraful/fast-drf

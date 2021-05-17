@@ -79,7 +79,7 @@ if requests is not None:
             """
             raw_kwargs = {}
 
-            def start_response(wsgi_status, wsgi_headers):
+            def start_response(wsgi_status, wsgi_headers, exc_info=None):
                 status, _, reason = wsgi_status.partition(' ')
                 raw_kwargs['status'] = int(status)
                 raw_kwargs['reason'] = reason
@@ -124,7 +124,7 @@ if coreapi is not None:
         def __init__(self, *args, **kwargs):
             self._session = RequestsClient()
             kwargs['transports'] = [coreapi.transports.HTTPTransport(session=self.session)]
-            return super().__init__(*args, **kwargs)
+            super().__init__(*args, **kwargs)
 
         @property
         def session(self):
