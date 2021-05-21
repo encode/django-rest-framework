@@ -216,8 +216,11 @@ class BaseSerializer(Field):
         )
 
         if not hasattr(self, '_validated_data'):
+            validation_data = self.to_representation(self.instance) if self.instance else {}
+            validation_data.update(self.initial_data)
+
             try:
-                self._validated_data = self.run_validation(self.initial_data)
+                self._validated_data = self.run_validation(validation_data)
             except ValidationError as exc:
                 self._validated_data = {}
                 self._errors = exc.detail
