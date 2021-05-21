@@ -374,5 +374,5 @@ We'll see how we can start to improve things in [part 2 of the tutorial][tut-2].
 [sandbox]: https://restframework.herokuapp.com/
 [venv]: https://docs.python.org/3/library/venv.html
 [tut-2]: 2-requests-and-responses.md
-[httpie]: https://github.com/jakubroztocil/httpie#installation
+[httpie]: https://github.com/httpie/httpie#installation
 [curl]: https://curl.haxx.se/
