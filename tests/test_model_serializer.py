@@ -1348,6 +1348,7 @@ class Issue7489Serializer(serializers.ModelSerializer):
     class Meta:
         model = Issue7489Model
         fields = '__all__'
+        validate_entire_instance = True
 
 
 class Issue7489Test(TestCase):

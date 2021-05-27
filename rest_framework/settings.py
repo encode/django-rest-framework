@@ -124,6 +124,9 @@ DEFAULTS = {
         'retrieve': 'read',
         'destroy': 'delete'
     },
+    
+    # Validation
+    'VALIDATE_ENTIRE_INSTANCE': False,
 }
 
 

@@ -13,7 +13,7 @@ response content is handled by parsers and renderers.
 import copy
 import inspect
 import traceback
-from collections import OrderedDict, defaultdict
+from collections import ChainMap, OrderedDict, defaultdict
 from collections.abc import Mapping
 
 from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured
@@ -215,12 +215,17 @@ class BaseSerializer(Field):
             'passed when instantiating the serializer instance.'
         )
 
-        if not hasattr(self, '_validated_data'):
-            validation_data = self.to_representation(self.instance) if self.instance else {}
-            validation_data.update(self.initial_data)
-
+        if not hasattr(self, '_validated_data'):            
+            if self.instance and getattr(getattr(self, 'Meta', None), 'validate_entire_instance', api_settings.VALIDATE_ENTIRE_INSTANCE):
+                data = ChainMap(
+                    self.initial_data,
+                    self.to_representation(self.instance)
+                )
+            else:
+                data = self.initial_data
+                
             try:
-                self._validated_data = self.run_validation(validation_data)
+                self._validated_data = self.run_validation(data)
             except ValidationError as exc:
                 self._validated_data = {}
                 self._errors = exc.detail
