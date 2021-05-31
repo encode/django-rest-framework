@@ -336,7 +336,7 @@ msgstr "No se pudo determinar un nombre de archivo."
 
 #: fields.py:1517
 msgid "The submitted file is empty."
-msgstr "El archivo enviado está vació."
+msgstr "El archivo enviado está vacío."
 
 #: fields.py:1518
 #, python-brace-format
