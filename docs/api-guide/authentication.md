@@ -11,7 +11,7 @@ source:
 
 Authentication is the mechanism of associating an incoming request with a set of identifying credentials, such as the user the request came from, or the token that it was signed with.  The [permission] and [throttling] policies can then use those credentials to determine if the request should be permitted.
 
-REST framework provides a number of authentication schemes out of the box, and also allows you to implement custom schemes.
+REST framework provides several authentication schemes out of the box, and also allows you to implement custom schemes.
 
 Authentication is always run at the very start of the view, before the permission and throttling checks occur, and before any other code is allowed to proceed.
 
@@ -23,7 +23,7 @@ The `request.auth` property is used for any additional authentication informatio
 
 **Note:** Don't forget that **authentication by itself won't allow or disallow an incoming request**, it simply identifies the credentials that the request was made with.
 
-For information on how to setup the permission polices for your API please see the [permissions documentation][permission].
+For information on how to set up the permission policies for your API please see the [permissions documentation][permission].
 
 ---
 
@@ -195,7 +195,7 @@ If you've already created some users, you can generate tokens for all existing u
 
 ##### By exposing an api endpoint
 
-When using `TokenAuthentication`, you may want to provide a mechanism for clients to obtain a token given the username and password.  REST framework provides a built-in view to provide this behavior.  To use it, add the `obtain_auth_token` view to your URLconf:
+When using `TokenAuthentication`, you may want to provide a mechanism for clients to obtain a token given the username and password.  REST framework provides a built-in view to provide this behaviour.  To use it, add the `obtain_auth_token` view to your URLconf:
 
     from rest_framework.authtoken import views
     urlpatterns += [
@@ -210,7 +210,7 @@ The `obtain_auth_token` view will return a JSON response when valid `username` a
 
 Note that the default `obtain_auth_token` view explicitly uses JSON requests and responses, rather than using default renderer and parser classes in your settings.
 
-By default there are no permissions or throttling applied to the  `obtain_auth_token` view. If you do wish to apply throttling you'll need to override the view class,
+By default, there are no permissions or throttling applied to the  `obtain_auth_token` view. If you do wish to apply to throttle you'll need to override the view class,
 and include them using the `throttle_classes` attribute.
 
 If you need a customized version of the `obtain_auth_token` view, you can do so by subclassing the `ObtainAuthToken` view class, and using that in your url conf instead.
@@ -244,7 +244,7 @@ And in your `urls.py`:
 
 ##### With Django admin
 
-It is also possible to create Tokens manually through admin interface. In case you are using a large user base, we recommend that you monkey patch the `TokenAdmin` class to customize it to your needs, more specifically by declaring the `user` field as `raw_field`.
+It is also possible to create Tokens manually through the admin interface. In case you are using a large user base, we recommend that you monkey patch the `TokenAdmin` class customize it to your needs, more specifically by declaring the `user` field as `raw_field`.
 
 `your_app/admin.py`:
 
@@ -279,11 +279,11 @@ If successfully authenticated, `SessionAuthentication` provides the following cr
 
 Unauthenticated responses that are denied permission will result in an `HTTP 403 Forbidden` response.
 
-If you're using an AJAX style API with SessionAuthentication, you'll need to make sure you include a valid CSRF token for any "unsafe" HTTP method calls, such as `PUT`, `PATCH`, `POST` or `DELETE` requests.  See the [Django CSRF documentation][csrf-ajax] for more details.
+If you're using an AJAX-style API with SessionAuthentication, you'll need to make sure you include a valid CSRF token for any "unsafe" HTTP method calls, such as `PUT`, `PATCH`, `POST` or `DELETE` requests.  See the [Django CSRF documentation][csrf-ajax] for more details.
 
 **Warning**: Always use Django's standard login view when creating login pages. This will ensure your login views are properly protected.
 
-CSRF validation in REST framework works slightly differently to standard Django due to the need to support both session and non-session based authentication to the same views. This means that only authenticated requests require CSRF tokens, and anonymous requests may be sent without CSRF tokens. This behaviour is not suitable for login views, which should always have CSRF validation applied.
+CSRF validation in REST framework works slightly differently from standard Django due to the need to support both session and non-session based authentication to the same views. This means that only authenticated requests require CSRF tokens, and anonymous requests may be sent without CSRF tokens. This behaviour is not suitable for login views, which should always have CSRF validation applied.
 
 
 ## RemoteUserAuthentication
@@ -316,7 +316,7 @@ In some circumstances instead of returning `None`, you may want to raise an `Aut
 Typically the approach you should take is:
 
 * If authentication is not attempted, return `None`.  Any other authentication schemes also in use will still be checked.
-* If authentication is attempted but fails, raise a `AuthenticationFailed` exception.  An error response will be returned immediately, regardless of any permissions checks, and without checking any other authentication schemes.
+* If authentication is attempted but fails, raise an `AuthenticationFailed` exception.  An error response will be returned immediately, regardless of any permissions checks, and without checking any other authentication schemes.
 
 You *may* also override the `.authenticate_header(self, request)` method.  If implemented, it should return a string that will be used as the value of the `WWW-Authenticate` header in a `HTTP 401 Unauthorized` response.
 
@@ -353,7 +353,7 @@ The following example will authenticate any incoming request as the user given b
 
 # Third party packages
 
-The following third party packages are also available.
+The following third-party packages are also available.
 
 ## Django OAuth Toolkit
 
@@ -384,7 +384,7 @@ For more details see the [Django REST framework - Getting started][django-oauth-
 
 The [Django REST framework OAuth][django-rest-framework-oauth] package provides both OAuth1 and OAuth2 support for REST framework.
 
-This package was previously included directly in REST framework but is now supported and maintained as a third party package.
+This package was previously included directly in the REST framework but is now supported and maintained as a third-party package.
 
 #### Installation & configuration
 
@@ -408,7 +408,7 @@ HTTP Signature (currently a [IETF draft][http-signature-ietf-draft]) provides a 
 
 ## Djoser
 
-[Djoser][djoser] library provides a set of views to handle basic actions such as registration, login, logout, password reset and account activation. The package works with a custom user model and it uses token based authentication. This is a ready to use REST implementation of Django authentication system.
+[Djoser][djoser] library provides a set of views to handle basic actions such as registration, login, logout, password reset and account activation. The package works with a custom user model and uses token-based authentication. This is ready to use REST implementation of the Django authentication system.
 
 ## django-rest-auth / dj-rest-auth
 
@@ -426,15 +426,15 @@ There are currently two forks of this project.
 
 ## django-rest-knox
 
-[Django-rest-knox][django-rest-knox] library provides models and views to handle token based authentication in a more secure and extensible way than the built-in TokenAuthentication scheme - with Single Page Applications and Mobile clients in mind. It provides per-client tokens, and views to generate them when provided some other authentication (usually basic authentication), to delete the token (providing a server enforced logout) and to delete all tokens (logs out all clients that a user is logged into).
+[Django-rest-knox][django-rest-knox] library provides models and views to handle token-based authentication in a more secure and extensible way than the built-in TokenAuthentication scheme - with Single Page Applications and Mobile clients in mind. It provides per-client tokens, and views to generate them when provided some other authentication (usually basic authentication), to delete the token (providing a server enforced logout) and to delete all tokens (logs out all clients that a user is logged into).
 
 ## drfpasswordless
 
-[drfpasswordless][drfpasswordless] adds (Medium, Square Cash inspired) passwordless support to Django REST Framework's own TokenAuthentication scheme. Users log in and sign up with a token sent to a contact point like an email address or a mobile number.
+[drfpasswordless][drfpasswordless] adds (Medium, Square Cash inspired) passwordless support to Django REST Framework's TokenAuthentication scheme. Users log in and sign up with a token sent to a contact point like an email address or a mobile number.
 
 ## django-rest-authemail
 
-[django-rest-authemail][django-rest-authemail] provides a RESTful API interface for user signup and authentication. Email addresses are used for authentication, rather than usernames.  API endpoints are available for signup, signup email verification, login, logout, password reset, password reset verification, email change, email change verification, password change, and user detail.  A fully-functional example project and detailed instructions are included.
+[django-rest-authemail][django-rest-authemail] provides a RESTful API interface for user signup and authentication. Email addresses are used for authentication, rather than usernames.  API endpoints are available for signup, signup email verification, login, logout, password reset, password reset verification, email change, email change verification, password change, and user detail.  A fully functional example project and detailed instructions are included.
 
 ## Django-Rest-Durin
 
