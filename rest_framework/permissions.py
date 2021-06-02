@@ -243,10 +243,7 @@ class DjangoModelPermissions(BasePermission):
 
         user = request.user
         if request.method == 'GET':
-            if user.has_perms(perms) or user.has_perms(change_perm):
-                return True
-            else:
-                return False
+            return user.has_perms(perms) or user.has_perms(change_perm)
 
         return user.has_perms(perms)
 
