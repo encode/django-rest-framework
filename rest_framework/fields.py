@@ -1416,6 +1416,7 @@ class ChoiceField(Field):
         self.html_cutoff_text = kwargs.pop('html_cutoff_text', self.html_cutoff_text)
 
         self.allow_blank = kwargs.pop('allow_blank', False)
+        self.strict_choices = kwargs.pop('strict_choices', False)
 
         super().__init__(**kwargs)
 
@@ -1429,6 +1430,12 @@ class ChoiceField(Field):
             self.fail('invalid_choice', input=data)
 
     def to_representation(self, value):
+        if self.strict_choices:
+            try:
+                return self.choice_strings_to_values[str(value)]
+            except KeyError:
+                self.fail('invalid_choice', input=value)
+
         if value in ('', None):
             return value
         return self.choice_strings_to_values.get(str(value), value)
@@ -1494,6 +1501,17 @@ class MultipleChoiceField(ChoiceField):
         }
 
     def to_representation(self, value):
+        if self.strict_choices:
+            if isinstance(value, str) or not hasattr(value, '__iter__'):
+                self.fail('not_a_list', input_type=type(value).__name__)
+            if not self.allow_empty and len(value) == 0:
+                self.fail('empty')
+
+            return {
+                super(MultipleChoiceField, self).to_representation(item)
+                for item in value
+            }
+
         return {
             self.choice_strings_to_values.get(str(item), item) for item in value
         }

@@ -1693,6 +1693,23 @@ class TestChoiceField(FieldValues):
             field.run_validation(2)
         assert exc_info.value.detail == ['"2" is not a valid choice.']
 
+    def test_strict_choices(self):
+        """
+        If `strict_choices` then to_representation() should return one of given choices.
+        """
+        field = serializers.ChoiceField(
+            strict_choices=True,
+            choices=[
+                ('poor', 'Poor quality'),
+                ('medium', 'Medium quality'),
+                ('good', 'Good quality'),
+            ]
+        )
+        assert field.to_representation('poor') == 'poor'
+        with pytest.raises(serializers.ValidationError) as exc_info:
+            field.to_representation('amazing')
+        assert exc_info.value.detail == ['"amazing" is not a valid choice.']
+
 
 class TestChoiceFieldWithType(FieldValues):
     """
@@ -1829,6 +1846,24 @@ class TestMultipleChoiceField(FieldValues):
         assert field.get_value(QueryDict({})) == []
         field.partial = True
         assert field.get_value(QueryDict({})) == rest_framework.fields.empty
+
+    def test_multiple_strict_choices(self):
+        """
+        If `strict_choices` then to_representation() should return a set from given choices.
+        """
+        field = serializers.MultipleChoiceField(
+            strict_choices=True,
+            choices=[
+                ('aircon', 'AirCon'),
+                ('manual', 'Manual drive'),
+                ('diesel', 'Diesel'),
+            ]
+        )
+
+        assert field.to_representation(['aircon', 'manual']) == {'aircon', 'manual'}
+        with pytest.raises(serializers.ValidationError) as exc_info:
+            field.to_representation(['aircon', 'incorrect'])
+        assert exc_info.value.detail == ['"incorrect" is not a valid choice.']
 
 
 class TestEmptyMultipleChoiceField(FieldValues):
