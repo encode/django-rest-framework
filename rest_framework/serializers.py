@@ -627,6 +627,17 @@ class ListSerializer(BaseSerializer):
 
         return value
 
+    def run_child_validation(self, data):
+        """
+        Run validation on child serializer.
+        You may need to override this method to support multiple updates. For example:
+
+        self.child.instance = self.instance.get(pk=data['id'])
+        self.child.initial_data = data
+        return super().run_child_validation(data)
+        """
+        return self.child.run_validation(data)
+
     def to_internal_value(self, data):
         """
         List of dicts of native values <- List of dicts of primitive datatypes.
@@ -665,7 +676,7 @@ class ListSerializer(BaseSerializer):
 
         for item in data:
             try:
-                validated = self.child.run_validation(item)
+                validated = self.run_child_validation(item)
             except ValidationError as exc:
                 errors.append(exc.detail)
             else:
