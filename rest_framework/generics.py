@@ -2,6 +2,7 @@
 Generic views that provide commonly needed behaviour.
 """
 from typing import Iterable
+
 from django.core.exceptions import ValidationError
 from django.db.models.query import QuerySet
 from django.http import Http404
@@ -77,7 +78,7 @@ class GenericAPIView(views.APIView):
             # Ensure queryset is re-evaluated on each request.
             queryset = queryset.all()
         return queryset
-    
+
     def get_prefetch_related(self):
         """
         Get the list of prefetch related objects for self.queryset or instance.
