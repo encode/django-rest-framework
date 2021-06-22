@@ -120,7 +120,7 @@ If you're intending to use the browsable API you'll probably also want to add RE
 
     urlpatterns = [
         ...
-        path('api-auth/', include('rest_framework.urls'))
+        path('api/v1/', include('rest_framework.urls'))
     ]
 
 Note that the URL path can be whatever you want.
@@ -140,8 +140,6 @@ Any global settings for a REST framework API are kept in a single configuration 
             'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
         ]
     }
-
-Don't forget to make sure you've also added `rest_framework` to your `INSTALLED_APPS`.
 
 We're ready to create our API now.
 Here's our project's root `urls.py` module:
