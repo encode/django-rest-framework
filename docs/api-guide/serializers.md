@@ -605,13 +605,13 @@ For `ModelSerializer` this defaults to `PrimaryKeyRelatedField`.
 
 For `HyperlinkedModelSerializer` this defaults to `serializers.HyperlinkedRelatedField`.
 
-### `serializer_url_field`
+### `.serializer_url_field`
 
 The serializer field class that should be used for any `url` field on the serializer.
 
 Defaults to `serializers.HyperlinkedIdentityField`
 
-### `serializer_choice_field`
+### `.serializer_choice_field`
 
 The serializer field class that should be used for any choice fields on the serializer.
 
