@@ -1163,6 +1163,30 @@ class TestMinMaxDecimalField(FieldValues):
     )
 
 
+class TestAllowEmptyStrDecimalFieldWithValidators(FieldValues):
+    """
+    Check that empty string ('', ' ') is acceptable value for the DecimalField
+    if allow_null=True and there are max/min validators
+    """
+    valid_inputs = {
+        None: None,
+        '': None,
+        ' ': None,
+        '  ': None,
+        5: Decimal('5'),
+        '0': Decimal('0'),
+        '10': Decimal('10'),
+    }
+    invalid_inputs = {
+        -1: ['Ensure this value is greater than or equal to 0.'],
+        11: ['Ensure this value is less than or equal to 10.'],
+    }
+    outputs = {
+        None: '',
+    }
+    field = serializers.DecimalField(max_digits=3, decimal_places=1, allow_null=True, min_value=0, max_value=10)
+
+
 class TestNoMaxDigitsDecimalField(FieldValues):
     field = serializers.DecimalField(
         max_value=100, min_value=0,

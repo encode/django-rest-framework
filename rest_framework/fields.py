@@ -1046,6 +1046,11 @@ class DecimalField(Field):
                 'Invalid rounding option %s. Valid values for rounding are: %s' % (rounding, valid_roundings))
         self.rounding = rounding
 
+    def validate_empty_values(self, data):
+        if smart_str(data).strip() == '' and self.allow_null:
+            return (True, None)
+        return super().validate_empty_values(data)
+
     def to_internal_value(self, data):
         """
         Validate that the input is a decimal number and return a Decimal
@@ -1063,9 +1068,6 @@ class DecimalField(Field):
         try:
             value = decimal.Decimal(data)
         except decimal.DecimalException:
-            if data == '' and self.allow_null:
-                return None
-
             self.fail('invalid')
 
         if value.is_nan():
