@@ -74,7 +74,8 @@ class UpdateModelMixin:
             # forcibly invalidate the prefetch cache on the instance,
             # and then re-prefetch related objects
             instance._prefetched_objects_cache = {}
-            prefetch_related_objects([instance], *self.get_prefetch_related())
+            queryset = self.filter_queryset(self.get_queryset())
+            prefetch_related_objects([instance], *queryset._prefetch_related_lookups)
 
         return Response(serializer.data)
 

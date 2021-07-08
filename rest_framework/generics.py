@@ -1,8 +1,6 @@
 """
 Generic views that provide commonly needed behaviour.
 """
-from typing import Iterable
-
 from django.core.exceptions import ValidationError
 from django.db.models.query import QuerySet
 from django.http import Http404
@@ -47,8 +45,6 @@ class GenericAPIView(views.APIView):
     # The style to use for queryset pagination.
     pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
 
-    prefetch_related = []
-
     def get_queryset(self):
         """
         Get the list of items for this view.
@@ -72,30 +68,9 @@ class GenericAPIView(views.APIView):
 
         queryset = self.queryset
         if isinstance(queryset, QuerySet):
-            # Prefetch related objects
-            if self.get_prefetch_related():
-                queryset = queryset.prefetch_related(*self.get_prefetch_related())
             # Ensure queryset is re-evaluated on each request.
             queryset = queryset.all()
         return queryset
-
-    def get_prefetch_related(self):
-        """
-        Get the list of prefetch related objects for self.queryset or instance.
-        This must be an iterable.
-        Defaults to using `self.prefetch_related`.
-
-        You may want to override this if you need to provide prefetched objects
-        depending on the incoming request.
-
-        (Eg. `['toppings', Prefetch('restaurants', queryset=Restaurant.objects.select_related('best_pizza'))]`)
-        """
-        assert isinstance(self.prefetch_related, Iterable), (
-            "'%s' should either include an iterable `prefetch_related` attribute, "
-            "or override the `get_prefetch_related()` method."
-            % self.__class__.__name__
-        )
-        return self.prefetch_related
 
     def get_object(self):
         """
