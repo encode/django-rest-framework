@@ -2,6 +2,7 @@
 Provides various throttling policies.
 """
 import time
+from collections import deque
 
 from django.core.cache import cache as default_cache
 from django.core.exceptions import ImproperlyConfigured
@@ -120,7 +121,7 @@ class SimpleRateThrottle(BaseThrottle):
         if self.key is None:
             return True
 
-        self.history = self.cache.get(self.key, [])
+        self.history = self.cache.get(self.key, deque())
         self.now = self.timer()
 
         # Drop any requests from the history which have now passed the
@@ -136,7 +137,7 @@ class SimpleRateThrottle(BaseThrottle):
         Inserts the current request's timestamp along with the key
         into the cache.
         """
-        self.history.insert(0, self.now)
+        self.history.appendleft(self.now)
         self.cache.set(self.key, self.history, self.duration)
         return True
 
