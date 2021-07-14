@@ -217,6 +217,25 @@ class TestRegularFieldMappings(TestCase):
         """)
         self.assertEqual(repr(TestSerializer()), expected)
 
+    def test_override_choice_field_mapping(self):
+        class CustomChoiceField(models.CharField):
+            """
+            A custom choice model field simply for testing purposes.
+            """
+            max_length = 100
+
+        class CostomizedChoiceModel(models.Model):
+            choices_field = CustomChoiceField(choices=COLOR_CHOICES)
+
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = CostomizedChoiceModel
+                fields = '__all__'
+
+        self.assertTrue(isinstance(TestSerializer().fields["choices_field"], serializers.ChoiceField))
+        TestSerializer.serializer_field_mapping[CustomChoiceField] = serializers.MultipleChoiceField
+        self.assertTrue(isinstance(TestSerializer().fields["choices_field"], serializers.MultipleChoiceField))
+
     def test_nullable_boolean_field_choices(self):
         class NullableBooleanChoicesModel(models.Model):
             CHECKLIST_OPTIONS = (

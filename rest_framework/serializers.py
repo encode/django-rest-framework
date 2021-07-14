@@ -1212,20 +1212,19 @@ class ModelSerializer(Serializer):
             field_class = self.serializer_related_field
             field_kwargs['queryset'] = model_field.related_model.objects
 
-        if 'choices' in field_kwargs:
+        if 'choices' in field_kwargs and not issubclass(field_class, self.serializer_choice_field):
             # Fields with choices get coerced into `ChoiceField`
             # instead of using their regular typed field.
             field_class = self.serializer_choice_field
             # Some model fields may introduce kwargs that would not be valid
             # for the choice field. We need to strip these out.
             # Eg. models.DecimalField(max_digits=3, decimal_places=1, choices=DECIMAL_CHOICES)
-            valid_kwargs = {
-                'read_only', 'write_only',
-                'required', 'default', 'initial', 'source',
-                'label', 'help_text', 'style',
-                'error_messages', 'validators', 'allow_null', 'allow_blank',
-                'choices'
-            }
+            valid_kwargs = set()
+            for c in inspect.getmro(field_class):
+                sig = inspect.signature(c.__init__)
+                for param in sig.parameters.values():
+                    if (param.kind == param.POSITIONAL_OR_KEYWORD):
+                        valid_kwargs.add(param.name)
             for key in list(field_kwargs):
                 if key not in valid_kwargs:
                     field_kwargs.pop(key)
