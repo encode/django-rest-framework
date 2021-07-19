@@ -8,6 +8,9 @@ from rest_framework import exceptions
 SAFE_METHODS = ('GET', 'HEAD', 'OPTIONS')
 
 
+Deferred = object()
+
+
 class OperationHolderMixin:
     def __and__(self, other):
         return OperandHolder(AND, self, other)
@@ -57,14 +60,14 @@ class AND:
         if not hasperm1:
             return hasperm1
         hasperm2 = self.op2.has_permission(request, view)
-        return hasperm1 if hasperm2 is NotImplemented else hasperm2
+        return hasperm1 if hasperm2 is Deferred else hasperm2
 
     def has_object_permission(self, request, view, obj):
         hasperm1 = self.op1.has_object_permission(request, view, obj)
         if not hasperm1:
             return hasperm1
         hasperm2 = self.op2.has_object_permission(request, view, obj)
-        return hasperm1 if hasperm2 is NotImplemented else hasperm2
+        return hasperm1 if hasperm2 is Deferred else hasperm2
 
 
 class OR:
@@ -74,19 +77,19 @@ class OR:
 
     def has_permission(self, request, view):
         hasperm1 = self.op1.has_permission(request, view)
-        if hasperm1 and hasperm1 is not NotImplemented:
+        if hasperm1 and hasperm1 is not Deferred:
             return hasperm1
         hasperm2 = self.op2.has_permission(request, view)
         return hasperm2 or hasperm1
 
     def has_object_permission(self, request, view, obj):
         hasperm1 = self.op1.has_object_permission(request, view, obj)
-        if hasperm1 is NotImplemented:
+        if hasperm1 is Deferred:
             hasperm1 = self.op1.has_permission(request, view)
-        if hasperm1 and hasperm1 is not NotImplemented:
+        if hasperm1 and hasperm1 is not Deferred:
             return hasperm1
         hasperm2 = self.op2.has_object_permission(request, view, obj)
-        if hasperm2 is NotImplemented:
+        if hasperm2 is Deferred:
             hasperm2 = self.op2.has_permission(request, view)
         return hasperm2 or hasperm1
 
@@ -97,11 +100,11 @@ class NOT:
 
     def has_permission(self, request, view):
         hasperm = self.op1.has_permission(request, view)
-        return hasperm if hasperm is NotImplemented else not hasperm
+        return hasperm if hasperm is Deferred else not hasperm
 
     def has_object_permission(self, request, view, obj):
         hasperm = self.op1.has_object_permission(request, view, obj)
-        return hasperm if hasperm is NotImplemented else not hasperm
+        return hasperm if hasperm is Deferred else not hasperm
 
 
 class BasePermissionMetaclass(OperationHolderMixin, type):
@@ -115,15 +118,22 @@ class BasePermission(metaclass=BasePermissionMetaclass):
 
     def has_permission(self, request, view):
         """
-        Return `True` if permission is granted, `False` otherwise.
+        Return `True` if permission is granted, `False` if permission is denied,
+        and `Deferred` if object permissions must be checked.
         """
-        return NotImplemented
+        return Deferred
 
     def has_object_permission(self, request, view, obj):
         """
-        Return `True` if permission is granted, `False` otherwise.
+        Return `True` if permission is granted, `False` if permission is denied,
+        and `Deferred` if object permissions aren't implemented and should be
+        granted or denied based on `has_permission` as necessary. Returning
+        `Deferred` is more efficient than simply calling `has_permission`
+        because it prevents calling `has_permission` redundantly in most cases
+        where `has_permission` was already checked before calling
+        `has_object_perimssion`.
         """
-        return NotImplemented
+        return Deferred
 
 
 class AllowAny(BasePermission):

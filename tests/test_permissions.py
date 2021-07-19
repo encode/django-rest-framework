@@ -12,6 +12,7 @@ from rest_framework import (
     HTTP_HEADER_ENCODING, authentication, generics, permissions, serializers,
     status, views
 )
+from rest_framework.permissions import Deferred
 from rest_framework.routers import DefaultRouter
 from rest_framework.test import APIRequestFactory
 from tests.models import BasicModel
@@ -688,7 +689,7 @@ class PermissionsCompositionTests(TestCase):
         request = factory.get('/1', format='json')
         request.user = self.user
         composed_perm = ~BasicObjectPerm
-        assert composed_perm().has_permission(request, None) is NotImplemented
+        assert composed_perm().has_permission(request, None) is Deferred
         assert composed_perm().has_object_permission(request, None, None) is True
 
     def test_has_object_permission_not_implemented_false(self):
@@ -698,7 +699,7 @@ class PermissionsCompositionTests(TestCase):
             permissions.IsAdminUser |
             BasicObjectPerm
         )
-        assert composed_perm().has_permission(request, None) is NotImplemented
+        assert composed_perm().has_permission(request, None) is Deferred
         assert composed_perm().has_object_permission(request, None, None) is False
 
     def test_has_object_permission_not_implemented_true(self):

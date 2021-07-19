@@ -1,4 +1,4 @@
----
+﻿---
 source:
     - permissions.py
 ---
@@ -212,7 +212,8 @@ To implement a custom permission, override `BasePermission` and implement either
 * `.has_permission(self, request, view)`
 * `.has_object_permission(self, request, view, obj)`
 
-The methods should return `True` if the request should be granted access, and `False` otherwise.
+The methods should return `True` if the request should be granted access, and `False` if it should be denied. Most permission classes will only need to implement one of these methods. The base class implementations return a special truthy value called `Deferred` which is used to make and/or/not composition work correctly where `has_permission` should always
+succeed in order to let object permissions be checked and `has_object_permission` should defer to the view-level permission.
 
 If you need to test if a request is a read operation or a write operation, you should check the request method against the constant `SAFE_METHODS`, which is a tuple containing `'GET'`, `'OPTIONS'` and `'HEAD'`.  For example:
 
