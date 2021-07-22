@@ -94,9 +94,9 @@ You'll need to remember to also set your custom throttle class in the `'DEFAULT_
 
 ## A note on concurrency
 
-Since the default implementations of throttles are based on the Django cache system, concurrent requests may be able to bypass throttling due to [race conditions][race].
+The built-in throttle implementations are open to [race conditions][race], so under high concurrency they may allow a few extra requests through.
 
-If your project requires more rock-solid throttles even in concurrent situations, you may need to implement such a throttle by hand. See [this issue][gh5181] for details.
+If your project relies on guaranteeing the number of requests during concurrent requests, you will need to implement your own throttle class. See [issue #5181][gh5181] for more details.
 
 ---
 
