@@ -121,7 +121,10 @@ class SimpleRateThrottle(BaseThrottle):
         if self.key is None:
             return True
 
-        self.history = self.cache.get(self.key, deque())
+        self.history = self.cache.get(self.key)
+        if self.history is None:
+            self.history = deque()
+
         self.now = self.timer()
 
         # Drop any requests from the history which have now passed the
