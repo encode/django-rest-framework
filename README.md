@@ -1,9 +1,5 @@
 # [Django REST framework][docs]
 
-[![build-status-image]][build-status]
-[![coverage-status-image]][codecov]
-[![pypi-version]][pypi]
-
 **Awesome web-browsable Web APIs.**
 
 Full documentation for the project is available at [https://www.django-rest-framework.org/][docs].
@@ -163,57 +159,3 @@ Or to create a new user:
         "email": "new@example.com",
         "is_staff": false,
     }
-
-# Documentation & Support
-
-Full documentation for the project is available at [https://www.django-rest-framework.org/][docs].
-
-For questions and support, use the [REST framework discussion group][group], or `#restframework` on freenode IRC.
-
-You may also want to [follow the author on Twitter][twitter].
-
-# Security
-
-Please see the [security policy][security-policy].
-
-[build-status-image]: https://github.com/encode/django-rest-framework/actions/workflows/main.yml/badge.svg
-[build-status]: https://github.com/encode/django-rest-framework/actions/workflows/main.yml
-[coverage-status-image]: https://img.shields.io/codecov/c/github/encode/django-rest-framework/master.svg
-[codecov]: https://codecov.io/github/encode/django-rest-framework?branch=master
-[pypi-version]: https://img.shields.io/pypi/v/djangorestframework.svg
-[pypi]: https://pypi.org/project/djangorestframework/
-[twitter]: https://twitter.com/_tomchristie
-[group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
-[sandbox]: https://restframework.herokuapp.com/
-
-[funding]: https://fund.django-rest-framework.org/topics/funding/
-[sponsors]: https://fund.django-rest-framework.org/topics/funding/#our-sponsors
-
-[sentry-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/sentry-readme.png
-[stream-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/stream-readme.png
-[rollbar-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/rollbar-readme.png
-[esg-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/esg-readme.png
-[retool-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/retool-readme.png
-[bitio-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/bitio-readme.png
-
-[sentry-url]: https://getsentry.com/welcome/
-[stream-url]: https://getstream.io/try-the-api/?utm_source=drf&utm_medium=banner&utm_campaign=drf
-[rollbar-url]: https://rollbar.com/?utm_source=django&utm_medium=sponsorship&utm_campaign=freetrial
-[esg-url]: https://software.esg-usa.com/
-[retool-url]: https://retool.com/?utm_source=djangorest&utm_medium=sponsorship
-[bitio-url]: https://bit.io/jobs?utm_source=DRF&utm_medium=sponsor&utm_campaign=DRF_sponsorship
-
-[oauth1-section]: https://www.django-rest-framework.org/api-guide/authentication/#django-rest-framework-oauth
-[oauth2-section]: https://www.django-rest-framework.org/api-guide/authentication/#django-oauth-toolkit
-[serializer-section]: https://www.django-rest-framework.org/api-guide/serializers/#serializers
-[modelserializer-section]: https://www.django-rest-framework.org/api-guide/serializers/#modelserializer
-[functionview-section]: https://www.django-rest-framework.org/api-guide/views/#function-based-views
-[generic-views]: https://www.django-rest-framework.org/api-guide/generic-views/
-[viewsets]: https://www.django-rest-framework.org/api-guide/viewsets/
-[routers]: https://www.django-rest-framework.org/api-guide/routers/
-[serializers]: https://www.django-rest-framework.org/api-guide/serializers/
-[authentication]: https://www.django-rest-framework.org/api-guide/authentication/
-[image]: https://www.django-rest-framework.org/img/quickstart.png
-
-[docs]: https://www.django-rest-framework.org/
-[security-policy]: https://github.com/encode/django-rest-framework/security/policy
