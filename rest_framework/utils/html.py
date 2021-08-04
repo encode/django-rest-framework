@@ -44,13 +44,33 @@ def parse_html_list(dictionary, prefix='', default=None):
         {'foo': 'abc', 'bar': 'def'},
         {'foo': 'hij', 'bar': 'klm'}
     ]
+    
+    [{
+    '[0]': 'abc',
+    '[1]': 'def',
+    '[2]': 'hij'
+    },
+    {
+    '[3]': 'lmn',
+    '[4]': 'opq',
+    '[5]': 'rst'}
+    ]
+        -->
+    [
+        'abc',
+        'def',
+        'hij',
+        'lmn',
+        'opq',
+        'rst',
+    ]
 
     :returns a list of objects, or the value specified in ``default`` if the list is empty
     """
     if  isinstance(dictionary, (list, tuple)):
         dictionary = str(dictionary)[1:-1]
-    dictionary = '{' + dictionary[1:-1].replace('}', '').replace('{', '') + '}'
-    dictionary = eval(dictionary)
+        dictionary = '{' + dictionary[1:-1].replace('}', '').replace('{', '') + '}'
+        dictionary = eval(dictionary)
     
     ret = {}
     regex = re.compile(r'^%s\[([0-9]+)\](.*)$' % re.escape(prefix))
