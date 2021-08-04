@@ -69,8 +69,7 @@ def parse_html_list(dictionary, prefix='', default=None):
     """
     if  isinstance(dictionary, (list, tuple)):
         dictionary = str(dictionary)[1:-1]
-        dictionary = '{' + dictionary[1:-1].replace('}', '').replace('{', '') + '}'
-        dictionary = eval(dictionary)
+        dictionary = eval('{' + dictionary[1:-1].replace('}', '').replace('{', '') + '}')
     
     ret = {}
     regex = re.compile(r'^%s\[([0-9]+)\](.*)$' % re.escape(prefix))
