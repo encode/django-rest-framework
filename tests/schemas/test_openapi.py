@@ -2,6 +2,7 @@ import uuid
 import warnings
 
 import pytest
+from django.db import models
 from django.test import RequestFactory, TestCase, override_settings
 from django.urls import path
 from django.utils.translation import gettext_lazy as _
@@ -109,6 +110,24 @@ class TestFieldMapping(TestCase):
         assert data['properties']['default_true']['default'] is True, "default must be true"
         assert data['properties']['default_false']['default'] is False, "default must be false"
         assert 'default' not in data['properties']['without_default'], "default must not be defined"
+
+    def test_nullable_fields(self):
+        class Model(models.Model):
+            rw_field = models.CharField(null=True)
+            ro_field = models.CharField(null=True)
+
+        class Serializer(serializers.ModelSerializer):
+            class Meta:
+                model = Model
+                fields = ["rw_field", "ro_field"]
+                read_only_fields = ["ro_field"]
+
+        inspector = AutoSchema()
+
+        data = inspector.map_serializer(Serializer())
+        assert data['properties']['rw_field']['nullable'], "rw_field nullable must be true"
+        assert data['properties']['ro_field']['nullable'], "ro_field nullable must be true"
+        assert data['properties']['ro_field']['readOnly'], "ro_field read_only must be true"
 
 
 @pytest.mark.skipif(uritemplate is None, reason='uritemplate not installed.')
