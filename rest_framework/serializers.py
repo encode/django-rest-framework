@@ -1326,9 +1326,8 @@ class ModelSerializer(Serializer):
         """
         if extra_kwargs.get('read_only', False):
             for attr in [
-                'required', 'default', 'allow_blank', 'allow_null',
-                'min_length', 'max_length', 'min_value', 'max_value',
-                'validators', 'queryset'
+                'required', 'default', 'allow_blank', 'min_length',
+                'max_length', 'min_value', 'max_value', 'validators', 'queryset'
             ]:
                 kwargs.pop(attr, None)
 

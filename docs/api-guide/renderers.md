@@ -105,7 +105,7 @@ The TemplateHTMLRenderer will create a `RequestContext`, using the `response.dat
 
 ---
 
-**Note:** When used with a view that makes use of a serializer the `Response` sent for rendering may not be a dictionay and will need to be wrapped in a dict before returning to allow the TemplateHTMLRenderer to render it. For example:
+**Note:** When used with a view that makes use of a serializer the `Response` sent for rendering may not be a dictionary and will need to be wrapped in a dict before returning to allow the TemplateHTMLRenderer to render it. For example:
 
 ```
 response.data = {'results': response.data}
@@ -528,7 +528,7 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 [Rest Framework Latex] provides a renderer that outputs PDFs using Laulatex. It is maintained by [Pebble (S/F Software)][mypebble].
 
 
-[cite]: https://docs.djangoproject.com/en/stable/stable/template-response/#the-rendering-process
+[cite]: https://docs.djangoproject.com/en/stable/ref/template-response/#the-rendering-process
 [conneg]: content-negotiation.md
 [html-and-forms]: ../topics/html-and-forms.md
 [browser-accept-headers]: http://www.gethifi.com/blog/browser-rest-http-accept-headers
