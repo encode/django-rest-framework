@@ -2010,6 +2010,11 @@ class TestListField(FieldValues):
             field.to_internal_value(input_value)
         assert exc_info.value.detail == ['Expected a list of items but got type "dict".']
 
+    def test_constructor_misuse_raises(self):
+        # Test that `ListField` can only be instantiated with keyword arguments
+        with pytest.raises(TypeError):
+            serializers.ListField(serializers.CharField())
+
 
 class TestNestedListField(FieldValues):
     """
