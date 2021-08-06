@@ -109,6 +109,7 @@ setup(
     project_urls={
         'Funding': 'https://fund.django-rest-framework.org/topics/funding/',
         'Source': 'https://github.com/encode/django-rest-framework',
+        'Changelog': 'https://www.django-rest-framework.org/community/release-notes/',
     },
 )
 
