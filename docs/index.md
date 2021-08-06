@@ -186,7 +186,7 @@ Framework.
 
 ## Support
 
-For support please see the [REST framework discussion group][group], try the  `#restframework` channel on `irc.freenode.net`, or raise a  question on [Stack Overflow][stack-overflow], making sure to include the ['django-rest-framework'][django-rest-framework-tag] tag.
+For support please see the [REST framework discussion group][group], try the  `#restframework` channel on `irc.libera.chat`, or raise a  question on [Stack Overflow][stack-overflow], making sure to include the ['django-rest-framework'][django-rest-framework-tag] tag.
 
 For priority support please sign up for a [professional or premium sponsorship plan](https://fund.django-rest-framework.org/topics/funding/).
 
