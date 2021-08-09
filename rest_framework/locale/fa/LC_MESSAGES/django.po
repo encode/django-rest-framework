@@ -178,12 +178,12 @@ msgstr "این مقدار نباید خالی باشد."
 #: fields.py:768 fields.py:1881
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} characters."
-msgstr "مطمعن شوید طول این مقدار بیشتر از {max_length} نیست."
+msgstr "مطمئن شوید طول این مقدار بیشتر از {max_length} نیست."
 
 #: fields.py:769
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} characters."
-msgstr "مطمعن شوید طول این مقدار حداقل {min_length} است."
+msgstr "مطمئن شوید طول این مقدار حداقل {min_length} است."
 
 #: fields.py:816
 msgid "Enter a valid email address."
