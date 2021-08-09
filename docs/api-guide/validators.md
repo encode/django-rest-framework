@@ -238,7 +238,7 @@ In the case of update operations on *nested* serializers there's no way of
 applying this exclusion, because the instance is not available.
 
 Again, you'll probably want to explicitly remove the validator from the
-serializer class, and write the code the for the validation constraint
+serializer class, and write the code for the validation constraint
 explicitly, in a `.validate()` method, or in the view.
 
 ## Debugging complex cases
