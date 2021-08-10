@@ -128,7 +128,7 @@ If you want to extend the logout drop down menu then add the following to both p
                 <ul class="dropdown-menu">
                     <li><a href='#profile'>My Profile</a></li>     <! –– Customization ––>
                     <li><a href='#messages'>My Messages</a></li>   <! –– Customization ––>
-                    <li role="separator" class="divider"></li>     <! –– Customization ––>
+                    <li role="separator" class="divider"></li>     <! –– Bootstrap v3  ––>
                     <li>{% optional_logout request %}</li>
                 </ul>
             </li>
