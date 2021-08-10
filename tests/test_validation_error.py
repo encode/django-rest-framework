@@ -109,3 +109,16 @@ class TestValidationErrorConvertsTuplesToLists(TestCase):
         assert len(error.detail) == 2
         assert str(error.detail[0]) == 'message1'
         assert str(error.detail[1]) == 'message2'
+
+class TestvalidationErrorWithDjangoStyle(TestCase):
+    def test_validation_error_details(self):
+        error = ValidationError('Invalid value: %(value)s', params={'value': '42'})
+        s = str(error.detail)
+        assert str(error.detail[0]) == 'Invalid value: 42'
+    
+    def test_validation_error_details_tuple(self):
+        error = ValidationError(detail=('Invalid value: %(value1)s', 'Invalid value: %(value2)s'), params={'value1': '42', 'value2':'43'})
+        assert isinstance(error.detail, list)
+        assert len(error.detail) == 2
+        assert str(error.detail[0]) == 'Invalid value: 42'
+        assert str(error.detail[1]) == 'Invalid value: 43'
