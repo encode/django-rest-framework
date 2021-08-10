@@ -140,10 +140,8 @@ def optional_logout(request, user=""):
                 <li><a href='{href}?next={next}'>Log out</a></li>
             </ul>
         </li>"""
-#        snippet = format_html(snippet, user=escape(user), href=logout_url, next=escape(request.path))
     else:
         snippet = "<a href='{href}?next={next}'>Log out</a>"
-#        snippet = format_html(snippet, href=logout_url, next=escape(request.path))
 
     snippet = format_html(snippet, user=escape(user), href=logout_url, next=escape(request.path))
     return mark_safe(snippet)
