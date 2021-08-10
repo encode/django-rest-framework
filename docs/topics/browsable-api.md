@@ -88,7 +88,9 @@ All of the standard [Bootstrap components][bcomponents] are available.
 
 The browsable API makes use of the Bootstrap tooltips component.  Any element with the `js-tooltip` class and a `title` attribute has that title content will display a tooltip on hover events.
 
-### Login Template
+### Customizing Authentication
+
+#### Login Template
 
 To add branding and customize the look-and-feel of the login template, create a template called `login.html` and add it to your project, eg: `templates/rest_framework/login.html`.  The template should extend from `rest_framework/login_base.html`.
 
@@ -101,6 +103,39 @@ You can add your site name or branding by including the branding block:
     {% endblock %}
 
 You can also customize the style by adding the `bootstrap_theme` or `style` block similar to `api.html`.
+
+#### Login/Logout Button
+
+The Login/Logout functionality comes from userlinks block from 'base.html' and 'admin.html' templates. If you want to remove it then you can just override the block in both templates:
+
+    {% extends "rest_framework/base.html" %}
+
+    {% block userlinks %}
+    {% endblock %}
+
+If you want to extend the logout drop down menu then add the following to both project templates:
+
+    {% extends "rest_framework/base.html" %}
+    {% load rest_framework %}
+
+    {% block userlinks %}
+        {% if user.is_authenticated %}
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    {{ user }}
+                    <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a href='#profile'>My Profile</a></li>     <! –– Customization ––>
+                    <li><a href='#messages'>My Messages</a></li>   <! –– Customization ––>
+                    <li role="separator" class="divider"></li>     <! –– Customization ––>
+                    <li>{% optional_logout request %}</li>
+                </ul>
+            </li>
+        {% else %}
+            <li>{% optional_login request %}</li>
+        {% endif %}
+    {% endblock %}
 
 ### Advanced Customization
 
