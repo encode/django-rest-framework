@@ -153,10 +153,13 @@ class ValidationError(APIException):
 
         # For validation failures, we may collect many errors together,
         # so the details should always be coerced to a list if not already.
-        if isinstance(detail, tuple) or isinstance(detail, list):
-                detail = [msg % params for msg in detail]
-        elif not isinstance(detail, dict):
-                detail = [detail % params]
+        # For str or list of str add params
+        if isinstance(detail, str):
+            detail = [detail % params]
+        elif isinstance(detail, list) or isinstance(detail, tuple):
+            detail = [msg % params if isinstance(msg, str) else msg for msg in detail]
+        elif not isinstance(detail, dict) and not isinstance(detail, list):
+            detail = [detail]
         self.detail = _get_error_details(detail, code)
 
 
