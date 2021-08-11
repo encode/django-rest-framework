@@ -141,29 +141,22 @@ class ValidationError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = _('Invalid input.')
     default_code = 'invalid'
+    default_params = {}
 
     def __init__(self, detail=None, code=None, params=None):
         if detail is None:
             detail = self.default_detail
         if code is None:
             code = self.default_code
+        if params is None:
+            params = self.default_params
 
         # For validation failures, we may collect many errors together,
         # so the details should always be coerced to a list if not already.
-        if isinstance(detail, tuple):
-            detail_list = list()
-            if params is not None:
-                for msg in detail:
-                    detail_list.append(msg % params)
-                detail = detail_list
-            else:
-                detail = list(detail)
-        elif not isinstance(detail, dict) and not isinstance(detail, list):
-            if params is not None:
+        if isinstance(detail, tuple) or isinstance(detail, list):
+                detail = [msg % params for msg in detail]
+        elif not isinstance(detail, dict):
                 detail = [detail % params]
-            else:
-                detail = [detail]
-
         self.detail = _get_error_details(detail, code)
 
 
