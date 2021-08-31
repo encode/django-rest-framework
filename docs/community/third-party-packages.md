@@ -54,7 +54,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [hawkrest][hawkrest] - Provides Hawk HTTP Authorization.
 * [djangorestframework-httpsignature][djangorestframework-httpsignature] - Provides an easy to use HTTP Signature Authentication mechanism.
 * [djoser][djoser] - Provides a set of views to handle basic actions such as registration, login, logout, password reset and account activation.
-* [django-rest-auth][django-rest-auth] - Provides a set of REST API endpoints for registration, authentication (including social media authentication), password reset, retrieve and update user details, etc.
+* [dj-rest-auth][dj-rest-auth] - Provides a set of REST API endpoints for registration, authentication (including social media authentication), password reset, retrieve and update user details, etc.
 * [drf-oidc-auth][drf-oidc-auth] - Implements OpenID Connect token authentication for DRF.
 * [drfpasswordless][drfpasswordless] - Adds (Medium, Square Cash inspired) passwordless logins and signups via email and mobile numbers.
 * [django-rest-authemail][django-rest-authemail] - Provides a RESTful API for user signup and authentication using email addresses.
@@ -193,7 +193,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [gaiarestframework]: https://github.com/AppsFuel/gaiarestframework
 [drf-extensions]: https://github.com/chibisov/drf-extensions
 [ember-django-adapter]: https://github.com/dustinfarris/ember-django-adapter
-[django-rest-auth]: https://github.com/Tivix/django-rest-auth/
+[dj-rest-auth]: https://github.com/iMerica/dj-rest-auth
 [django-versatileimagefield]: https://github.com/WGBH/django-versatileimagefield
 [django-versatileimagefield-drf-docs]:https://django-versatileimagefield.readthedocs.io/en/latest/drf_integration.html
 [drf-tracking]: https://github.com/aschn/drf-tracking
