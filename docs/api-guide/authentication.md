@@ -13,7 +13,7 @@ Authentication is the mechanism of associating an incoming request with a set of
 
 REST framework provides several authentication schemes out of the box, and also allows you to implement custom schemes.
 
-Authentication is always run at the very start of the view, before the permission and throttling checks occur, and before any other code is allowed to proceed.
+Authentication always runs at the very start of the view, before the permission and throttling checks occur, and before any other code is allowed to proceed.
 
 The `request.user` property will typically be set to an instance of the `contrib.auth` package's `User` class.
 
