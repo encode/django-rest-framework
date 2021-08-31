@@ -335,7 +335,7 @@ Generic filters may also present an interface in the browsable API. To do so you
 
 The method should return a rendered HTML string.
 
-## Pagination & schemas
+## Filtering & schemas
 
 You can also make the filter controls available to the schema autogeneration
 that REST framework provides, by implementing a `get_schema_fields()` method. This method should have the following signature:
