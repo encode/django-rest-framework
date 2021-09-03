@@ -52,7 +52,7 @@ class SimpleRateThrottle(BaseThrottle):
     A simple cache implementation, that only requires `.get_cache_key()`
     to be overridden.
 
-    The rate (requests / seconds) is set by a `rate` attribute on the View
+    The rate (requests / seconds) is set by a `rate` attribute on the Throttle
     class.  The attribute is a string of the form 'number_of_requests/period'.
 
     Period should be one of: ('s', 'sec', 'm', 'min', 'h', 'hour', 'd', 'day')
