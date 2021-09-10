@@ -197,7 +197,7 @@ Please see the [security policy][security-policy].
 [bitio-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/bitio-readme.png
 
 [sentry-url]: https://getsentry.com/welcome/
-[stream-url]: https://getstream.io/try-the-api/?utm_source=drf&utm_medium=banner&utm_campaign=drf
+[stream-url]: https://getstream.io/?utm_source=drf&utm_medium=sponsorship&utm_content=developer
 [rollbar-url]: https://rollbar.com/?utm_source=django&utm_medium=sponsorship&utm_campaign=freetrial
 [esg-url]: https://software.esg-usa.com/
 [retool-url]: https://retool.com/?utm_source=djangorest&utm_medium=sponsorship
