@@ -67,7 +67,7 @@ continued development by **[signing up for a paid plan][funding]**.
 
 <ul class="premium-promo promo">
     <li><a href="https://getsentry.com/welcome/" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/sentry130.png)">Sentry</a></li>
-    <li><a href="https://getstream.io/try-the-api/?utm_source=drf&utm_medium=banner&utm_campaign=drf" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/stream-130.png)">Stream</a></li>
+    <li><a href="https://getstream.io/?utm_source=drf&utm_medium=sponsorship&utm_content=developer" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/stream-130.png)">Stream</a></li>
     <li><a href="https://software.esg-usa.com" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/esg-new-logo.png)">ESG</a></li>
     <li><a href="https://rollbar.com" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/rollbar2.png)">Rollbar</a></li>
     <li><a href="https://retool.com/?utm_source=djangorest&utm_medium=sponsorship" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/retool-sidebar.png)">Retool</a></li>
