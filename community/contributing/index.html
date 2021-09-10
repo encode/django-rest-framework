@@ -517,10 +517,17 @@
 <a href="https://github.com/encode/django-rest-framework">Django REST Framework repo</a> on GitHub.</p>
 <p>Then clone your fork. The clone command will look like this, with your GitHub
 username instead of YOUR-USERNAME:</p>
-<pre><code>git clone https://github.com/YOUR-USERNAME/Spoon-Knife
+<pre><code>git clone https://github.com/YOUR-USERNAME/django-rest-framework
 </code></pre>
 <p>See GitHub's <a href="https://help.github.com/articles/fork-a-repo/"><em>Fork a Repo</em></a> Guide for more help.</p>
-<p>Changes should broadly follow the <a href="https://www.python.org/dev/peps/pep-0008/">PEP 8</a> style conventions, and we recommend you set up your editor to automatically indicate non-conforming styles.</p>
+<p>Changes should broadly follow the <a href="https://www.python.org/dev/peps/pep-0008/">PEP 8</a> style conventions, and we recommend you set up your editor to automatically indicate non-conforming styles.
+You can check your contributions against these conventions each time you commit using the <a href="https://pre-commit.com/">pre-commit</a> hooks, which we also run on CI.
+To set them up, first ensure you have the pre-commit tool installed, for example:</p>
+<pre><code>python -m pip install pre-commit
+</code></pre>
+<p>Then run:</p>
+<pre><code>pre-commit install
+</code></pre>
 <h2 id="testing"><a class="toclink" href="#testing">Testing</a></h2>
 <p>To run the tests, clone the repository, and then:</p>
 <pre><code># Setup the virtual environment
@@ -535,15 +542,6 @@ pip install -r requirements.txt
 <h3 id="test-options"><a class="toclink" href="#test-options">Test options</a></h3>
 <p>Run using a more concise output style.</p>
 <pre><code>./runtests.py -q
-</code></pre>
-<p>Run the tests using a more concise output style, no coverage, no flake8.</p>
-<pre><code>./runtests.py --fast
-</code></pre>
-<p>Don't run the flake8 code linting.</p>
-<pre><code>./runtests.py --nolint
-</code></pre>
-<p>Only run the flake8 code linting, don't run the tests.</p>
-<pre><code>./runtests.py --lintonly
 </code></pre>
 <p>Run the tests for a given test case.</p>
 <pre><code>./runtests.py MyTestCase
@@ -565,9 +563,9 @@ pip install -r requirements.txt
 <p>It's also useful to remember that if you have an outstanding pull request then pushing new commits to your GitHub repo will also automatically update the pull requests.</p>
 <p>GitHub's documentation for working on pull requests is <a href="https://help.github.com/articles/using-pull-requests">available here</a>.</p>
 <p>Always run the tests before submitting pull requests, and ideally run <code>tox</code> in order to check that your modifications are compatible on all supported versions of Python and Django.</p>
-<p>Once you've made a pull request take a look at the Travis build status in the GitHub interface and make sure the tests are running as you'd expect.</p>
-<p><img alt="Travis status" src="../../img/travis-status.png" /></p>
-<p><em>Above: Travis build notifications</em></p>
+<p>Once you've made a pull request take a look at the build status in the GitHub interface and make sure the tests are running as you'd expect.</p>
+<p><img alt="Build status" src="../../img/build-status.png" /></p>
+<p><em>Above: build notifications</em></p>
 <h2 id="managing-compatibility-issues"><a class="toclink" href="#managing-compatibility-issues">Managing compatibility issues</a></h2>
 <p>Sometimes, in order to ensure your code works on various different versions of Django, Python or third party libraries, you'll need to run slightly different code depending on the environment.  Any code that branches in this way should be isolated into the <code>compat.py</code> module, and should provide a single common interface that the rest of the codebase can use.</p>
 <h1 id="documentation"><a class="toclink" href="#documentation">Documentation</a></h1>

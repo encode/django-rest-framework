@@ -666,10 +666,10 @@ class StandardResultsSetPagination(PageNumberPagination):
 </ul>
 <hr />
 <h1 id="custom-pagination-styles"><a class="toclink" href="#custom-pagination-styles">Custom pagination styles</a></h1>
-<p>To create a custom pagination serializer class you should subclass <code>pagination.BasePagination</code> and override the <code>paginate_queryset(self, queryset, request, view=None)</code> and <code>get_paginated_response(self, data)</code> methods:</p>
+<p>To create a custom pagination serializer class, you should inherit the subclass <code>pagination.BasePagination</code>, override the <code>paginate_queryset(self, queryset, request, view=None)</code>, and <code>get_paginated_response(self, data)</code> methods:</p>
 <ul>
-<li>The <code>paginate_queryset</code> method is passed the initial queryset and should return an iterable object that contains only the data in the requested page.</li>
-<li>The <code>get_paginated_response</code> method is passed the serialized page data and should return a <code>Response</code> instance.</li>
+<li>The <code>paginate_queryset</code> method is passed to the initial queryset and should return an iterable object. That object contains only the data in the requested page.</li>
+<li>The <code>get_paginated_response</code> method is passed to the serialized page data and should return a <code>Response</code> instance.</li>
 </ul>
 <p>Note that the <code>paginate_queryset</code> method may set state on the pagination instance, that may later be used by the <code>get_paginated_response</code> method.</p>
 <h2 id="example"><a class="toclink" href="#example">Example</a></h2>

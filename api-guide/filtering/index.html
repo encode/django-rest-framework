@@ -472,7 +472,7 @@
                     </li>
                   
                     <li>
-                      <a href="#pagination-schemas">Pagination &amp; schemas</a>
+                      <a href="#filtering-schemas">Filtering &amp; schemas</a>
                     </li>
                   
                 
@@ -767,7 +767,7 @@ class CustomSearchFilter(filters.SearchFilter):
 <p>Generic filters may also present an interface in the browsable API. To do so you should implement a <code>to_html()</code> method which returns a rendered HTML representation of the filter. This method should have the following signature:</p>
 <p><code>to_html(self, request, queryset, view)</code></p>
 <p>The method should return a rendered HTML string.</p>
-<h2 id="pagination-schemas"><a class="toclink" href="#pagination-schemas">Pagination &amp; schemas</a></h2>
+<h2 id="filtering-schemas"><a class="toclink" href="#filtering-schemas">Filtering &amp; schemas</a></h2>
 <p>You can also make the filter controls available to the schema autogeneration
 that REST framework provides, by implementing a <code>get_schema_fields()</code> method. This method should have the following signature:</p>
 <p><code>get_schema_fields(self, view)</code></p>

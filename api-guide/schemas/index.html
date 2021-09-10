@@ -449,7 +449,7 @@
               <h1 id="schema"><a class="toclink" href="#schema">Schema</a></h1>
 <blockquote>
 <p>A machine-readable [schema] describes what resources are available via the API, what their URLs are, how they are represented and what operations they support.</p>
-<p>&mdash; Heroku, [JSON Schema for the Heroku Platform API][cite]</p>
+<p>&mdash; Heroku, <a href="https://blog.heroku.com/archives/2014/1/8/json_schema_for_heroku_platform_api">JSON Schema for the Heroku Platform API</a></p>
 </blockquote>
 <p>API schemas are a useful tool that allow for a range of use cases, including
 generating reference documentation, or driving dynamic client libraries that
@@ -738,6 +738,14 @@ view name. The operationId looks like "listItems", "retrieveItem",
 operationIds.</p>
 <p>In order to work around this, you can override <code>get_operation_id_base()</code> to
 provide a different base for name part of the ID.</p>
+<h4 id="get_serializer"><a class="toclink" href="#get_serializer"><code>get_serializer()</code></a></h4>
+<p>If the view has implemented <code>get_serializer()</code>, returns the result.</p>
+<h4 id="get_request_serializer"><a class="toclink" href="#get_request_serializer"><code>get_request_serializer()</code></a></h4>
+<p>By default returns <code>get_serializer()</code> but can be overridden to
+differentiate between request and response objects.</p>
+<h4 id="get_response_serializer"><a class="toclink" href="#get_response_serializer"><code>get_response_serializer()</code></a></h4>
+<p>By default returns <code>get_serializer()</code> but can be overridden to
+differentiate between request and response objects.</p>
 <h3 id="autoschema__init__-kwargs"><a class="toclink" href="#autoschema__init__-kwargs"><code>AutoSchema.__init__()</code> kwargs</a></h3>
 <p><code>AutoSchema</code> provides a number of <code>__init__()</code> kwargs that can be used for
 common customizations, if the default generated values are not appropriate.</p>

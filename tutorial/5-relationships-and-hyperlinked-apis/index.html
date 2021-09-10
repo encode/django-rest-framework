@@ -471,7 +471,6 @@ def api_root(request, format=None):
 <p>The other thing we need to consider when creating the code highlight view is that there's no existing concrete generic view that we can use.  We're not returning an object instance, but instead a property of an object instance.</p>
 <p>Instead of using a concrete generic view, we'll use the base class for representing instances, and create our own <code>.get()</code> method.  In your <code>snippets/views.py</code> add:</p>
 <pre><code>from rest_framework import renderers
-from rest_framework.response import Response
 
 class SnippetHighlight(generics.GenericAPIView):
     queryset = Snippet.objects.all()

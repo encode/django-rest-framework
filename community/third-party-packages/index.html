@@ -414,7 +414,7 @@
                     </li>
                   
                     <li>
-                      <a href="#how-to-create-a-third-party-package">How to create a Third Party Package</a>
+                      <a href="#creating-a-third-party-package">Creating a Third Party Package</a>
                     </li>
                   
                     <li>
@@ -446,99 +446,8 @@
 <p>We <strong>support</strong>, <strong>encourage</strong> and <strong>strongly favor</strong> the creation of Third Party Packages to encapsulate new behavior rather than adding additional functionality directly to Django REST Framework.</p>
 <p>We aim to make creating third party packages as easy as possible, whilst keeping a <strong>simple</strong> and <strong>well maintained</strong> core API. By promoting third party packages we ensure that the responsibility for a package remains with its author. If a package proves suitably popular it can always be considered for inclusion into the core REST framework.</p>
 <p>If you have an idea for a new feature please consider how it may be packaged as a Third Party Package. We're always happy to discuss ideas on the <a href="https://groups.google.com/forum/#!forum/django-rest-framework">Mailing List</a>.</p>
-<h2 id="how-to-create-a-third-party-package"><a class="toclink" href="#how-to-create-a-third-party-package">How to create a Third Party Package</a></h2>
-<h3 id="creating-your-package"><a class="toclink" href="#creating-your-package">Creating your package</a></h3>
-<p>You can use <a href="https://github.com/jpadilla/cookiecutter-django-rest-framework">this cookiecutter template</a> for creating reusable Django REST Framework packages quickly. Cookiecutter creates projects from project templates. While optional, this cookiecutter template includes best practices from Django REST framework and other packages, as well as a Travis CI configuration, Tox configuration, and a sane setup.py for easy PyPI registration/distribution.</p>
-<p>Note: Let us know if you have an alternate cookiecutter package so we can also link to it.</p>
-<h4 id="running-the-initial-cookiecutter-command"><a class="toclink" href="#running-the-initial-cookiecutter-command">Running the initial cookiecutter command</a></h4>
-<p>To run the initial cookiecutter command, you'll first need to install the Python <code>cookiecutter</code> package.</p>
-<pre><code>$ pip install cookiecutter
-</code></pre>
-<p>Once <code>cookiecutter</code> is installed just run the following to create a new project.</p>
-<pre><code>$ cookiecutter gh:jpadilla/cookiecutter-django-rest-framework
-</code></pre>
-<p>You'll be prompted for some questions, answer them, then it'll create your Python package in the current working directory based on those values.</p>
-<pre><code>full_name (default is "Your full name here")? Johnny Appleseed
-email (default is "you@example.com")? jappleseed@example.com
-github_username (default is "yourname")? jappleseed
-pypi_project_name (default is "dj-package")? djangorestframework-custom-auth
-repo_name (default is "dj-package")? django-rest-framework-custom-auth
-app_name (default is "djpackage")? custom_auth
-project_short_description (default is "Your project description goes here")?
-year (default is "2014")?
-version (default is "0.1.0")?
-</code></pre>
-<h4 id="getting-it-onto-github"><a class="toclink" href="#getting-it-onto-github">Getting it onto GitHub</a></h4>
-<p>To put your project up on GitHub, you'll need a repository for it to live in. You can create a new repository <a href="https://github.com/new">here</a>. If you need help, check out the <a href="https://help.github.com/articles/create-a-repo/">Create A Repo</a> article on GitHub.</p>
-<h4 id="adding-to-travis-ci"><a class="toclink" href="#adding-to-travis-ci">Adding to Travis CI</a></h4>
-<p>We recommend using <a href="https://travis-ci.org">Travis CI</a>, a hosted continuous integration service which integrates well with GitHub and is free for public repositories.</p>
-<p>To get started with Travis CI, <a href="https://travis-ci.org">sign in</a> with your GitHub account. Once you're signed in, go to your <a href="https://travis-ci.org/profile">profile page</a> and enable the service hook for the repository you want.</p>
-<p>If you use the cookiecutter template, your project will already contain a <code>.travis.yml</code> file which Travis CI will use to build your project and run tests.  By default, builds are triggered every time you push to your repository or create Pull Request.</p>
-<h4 id="uploading-to-pypi"><a class="toclink" href="#uploading-to-pypi">Uploading to PyPI</a></h4>
-<p>Once you've got at least a prototype working and tests running, you should publish it on PyPI to allow others to install it via <code>pip</code>.</p>
-<p>You must <a href="https://pypi.org/account/register/">register</a> an account before publishing to PyPI.</p>
-<p>To register your package on PyPI run the following command.</p>
-<pre><code>$ python setup.py register
-</code></pre>
-<p>If this is the first time publishing to PyPI, you'll be prompted to login.</p>
-<p>Note: Before publishing you'll need to make sure you have the latest pip that supports <code>wheel</code> as well as install the <code>wheel</code> package.</p>
-<pre><code>$ pip install --upgrade pip
-$ pip install wheel
-</code></pre>
-<p>After this, every time you want to release a new version on PyPI just run the following command.</p>
-<pre><code>$ python setup.py publish
-You probably want to also tag the version now:
-    git tag -a {0} -m 'version 0.1.0'
-    git push --tags
-</code></pre>
-<p>After releasing a new version to PyPI, it's always a good idea to tag the version and make available as a GitHub Release.</p>
-<p>We recommend to follow <a href="https://semver.org/">Semantic Versioning</a> for your package's versions.</p>
-<h3 id="development"><a class="toclink" href="#development">Development</a></h3>
-<h4 id="version-requirements"><a class="toclink" href="#version-requirements">Version requirements</a></h4>
-<p>The cookiecutter template assumes a set of supported versions will be provided for Python and Django. Make sure you correctly update your requirements, docs, <code>tox.ini</code>, <code>.travis.yml</code>, and <code>setup.py</code> to match the set of versions you wish to support.</p>
-<h4 id="tests"><a class="toclink" href="#tests">Tests</a></h4>
-<p>The cookiecutter template includes a <code>runtests.py</code> which uses the <code>pytest</code> package as a test runner.</p>
-<p>Before running, you'll need to install a couple test requirements.</p>
-<pre><code>$ pip install -r requirements.txt
-</code></pre>
-<p>Once requirements installed, you can run <code>runtests.py</code>.</p>
-<pre><code>$ ./runtests.py
-</code></pre>
-<p>Run using a more concise output style.</p>
-<pre><code>$ ./runtests.py -q
-</code></pre>
-<p>Run the tests using a more concise output style, no coverage, no flake8.</p>
-<pre><code>$ ./runtests.py --fast
-</code></pre>
-<p>Don't run the flake8 code linting.</p>
-<pre><code>$ ./runtests.py --nolint
-</code></pre>
-<p>Only run the flake8 code linting, don't run the tests.</p>
-<pre><code>$ ./runtests.py --lintonly
-</code></pre>
-<p>Run the tests for a given test case.</p>
-<pre><code>$ ./runtests.py MyTestCase
-</code></pre>
-<p>Run the tests for a given test method.</p>
-<pre><code>$ ./runtests.py MyTestCase.test_this_method
-</code></pre>
-<p>Shorter form to run the tests for a given test method.</p>
-<pre><code>$ ./runtests.py test_this_method
-</code></pre>
-<p>To run your tests against multiple versions of Python as different versions of requirements such as Django we recommend using <code>tox</code>. <a href="https://tox.readthedocs.io/en/latest/">Tox</a> is a generic virtualenv management and test command line tool.</p>
-<p>First, install <code>tox</code> globally.</p>
-<pre><code>$ pip install tox
-</code></pre>
-<p>To run <code>tox</code>, just simply run:</p>
-<pre><code>$ tox
-</code></pre>
-<p>To run a particular <code>tox</code> environment:</p>
-<pre><code>$ tox -e envlist
-</code></pre>
-<p><code>envlist</code> is a comma-separated value to that specifies the environments to run tests against. To view a list of all possible test environments, run:</p>
-<pre><code>$ tox -l
-</code></pre>
-<h4 id="version-compatibility"><a class="toclink" href="#version-compatibility">Version compatibility</a></h4>
+<h2 id="creating-a-third-party-package"><a class="toclink" href="#creating-a-third-party-package">Creating a Third Party Package</a></h2>
+<h3 id="version-compatibility"><a class="toclink" href="#version-compatibility">Version compatibility</a></h3>
 <p>Sometimes, in order to ensure your code works on various different versions of Django, Python or third party libraries, you'll need to run slightly different code depending on the environment. Any code that branches in this way should be isolated into a <code>compat.py</code> module, and should provide a single common interface that the rest of the codebase can use.</p>
 <p>Check out Django REST framework's <a href="https://github.com/encode/django-rest-framework/blob/master/rest_framework/compat.py">compat.py</a> for an example.</p>
 <h3 id="once-your-package-is-available"><a class="toclink" href="#once-your-package-is-available">Once your package is available</a></h3>
@@ -561,7 +470,7 @@ You probably want to also tag the version now:
 <li><a href="https://github.com/kumar303/hawkrest">hawkrest</a> - Provides Hawk HTTP Authorization.</li>
 <li><a href="https://github.com/etoccalino/django-rest-framework-httpsignature">djangorestframework-httpsignature</a> - Provides an easy to use HTTP Signature Authentication mechanism.</li>
 <li><a href="https://github.com/sunscrapers/djoser">djoser</a> - Provides a set of views to handle basic actions such as registration, login, logout, password reset and account activation.</li>
-<li><a href="https://github.com/Tivix/django-rest-auth/">django-rest-auth</a> - Provides a set of REST API endpoints for registration, authentication (including social media authentication), password reset, retrieve and update user details, etc.</li>
+<li><a href="https://github.com/iMerica/dj-rest-auth">dj-rest-auth</a> - Provides a set of REST API endpoints for registration, authentication (including social media authentication), password reset, retrieve and update user details, etc.</li>
 <li><a href="https://github.com/ByteInternet/drf-oidc-auth">drf-oidc-auth</a> - Implements OpenID Connect token authentication for DRF.</li>
 <li><a href="https://github.com/aaronn/django-rest-framework-passwordless">drfpasswordless</a> - Adds (Medium, Square Cash inspired) passwordless logins and signups via email and mobile numbers.</li>
 <li><a href="https://github.com/celiao/django-rest-authemail">django-rest-authemail</a> - Provides a RESTful API for user signup and authentication using email addresses.</li>
