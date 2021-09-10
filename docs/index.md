@@ -75,7 +75,7 @@ continued development by **[signing up for a paid plan][funding]**.
 </ul>
 <div style="clear: both; padding-bottom: 20px;"></div>
 
-*Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Sentry](https://getsentry.com/welcome/), [Stream](https://getstream.io/?utm_source=drf&utm_medium=banner&utm_campaign=drf), [ESG](https://software.esg-usa.com/), [Rollbar](https://rollbar.com/?utm_source=django&utm_medium=sponsorship&utm_campaign=freetrial), [Cadre](https://cadre.com), [Kloudless](https://hubs.ly/H0f30Lf0), [Lights On Software](https://lightsonsoftware.com), [Retool](https://retool.com/?utm_source=djangorest&utm_medium=sponsorship), and [bit.io](https://bit.io/jobs?utm_source=DRF&utm_medium=sponsor&utm_campaign=DRF_sponsorship).*
+*Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Sentry](https://getsentry.com/welcome/), [Stream](https://getstream.io/?utm_source=drf&utm_medium=sponsorship&utm_content=developer), [ESG](https://software.esg-usa.com/), [Rollbar](https://rollbar.com/?utm_source=django&utm_medium=sponsorship&utm_campaign=freetrial), [Cadre](https://cadre.com), [Kloudless](https://hubs.ly/H0f30Lf0), [Lights On Software](https://lightsonsoftware.com), [Retool](https://retool.com/?utm_source=djangorest&utm_medium=sponsorship), and [bit.io](https://bit.io/jobs?utm_source=DRF&utm_medium=sponsor&utm_campaign=DRF_sponsorship).*
 
 ---
 
