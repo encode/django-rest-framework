@@ -616,3 +616,70 @@ class TestEmptyListSerializer:
 
         assert serializer.is_valid()
         assert serializer.validated_data == []
+
+
+class TestMaxMinLengthListSerializer:
+    """
+    Tests the behaviour of ListSerializers when max_length and min_length are used
+    """
+
+    def setup(self):
+        class IntegerSerializer(serializers.Serializer):
+            some_int = serializers.IntegerField()
+
+        class MaxLengthSerializer(serializers.Serializer):
+            many_int = IntegerSerializer(many=True, max_length=5)
+
+        class MinLengthSerializer(serializers.Serializer):
+            many_int = IntegerSerializer(many=True, min_length=3)
+
+        class MaxMinLengthSerializer(serializers.Serializer):
+            many_int = IntegerSerializer(many=True, min_length=3, max_length=5)
+
+        self.MaxLengthSerializer = MaxLengthSerializer
+        self.MinLengthSerializer = MinLengthSerializer
+        self.MaxMinLengthSerializer = MaxMinLengthSerializer
+
+    def test_min_max_length_two_items(self):
+        input_data = {'many_int': [{'some_int': i} for i in range(2)]}
+
+        max_serializer = self.MaxLengthSerializer(data=input_data)
+        min_serializer = self.MinLengthSerializer(data=input_data)
+        max_min_serializer = self.MaxMinLengthSerializer(data=input_data)
+
+        assert max_serializer.is_valid()
+        assert max_serializer.validated_data == input_data
+
+        assert not min_serializer.is_valid()
+
+        assert not max_min_serializer.is_valid()
+
+    def test_min_max_length_four_items(self):
+        input_data = {'many_int': [{'some_int': i} for i in range(4)]}
+
+        max_serializer = self.MaxLengthSerializer(data=input_data)
+        min_serializer = self.MinLengthSerializer(data=input_data)
+        max_min_serializer = self.MaxMinLengthSerializer(data=input_data)
+
+        assert max_serializer.is_valid()
+        assert max_serializer.validated_data == input_data
+
+        assert min_serializer.is_valid()
+        assert min_serializer.validated_data == input_data
+
+        assert max_min_serializer.is_valid()
+        assert min_serializer.validated_data == input_data
+
+    def test_min_max_length_six_items(self):
+        input_data = {'many_int': [{'some_int': i} for i in range(6)]}
+
+        max_serializer = self.MaxLengthSerializer(data=input_data)
+        min_serializer = self.MinLengthSerializer(data=input_data)
+        max_min_serializer = self.MaxMinLengthSerializer(data=input_data)
+
+        assert not max_serializer.is_valid()
+
+        assert min_serializer.is_valid()
+        assert min_serializer.validated_data == input_data
+
+        assert not max_min_serializer.is_valid()

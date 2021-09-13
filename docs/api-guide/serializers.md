@@ -755,6 +755,14 @@ The following argument can also be passed to a `ListSerializer` field or a seria
 
 This is `True` by default, but can be set to `False` if you want to disallow empty lists as valid input.
 
+### `max_length`
+
+This is `None` by default, but can be set to a positive integer if you want to validates that the list contains no more than this number of elements.
+
+### `min_length`
+
+This is `None` by default, but can be set to a positive integer if you want to validates that the list contains no fewer than this number of elements.
+
 ### Customizing `ListSerializer` behavior
 
 There *are* a few use cases when you might want to customize the `ListSerializer` behavior. For example:
