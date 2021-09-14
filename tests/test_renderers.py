@@ -391,6 +391,13 @@ class JSONRendererTests(TestCase):
         content = renderer.render(obj, 'application/json; indent=2')
         self.assertEqual(strip_trailing_whitespace(content.decode()), _indented_repr)
 
+    @override_settings(REST_FRAMEWORK={'SORT_KEYS_JSON': True})
+    def test_sort_keys_json(self):
+        obj = {'2': {'c': 1, 'b': 2, 'a': 3 }, '1': None}
+        renderer = JSONRenderer()
+        content = renderer.render(obj, 'application/json')
+        self.assertEqual(content.decode(), '{"1": null, "2": {"a": 3, "b": 2, "c": 1}}')
+
 
 class UnicodeJSONRendererTests(TestCase):
     """

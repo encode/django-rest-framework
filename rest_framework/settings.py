@@ -111,6 +111,7 @@ DEFAULTS = {
     'UNICODE_JSON': True,
     'COMPACT_JSON': True,
     'STRICT_JSON': True,
+    'SORT_KEYS_JSON': False,
     'COERCE_DECIMAL_TO_STRING': True,
     'UPLOADED_FILES_USE_URL': True,
 

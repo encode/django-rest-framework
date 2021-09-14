@@ -348,6 +348,14 @@ When set to `False`, JSON rendering and parsing will be permissive. However, the
 
 Default: `True`
 
+#### SORT_KEYS_JSON
+
+When set to `True`, Keys will be sorted before JSON rendering (see json.dumps sort_keys)
+
+When set to `False`, Keys will be sorted before JSON rendering (see json.dumps sort_keys)
+
+Default: `False`
+
 #### COERCE_DECIMAL_TO_STRING
 
 When returning decimal objects in API representations that do not support a native decimal type, it is normally best to return the value as a string. This avoids the loss of precision that occurs with binary floating point implementations.

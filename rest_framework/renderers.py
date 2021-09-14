@@ -60,6 +60,7 @@ class JSONRenderer(BaseRenderer):
     ensure_ascii = not api_settings.UNICODE_JSON
     compact = api_settings.COMPACT_JSON
     strict = api_settings.STRICT_JSON
+    sort_keys = api_settings.SORT_KEYS_JSON
 
     # We don't set a charset because JSON is a binary encoding,
     # that can be encoded as utf-8, utf-16 or utf-32.
@@ -100,7 +101,7 @@ class JSONRenderer(BaseRenderer):
         ret = json.dumps(
             data, cls=self.encoder_class,
             indent=indent, ensure_ascii=self.ensure_ascii,
-            allow_nan=not self.strict, separators=separators
+            allow_nan=not self.strict, separators=separators, sort_keys=self.sort_keys
         )
 
         # We always fully escape \u2028 and \u2029 to ensure we output JSON
