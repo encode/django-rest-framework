@@ -71,7 +71,8 @@ from rest_framework.relations import Hyperlink, PKOnlyObject  # NOQA # isort:ski
 LIST_SERIALIZER_KWARGS = (
     'read_only', 'write_only', 'required', 'default', 'initial', 'source',
     'label', 'help_text', 'style', 'error_messages', 'allow_empty',
-    'instance', 'data', 'partial', 'context', 'allow_null'
+    'instance', 'data', 'partial', 'context', 'allow_null',
+    'max_length', 'min_length'
 )
 
 ALL_FIELDS = '__all__'
@@ -143,12 +144,18 @@ class BaseSerializer(Field):
             return CustomListSerializer(*args, **kwargs)
         """
         allow_empty = kwargs.pop('allow_empty', None)
+        max_length = kwargs.pop('max_length', None)
+        min_length = kwargs.pop('min_length', None)
         child_serializer = cls(*args, **kwargs)
         list_kwargs = {
             'child': child_serializer,
         }
         if allow_empty is not None:
             list_kwargs['allow_empty'] = allow_empty
+        if max_length is not None:
+            list_kwargs['max_length'] = max_length
+        if min_length is not None:
+            list_kwargs['min_length'] = min_length
         list_kwargs.update({
             key: value for key, value in kwargs.items()
             if key in LIST_SERIALIZER_KWARGS
@@ -568,12 +575,16 @@ class ListSerializer(BaseSerializer):
 
     default_error_messages = {
         'not_a_list': _('Expected a list of items but got type "{input_type}".'),
-        'empty': _('This list may not be empty.')
+        'empty': _('This list may not be empty.'),
+        'max_length': _('Ensure this field has no more than {max_length} elements.'),
+        'min_length': _('Ensure this field has at least {min_length} elements.')
     }
 
     def __init__(self, *args, **kwargs):
         self.child = kwargs.pop('child', copy.deepcopy(self.child))
         self.allow_empty = kwargs.pop('allow_empty', True)
+        self.max_length = kwargs.pop('max_length', None)
+        self.min_length = kwargs.pop('min_length', None)
         assert self.child is not None, '`child` is a required argument.'
         assert not inspect.isclass(self.child), '`child` has not been instantiated.'
         super().__init__(*args, **kwargs)
@@ -634,6 +645,18 @@ class ListSerializer(BaseSerializer):
             raise ValidationError({
                 api_settings.NON_FIELD_ERRORS_KEY: [message]
             }, code='empty')
+
+        if self.max_length is not None and len(data) > self.max_length:
+            message = self.error_messages['max_length'].format(max_length=self.max_length)
+            raise ValidationError({
+                api_settings.NON_FIELD_ERRORS_KEY: [message]
+            }, code='max_length')
+
+        if self.min_length is not None and len(data) < self.min_length:
+            message = self.error_messages['min_length'].format(min_length=self.min_length)
+            raise ValidationError({
+                api_settings.NON_FIELD_ERRORS_KEY: [message]
+            }, code='min_length')
 
         ret = []
         errors = []
