@@ -31,11 +31,11 @@ In order to make AJAX requests, you need to include CSRF token in the HTTP heade
 
 The best way to deal with CORS in REST framework is to add the required response headers in middleware.  This ensures that CORS is supported transparently, without having to change any behavior in your views.
 
-[Otto Yiu][ottoyiu] maintains the [django-cors-headers] package, which is known to work correctly with REST framework APIs.
+[Adam Johnson][adamchainz] maintains the [django-cors-headers] package, which is known to work correctly with REST framework APIs.
 
 [cite]: https://blog.codinghorror.com/preventing-csrf-and-xsrf-attacks/
 [csrf]: https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)
 [csrf-ajax]: https://docs.djangoproject.com/en/stable/ref/csrf/#ajax
 [cors]: https://www.w3.org/TR/cors/
-[ottoyiu]: https://github.com/ottoyiu/
-[django-cors-headers]: https://github.com/ottoyiu/django-cors-headers/
+[adamchainz]: https://github.com/adamchainz
+[django-cors-headers]: https://github.com/adamchainz/django-cors-headers
