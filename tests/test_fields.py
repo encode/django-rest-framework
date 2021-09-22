@@ -1220,12 +1220,12 @@ class TestNoStringCoercionDecimalField(FieldValues):
 
 
 class TestLocalizedDecimalField(TestCase):
-    @override_settings(USE_L10N=True, LANGUAGE_CODE='pl')
+    @override_settings(LANGUAGE_CODE='pl')
     def test_to_internal_value(self):
         field = serializers.DecimalField(max_digits=2, decimal_places=1, localize=True)
         assert field.to_internal_value('1,1') == Decimal('1.1')
 
-    @override_settings(USE_L10N=True, LANGUAGE_CODE='pl')
+    @override_settings(LANGUAGE_CODE='pl')
     def test_to_representation(self):
         field = serializers.DecimalField(max_digits=2, decimal_places=1, localize=True)
         assert field.to_representation(Decimal('1.1')) == '1,1'
