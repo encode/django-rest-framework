@@ -1,5 +1,6 @@
 from io import BytesIO
 
+import django
 from django.contrib.auth.models import User
 from django.shortcuts import redirect
 from django.test import TestCase, override_settings
@@ -282,6 +283,10 @@ class TestAPIRequestFactory(TestCase):
         assert request.META['CONTENT_TYPE'] == 'application/json'
 
 
+def check_urlpatterns(cls):
+    assert urlpatterns is not cls.urlpatterns
+
+
 class TestUrlPatternTestCase(URLPatternsTestCase):
     urlpatterns = [
         path('', view),
@@ -293,11 +298,18 @@ class TestUrlPatternTestCase(URLPatternsTestCase):
         super().setUpClass()
         assert urlpatterns is cls.urlpatterns
 
-    @classmethod
-    def tearDownClass(cls):
-        assert urlpatterns is cls.urlpatterns
-        super().tearDownClass()
-        assert urlpatterns is not cls.urlpatterns
+        if django.VERSION > (4, 0):
+            cls.addClassCleanup(
+                check_urlpatterns,
+                cls
+            )
+
+    if django.VERSION < (4, 0):
+        @classmethod
+        def tearDownClass(cls):
+            assert urlpatterns is cls.urlpatterns
+            super().tearDownClass()
+            assert urlpatterns is not cls.urlpatterns
 
     def test_urlpatterns(self):
         assert self.client.get('/').status_code == 200

@@ -3,6 +3,7 @@
 import io
 from importlib import import_module
 
+import django
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.handlers.wsgi import WSGIHandler
@@ -357,6 +358,13 @@ class APILiveServerTestCase(testcases.LiveServerTestCase):
     client_class = APIClient
 
 
+def cleanup_url_patterns(cls):
+    if hasattr(cls, '_module_urlpatterns'):
+        cls._module.urlpatterns = cls._module_urlpatterns
+    else:
+        del cls._module.urlpatterns
+
+
 class URLPatternsTestCase(testcases.SimpleTestCase):
     """
     Isolate URL patterns on a per-TestCase basis. For example,
@@ -385,14 +393,20 @@ class URLPatternsTestCase(testcases.SimpleTestCase):
         cls._module.urlpatterns = cls.urlpatterns
 
         cls._override.enable()
+
+        if django.VERSION > (4, 0):
+            cls.addClassCleanup(cls._override.disable)
+            cls.addClassCleanup(cleanup_url_patterns, cls)
+
         super().setUpClass()
 
-    @classmethod
-    def tearDownClass(cls):
-        super().tearDownClass()
-        cls._override.disable()
+    if django.VERSION < (4, 0):
+        @classmethod
+        def tearDownClass(cls):
+            super().tearDownClass()
+            cls._override.disable()
 
-        if hasattr(cls, '_module_urlpatterns'):
-            cls._module.urlpatterns = cls._module_urlpatterns
-        else:
-            del cls._module.urlpatterns
+            if hasattr(cls, '_module_urlpatterns'):
+                cls._module.urlpatterns = cls._module_urlpatterns
+            else:
+                del cls._module.urlpatterns
