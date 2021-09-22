@@ -1464,15 +1464,24 @@ class TestDefaultTZDateTimeField(TestCase):
         cls.field = serializers.DateTimeField()
         cls.kolkata = pytz.timezone('Asia/Kolkata')
 
+    def assertUTC(self, tzinfo):
+        """
+        Check UTC for datetime.timezone, ZoneInfo, and pytz tzinfo instances.
+        """
+        assert (
+            tzinfo is utc or
+            (getattr(tzinfo, "key", None) or getattr(tzinfo, "zone", None)) == "UTC"
+        )
+
     def test_default_timezone(self):
-        assert self.field.default_timezone() == utc
+        self.assertUTC(self.field.default_timezone())
 
     def test_current_timezone(self):
-        assert self.field.default_timezone() == utc
+        self.assertUTC(self.field.default_timezone())
         activate(self.kolkata)
         assert self.field.default_timezone() == self.kolkata
         deactivate()
-        assert self.field.default_timezone() == utc
+        self.assertUTC(self.field.default_timezone())
 
 
 @pytest.mark.skipif(pytz is None, reason='pytz not installed')
