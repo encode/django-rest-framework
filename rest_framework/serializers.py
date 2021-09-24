@@ -136,12 +136,12 @@ class BaseSerializer(Field):
 
         Note that we're over-cautious in passing most arguments to both parent
         and child classes in order to try to cover the general case. If you're
-        overriding this method you'll probably want something much simpler, eg:
+        overriding this method you'll probably want something much simpler, eg::
 
-        @classmethod
-        def many_init(cls, *args, **kwargs):
-            kwargs['child'] = cls()
-            return CustomListSerializer(*args, **kwargs)
+            @classmethod
+            def many_init(cls, *args, **kwargs):
+                kwargs['child'] = cls()
+                return CustomListSerializer(*args, **kwargs)
         """
         allow_empty = kwargs.pop('allow_empty', None)
         max_length = kwargs.pop('max_length', None)
@@ -928,13 +928,13 @@ class ModelSerializer(Serializer):
         """
         We have a bit of extra checking around this in order to provide
         descriptive messages when something goes wrong, but this method is
-        essentially just:
+        essentially just::
 
             return ExampleModel.objects.create(**validated_data)
 
         If there are many to many fields present on the instance then they
         cannot be set until the model is instantiated, in which case the
-        implementation is like so:
+        implementation is like so::
 
             example_relationship = validated_data.pop('example_relationship')
             instance = ExampleModel.objects.create(**validated_data)
