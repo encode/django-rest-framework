@@ -1,5 +1,16 @@
 # Tutorial 7: Schemas & client libraries
 
+----
+
+**DEPRECATION NOTICE:** As of DRF version 3.9, the plan is to phase out CoreAPI in favor of OpenAPI as the default schema representation. You can look for more details at [Version 3.9 Annoucement](../community/3.9-announcement.md).
+
+If you are looking for information regarding schemas, you might want to look at these updated resources:
+
+1. [Schema](../api-guide/schemas.md)
+2. [Documenting your API](../topics/documenting-your-api.md)
+
+----
+
 A schema is a machine-readable document that describes the available API
 endpoints, their URLS, and what operations they support.
 
