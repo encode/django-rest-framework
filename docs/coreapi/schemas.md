@@ -4,7 +4,7 @@ source: schemas.py
 
 ----
 
-**DEPRECATION NOTICE:** As of DRF version 3.9, the plan is to phase out CoreAPI in favor of OpenAPI as the default schema representation. You can look for more details at [Version 3.9 Annoucement](../community/3.9-announcement.md).
+**DEPRECATION NOTICE:** Use of CoreAPI-based schemas were deprecated with the introduction of native OpenAPI-based schema generation as of Django REST Framework v3.10. See the [Version 3.10 Release Announcement](../community/3.10-announcement.md) for more details.
 
 You are probably looking for [this page](../api-guide/schemas.md) if you want latest information regarding schemas.
 
