@@ -116,7 +116,7 @@ Calling `.save()` will either create a new instance, or update an existing insta
     # .save() will update the existing `comment` instance.
     serializer = CommentSerializer(comment, data=data)
 
-Both the `.create()` and `.update()` methods are optional. You can implement either neither, one, or both of them, depending on the use-case for your serializer class.
+Both the `.create()` and `.update()` methods are optional. You can implement either none, one, or both of them, depending on the use-case for your serializer class.
 
 #### Passing additional attributes to `.save()`
 
