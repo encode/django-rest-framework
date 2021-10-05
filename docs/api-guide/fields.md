@@ -83,7 +83,7 @@ The name of the attribute that will be used to populate the field.  May be a met
 When serializing fields with dotted notation, it may be necessary to provide a `default` value if any object is not present or is empty during attribute traversal. Beware of possible n+1 problems when using source attribute if you are accessing a relational orm model. For example:
 
     class CommentSerializer(serializers.Serializer):
-        email = serializers.EmailField(source='user.email')
+        email = serializers.EmailField(source="user.email")
 
 would require user object to be fetched from database when it is not prefetched. If that is not wanted, be sure to be using `prefetch_related` and `select_related` methods appropriately. For more information about the methods refer to [django documentation][django-docs-select-related].
 
