@@ -17,6 +17,37 @@ Relational fields are used to represent model relationships.  They can be applie
 
 ---
 
+---
+
+**Note:** REST Framework does not attempt to automatically optimize querysets passed to serializers in terms of `select_related` and `prefetch_related` since it would be too much magic. A serializer with a field spanning an orm relation through its source attribute could require an additional database hit to fetch related object from the database. It is the programmer's responsibility to optimize queries to avoid additional database hits which could occur while using such a serializer.
+
+For example, the following serializer would lead to a database hit each time evaluating the tracks field if it is not prefetched:
+
+    class AlbumSerializer(serializers.ModelSerializer):
+        tracks = serializers.SlugRelatedField(
+            many=True,
+            read_only=True,
+            slug_field='title'
+        )
+
+        class Meta:
+            model = Album
+            fields = ['album_name', 'artist', 'tracks']
+    
+    # For each album object, tracks should be fetched from database
+    qs = Album.objects.all()
+    print(AlbumSerializer(qs, many=True).data)
+
+If `AlbumSerializer` is used to serialize a fairly large queryset with `many=True` then it could be a serious performance problem. Optimizing the queryset passed to `AlbumSerializer` with:
+
+    qs = Album.objects.prefetch_related('tracks')
+    # No additional database hits required
+    print(AlbumSerializer(qs, many=True).data)
+
+would solve the issue.
+
+---
+
 #### Inspecting relationships.
 
 When using the `ModelSerializer` class, serializer fields and relationships will be automatically generated for you. Inspecting these automatically generated fields can be a useful tool for determining how to customize the relationship style.
