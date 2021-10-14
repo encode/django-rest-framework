@@ -106,6 +106,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [djangorestframework-msgpack][djangorestframework-msgpack] - Provides MessagePack renderer and parser support.
 * [djangorestframework-jsonapi][djangorestframework-jsonapi] - Provides a parser, renderer, serializers, and other tools to help build an API that is compliant with the jsonapi.org spec.
 * [djangorestframework-camel-case][djangorestframework-camel-case] - Provides camel case JSON renderers and parsers.
+* [nested-multipart-parser][nested-multipart-parser] - Provides nested parser for http multipart request
 
 ### Renderers
 
@@ -183,6 +184,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [wq.db.rest]: https://wq.io/docs/about-rest
 [djangorestframework-msgpack]: https://github.com/juanriaza/django-rest-framework-msgpack
 [djangorestframework-camel-case]: https://github.com/vbabiy/djangorestframework-camel-case
+[nested-multipart-parser]: https://github.com/remigermain/nested-multipart-parser
 [djangorestframework-csv]: https://github.com/mjumbewu/django-rest-framework-csv
 [drf_ujson2]: https://github.com/Amertz08/drf_ujson2
 [rest-pandas]: https://github.com/wq/django-rest-pandas
