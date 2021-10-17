@@ -4,7 +4,7 @@
 [![coverage-status-image]][codecov]
 [![pypi-version]][pypi]
 
-**Awesome web-browsable Web APIs.**
+**Awesome web-browsable web API's.**
 
 Full documentation for the project is available at [https://www.django-rest-framework.org/][docs].
 
