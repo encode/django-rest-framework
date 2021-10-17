@@ -102,8 +102,9 @@ class TestAPITestClient(TestCase):
         response = self.client.get('/session-view/')
         assert response.data['active_session'] is True
 
-        # Force authenticating as `None` should also logout the user session.
-        self.client.force_authenticate(None)
+        # Force authenticating with `None` user and token should also logout
+        # the user session.
+        self.client.force_authenticate(user=None, token=None)
         response = self.client.get('/session-view/')
         assert response.data['active_session'] is False
 

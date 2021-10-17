@@ -277,7 +277,7 @@ class APIClient(APIRequestFactory, DjangoClient):
         """
         self.handler._force_user = user
         self.handler._force_token = token
-        if user is None:
+        if user is None and token is None:
             self.logout()  # Also clear any possible session info if required
 
     def request(self, **kwargs):
