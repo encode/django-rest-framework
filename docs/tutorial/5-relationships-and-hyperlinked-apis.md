@@ -51,7 +51,7 @@ And then add a url pattern for the snippet highlights:
 
 ## Hyperlinking our API
 
-Dealing with relationships between entities is one of the more challenging aspects of Web API design.  There are a number of different ways that we might choose to represent a relationship:
+Dealing with relationships between entities is one of the most challenging aspects of Web API design.  There are a number of different ways that we might choose to represent a relationship:
 
 * Using primary keys.
 * Using hyperlinking between entities.
