@@ -241,7 +241,7 @@ To dynamically change search fields based on request content, it's possible to s
         def get_search_fields(self, view, request):
             if request.query_params.get('title_only'):
                 return ['title']
-            return super(CustomSearchFilter, self).get_search_fields(view, request)
+            return super().get_search_fields(view, request)
 
 For more details, see the [Django documentation][search-django-admin].
 

@@ -38,7 +38,7 @@ And now we can add a `.save()` method to our model class:
         formatter = HtmlFormatter(style=self.style, linenos=linenos,
                                   full=True, **options)
         self.highlighted = highlight(self.code, lexer, formatter)
-        super(Snippet, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 When that's all done we'll need to update our database tables.
 Normally we'd create a database migration in order to do that, but for the purposes of this tutorial, let's just delete the database and start again.

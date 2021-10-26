@@ -1095,7 +1095,7 @@ For example, if you wanted to be able to set which fields should be used by a se
             fields = kwargs.pop('fields', None)
 
             # Instantiate the superclass normally
-            super(DynamicFieldsModelSerializer, self).__init__(*args, **kwargs)
+            super().__init__(*args, **kwargs)
 
             if fields is not None:
                 # Drop any fields that are not specified in the `fields` argument.

@@ -58,7 +58,7 @@ class LinkNode(OrderedDict):
     def __init__(self):
         self.links = []
         self.methods_counter = Counter()
-        super(LinkNode, self).__init__()
+        super().__init__()
 
     def get_available_key(self, preferred_key):
         if preferred_key not in self:
@@ -120,7 +120,7 @@ class SchemaGenerator(BaseSchemaGenerator):
         assert coreapi, '`coreapi` must be installed for schema support.'
         assert coreschema, '`coreschema` must be installed for schema support.'
 
-        super(SchemaGenerator, self).__init__(title, url, description, patterns, urlconf)
+        super().__init__(title, url, description, patterns, urlconf)
         self.coerce_method_names = api_settings.SCHEMA_COERCE_METHOD_NAMES
 
     def get_links(self, request=None):
@@ -346,7 +346,7 @@ class AutoSchema(ViewInspector):
         * `manual_fields`: list of `coreapi.Field` instances that
             will be added to auto-generated fields, overwriting on `Field.name`
         """
-        super(AutoSchema, self).__init__()
+        super().__init__()
         if manual_fields is None:
             manual_fields = []
         self._manual_fields = manual_fields
@@ -587,7 +587,7 @@ class ManualSchema(ViewInspector):
         * `fields`: list of `coreapi.Field` instances.
         * `description`: String description for view. Optional.
         """
-        super(ManualSchema, self).__init__()
+        super().__init__()
         assert all(isinstance(f, coreapi.Field) for f in fields), "`fields` must be a list of coreapi.Field instances"
         self._fields = fields
         self._description = description
