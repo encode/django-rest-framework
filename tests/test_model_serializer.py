@@ -1333,3 +1333,26 @@ class Issue6751Test(TestCase):
         serializer.save()
 
         self.assertEqual(instance.char_field, 'value changed by signal')
+
+class ExtraKwargsForDeclaredFieldsModel(models.Model):
+    test_field = models.CharField(max_length=64)
+
+class TestExtraKwargsForDeclaredFields(TestCase):
+    """
+    Passing extra_kwargs for a declared field should throw an AssertionError.
+    Particularly relevant for read_only_fields. See
+    https://github.com/encode/django-rest-framework/issues/3460.
+    """
+    def test_extra_kwargs_for_declared_fields(self):
+        class TestSerializer(serializers.ModelSerializer):
+            test_field = serializers.CharField()
+
+            class Meta:
+                model = ExtraKwargsForDeclaredFieldsModel
+                fields = ('test_field', )
+                read_only_fields = ('test_field', )
+
+        with pytest.raises(AssertionError) as e_info:
+            TestSerializer(data={'test_field': 'abc'}).fields
+
+        assert 'extra_field_kwargs' in str(e_info.value)

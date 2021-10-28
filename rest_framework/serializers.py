@@ -1062,12 +1062,26 @@ class ModelSerializer(Serializer):
         fields = OrderedDict()
 
         for field_name in field_names:
+            extra_field_kwargs = extra_kwargs.get(field_name, {})
+
             # If the field is explicitly declared on the class then use that.
             if field_name in declared_fields:
-                fields[field_name] = declared_fields[field_name]
+                assert not extra_field_kwargs, (
+                    "The field '{field_name}' was declared on serializer "
+                    "{serializer_class}, but has also been included in "
+                    "extra_fields_kwargs ({extra_field_kwargs}). "
+                    "This must be a mistake, because extra_field_kwargs are "
+                    "not applied to declared fields. For example, if you want "
+                    "the field to be read-only, you must explicitly pass "
+                    "read_only=True when declaring, instead of including the "
+                    "field in read_only_fields.".format(
+                        field_name=field_name,
+                        serializer_class=self.__class__.__name__,
+                        extra_field_kwargs=extra_field_kwargs
+                    )
+                )
                 continue
 
-            extra_field_kwargs = extra_kwargs.get(field_name, {})
             source = extra_field_kwargs.get('source', '*')
             if source == '*':
                 source = field_name
