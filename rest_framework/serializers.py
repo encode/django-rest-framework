@@ -1080,6 +1080,7 @@ class ModelSerializer(Serializer):
                         extra_field_kwargs=extra_field_kwargs
                     )
                 )
+                fields[field_name] = declared_fields[field_name]
                 continue
 
             source = extra_field_kwargs.get('source', '*')
