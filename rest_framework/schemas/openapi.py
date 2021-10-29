@@ -687,18 +687,20 @@ class AutoSchema(ViewInspector):
         else:
             response_schema = item_schema
         status_code = '201' if method == 'POST' else '200'
-        return {
+        response = {
             status_code: {
-                'content': {
-                    ct: {'schema': response_schema}
-                    for ct in self.response_media_types
-                },
                 # description is a mandatory property,
                 # https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#responseObject
                 # TODO: put something meaningful into it
                 'description': ""
             }
         }
+        if self.response_media_types:
+            response[status_code]['content'] = {
+                ct: {'schema': response_schema}
+                for ct in self.response_media_types
+            }
+        return response
 
     def get_tags(self, path, method):
         # If user have specified tags, use them.
