@@ -234,7 +234,7 @@ If you're using `SessionAuthentication` then you'll need to include a CSRF token
 for any `POST`, `PUT`, `PATCH` or `DELETE` requests.
 
 You can do so by following the same flow that a JavaScript based client would use.
-First make a `GET` request in order to obtain a CRSF token, then present that
+First, make a `GET` request in order to obtain a CSRF token, then present that
 token in the following request.
 
 For example...
@@ -259,7 +259,7 @@ With careful usage both the `RequestsClient` and the `CoreAPIClient` provide
 the ability to write test cases that can run either in development, or be run
 directly against your staging server or production environment.
 
-Using this style to create basic tests of a few core piece of functionality is
+Using this style to create basic tests of a few core pieces of functionality is
 a powerful way to validate your live service. Doing so may require some careful
 attention to setup and teardown to ensure that the tests run in a way that they
 do not directly affect customer data.
