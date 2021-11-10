@@ -312,7 +312,7 @@ The [`drf-proxy-pagination` package][drf-proxy-pagination] includes a `ProxyPagi
 
 ## link-header-pagination
 
-The [`django-rest-framework-link-header-pagination` package][drf-link-header-pagination] includes a `LinkHeaderPagination` class which provides pagination via an HTTP `Link` header as described in [Github's developer documentation](github-link-pagination).
+The [`django-rest-framework-link-header-pagination` package][drf-link-header-pagination] includes a `LinkHeaderPagination` class which provides pagination via an HTTP `Link` header as described in [GitHub REST API documentation][github-traversing-with-pagination].
 
 [cite]: https://docs.djangoproject.com/en/stable/topics/pagination/
 [link-header]: ../img/link-header-pagination.png
@@ -322,3 +322,4 @@ The [`django-rest-framework-link-header-pagination` package][drf-link-header-pag
 [drf-link-header-pagination]: https://github.com/tbeadle/django-rest-framework-link-header-pagination
 [disqus-cursor-api]: https://cra.mr/2011/03/08/building-cursors-for-the-disqus-api
 [float_cursor_pagination_example]: https://gist.github.com/keturn/8bc88525a183fd41c73ffb729b8865be#file-fpcursorpagination-py
+[github-traversing-with-pagination]: https://docs.github.com/en/rest/guides/traversing-with-pagination
