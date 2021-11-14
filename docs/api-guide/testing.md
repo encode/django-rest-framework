@@ -329,6 +329,34 @@ You can use any of REST framework's test case classes as you would for the regul
 
 ---
 
+# ModelTestCase
+
+REST framework provides a test case class that derives directly from model, which makes request and response more predictable.
+
+For each one of the fields, you must set an attribute with same name from field, assigning an array of options. If you have three fields, where the first one has 2 options, the second one has 2 and the third has 5, it will run the test for 2 x 2 x 5 = 20 cases.
+
+## Example
+
+`models.py` file:
+
+    class Person(models.Model):
+        first_name = models.CharField(max_length=100)
+        last_name = models.CharField(max_length=100)
+        age = models.PositiveSmallIntegerField()
+
+`tests.py` file:
+
+    from rest_framework.test import ModelTestCase
+
+    class PersonTests(ModelTestCase):
+        model = Person
+        url = "/persons/"
+        first_name = ["John", "Jane"]
+        last_name = ["Doe", "Roosevelt"]
+        age = [11, 23, 58, 13, 21]
+
+---
+
 # URLPatternsTestCase
 
 REST framework also provides a test case class for isolating `urlpatterns` on a per-class basis. Note that this inherits from Django's `SimpleTestCase`, and will most likely need to be mixed with another test case class.

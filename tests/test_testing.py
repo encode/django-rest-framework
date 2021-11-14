@@ -340,7 +340,7 @@ class TestExistingPatterns(TestCase):
 @override_settings(ROOT_URLCONF='tests.test_testing')
 class TestModelTestCase(ModelTestCase):
     model = Person
+    url = "/persons/"
     first_name = ["John", "Jane"]
     last_name = ["Doe", "Roosevelt"]
     age = [11, 23, 58, 13, 21]
-    url = "/persons/"
