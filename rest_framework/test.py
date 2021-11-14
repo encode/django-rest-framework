@@ -14,6 +14,7 @@ from django.test.client import RequestFactory as DjangoRequestFactory
 from django.utils.encoding import force_bytes
 from django.utils.http import urlencode
 
+from rest_framework import status
 from rest_framework.compat import coreapi, requests
 from rest_framework.settings import api_settings
 
@@ -410,3 +411,44 @@ class URLPatternsTestCase(testcases.SimpleTestCase):
                 cls._module.urlpatterns = cls._module_urlpatterns
             else:
                 del cls._module.urlpatterns
+
+class ModelTestCase(APITestCase):
+    model = None
+
+    def __model_fields(self):
+        return [field.name for field in self.model._meta.local_fields[1:]]
+    
+    def __get_field_cases(self):
+        fields = self.__model_fields()
+        field_cases = {}
+        for field_name in fields:
+            try:
+                field_value = getattr(self, field_name) # must be an array
+            except:
+                raise AttributeError(f"TestCase doesn't have attribute '{field_name}'.")
+            field_cases[field_name] = field_value
+
+        return field_cases
+
+    def __cases(self):
+        fields = self.__model_fields()
+        field_cases = self.__get_field_cases()
+        cases = [{}]
+        for field_name in fields:
+            cases_updated = []
+            for case in cases:
+                for field_case in field_cases[field_name]:
+                    cases_updated.append({ **case, field_name: field_case })
+            cases = cases_updated[:]
+
+        return cases
+
+    def test_post(self):
+        if self.model == None:
+            return
+        cases = self.__cases()
+        for case in cases:
+            response = self.client.post(self.url, case, format='json')
+            response.data.pop('id')
+            self.assertEqual(case, response.data)
+            self.assertEqual(response.status_code, status.HTTP_201_CREATED)

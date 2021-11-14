@@ -1,16 +1,17 @@
 from io import BytesIO
 
 import django
+from django.db import models
 from django.contrib.auth.models import User
 from django.shortcuts import redirect
 from django.test import TestCase, override_settings
 from django.urls import path
 
-from rest_framework import fields, serializers
+from rest_framework import fields, serializers, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.test import (
-    APIClient, APIRequestFactory, URLPatternsTestCase, force_authenticate
+    APIClient, APIRequestFactory, URLPatternsTestCase, force_authenticate, ModelTestCase
 )
 
 
@@ -47,11 +48,27 @@ def post_view(request):
     return Response(serializer.validated_data)
 
 
+class Person(models.Model):
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    age = models.PositiveSmallIntegerField()
+
+class PersonSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Person
+        fields = '__all__'
+
+class PersonViewSet(viewsets.ModelViewSet):
+    queryset = Person.objects.all()
+    serializer_class = PersonSerializer
+
+
 urlpatterns = [
     path('view/', view),
     path('session-view/', session_view),
     path('redirect-view/', redirect_view),
-    path('post-view/', post_view)
+    path('post-view/', post_view),
+    path('persons/', PersonViewSet.as_view({'post': 'create'}))
 ]
 
 
@@ -319,3 +336,11 @@ class TestExistingPatterns(TestCase):
     def test_urlpatterns(self):
         # sanity test to ensure that this test module does not have a '/' route
         assert self.client.get('/').status_code == 404
+
+@override_settings(ROOT_URLCONF='tests.test_testing')
+class TestModelTestCase(ModelTestCase):
+    model = Person
+    first_name = ["John", "Jane"]
+    last_name = ["Doe", "Roosevelt"]
+    age = [11, 23, 58, 13, 21]
+    url = "/persons/"
