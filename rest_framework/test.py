@@ -413,6 +413,10 @@ class URLPatternsTestCase(testcases.SimpleTestCase):
                 del cls._module.urlpatterns
 
 class ModelTestCase(APITestCase):
+    """
+    Make request according to model
+    """
+    
     model = None
 
     def __model_fields(self):
