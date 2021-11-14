@@ -11,7 +11,8 @@ from rest_framework import fields, serializers, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.test import (
-    APIClient, APIRequestFactory, URLPatternsTestCase, force_authenticate, ModelTestCase
+    APIClient, APIRequestFactory, ModelTestCase, URLPatternsTestCase,
+    force_authenticate
 )
 
 
