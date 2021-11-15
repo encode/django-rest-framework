@@ -225,4 +225,4 @@ If you want to get a more in depth understanding of how REST framework fits toge
 [image]: ../img/quickstart.png
 [tutorial]: 1-serialization.md
 [guide]: ../api-guide/requests.md
-[httpie]: https://github.com/jakubroztocil/httpie#installation
+[httpie]: https://httpie.io/docs#installation
