@@ -65,12 +65,9 @@ class BasicAuthentication(BaseAuthentication):
 
         if not auth or auth[0].lower() != b'basic':
             return None
-
-        if len(auth) == 1:
+        
+        if len(auth) != 2:
             msg = _('Invalid basic header. No credentials provided.')
-            raise exceptions.AuthenticationFailed(msg)
-        elif len(auth) > 2:
-            msg = _('Invalid basic header. Credentials string should not contain spaces.')
             raise exceptions.AuthenticationFailed(msg)
 
         try:
@@ -180,11 +177,8 @@ class TokenAuthentication(BaseAuthentication):
         if not auth or auth[0].lower() != self.keyword.lower().encode():
             return None
 
-        if len(auth) == 1:
+        if len(auth) != 2:
             msg = _('Invalid token header. No credentials provided.')
-            raise exceptions.AuthenticationFailed(msg)
-        elif len(auth) > 2:
-            msg = _('Invalid token header. Token string should not contain spaces.')
             raise exceptions.AuthenticationFailed(msg)
 
         try:
