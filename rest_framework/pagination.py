@@ -919,7 +919,7 @@ class CursorPagination(BasePagination):
                     'nullable': True,
                 },
                 'results': schema,
-            },,
+            },
             'required': [
                 'results',
             ],
