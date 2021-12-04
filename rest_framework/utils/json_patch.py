@@ -1,5 +1,4 @@
 from jsonpatch import (
-    JsonPatch,
     InvalidJsonPatch,
     JsonPatchConflict,
     JsonPatchTestFailed,
@@ -28,7 +27,7 @@ def filter_state(state, paths_parts):
     return filtered_state
 
 
-def apply_json_patch(patch: JsonPatch, current_state: dict):
+def apply_json_patch(patch, current_state):
     field = None
     try:
         # empty parts will raise JsonPointerException during apply()
