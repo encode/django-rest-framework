@@ -23,6 +23,7 @@ from django.db.models.fields import Field as DjangoModelField
 from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
+from jsonpatch import JsonPatch
 
 from rest_framework.compat import postgres_fields
 from rest_framework.exceptions import ErrorDetail, ValidationError
@@ -33,6 +34,7 @@ from rest_framework.utils.field_mapping import (
     ClassLookupDict, get_field_kwargs, get_nested_relation_kwargs,
     get_relation_kwargs, get_url_kwargs
 )
+from rest_framework.utils.json_patch import apply_json_patch
 from rest_framework.utils.serializer_helpers import (
     BindingDict, BoundField, JSONBoundField, NestedBoundField, ReturnDict,
     ReturnList
@@ -108,6 +110,12 @@ class BaseSerializer(Field):
 
     def __init__(self, instance=None, data=empty, **kwargs):
         self.instance = instance
+
+        if isinstance(data, JsonPatch):
+            # serialise current instance to get a dict
+            instance_serialized = self.__class__(instance).data
+            data = apply_json_patch(patch=data, current_state=instance_serialized)
+
         if data is not empty:
             self.initial_data = data
         self.partial = kwargs.pop('partial', False)
