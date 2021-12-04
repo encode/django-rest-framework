@@ -39,6 +39,7 @@ class TestMetadata:
             ],
             'parses': [
                 'application/json',
+                'application/json-patch+json',
                 'application/x-www-form-urlencoded',
                 'multipart/form-data'
             ]
@@ -103,6 +104,7 @@ class TestMetadata:
             ],
             'parses': [
                 'application/json',
+                'application/json-patch+json',
                 'application/x-www-form-urlencoded',
                 'multipart/form-data'
             ],
@@ -366,6 +368,7 @@ class TestModelSerializerMetadata(TestCase):
             ],
             'parses': [
                 'application/json',
+                'application/json-patch+json',
                 'application/x-www-form-urlencoded',
                 'multipart/form-data'
             ],

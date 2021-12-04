@@ -789,6 +789,11 @@ class TestOperationIntrospection(TestCase):
                             '$ref': '#/components/schemas/Request'
                         }
                     },
+                    'application/json-patch+json': {
+                        'schema': {
+                            '$ref': '#/components/schemas/Request'
+                        }
+                    },
                     'application/x-www-form-urlencoded': {
                         'schema': {
                             '$ref': '#/components/schemas/Request'
