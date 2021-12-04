@@ -68,29 +68,21 @@ class JSONParser(BaseParser):
             raise ParseError('JSON parse error - %s' % str(exc))
 
 
-class JSONPatchParser(BaseParser):
+class JSONPatchParser(JSONParser):
     """
     Parses PATCH RFC 6902 JSON-serialized data.
     """
 
     media_type = 'application/json-patch+json'
-    renderer_class = renderers.JSONRenderer
-    strict = api_settings.STRICT_JSON
 
     def parse(self, stream, media_type=None, parser_context=None):
         """
         Parses the incoming bytestream as JSON and returns the resulting data as json patch.
         """
-        parser_context = parser_context or {}
-        encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
+        data = super().parse(stream, media_type, parser_context)
 
         try:
-            decoded_stream = codecs.getreader(encoding)(stream)
-            parse_constant = json.strict_constant if self.strict else None
-            data = json.load(decoded_stream, parse_constant=parse_constant)
             return jsonpatch.JsonPatch(data)
-        except ValueError as exc:
-            raise ParseError('JSON parse error - %s' % str(exc))
         except jsonpatch.InvalidJsonPatch as exc:
             raise ParseError('JSON Patch (rfc 6902) invalid - %s' % str(exc))
 
