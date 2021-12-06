@@ -1491,6 +1491,8 @@ class MultipleChoiceField(ChoiceField):
             self.fail('empty')
 
         return {
+            # Arguments for super() are needed because of scoping inside
+            # comprehensions.
             super(MultipleChoiceField, self).to_internal_value(item)
             for item in data
         }
