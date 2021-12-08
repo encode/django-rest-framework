@@ -2,6 +2,14 @@ source: schemas.py
 
 # Schemas
 
+----
+
+**DEPRECATION NOTICE:** Use of CoreAPI-based schemas were deprecated with the introduction of native OpenAPI-based schema generation as of Django REST Framework v3.10. See the [Version 3.10 Release Announcement](../community/3.10-announcement.md) for more details.
+
+You are probably looking for [this page](../api-guide/schemas.md) if you want latest information regarding schemas.
+
+----
+
 > A machine-readable [schema] describes what resources are available via the API, what their URLs are, how they are represented and what operations they support.
 >
 > &mdash; Heroku, [JSON Schema for the Heroku Platform API][cite]

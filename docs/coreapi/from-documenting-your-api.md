@@ -1,6 +1,17 @@
 
 ## Built-in API documentation
 
+----
+
+**DEPRECATION NOTICE:** Use of CoreAPI-based schemas were deprecated with the introduction of native OpenAPI-based schema generation as of Django REST Framework v3.10. See the [Version 3.10 Release Announcement](../community/3.10-announcement.md) for more details.
+
+If you are looking for information regarding schemas, you might want to look at these updated resources:
+
+1. [Schema](../api-guide/schemas.md)
+2. [Documenting your API](../topics/documenting-your-api.md)
+
+----
+
 The built-in API documentation includes:
 
 * Documentation of API endpoints.
