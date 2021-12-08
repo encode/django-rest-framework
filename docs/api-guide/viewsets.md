@@ -125,7 +125,7 @@ You may inspect these attributes to adjust behaviour based on the current action
         if self.action == 'list':
             permission_classes = [IsAuthenticated]
         else:
-            permission_classes = [IsAdmin]
+            permission_classes = [IsAdminUser]
         return [permission() for permission in permission_classes]
 
 ## Marking extra actions for routing
