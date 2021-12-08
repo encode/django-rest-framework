@@ -543,8 +543,8 @@
 <h2 id="how-permissions-are-determined"><a class="toclink" href="#how-permissions-are-determined">How permissions are determined</a></h2>
 <p>Permissions in REST framework are always defined as a list of permission classes.</p>
 <p>Before running the main body of the view each permission in the list is checked.
-If any permission check fails an <code>exceptions.PermissionDenied</code> or <code>exceptions.NotAuthenticated</code> exception will be raised, and the main body of the view will not run.</p>
-<p>When the permissions checks fail either a "403 Forbidden" or a "401 Unauthorized" response will be returned, according to the following rules:</p>
+If any permission check fails, an <code>exceptions.PermissionDenied</code> or <code>exceptions.NotAuthenticated</code> exception will be raised, and the main body of the view will not run.</p>
+<p>When the permission checks fail, either a "403 Forbidden" or a "401 Unauthorized" response will be returned, according to the following rules:</p>
 <ul>
 <li>The request was successfully authenticated, but permission was denied. <em>&mdash; An HTTP 403 Forbidden response will be returned.</em></li>
 <li>The request was not successfully authenticated, and the highest priority authentication class <em>does not</em> use <code>WWW-Authenticate</code> headers. <em>&mdash; An HTTP 403 Forbidden response will be returned.</em></li>
@@ -753,7 +753,7 @@ class BlocklistPermission(permissions.BasePermission):
 <tr>
 <td>Action: list</td>
 <td>global</td>
-<td>no</td>
+<td>global</td>
 <td>object-level*</td>
 </tr>
 <tr>

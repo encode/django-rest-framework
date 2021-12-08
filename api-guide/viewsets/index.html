@@ -587,7 +587,7 @@ urlpatterns = router.urls
     if self.action == 'list':
         permission_classes = [IsAuthenticated]
     else:
-        permission_classes = [IsAdmin]
+        permission_classes = [IsAdminUser]
     return [permission() for permission in permission_classes]
 </code></pre>
 <h2 id="marking-extra-actions-for-routing"><a class="toclink" href="#marking-extra-actions-for-routing">Marking extra actions for routing</a></h2>

@@ -540,7 +540,7 @@ that uses an API schema to automatically provide a client library interface for 
 <h2 id="composable-permission-classes"><a class="toclink" href="#composable-permission-classes">Composable permission classes</a></h2>
 <p>You can now compose permission classes using the and/or operators, <code>&amp;</code> and <code>|</code>.</p>
 <p>For example...</p>
-<pre><code class="language-python">permission_classes = [IsAuthenticated &amp; (ReadOnly | IsAdmin)]
+<pre><code class="language-python">permission_classes = [IsAuthenticated &amp; (ReadOnly | IsAdminUser)]
 </code></pre>
 <p>If you're using custom permission classes then make sure that you are subclassing
 from <code>BasePermission</code> in order to enable this support.</p>

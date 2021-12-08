@@ -520,6 +520,14 @@
                     </li>
                   
                     <li>
+                      <a href="#max_length">max_length</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#min_length">min_length</a>
+                    </li>
+                  
+                    <li>
                       <a href="#customizing-listserializer-behavior">Customizing ListSerializer behavior</a>
                     </li>
                   
@@ -741,7 +749,7 @@ serializer = CommentSerializer(data=data)
 # .save() will update the existing `comment` instance.
 serializer = CommentSerializer(comment, data=data)
 </code></pre>
-<p>Both the <code>.create()</code> and <code>.update()</code> methods are optional. You can implement either neither, one, or both of them, depending on the use-case for your serializer class.</p>
+<p>Both the <code>.create()</code> and <code>.update()</code> methods are optional. You can implement either none, one, or both of them, depending on the use-case for your serializer class.</p>
 <h4 id="passing-additional-attributes-to-save"><a class="toclink" href="#passing-additional-attributes-to-save">Passing additional attributes to <code>.save()</code></a></h4>
 <p>Sometimes you'll want your view code to be able to inject additional data at the point of saving the instance. This additional data might include information like the current user, the current time, or anything else that is not part of the request data.</p>
 <p>You can do so by including additional keyword arguments when calling <code>.save()</code>. For example:</p>
@@ -1204,6 +1212,10 @@ in the serializer context.</p>
 <p>The following argument can also be passed to a <code>ListSerializer</code> field or a serializer that is passed <code>many=True</code>:</p>
 <h3 id="allow_empty"><a class="toclink" href="#allow_empty"><code>allow_empty</code></a></h3>
 <p>This is <code>True</code> by default, but can be set to <code>False</code> if you want to disallow empty lists as valid input.</p>
+<h3 id="max_length"><a class="toclink" href="#max_length"><code>max_length</code></a></h3>
+<p>This is <code>None</code> by default, but can be set to a positive integer if you want to validates that the list contains no more than this number of elements.</p>
+<h3 id="min_length"><a class="toclink" href="#min_length"><code>min_length</code></a></h3>
+<p>This is <code>None</code> by default, but can be set to a positive integer if you want to validates that the list contains no fewer than this number of elements.</p>
 <h3 id="customizing-listserializer-behavior"><a class="toclink" href="#customizing-listserializer-behavior">Customizing <code>ListSerializer</code> behavior</a></h3>
 <p>There <em>are</em> a few use cases when you might want to customize the <code>ListSerializer</code> behavior. For example:</p>
 <ul>
@@ -1483,7 +1495,7 @@ class MySerializer(MyBaseSerializer):
         fields = kwargs.pop('fields', None)
 
         # Instantiate the superclass normally
-        super(DynamicFieldsModelSerializer, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         if fields is not None:
             # Drop any fields that are not specified in the `fields` argument.

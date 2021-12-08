@@ -615,6 +615,9 @@ class UserList(generics.ListCreateAPIView):
     user = self.request.user
     return user.accounts.all()
 </code></pre>
+<hr />
+<p><strong>Note:</strong> If the serializer_class used in the generic view spans orm relations, leading to an n+1 problem, you could optimize your queryset in this method using <code>select_related</code> and <code>prefetch_related</code>. To get more information about n+1 problem and use cases of the mentioned methods refer to related section in <a href="https://docs.djangoproject.com/en/3.1/ref/models/querysets/#django.db.models.query.QuerySet.select_related">django documentation</a>.</p>
+<hr />
 <h4 id="get_objectself"><a class="toclink" href="#get_objectself"><code>get_object(self)</code></a></h4>
 <p>Returns an object instance that should be used for detail views.  Defaults to using the <code>lookup_field</code> parameter to filter the base queryset.</p>
 <p>May be overridden to provide more complex behavior, such as object lookups based on more than one URL kwarg.</p>

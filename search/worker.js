@@ -58,6 +58,7 @@ function onScriptsLoaded () {
   if (data.config && data.config.separator && data.config.separator.length) {
     lunr.tokenizer.separator = new RegExp(data.config.separator);
   }
+
   if (data.index) {
     index = lunr.Index.load(data.index);
     data.docs.forEach(function (doc) {
@@ -84,6 +85,7 @@ function onScriptsLoaded () {
     console.log('Lunr index built, search ready');
   }
   allowSearch = true;
+  postMessage({config: data.config});
   postMessage({allowSearch: allowSearch});
 }
 

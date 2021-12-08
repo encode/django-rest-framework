@@ -713,7 +713,7 @@ client.headers.update({'x-test': 'true'})
 <p>If you're using <code>SessionAuthentication</code> then you'll need to include a CSRF token
 for any <code>POST</code>, <code>PUT</code>, <code>PATCH</code> or <code>DELETE</code> requests.</p>
 <p>You can do so by following the same flow that a JavaScript based client would use.
-First make a <code>GET</code> request in order to obtain a CRSF token, then present that
+First, make a <code>GET</code> request in order to obtain a CSRF token, then present that
 token in the following request.</p>
 <p>For example...</p>
 <pre><code>client = RequestsClient()
@@ -734,7 +734,7 @@ assert response.status_code == 200
 <p>With careful usage both the <code>RequestsClient</code> and the <code>CoreAPIClient</code> provide
 the ability to write test cases that can run either in development, or be run
 directly against your staging server or production environment.</p>
-<p>Using this style to create basic tests of a few core piece of functionality is
+<p>Using this style to create basic tests of a few core pieces of functionality is
 a powerful way to validate your live service. Doing so may require some careful
 attention to setup and teardown to ensure that the tests run in a way that they
 do not directly affect customer data.</p>

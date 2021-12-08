@@ -558,6 +558,7 @@ This method is used to enforce permissions and throttling, and perform content n
 <p><strong>Signature:</strong> <code>@api_view(http_method_names=['GET'])</code></p>
 <p>The core of this functionality is the <code>api_view</code> decorator, which takes a list of HTTP methods that your view should respond to. For example, this is how you would write a very simple view that just manually returns some data:</p>
 <pre><code>from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 @api_view()
 def hello_world(request):
