@@ -198,7 +198,7 @@ Please see the [security policy][security-policy].
 [retool-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/retool-readme.png
 [bitio-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/bitio-readme.png
 [posthog-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/posthog-readme.png
-[posthog-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/cryptapi-readme.png
+[cryptapi-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/cryptapi-readme.png
 
 [sentry-url]: https://getsentry.com/welcome/
 [stream-url]: https://getstream.io/?utm_source=drf&utm_medium=sponsorship&utm_content=developer
