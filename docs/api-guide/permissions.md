@@ -286,7 +286,7 @@ The following table lists the access restriction methods and the level of contro
 
 |                                    | `queryset` | `permission_classes` | `serializer_class` |
 |------------------------------------|------------|----------------------|--------------------|
-| Action: list                       | global     | no                   | object-level*      |
+| Action: list                       | global     | global               | object-level*      |
 | Action: create                     | no         | global               | object-level       |
 | Action: retrieve                   | global     | object-level         | object-level       |
 | Action: update                     | global     | object-level         | object-level       |
