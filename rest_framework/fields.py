@@ -1878,6 +1878,11 @@ class SerializerMethodField(Field):
         # The method name defaults to `get_{field_name}`.
         if self.method_name is None:
             self.method_name = 'get_{field_name}'.format(field_name=field_name)
+        # If help_text isn't specified, try to get the method's docstring.
+        if self.help_text is None:
+            method = getattr(parent, self.method_name, None)
+            if method is not None:
+                self.help_text = method.__doc__
 
         super().bind(field_name, parent)
 
