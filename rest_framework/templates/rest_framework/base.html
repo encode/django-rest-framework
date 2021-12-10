@@ -83,7 +83,6 @@
                   <div class="btn-group">
                     <button class="btn btn-primary" data-bs-toggle="tooltip" href="{{ request.get_full_path }}" rel="nofollow" title="Make a GET request on the {{ name }} resource">GET</button>
                     <button class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown">
-                      <span class="sr-only" data-bs-toggle="tooltip" title="Specify a format for the GET request">Toggle Dropdown</span>
                     </button>
                     <ul class="dropdown-menu">
                       {% for format in available_formats %}
