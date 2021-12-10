@@ -83,7 +83,7 @@ setup(
     packages=find_packages(exclude=['tests*']),
     include_package_data=True,
     install_requires=["django>=2.2", "pytz"],
-    python_requires=">=3.5",
+    python_requires=">=3.6",
     zip_safe=False,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
