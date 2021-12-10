@@ -54,7 +54,7 @@ There is a live example API for testing purposes, [available here][sandbox].
 
 # Requirements
 
-* Python (3.5, 3.6, 3.7, 3.8, 3.9)
+* Python (3.6, 3.7, 3.8, 3.9, 3.10)
 * Django (2.2, 3.0, 3.1, 3.2, 4.0)
 
 We **highly recommend** and only officially support the latest patch release of
