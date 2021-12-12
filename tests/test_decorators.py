@@ -162,6 +162,16 @@ class DecoratorTestCase(TestCase):
 
         assert isinstance(view.cls.schema, CustomSchema)
 
+    def test_wrapper_assignments(self):
+        @api_view(["GET"])
+        def test_view(request):
+            """example docstring"""
+            pass
+
+        assert test_view.__name__ == "test_view"
+        assert test_view.__doc__ == "example docstring"
+        assert test_view.__qualname__ == "DecoratorTestCase.test_wrapper_assignments.<locals>.test_view"
+
 
 class ActionDecoratorTestCase(TestCase):
 
