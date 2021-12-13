@@ -54,7 +54,7 @@
       <div class="navbar-inner">
         <div class="container-fluid">
           <a class="repo-link btn btn-primary btn-small" href="https://github.com/encode/django-rest-framework/tree/master">GitHub</a>
-          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../3.12-announcement/">
+          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../3.13-announcement/">
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
           <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../project-management/">
@@ -294,6 +294,10 @@
                   </li>
                   
                   <li >
+                    <a href="../3.13-announcement/">3.13 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../3.12-announcement/">3.12 Announcement</a>
                   </li>
                   
@@ -422,6 +426,10 @@
                     </li>
                   
                     <li>
+                      <a href="#313x-series">3.13.x series</a>
+                    </li>
+                  
+                    <li>
                       <a href="#312x-series">3.12.x series</a>
                     </li>
                   
@@ -515,6 +523,19 @@
 <p>You can determine your currently installed version using <code>pip show</code>:</p>
 <pre><code>pip show djangorestframework
 </code></pre>
+<hr />
+<h2 id="313x-series"><a class="toclink" href="#313x-series">3.13.x series</a></h2>
+<h3 id="3130"><a class="toclink" href="#3130">3.13.0</a></h3>
+<p>Date: 13th December 2021</p>
+<ul>
+<li>Django 4.0 compatability. [#8178]</li>
+<li>Add <code>max_length</code> and <code>min_length</code> options to <code>ListSerializer</code>. [#8165]</li>
+<li>Add <code>get_request_serializer</code> and <code>get_response_serializer</code> hooks to <code>AutoSchema</code>. [#7424]</li>
+<li>Fix OpenAPI representation of null-able read only fields. [#8116]</li>
+<li>Respect <code>UNICODE_JSON</code> setting in API schema outputs. [#7991]</li>
+<li>Fix for <code>RemoteUserAuthentication</code>. [#7158]</li>
+<li>Make Field constructors keyword-only. [#7632]</li>
+</ul>
 <hr />
 <h2 id="312x-series"><a class="toclink" href="#312x-series">3.12.x series</a></h2>
 <h3 id="3124"><a class="toclink" href="#3124">3.12.4</a></h3>
