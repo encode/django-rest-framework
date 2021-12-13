@@ -34,11 +34,11 @@ You can determine your currently installed version using `pip show`:
 
 ---
 
-## 3.12.x series
+## 3.13.x series
 
-### 3.12.5
+### 3.13.0
 
-Date: ...
+Date: 13th December 2021
 
 * Django 4.0 compatability. [#8178]
 * Add `max_length` and `min_length` options to `ListSerializer`. [#8165]
@@ -47,6 +47,10 @@ Date: ...
 * Respect `UNICODE_JSON` setting in API schema outputs. [#7991]
 * Fix for `RemoteUserAuthentication`. [#7158]
 * Make Field constructors keyword-only. [#7632]
+
+---
+
+## 3.12.x series
 
 ### 3.12.4
 
