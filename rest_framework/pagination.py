@@ -961,7 +961,7 @@ class CursorPagination(BasePagination):
                 'in': 'query',
                 'description': force_str(self.cursor_query_description),
                 'schema': {
-                    'type': 'integer',
+                    'type': 'string',
                 },
             }
         ]
