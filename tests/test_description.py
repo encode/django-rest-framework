@@ -23,7 +23,7 @@ indented
 
 # hash style header #
 
-``` json
+```json
 [{
     "alpha": 1,
     "beta": "this is a string"
@@ -107,7 +107,7 @@ class TestViewNamesAndDescriptions(TestCase):
 
             # hash style header #
 
-            ``` json
+            ```json
             [{
                 "alpha": 1,
                 "beta": "this is a string"
