@@ -36,6 +36,12 @@ You can determine your currently installed version using `pip show`:
 
 ## 3.13.x series
 
+### 3.13.1
+
+Date: 15th December 2021
+
+* Revert schema naming changes with function based `@api_view`. [#8297]
+
 ### 3.13.0
 
 Date: 13th December 2021
