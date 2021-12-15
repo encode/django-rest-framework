@@ -7,7 +7,6 @@ based views, as well as the `@action` decorator, which is used to annotate
 methods on viewsets that should be included by routers.
 """
 import types
-from functools import update_wrapper
 
 from django.forms.utils import pretty_name
 
@@ -23,8 +22,18 @@ def api_view(http_method_names=None):
 
     def decorator(func):
 
-        class WrappedAPIView(APIView):
-            pass
+        WrappedAPIView = type(
+            'WrappedAPIView',
+            (APIView,),
+            {'__doc__': func.__doc__}
+        )
+
+        # Note, the above allows us to set the docstring.
+        # It is the equivalent of:
+        #
+        #     class WrappedAPIView(APIView):
+        #         pass
+        #     WrappedAPIView.__doc__ = func.doc    <--- Not possible to do this
 
         # api_view applied without (method_names)
         assert not(isinstance(http_method_names, types.FunctionType)), \
@@ -42,6 +51,9 @@ def api_view(http_method_names=None):
 
         for method in http_method_names:
             setattr(WrappedAPIView, method.lower(), handler)
+
+        WrappedAPIView.__name__ = func.__name__
+        WrappedAPIView.__module__ = func.__module__
 
         WrappedAPIView.renderer_classes = getattr(func, 'renderer_classes',
                                                   APIView.renderer_classes)
@@ -61,7 +73,7 @@ def api_view(http_method_names=None):
         WrappedAPIView.schema = getattr(func, 'schema',
                                         APIView.schema)
 
-        return update_wrapper(WrappedAPIView.as_view(), func)
+        return WrappedAPIView.as_view()
 
     return decorator
 
