@@ -524,6 +524,7 @@ You can add extra fields to a `ModelSerializer` or override the default fields b
 
         class Meta:
             model = Account
+            fields = ['url', 'groups']
 
 Extra fields can correspond to any property or callable on the model.
 
