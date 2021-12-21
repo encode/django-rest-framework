@@ -62,7 +62,7 @@ Also note that `format_suffix_patterns` does not support descending into `includ
 
 If using the `i18n_patterns` function provided by Django, as well as `format_suffix_patterns` you should make sure that the `i18n_patterns` function is applied as the final, or outermost function. For example:
 
-    url patterns = [
+    urlpatterns = [
         …
     ]
 
