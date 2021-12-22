@@ -161,7 +161,7 @@ msgstr "این مقدار لازم است."
 
 #: fields.py:317
 msgid "This field may not be null."
-msgstr "این مقدار نباید توهی باشد."
+msgstr "این مقدار نباید تهی باشد."
 
 #: fields.py:701
 msgid "Must be a valid boolean."
