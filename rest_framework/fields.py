@@ -63,22 +63,25 @@ def is_simple_callable(obj):
     """
     True if the object is a callable that takes no arguments.
     """
+    if not callable(obj):
+        return False
+
     # Bail early since we cannot inspect built-in function signatures.
     if inspect.isbuiltin(obj):
         raise BuiltinSignatureError(
             'Built-in function signatures are not inspectable. '
             'Wrap the function call in a simple, pure Python function.')
 
-    if not (inspect.isfunction(obj) or inspect.ismethod(obj) or isinstance(obj, functools.partial)):
+    if not (inspect.ismethod(obj) or inspect.isfunction(obj) or isinstance(obj, functools.partial)):
         return False
 
     sig = inspect.signature(obj)
-    params = sig.parameters.values()
-    return all(
+    params = sig.parameters
+    return not params or all(
         param.kind == param.VAR_POSITIONAL or
         param.kind == param.VAR_KEYWORD or
         param.default != param.empty
-        for param in params
+        for param in params.values()
     )
 
 
@@ -91,7 +94,7 @@ def get_attribute(instance, attrs):
     """
     for attr in attrs:
         try:
-            if isinstance(instance, Mapping):
+            if hasattr(instance, 'items') and isinstance(instance, Mapping):
                 instance = instance[attr]
             else:
                 instance = getattr(instance, attr)
