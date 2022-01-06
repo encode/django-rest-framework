@@ -45,7 +45,7 @@ We'll need to add our new `snippets` app and the `rest_framework` app to `INSTAL
     INSTALLED_APPS = [
         ...
         'rest_framework',
-        'snippets.apps.SnippetsConfig',
+        'snippets',
     ]
 
 Okay, we're ready to roll.
@@ -77,7 +77,7 @@ For the purposes of this tutorial we're going to start by creating a simple `Sni
 We'll also need to create an initial migration for our snippet model, and sync the database for the first time.
 
     python manage.py makemigrations snippets
-    python manage.py migrate
+    python manage.py migrate snippets
 
 ## Creating a Serializer class
 
@@ -307,8 +307,8 @@ Quit out of the shell...
     Validating models...
 
     0 errors found
-    Django version 1.11, using settings 'tutorial.settings'
-    Development server is running at http://127.0.0.1:8000/
+    Django version 4.0,1 using settings 'tutorial.settings'
+    Starting Development server at http://127.0.0.1:8000/
     Quit the server with CONTROL-C.
 
 In another terminal window, we can test the server.
