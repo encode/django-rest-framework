@@ -495,6 +495,7 @@ $ find .
 ./tutorial/quickstart/models.py
 ./tutorial/quickstart/tests.py
 ./tutorial/quickstart/views.py
+./tutorial/asgi.py
 ./tutorial/settings.py
 ./tutorial/urls.py
 ./tutorial/wsgi.py
@@ -605,12 +606,6 @@ urlpatterns = [
             "url": "http://127.0.0.1:8000/users/1/",
             "username": "admin"
         },
-        {
-            "email": "tom@example.com",
-            "groups": [],
-            "url": "http://127.0.0.1:8000/users/2/",
-            "username": "tom"
-        }
     ]
 }
 </code></pre>
@@ -630,12 +625,6 @@ HTTP/1.1 200 OK
             "url": "http://localhost:8000/users/1/",
             "username": "paul"
         },
-        {
-            "email": "tom@example.com",
-            "groups": [],
-            "url": "http://127.0.0.1:8000/users/2/",
-            "username": "tom"
-        }
     ]
 }
 </code></pre>

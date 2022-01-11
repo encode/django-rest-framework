@@ -1069,6 +1069,7 @@ AccountSerializer():
 
     class Meta:
         model = Account
+        fields = ['url', 'groups']
 </code></pre>
 <p>Extra fields can correspond to any property or callable on the model.</p>
 <h2 id="specifying-read-only-fields"><a class="toclink" href="#specifying-read-only-fields">Specifying read only fields</a></h2>

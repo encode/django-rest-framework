@@ -492,7 +492,7 @@ def comment_list(request, format=None):
 <p>Also note that <code>format_suffix_patterns</code> does not support descending into <code>include</code> URL patterns.</p>
 <h3 id="using-with-i18n_patterns"><a class="toclink" href="#using-with-i18n_patterns">Using with <code>i18n_patterns</code></a></h3>
 <p>If using the <code>i18n_patterns</code> function provided by Django, as well as <code>format_suffix_patterns</code> you should make sure that the <code>i18n_patterns</code> function is applied as the final, or outermost function. For example:</p>
-<pre><code>url patterns = [
+<pre><code>urlpatterns = [
     …
 ]
 

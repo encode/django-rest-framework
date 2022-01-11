@@ -500,7 +500,7 @@ cd tutorial
 <pre><code>INSTALLED_APPS = [
     ...
     'rest_framework',
-    'snippets.apps.SnippetsConfig',
+    'snippets',
 ]
 </code></pre>
 <p>Okay, we're ready to roll.</p>
@@ -528,7 +528,7 @@ class Snippet(models.Model):
 </code></pre>
 <p>We'll also need to create an initial migration for our snippet model, and sync the database for the first time.</p>
 <pre><code>python manage.py makemigrations snippets
-python manage.py migrate
+python manage.py migrate snippets
 </code></pre>
 <h2 id="creating-a-serializer-class"><a class="toclink" href="#creating-a-serializer-class">Creating a Serializer class</a></h2>
 <p>The first thing we need to get started on our Web API is to provide a way of serializing and deserializing the snippet instances into representations such as <code>json</code>.  We can do this by declaring serializers that work very similar to Django's forms.  Create a file in the <code>snippets</code> directory named <code>serializers.py</code> and add the following.</p>
@@ -725,8 +725,8 @@ urlpatterns = [
 Validating models...
 
 0 errors found
-Django version 1.11, using settings 'tutorial.settings'
-Development server is running at http://127.0.0.1:8000/
+Django version 4.0,1 using settings 'tutorial.settings'
+Starting Development server at http://127.0.0.1:8000/
 Quit the server with CONTROL-C.
 </code></pre>
 <p>In another terminal window, we can test the server.</p>
