@@ -201,7 +201,7 @@ Please see the [security policy][security-policy].
 [cryptapi-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/cryptapi-readme.png
 
 [sentry-url]: https://getsentry.com/welcome/
-[stream-url]: https://getstream.io/?utm_source=drf&utm_medium=sponsorship&utm_content=developer
+[stream-url]: https://getstream.io/?utm_source=DjangoRESTFramework&utm_medium=Webpage_Logo_Ad&utm_content=Developer&utm_campaign=DjangoRESTFramework_Jan2022_HomePage
 [rollbar-url]: https://rollbar.com/?utm_source=django&utm_medium=sponsorship&utm_campaign=freetrial
 [esg-url]: https://software.esg-usa.com/
 [retool-url]: https://retool.com/?utm_source=djangorest&utm_medium=sponsorship
