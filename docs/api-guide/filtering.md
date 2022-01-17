@@ -224,7 +224,7 @@ The search behavior may be restricted by prepending various characters to the `s
 
 * '^' Starts-with search.
 * '=' Exact matches.
-* '@' Full-text search.  (Currently only supported Django's [PostgreSQL backend](https://docs.djangoproject.com/en/dev/ref/contrib/postgres/search/).)
+* '@' Full-text search.  (Currently only supported Django's [PostgreSQL backend][postgres-search].)
 * '$' Regex search.
 
 For example:
@@ -374,3 +374,4 @@ The [djangorestframework-word-filter][django-rest-framework-word-search-filter] 
 [drf-url-filter]: https://github.com/manjitkumar/drf-url-filters
 [HStoreField]: https://docs.djangoproject.com/en/3.0/ref/contrib/postgres/fields/#hstorefield
 [JSONField]: https://docs.djangoproject.com/en/3.0/ref/contrib/postgres/fields/#jsonfield
+[postgres-search]: https://docs.djangoproject.com/en/stable/ref/contrib/postgres/search/
