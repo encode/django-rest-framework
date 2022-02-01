@@ -105,7 +105,7 @@ class JSONRenderer(BaseRenderer):
 
         # We always fully escape \u2028 and \u2029 to ensure we output JSON
         # that is a strict javascript subset.
-        # See: http://timelessrepo.com/json-isnt-a-javascript-subset
+        # See: https://gist.github.com/damncabbage/623b879af56f850a6ddc
         ret = ret.replace('\u2028', '\\u2028').replace('\u2029', '\\u2029')
         return ret.encode()
 
