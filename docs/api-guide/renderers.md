@@ -271,7 +271,7 @@ The request data, as set by the `Response()` instantiation.
 
 Optional.  If provided, this is the accepted media type, as determined by the content negotiation stage.
 
-Depending on the client's `Accept:` header, this may be more specific than the renderer's `accepted_media_type` attribute, and may include media type parameters.  For example `"application/json; nested=true"`.
+Depending on the client's `Accept:` header, this may be more specific than the renderer's `media_type` attribute, and may include media type parameters.  For example `"application/json; nested=true"`.
 
 ### `renderer_context=None`
 
