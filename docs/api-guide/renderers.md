@@ -257,7 +257,7 @@ This renderer is used for rendering HTML multipart form data.  **It is not suita
 
 # Custom renderers
 
-To implement a custom renderer, you should override `BaseRenderer`, set the `.media_type` and `.format` properties, and implement the `.render(self, data, media_type=None, renderer_context=None)` method.
+To implement a custom renderer, you should override `BaseRenderer`, set the `.media_type` and `.format` properties, and implement the `.render(self, data, accepted_media_type=None, renderer_context=None)` method.
 
 The method should return a bytestring, which will be used as the body of the HTTP response.
 
@@ -267,7 +267,7 @@ The arguments passed to the `.render()` method are:
 
 The request data, as set by the `Response()` instantiation.
 
-### `media_type=None`
+### `accepted_media_type=None`
 
 Optional.  If provided, this is the accepted media type, as determined by the content negotiation stage.
 
@@ -291,7 +291,7 @@ The following is an example plaintext renderer that will return a response with 
         media_type = 'text/plain'
         format = 'txt'
 
-        def render(self, data, media_type=None, renderer_context=None):
+        def render(self, data, accepted_media_type=None, renderer_context=None):
             return smart_text(data, encoding=self.charset)
 
 ## Setting the character set
@@ -303,7 +303,7 @@ By default renderer classes are assumed to be using the `UTF-8` encoding.  To us
         format = 'txt'
         charset = 'iso-8859-1'
 
-        def render(self, data, media_type=None, renderer_context=None):
+        def render(self, data, accepted_media_type=None, renderer_context=None):
             return data.encode(self.charset)
 
 Note that if a renderer class returns a unicode string, then the response content will be coerced into a bytestring by the `Response` class, with the `charset` attribute set on the renderer used to determine the encoding.
@@ -318,7 +318,7 @@ In some cases you may also want to set the `render_style` attribute to `'binary'
         charset = None
         render_style = 'binary'
 
-        def render(self, data, media_type=None, renderer_context=None):
+        def render(self, data, accepted_media_type=None, renderer_context=None):
             return data
 
 ---
