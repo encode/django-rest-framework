@@ -194,7 +194,7 @@ def add_class(value, css_class):
             return mark_safe(class_re.sub(match.group(1) + " " + css_class,
                                           html))
     else:
-        return mark_safe(html.replace('>', ' class="%s">' % css_class, 1))
+        return mark_safe(html.replace('>', f' class="{css_class}">', 1))
     return value
 
 
@@ -202,7 +202,7 @@ def add_class(value, css_class):
 def format_value(value):
     if getattr(value, 'is_hyperlink', False):
         name = str(value.obj)
-        return mark_safe('<a href=%s>%s</a>' % (value, escape(name)))
+        return mark_safe(f'<a href={value}>{escape(name)}</a>')
     if value is None or isinstance(value, bool):
         return mark_safe('<code>%s</code>' % {True: 'true', False: 'false', None: 'null'}[value])
     elif isinstance(value, list):
@@ -218,8 +218,8 @@ def format_value(value):
         return template.render(context)
     elif isinstance(value, str):
         if (
-            (value.startswith('http:') or value.startswith('https:')) and not
-            re.search(r'\s', value)
+                (value.startswith('http:') or value.startswith('https:')) and not
+        re.search(r'\s', value)
         ):
             return mark_safe('<a href="{value}">{value}</a>'.format(value=escape(value)))
         elif '@' in value and not re.search(r'\s', value):

@@ -856,8 +856,8 @@ class DocumentationRenderer(BaseRenderer):
         return {
             'document': data,
             'langs': self.languages,
-            'lang_htmls': ["rest_framework/docs/langs/%s.html" % language for language in self.languages],
-            'lang_intro_htmls': ["rest_framework/docs/langs/%s-intro.html" % language for language in self.languages],
+            'lang_htmls': [f"rest_framework/docs/langs/{language}.html" for language in self.languages],
+            'lang_intro_htmls': [f"rest_framework/docs/langs/{language}-intro.html" for language in self.languages],
             'code_style': pygments_css(self.code_style),
             'request': request
         }

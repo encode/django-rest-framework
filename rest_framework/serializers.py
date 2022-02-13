@@ -1375,7 +1375,7 @@ class ModelSerializer(Serializer):
             if not isinstance(read_only_fields, (list, tuple)):
                 raise TypeError(
                     'The `read_only_fields` option must be a list or tuple. '
-                    'Got %s.' % type(read_only_fields).__name__
+                    f'Got {type(read_only_fields).__name__}.'
                 )
             for field_name in read_only_fields:
                 kwargs = extra_kwargs.get(field_name, {})
