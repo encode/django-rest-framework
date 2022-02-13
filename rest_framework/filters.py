@@ -236,9 +236,9 @@ class OrderingFilter(BaseFilterBackend):
             (field.source.replace('.', '__') or field_name, field.label)
             for field_name, field in serializer_class(context=context).fields.items()
             if (
-                not getattr(field, 'write_only', False) and
-                not field.source == '*' and
-                field.source not in model_property_names
+                    not getattr(field, 'write_only', False) and
+                    not field.source == '*' and
+                    field.source not in model_property_names
             )
         ]
 
@@ -294,9 +294,9 @@ class OrderingFilter(BaseFilterBackend):
             'param': self.ordering_param,
         }
         for key, label in self.get_valid_fields(queryset, view, context):
-            options.append((key, '%s - %s' % (label, _('ascending'))))
-            options.append(('-' + key, '%s - %s' % (label, _('descending'))))
-        context['options'] = options
+            options.append((key, f'{label} - {_("ascending")}'))
+            options.append(('-' + key, f'{label} - {_("descending")}'))
+            context['options'] = options
         return context
 
     def to_html(self, request, queryset, view):

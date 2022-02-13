@@ -41,7 +41,7 @@ def api_view(http_method_names=None):
 
         # api_view applied with eg. string instead of list of strings
         assert isinstance(http_method_names, (list, tuple)), \
-            '@api_view expected a list of strings, received %s' % type(http_method_names).__name__
+            f'@api_view expected a list of strings, received {type(http_method_names).__name__}'
 
         allowed_methods = set(http_method_names) | {'options'}
         WrappedAPIView.http_method_names = [method.lower() for method in allowed_methods]
@@ -199,7 +199,7 @@ class MethodMapper(dict):
 
     def _map(self, method, func):
         assert method not in self, (
-            "Method '%s' has already been mapped to '.%s'." % (method, self[method]))
+            f"Method '{method}' has already been mapped to '.{self[method]}'.")
         assert func.__name__ != self.action.__name__, (
             "Method mapping does not behave like the property decorator. You "
             "cannot use the same method name for each mapping declaration.")

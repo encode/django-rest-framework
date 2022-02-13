@@ -46,6 +46,7 @@ class Hyperlink(str):
     We use this for hyperlinked URLs that may render as a named link
     in some contexts, or render as a plain URL in others.
     """
+
     def __new__(cls, url, obj):
         ret = super().__new__(cls, url)
         ret.obj = obj
@@ -70,11 +71,12 @@ class PKOnlyObject:
     instance, but still want to return an object with a .pk attribute,
     in order to keep the same interface as a regular model instance.
     """
+
     def __init__(self, pk):
         self.pk = pk
 
     def __str__(self):
-        return "%s" % self.pk
+        return f"{self.pk}"
 
 
 # We assume that 'validators' are intended for the child serializer,
@@ -376,9 +378,9 @@ class HyperlinkedRelatedField(RelatedField):
 
     def to_representation(self, value):
         assert 'request' in self.context, (
-            "`%s` requires the request in the serializer"
+            f"`{self.__class__.__name__}` requires the request in the serializer"
             " context. Add `context={'request': request}` when instantiating "
-            "the serializer." % self.__class__.__name__
+            "the serializer."
         )
 
         request = self.context['request']
@@ -409,9 +411,9 @@ class HyperlinkedRelatedField(RelatedField):
             if value in ('', None):
                 value_string = {'': 'the empty string', None: 'None'}[value]
                 msg += (
-                    " WARNING: The value of the field on the model instance "
-                    "was %s, which may be why it didn't match any "
-                    "entries in your URL conf." % value_string
+                        " WARNING: The value of the field on the model instance "
+                        "was %s, which may be why it didn't match any "
+                        "entries in your URL conf." % value_string
                 )
             raise ImproperlyConfigured(msg % self.view_name)
 

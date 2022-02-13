@@ -64,7 +64,7 @@ class JSONParser(BaseParser):
             parse_constant = json.strict_constant if self.strict else None
             return json.load(decoded_stream, parse_constant=parse_constant)
         except ValueError as exc:
-            raise ParseError('JSON parse error - %s' % str(exc))
+            raise ParseError(f'JSON parse error - {str(exc)}')
 
 
 class FormParser(BaseParser):
@@ -109,7 +109,7 @@ class MultiPartParser(BaseParser):
             data, files = parser.parse()
             return DataAndFiles(data, files)
         except MultiPartParserError as exc:
-            raise ParseError('Multipart form parse error - %s' % str(exc))
+            raise ParseError(f'Multipart form parse error - {str(exc)}')
 
 
 class FileUploadParser(BaseParser):

@@ -154,7 +154,7 @@ class Request:
         assert isinstance(request, HttpRequest), (
             'The `request` argument must be an instance of '
             '`django.http.HttpRequest`, not `{}.{}`.'
-            .format(request.__class__.__module__, request.__class__.__name__)
+                .format(request.__class__.__module__, request.__class__.__name__)
         )
 
         self._request = request
@@ -180,11 +180,8 @@ class Request:
             self.authenticators = (forced_auth,)
 
     def __repr__(self):
-        return '<%s.%s: %s %r>' % (
-            self.__class__.__module__,
-            self.__class__.__name__,
-            self.method,
-            self.get_full_path())
+        return f'<{self.__class__.__module__}.{self.__class__.__name__}: ' \
+               f"{self.method} '{self.get_full_path()}'>"
 
     def _default_negotiator(self):
         return api_settings.DEFAULT_CONTENT_NEGOTIATION_CLASS()

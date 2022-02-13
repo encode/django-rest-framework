@@ -61,9 +61,9 @@ class GenericAPIView(views.APIView):
         (Eg. return a list of items that is specific to the user)
         """
         assert self.queryset is not None, (
-            "'%s' should either include a `queryset` attribute, "
-            "or override the `get_queryset()` method."
-            % self.__class__.__name__
+            f"'{self.__class__.__name__}' should either include a `queryset` attribute, "
+            f"or override the `get_queryset()` method."
+
         )
 
         queryset = self.queryset
@@ -120,9 +120,8 @@ class GenericAPIView(views.APIView):
         (Eg. admins get full serialization, others get basic serialization)
         """
         assert self.serializer_class is not None, (
-            "'%s' should either include a `serializer_class` attribute, "
+            f"'{self.__class__.__name__}' should either include a `serializer_class` attribute, "
             "or override the `get_serializer_class()` method."
-            % self.__class__.__name__
         )
 
         return self.serializer_class

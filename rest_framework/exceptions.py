@@ -84,10 +84,8 @@ class ErrorDetail(str):
         return not self.__eq__(other)
 
     def __repr__(self):
-        return 'ErrorDetail(string=%r, code=%r)' % (
-            str(self),
-            self.code,
-        )
+        return f"ErrorDetail(string='{str(self)}', code='{self.code}')"
+
 
     def __hash__(self):
         return hash(str(self))

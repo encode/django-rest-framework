@@ -280,7 +280,7 @@ class CreateOnlyDefault:
         return self.default
 
     def __repr__(self):
-        return '%s(%s)' % (self.__class__.__name__, repr(self.default))
+        return f'{self.__class__.__name__}({repr(self.default)})'
 
 
 class CurrentUserDefault:
@@ -290,7 +290,7 @@ class CurrentUserDefault:
         return serializer_field.context['request'].user
 
     def __repr__(self):
-        return '%s()' % self.__class__.__name__
+        return f'{self.__class__.__name__}()'
 
 
 class SkipField(Exception):

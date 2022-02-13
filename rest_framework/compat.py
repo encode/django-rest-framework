@@ -140,7 +140,7 @@ if markdown is not None and pygments is not None:
                 code = m.group(2).replace('\t', '    ')
                 code = pygments.highlight(code, lexer, self.formatter)
                 code = code.replace('\n\n', '\n&nbsp;\n').replace('\n', '<br />').replace('\\@', '@')
-                return '\n\n%s\n\n' % code
+                return f'\n\n{code}\n\n'
             ret = self.pattern.sub(repl, "\n".join(lines))
             return ret.split("\n")
 

@@ -208,7 +208,7 @@ class SearchFilterTests(TestCase):
 
             def as_sql(self, compiler, connection):
                 sql, params = compiler.compile(self.lhs)
-                return "trim(%s, 'a')" % sql, params
+                return f"trim({sql}, 'a')", params
 
         with register_lookup(CharField, TrimA):
             # Search including `a`

@@ -13,7 +13,7 @@ class MockObject:
             '%s=%s' % (key, value)
             for key, value in sorted(self._kwargs.items())
         ])
-        return '<MockObject %s>' % kwargs_str
+        return f'<MockObject {kwargs_str}>'
 
 
 class MockQueryset:

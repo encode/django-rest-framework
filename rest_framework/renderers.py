@@ -197,7 +197,7 @@ class TemplateHTMLRenderer(BaseRenderer):
             return self.resolve_template(template_names)
         except Exception:
             # Fall back to using eg '404 Not Found'
-            body = '%d %s' % (response.status_code, response.status_text.title())
+            body = f'{response.status_code} {response.status_text.title()}'
             template = engines['django'].from_string(body)
             return template
 
@@ -414,9 +414,9 @@ class BrowsableAPIRenderer(BaseRenderer):
 
         render_style = getattr(renderer, 'render_style', 'text')
         assert render_style in ['text', 'binary'], 'Expected .render_style ' \
-            '"text" or "binary", but got "%s"' % render_style
+            f'"text" or "binary", but got "{render_style}"'
         if render_style == 'binary':
-            return '[%d bytes of binary content]' % len(content)
+            return f'[{len(content)} bytes of binary content]'
 
         return content.decode('utf-8') if isinstance(content, bytes) else content
 
@@ -660,9 +660,9 @@ class BrowsableAPIRenderer(BaseRenderer):
         response_headers = OrderedDict(sorted(response.items()))
         renderer_content_type = ''
         if renderer:
-            renderer_content_type = '%s' % renderer.media_type
+            renderer_content_type = f'{renderer.media_type}'
             if renderer.charset:
-                renderer_content_type += ' ;%s' % renderer.charset
+                renderer_content_type += f' ;{renderer.charset}'
         response_headers['Content-Type'] = renderer_content_type
 
         if getattr(view, 'paginator', None) and view.paginator.display_page_controls:
