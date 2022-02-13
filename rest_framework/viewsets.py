@@ -88,17 +88,17 @@ class ViewSetMixin:
         # sanitize keyword arguments
         for key in initkwargs:
             if key in cls.http_method_names:
-                raise TypeError("You tried to pass in the %s method name as a "
-                                "keyword argument to %s(). Don't do that."
-                                % (key, cls.__name__))
+                raise TypeError(f"You tried to pass in the {key} method name as a "
+                                f"keyword argument to {cls.__name__}(). Don't do that."
+                                )
             if not hasattr(cls, key):
                 raise TypeError("%s() received an invalid keyword %r" % (
                     cls.__name__, key))
 
         # name and suffix are mutually exclusive
         if 'name' in initkwargs and 'suffix' in initkwargs:
-            raise TypeError("%s() received both `name` and `suffix`, which are "
-                            "mutually exclusive arguments." % (cls.__name__))
+            raise TypeError(f"{cls.__name__}() received both `name` and `suffix`, which are "
+                            "mutually exclusive arguments.")
 
         def view(request, *args, **kwargs):
             self = cls(**initkwargs)
@@ -158,7 +158,7 @@ class ViewSetMixin:
         """
         Reverse the action for the given `url_name`.
         """
-        url_name = '%s-%s' % (self.basename, url_name)
+        url_name = f'{self.basename}-{url_name}'
         namespace = None
         if self.request and self.request.resolver_match:
             namespace = self.request.resolver_match.namespace

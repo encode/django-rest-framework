@@ -106,7 +106,7 @@ class BasicAuthentication(BaseAuthentication):
         return (user, None)
 
     def authenticate_header(self, request):
-        return 'Basic realm="%s"' % self.www_authenticate_realm
+        return f'Basic realm="{self.www_authenticate_realm}"'
 
 
 class SessionAuthentication(BaseAuthentication):
@@ -145,7 +145,7 @@ class SessionAuthentication(BaseAuthentication):
         reason = check.process_view(request, None, (), {})
         if reason:
             # CSRF failed, bail with explicit error message
-            raise exceptions.PermissionDenied('CSRF Failed: %s' % reason)
+            raise exceptions.PermissionDenied(f'CSRF Failed: {reason}')
 
 
 class TokenAuthentication(BaseAuthentication):

@@ -77,7 +77,7 @@ class _MediaType:
         return 3
 
     def __str__(self):
-        ret = "%s/%s" % (self.main_type, self.sub_type)
+        ret = f"{self.main_type}/{self.sub_type}"
         for key, val in self.params.items():
-            ret += "; %s=%s" % (key, val.decode('ascii'))
+            ret += f"; {key}={val.decode('ascii')}"
         return ret

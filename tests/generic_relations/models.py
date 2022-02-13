@@ -26,7 +26,7 @@ class Bookmark(models.Model):
     tags = GenericRelation(Tag)
 
     def __str__(self):
-        return 'Bookmark: %s' % self.url
+        return f'Bookmark: {self.url}'
 
 
 class Note(models.Model):
@@ -37,4 +37,4 @@ class Note(models.Model):
     tags = GenericRelation(Tag)
 
     def __str__(self):
-        return 'Note: %s' % self.text
+        return f'Note: {self.text}'

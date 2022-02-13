@@ -19,7 +19,7 @@ def manager_repr(value):
     ]
     for manager_name, manager_instance in names_and_managers:
         if manager_instance == value:
-            return '%s.%s.all()' % (model._meta.object_name, manager_name)
+            return f'{model._meta.object_name}.{manager_name}.all()'
     return repr(value)
 
 

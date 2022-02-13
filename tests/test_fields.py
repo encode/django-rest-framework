@@ -2310,7 +2310,7 @@ class TestSerializerMethodField:
             example_field = serializers.SerializerMethodField()
 
             def get_example_field(self, obj):
-                return 'ran get_example_field(%d)' % obj['example_field']
+                return f'ran get_example_field({obj["example_field"]})'
 
         serializer = ExampleSerializer({'example_field': 123})
         assert serializer.data == {

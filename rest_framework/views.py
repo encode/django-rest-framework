@@ -88,7 +88,7 @@ def exception_handler(exc, context):
         if getattr(exc, 'auth_header', None):
             headers['WWW-Authenticate'] = exc.auth_header
         if getattr(exc, 'wait', None):
-            headers['Retry-After'] = '%d' % exc.wait
+            headers['Retry-After'] = f'{exc.wait}'
 
         if isinstance(exc.detail, (list, dict)):
             data = exc.detail
