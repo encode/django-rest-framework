@@ -967,7 +967,7 @@ class _BaseOpenAPIRenderer:
         return parameters
 
     def get_operation(self, link, name, tag):
-        operation_id = "%s_%s" % (tag, name) if tag else name
+        operation_id = f"{tag}_{name}" if tag else name
         parameters = self.get_parameters(link)
 
         operation = {

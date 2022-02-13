@@ -92,8 +92,7 @@ class ViewSetMixin:
                                 f"keyword argument to {cls.__name__}(). Don't do that."
                                 )
             if not hasattr(cls, key):
-                raise TypeError("%s() received an invalid keyword %r" % (
-                    cls.__name__, key))
+                raise TypeError(f"{cls.__name__}() received an invalid keyword {key}")
 
         # name and suffix are mutually exclusive
         if 'name' in initkwargs and 'suffix' in initkwargs:

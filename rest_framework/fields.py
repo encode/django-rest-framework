@@ -1043,7 +1043,7 @@ class DecimalField(Field):
         if rounding is not None:
             valid_roundings = [v for k, v in vars(decimal).items() if k.startswith('ROUND_')]
             assert rounding in valid_roundings, (
-                'Invalid rounding option %s. Valid values for rounding are: %s' % (rounding, valid_roundings))
+                f'Invalid rounding option {rounding}. Valid values for rounding are: {valid_roundings}')
         self.rounding = rounding
 
     def validate_empty_values(self, data):

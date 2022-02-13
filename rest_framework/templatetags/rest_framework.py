@@ -158,7 +158,7 @@ def add_query_param(request, key, val):
 def as_string(value):
     if value is None:
         return ''
-    return '%s' % value
+    return f'{value}'
 
 
 @register.filter
@@ -225,7 +225,7 @@ def format_value(value):
         elif '@' in value and not re.search(r'\s', value):
             return mark_safe('<a href="mailto:{value}">{value}</a>'.format(value=escape(value)))
         elif '\n' in value:
-            return mark_safe('<pre>%s</pre>' % escape(value))
+            return mark_safe(f'<pre>{escape(value)}</pre>')
     return str(value)
 
 

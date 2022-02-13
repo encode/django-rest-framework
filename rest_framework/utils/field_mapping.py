@@ -23,6 +23,7 @@ class ClassLookupDict:
     hierarchy in method resolution order, and returns the first matching value
     from the dictionary or raises a KeyError if nothing matches.
     """
+
     def __init__(self, mapping):
         self.mapping = mapping
 
@@ -37,7 +38,7 @@ class ClassLookupDict:
         for cls in inspect.getmro(base_class):
             if cls in self.mapping:
                 return self.mapping[cls]
-        raise KeyError('Class %s not found in lookup.' % base_class.__name__)
+        raise KeyError(f'Class {base_class.__name__} not found in lookup.')
 
     def __setitem__(self, key, value):
         self.mapping[key] = value
