@@ -222,12 +222,15 @@ class PageNumberPagination(BasePagination):
         return page_number
 
     def get_paginated_response(self, data):
-        return Response(OrderedDict([
+        return Response(self.get_paginated_response_values(data))
+
+    def get_paginated_response_values(self, data):
+        return OrderedDict([
             ('count', self.page.paginator.count),
             ('next', self.get_next_link()),
             ('previous', self.get_previous_link()),
             ('results', data)
-        ]))
+        ])
 
     def get_paginated_response_schema(self, schema):
         return {
