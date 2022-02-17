@@ -762,3 +762,21 @@ class Test8301Regression:
 
         assert (s.data | {}).__class__ == s.data.__class__
         assert ({} | s.data).__class__ == s.data.__class__
+
+
+class TestRelatedFieldTypes:
+
+    def test_one_to_one_field(self):
+        class MyModelA(models.Model):
+            id = models.DecimalField(max_digits=4, decimal_places=2, primary_key=True)
+
+        class MyModelB(models.Model):
+            id = models.OneToOneField(MyModelA, models.CASCADE, primary_key=True)
+
+        class MyModelBSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = MyModelB
+                fields = "__all__"
+
+        ser = MyModelBSerializer()
+        assert type(ser.fields["id"].pk_field) == fields.DecimalField

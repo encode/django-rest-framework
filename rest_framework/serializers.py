@@ -1234,6 +1234,10 @@ class ModelSerializer(Serializer):
         if model_field.one_to_one and model_field.primary_key:
             field_class = self.serializer_related_field
             field_kwargs['queryset'] = model_field.related_model.objects
+            pk_field = field_mapping[model_field.foreign_related_fields[0]]
+            pk_field_kwargs = get_field_kwargs(field_name, model_field.foreign_related_fields[0])
+            pk_field_kwargs.pop("model_field")
+            field_kwargs["pk_field"] = pk_field(**pk_field_kwargs)
 
         if 'choices' in field_kwargs:
             # Fields with choices get coerced into `ChoiceField`
