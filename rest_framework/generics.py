@@ -39,6 +39,9 @@ class GenericAPIView(views.APIView):
     lookup_field = 'pk'
     lookup_url_kwarg = None
 
+    # set it to lookup field if you want to enable ListCreateRetrieveUpdateDestroyAPIView
+    lookup_arg = None
+
     # The filter backend classes to use for queryset filtering
     filter_backends = api_settings.DEFAULT_FILTER_BACKENDS
 
@@ -61,9 +64,9 @@ class GenericAPIView(views.APIView):
         (Eg. return a list of items that is specific to the user)
         """
         assert self.queryset is not None, (
-            "'%s' should either include a `queryset` attribute, "
-            "or override the `get_queryset()` method."
-            % self.__class__.__name__
+                "'%s' should either include a `queryset` attribute, "
+                "or override the `get_queryset()` method."
+                % self.__class__.__name__
         )
 
         queryset = self.queryset
@@ -86,13 +89,25 @@ class GenericAPIView(views.APIView):
         lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
 
         assert lookup_url_kwarg in self.kwargs, (
-            'Expected view %s to be called with a URL keyword argument '
-            'named "%s". Fix your URL conf, or set the `.lookup_field` '
-            'attribute on the view correctly.' %
-            (self.__class__.__name__, lookup_url_kwarg)
+                'Expected view %s to be called with a URL keyword argument '
+                'named "%s". Fix your URL conf, or set the `.lookup_field` '
+                'attribute on the view correctly.' %
+                (self.__class__.__name__, lookup_url_kwarg)
         )
 
-        filter_kwargs = {self.lookup_field: self.kwargs[lookup_url_kwarg]}
+        lookup_arg = self.lookup_arg
+
+        assert lookup_arg in self.request.GET, (
+                'Expected view %s to be called with a URL keyword argument '
+                'named "%s". Fix your URL conf, or set the `.lookup_arg` '
+                'attribute on the view correctly.' %
+                (self.__class__.__name__, lookup_arg)
+        )
+
+        filter_kwargs = {self.lookup_field: self.request.GET[lookup_arg]} \
+            if lookup_arg is not None \
+            else {self.lookup_field: self.kwargs[lookup_url_kwarg]}
+
         obj = get_object_or_404(queryset, **filter_kwargs)
 
         # May raise a permission denied
@@ -120,9 +135,9 @@ class GenericAPIView(views.APIView):
         (Eg. admins get full serialization, others get basic serialization)
         """
         assert self.serializer_class is not None, (
-            "'%s' should either include a `serializer_class` attribute, "
-            "or override the `get_serializer_class()` method."
-            % self.__class__.__name__
+                "'%s' should either include a `serializer_class` attribute, "
+                "or override the `get_serializer_class()` method."
+                % self.__class__.__name__
         )
 
         return self.serializer_class
@@ -186,6 +201,7 @@ class CreateAPIView(mixins.CreateModelMixin,
     """
     Concrete view for creating a model instance.
     """
+
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
 
@@ -195,6 +211,7 @@ class ListAPIView(mixins.ListModelMixin,
     """
     Concrete view for listing a queryset.
     """
+
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
 
@@ -204,6 +221,7 @@ class RetrieveAPIView(mixins.RetrieveModelMixin,
     """
     Concrete view for retrieving a model instance.
     """
+
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
 
@@ -213,6 +231,7 @@ class DestroyAPIView(mixins.DestroyModelMixin,
     """
     Concrete view for deleting a model instance.
     """
+
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
 
@@ -222,6 +241,7 @@ class UpdateAPIView(mixins.UpdateModelMixin,
     """
     Concrete view for updating a model instance.
     """
+
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)
 
@@ -235,6 +255,7 @@ class ListCreateAPIView(mixins.ListModelMixin,
     """
     Concrete view for listing a queryset or creating a model instance.
     """
+
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
 
@@ -248,6 +269,7 @@ class RetrieveUpdateAPIView(mixins.RetrieveModelMixin,
     """
     Concrete view for retrieving, updating a model instance.
     """
+
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
 
@@ -264,6 +286,7 @@ class RetrieveDestroyAPIView(mixins.RetrieveModelMixin,
     """
     Concrete view for retrieving or deleting a model instance.
     """
+
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
 
@@ -278,8 +301,37 @@ class RetrieveUpdateDestroyAPIView(mixins.RetrieveModelMixin,
     """
     Concrete view for retrieving, updating or deleting a model instance.
     """
+
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def patch(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
+
+
+class ListCreateRetrieveUpdateDestroyAPIView(mixins.ListModelMixin,
+                                             mixins.CreateModelMixin,
+                                             mixins.RetrieveModelMixin,
+                                             mixins.UpdateModelMixin,
+                                             mixins.DestroyModelMixin,
+                                             GenericAPIView):
+    """
+    Concrete view for listing ,creating ,retrieving, updating or deleting a model instance.
+    """
+
+    def get(self, request, *args, **kwargs):
+        if self.lookup_arg in request.GET:
+            return self.retrieve(request, *args, **kwargs)
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
 
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)
