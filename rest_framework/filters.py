@@ -236,9 +236,9 @@ class OrderingFilter(BaseFilterBackend):
             (field.source.replace('.', '__') or field_name, field.label)
             for field_name, field in serializer_class(context=context).fields.items()
             if (
-                    not getattr(field, 'write_only', False) and
-                    not field.source == '*' and
-                    field.source not in model_property_names
+                not getattr(field, 'write_only', False) and
+                not field.source == '*' and
+                field.source not in model_property_names
             )
         ]
 

@@ -70,9 +70,9 @@ class ErrorDetailTests(TestCase):
 
     def test_repr(self):
         assert repr(ErrorDetail('msg1')) == \
-            f"ErrorDetail(string='msg1', code='None')"
+            "ErrorDetail(string='msg1', code='None')"
         assert repr(ErrorDetail('msg1', 'code')) == \
-            f"ErrorDetail(string='msg1', code='code')"
+            "ErrorDetail(string='msg1', code='code')"
 
     def test_str(self):
         assert str(ErrorDetail('msg1')) == 'msg1'

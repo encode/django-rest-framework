@@ -86,7 +86,6 @@ class ErrorDetail(str):
     def __repr__(self):
         return f"ErrorDetail(string='{str(self)}', code='{self.code}')"
 
-
     def __hash__(self):
         return hash(str(self))
 

@@ -153,8 +153,7 @@ class Request:
                  negotiator=None, parser_context=None):
         assert isinstance(request, HttpRequest), (
             'The `request` argument must be an instance of '
-            '`django.http.HttpRequest`, not `{}.{}`.'
-                .format(request.__class__.__module__, request.__class__.__name__)
+            f'`django.http.HttpRequest`, not `{request.__class__.__module__}.{request.__class__.__name__}`.' # noqa
         )
 
         self._request = request

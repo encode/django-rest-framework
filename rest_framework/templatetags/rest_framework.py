@@ -219,7 +219,7 @@ def format_value(value):
     elif isinstance(value, str):
         if (
                 (value.startswith('http:') or value.startswith('https:')) and not
-        re.search(r'\s', value)
+                re.search(r'\s', value)
         ):
             return mark_safe('<a href="{value}">{value}</a>'.format(value=escape(value)))
         elif '@' in value and not re.search(r'\s', value):
