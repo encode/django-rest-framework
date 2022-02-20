@@ -98,6 +98,7 @@ class GenericAPIView(views.APIView):
                     (self.__class__.__name__, lookup_url_kwarg)
             )
             filter_kwargs = {self.lookup_field: self.kwargs[lookup_url_kwarg]}
+            obj = get_object_or_404(queryset, **filter_kwargs)
 
         else:
 
@@ -108,9 +109,10 @@ class GenericAPIView(views.APIView):
                     (self.__class__.__name__, lookup_arg)
             )
 
-            filter_kwargs = {self.lookup_field: self.request.GET[lookup_arg]}
+            filter_args = {self.lookup_field: self.request.GET[lookup_arg]}
+            obj = get_object_or_404(queryset, **filter_args)
 
-        obj = get_object_or_404(queryset, **filter_kwargs)
+
 
         # May raise a permission denied
         self.check_object_permissions(self.request, obj)
