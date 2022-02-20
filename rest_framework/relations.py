@@ -411,9 +411,9 @@ class HyperlinkedRelatedField(RelatedField):
             if value in ('', None):
                 value_string = {'': 'the empty string', None: 'None'}[value]
                 msg += (
-                        f" WARNING: The value of the field on the model instance "
+                        " WARNING: The value of the field on the model instance "
                         f"was {value_string}, which may be why it didn't match any "
-                        f"entries in your URL conf."
+                        "entries in your URL conf."
                 )
             raise ImproperlyConfigured(msg % self.view_name)
 

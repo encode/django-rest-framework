@@ -12,6 +12,7 @@ User = get_user_model()
 
 class TokenChangeList(ChangeList):
     """Map to matching User id"""
+
     def url_for_result(self, result):
         pk = result.user.pk
         return reverse(f'admin:{self.opts.app_label}_{self.opts.model_name}_change',

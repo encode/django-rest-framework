@@ -1114,7 +1114,7 @@ class ModelSerializer(Serializer):
             )
 
         assert not (fields and exclude), (
-            f"Cannot set both 'fields' and 'exclude' options on "
+            "Cannot set both 'fields' and 'exclude' options on "
             f"serializer {self.__class__.__name__}."
         )
 

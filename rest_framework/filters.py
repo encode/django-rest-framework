@@ -296,7 +296,7 @@ class OrderingFilter(BaseFilterBackend):
         for key, label in self.get_valid_fields(queryset, view, context):
             options.append((key, f'{label} - {_("ascending")}'))
             options.append(('-' + key, f'{label} - {_("descending")}'))
-            context['options'] = options
+        context['options'] = options
         return context
 
     def to_html(self, request, queryset, view):
