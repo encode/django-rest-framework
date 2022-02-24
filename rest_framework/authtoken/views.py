@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.schemas import ManualSchema
 from rest_framework.schemas import coreapi as coreapi_schema
 from rest_framework.views import APIView
+from django.contrib.auth import authenticate, login
 
 
 class ObtainAuthToken(APIView):
@@ -52,6 +53,11 @@ class ObtainAuthToken(APIView):
         return self.serializer_class(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
+        username = request.data["username"]
+        password = request.data["password"]
+        usr = authenticate(request, username=username, password=password)
+        if usr is not None:
+            login(request, usr)
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
