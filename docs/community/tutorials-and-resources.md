@@ -24,7 +24,6 @@ There are a wide range of resources available for learning and using Django REST
 * [Beginner's Guide to the Django REST Framework][beginners-guide-to-the-django-rest-framework]
 * [Django REST Framework - An Introduction][drf-an-intro]
 * [Django REST Framework Tutorial][drf-tutorial]
-* [Django REST Framework Course][django-rest-framework-course]
 * [Building a RESTful API with Django REST Framework][building-a-restful-api-with-drf]
 * [Getting Started with Django REST Framework and AngularJS][getting-started-with-django-rest-framework-and-angularjs]
 * [End to End Web App with Django REST Framework & AngularJS][end-to-end-web-app-with-django-rest-framework-angularjs]
