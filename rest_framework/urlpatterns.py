@@ -100,7 +100,8 @@ def format_suffix_patterns(urlpatterns, suffix_required=False, allowed=None):
         if len(allowed) == 1:
             allowed_pattern = allowed[0]
         else:
-            allowed_pattern = f'({"|".join(allowed)})'
+            allowed_cases = "|".join(allowed)
+            allowed_pattern = f'({allowed_cases})'
         suffix_pattern = r'\.(?P<%s>%s)/?$' % (suffix_kwarg, allowed_pattern)
     else:
         suffix_pattern = r'\.(?P<%s>[a-z0-9]+)/?$' % suffix_kwarg
