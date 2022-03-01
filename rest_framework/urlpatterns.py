@@ -9,7 +9,8 @@ def _get_format_path_converter(suffix_kwarg, allowed):
         if len(allowed) == 1:
             allowed_pattern = allowed[0]
         else:
-            allowed_pattern = f'(?:{"|".join(allowed)})'
+            allowed_cases = "|".join(allowed)
+            allowed_pattern = f'(?:{allowed_cases})'
         suffix_pattern = r"\.%s/?" % allowed_pattern
     else:
         suffix_pattern = r"\.[a-z0-9]+/?"
