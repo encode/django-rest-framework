@@ -235,10 +235,12 @@ class UniqueForDateValidator(BaseUniqueForValidator):
         value = attrs[self.field]
         date = attrs[self.date_field]
 
-        filter_kwargs = {field_name: value,
-                         f'{date_field_name}__day': date.day,
-                         f'{date_field_name}__month': date.month,
-                         f'{date_field_name}__year': date.year}
+        filter_kwargs = {
+            field_name: value,
+            f'{date_field_name}__day': date.day,
+            f'{date_field_name}__month': date.month,
+            f'{date_field_name}__year': date.year
+        }
         return qs_filter(queryset, **filter_kwargs)
 
 
