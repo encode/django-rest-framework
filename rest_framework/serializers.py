@@ -477,7 +477,7 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
         fields = self._writable_fields
 
         for field in fields:
-            validate_method = getattr(self, 'validate_' + field.field_name, None)
+            validate_method = getattr(self, f'validate_{field.field_name}', None)
             primitive_value = field.get_value(data)
             try:
                 validated_value = field.run_validation(primitive_value)

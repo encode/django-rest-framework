@@ -187,12 +187,9 @@ def add_class(value, css_class):
     html = str(value)
     match = class_re.search(html)
     if match:
-        m = re.search(r'^%s$|^%s\s|\s%s\s|\s%s$' % (css_class, css_class,
-                                                    css_class, css_class),
-                      match.group(1))
+        m = re.search(fr'[^|\s]{css_class}[$|\s]', match.group(1))
         if not m:
-            return mark_safe(class_re.sub(match.group(1) + " " + css_class,
-                                          html))
+            return mark_safe(class_re.sub(f"{match.group(1)} {css_class}", html))
     else:
         return mark_safe(html.replace('>', f' class="{css_class}">', 1))
     return value
@@ -318,5 +315,5 @@ def break_long_headers(header):
     when possible (are comma separated)
     """
     if len(header) > 160 and ',' in header:
-        header = mark_safe('<br> ' + ', <br>'.join(header.split(',')))
+        header = mark_safe(f"<br> {header.replace(',', ', <br>')}")
     return header

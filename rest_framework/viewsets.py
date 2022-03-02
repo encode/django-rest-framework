@@ -162,7 +162,7 @@ class ViewSetMixin:
         if self.request and self.request.resolver_match:
             namespace = self.request.resolver_match.namespace
         if namespace:
-            url_name = namespace + ':' + url_name
+            url_name = f"{namespace}:{url_name}"
         kwargs.setdefault('request', self.request)
 
         return reverse(url_name, *args, **kwargs)

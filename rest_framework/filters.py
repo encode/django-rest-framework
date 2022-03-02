@@ -297,7 +297,7 @@ class OrderingFilter(BaseFilterBackend):
             ascending_translation = _("ascending")
             descending_translation = _("descending")
             options.append((key, f'{label} - {ascending_translation}'))
-            options.append(('-' + key, f'{label} - {descending_translation}'))
+            options.append((f'-{key}', f'{label} - {descending_translation}'))
         context['options'] = options
         return context
 

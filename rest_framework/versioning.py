@@ -135,7 +135,7 @@ class NamespaceVersioning(BaseVersioning):
         )
 
     def get_versioned_viewname(self, viewname, request):
-        return request.version + ':' + viewname
+        return f"{request.version}:{viewname}"
 
 
 class HostNameVersioning(BaseVersioning):

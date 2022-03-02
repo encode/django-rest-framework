@@ -77,7 +77,7 @@ def serializer_repr(serializer, indent, force_many=None):
         fields = serializer.fields
 
     for field_name, field in fields.items():
-        ret += '\n' + indent_str + field_name + ' = '
+        ret += f'\n{indent_str}{field_name} = '
         if hasattr(field, 'fields'):
             ret += serializer_repr(field, indent + 1)
         elif hasattr(field, 'child'):

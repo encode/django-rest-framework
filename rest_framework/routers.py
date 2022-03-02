@@ -254,7 +254,7 @@ class SimpleRouter(BaseRouter):
                 #   so a slash in the beginning will (A) cause Django to give
                 #   warnings and (B) generate URLS that will require using '//'.
                 if not prefix and regex[:2] == '^/':
-                    regex = '^' + regex[2:]
+                    regex = f'^{regex[2:]}'
 
                 initkwargs = route.initkwargs.copy()
                 initkwargs.update({
@@ -283,7 +283,7 @@ class APIRootView(views.APIView):
         namespace = request.resolver_match.namespace
         for key, url_name in self.api_root_dict.items():
             if namespace:
-                url_name = namespace + ':' + url_name
+                url_name = f"{namespace}:{url_name}"
             try:
                 ret[key] = reverse(
                     url_name,

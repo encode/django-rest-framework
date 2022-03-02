@@ -240,7 +240,7 @@ class SchemaGenerator(BaseSchemaGenerator):
                 # We can just break early in the case that there's at least
                 # one URL that doesn't have a path prefix.
                 return '/'
-            prefixes.append('/' + prefix + '/')
+            prefixes.append(f'/{prefix}/')
         return common_path(prefixes)
 
 # View Inspectors #

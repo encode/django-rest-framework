@@ -39,7 +39,7 @@ def get_view_name(view):
     # Suffix may be set by some Views, such as a ViewSet.
     suffix = getattr(view, 'suffix', None)
     if suffix:
-        name += ' ' + suffix
+        name += f' {suffix}'
 
     return name
 

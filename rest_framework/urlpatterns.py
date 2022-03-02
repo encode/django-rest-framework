@@ -11,7 +11,7 @@ def _get_format_path_converter(suffix_kwarg, allowed):
         else:
             allowed_cases = "|".join(allowed)
             allowed_pattern = f'(?:{allowed_cases})'
-        suffix_pattern = r"\.%s/?" % allowed_pattern
+        suffix_pattern = fr"\.{allowed_pattern}/?"
     else:
         suffix_pattern = r"\.[a-z0-9]+/?"
 
@@ -22,7 +22,7 @@ def _get_format_path_converter(suffix_kwarg, allowed):
             return value.strip('./')
 
         def to_url(self, value):
-            return '.' + value + '/'
+            return f'.{value}/'
 
     converter_name = 'drf_format_suffix'
     if allowed:
@@ -102,9 +102,9 @@ def format_suffix_patterns(urlpatterns, suffix_required=False, allowed=None):
         else:
             allowed_cases = "|".join(allowed)
             allowed_pattern = f'({allowed_cases})'
-        suffix_pattern = r'\.(?P<%s>%s)/?$' % (suffix_kwarg, allowed_pattern)
+        suffix_pattern = fr'\.(?P<{suffix_kwarg}>{allowed_pattern})/?$'
     else:
-        suffix_pattern = r'\.(?P<%s>[a-z0-9]+)/?$' % suffix_kwarg
+        suffix_pattern = fr'\.(?P<{suffix_kwarg}>[a-z0-9]+)/?$'
 
     converter_name, suffix_converter = _get_format_path_converter(suffix_kwarg, allowed)
     register_converter(suffix_converter, converter_name)

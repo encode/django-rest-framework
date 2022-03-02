@@ -83,7 +83,7 @@ def parse_html_dict(dictionary, prefix=''):
     }
     """
     ret = MultiValueDict()
-    regex = re.compile(r'^%s\.(.+)$' % re.escape(prefix))
+    regex = re.compile(fr'^{re.escape(prefix)}\.(.+)$')
     for field in dictionary:
         match = regex.match(field)
         if not match:
