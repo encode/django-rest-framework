@@ -344,7 +344,9 @@ class HTMLFormRenderer(BaseRenderer):
         if 'template' in style:
             template_name = style['template']
         else:
-            template_name = style['template_pack'].strip('/') + f"/{style['base_template']}"
+            prefix = style['template_pack'].strip('/')
+            suffix = style['base_template']
+            template_name = f"{prefix}/{suffix}"
 
         template = loader.get_template(template_name)
         context = {'field': field, 'style': style}
