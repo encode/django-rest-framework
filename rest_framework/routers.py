@@ -254,7 +254,7 @@ class SimpleRouter(BaseRouter):
                 #   so a slash in the beginning will (A) cause Django to give
                 #   warnings and (B) generate URLS that will require using '//'.
                 if not prefix and regex[:2] == '^/':
-                    regex = f'^{regex[2:]}'
+                    regex = '^' + regex[2:]
 
                 initkwargs = route.initkwargs.copy()
                 initkwargs.update({
