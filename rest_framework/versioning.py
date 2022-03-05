@@ -81,7 +81,7 @@ class URLPathVersioning(BaseVersioning):
 
     def reverse(self, viewname, args=None, kwargs=None, request=None, format=None, **extra):
         if request.version is not None:
-            kwargs = {} if (kwargs is None) else kwargs
+            kwargs = kwargs or {}
             kwargs[self.version_param] = request.version
 
         return super().reverse(

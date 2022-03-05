@@ -45,7 +45,7 @@ def order_by_precedence(media_type_lst):
 
 class _MediaType:
     def __init__(self, media_type_str):
-        self.orig = '' if (media_type_str is None) else media_type_str
+        self.orig = media_type_str or ''
         self.full_type, self.params = parse_header(self.orig.encode(HTTP_HEADER_ENCODING))
         self.main_type, sep, self.sub_type = self.full_type.partition('/')
 

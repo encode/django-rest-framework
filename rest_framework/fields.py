@@ -345,7 +345,7 @@ class Field:
         self.initial = self.initial if (initial is empty) else initial
         self.label = label
         self.help_text = help_text
-        self.style = {} if style is None else style
+        self.style = style or {}
         self.allow_null = allow_null
 
         if self.default_empty_html is not empty:

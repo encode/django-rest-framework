@@ -18,7 +18,7 @@ def api_view(http_method_names=None):
     Decorator that converts a function-based view into an APIView subclass.
     Takes a list of allowed methods for the view as an argument.
     """
-    http_method_names = ['GET'] if (http_method_names is None) else http_method_names
+    http_method_names = http_method_names or ['GET']
 
     def decorator(func):
 
@@ -142,8 +142,7 @@ def action(methods=None, detail=None, url_path=None, url_name=None, **kwargs):
                    how the `@renderer_classes` etc. decorators work for function-
                    based API views.
     """
-    methods = ['get'] if methods is None else methods
-    methods = [method.lower() for method in methods]
+    methods = [method.lower() for method in methods or ['get']]
 
     assert detail is not None, (
         "@action() missing required argument: 'detail'"
