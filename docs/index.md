@@ -111,7 +111,7 @@ Install using `pip`, including any optional packages you want...
 
     git clone https://github.com/encode/django-rest-framework
 
-Add `'rest_framework'` to your `INSTALLED_APPS` inside setting.py file.
+Add `'rest_framework'` to your `INSTALLED_APPS` inside settings.py file.
 
     INSTALLED_APPS = [
         ...
