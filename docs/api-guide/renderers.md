@@ -470,15 +470,15 @@ Modify your REST framework settings.
 
 [MessagePack][messagepack] is a fast, efficient binary serialization format.  [Juan Riaza][juanriaza] maintains the [djangorestframework-msgpack][djangorestframework-msgpack] package which provides MessagePack renderer and parser support for REST framework.
 
-## XLSX (Binary Spreadsheet Endpoints)
+## Microsoft Excel: XLSX (Binary Spreadsheet Endpoints)
 
-XLSX is the world's most popular binary spreadsheet format. [Tim Allen][flipperpa] of [The Wharton School][wharton] maintains [drf-renderer-xlsx][drf-renderer-xlsx], which renders an endpoint as an XLSX spreadsheet using OpenPyXL, and allows the client to download it. Spreadsheets can be styled on a per-view basis.
+XLSX is the world's most popular binary spreadsheet format. [Tim Allen][flipperpa] of [The Wharton School][wharton] maintains [drf-excel][drf-excel], which renders an endpoint as an XLSX spreadsheet using OpenPyXL, and allows the client to download it. Spreadsheets can be styled on a per-view basis.
 
 #### Installation & configuration
 
 Install using pip.
 
-    $ pip install drf-renderer-xlsx
+    $ pip install drf-excel
 
 Modify your REST framework settings.
 
@@ -488,15 +488,15 @@ Modify your REST framework settings.
         'DEFAULT_RENDERER_CLASSES': [
             'rest_framework.renderers.JSONRenderer',
             'rest_framework.renderers.BrowsableAPIRenderer',
-            'drf_renderer_xlsx.renderers.XLSXRenderer',
+            'drf_excel.renderers.XLSXRenderer',
         ],
     }
 
 To avoid having a file streamed without a filename (which the browser will often default to the filename "download", with no extension), we need to use a mixin to override the `Content-Disposition` header. If no filename is provided, it will default to `export.xlsx`. For example:
 
     from rest_framework.viewsets import ReadOnlyModelViewSet
-    from drf_renderer_xlsx.mixins import XLSXFileMixin
-    from drf_renderer_xlsx.renderers import XLSXRenderer
+    from drf_excel.mixins import XLSXFileMixin
+    from drf_excel.renderers import XLSXRenderer
 
     from .models import MyExampleModel
     from .serializers import MyExampleSerializer
@@ -549,7 +549,7 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 [mjumbewu]: https://github.com/mjumbewu
 [flipperpa]: https://github.com/flipperpa
 [wharton]: https://github.com/wharton
-[drf-renderer-xlsx]: https://github.com/wharton/drf-renderer-xlsx
+[drf-excel]: https://github.com/wharton/drf-excel
 [vbabiy]: https://github.com/vbabiy
 [rest-framework-yaml]: https://jpadilla.github.io/django-rest-framework-yaml/
 [rest-framework-xml]: https://jpadilla.github.io/django-rest-framework-xml/
