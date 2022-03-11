@@ -19,6 +19,8 @@ Multiple throttles can also be used if you want to impose both burst throttling 
 
 Throttles do not necessarily only refer to rate-limiting requests.  For example a storage service might also need to throttle against bandwidth, and a paid data service might want to throttle against a certain number of a records being accessed.
 
+**The application-level throttling that REST framework provides should not be considered a security measure or protection against brute forcing or denial-of-service attacks. Deliberately malicious actors will always be able to spoof IP origins, and application-level throttling is intended for implementing policies such as different business tiers and basic protections against service over-use.**
+
 ## How throttling is determined
 
 As with permissions and authentication, throttling in REST framework is always defined as a list of classes.
@@ -79,7 +81,7 @@ Throttle classes set in this way will override any viewset level class settings.
         }
         return Response(content)
 
-## How clients are identified
+## How clients are identified
 
 The `X-Forwarded-For` HTTP header and `REMOTE_ADDR` WSGI variable are used to uniquely identify client IP addresses for throttling.  If the `X-Forwarded-For` header is present then it will be used, otherwise the value of the `REMOTE_ADDR` variable from the WSGI environment will be used.
 
