@@ -153,7 +153,7 @@ The core of this functionality is the `api_view` decorator, which takes a list o
 
 This view will use the default renderers, parsers, authentication classes etc specified in the [settings].
 
-By default only `GET` methods will be accepted. Other methods will respond with "405 Method Not Allowed". To alter this behaviour, specify which methods the view allows, like so:
+By default only `GET` methods will be accepted. Other methods will respond with "405 Method Not Allowed". To alter this behavior, specify which methods the view allows, like so:
 
     @api_view(['GET', 'POST'])
     def hello_world(request):

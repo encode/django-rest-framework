@@ -246,7 +246,7 @@ When using `SlugRelatedField` as a read-write field, you will normally want to e
 
 ## HyperlinkedIdentityField
 
-This field can be applied as an identity relationship, such as the `'url'` field on  a HyperlinkedModelSerializer.  It can also be used for an attribute on the object.  For example, the following serializer:
+This field can be applied as an identity relationship, such as the `'url'` field on a HyperlinkedModelSerializer.  It can also be used for an attribute on the object.  For example, the following serializer:
 
     class AlbumSerializer(serializers.HyperlinkedModelSerializer):
         track_listing = serializers.HyperlinkedIdentityField(view_name='track-list')

@@ -105,7 +105,7 @@ The TemplateHTMLRenderer will create a `RequestContext`, using the `response.dat
 
 ---
 
-**Note:** When used with a view that makes use of a serializer the `Response` sent for rendering may not be a dictionary and will need to be wrapped in a dict before returning to allow the TemplateHTMLRenderer to render it. For example:
+**Note:** When used with a view that makes use of a serializer the `Response` sent for rendering may not be a dictionary and will need to be wrapped in a dict before returning to allow the `TemplateHTMLRenderer` to render it. For example:
 
 ```
 response.data = {'results': response.data}
@@ -192,7 +192,7 @@ By default the response content will be rendered with the highest priority rende
         def get_default_renderer(self, view):
             return JSONRenderer()
 
-##  AdminRenderer
+## AdminRenderer
 
 Renders data into HTML for an admin-like display:
 
@@ -332,7 +332,7 @@ You can do some pretty flexible things using REST framework's renderers.  Some e
 * Specify multiple types of HTML representation for API clients to use.
 * Underspecify a renderer's media type, such as using `media_type = 'image/*'`, and use the `Accept` header to vary the encoding of the response.
 
-## Varying behaviour by media type
+## Varying behavior by media type
 
 In some cases you might want your view to use different serialization styles depending on the accepted media type.  If you need to do this you can access `request.accepted_renderer` to determine the negotiated renderer that will be used for the response.
 
