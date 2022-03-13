@@ -308,6 +308,8 @@ class TestPageNumberPaginationOverride:
             # we will only return one page, with one item
             count = 1
 
+        self.paginator = OverriddenDjangoPaginator
+
         class ExamplePagination(pagination.PageNumberPagination):
             django_paginator_class = OverriddenDjangoPaginator
             page_size = 5
@@ -351,6 +353,47 @@ class TestPageNumberPaginationOverride:
         request = Request(factory.get('/', {'page': 'invalid'}))
         with pytest.raises(exceptions.NotFound):
             self.paginate_queryset(request)
+
+    def test_no_page_number_override_using_get_django_paginator_class(self):
+
+        paginator = self.paginator
+
+        class UrlSpecifiedPagination(pagination.PageNumberPagination):
+            page_size = 5
+
+            def get_django_paginator_class(self):
+                """
+                Set the pagination class based on URL parameters.
+                """
+                if self.request.GET.get("pagination_mode") == "overridden":
+                    return paginator
+                else:
+                    raise NotImplementedError(
+                        "The test data should not trigger this branch."
+                    )
+
+        self.pagination = UrlSpecifiedPagination()
+
+        request = Request(factory.get('/', data={'pagination_mode': 'overridden'}))
+        queryset = self.paginate_queryset(request)
+        content = self.get_paginated_content(queryset)
+        context = self.get_html_context()
+        assert queryset == [1]
+        assert content == {
+            'results': [1, ],
+            'previous': None,
+            'next': None,
+            'count': 1
+        }
+        assert context == {
+            'previous_url': None,
+            'next_url': None,
+            'page_links': [
+                PageLink('http://testserver/?pagination_mode=overridden', 1, True, False),
+            ]
+        }
+        assert not self.pagination.display_page_controls
+        assert isinstance(self.pagination.to_html(), str)
 
 
 class TestLimitOffset:

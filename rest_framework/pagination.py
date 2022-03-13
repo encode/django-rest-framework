@@ -193,11 +193,13 @@ class PageNumberPagination(BasePagination):
         Paginate a queryset if required, either returning a
         page object, or `None` if pagination is not configured for this view.
         """
+        self.request = request
+
         page_size = self.get_page_size(request)
         if not page_size:
             return None
 
-        paginator = self.django_paginator_class(queryset, page_size)
+        paginator = self.get_django_paginator_class()(queryset, page_size)
         page_number = self.get_page_number(request, paginator)
 
         try:
@@ -212,7 +214,6 @@ class PageNumberPagination(BasePagination):
             # The browsable API should display pagination controls.
             self.display_page_controls = True
 
-        self.request = request
         return list(self.page)
 
     def get_page_number(self, request, paginator):
@@ -303,6 +304,9 @@ class PageNumberPagination(BasePagination):
             'next_url': self.get_next_link(),
             'page_links': page_links
         }
+
+    def get_django_paginator_class(self):
+        return self.django_paginator_class
 
     def to_html(self):
         template = loader.get_template(self.template)
