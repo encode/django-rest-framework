@@ -194,9 +194,11 @@ For priority support please sign up for a [professional or premium sponsorship p
 
 ## Security
 
-If you believe you’ve found something in Django REST framework which has security implications, please **do not raise the issue in a public forum**.
+Security issues are handled under the supervision of the [Django security team](https://www.djangoproject.com/foundation/teams/#security-team).
 
-Send a description of the issue via email to [rest-framework-security@googlegroups.com][security-mail].  The project maintainers will then work with you to resolve any issues where required, prior to any public disclosure.
+**Please report security issues by emailing security@djangoproject.com**.
+
+The project maintainers will then work with you to resolve any issues where required, prior to any public disclosure.
 
 ## License
 
