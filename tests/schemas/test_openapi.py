@@ -795,6 +795,23 @@ class TestOperationIntrospection(TestCase):
                 },
                 'required': ['text'],
                 'type': 'object'
+            },
+            'RequestError': {
+                'properties': {
+                    'non_field_errors': {
+                        'type': 'array',
+                        'items': {
+                            'type': 'string'
+                        }
+                    },
+                    'text': {
+                        'type': 'array',
+                        'items': {
+                            'type': 'string'
+                        }
+                    }
+                },
+                'type': 'object'
             }
         }
 
@@ -828,6 +845,16 @@ class TestOperationIntrospection(TestCase):
                         'application/json': {
                             'schema': {
                                 '$ref': '#/components/schemas/Response'
+                            }
+                        }
+                    },
+                    'description': ''
+                },
+                '400': {
+                    'content': {
+                        'application/json': {
+                            'schema': {
+                                '$ref': '#/components/schemas/RequestError'
                             }
                         }
                     },
