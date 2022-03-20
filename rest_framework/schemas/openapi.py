@@ -162,7 +162,7 @@ class AutoSchema(ViewInspector):
 
         return operation
 
-    def get_component_name(self, serializer):
+    def get_component_name(self, serializer, method):
         """
         Compute the component's name from the serializer.
         Raise an exception if the serializer's class name is "Serializer" (case-insensitive).
@@ -183,6 +183,13 @@ class AutoSchema(ViewInspector):
                 .format(serializer.__class__.__name__)
             )
 
+        if method.lower() == 'patch':
+            return component_name + 'PartialUpdate'
+        if method.lower() == 'put':
+            return component_name + 'Update'
+        if method.lower() == 'post':
+            return component_name + 'Create'
+
         return component_name
 
     def get_components(self, path, method):
@@ -194,16 +201,16 @@ class AutoSchema(ViewInspector):
             return {}
 
         request_serializer = self.get_request_serializer(path, method)
-        response_serializer = self.get_response_serializer(path, method)
+        response_serializer = self.get_response_serializer(path, 'GET')
 
         if isinstance(request_serializer, serializers.Serializer):
-            component_name = self.get_component_name(request_serializer)
-            content = self.map_serializer(request_serializer)
+            component_name = self.get_component_name(request_serializer, method)
+            content = self.map_serializer(request_serializer, method)
             self.components.setdefault(component_name, content)
 
         if isinstance(response_serializer, serializers.Serializer):
-            component_name = self.get_component_name(response_serializer)
-            content = self.map_serializer(response_serializer)
+            component_name = self.get_component_name(response_serializer, 'GET')
+            content = self.map_serializer(response_serializer, 'GET')
             self.components.setdefault(component_name, content)
 
         return self.components
@@ -364,27 +371,27 @@ class AutoSchema(ViewInspector):
             mapping['type'] = type
         return mapping
 
-    def map_field(self, field):
+    def map_field(self, field, method):
 
         # Nested Serializers, `many` or not.
         if isinstance(field, serializers.ListSerializer):
             return {
                 'type': 'array',
-                'items': self.map_serializer(field.child)
+                'items': self.map_serializer(field.child, method)
             }
         if isinstance(field, serializers.Serializer):
-            data = self.map_serializer(field)
+            data = self.map_serializer(field, method)
             data['type'] = 'object'
             return data
 
         if isinstance(field, serializers.SerializerMethodField) and field.output_field:
-            return self.map_field(field.output_field)
+            return self.map_field(field.output_field, method)
 
         # Related fields.
         if isinstance(field, serializers.ManyRelatedField):
             return {
                 'type': 'array',
-                'items': self.map_field(field.child_relation)
+                'items': self.map_field(field.child_relation, method)
             }
         if isinstance(field, serializers.PrimaryKeyRelatedField):
             model = getattr(field.queryset, 'model', None)
@@ -413,7 +420,7 @@ class AutoSchema(ViewInspector):
                 'items': {},
             }
             if not isinstance(field.child, _UnvalidatedField):
-                mapping['items'] = self.map_field(field.child)
+                mapping['items'] = self.map_field(field.child, method)
             return mapping
 
         # DateField and DateTimeField type is string
@@ -515,7 +522,7 @@ class AutoSchema(ViewInspector):
         if field.min_value:
             content['minimum'] = field.min_value
 
-    def map_serializer(self, serializer):
+    def map_serializer(self, serializer, method):
         # Assuming we have a valid serializer instance.
         required = []
         properties = {}
@@ -524,10 +531,24 @@ class AutoSchema(ViewInspector):
             if isinstance(field, serializers.HiddenField):
                 continue
 
-            if field.required:
-                required.append(field.field_name)
+            if method.lower() == 'get':
+                if field.write_only:
+                    # Write only fields don't appear in the output
+                    continue
+                else:
+                    # All non-write-only fields are required in get requests
+                    required.append(field.field_name)
 
-            schema = self.map_field(field)
+            if method.lower() in ('post', 'put', 'patch') and field.read_only:
+                # Don't emit readonly fields for writable methods
+                continue
+
+            if method.lower() != 'patch' and field.required:
+                # Only mark required fields as required if we're not patching
+                if field.field_name not in required:
+                    required.append(field.field_name)
+
+            schema = self.map_field(field, method)
             if field.read_only:
                 schema['readOnly'] = True
             if field.write_only:
@@ -549,9 +570,9 @@ class AutoSchema(ViewInspector):
         if required:
             result['required'] = required
 
-        component_name = self.get_component_name(serializer=serializer)
+        component_name = self.get_component_name(serializer=serializer, method=method)
         self.components[component_name] = result
-        return self._get_reference(serializer)
+        return self._get_reference(serializer, method)
 
     def map_field_validators(self, field, schema):
         """
@@ -640,8 +661,8 @@ class AutoSchema(ViewInspector):
         """
         return self.get_serializer(path, method)
 
-    def _get_reference(self, serializer):
-        return {'$ref': '#/components/schemas/{}'.format(self.get_component_name(serializer))}
+    def _get_reference(self, serializer, method):
+        return {'$ref': '#/components/schemas/{}'.format(self.get_component_name(serializer, method))}
 
     def get_request_body(self, path, method):
         if method not in ('PUT', 'PATCH', 'POST'):
@@ -654,7 +675,7 @@ class AutoSchema(ViewInspector):
         if not isinstance(serializer, serializers.Serializer):
             item_schema = {}
         else:
-            item_schema = self._get_reference(serializer)
+            item_schema = self._get_reference(serializer, method)
 
         return {
             'content': {
@@ -673,12 +694,12 @@ class AutoSchema(ViewInspector):
 
         self.response_media_types = self.map_renderers(path, method)
 
-        serializer = self.get_response_serializer(path, method)
+        serializer = self.get_response_serializer(path, 'GET')
 
         if not isinstance(serializer, serializers.Serializer):
             item_schema = {}
         else:
-            item_schema = self._get_reference(serializer)
+            item_schema = self._get_reference(serializer, 'GET')
 
         if is_list_view(path, method, self.view):
             response_schema = {
@@ -779,7 +800,7 @@ class AutoSchema(ViewInspector):
             "The old name will be removed in DRF v3.14.",
             RemovedInDRF314Warning, stacklevel=2
         )
-        return self.map_serializer(serializer)
+        return self.map_serializer(serializer, 'GET')
 
     def _map_field(self, field):
         warnings.warn(
@@ -787,7 +808,7 @@ class AutoSchema(ViewInspector):
             "The old name will be removed in DRF v3.14.",
             RemovedInDRF314Warning, stacklevel=2
         )
-        return self.map_field(field)
+        return self.map_field(field, 'GET')
 
     def _map_choicefield(self, field):
         warnings.warn(

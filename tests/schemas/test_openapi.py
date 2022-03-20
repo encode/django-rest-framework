@@ -87,7 +87,7 @@ class TestFieldMapping(TestCase):
         ]
         for field, mapping in cases:
             with self.subTest(field=field):
-                assert inspector.map_field(field) == mapping
+                assert inspector.map_field(field, method='GET') == mapping
 
     def test_lazy_string_field(self):
         class ItemSerializer(serializers.Serializer):
@@ -95,7 +95,7 @@ class TestFieldMapping(TestCase):
 
         inspector = AutoSchema()
 
-        inspector.map_serializer(ItemSerializer())
+        inspector.map_serializer(ItemSerializer(), method='GET')
         data = inspector.components['Item']
         assert isinstance(data['properties']['text']['description'], str), "description must be str"
 
@@ -107,7 +107,7 @@ class TestFieldMapping(TestCase):
 
         inspector = AutoSchema()
 
-        inspector.map_serializer(BooleanTestSerializer())
+        inspector.map_serializer(BooleanTestSerializer(), method='GET')
         data = inspector.components['BooleanTest']
         assert data['properties']['default_true']['default'] is True, "default must be true"
         assert data['properties']['default_false']['default'] is False, "default must be false"
@@ -126,7 +126,7 @@ class TestFieldMapping(TestCase):
 
         inspector = AutoSchema()
 
-        inspector.map_serializer(NullableSerializer())
+        inspector.map_serializer(NullableSerializer(), method='GET')
         data = inspector.components['Nullable']
         assert data['properties']['rw_field']['nullable'], "rw_field nullable must be true"
         assert data['properties']['ro_field']['nullable'], "ro_field nullable must be true"
@@ -142,7 +142,7 @@ class TestFieldMapping(TestCase):
 
         inspector = AutoSchema()
 
-        inspector.map_serializer(MethodSerializer())
+        inspector.map_serializer(MethodSerializer(), method='GET')
         data = inspector.components['Method']
         assert data['properties']['method_field']['type'] == 'boolean'
 
@@ -243,11 +243,11 @@ class TestOperationIntrospection(TestCase):
 
         request_body = inspector.get_request_body(path, method)
         print(request_body)
-        assert request_body['content']['application/json']['schema']['$ref'] == '#/components/schemas/Item'
+        assert request_body['content']['application/json']['schema']['$ref'] == '#/components/schemas/ItemCreate'
 
         components = inspector.get_components(path, method)
-        assert components['Item']['required'] == ['text']
-        assert sorted(list(components['Item']['properties'].keys())) == ['read_only', 'text']
+        assert components['ItemCreate']['required'] == ['text']
+        assert sorted(list(components['ItemCreate']['properties'].keys())) == ['text']
 
     def test_invalid_serializer_class_name(self):
         path = '/'
@@ -271,7 +271,7 @@ class TestOperationIntrospection(TestCase):
         serializer = inspector.get_serializer(path, method)
 
         with pytest.raises(Exception) as exc:
-            inspector.get_component_name(serializer)
+            inspector.get_component_name(serializer, method='GET')
         assert "is an invalid class name for schema generation" in str(exc.value)
 
     def test_empty_required(self):
@@ -294,7 +294,7 @@ class TestOperationIntrospection(TestCase):
         inspector.view = view
 
         components = inspector.get_components(path, method)
-        component = components['Item']
+        component = components['ItemCreate']
         # there should be no empty 'required' property, see #6834
         assert 'required' not in component
 
@@ -321,7 +321,7 @@ class TestOperationIntrospection(TestCase):
         inspector.view = view
 
         components = inspector.get_components(path, method)
-        component = components['Item']
+        component = components['ItemPartialUpdate']
         # there should be no empty 'required' property, see #6834
         assert 'required' not in component
         for response in inspector.get_responses(path, method).values():
@@ -350,8 +350,10 @@ class TestOperationIntrospection(TestCase):
         assert responses['201']['content']['application/json']['schema']['$ref'] == '#/components/schemas/Item'
 
         components = inspector.get_components(path, method)
-        assert sorted(components['Item']['required']) == ['text', 'write_only']
-        assert sorted(list(components['Item']['properties'].keys())) == ['text', 'write_only']
+        assert sorted(components['Item']['required']) == ['text']
+        assert sorted(list(components['Item']['properties'].keys())) == ['text']
+        assert sorted(components['ItemCreate']['required']) == ['text', 'write_only']
+        assert sorted(list(components['ItemCreate']['properties'].keys())) == ['text', 'write_only']
         assert 'description' in responses['201']
 
     def test_response_body_nested_serializer(self):
@@ -776,7 +778,7 @@ class TestOperationIntrospection(TestCase):
 
         components = inspector.get_components(path, method)
         assert components == {
-            'Request': {
+            'RequestCreate': {
                 'properties': {
                     'text': {
                         'type': 'string'
@@ -805,17 +807,17 @@ class TestOperationIntrospection(TestCase):
                 'content': {
                     'application/json': {
                         'schema': {
-                            '$ref': '#/components/schemas/Request'
+                            '$ref': '#/components/schemas/RequestCreate'
                         }
                     },
                     'application/x-www-form-urlencoded': {
                         'schema': {
-                            '$ref': '#/components/schemas/Request'
+                            '$ref': '#/components/schemas/RequestCreate'
                         }
                     },
                     'multipart/form-data': {
                         'schema': {
-                            '$ref': '#/components/schemas/Request'
+                            '$ref': '#/components/schemas/RequestCreate'
                         }
                     }
                 }
@@ -1197,14 +1199,13 @@ class TestGenerator(TestCase):
         body_schema = route['requestBody']['content']['application/json']['schema']
 
         assert body_schema == {
-            '$ref': '#/components/schemas/AuthToken'
+            '$ref': '#/components/schemas/AuthTokenCreate'
         }
-        assert schema['components']['schemas']['AuthToken'] == {
+        assert schema['components']['schemas']['AuthTokenCreate'] == {
             'type': 'object',
             'properties': {
                 'username': {'type': 'string', 'writeOnly': True},
                 'password': {'type': 'string', 'writeOnly': True},
-                'token': {'type': 'string', 'readOnly': True},
             },
             'required': ['username', 'password']
         }
