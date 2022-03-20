@@ -128,6 +128,7 @@ class AutoSchema(ViewInspector):
         self._tags = tags
         self.operation_id_base = operation_id_base
         self.component_name = component_name
+        self.components = {}
         super().__init__()
 
     request_media_types = []
@@ -195,19 +196,17 @@ class AutoSchema(ViewInspector):
         request_serializer = self.get_request_serializer(path, method)
         response_serializer = self.get_response_serializer(path, method)
 
-        components = {}
-
         if isinstance(request_serializer, serializers.Serializer):
             component_name = self.get_component_name(request_serializer)
             content = self.map_serializer(request_serializer)
-            components.setdefault(component_name, content)
+            self.components.setdefault(component_name, content)
 
         if isinstance(response_serializer, serializers.Serializer):
             component_name = self.get_component_name(response_serializer)
             content = self.map_serializer(response_serializer)
-            components.setdefault(component_name, content)
+            self.components.setdefault(component_name, content)
 
-        return components
+        return self.components
 
     def _to_camel_case(self, snake_str):
         components = snake_str.split('_')
@@ -547,7 +546,9 @@ class AutoSchema(ViewInspector):
         if required:
             result['required'] = required
 
-        return result
+        component_name = self.get_component_name(serializer=serializer)
+        self.components[component_name] = result
+        return self._get_reference(serializer)
 
     def map_field_validators(self, field, schema):
         """

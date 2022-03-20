@@ -95,18 +95,20 @@ class TestFieldMapping(TestCase):
 
         inspector = AutoSchema()
 
-        data = inspector.map_serializer(ItemSerializer())
+        inspector.map_serializer(ItemSerializer())
+        data = inspector.components['Item']
         assert isinstance(data['properties']['text']['description'], str), "description must be str"
 
     def test_boolean_default_field(self):
-        class Serializer(serializers.Serializer):
+        class BooleanTestSerializer(serializers.Serializer):
             default_true = serializers.BooleanField(default=True)
             default_false = serializers.BooleanField(default=False)
             without_default = serializers.BooleanField()
 
         inspector = AutoSchema()
 
-        data = inspector.map_serializer(Serializer())
+        inspector.map_serializer(BooleanTestSerializer())
+        data = inspector.components['BooleanTest']
         assert data['properties']['default_true']['default'] is True, "default must be true"
         assert data['properties']['default_false']['default'] is False, "default must be false"
         assert 'default' not in data['properties']['without_default'], "default must not be defined"
@@ -116,7 +118,7 @@ class TestFieldMapping(TestCase):
             rw_field = models.CharField(null=True)
             ro_field = models.CharField(null=True)
 
-        class Serializer(serializers.ModelSerializer):
+        class NullableSerializer(serializers.ModelSerializer):
             class Meta:
                 model = Model
                 fields = ["rw_field", "ro_field"]
@@ -124,7 +126,8 @@ class TestFieldMapping(TestCase):
 
         inspector = AutoSchema()
 
-        data = inspector.map_serializer(Serializer())
+        inspector.map_serializer(NullableSerializer())
+        data = inspector.components['Nullable']
         assert data['properties']['rw_field']['nullable'], "rw_field nullable must be true"
         assert data['properties']['ro_field']['nullable'], "ro_field nullable must be true"
         assert data['properties']['ro_field']['readOnly'], "ro_field read_only must be true"
@@ -368,8 +371,10 @@ class TestOperationIntrospection(TestCase):
         assert sorted(schema['required']) == ['nested', 'text']
         assert sorted(list(schema['properties'].keys())) == ['nested', 'text']
         assert schema['properties']['nested']['type'] == 'object'
-        assert list(schema['properties']['nested']['properties'].keys()) == ['number']
-        assert schema['properties']['nested']['required'] == ['number']
+        assert schema['properties']['nested']['$ref'] == '#/components/schemas/Nested'
+        nested_schema = components['Nested']
+        assert list(nested_schema['properties'].keys()) == ['number']
+        assert nested_schema['required'] == ['number']
 
     def test_list_response_body_generation(self):
         """Test that an array schema is returned for list views."""
