@@ -474,13 +474,7 @@ class TestOperationIntrospection(TestCase):
                 'content': {
                     'application/json': {
                         'schema': {
-                            'type': 'object',
-                            'item': {
-                                'type': 'array',
-                                'items': {
-                                    '$ref': '#/components/schemas/Item'
-                                },
-                            },
+                            '$ref': '#/components/schemas/PaginatedItem',
                         },
                     },
                 },
@@ -488,6 +482,15 @@ class TestOperationIntrospection(TestCase):
         }
         components = inspector.get_components(path, method)
         assert components == {
+            'PaginatedItem': {
+                'type': 'object',
+                'item': {
+                    'type': 'array',
+                    'items': {
+                        '$ref': '#/components/schemas/Item'
+                    },
+                },
+            },
             'Item': {
                 'type': 'object',
                 'properties': {
