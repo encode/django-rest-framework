@@ -1868,8 +1868,9 @@ class SerializerMethodField(Field):
         def get_extra_info(self, obj):
             return ...  # Calculate some data to return.
     """
-    def __init__(self, method_name=None, **kwargs):
+    def __init__(self, method_name=None, output_field=None, **kwargs):
         self.method_name = method_name
+        self.output_field = output_field
         kwargs['source'] = '*'
         kwargs['read_only'] = True
         super().__init__(**kwargs)

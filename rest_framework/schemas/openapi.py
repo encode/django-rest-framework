@@ -377,6 +377,9 @@ class AutoSchema(ViewInspector):
             data['type'] = 'object'
             return data
 
+        if isinstance(field, serializers.SerializerMethodField) and field.output_field:
+            return self.map_field(field.output_field)
+
         # Related fields.
         if isinstance(field, serializers.ManyRelatedField):
             return {

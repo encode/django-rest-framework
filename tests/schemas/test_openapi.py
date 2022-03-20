@@ -132,6 +132,20 @@ class TestFieldMapping(TestCase):
         assert data['properties']['ro_field']['nullable'], "ro_field nullable must be true"
         assert data['properties']['ro_field']['readOnly'], "ro_field read_only must be true"
 
+    def test_serializer_method_field(self):
+        class MethodSerializer(serializers.Serializer):
+
+            method_field = serializers.SerializerMethodField(output_field=serializers.BooleanField())
+
+            def get_method_field(self, obj):
+                return True
+
+        inspector = AutoSchema()
+
+        inspector.map_serializer(MethodSerializer())
+        data = inspector.components['Method']
+        assert data['properties']['method_field']['type'] == 'boolean'
+
 
 @pytest.mark.skipif(uritemplate is None, reason='uritemplate not installed.')
 class TestOperationIntrospection(TestCase):
