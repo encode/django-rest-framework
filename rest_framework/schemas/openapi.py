@@ -185,6 +185,9 @@ class AutoSchema(ViewInspector):
 
         return component_name
 
+    def get_paginated_component_name(self, serializer):
+        return 'Paginated' + self.get_component_name(serializer)
+
     def get_error_component_name(self, serializer):
         return self.get_component_name(serializer) + 'Error'
 
@@ -695,6 +698,9 @@ class AutoSchema(ViewInspector):
     def _get_reference(self, serializer):
         return {'$ref': '#/components/schemas/{}'.format(self.get_component_name(serializer))}
 
+    def _get_paginated_reference(self, serializer):
+        return {'$ref': '#/components/schemas/{}'.format(self.get_paginated_component_name(serializer))}
+
     def _get_error_reference(self, serializer):
         return {'$ref': '#/components/schemas/{}'.format(self.get_error_component_name(serializer))}
 
@@ -742,7 +748,9 @@ class AutoSchema(ViewInspector):
             }
             paginator = self.get_paginator()
             if paginator:
-                response_schema = paginator.get_paginated_response_schema(response_schema)
+                pagination_schema = paginator.get_paginated_response_schema(response_schema)
+                self.components[self.get_paginated_component_name(serializer)] = pagination_schema
+                response_schema = self._get_paginated_reference(serializer)
         else:
             response_schema = item_schema
         status_code = '201' if method == 'POST' else '200'
