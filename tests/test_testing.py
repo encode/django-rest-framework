@@ -146,41 +146,14 @@ class TestAPITestClient(TestCase):
         """
         Follow redirect by setting follow argument.
         """
-        response = self.client.get('/redirect-view/')
-        assert response.status_code == 302
-        response = self.client.get('/redirect-view/', follow=True)
-        assert response.redirect_chain is not None
-        assert response.status_code == 200
-
-        response = self.client.post('/redirect-view/')
-        assert response.status_code == 302
-        response = self.client.post('/redirect-view/', follow=True)
-        assert response.redirect_chain is not None
-        assert response.status_code == 200
-
-        response = self.client.put('/redirect-view/')
-        assert response.status_code == 302
-        response = self.client.put('/redirect-view/', follow=True)
-        assert response.redirect_chain is not None
-        assert response.status_code == 200
-
-        response = self.client.patch('/redirect-view/')
-        assert response.status_code == 302
-        response = self.client.patch('/redirect-view/', follow=True)
-        assert response.redirect_chain is not None
-        assert response.status_code == 200
-
-        response = self.client.delete('/redirect-view/')
-        assert response.status_code == 302
-        response = self.client.delete('/redirect-view/', follow=True)
-        assert response.redirect_chain is not None
-        assert response.status_code == 200
-
-        response = self.client.options('/redirect-view/')
-        assert response.status_code == 302
-        response = self.client.options('/redirect-view/', follow=True)
-        assert response.redirect_chain is not None
-        assert response.status_code == 200
+        for method in ('get', 'post', 'put', 'patch', 'delete', 'options'):
+            with self.subTest(method=method):
+                req_method = getattr(self.client, method)
+                response = req_method('/redirect-view/')
+                assert response.status_code == 302
+                response = req_method('/redirect-view/', follow=True)
+                assert response.redirect_chain is not None
+                assert response.status_code == 200
 
     def test_invalid_multipart_data(self):
         """
