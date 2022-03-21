@@ -488,6 +488,7 @@
 <p>Another scenario where you might want to use multiple throttles would be if you need to impose different constraints on different parts of the API, due to some services being particularly resource-intensive.</p>
 <p>Multiple throttles can also be used if you want to impose both burst throttling rates, and sustained throttling rates.  For example, you might want to limit a user to a maximum of 60 requests per minute, and 1000 requests per day.</p>
 <p>Throttles do not necessarily only refer to rate-limiting requests.  For example a storage service might also need to throttle against bandwidth, and a paid data service might want to throttle against a certain number of a records being accessed.</p>
+<p><strong>The application-level throttling that REST framework provides should not be considered a security measure or protection against brute forcing or denial-of-service attacks. Deliberately malicious actors will always be able to spoof IP origins, and application-level throttling is intended for implementing policies such as different business tiers and basic protections against service over-use.</strong></p>
 <h2 id="how-throttling-is-determined"><a class="toclink" href="#how-throttling-is-determined">How throttling is determined</a></h2>
 <p>As with permissions and authentication, throttling in REST framework is always defined as a list of classes.</p>
 <p>Before running the main body of the view each throttle in the list is checked.

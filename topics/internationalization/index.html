@@ -455,8 +455,8 @@
 <p>You can change the default language by using the standard Django <code>LANGUAGE_CODE</code> setting:</p>
 <pre><code>LANGUAGE_CODE = "es-es"
 </code></pre>
-<p>You can turn on per-request language requests by adding <code>LocalMiddleware</code> to your <code>MIDDLEWARE_CLASSES</code> setting:</p>
-<pre><code>MIDDLEWARE_CLASSES = [
+<p>You can turn on per-request language requests by adding <code>LocalMiddleware</code> to your <code>MIDDLEWARE</code> setting:</p>
+<pre><code>MIDDLEWARE = [
     ...
     'django.middleware.locale.LocaleMiddleware'
 ]
@@ -519,7 +519,7 @@ available for Django to use. You should see a message like <code>processing file
 </ol>
 <p>If you're only translating custom error messages that exist inside your project codebase you don't need to copy the REST framework source <code>django.po</code> file into a <code>LOCALE_PATHS</code> folder, and can instead simply run Django's standard <code>makemessages</code> process.</p>
 <h2 id="how-the-language-is-determined"><a class="toclink" href="#how-the-language-is-determined">How the language is determined</a></h2>
-<p>If you want to allow per-request language preferences you'll need to include <code>django.middleware.locale.LocaleMiddleware</code> in your <code>MIDDLEWARE_CLASSES</code> setting.</p>
+<p>If you want to allow per-request language preferences you'll need to include <code>django.middleware.locale.LocaleMiddleware</code> in your <code>MIDDLEWARE</code> setting.</p>
 <p>You can find more information on how the language preference is determined in the <a href="https://docs.djangoproject.com/en/stable/topics/i18n/translation/#how-django-discovers-language-preference">Django documentation</a>. For reference, the method is:</p>
 <ol>
 <li>First, it looks for the language prefix in the requested URL.</li>
