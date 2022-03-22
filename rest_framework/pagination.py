@@ -253,6 +253,12 @@ class PageNumberPagination(BasePagination):
                 },
                 'results': schema,
             },
+            'required': [
+                'count',
+                'next',
+                'previous',
+                'results',
+            ],
         }
 
     def get_page_size(self, request):
@@ -426,6 +432,12 @@ class LimitOffsetPagination(BasePagination):
                 },
                 'results': schema,
             },
+            'required': [
+                'count',
+                'next',
+                'previous',
+                'results',
+            ],
         }
 
     def get_limit(self, request):
@@ -912,6 +924,11 @@ class CursorPagination(BasePagination):
                 },
                 'results': schema,
             },
+            'required': [
+                'next',
+                'previous',
+                'results',
+            ],
         }
 
     def get_html_context(self):
