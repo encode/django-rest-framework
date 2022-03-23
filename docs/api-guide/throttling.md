@@ -19,7 +19,9 @@ Multiple throttles can also be used if you want to impose both burst throttling 
 
 Throttles do not necessarily only refer to rate-limiting requests.  For example a storage service might also need to throttle against bandwidth, and a paid data service might want to throttle against a certain number of a records being accessed.
 
-**The application-level throttling that REST framework provides should not be considered a security measure or protection against brute forcing or denial-of-service attacks. Deliberately malicious actors will always be able to spoof IP origins, and application-level throttling is intended for implementing policies such as different business tiers and basic protections against service over-use.**
+**The application-level throttling that REST framework provides should not be considered a security measure or protection against brute forcing or denial-of-service attacks. Deliberately malicious actors will always be able to spoof IP origins. In addition to this, the built-in throttling implementations are implemented using Django's cache framework, and use non-atomic operations to determine the request rate, which may sometimes result in some fuzziness.
+
+The application-level throttling provided by REST framework is intended for implementing policies such as different business tiers and basic protections against service over-use.**
 
 ## How throttling is determined
 
