@@ -6,6 +6,12 @@
 
 There are many ways you can contribute to Django REST framework.  We'd like it to be a community-led project, so please get involved and help shape the future of the project.
 
+---
+
+**Note**: At this point in it's lifespan we consider Django REST framework to be essentially feature-complete. We may accept pull requests that track the continued development of Django versions, but would prefer not to accept new features or code formatting changes.
+
+---
+
 ## Community
 
 The most important thing you can do to help push the REST framework project forward is to be actively involved wherever possible.  Code contributions are often overvalued as being the primary way to get involved in a project, we don't believe that needs to be the case.
@@ -26,14 +32,13 @@ The [Django code of conduct][code-of-conduct] gives a fuller set of guidelines f
 
 # Issues
 
-It's really helpful if you can make sure to address issues on the correct channel.  Usage questions should be directed to the [discussion group][google-group].  Feature requests, bug reports and other issues should be raised on the GitHub [issue tracker][issues].
+Our contribution process is that the [GitHub discussions page](https://github.com/encode/django-rest-framework/discussions) should generally be your starting point. Please only raise an issue or pull request if you've been recommended to do so after discussion.
 
-Some tips on good issue reporting:
+Some tips on good potential issue reporting:
 
 * When describing issues try to phrase your ticket in terms of the *behavior* you think needs changing rather than the *code* you think need changing.
-* Search the issue list first for related items, and make sure you're running the latest version of REST framework before reporting an issue.
-* If reporting a bug, then try to include a pull request with a failing test case.  This will help us quickly identify if there is a valid issue, and make sure that it gets fixed more quickly if there is one.
-* Feature requests will often be closed with a recommendation that they be implemented outside of the core REST framework library.  Keeping new feature requests implemented as third party libraries allows us to keep down the maintenance overhead of REST framework, so that the focus can be on continued stability, bugfixes, and great documentation.
+* Search the GitHub project page for related items, and make sure you're running the latest version of REST framework before reporting an issue.
+* Feature requests will often be closed with a recommendation that they be implemented outside of the core REST framework library.  Keeping new feature requests implemented as third party libraries allows us to keep down the maintenance overhead of REST framework, so that the focus can be on continued stability, bugfixes, and great documentation. At this point in it's lifespan we consider Django REST framework to be essentially feature-complete.
 * Closing an issue doesn't necessarily mean the end of a discussion.  If you believe your issue has been closed incorrectly, explain why and we'll consider if it needs to be reopened.
 
 ## Triaging issues
