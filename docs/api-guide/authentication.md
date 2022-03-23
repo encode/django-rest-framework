@@ -420,9 +420,9 @@ There are currently two forks of this project.
 * [Django-rest-auth][django-rest-auth] is the original project, [but is not currently receiving updates](https://github.com/Tivix/django-rest-auth/issues/568).
 * [Dj-rest-auth][dj-rest-auth] is a newer fork of the project.
 
-## django-rest-framework-social-oauth2
+## drf-social-oauth2
 
-[Django-rest-framework-social-oauth2][django-rest-framework-social-oauth2] library provides an easy way to integrate social plugins (facebook, twitter, google, etc.) to your authentication system and an easy oauth2 setup. With this library, you will be able to authenticate users based on external tokens (e.g. facebook access token), convert these tokens to "in-house" oauth2 tokens and use and generate oauth2 tokens to authenticate your users.
+[Drf-social-oauth2][drf-social-oauth2] is a framework that helps you authenticate with major social oauth2 vendors, such as Facebook, Google, Twitter, Orcid, etc. It generates tokens in a JWTed way with an easy setup. 
 
 ## django-rest-knox
 
@@ -473,7 +473,7 @@ More information can be found in the [Documentation](https://django-rest-durin.r
 [djoser]: https://github.com/sunscrapers/djoser
 [django-rest-auth]: https://github.com/Tivix/django-rest-auth
 [dj-rest-auth]: https://github.com/jazzband/dj-rest-auth
-[django-rest-framework-social-oauth2]: https://github.com/PhilipGarnero/django-rest-framework-social-oauth2
+[drf-social-oauth2]: https://github.com/wagnerdelima/drf-social-oauth2
 [django-rest-knox]: https://github.com/James1345/django-rest-knox
 [drfpasswordless]: https://github.com/aaronn/django-rest-framework-passwordless
 [django-rest-authemail]: https://github.com/celiao/django-rest-authemail
