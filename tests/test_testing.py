@@ -1,7 +1,10 @@
+import itertools
 from io import BytesIO
+from unittest.mock import patch
 
 import django
 from django.contrib.auth.models import User
+from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.test import TestCase, override_settings
 from django.urls import path
@@ -14,7 +17,7 @@ from rest_framework.test import (
 )
 
 
-@api_view(['GET', 'POST'])
+@api_view(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'])
 def view(request):
     return Response({
         'auth': request.META.get('HTTP_AUTHORIZATION', b''),
@@ -36,6 +39,11 @@ def redirect_view(request):
     return redirect('/view/')
 
 
+@api_view(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'])
+def redirect_307_308_view(request, code):
+    return HttpResponseRedirect('/view/', status=code)
+
+
 class BasicSerializer(serializers.Serializer):
     flag = fields.BooleanField(default=lambda: True)
 
@@ -51,6 +59,7 @@ urlpatterns = [
     path('view/', view),
     path('session-view/', session_view),
     path('redirect-view/', redirect_view),
+    path('redirect-view/<int:code>/', redirect_307_308_view),
     path('post-view/', post_view)
 ]
 
@@ -146,41 +155,32 @@ class TestAPITestClient(TestCase):
         """
         Follow redirect by setting follow argument.
         """
-        response = self.client.get('/redirect-view/')
-        assert response.status_code == 302
-        response = self.client.get('/redirect-view/', follow=True)
-        assert response.redirect_chain is not None
-        assert response.status_code == 200
+        for method in ('get', 'post', 'put', 'patch', 'delete', 'options'):
+            with self.subTest(method=method):
+                req_method = getattr(self.client, method)
+                response = req_method('/redirect-view/')
+                assert response.status_code == 302
+                response = req_method('/redirect-view/', follow=True)
+                assert response.redirect_chain is not None
+                assert response.status_code == 200
 
-        response = self.client.post('/redirect-view/')
-        assert response.status_code == 302
-        response = self.client.post('/redirect-view/', follow=True)
-        assert response.redirect_chain is not None
-        assert response.status_code == 200
-
-        response = self.client.put('/redirect-view/')
-        assert response.status_code == 302
-        response = self.client.put('/redirect-view/', follow=True)
-        assert response.redirect_chain is not None
-        assert response.status_code == 200
-
-        response = self.client.patch('/redirect-view/')
-        assert response.status_code == 302
-        response = self.client.patch('/redirect-view/', follow=True)
-        assert response.redirect_chain is not None
-        assert response.status_code == 200
-
-        response = self.client.delete('/redirect-view/')
-        assert response.status_code == 302
-        response = self.client.delete('/redirect-view/', follow=True)
-        assert response.redirect_chain is not None
-        assert response.status_code == 200
-
-        response = self.client.options('/redirect-view/')
-        assert response.status_code == 302
-        response = self.client.options('/redirect-view/', follow=True)
-        assert response.redirect_chain is not None
-        assert response.status_code == 200
+    def test_follow_307_308_preserve_kwargs(self, *mocked_methods):
+        """
+        Follow redirect by setting follow argument, and make sure the following
+        method called with appropriate kwargs.
+        """
+        methods = ('get', 'post', 'put', 'patch', 'delete', 'options')
+        codes = (307, 308)
+        for method, code in itertools.product(methods, codes):
+            subtest_ctx = self.subTest(method=method, code=code)
+            patch_ctx = patch.object(self.client, method, side_effect=getattr(self.client, method))
+            with subtest_ctx, patch_ctx as req_method:
+                kwargs = {'data': {'example': 'test'}, 'format': 'json'}
+                response = req_method('/redirect-view/%s/' % code, follow=True, **kwargs)
+                assert response.redirect_chain is not None
+                assert response.status_code == 200
+                for _, call_args, call_kwargs in req_method.mock_calls:
+                    assert all(call_kwargs[k] == kwargs[k] for k in kwargs if k in call_kwargs)
 
     def test_invalid_multipart_data(self):
         """
