@@ -481,3 +481,17 @@ class TestViewInitkwargs(URLPatternsTestCase, TestCase):
         initkwargs = match.func.initkwargs
 
         assert initkwargs['basename'] == 'routertestmodel'
+
+
+class TestDuplicateBasename(URLPatternsTestCase, TestCase):
+    def test_exception_for_duplicate_basename(self):
+        class NoteViewSet(viewsets.ModelViewSet):
+            queryset = RouterTestModel.objects.all()
+
+        self.router = SimpleRouter(trailing_slash=False)
+        self.router.register(r'notes', NoteViewSet)
+
+        with pytest.raises(ImproperlyConfigured):
+            self.router.register(r'notes_duplicate', NoteViewSet)
+
+        self.router.register(r'notes_duplicate_2', NoteViewSet, basename='note_duplicate')
