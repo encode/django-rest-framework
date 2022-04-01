@@ -771,7 +771,7 @@ class CharField(Field):
     initial = ''
 
     def __init__(self, **kwargs):
-        self.allow_blank = kwargs.pop('allow_blank', False)
+        self.allow_blank = kwargs.pop('allow_blank', True)
         self.trim_whitespace = kwargs.pop('trim_whitespace', True)
         self.max_length = kwargs.pop('max_length', None)
         self.min_length = kwargs.pop('min_length', None)
