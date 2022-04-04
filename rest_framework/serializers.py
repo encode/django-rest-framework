@@ -923,6 +923,12 @@ class ModelSerializer(Serializer):
     # "HTTP 201 Created" responses.
     url_field_name = None
 
+    def save_m2m(self, instance, m2m_fields):
+        """Create or update many-to-many relationships."""
+        for field_name, value in m2m_fields.items():
+            field = getattr(instance, field_name)
+            field.set(value)
+
     # Default `create` and `update` behavior...
     def create(self, validated_data):
         """
@@ -953,10 +959,10 @@ class ModelSerializer(Serializer):
         # They are not valid arguments to the default `.create()` method,
         # as they require that the instance has already been saved.
         info = model_meta.get_field_info(ModelClass)
-        many_to_many = {}
+        m2m_fields = {}
         for field_name, relation_info in info.relations.items():
             if relation_info.to_many and (field_name in validated_data):
-                many_to_many[field_name] = validated_data.pop(field_name)
+                m2m_fields[field_name] = validated_data.pop(field_name)
 
         try:
             instance = ModelClass._default_manager.create(**validated_data)
@@ -981,10 +987,7 @@ class ModelSerializer(Serializer):
             raise TypeError(msg)
 
         # Save many-to-many relationships after the instance is created.
-        if many_to_many:
-            for field_name, value in many_to_many.items():
-                field = getattr(instance, field_name)
-                field.set(value)
+        self.save_m2m(instance, m2m_fields)
 
         return instance
 
@@ -996,10 +999,10 @@ class ModelSerializer(Serializer):
         # Note that unlike `.create()` we don't need to treat many-to-many
         # relationships as being a special case. During updates we already
         # have an instance pk for the relationships to be associated with.
-        m2m_fields = []
+        m2m_fields = {}
         for attr, value in validated_data.items():
             if attr in info.relations and info.relations[attr].to_many:
-                m2m_fields.append((attr, value))
+                m2m_fields[attr] = value
             else:
                 setattr(instance, attr, value)
 
@@ -1008,9 +1011,7 @@ class ModelSerializer(Serializer):
         # Note that many-to-many fields are set after updating instance.
         # Setting m2m fields triggers signals which could potentially change
         # updated instance and we do not want it to collide with .update()
-        for attr, value in m2m_fields:
-            field = getattr(instance, attr)
-            field.set(value)
+        self.save_m2m(instance, m2m_fields)
 
         return instance
 
