@@ -75,6 +75,9 @@ class ViewSetMixin:
         # The detail initkwarg is reserved for introspecting the viewset type.
         cls.detail = None
 
+        # The many initkwarg is reserved for introspecting the viewset return type.
+        cls.many = None
+
         # Setting a basename allows a view to reverse its action urls. This
         # value is provided by the router through the initkwargs.
         cls.basename = None

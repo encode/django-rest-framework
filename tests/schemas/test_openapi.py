@@ -10,6 +10,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import filters, generics, pagination, routers, serializers
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.compat import uritemplate
+from rest_framework.decorators import action
 from rest_framework.parsers import JSONParser, MultiPartParser
 from rest_framework.renderers import (
     BaseRenderer, BrowsableAPIRenderer, JSONOpenAPIRenderer, JSONRenderer,
@@ -865,6 +866,22 @@ class TestOperationIntrospection(TestCase):
         assert schema['paths']['/account/{id}/']['put']['operationId'] == 'updateExampleViewSet'
         assert schema['paths']['/account/{id}/']['patch']['operationId'] == 'partialUpdateExampleViewSet'
         assert schema['paths']['/account/{id}/']['delete']['operationId'] == 'destroyExampleViewSet'
+
+    def test_viewset_with_list_action(self):
+        router = routers.SimpleRouter()
+
+        class ViewSetWithAction(views.ExampleViewSet):
+            @action(detail=False, many=True)
+            def list_action(self, request, *args, **kwargs):
+                pass
+
+        router.register('account', ViewSetWithAction, basename="account")
+        urlpatterns = router.urls
+
+        generator = SchemaGenerator(patterns=urlpatterns)
+        request = create_request('/')
+        schema = generator.get_schema(request=request)
+        assert schema['paths']['/account/list_action/']['get']['responses']['200']['content']['application/json']['schema']['type'] == 'array'
 
     def test_serializer_datefield(self):
         path = '/'
