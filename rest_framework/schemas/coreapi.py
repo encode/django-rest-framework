@@ -89,13 +89,13 @@ def insert_into(target, keys, value):
 
     try:
         target.links.append((keys[-1], value))
-    except TypeError:
+    except TypeError as exc:
         msg = INSERT_INTO_COLLISION_FMT.format(
             value_url=value.url,
             target_url=target.url,
             keys=keys
         )
-        raise ValueError(msg)
+        raise ValueError(msg) from exc
 
 
 class SchemaGenerator(BaseSchemaGenerator):

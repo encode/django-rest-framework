@@ -206,7 +206,7 @@ class PageNumberPagination(BasePagination):
             msg = self.invalid_page_message.format(
                 page_number=page_number, message=str(exc)
             )
-            raise NotFound(msg)
+            raise NotFound(msg) from exc
 
         if paginator.num_pages > 1 and self.template is not None:
             # The browsable API should display pagination controls.
@@ -862,8 +862,8 @@ class CursorPagination(BasePagination):
             reverse = bool(int(reverse))
 
             position = tokens.get('p', [None])[0]
-        except (TypeError, ValueError):
-            raise NotFound(self.invalid_cursor_message)
+        except (TypeError, ValueError) as exc:
+            raise NotFound(self.invalid_cursor_message) from exc
 
         return Cursor(offset=offset, reverse=reverse, position=position)
 

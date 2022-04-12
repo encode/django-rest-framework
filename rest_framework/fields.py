@@ -4,6 +4,7 @@ import decimal
 import functools
 import inspect
 import re
+import sys
 import uuid
 import warnings
 from collections import OrderedDict
@@ -104,7 +105,7 @@ def get_attribute(instance, attrs):
                 # If we raised an Attribute or KeyError here it'd get treated
                 # as an omitted field in `Field.get_attribute()`. Instead we
                 # raise a ValueError to ensure the exception is not masked.
-                raise ValueError('Exception raised in callable attribute "{}"; original exception was: {}'.format(attr, exc))
+                raise ValueError('Exception raised in callable attribute "{}"; original exception was: {}'.format(attr, exc)) from exc
 
     return instance
 
@@ -466,14 +467,14 @@ class Field:
                     instance=instance.__class__.__name__,
                 )
             )
-            raise type(exc)(msg)
+            raise type(exc)(msg) from exc
         except (KeyError, AttributeError) as exc:
             if self.default is not empty:
                 return self.get_default()
             if self.allow_null:
                 return None
             if not self.required:
-                raise SkipField()
+                raise SkipField() from exc
             msg = (
                 'Got {exc_type} when attempting to get a value for field '
                 '`{field}` on serializer `{serializer}`.\nThe serializer '
@@ -487,7 +488,7 @@ class Field:
                     exc=exc
                 )
             )
-            raise type(exc)(msg)
+            raise type(exc)(msg) from exc
 
     def get_default(self):
         """
@@ -633,12 +634,17 @@ class Field:
         """
         try:
             msg = self.error_messages[key]
-        except KeyError:
+        except KeyError as exc:
             class_name = self.__class__.__name__
             msg = MISSING_ERROR_MESSAGE.format(class_name=class_name, key=key)
-            raise AssertionError(msg)
+            raise AssertionError(msg) from exc
         message_string = msg.format(**kwargs)
-        raise ValidationError(message_string, code=key)
+        err = ValidationError(message_string, code=key)
+        (_, exc, _) = sys.exc_info()
+        if exc:
+            raise err from exc
+        else:
+            raise err
 
     @property
     def root(self):

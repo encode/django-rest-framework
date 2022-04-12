@@ -1,4 +1,3 @@
-import sys
 from collections import OrderedDict
 from urllib import parse
 
@@ -316,12 +315,10 @@ class HyperlinkedRelatedField(RelatedField):
 
         try:
             return queryset.get(**lookup_kwargs)
-        except ValueError:
-            exc = ObjectValueError(str(sys.exc_info()[1]))
-            raise exc.with_traceback(sys.exc_info()[2])
-        except TypeError:
-            exc = ObjectTypeError(str(sys.exc_info()[1]))
-            raise exc.with_traceback(sys.exc_info()[2])
+        except ValueError as exc:
+            raise ObjectValueError(str(exc)) from exc
+        except TypeError as exc:
+            raise ObjectTypeError(str(exc)) from exc
 
     def get_url(self, obj, view_name, request, format):
         """
@@ -399,7 +396,7 @@ class HyperlinkedRelatedField(RelatedField):
         # Return the hyperlink, or error if incorrectly configured.
         try:
             url = self.get_url(value, self.view_name, request, format)
-        except NoReverseMatch:
+        except NoReverseMatch as exc:
             msg = (
                 'Could not resolve URL for hyperlinked relationship using '
                 'view name "%s". You may have failed to include the related '
@@ -413,7 +410,7 @@ class HyperlinkedRelatedField(RelatedField):
                     "was %s, which may be why it didn't match any "
                     "entries in your URL conf." % value_string
                 )
-            raise ImproperlyConfigured(msg % self.view_name)
+            raise ImproperlyConfigured(msg % self.view_name) from exc
 
         if url is None:
             return None

@@ -90,9 +90,9 @@ class SimpleRateThrottle(BaseThrottle):
 
         try:
             return self.THROTTLE_RATES[self.scope]
-        except KeyError:
+        except KeyError as exc:
             msg = "No default throttle rate set for '%s' scope" % self.scope
-            raise ImproperlyConfigured(msg)
+            raise ImproperlyConfigured(msg) from exc
 
     def parse_rate(self, rate):
         """

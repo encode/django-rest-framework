@@ -79,9 +79,9 @@ class BasicAuthentication(BaseAuthentication):
             except UnicodeDecodeError:
                 auth_decoded = base64.b64decode(auth[1]).decode('latin-1')
             auth_parts = auth_decoded.partition(':')
-        except (TypeError, UnicodeDecodeError, binascii.Error):
+        except (TypeError, UnicodeDecodeError, binascii.Error) as exc:
             msg = _('Invalid basic header. Credentials not correctly base64 encoded.')
-            raise exceptions.AuthenticationFailed(msg)
+            raise exceptions.AuthenticationFailed(msg) from exc
 
         userid, password = auth_parts[0], auth_parts[2]
         return self.authenticate_credentials(userid, password, request)
@@ -189,9 +189,9 @@ class TokenAuthentication(BaseAuthentication):
 
         try:
             token = auth[1].decode()
-        except UnicodeError:
+        except UnicodeError as exc:
             msg = _('Invalid token header. Token string should not contain invalid characters.')
-            raise exceptions.AuthenticationFailed(msg)
+            raise exceptions.AuthenticationFailed(msg) from exc
 
         return self.authenticate_credentials(token)
 

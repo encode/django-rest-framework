@@ -12,7 +12,6 @@ response content is handled by parsers and renderers.
 """
 import copy
 import inspect
-import traceback
 from collections import OrderedDict, defaultdict
 from collections.abc import Mapping
 
@@ -227,12 +226,14 @@ class BaseSerializer(Field):
                 self._validated_data = self.run_validation(self.initial_data)
             except ValidationError as exc:
                 self._validated_data = {}
+                self._exc = exc
                 self._errors = exc.detail
             else:
+                self._exc = None
                 self._errors = {}
 
-        if self._errors and raise_exception:
-            raise ValidationError(self.errors)
+        if raise_exception and self._exc is not None:
+            raise ValidationError(self.errors) from self._exc
 
         return not bool(self._errors)
 
@@ -429,7 +430,7 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
             value = self.validate(value)
             assert value is not None, '.validate() should return the validated data'
         except (ValidationError, DjangoValidationError) as exc:
-            raise ValidationError(detail=as_serializer_error(exc))
+            raise ValidationError(detail=as_serializer_error(exc)) from exc
 
         return value
 
@@ -621,7 +622,7 @@ class ListSerializer(BaseSerializer):
             value = self.validate(value)
             assert value is not None, '.validate() should return the validated data'
         except (ValidationError, DjangoValidationError) as exc:
-            raise ValidationError(detail=as_serializer_error(exc))
+            raise ValidationError(detail=as_serializer_error(exc)) from exc
 
         return value
 
@@ -748,12 +749,14 @@ class ListSerializer(BaseSerializer):
                 self._validated_data = self.run_validation(self.initial_data)
             except ValidationError as exc:
                 self._validated_data = []
+                self._exc = exc
                 self._errors = exc.detail
             else:
+                self._exc = None
                 self._errors = []
 
-        if self._errors and raise_exception:
-            raise ValidationError(self.errors)
+        if raise_exception and self._exc is not None:
+            raise ValidationError(self.errors) from self._exc
 
         return not bool(self._errors)
 
@@ -960,25 +963,23 @@ class ModelSerializer(Serializer):
 
         try:
             instance = ModelClass._default_manager.create(**validated_data)
-        except TypeError:
-            tb = traceback.format_exc()
+        except TypeError as exc:
             msg = (
                 'Got a `TypeError` when calling `%s.%s.create()`. '
                 'This may be because you have a writable field on the '
                 'serializer class that is not a valid argument to '
                 '`%s.%s.create()`. You may need to make the field '
                 'read-only, or override the %s.create() method to handle '
-                'this correctly.\nOriginal exception was:\n %s' %
+                'this correctly.' %
                 (
                     ModelClass.__name__,
                     ModelClass._default_manager.name,
                     ModelClass.__name__,
                     ModelClass._default_manager.name,
                     self.__class__.__name__,
-                    tb
                 )
             )
-            raise TypeError(msg)
+            raise TypeError(msg) from exc
 
         # Save many-to-many relationships after the instance is created.
         if many_to_many:

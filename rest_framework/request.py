@@ -9,7 +9,6 @@ The wrapped request then offers a richer API, in particular :
     - form overloading of HTTP method, content type and content
 """
 import io
-import sys
 from contextlib import contextmanager
 
 from django.conf import settings
@@ -72,10 +71,8 @@ def wrap_attributeerrors():
     """
     try:
         yield
-    except AttributeError:
-        info = sys.exc_info()
-        exc = WrappedAttributeError(str(info[1]))
-        raise exc.with_traceback(info[2])
+    except AttributeError as exc:
+        raise WrappedAttributeError(str(exc)) from exc
 
 
 class Empty:
