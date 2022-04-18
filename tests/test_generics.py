@@ -692,3 +692,45 @@ class TestSerializer(TestCase):
         serializer = response.serializer
 
         assert serializer.context is context
+
+    def test_get_request_serializer_class(self):
+        class View(generics.GenericAPIView):
+            request_serializer_class = BasicSerializer
+
+        view = View()
+        assert view.get_request_serializer_class() == BasicSerializer
+
+    def test_get_response_serializer_class(self):
+        class TestResponseSerializerView(generics.GenericAPIView):
+            response_serializer_class = BasicSerializer
+
+        view = TestResponseSerializerView()
+        assert view.get_response_serializer_class() == BasicSerializer
+
+    def test_get_request_serializer(self):
+        class View(generics.ListAPIView):
+            request_serializer_class = BasicSerializer
+
+            def list(self, request):
+                response = Response()
+                response.serializer = self.get_request_serializer()
+                return response
+
+        view = View.as_view()
+        request = factory.get('/')
+        response = view(request)
+        assert isinstance(response.serializer, BasicSerializer)
+
+    def test_get_response_serializer(self):
+        class View(generics.ListAPIView):
+            response_serializer_class = BasicSerializer
+
+            def list(self, request):
+                response = Response()
+                response.serializer = self.get_response_serializer()
+                return response
+
+        view = View.as_view()
+        request = factory.get('/')
+        response = view(request)
+        assert isinstance(response.serializer, BasicSerializer)

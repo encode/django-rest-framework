@@ -33,6 +33,8 @@ class GenericAPIView(views.APIView):
     # for all subsequent requests.
     queryset = None
     serializer_class = None
+    request_serializer_class = None
+    response_serializer_class = None
 
     # If you want to use object lookups other than pk, set 'lookup_field'.
     # For more complex lookup requirements override `get_object()`.
@@ -109,6 +111,23 @@ class GenericAPIView(views.APIView):
         kwargs.setdefault('context', self.get_serializer_context())
         return serializer_class(*args, **kwargs)
 
+    def get_request_serializer(self, *args, **kwargs):
+        """
+        Return the serializer instance that should be used for validating and
+        deserializing input.
+        """
+        serializer_class = self.get_request_serializer_class()
+        kwargs.setdefault('context', self.get_serializer_context())
+        return serializer_class(*args, **kwargs)
+
+    def get_response_serializer(self, *args, **kwargs):
+        """
+        Return the serializer instance that should be used for serializing output.
+        """
+        serializer_class = self.get_response_serializer_class()
+        kwargs.setdefault('context', self.get_serializer_context())
+        return serializer_class(*args, **kwargs)
+
     def get_serializer_class(self):
         """
         Return the class to use for the serializer.
@@ -126,6 +145,18 @@ class GenericAPIView(views.APIView):
         )
 
         return self.serializer_class
+
+    def get_request_serializer_class(self):
+        """
+        Return the class to use as input serializer.
+        """
+        return self.request_serializer_class or self.get_serializer_class()
+
+    def get_response_serializer_class(self):
+        """
+        Returns the class to use as output serializer.
+        """
+        return self.response_serializer_class or self.get_serializer_class()
 
     def get_serializer_context(self):
         """

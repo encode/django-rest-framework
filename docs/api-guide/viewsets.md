@@ -295,6 +295,8 @@ As with `ModelViewSet`, you'll normally need to provide at least the `queryset` 
 
 Again, as with `ModelViewSet`, you can use any of the standard attributes and method overrides available to `GenericAPIView`.
 
+---
+
 # Custom ViewSet base classes
 
 You may need to provide custom `ViewSet` classes that do not have the full set of `ModelViewSet` actions, or that customize the behavior in some other way.
@@ -321,3 +323,44 @@ By creating your own base `ViewSet` classes, you can provide common behavior tha
 
 [cite]: https://guides.rubyonrails.org/action_controller_overview.html
 [routers]: routers.md
+
+---
+
+# Custom serializer for request and response
+
+It is possible to define at the view level (or for each custom method via the @action decorator) a custom serialization class for each request and response.
+To do this you need to define `request_serializer_response` and `response_serializer_response` and call them via `get_request_serializer` and `get_response_serializer`.
+
+
+        class UserViewSet(viewsets.ModelViewSet):
+        """
+        A viewset that provides the standard actions
+        """
+        queryset = User.objects.all()
+        serializer_class = UserSerializer
+
+        @action(
+            detail=True,
+            methods=['post'],
+            request_serializer_class=PasswordSerializer
+        )
+        def set_password(self, request, pk=None):
+            user = self.get_object()
+            serializer = self.get_request_serializer(data=request.data)
+            if serializer.is_valid():
+                user.set_password(serializer.validated_data['password'])
+                user.save()
+                return Response({'status': 'password set'})
+            else:
+                return Response(serializer.errors,
+                                status=status.HTTP_400_BAD_REQUEST)
+
+        @action(
+            detail=True,
+            methods=['get'],
+            request_response_class=ExtendedUserSerializer
+        )
+        def complete_profile(self, request, pk=None):
+            user = self.get_object()
+            response_serializer = self.get_response_serializer(user)
+            return Response(response_serializer.data)
