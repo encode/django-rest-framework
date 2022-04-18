@@ -627,14 +627,40 @@ class AutoSchema(ViewInspector):
         Override this method if your view uses a different serializer for
         handling request body.
         """
-        return self.get_serializer(path, method)
+        view = self.view
+
+        if not hasattr(view, "get_request_serializer"):
+            return self.get_serializer(path, method)
+
+        try:
+            return view.get_request_serializer()
+        except exceptions.APIException:
+            warnings.warn(
+                "{}.get_request_serializer() raised an exception during "
+                "schema generation. Serializer fields will not be "
+                "generated for {} {}.".format(view.__class__.__name__, method, path)
+            )
+            return None
 
     def get_response_serializer(self, path, method):
         """
         Override this method if your view uses a different serializer for
         populating response data.
         """
-        return self.get_serializer(path, method)
+        view = self.view
+
+        if not hasattr(view, "get_response_serializer"):
+            return self.get_serializer(path, method)
+
+        try:
+            return view.get_response_serializer()
+        except exceptions.APIException:
+            warnings.warn(
+                "{}.get_response_serializer() raised an exception during "
+                "schema generation. Serializer fields will not be "
+                "generated for {} {}.".format(view.__class__.__name__, method, path)
+            )
+            return None
 
     def _get_reference(self, serializer):
         return {'$ref': '#/components/schemas/{}'.format(self.get_component_name(serializer))}
