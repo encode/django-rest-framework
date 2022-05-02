@@ -98,10 +98,10 @@ class BasicAuthentication(BaseAuthentication):
         user = authenticate(request=request, **credentials)
 
         if user is None:
-            raise exceptions.AuthenticationFailed({'detail': _('Invalid username/password.'), 'status':'invalid-credentials'})
+            raise exceptions.AuthenticationFailed({'detail': _('Invalid username/password.'), 'status': 'invalid-credentials'})
 
         if not user.is_active:
-            raise exceptions.AuthenticationFailed({'detail': _('User inactive or deleted.'), 'status':'inactive-user'})
+            raise exceptions.AuthenticationFailed({'detail': _('User inactive or deleted.'), 'status': 'inactive-user'})
 
         return (user, None)
 
@@ -200,10 +200,10 @@ class TokenAuthentication(BaseAuthentication):
         try:
             token = model.objects.select_related('user').get(key=key)
         except model.DoesNotExist:
-            raise exceptions.AuthenticationFailed({'detail': _('Invalid token.'), 'status':'invalid-credentials'})
+            raise exceptions.AuthenticationFailed({'detail': _('Invalid token.'), 'status': 'invalid-credentials'})
 
         if not token.user.is_active:
-            raise exceptions.AuthenticationFailed({'detail': _('User inactive or deleted.'), 'status':'inactive-user'})
+            raise exceptions.AuthenticationFailed({'detail': _('User inactive or deleted.'), 'status': 'inactive-user'})
 
         return (token.user, token)
 
