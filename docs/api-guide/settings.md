@@ -143,6 +143,19 @@ Default: `ordering`
 
 ---
 
+## Model serializer settings
+
+*The following settings control the behavior of the model serializer.*
+
+#### STRICT_PARTIAL_UPDATE
+
+Enforce the use of [update_fields](https://docs.djangoproject.com/en/4.0/ref/models/instances/#specifying-which-fields-to-save) 
+when saving an instance during a model serializer update with `partial=True`.
+
+Default: `False`
+
+---
+
 ## Versioning settings
 
 #### DEFAULT_VERSION
