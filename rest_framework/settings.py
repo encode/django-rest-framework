@@ -51,7 +51,7 @@ DEFAULTS = {
     'DEFAULT_PAGINATION_CLASS': None,
     'DEFAULT_FILTER_BACKENDS': [],
     
-    # Model view behavior
+    # Model serializer behavior
     'STRICT_PARTIAL_UPDATE': False,
 
     # Schema
