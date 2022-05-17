@@ -997,7 +997,7 @@ class ModelSerializer(Serializer):
         # relationships as being a special case. During updates we already
         # have an instance pk for the relationships to be associated with.
         m2m_fields = []
-        update_fields = []
+        update_fields = [*api_settings.PARTIAL_UPDATE_EXTRA_FIELDS]
         for attr, value in validated_data.items():
             if attr in info.relations and info.relations[attr].to_many:
                 m2m_fields.append((attr, value))
