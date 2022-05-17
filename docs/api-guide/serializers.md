@@ -256,7 +256,7 @@ When passing data to a serializer instance, the unmodified data will be made ava
 ## Partial updates
 
 By default, serializers must be passed values for all required fields or they will raise validation errors. You can use the `partial` argument in order to allow partial updates. Note that `STRICT_PARTIAL_UPDATE` must be set to `True` to enable field specific updates using `.save(update_fields=[...])` for `ModelSerializer`
-with `partial=True`. 
+with `partial=True`. `PARTIAL_UPDATE_EXTRA_FIELDS` lets you specify the fields you will like to update everytime like `mod_date` or `modified_at`.
 
     # Update `comment` with partial data
     serializer = CommentSerializer(comment, data={'content': 'foo bar'}, partial=True)
