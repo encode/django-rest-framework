@@ -154,6 +154,12 @@ when saving an instance during a model serializer update with `partial=True`.
 
 Default: `False`
 
+#### PARTIAL_UPDATE_EXTRA_FIELDS
+
+Lets you specify the fields you will like to update everytime like `mod_date` or `modified_at`.
+
+Default: `[]`
+
 ---
 
 ## Versioning settings
