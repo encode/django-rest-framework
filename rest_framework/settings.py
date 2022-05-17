@@ -53,6 +53,7 @@ DEFAULTS = {
     
     # Model serializer behavior
     'STRICT_PARTIAL_UPDATE': False,
+    'PARTIAL_UPDATE_EXTRA_FIELDS': [],
 
     # Schema
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.openapi.AutoSchema',
