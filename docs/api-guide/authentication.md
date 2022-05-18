@@ -120,6 +120,14 @@ Unauthenticated responses that are denied permission will result in an `HTTP 401
 
 ## TokenAuthentication
 
+---
+
+**Note:** The token authentication provided by Django REST framework is a fairly simple implementation.
+
+For an implementation which allows more than one token per user, has some tighter security implementation details, and supports token expiry, please see the [Django REST Knox][django-rest-knox] third party package.
+
+---
+
 This authentication scheme uses a simple token-based HTTP Authentication scheme.  Token authentication is appropriate for client-server setups, such as native desktop and mobile clients.
 
 To use the `TokenAuthentication` scheme you'll need to [configure the authentication classes](#setting-the-authentication-scheme) to include `TokenAuthentication`, and additionally include `rest_framework.authtoken` in your `INSTALLED_APPS` setting:
@@ -129,11 +137,9 @@ To use the `TokenAuthentication` scheme you'll need to [configure the authentica
         'rest_framework.authtoken'
     ]
 
----
+Make sure to run `manage.py migrate` after changing your settings.
 
-**Note:** Make sure to run `manage.py migrate` after changing your settings. The `rest_framework.authtoken` app provides Django database migrations.
-
----
+The `rest_framework.authtoken` app provides Django database migrations.
 
 You'll also need to create tokens for your users.
 
@@ -146,7 +152,7 @@ For clients to authenticate, the token key should be included in the `Authorizat
 
     Authorization: Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b
 
-**Note:** If you want to use a different keyword in the header, such as `Bearer`, simply subclass `TokenAuthentication` and set the `keyword` class variable.
+*If you want to use a different keyword in the header, such as `Bearer`, simply subclass `TokenAuthentication` and set the `keyword` class variable.*
 
 If successfully authenticated, `TokenAuthentication` provides the following credentials.
 
@@ -355,6 +361,10 @@ The following example will authenticate any incoming request as the user given b
 
 The following third-party packages are also available.
 
+## django-rest-knox
+
+[Django-rest-knox][django-rest-knox] library provides models and views to handle token-based authentication in a more secure and extensible way than the built-in TokenAuthentication scheme - with Single Page Applications and Mobile clients in mind. It provides per-client tokens, and views to generate them when provided some other authentication (usually basic authentication), to delete the token (providing a server enforced logout) and to delete all tokens (logs out all clients that a user is logged into).
+
 ## Django OAuth Toolkit
 
 The [Django OAuth Toolkit][django-oauth-toolkit] package provides OAuth 2.0 support and works with Python 3.4+. The package is maintained by [jazzband][jazzband] and uses the excellent [OAuthLib][oauthlib].  The package is well documented, and well supported and is currently our **recommended package for OAuth 2.0 support**.
@@ -422,11 +432,7 @@ There are currently two forks of this project.
 
 ## drf-social-oauth2
 
-[Drf-social-oauth2][drf-social-oauth2] is a framework that helps you authenticate with major social oauth2 vendors, such as Facebook, Google, Twitter, Orcid, etc. It generates tokens in a JWTed way with an easy setup. 
-
-## django-rest-knox
-
-[Django-rest-knox][django-rest-knox] library provides models and views to handle token-based authentication in a more secure and extensible way than the built-in TokenAuthentication scheme - with Single Page Applications and Mobile clients in mind. It provides per-client tokens, and views to generate them when provided some other authentication (usually basic authentication), to delete the token (providing a server enforced logout) and to delete all tokens (logs out all clients that a user is logged into).
+[Drf-social-oauth2][drf-social-oauth2] is a framework that helps you authenticate with major social oauth2 vendors, such as Facebook, Google, Twitter, Orcid, etc. It generates tokens in a JWTed way with an easy setup.
 
 ## drfpasswordless
 
