@@ -256,11 +256,23 @@ When passing data to a serializer instance, the unmodified data will be made ava
 ## Partial updates
 
 By default, serializers must be passed values for all required fields or they will raise validation errors. You can use the `partial` argument in order to allow partial updates. Note that `STRICT_PARTIAL_UPDATE` must be set to `True` to enable field specific updates using `.save(update_fields=[...])` for `ModelSerializer`
-with `partial=True`. `PARTIAL_UPDATE_EXTRA_FIELDS` lets you specify the fields you will like to update everytime like `mod_date` or `modified_at`.
+with `partial=True`. 
 
     # Update `comment` with partial data
     serializer = CommentSerializer(comment, data={'content': 'foo bar'}, partial=True)
 
+The current implementation of `ModelSerializer` performs `instance.save()` which [saves all fields](https://docs.djangoproject.com/en/4.0/ref/models/instances/#specifying-which-fields-to-save) in a model which may lead to a race condition given a high frequency of partial 
+update requests on a single resource. Specifying `partial_update_extra_fields = []` in a `ModelSerializer`'s `Meta` will save only the fields specified in a partial update by enforcing the use of 
+[update_fields](https://docs.djangoproject.com/en/4.0/ref/models/instances/#specifying-which-fields-to-save) when saving an instance during a `ModelSerializer` update with `partial=True`.
+
+    # define the ModelSerializer with partial_update_extra_fields
+    class EventSerializer(serializers.ModelSerializer):
+        class Meta:
+            fields = "__all__"
+            model = Event
+            partial_update_extra_fields = []
+
+For cases where there are fields like `modified_at` that need to be updated during a partial update even when not provided during a partial update, those field names should be specified in `partial_update_extra_fields` like so: `partial_update_extra_fields = ['modified_at']` or `partial_update_extra_fields = ['mod_date']`
 ## Dealing with nested objects
 
 The previous examples are fine for dealing with objects that only have simple datatypes, but sometimes we also need to be able to represent more complex objects, where some of the attributes of an object might not be simple datatypes such as strings, dates or integers.

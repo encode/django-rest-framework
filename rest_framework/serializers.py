@@ -997,7 +997,8 @@ class ModelSerializer(Serializer):
         # relationships as being a special case. During updates we already
         # have an instance pk for the relationships to be associated with.
         m2m_fields = []
-        update_fields = [*api_settings.PARTIAL_UPDATE_EXTRA_FIELDS]
+        partial_update_extra_fields = self.get_partial_update_extra_fields()
+        update_fields = [*(partial_update_extra_fields or [])]
         for attr, value in validated_data.items():
             if attr in info.relations and info.relations[attr].to_many:
                 m2m_fields.append((attr, value))
@@ -1005,7 +1006,7 @@ class ModelSerializer(Serializer):
                 setattr(instance, attr, value)
                 update_fields.append(attr)
         
-        if self.partial and api_settings.STRICT_PARTIAL_UPDATE:
+        if self.partial and partial_update_extra_fields is not None:
             instance.save(update_fields=update_fields)
         else:
             instance.save()
@@ -1631,6 +1632,29 @@ class ModelSerializer(Serializer):
                 validators.append(validator)
 
         return validators
+
+    def get_partial_update_extra_fields(self):
+        partial_update_extra_fields = getattr(self.Meta, 'partial_update_extra_fields', None)
+
+        if partial_update_extra_fields is not None and not isinstance(partial_update_extra_fields, (list, tuple)):
+            raise TypeError(
+                'The `partial_update_extra_fields` option must be a NoneType or list or tuple. Got %s.' %
+                type(partial_update_extra_fields).__name__
+            )
+
+        fields = self.get_fields()
+        if partial_update_extra_fields is not None:
+            for field_name in partial_update_extra_fields:
+                assert field_name in fields, (
+                    "The field '{field_name}' was included on serializer "
+                    "{serializer_class} in the 'partial_update_extra_fields' option, but does "
+                    "not match any model field.".format(
+                        field_name=field_name,
+                        serializer_class=self.__class__.__name__
+                    )
+                )
+
+        return partial_update_extra_fields
 
 
 class HyperlinkedModelSerializer(ModelSerializer):
