@@ -552,7 +552,7 @@
 <p><strong>Note:</strong> The relational fields are declared in <code>relations.py</code>, but by convention you should import them from the <code>serializers</code> module, using <code>from rest_framework import serializers</code> and refer to fields as <code>serializers.&lt;FieldName&gt;</code>.</p>
 <hr />
 <hr />
-<p><strong>Note:</strong> REST Framework does not attempt to automatically optimize querysets passed to serializers in terms of <code>select_related</code> and <code>prefetch_related</code> since it would be too much magic. A serializer with a field spanning an orm relation through its source attribute could require an additional database hit to fetch related object from the database. It is the programmer's responsibility to optimize queries to avoid additional database hits which could occur while using such a serializer.</p>
+<p><strong>Note:</strong> REST Framework does not attempt to automatically optimize querysets passed to serializers in terms of <code>select_related</code> and <code>prefetch_related</code> since it would be too much magic. A serializer with a field spanning an orm relation through its source attribute could require an additional database hit to fetch related objects from the database. It is the programmer's responsibility to optimize queries to avoid additional database hits which could occur while using such a serializer.</p>
 <p>For example, the following serializer would lead to a database hit each time evaluating the tracks field if it is not prefetched:</p>
 <pre><code>class AlbumSerializer(serializers.ModelSerializer):
     tracks = serializers.SlugRelatedField(

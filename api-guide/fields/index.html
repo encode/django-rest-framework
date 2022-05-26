@@ -664,7 +664,7 @@
 <p>Normally an error will be raised if a field is not supplied during deserialization.
 Set to false if this field is not required to be present during deserialization.</p>
 <p>Setting this to <code>False</code> also allows the object attribute or dictionary key to be omitted from output when serializing the instance. If the key is not present it will simply not be included in the output representation.</p>
-<p>Defaults to <code>True</code>.</p>
+<p>Defaults to <code>True</code>. If you're using <a href="https://www.django-rest-framework.org/api-guide/serializers/#modelserializer">Model Serializer</a> default value will be <code>False</code> if you have specified <code>blank=True</code> or <code>default</code> or <code>null=True</code> at your field in your <code>Model</code>.</p>
 <h3 id="default"><a class="toclink" href="#default"><code>default</code></a></h3>
 <p>If set, this gives the default value that will be used for the field if no input value is supplied. If not set the default behaviour is to not populate the attribute at all.</p>
 <p>The <code>default</code> is not applied during partial update operations. In the partial update case only fields that are provided in the incoming data will have a validated value returned.</p>

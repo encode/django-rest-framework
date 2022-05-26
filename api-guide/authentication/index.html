@@ -468,6 +468,10 @@
 
                   
                     <li>
+                      <a href="#django-rest-knox">django-rest-knox</a>
+                    </li>
+                  
+                    <li>
                       <a href="#django-oauth-toolkit">Django OAuth Toolkit</a>
                     </li>
                   
@@ -496,11 +500,7 @@
                     </li>
                   
                     <li>
-                      <a href="#django-rest-framework-social-oauth2">django-rest-framework-social-oauth2</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#django-rest-knox">django-rest-knox</a>
+                      <a href="#drf-social-oauth2">drf-social-oauth2</a>
                     </li>
                   
                     <li>
@@ -621,6 +621,10 @@ WSGIPassAuthorization On
 </code></pre>
 <p><strong>Note:</strong> If you use <code>BasicAuthentication</code> in production you must ensure that your API is only available over <code>https</code>.  You should also ensure that your API clients will always re-request the username and password at login, and will never store those details to persistent storage.</p>
 <h2 id="tokenauthentication"><a class="toclink" href="#tokenauthentication">TokenAuthentication</a></h2>
+<hr />
+<p><strong>Note:</strong> The token authentication provided by Django REST framework is a fairly simple implementation.</p>
+<p>For an implementation which allows more than one token per user, has some tighter security implementation details, and supports token expiry, please see the <a href="https://github.com/James1345/django-rest-knox">Django REST Knox</a> third party package.</p>
+<hr />
 <p>This authentication scheme uses a simple token-based HTTP Authentication scheme.  Token authentication is appropriate for client-server setups, such as native desktop and mobile clients.</p>
 <p>To use the <code>TokenAuthentication</code> scheme you'll need to <a href="#setting-the-authentication-scheme">configure the authentication classes</a> to include <code>TokenAuthentication</code>, and additionally include <code>rest_framework.authtoken</code> in your <code>INSTALLED_APPS</code> setting:</p>
 <pre><code>INSTALLED_APPS = [
@@ -628,9 +632,8 @@ WSGIPassAuthorization On
     'rest_framework.authtoken'
 ]
 </code></pre>
-<hr />
-<p><strong>Note:</strong> Make sure to run <code>manage.py migrate</code> after changing your settings. The <code>rest_framework.authtoken</code> app provides Django database migrations.</p>
-<hr />
+<p>Make sure to run <code>manage.py migrate</code> after changing your settings.</p>
+<p>The <code>rest_framework.authtoken</code> app provides Django database migrations.</p>
 <p>You'll also need to create tokens for your users.</p>
 <pre><code>from rest_framework.authtoken.models import Token
 
@@ -640,7 +643,7 @@ print(token.key)
 <p>For clients to authenticate, the token key should be included in the <code>Authorization</code> HTTP header.  The key should be prefixed by the string literal "Token", with whitespace separating the two strings.  For example:</p>
 <pre><code>Authorization: Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b
 </code></pre>
-<p><strong>Note:</strong> If you want to use a different keyword in the header, such as <code>Bearer</code>, simply subclass <code>TokenAuthentication</code> and set the <code>keyword</code> class variable.</p>
+<p><em>If you want to use a different keyword in the header, such as <code>Bearer</code>, simply subclass <code>TokenAuthentication</code> and set the <code>keyword</code> class variable.</em></p>
 <p>If successfully authenticated, <code>TokenAuthentication</code> provides the following credentials.</p>
 <ul>
 <li><code>request.user</code> will be a Django <code>User</code> instance.</li>
@@ -795,6 +798,8 @@ class ExampleAuthentication(authentication.BaseAuthentication):
 <hr />
 <h1 id="third-party-packages"><a class="toclink" href="#third-party-packages">Third party packages</a></h1>
 <p>The following third-party packages are also available.</p>
+<h2 id="django-rest-knox"><a class="toclink" href="#django-rest-knox">django-rest-knox</a></h2>
+<p><a href="https://github.com/James1345/django-rest-knox">Django-rest-knox</a> library provides models and views to handle token-based authentication in a more secure and extensible way than the built-in TokenAuthentication scheme - with Single Page Applications and Mobile clients in mind. It provides per-client tokens, and views to generate them when provided some other authentication (usually basic authentication), to delete the token (providing a server enforced logout) and to delete all tokens (logs out all clients that a user is logged into).</p>
 <h2 id="django-oauth-toolkit"><a class="toclink" href="#django-oauth-toolkit">Django OAuth Toolkit</a></h2>
 <p>The <a href="https://github.com/evonove/django-oauth-toolkit">Django OAuth Toolkit</a> package provides OAuth 2.0 support and works with Python 3.4+. The package is maintained by <a href="https://github.com/jazzband/">jazzband</a> and uses the excellent <a href="https://github.com/idan/oauthlib">OAuthLib</a>.  The package is well documented, and well supported and is currently our <strong>recommended package for OAuth 2.0 support</strong>.</p>
 <h4 id="installation-configuration"><a class="toclink" href="#installation-configuration">Installation &amp; configuration</a></h4>
@@ -837,10 +842,8 @@ REST_FRAMEWORK = {
 <li><a href="https://github.com/Tivix/django-rest-auth">Django-rest-auth</a> is the original project, <a href="https://github.com/Tivix/django-rest-auth/issues/568">but is not currently receiving updates</a>.</li>
 <li><a href="https://github.com/jazzband/dj-rest-auth">Dj-rest-auth</a> is a newer fork of the project.</li>
 </ul>
-<h2 id="django-rest-framework-social-oauth2"><a class="toclink" href="#django-rest-framework-social-oauth2">django-rest-framework-social-oauth2</a></h2>
-<p><a href="https://github.com/PhilipGarnero/django-rest-framework-social-oauth2">Django-rest-framework-social-oauth2</a> library provides an easy way to integrate social plugins (facebook, twitter, google, etc.) to your authentication system and an easy oauth2 setup. With this library, you will be able to authenticate users based on external tokens (e.g. facebook access token), convert these tokens to "in-house" oauth2 tokens and use and generate oauth2 tokens to authenticate your users.</p>
-<h2 id="django-rest-knox"><a class="toclink" href="#django-rest-knox">django-rest-knox</a></h2>
-<p><a href="https://github.com/James1345/django-rest-knox">Django-rest-knox</a> library provides models and views to handle token-based authentication in a more secure and extensible way than the built-in TokenAuthentication scheme - with Single Page Applications and Mobile clients in mind. It provides per-client tokens, and views to generate them when provided some other authentication (usually basic authentication), to delete the token (providing a server enforced logout) and to delete all tokens (logs out all clients that a user is logged into).</p>
+<h2 id="drf-social-oauth2"><a class="toclink" href="#drf-social-oauth2">drf-social-oauth2</a></h2>
+<p><a href="https://github.com/wagnerdelima/drf-social-oauth2">Drf-social-oauth2</a> is a framework that helps you authenticate with major social oauth2 vendors, such as Facebook, Google, Twitter, Orcid, etc. It generates tokens in a JWTed way with an easy setup.</p>
 <h2 id="drfpasswordless"><a class="toclink" href="#drfpasswordless">drfpasswordless</a></h2>
 <p><a href="https://github.com/aaronn/django-rest-framework-passwordless">drfpasswordless</a> adds (Medium, Square Cash inspired) passwordless support to Django REST Framework's TokenAuthentication scheme. Users log in and sign up with a token sent to a contact point like an email address or a mobile number.</p>
 <h2 id="django-rest-authemail"><a class="toclink" href="#django-rest-authemail">django-rest-authemail</a></h2>
