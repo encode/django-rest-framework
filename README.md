@@ -21,14 +21,13 @@ The initial aim is to provide a single full-time position on REST framework.
 
 [![][sentry-img]][sentry-url]
 [![][stream-img]][stream-url]
-[![][rollbar-img]][rollbar-url]
-[![][esg-img]][esg-url]
 [![][retool-img]][retool-url]
 [![][bitio-img]][bitio-url]
 [![][posthog-img]][posthog-url]
 [![][cryptapi-img]][cryptapi-url]
+[![][fezto-img]][fezto-url]
 
-Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Sentry][sentry-url], [Stream][stream-url], [Rollbar][rollbar-url], [ESG][esg-url], [Retool][retool-url], [bit.io][bitio-url], [PostHog][posthog-url], and [CryptAPI][cryptapi-url].
+Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Sentry][sentry-url], [Stream][stream-url], [Retool][retool-url], [bit.io][bitio-url], [PostHog][posthog-url], [CryptAPI][cryptapi-url], and [FEZTO][fezto-url].
 
 ---
 
@@ -194,21 +193,19 @@ Please see the [security policy][security-policy].
 
 [sentry-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/sentry-readme.png
 [stream-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/stream-readme.png
-[rollbar-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/rollbar-readme.png
-[esg-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/esg-readme.png
 [retool-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/retool-readme.png
 [bitio-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/bitio-readme.png
 [posthog-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/posthog-readme.png
 [cryptapi-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/cryptapi-readme.png
+[fezto-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/fezto-readme.png
 
 [sentry-url]: https://getsentry.com/welcome/
 [stream-url]: https://getstream.io/?utm_source=DjangoRESTFramework&utm_medium=Webpage_Logo_Ad&utm_content=Developer&utm_campaign=DjangoRESTFramework_Jan2022_HomePage
-[rollbar-url]: https://rollbar.com/?utm_source=django&utm_medium=sponsorship&utm_campaign=freetrial
-[esg-url]: https://software.esg-usa.com/
 [retool-url]: https://retool.com/?utm_source=djangorest&utm_medium=sponsorship
 [bitio-url]: https://bit.io/jobs?utm_source=DRF&utm_medium=sponsor&utm_campaign=DRF_sponsorship
 [posthog-url]: https://posthog.com?utm_source=drf&utm_medium=sponsorship&utm_campaign=open-source-sponsorship
 [cryptapi-url]: https://cryptapi.io
+[fezto-url]: https://www.fezto.xyz/?utm_source=DjangoRESTFramework
 
 [oauth1-section]: https://www.django-rest-framework.org/api-guide/authentication/#django-rest-framework-oauth
 [oauth2-section]: https://www.django-rest-framework.org/api-guide/authentication/#django-oauth-toolkit
