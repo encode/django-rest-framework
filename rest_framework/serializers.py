@@ -77,6 +77,13 @@ LIST_SERIALIZER_KWARGS = (
 
 ALL_FIELDS = '__all__'
 
+READ_ONLY_FIELDS = 'read_only_fields'
+WRITE_ONLY_FIELDS = 'write_only_fields'
+EXTRA_KWARGS_FIELDS = {
+    READ_ONLY_FIELDS: 'read_only',
+    WRITE_ONLY_FIELDS: 'write_only',
+}
+
 
 # BaseSerializer
 # --------------
@@ -1373,26 +1380,27 @@ class ModelSerializer(Serializer):
         """
         extra_kwargs = copy.deepcopy(getattr(self.Meta, 'extra_kwargs', {}))
 
-        read_only_fields = getattr(self.Meta, 'read_only_fields', None)
-        if read_only_fields is not None:
-            if not isinstance(read_only_fields, (list, tuple)):
-                raise TypeError(
-                    'The `read_only_fields` option must be a list or tuple. '
-                    'Got %s.' % type(read_only_fields).__name__
-                )
-            for field_name in read_only_fields:
-                kwargs = extra_kwargs.get(field_name, {})
-                kwargs['read_only'] = True
-                extra_kwargs[field_name] = kwargs
+        for option, limit in EXTRA_KWARGS_FIELDS.items():
+            fields = getattr(self.Meta, option, None)
 
-        else:
-            # Guard against the possible misspelling `readonly_fields` (used
-            # by the Django admin and others).
-            assert not hasattr(self.Meta, 'readonly_fields'), (
-                'Serializer `%s.%s` has field `readonly_fields`; '
-                'the correct spelling for the option is `read_only_fields`.' %
-                (self.__class__.__module__, self.__class__.__name__)
-            )
+            if fields is not None:
+                if not isinstance(fields, (list, tuple)):
+                    raise TypeError(
+                        f'The `{option}` option must be a list or tuple. '
+                        f'Got {type(fields).__name__}.'
+                    )
+                for field_name in fields:
+                    kwargs = extra_kwargs.get(field_name, {})
+                    kwargs[limit] = True
+                    extra_kwargs[field_name] = kwargs
+            else:
+                # Guard against the possible misspelling `readonly_fields` (used
+                # by the Django admin and others).
+                assert not hasattr(self.Meta, 'readonly_fields'), (
+                    'Serializer `%s.%s` has field `readonly_fields`; '
+                    'the correct spelling for the option is `read_only_fields`.' %
+                    (self.__class__.__module__, self.__class__.__name__)
+                )
 
         return extra_kwargs
 

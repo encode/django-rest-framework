@@ -47,6 +47,11 @@ class OneFieldModel(models.Model):
     char_field = models.CharField(max_length=100)
 
 
+class TwoFieldModel(models.Model):
+    char_field = models.CharField(max_length=100)
+    datetime_field = models.DateTimeField()
+
+
 class RegularFieldsModel(models.Model):
     """
     A model class for testing regular flat fields.
@@ -1078,25 +1083,29 @@ class TestMetaInheritance(TestCase):
             non_model_field = serializers.CharField()
 
             class Meta:
-                model = OneFieldModel
+                model = TwoFieldModel
                 read_only_fields = ('char_field', 'non_model_field')
-                fields = read_only_fields
+                write_only_fields = ('datetime_field',)
+                fields = read_only_fields + write_only_fields
                 extra_kwargs = {}
 
         class ChildSerializer(TestSerializer):
             class Meta(TestSerializer.Meta):
                 read_only_fields = ()
+                write_only_fields = ()
 
         test_expected = dedent("""
             TestSerializer():
                 char_field = CharField(read_only=True)
                 non_model_field = CharField()
+                datetime_field = DateTimeField(write_only=True)
         """)
 
         child_expected = dedent("""
             ChildSerializer():
                 char_field = CharField(max_length=100)
                 non_model_field = CharField()
+                datetime_field = DateTimeField()
         """)
         self.assertEqual(repr(ChildSerializer()), child_expected)
         self.assertEqual(repr(TestSerializer()), test_expected)
@@ -1122,6 +1131,27 @@ class TestModelFieldValues(TestCase):
         source = OneToOneSourceTestModel(target=target)
         serializer = ExampleSerializer(source)
         self.assertEqual(serializer.data, {'target': 1})
+
+
+class TestExtraKwargs(TestCase):
+    def test_write_only_fields(self):
+        class TestSerializer(serializers.ModelSerializer):
+
+            class Meta:
+                model = OneFieldModel
+                write_only_fields = ('char_field',)
+                fields = write_only_fields
+
+        test_expected = dedent("""
+            TestSerializer():
+                char_field = CharField(max_length=100, write_only=True)
+        """)
+
+        self.assertEqual(repr(TestSerializer()), test_expected)
+        self.assertEqual(
+            TestSerializer().get_extra_kwargs().get('char_field', {}).get('write_only'),
+            True,
+        )
 
 
 class TestUniquenessOverride(TestCase):
