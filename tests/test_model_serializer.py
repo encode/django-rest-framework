@@ -1301,11 +1301,6 @@ class Issue6751Model(models.Model):
     char_field2 = models.CharField(max_length=100)
 
 
-class Issue2648Model(models.Model):
-    char_field = models.CharField(max_length=100)
-    updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
-
-
 @receiver(m2m_changed, sender=Issue6751Model.many_to_many.through)
 def process_issue6751model_m2m_changed(action, instance, **_):
     if action == 'post_add':
@@ -1340,6 +1335,11 @@ class Issue6751Test(TestCase):
         self.assertEqual(instance.char_field, 'value changed by signal')
 
 
+class Issue2648Model(models.Model):
+    char_field = models.CharField(max_length=100)
+    updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
+
+
 class Issue2648Test(TestCase):
     def test_model_serializer_uses_partial_update_extra_fields_when_not_empty(self):
         class TestSerializer(serializers.ModelSerializer):
@@ -1349,8 +1349,8 @@ class Issue2648Test(TestCase):
                 fields = ('updated_at', 'char_field',)
 
         instance = Issue2648Model.objects.create(char_field='initial value')
-        instance.updated_at = None
-        instance.save(update_fields=['updated_at'])
+        Issue2648Model.objects.filter(id=instance.id).update(updated_at=None)
+        instance = Issue2648Model.objects.get(id=instance.id)
 
         serializer = TestSerializer(instance=instance, data={'char_field': 'char_field updated value'}, partial=True)
         serializer.is_valid()
@@ -1367,8 +1367,8 @@ class Issue2648Test(TestCase):
                 fields = ('updated_at', 'char_field',)
 
         instance = Issue2648Model.objects.create(char_field='initial value')
-        instance.updated_at = None
-        instance.save(update_fields=['updated_at'])
+        Issue2648Model.objects.filter(id=instance.id).update(updated_at=None)
+        instance = Issue2648Model.objects.get(id=instance.id)
 
         serializer = TestSerializer(instance=instance, data={'char_field': 'char_field updated value'}, partial=True)
         serializer.is_valid()
