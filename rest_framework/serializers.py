@@ -1386,21 +1386,22 @@ class ModelSerializer(Serializer):
             if fields is not None:
                 if not isinstance(fields, (list, tuple)):
                     raise TypeError(
-                        f'The `{option}` option must be a list or tuple. '
-                        f'Got {type(fields).__name__}.'
+                        'The `%s` option must be a list or tuple. '
+                        'Got %s.' % (option, type(fields).__name__)
                     )
                 for field_name in fields:
                     kwargs = extra_kwargs.get(field_name, {})
                     kwargs[limit] = True
                     extra_kwargs[field_name] = kwargs
             else:
-                # Guard against the possible misspelling `readonly_fields` (used
-                # by the Django admin and others).
-                assert not hasattr(self.Meta, 'readonly_fields'), (
-                    'Serializer `%s.%s` has field `readonly_fields`; '
-                    'the correct spelling for the option is `read_only_fields`.' %
-                    (self.__class__.__module__, self.__class__.__name__)
-                )
+                if option == READ_ONLY_FIELDS:
+                    # Guard against the possible misspelling `readonly_fields` (used
+                    # by the Django admin and others).
+                    assert not hasattr(self.Meta, 'readonly_fields'), (
+                        'Serializer `%s.%s` has field `readonly_fields`; '
+                        'the correct spelling for the option is `read_only_fields`.' %
+                        (self.__class__.__module__, self.__class__.__name__)
+                    )
 
         return extra_kwargs
 
