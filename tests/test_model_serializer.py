@@ -1337,18 +1337,19 @@ class Issue6751Test(TestCase):
 
 class Issue2648Model(models.Model):
     char_field = models.CharField(max_length=100)
+    int_field = models.IntegerField()
     updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
 
 
 class Issue2648Test(TestCase):
-    def test_model_serializer_uses_partial_update_extra_fields_when_not_empty(self):
+    def test_model_serializer_uses_partial_update_extra_fields_when_provided(self):
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
                 model = Issue2648Model
-                partial_update_extra_fields = ('updated_at',)
+                partial_update_extra_fields = ('char_field',)
                 fields = ('updated_at', 'char_field',)
 
-        instance = Issue2648Model.objects.create(char_field='initial value')
+        instance = Issue2648Model.objects.create(char_field='initial value', int_field=42)
         Issue2648Model.objects.filter(id=instance.id).update(updated_at=None)
         instance = Issue2648Model.objects.get(id=instance.id)
 
@@ -1357,6 +1358,26 @@ class Issue2648Test(TestCase):
         serializer.save()
 
         self.assertEqual(instance.char_field, 'char_field updated value')
+        self.assertEqual(instance.int_field, 42)
+        self.assertIsNone(instance.updated_at)
+
+    def test_model_serializer_uses_partial_update_extra_fields_when_not_empty(self):
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Issue2648Model
+                partial_update_extra_fields = ('updated_at',)
+                fields = ('updated_at', 'char_field',)
+
+        instance = Issue2648Model.objects.create(char_field='initial value', int_field=42)
+        Issue2648Model.objects.filter(id=instance.id).update(updated_at=None)
+        instance = Issue2648Model.objects.get(id=instance.id)
+
+        serializer = TestSerializer(instance=instance, data={'char_field': 'char_field updated value'}, partial=True)
+        serializer.is_valid()
+        serializer.save()
+
+        self.assertEqual(instance.char_field, 'char_field updated value')
+        self.assertEqual(instance.int_field, 42)
         self.assertIsNotNone(instance.updated_at)
 
     def test_model_serializer_uses_partial_update_extra_fields_when_empty(self):
@@ -1366,7 +1387,7 @@ class Issue2648Test(TestCase):
                 partial_update_extra_fields = []
                 fields = ('updated_at', 'char_field',)
 
-        instance = Issue2648Model.objects.create(char_field='initial value')
+        instance = Issue2648Model.objects.create(char_field='initial value', int_field=42)
         Issue2648Model.objects.filter(id=instance.id).update(updated_at=None)
         instance = Issue2648Model.objects.get(id=instance.id)
 
@@ -1375,6 +1396,7 @@ class Issue2648Test(TestCase):
         serializer.save()
 
         self.assertEqual(instance.char_field, 'char_field updated value')
+        self.assertEqual(instance.int_field, 42)
         self.assertIsNone(instance.updated_at)
 
     def test_model_serializer_validate_partial_update_extra_fields_are_model_fields(self):
@@ -1384,7 +1406,7 @@ class Issue2648Test(TestCase):
                 partial_update_extra_fields = ('missing_model_field',)
                 fields = ('updated_at', 'char_field',)
 
-        instance = Issue2648Model.objects.create(char_field='initial value')
+        instance = Issue2648Model.objects.create(char_field='initial value', int_field=42)
         serializer = TestSerializer(instance=instance, data={'char_field': 'char_field updated value'}, partial=True)
         serializer.is_valid()
 
