@@ -275,44 +275,6 @@ class BaseSerializer(Field):
 # Serializer & ListSerializer classes
 # -----------------------------------
 
-class SerializerMetaclass(type):
-    """
-    This metaclass sets a dictionary named `_declared_fields` on the class.
-
-    Any instances of `Field` included as attributes on either the class
-    or on any of its superclasses will be include in the
-    `_declared_fields` dictionary.
-    """
-
-    @classmethod
-    def _get_declared_fields(cls, bases, attrs):
-        fields = [(field_name, attrs.pop(field_name))
-                  for field_name, obj in list(attrs.items())
-                  if isinstance(obj, Field)]
-        fields.sort(key=lambda x: x[1]._creation_counter)
-
-        # Ensures a base class field doesn't override cls attrs, and maintains
-        # field precedence when inheriting multiple parents. e.g. if there is a
-        # class C(A, B), and A and B both define 'field', use 'field' from A.
-        known = set(attrs)
-
-        def visit(name):
-            known.add(name)
-            return name
-
-        base_fields = [
-            (visit(name), f)
-            for base in bases if hasattr(base, '_declared_fields')
-            for name, f in base._declared_fields.items() if name not in known
-        ]
-
-        return OrderedDict(base_fields + fields)
-
-    def __new__(cls, name, bases, attrs):
-        attrs['_declared_fields'] = cls._get_declared_fields(bases, attrs)
-        return super().__new__(cls, name, bases, attrs)
-
-
 def as_serializer_error(exc):
     assert isinstance(exc, (ValidationError, DjangoValidationError))
 
@@ -339,10 +301,45 @@ def as_serializer_error(exc):
     }
 
 
-class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
+class Serializer(BaseSerializer):
     default_error_messages = {
         'invalid': _('Invalid data. Expected a dictionary, but got {datatype}.')
     }
+
+    # Fields are expected to be declared in user's subclasses. This main class
+    # has got none.
+    _declared_fields = OrderedDict()
+
+    def __init_subclass__(cls):
+        """
+        Collect any `Field` attributes (including ones from superclasses) to
+        the internal `_declared_fields` dictionary and remove the attributes
+        from class namespace.
+        """
+
+        fields = [(field_name, obj)
+                  for field_name, obj in vars(cls).items()
+                  if isinstance(obj, Field)]
+        for field_name, _ in fields:
+            delattr(cls, field_name)
+        fields.sort(key=lambda x: x[1]._creation_counter)
+
+        # Ensures a base class field doesn't override cls attrs, and maintains
+        # field precedence when inheriting multiple parents. e.g. if there is a
+        # class C(A, B), and A and B both define 'field', use 'field' from A.
+        known = set(vars(cls))
+
+        def visit(name):
+            known.add(name)
+            return name
+
+        base_fields = [
+            (visit(name), f)
+            for base in cls.__bases__ if hasattr(base, '_declared_fields')
+            for name, f in base._declared_fields.items() if name not in known
+        ]
+
+        cls._declared_fields = OrderedDict(base_fields + fields)
 
     @cached_property
     def fields(self):
