@@ -29,7 +29,7 @@ msgstr "رأس أساسي غير صالح, لم تقدم أي بيانات."
 
 #: authentication.py:73
 msgid "Invalid basic header. Credentials string should not contain spaces."
-msgstr "رأس أساسي غير صالح, سلسلة البيانات لا يجب أن تحتوي على أي مسافات"
+msgstr ".رأس أساسي غير صالح, سلسلة البيانات لا يجب أن تحتوي على أي مسافات"
 
 #: authentication.py:83
 msgid "Invalid basic header. Credentials not correctly base64 encoded."
@@ -239,7 +239,7 @@ msgstr "السلسلة أطول من القيمة المسموح بها."
 
 #: fields.py:968 fields.py:1004
 msgid "A valid number is required."
-msgstr "الرجاء إدخال رقم صالح."
+msgstr "الرجاء إدخال رقم صحيح."
 
 #: fields.py:1007
 #, python-brace-format
@@ -266,7 +266,7 @@ msgstr "صيغة التاريخ و الوقت غير صحيحة. عليك أن �
 
 #: fields.py:1149
 msgid "Expected a datetime but got a date."
-msgstr "متوقع تاريخ و وقت و وجد تاريخ فقط"
+msgstr "متوقع تاريخ و وقت و وجد تاريخ فقط."
 
 #: fields.py:1150
 #, python-brace-format
@@ -284,7 +284,7 @@ msgstr "صيغة التاريخ غير صحيحة. عليك أن تستخدم و
 
 #: fields.py:1237
 msgid "Expected a date but got a datetime."
-msgstr "متوقع تاريخ  فقط و وجد تاريخ ووقت"
+msgstr "متوقع تاريخ  فقط و وجد تاريخ ووقت."
 
 #: fields.py:1303
 #, python-brace-format
@@ -475,7 +475,7 @@ msgstr "قيمة فريدة"
 #: schemas/utils.py:38
 #, python-brace-format
 msgid "A {value_type} identifying this {name}."
-msgstr "نوع القيمة {value_type} يحدد {name}"
+msgstr "نوع القيمة {value_type} يحدد {name}."
 
 #: serializers.py:337
 #, python-brace-format
