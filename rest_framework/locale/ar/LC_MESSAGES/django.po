@@ -540,7 +540,7 @@ msgstr "الحقول {field_names} يجب أن تشكل مجموعة فريدة.
 #: validators.py:171
 #, python-brace-format
 msgid "Surrogate characters are not allowed: U+{code_point:X}."
-msgstr "غير مسموح باتخدام الأحرف البديلة: U+{code_point:X}."
+msgstr "غير مسموح باستخدام الأحرف البديلة: U+{code_point:X}."
 
 #: validators.py:243
 #, python-brace-format
