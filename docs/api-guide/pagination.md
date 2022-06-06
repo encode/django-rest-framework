@@ -24,20 +24,23 @@ Pagination can be turned off by setting the pagination class to `None`.
 
 ## Details and limitations
 
-Proper use of pagination requires a little attention to detail. You'll need to think about what ordering you want the scheme to be applied against. The default is to order by `"-created"`. This assumes that **there must be a 'created' timestamp field** on the model instances, and will present a "timeline" style paginated view, with the most recently added items first.
+Proper use of pagination requires a little attention to detail. You'll need to think about what ordering you want the scheme to be applied against.
 
 You can modify the ordering in multiple ways:
 
-* Overriding the `'ordering'` attribute on the pagination class.
-* Using the `OrderingFilter` filter class together with the pagination class. 
+* Using the `OrderingFilter` filter class together with the pagination class in the view definition. 
 * Setting the `ordering` attribute on the `Meta` class of the model whose records are being paginated.
+* Explicitly calling `order_by` on the view's `queryset`.
+* Overriding the `'ordering'` attribute if using the `CursorPagination` class.
 
 When using `OrderingFilter`, you should strongly consider restricting the fields that the user may order by.
+
+For `CursorPagination`, the default is to order by `"-created"`. This assumes that **there must be a 'created' timestamp field** on the model instances, and will present a "timeline" style paginated view, with the most recently added items first.
 
 Proper usage of pagination should have an ordering field that satisfies the following:
 
 * Should be an unchanging value, such as a timestamp, slug, or other field that is only set once, on creation.
-* Should be unique, or nearly unique. Millisecond precision timestamps are a good example. This implementation of cursor pagination uses a smart "position plus offset" style that allows it to properly support not-strictly-unique values as the ordering.
+* Should be unique, or nearly unique if using `CursorPagination`. The `CursorPagination` implementation uses a smart "position plus offset" style that allows it to properly support not-strictly-unique values as the ordering. Millisecond precision timestamps are a good example.
 * Should be a non-nullable value that can be coerced to a string.
 * Should not be a float. Precision errors easily lead to incorrect results.
   Hint: use decimals instead.
