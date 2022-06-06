@@ -62,6 +62,9 @@ def is_simple_callable(obj):
     """
     True if the object is a callable that takes no arguments.
     """
+    if not callable(obj):
+        return False
+
     # Bail early since we cannot inspect built-in function signatures.
     if inspect.isbuiltin(obj):
         raise BuiltinSignatureError(

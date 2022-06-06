@@ -75,6 +75,10 @@ class TestIsSimpleCallable:
         assert is_simple_callable(valid_vargs_kwargs)
         assert not is_simple_callable(invalid)
 
+    @pytest.mark.parametrize('obj', (True, None, "str", b'bytes', 123, 1.23))
+    def test_not_callable(self, obj):
+        assert not is_simple_callable(obj)
+
     def test_4602_regression(self):
         from django.db import models
 
