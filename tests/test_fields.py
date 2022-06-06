@@ -9,13 +9,15 @@ import pytz
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.http import QueryDict
 from django.test import TestCase, override_settings
-from django.utils.timezone import activate, deactivate, override, utc
+from django.utils.timezone import activate, deactivate, override
 
 import rest_framework
 from rest_framework import exceptions, serializers
 from rest_framework.fields import (
     BuiltinSignatureError, DjangoImageField, is_simple_callable
 )
+
+utc = datetime.timezone.utc
 
 # Tests for helper functions.
 # ---------------------------

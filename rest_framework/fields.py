@@ -27,7 +27,6 @@ from django.utils.duration import duration_string
 from django.utils.encoding import is_protected_type, smart_str
 from django.utils.formats import localize_input, sanitize_separators
 from django.utils.ipv6 import clean_ipv6_address
-from django.utils.timezone import utc
 from django.utils.translation import gettext_lazy as _
 from pytz.exceptions import InvalidTimeError
 
@@ -1190,7 +1189,7 @@ class DateTimeField(Field):
             except InvalidTimeError:
                 self.fail('make_aware', timezone=field_timezone)
         elif (field_timezone is None) and timezone.is_aware(value):
-            return timezone.make_naive(value, utc)
+            return timezone.make_naive(value, datetime.timezone.utc)
         return value
 
     def default_timezone(self):
