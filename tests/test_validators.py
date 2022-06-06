@@ -42,6 +42,12 @@ class RelatedModelSerializer(serializers.ModelSerializer):
         fields = ('username', 'email')
 
 
+class RelatedModelUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RelatedModel
+        fields = ('user',)
+
+
 class AnotherUniquenessModel(models.Model):
     code = models.IntegerField(unique=True)
 
@@ -82,6 +88,13 @@ class TestUniquenessValidation(TestCase):
         serializer = UniquenessSerializer(data=data)
         assert not serializer.is_valid()
         assert serializer.errors == {'username': ['uniqueness model with this username already exists.']}
+
+    def test_relation_is_not_unique(self):
+        RelatedModel.objects.create(user=self.instance)
+        data = {'user': self.instance.pk}
+        serializer = RelatedModelUserSerializer(data=data)
+        assert not serializer.is_valid()
+        assert serializer.errors == {'user': ['related model with this user already exists.']}
 
     def test_is_unique(self):
         data = {'username': 'other'}
