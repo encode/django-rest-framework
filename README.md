@@ -21,13 +21,14 @@ The initial aim is to provide a single full-time position on REST framework.
 
 [![][sentry-img]][sentry-url]
 [![][stream-img]][stream-url]
+[![][spacinov-img]][spacinov-url]
 [![][retool-img]][retool-url]
 [![][bitio-img]][bitio-url]
 [![][posthog-img]][posthog-url]
 [![][cryptapi-img]][cryptapi-url]
 [![][fezto-img]][fezto-url]
 
-Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Sentry][sentry-url], [Stream][stream-url], [Retool][retool-url], [bit.io][bitio-url], [PostHog][posthog-url], [CryptAPI][cryptapi-url], and [FEZTO][fezto-url].
+Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Sentry][sentry-url], [Stream][stream-url], [Spacinov][spacinov-url], [Retool][retool-url], [bit.io][bitio-url], [PostHog][posthog-url], [CryptAPI][cryptapi-url], and [FEZTO][fezto-url].
 
 ---
 
@@ -193,6 +194,7 @@ Please see the [security policy][security-policy].
 
 [sentry-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/sentry-readme.png
 [stream-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/stream-readme.png
+[spacinov-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/spacinov-readme.png
 [retool-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/retool-readme.png
 [bitio-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/bitio-readme.png
 [posthog-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/posthog-readme.png
@@ -201,6 +203,7 @@ Please see the [security policy][security-policy].
 
 [sentry-url]: https://getsentry.com/welcome/
 [stream-url]: https://getstream.io/?utm_source=DjangoRESTFramework&utm_medium=Webpage_Logo_Ad&utm_content=Developer&utm_campaign=DjangoRESTFramework_Jan2022_HomePage
+[spacinov-url]: https://www.spacinov.com/
 [retool-url]: https://retool.com/?utm_source=djangorest&utm_medium=sponsorship
 [bitio-url]: https://bit.io/jobs?utm_source=DRF&utm_medium=sponsor&utm_campaign=DRF_sponsorship
 [posthog-url]: https://posthog.com?utm_source=drf&utm_medium=sponsorship&utm_campaign=open-source-sponsorship
