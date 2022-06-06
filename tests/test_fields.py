@@ -9,13 +9,15 @@ import pytz
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.http import QueryDict
 from django.test import TestCase, override_settings
-from django.utils.timezone import activate, deactivate, override, utc
+from django.utils.timezone import activate, deactivate, override
 
 import rest_framework
 from rest_framework import exceptions, serializers
 from rest_framework.fields import (
     BuiltinSignatureError, DjangoImageField, is_simple_callable
 )
+
+utc = datetime.timezone.utc
 
 # Tests for helper functions.
 # ---------------------------
@@ -72,6 +74,10 @@ class TestIsSimpleCallable:
         assert is_simple_callable(valid)
         assert is_simple_callable(valid_vargs_kwargs)
         assert not is_simple_callable(invalid)
+
+    @pytest.mark.parametrize('obj', (True, None, "str", b'bytes', 123, 1.23))
+    def test_not_callable(self, obj):
+        assert not is_simple_callable(obj)
 
     def test_4602_regression(self):
         from django.db import models
