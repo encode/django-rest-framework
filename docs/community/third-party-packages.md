@@ -149,6 +149,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [django-api-client][django-api-client] - DRF client that groups the Endpoint response, for use in CBVs and FBV as if you were working with Django's Native Models..
 * [fast-drf] - A model based library for making API development faster and easier.
 * [django-requestlogs] - Providing middleware and other helpers for audit logging for REST framework.
+* [drf-standardized-errors][drf-standardized-errors] - DRF exception handler to standardize error responses for all API endpoints.
 
 [cite]: http://www.software-ecosystems.com/Software_Ecosystems/Ecosystems.html
 [cookiecutter]: https://github.com/jpadilla/cookiecutter-django-rest-framework
@@ -239,3 +240,4 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [rest-framework-actions]: https://github.com/AlexisMunera98/rest-framework-actions
 [fast-drf]: https://github.com/iashraful/fast-drf
 [django-requestlogs]: https://github.com/Raekkeri/django-requestlogs
+[drf-standardized-errors]: https://github.com/ghazi-git/drf-standardized-errors
