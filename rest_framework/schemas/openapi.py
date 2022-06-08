@@ -636,7 +636,7 @@ class AutoSchema(ViewInspector):
         """
         return self.get_serializer(path, method)
 
-    def _get_reference(self, serializer):
+    def get_reference(self, serializer):
         return {'$ref': '#/components/schemas/{}'.format(self.get_component_name(serializer))}
 
     def get_request_body(self, path, method):
@@ -650,7 +650,7 @@ class AutoSchema(ViewInspector):
         if not isinstance(serializer, serializers.Serializer):
             item_schema = {}
         else:
-            item_schema = self._get_reference(serializer)
+            item_schema = self.get_reference(serializer)
 
         return {
             'content': {
@@ -674,7 +674,7 @@ class AutoSchema(ViewInspector):
         if not isinstance(serializer, serializers.Serializer):
             item_schema = {}
         else:
-            item_schema = self._get_reference(serializer)
+            item_schema = self.get_reference(serializer)
 
         if is_list_view(path, method, self.view):
             response_schema = {
@@ -808,3 +808,11 @@ class AutoSchema(ViewInspector):
             RemovedInDRF314Warning, stacklevel=2
         )
         return self.allows_filters(path, method)
+
+    def _get_reference(self, serializer):
+        warnings.warn(
+            "Method `_get_reference()` has been renamed to `get_reference()`. "
+            "The old name will be removed in DRF v3.14.",
+            RemovedInDRF314Warning, stacklevel=2
+        )
+        return self.get_reference(serializer)
