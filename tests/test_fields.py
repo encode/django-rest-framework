@@ -1865,9 +1865,9 @@ class TestMultipleChoiceField(FieldValues):
     def test_against_partial_and_full_updates(self):
         field = serializers.MultipleChoiceField(choices=(('a', 'a'), ('b', 'b')))
         field.partial = False
-        assert field.get_value(QueryDict({})) == []
+        assert field.get_value(QueryDict('')) == []
         field.partial = True
-        assert field.get_value(QueryDict({})) == rest_framework.fields.empty
+        assert field.get_value(QueryDict('')) == rest_framework.fields.empty
 
 
 class TestEmptyMultipleChoiceField(FieldValues):
