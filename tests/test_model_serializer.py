@@ -1025,6 +1025,73 @@ class Issue2704TestCase(TestCase):
         assert serializer.data == expected
 
 
+class Issue7550FooModel(models.Model):
+    text = models.CharField(max_length=100)
+    bar = models.ForeignKey(
+        'Issue7550BarModel', null=True, blank=True, on_delete=models.SET_NULL,
+        related_name='foos', related_query_name='foo')
+
+
+class Issue7550BarModel(models.Model):
+    pass
+
+
+class Issue7550TestCase(TestCase):
+
+    def test_dotted_source(self):
+
+        class _FooSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Issue7550FooModel
+                fields = ('id', 'text')
+
+        class FooSerializer(serializers.ModelSerializer):
+            other_foos = _FooSerializer(source='bar.foos', many=True)
+
+            class Meta:
+                model = Issue7550BarModel
+                fields = ('id', 'other_foos')
+
+        bar = Issue7550BarModel.objects.create()
+        foo_a = Issue7550FooModel.objects.create(bar=bar, text='abc')
+        foo_b = Issue7550FooModel.objects.create(bar=bar, text='123')
+
+        assert FooSerializer(foo_a).data == {
+            'id': foo_a.id,
+            'other_foos': [
+                {
+                    'id': foo_a.id,
+                    'text': foo_a.text,
+                },
+                {
+                    'id': foo_b.id,
+                    'text': foo_b.text,
+                },
+            ],
+        }
+
+    def test_dotted_source_with_default(self):
+
+        class _FooSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Issue7550FooModel
+                fields = ('id', 'text')
+
+        class FooSerializer(serializers.ModelSerializer):
+            other_foos = _FooSerializer(source='bar.foos', default=[], many=True)
+
+            class Meta:
+                model = Issue7550FooModel
+                fields = ('id', 'other_foos')
+
+        foo = Issue7550FooModel.objects.create(bar=None, text='abc')
+
+        assert FooSerializer(foo).data == {
+            'id': foo.id,
+            'other_foos': [],
+        }
+
+
 class DecimalFieldModel(models.Model):
     decimal_field = models.DecimalField(
         max_digits=3,
