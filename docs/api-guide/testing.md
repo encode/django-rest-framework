@@ -299,7 +299,7 @@ similar way as with `RequestsClient`.
 
 # API Test cases
 
-REST framework includes the following test case classes, that mirror the existing Django test case classes, but use `APIClient` instead of Django's default `Client`.
+REST framework includes the following test case classes, that mirror the existing [Django's test case classes][provided_test_case_classes], but use `APIClient` instead of Django's default `Client`.
 
 * `APISimpleTestCase`
 * `APITransactionTestCase`
@@ -413,5 +413,6 @@ For example, to add support for using `format='html'` in test requests, you migh
 [client]: https://docs.djangoproject.com/en/stable/topics/testing/tools/#the-test-client
 [requestfactory]: https://docs.djangoproject.com/en/stable/topics/testing/advanced/#django.test.client.RequestFactory
 [configuration]: #configuration
-[refresh_from_db_docs]: https://docs.djangoproject.com/en/1.11/ref/models/instances/#django.db.models.Model.refresh_from_db
+[refresh_from_db_docs]: https://docs.djangoproject.com/en/stable/ref/models/instances/#django.db.models.Model.refresh_from_db
 [session_objects]: https://requests.readthedocs.io/en/master/user/advanced/#session-objects
+[provided_test_case_classes]: https://docs.djangoproject.com/en/stable/topics/testing/tools/#provided-test-case-classes

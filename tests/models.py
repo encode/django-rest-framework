@@ -1,5 +1,6 @@
 import uuid
 
+from django.contrib.auth.models import User
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -31,6 +32,10 @@ class ManyToManyTarget(RESTFrameworkModel):
 class ManyToManySource(RESTFrameworkModel):
     name = models.CharField(max_length=100)
     targets = models.ManyToManyField(ManyToManyTarget, related_name='sources')
+
+
+class BasicModelWithUsers(RESTFrameworkModel):
+    users = models.ManyToManyField(User)
 
 
 # ForeignKey

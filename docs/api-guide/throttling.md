@@ -19,7 +19,9 @@ Multiple throttles can also be used if you want to impose both burst throttling 
 
 Throttles do not necessarily only refer to rate-limiting requests.  For example a storage service might also need to throttle against bandwidth, and a paid data service might want to throttle against a certain number of a records being accessed.
 
-**The application-level throttling that REST framework provides should not be considered a security measure or protection against brute forcing or denial-of-service attacks. Deliberately malicious actors will always be able to spoof IP origins, and application-level throttling is intended for implementing policies such as different business tiers and basic protections against service over-use.**
+**The application-level throttling that REST framework provides should not be considered a security measure or protection against brute forcing or denial-of-service attacks. Deliberately malicious actors will always be able to spoof IP origins. In addition to this, the built-in throttling implementations are implemented using Django's cache framework, and use non-atomic operations to determine the request rate, which may sometimes result in some fuzziness.
+
+The application-level throttling provided by REST framework is intended for implementing policies such as different business tiers and basic protections against service over-use.**
 
 ## How throttling is determined
 
@@ -103,6 +105,12 @@ If you need to use a cache other than `'default'`, you can do so by creating a c
         cache = caches['alternate']
 
 You'll need to remember to also set your custom throttle class in the `'DEFAULT_THROTTLE_CLASSES'` settings key, or using the `throttle_classes` view attribute.
+
+## A note on concurrency
+
+The built-in throttle implementations are open to [race conditions][race], so under high concurrency they may allow a few extra requests through.
+
+If your project relies on guaranteeing the number of requests during concurrent requests, you will need to implement your own throttle class. See [issue #5181][gh5181] for more details.
 
 ---
 
@@ -212,3 +220,5 @@ The following is an example of a rate throttle, that will randomly throttle 1 in
 [identifying-clients]: http://oxpedia.org/wiki/index.php?title=AppSuite:Grizzly#Multiple_Proxies_in_front_of_the_cluster
 [cache-setting]: https://docs.djangoproject.com/en/stable/ref/settings/#caches
 [cache-docs]: https://docs.djangoproject.com/en/stable/topics/cache/#setting-up-the-cache
+[gh5181]: https://github.com/encode/django-rest-framework/issues/5181
+[race]: https://en.wikipedia.org/wiki/Race_condition#Data_race
