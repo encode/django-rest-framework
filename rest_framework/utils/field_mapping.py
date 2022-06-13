@@ -217,15 +217,9 @@ def get_field_kwargs(field_name, model_field):
         ]
 
     if getattr(model_field, 'unique', False):
-        unique_error_message = model_field.error_messages.get('unique', None)
-        if unique_error_message:
-            unique_error_message = unique_error_message % {
-                'model_name': model_field.model._meta.verbose_name,
-                'field_label': model_field.verbose_name
-            }
         validator = UniqueValidator(
             queryset=model_field.model._default_manager,
-            message=unique_error_message)
+            message=get_unique_error_message(model_field))
         validator_kwarg.append(validator)
 
     if validator_kwarg:
@@ -281,7 +275,9 @@ def get_relation_kwargs(field_name, relation_info):
         if model_field.validators:
             kwargs['validators'] = model_field.validators
         if getattr(model_field, 'unique', False):
-            validator = UniqueValidator(queryset=model_field.model._default_manager)
+            validator = UniqueValidator(
+                queryset=model_field.model._default_manager,
+                message=get_unique_error_message(model_field))
             kwargs['validators'] = kwargs.get('validators', []) + [validator]
         if to_many and not model_field.blank:
             kwargs['allow_empty'] = False
@@ -300,3 +296,13 @@ def get_url_kwargs(model_field):
     return {
         'view_name': get_detail_view_name(model_field)
     }
+
+
+def get_unique_error_message(model_field):
+    unique_error_message = model_field.error_messages.get('unique', None)
+    if unique_error_message:
+        unique_error_message = unique_error_message % {
+            'model_name': model_field.model._meta.verbose_name,
+            'field_label': model_field.verbose_name
+        }
+    return unique_error_message
