@@ -237,7 +237,7 @@ class ScopedRateThrottle(SimpleRateThrottle):
         If `view.throttle_scope` is not set, don't apply this throttle.
 
         Otherwise generate the unique cache key by concatenating the user id
-        with the '.throttle_scope` property of the view.
+        with the `.throttle_scope` property of the view.
         """
         if request.user.is_authenticated:
             ident = request.user.pk
