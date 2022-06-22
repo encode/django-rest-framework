@@ -1179,7 +1179,7 @@ class DateTimeField(Field):
         When `self.default_timezone` is `None`, always return naive datetimes.
         When `self.default_timezone` is not `None`, always return aware datetimes.
         """
-        field_timezone = getattr(self, 'timezone', self.default_timezone())
+        field_timezone = self.timezone if hasattr(self, 'timezone') else self.default_timezone()
 
         if field_timezone is not None:
             if timezone.is_aware(value):
