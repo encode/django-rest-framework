@@ -24,7 +24,7 @@ from django.utils import timezone
 from django.utils.dateparse import (
     parse_date, parse_datetime, parse_duration, parse_time
 )
-from django.utils.duration import duration_string
+from django.utils.duration import duration_iso_string, duration_string
 from django.utils.encoding import is_protected_type, smart_str
 from django.utils.formats import localize_input, sanitize_separators
 from django.utils.ipv6 import clean_ipv6_address
@@ -1351,9 +1351,11 @@ class DurationField(Field):
         'overflow': _('The number of days must be between {min_days} and {max_days}.'),
     }
 
-    def __init__(self, **kwargs):
+    def __init__(self, format=empty, **kwargs):
         self.max_value = kwargs.pop('max_value', None)
         self.min_value = kwargs.pop('min_value', None)
+        if format is not empty:
+            self.format = format
         super().__init__(**kwargs)
         if self.max_value is not None:
             message = lazy_format(self.error_messages['max_value'], max_value=self.max_value)
@@ -1376,6 +1378,13 @@ class DurationField(Field):
         self.fail('invalid', format='[DD] [HH:[MM:]]ss[.uuuuuu]')
 
     def to_representation(self, value):
+        output_format = getattr(self, 'format', api_settings.DURATION_FORMAT)
+
+        if output_format is None or isinstance(value, str):
+            return value
+
+        if output_format.lower() == ISO_8601:
+            return duration_iso_string(value)
         return duration_string(value)
 
 
