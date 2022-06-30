@@ -385,7 +385,7 @@ The `validated_data` for these fields will contain a `datetime.timedelta` instan
 * `min_value` Validate that the duration provided is no less than this value.
 
 #### `DurationField` format strings
-Format strings may either be the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style intervals should be used (eg `'P4DT1H15M20S'`), or the special string `'standard'`, which indicates that Django interval format `'[DD] [HH:[MM:]]ss[.uuuuuu]'` hould be used (eg: `'4 1:15:20'`).
+Format strings may either be the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style intervals should be used (eg `'P4DT1H15M20S'`), or the special string `'standard'`, which indicates that Django interval format `'[DD] [HH:[MM:]]ss[.uuuuuu]'` should be used (eg: `'4 1:15:20'`).
 
 ---
 
