@@ -8,7 +8,7 @@ from django.utils import six
 
 from rest_framework import exceptions
 
-SAFE_METHODS = ('GET', 'HEAD', 'OPTIONS')
+SAFE_METHODS = ('GET', 'HEAD','OPTIONS')
 
 
 class OperationHolderMixin:
