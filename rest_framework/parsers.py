@@ -13,13 +13,14 @@ from django.http import QueryDict
 from django.http.multipartparser import ChunkIter
 from django.http.multipartparser import \
     MultiPartParser as DjangoMultiPartParser
-from django.http.multipartparser import MultiPartParserError, parse_header
+from django.http.multipartparser import MultiPartParserError
 from django.utils.encoding import force_str
 
 from rest_framework import renderers
 from rest_framework.exceptions import ParseError
 from rest_framework.settings import api_settings
 from rest_framework.utils import json
+from rest_framework.compat import parse_header_params
 
 
 class DataAndFiles:
@@ -201,7 +202,7 @@ class FileUploadParser(BaseParser):
 
         try:
             meta = parser_context['request'].META
-            disposition = parse_header(meta['HTTP_CONTENT_DISPOSITION'].encode())
+            disposition = parse_header_params(meta['HTTP_CONTENT_DISPOSITION'])
             filename_parm = disposition[1]
             if 'filename*' in filename_parm:
                 return self.get_encoded_filename(filename_parm)

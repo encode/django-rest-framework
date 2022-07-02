@@ -2,6 +2,7 @@
 The `compat` module provides support for backwards compatibility with older
 versions of Django/Python, and compatibility wrappers around optional packages.
 """
+import django
 from django.conf import settings
 from django.views.generic import View
 
@@ -157,3 +158,19 @@ else:
 SHORT_SEPARATORS = (',', ':')
 LONG_SEPARATORS = (', ', ': ')
 INDENT_SEPARATORS = (',', ': ')
+
+
+if django.VERSION > (4, 1):
+    from django.utils.http import parse_header_parameters
+
+    def parse_header_params(params, encoding='utf-8'):
+        key, pdict =  parse_header_parameters(params)
+        # parse_header_params expects values in the bytes format and
+        # returns string values.
+        pdict = {k:v.encode(encoding) for k, v in pdict.items()}
+        return key, pdict
+else:
+    from django.http.multipartparser import parse_header
+
+    def parse_header_params(params, encoding='utf-8'):
+        return parse_header(params.encode(encoding))
