@@ -81,27 +81,44 @@ class TestAPITestClient(TestCase):
             response = self.client.get('/view/')
             assert response.data['auth'] == 'example'
 
-    def test_force_authenticate(self):
+    def test_force_authenticate_with_user(self):
         """
-        Setting `.force_authenticate()` forcibly authenticates each request.
+        Setting `.force_authenticate()` with a user forcibly authenticates each
+        request with that user.
         """
-        # User only
         user = User.objects.create_user('example', 'example@example.com')
+
         self.client.force_authenticate(user=user)
         response = self.client.get('/view/')
+
         assert response.data['user'] == 'example'
         assert 'token' not in response.data
 
-        # Token only
+    def test_force_authenticate_with_token(self):
+        """
+        Setting `.force_authenticate()` with a token forcibly authenticates each
+        request with that token.
+        """
+        user = User.objects.create_user('example', 'example@example.com')
         token = Token.objects.create(key='xyz', user=user)
+
         self.client.force_authenticate(token=token)
         response = self.client.get('/view/')
+
         assert response.data['token'] == 'xyz'
         assert 'user' not in response.data
 
-        # User and token
+    def test_force_authenticate_with_user_and_token(self):
+        """
+        Setting `.force_authenticate()` with a user and token forcibly
+        authenticates each request with that user and token.
+        """
+        user = User.objects.create_user('example', 'example@example.com')
+        token = Token.objects.create(key='xyz', user=user)
+        
         self.client.force_authenticate(user=user, token=token)
         response = self.client.get('/view/')
+
         assert response.data['user'] == 'example'
         assert response.data['token'] == 'xyz'
 
