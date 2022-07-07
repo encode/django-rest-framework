@@ -152,6 +152,8 @@ A simple renderer that simply returns pre-rendered HTML.  Unlike other renderers
 
 An example of a view that uses `StaticHTMLRenderer`:
 
+    from rest_framework.decorators import renderer_classes
+
     @api_view(['GET'])
     @renderer_classes([StaticHTMLRenderer])
     def simple_html_view(request):
