@@ -159,8 +159,6 @@ if django.VERSION >= (4, 2):
     #       which is slightly different from the one in 4.2, it needs
     #       the compatibility shim as well.
     from django.utils.http import parse_header_parameters
-    parse_header_parameters = parse_header_parameters
-
 else:
     # Django <= 4.1: create a compatibility shim for parse_header_parameters
     from django.http.multipartparser import parse_header
