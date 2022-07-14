@@ -14,7 +14,6 @@ from django import forms
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.paginator import Page
-from django.http.multipartparser import parse_header
 from django.template import engines, loader
 from django.urls import NoReverseMatch
 from django.utils.html import mark_safe
@@ -22,7 +21,7 @@ from django.utils.html import mark_safe
 from rest_framework import VERSION, exceptions, serializers, status
 from rest_framework.compat import (
     INDENT_SEPARATORS, LONG_SEPARATORS, SHORT_SEPARATORS, coreapi, coreschema,
-    pygments_css, yaml
+    parse_header_parameters, pygments_css, yaml
 )
 from rest_framework.exceptions import ParseError
 from rest_framework.request import is_form_media_type, override_method
@@ -72,7 +71,7 @@ class JSONRenderer(BaseRenderer):
             # If the media type looks like 'application/json; indent=4',
             # then pretty print the result.
             # Note that we coerce `indent=0` into `indent=None`.
-            base_media_type, params = parse_header(accepted_media_type.encode('ascii'))
+            base_media_type, params = parse_header_parameters(accepted_media_type)
             try:
                 return zero_as_none(max(min(int(params['indent']), 8), 0))
             except (KeyError, ValueError, TypeError):
