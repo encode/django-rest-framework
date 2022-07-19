@@ -615,6 +615,7 @@ class StaticHTMLRendererTests(TestCase):
 
     def test_static_renderer_with_exception(self):
         context = {
+            'view': APIView(),
             'response': Response(status=500, exception=True),
             'request': Request(HttpRequest())
         }

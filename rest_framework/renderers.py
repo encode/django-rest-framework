@@ -169,10 +169,16 @@ class TemplateHTMLRenderer(BaseRenderer):
         return loader.select_template(template_names)
 
     def get_template_context(self, data, renderer_context):
+        result = {k: renderer_context[k] for k in ('request', 'response', 'view')}
+        result['data'] = data
+        try:
+            result.update(data)  # for compatibility
+        except TypeError:
+            pass
         response = renderer_context['response']
         if response.exception:
-            data['status_code'] = response.status_code
-        return data
+            result['status_code'] = response.status_code
+        return result
 
     def get_template_names(self, response, view):
         if response.template_name:
