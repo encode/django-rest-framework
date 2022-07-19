@@ -17,25 +17,24 @@ Here's an example of a view that returns a list of "Profile" instances, rendered
 **views.py**:
 
     from my_project.example.models import Profile
-    from rest_framework.renderers import TemplateHTMLRenderer
+    from my_project.example.serializers import ProfileSerializer
+    from rest_framework.generics import ListAPIView
+    from rest_framework.renderers import JSONPRenderer, TemplateHTMLRenderer
     from rest_framework.response import Response
-    from rest_framework.views import APIView
 
 
-    class ProfileList(APIView):
-        renderer_classes = [TemplateHTMLRenderer]
+    class ProfileListView(ListAPIView):
+        queryset = Profile.objects.all()
+        serializer_class = ProfileSerializer
+        renderer_classes = [JSONPRenderer, TemplateHTMLRenderer]
         template_name = 'profile_list.html'
-
-        def get(self, request):
-            queryset = Profile.objects.all()
-            return Response({'profiles': queryset})
 
 **profile_list.html**:
 
     <html><body>
     <h1>Profiles</h1>
     <ul>
-        {% for profile in profiles %}
+        {% for profile in data %}
         <li>{{ profile.name }}</li>
         {% endfor %}
     </ul>
@@ -55,7 +54,7 @@ The following view demonstrates an example of using a serializer in a template f
     from rest_framework.views import APIView
 
 
-    class ProfileDetail(APIView):
+    class ProfileDetailView(APIView):
         renderer_classes = [TemplateHTMLRenderer]
         template_name = 'profile_detail.html'
 
@@ -66,7 +65,7 @@ The following view demonstrates an example of using a serializer in a template f
 
         def post(self, request, pk):
             profile = get_object_or_404(Profile, pk=pk)
-            serializer = ProfileSerializer(profile, data=request.data)
+            serializer = ProfileSerializer(profile, request.data)
             if not serializer.is_valid():
                 return Response({'serializer': serializer, 'profile': profile})
             serializer.save()

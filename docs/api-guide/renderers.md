@@ -100,18 +100,9 @@ The default JSON encoding style can be altered using the `UNICODE_JSON` and `COM
 
 Renders data to HTML, using Django's standard template rendering.
 Unlike other renderers, the data passed to the `Response` does not need to be serialized.  Also, unlike other renderers, you may want to include a `template_name` argument when creating the `Response`.
+The `TemplateHTMLRenderer` will create the template context with keys `data`, `request`, `response`, `view` and determine a template name to use to render it.
 
-The TemplateHTMLRenderer will create a `RequestContext`, using the `response.data` as the context dict, and determine a template name to use to render the context.
-
----
-
-**Note:** When used with a view that makes use of a serializer the `Response` sent for rendering may not be a dictionary and will need to be wrapped in a dict before returning to allow the TemplateHTMLRenderer to render it. For example:
-
-```
-response.data = {'results': response.data}
-```
-
----
+**Note:** For compatibility reasons, the context may contain all response data at the top level as well as the `status_code` key.
 
 The template name is determined by (in order of preference):
 
