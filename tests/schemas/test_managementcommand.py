@@ -52,7 +52,7 @@ class GenerateSchemaTests(TestCase):
     @pytest.mark.skipif(yaml is None, reason='PyYAML is required.')
     def test_renders_default_schema_with_custom_title_url_and_description(self):
         call_command('generateschema',
-                     '--title=EampleAPI',
+                     '--title=ExampleAPI',
                      '--url=http://api.example.com',
                      '--description=Example description',
                      stdout=self.out)
