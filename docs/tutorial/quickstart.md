@@ -55,9 +55,9 @@ Now sync your database for the first time:
 
     python manage.py migrate
 
-We'll also create an initial user named `admin` with a password of `password123`. We'll authenticate as that user later in our example.
+We'll also create an initial user named `admin` with a password. We'll authenticate as that user later in our example.
 
-    python manage.py createsuperuser --email admin@example.com --username admin
+    python manage.py createsuperuser --username admin --email admin@example.com
 
 Once you've set up a database and the initial user is created and ready to go, open up the app's directory and we'll get coding...
 
@@ -168,29 +168,30 @@ We're now ready to test the API we've built.  Let's fire up the server from the 
 
 We can now access our API, both from the command-line, using tools like `curl`...
 
-    bash: curl -H 'Accept: application/json; indent=4' -u admin:password123 http://127.0.0.1:8000/users/
+    bash: curl -u admin -H 'Accept: application/json; indent=4' http://127.0.0.1:8000/users/
+    Enter host password for user 'admin':
     {
-        "count": 2,
+        "count": 1,
         "next": null,
         "previous": null,
         "results": [
             {
-                "email": "admin@example.com",
-                "groups": [],
                 "url": "http://127.0.0.1:8000/users/1/",
-                "username": "admin"
-            },
+                "username": "admin",
+                "email": "admin@example.com",
+                "groups": []
+            }
         ]
     }
 
 Or using the [httpie][httpie], command line tool...
 
-    bash: http -a admin:password123 http://127.0.0.1:8000/users/
-
-    HTTP/1.1 200 OK
+    bash: http -a admin http://127.0.0.1:8000/users/
+    http: password for admin@127.0.0.1:8000:: 
+    $HTTP/1.1 200 OK
     ...
     {
-        "count": 2,
+        "count": 1,
         "next": null,
         "previous": null,
         "results": [
@@ -199,7 +200,7 @@ Or using the [httpie][httpie], command line tool...
                 "groups": [],
                 "url": "http://127.0.0.1:8000/users/1/",
                 "username": "admin"
-            },
+            }
         ]
     }
 
