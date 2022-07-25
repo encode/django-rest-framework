@@ -30,22 +30,24 @@ The project layout should look like:
     <some path>/tutorial
     $ find .
     .
-    ./manage.py
     ./tutorial
+    ./tutorial/asgi.py
     ./tutorial/__init__.py
     ./tutorial/quickstart
-    ./tutorial/quickstart/__init__.py
-    ./tutorial/quickstart/admin.py
-    ./tutorial/quickstart/apps.py
     ./tutorial/quickstart/migrations
     ./tutorial/quickstart/migrations/__init__.py
     ./tutorial/quickstart/models.py
+    ./tutorial/quickstart/__init__.py
+    ./tutorial/quickstart/apps.py
+    ./tutorial/quickstart/admin.py
     ./tutorial/quickstart/tests.py
     ./tutorial/quickstart/views.py
-    ./tutorial/asgi.py
     ./tutorial/settings.py
     ./tutorial/urls.py
     ./tutorial/wsgi.py
+    ./env
+    ./env/...
+    ./manage.py
 
 It may look unusual that the application has been created within the project directory. Using the project's namespace avoids name clashes with external modules (a topic that goes outside the scope of the quickstart).
 
@@ -194,8 +196,8 @@ Or using the [httpie][httpie], command line tool...
             {
                 "email": "admin@example.com",
                 "groups": [],
-                "url": "http://localhost:8000/users/1/",
-                "username": "paul"
+                "url": "http://127.0.0.1:8000/users/1/",
+                "username": "admin"
             },
         ]
     }
