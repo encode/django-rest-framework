@@ -65,7 +65,7 @@ Once you've set up a database and the initial user is created and ready to go, o
 
 First up we're going to define some serializers. Let's create a new module named `tutorial/quickstart/serializers.py` that we'll use for our data representations.
 
-    from django.contrib.auth.models import User, Group
+    from django.contrib.auth.models import Group, User
     from rest_framework import serializers
 
 
@@ -86,10 +86,10 @@ Notice that we're using hyperlinked relations in this case with `HyperlinkedMode
 
 Right, we'd better write some views then.  Open `tutorial/quickstart/views.py` and get typing.
 
-    from django.contrib.auth.models import User, Group
-    from rest_framework import viewsets
-    from rest_framework import permissions
-    from tutorial.quickstart.serializers import UserSerializer, GroupSerializer
+    from django.contrib.auth.models import Group, User
+    from rest_framework import permissions, viewsets
+
+    from tutorial.quickstart.serializers import GroupSerializer, UserSerializer
 
 
     class UserViewSet(viewsets.ModelViewSet):
@@ -119,6 +119,7 @@ Okay, now let's wire up the API URLs.  On to `tutorial/urls.py`...
 
     from django.urls import include, path
     from rest_framework import routers
+
     from tutorial.quickstart import views
 
     router = routers.DefaultRouter()
