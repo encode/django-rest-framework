@@ -52,9 +52,9 @@ class GenerateSchemaTests(TestCase):
     @pytest.mark.skipif(yaml is None, reason='PyYAML is required.')
     def test_renders_default_schema_with_custom_title_url_and_description(self):
         call_command('generateschema',
-                     '--title=SampleAPI',
-                     '--url=http://api.sample.com',
-                     '--description=Sample description',
+                     '--title=ExampleAPI',
+                     '--url=http://api.example.com',
+                     '--description=Example description',
                      stdout=self.out)
         # Check valid YAML was output.
         schema = yaml.safe_load(self.out.getvalue())
@@ -94,8 +94,8 @@ class GenerateSchemaTests(TestCase):
     @override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema'})
     def test_coreapi_renders_default_schema_with_custom_title_url_and_description(self):
         expected_out = """info:
-                            description: Sample description
-                            title: SampleAPI
+                            description: Example description
+                            title: ExampleAPI
                             version: ''
                           openapi: 3.0.0
                           paths:
@@ -103,12 +103,12 @@ class GenerateSchemaTests(TestCase):
                               get:
                                 operationId: list
                           servers:
-                          - url: http://api.sample.com/
+                          - url: http://api.example.com/
                           """
         call_command('generateschema',
-                     '--title=SampleAPI',
-                     '--url=http://api.sample.com',
-                     '--description=Sample description',
+                     '--title=ExampleAPI',
+                     '--url=http://api.example.com',
+                     '--description=Example description',
                      stdout=self.out)
 
         self.assertIn(formatting.dedent(expected_out), self.out.getvalue())
