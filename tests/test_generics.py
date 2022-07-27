@@ -11,6 +11,7 @@ from tests.models import (
     BasicModel, ForeignKeySource, ForeignKeyTarget, RESTFrameworkModel,
     UUIDForeignKeyTarget
 )
+from rest_framework.exceptions import ErrorDetail
 
 factory = APIRequestFactory()
 
@@ -519,7 +520,8 @@ class TestFilterBackendAppliedToViews(TestCase):
         request = factory.get('/1')
         response = instance_view(request, pk=1).render()
         assert response.status_code == status.HTTP_404_NOT_FOUND
-        assert response.data == {'detail': 'Not found.'}
+        assert response.data == {
+            'detail': ErrorDetail(string='No BasicModel matches the given query.', code='not_found')}
 
     def test_get_instance_view_will_return_single_object_when_filter_does_not_exclude_it(self):
         """
