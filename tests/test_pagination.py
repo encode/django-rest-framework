@@ -180,8 +180,9 @@ class TestPageNumberPagination:
     def get_html_context(self):
         return self.pagination.get_html_context()
 
-    def test_no_page_number(self):
-        request = Request(factory.get('/'))
+    @pytest.mark.parametrize('url', ['/', '/?page='])
+    def test_no_page_number(self, url):
+        request = Request(factory.get(url))
         queryset = self.paginate_queryset(request)
         content = self.get_paginated_content(queryset)
         context = self.get_html_context()
