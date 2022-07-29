@@ -244,7 +244,7 @@ class APISettings:
             delattr(self, '_user_settings')
 
 
-api_settings = APISettings(None, DEFAULTS, IMPORT_STRINGS)
+api_settings = APISettings(getattr(settings, 'REST_FRAMEWORK', None), DEFAULTS, IMPORT_STRINGS)
 
 
 def reload_api_settings(*args, **kwargs):
