@@ -6,6 +6,7 @@ from collections import ChainMap
 from collections.abc import Mapping
 
 import pytest
+from django.apps import apps
 from django.db import models
 
 from rest_framework import exceptions, fields, relations, serializers
@@ -669,6 +670,11 @@ class TestDeclaredFieldInheritance:
         assert len(Child._declared_fields) == 1
         assert len(Grandchild._declared_fields) == 1
 
+    @staticmethod
+    def deregister_model(model_class):
+        app_models = apps.all_models[model_class._meta.app_label]
+        del app_models[model_class._meta.model_name]
+
     def test_meta_field_disabling(self):
         # Declaratively setting a field on a child class will *not* prevent
         # the ModelSerializer from generating a default field.
@@ -690,6 +696,24 @@ class TestDeclaredFieldInheritance:
         assert len(Parent().get_fields()) == 2
         assert len(Child().get_fields()) == 2
         assert len(Grandchild().get_fields()) == 2
+
+        self.deregister_model(MyModel)
+
+    def test_lazy_load_model_serializer(self):
+        class MyModel(models.Model):
+            f1 = models.CharField(max_length=10)
+            f2 = models.CharField(max_length=10)
+
+        model_string = f"{MyModel._meta.app_label}.{MyModel._meta.model_name}"
+
+        class MyModelSerializer(serializers.LazyLoadModelSerializer):
+            class Meta:
+                model = model_string
+                fields = '__all__'
+
+        assert len(MyModelSerializer().get_fields()) == 3
+
+        self.deregister_model(MyModel)
 
     def test_multiple_inheritance(self):
         class A(serializers.Serializer):

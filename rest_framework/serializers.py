@@ -16,6 +16,7 @@ import traceback
 from collections import OrderedDict, defaultdict
 from collections.abc import Mapping
 
+from django.apps import apps
 from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import models
@@ -1014,6 +1015,27 @@ class ModelSerializer(Serializer):
 
         return instance
 
+    @classmethod
+    def check_meta(cls):
+        """
+        Check presence of Meta and Meta.model and test whether Meta.model is
+        not abstract.
+        """
+        assert hasattr(cls, 'Meta'), (
+            'Class {serializer_class} missing "Meta" attribute'.format(
+                serializer_class=cls.__class__.__name__
+            )
+        )
+        assert hasattr(cls.Meta, 'model'), (
+            'Class {serializer_class} missing "Meta.model" attribute'.format(
+                serializer_class=cls.__class__.__name__
+            )
+        )
+        if model_meta.is_abstract_model(cls.Meta.model):
+            raise ValueError(
+                'Cannot use ModelSerializer with Abstract Models.'
+            )
+
     # Determine the fields to apply...
 
     def get_fields(self):
@@ -1024,20 +1046,7 @@ class ModelSerializer(Serializer):
         if self.url_field_name is None:
             self.url_field_name = api_settings.URL_FIELD_NAME
 
-        assert hasattr(self, 'Meta'), (
-            'Class {serializer_class} missing "Meta" attribute'.format(
-                serializer_class=self.__class__.__name__
-            )
-        )
-        assert hasattr(self.Meta, 'model'), (
-            'Class {serializer_class} missing "Meta.model" attribute'.format(
-                serializer_class=self.__class__.__name__
-            )
-        )
-        if model_meta.is_abstract_model(self.Meta.model):
-            raise ValueError(
-                'Cannot use ModelSerializer with Abstract Models.'
-            )
+        self.check_meta()
 
         declared_fields = copy.deepcopy(self._declared_fields)
         model = getattr(self.Meta, 'model')
@@ -1664,3 +1673,41 @@ class HyperlinkedModelSerializer(ModelSerializer):
         field_kwargs = get_nested_relation_kwargs(relation_info)
 
         return field_class, field_kwargs
+
+
+class LazyLoadModelSerializer(ModelSerializer):
+    """
+    Lazy loads the model from django.apps.apps during instance creation.
+    """
+
+    @classmethod
+    def get_model(cls):
+        """
+        Splits the app_label and model_name from Meta.model and fetches model
+        from model registry.
+        """
+        try:
+            app_label, model_name = cls.Meta.model.split(".")
+        except ValueError:
+            raise ValueError(
+                "Please provide the app_label and model_name in dot notation."
+            )
+        return apps.get_model(app_label, model_name=model_name)
+
+    @classmethod
+    def load_model(cls):
+        """
+        Loads the model and sets it.
+        """
+        cls.check_meta()
+        if not isinstance(cls.Meta.model, str):
+            return
+
+        cls.Meta.model = cls.get_model()
+
+    def __new__(cls, *args, **kwargs):
+        """
+        Overridden to load the model.
+        """
+        cls.load_model()
+        return super().__new__(cls, *args, **kwargs)
