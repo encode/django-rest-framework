@@ -206,7 +206,7 @@ class APISettings:
     @property
     def user_settings(self):
         if not hasattr(self, '_user_settings'):
-            self._user_settings = getattr(settings, 'REST_FRAMEWORK', {})
+            self._user_settings = self.__check_user_settings(getattr(settings, 'REST_FRAMEWORK', {}))
         return self._user_settings
 
     def __getattr__(self, attr):
