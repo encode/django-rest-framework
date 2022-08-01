@@ -72,19 +72,19 @@ class ErrorDetail(str):
         return self
 
     def __eq__(self, other):
-        r = super().__eq__(other)
-        if r is NotImplemented:
+        result = super().__eq__(other)
+        if result is NotImplemented:
             return NotImplemented
         try:
-            return r and self.code == other.code
+            return result and self.code == other.code
         except AttributeError:
-            return r
+            return result
 
     def __ne__(self, other):
-        r = self.__eq__(other)
-        if r is NotImplemented:
+        result = self.__eq__(other)
+        if result is NotImplemented:
             return NotImplemented
-        return not r
+        return not result
 
     def __repr__(self):
         return 'ErrorDetail(string=%r, code=%r)' % (
