@@ -566,7 +566,7 @@ class TestCreateOnlyDefault:
 
     def test_create_only_default_callable_sets_context(self):
         """
-        CreateOnlyDefault instances with a callable default should set_context
+        CreateOnlyDefault instances with a callable default should set context
         on the callable if possible
         """
         class TestCallableDefault:
