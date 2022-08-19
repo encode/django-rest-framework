@@ -1,5 +1,7 @@
 import copy
 
+import django
+import pytest
 from django.test import TestCase
 
 from rest_framework import status
@@ -136,6 +138,10 @@ class FunctionBasedViewIntegrationTests(TestCase):
         assert sanitise_json_error(response.data) == expected
 
 
+@pytest.mark.skipif(
+    django.VERSION < (3, 1),
+    reason="Async view support requires Django 3.1 or higher",
+)
 class ClassBasedAsyncViewIntegrationTests(TestCase):
     def setUp(self):
         self.view = BasicAsyncView.as_view()

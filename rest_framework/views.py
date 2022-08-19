@@ -2,7 +2,8 @@
 Provides an APIView class that is the base of all views in REST framework.
 """
 import asyncio
-from asgiref.sync import async_to_sync
+
+import django
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.db import connections, models
@@ -19,6 +20,11 @@ from rest_framework.response import Response
 from rest_framework.schemas import DefaultSchema
 from rest_framework.settings import api_settings
 from rest_framework.utils import formatting
+
+if django.VERSION >= (3, 1):
+    from asgiref.sync import async_to_sync
+else:
+    async_to_sync = None
 
 
 def get_view_name(view):
@@ -506,6 +512,8 @@ class APIView(View):
                 handler = self.http_method_not_allowed
 
             if asyncio.iscoroutinefunction(handler):
+                if not async_to_sync:
+                    raise Exception('Async API views are supported only for django>=3.1.')
                 response = async_to_sync(handler)(request, *args, **kwargs)
             else:
                 response = handler(request, *args, **kwargs)
