@@ -22,16 +22,24 @@ class BasicView(APIView):
         return Response({'method': 'POST', 'data': request.data})
 
 
+class BasicAsyncView(APIView):
+    async def get(self, request, *args, **kwargs):
+        return Response({'method': 'GET'})
+
+    async def post(self, request, *args, **kwargs):
+        return Response({'method': 'POST', 'data': request.data})
+
+
 @api_view(['GET', 'POST', 'PUT', 'PATCH'])
 def basic_view(request):
     if request.method == 'GET':
-        return {'method': 'GET'}
+        return Response({'method': 'GET'})
     elif request.method == 'POST':
-        return {'method': 'POST', 'data': request.data}
+        return Response({'method': 'POST', 'data': request.data})
     elif request.method == 'PUT':
-        return {'method': 'PUT', 'data': request.data}
+        return Response({'method': 'PUT', 'data': request.data})
     elif request.method == 'PATCH':
-        return {'method': 'PATCH', 'data': request.data}
+        return Response({'method': 'PATCH', 'data': request.data})
 
 
 class ErrorView(APIView):
@@ -72,6 +80,23 @@ class ClassBasedViewIntegrationTests(TestCase):
     def setUp(self):
         self.view = BasicView.as_view()
 
+    def test_get_succeeds(self):
+        request = factory.get('/', content_type='application/json')
+        response = self.view(request)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == {'method': 'GET'}
+
+    # def test_post_succeeds(self):
+    #     request = factory.post('/', {"test": "foo"}, content_type='application/json')
+    #     response = self.view(request)
+    #     import pdb; pdb.set_trace()
+    #     expected = {
+    #         'method': 'POST',
+    #         'data': {'test': 'foo'}
+    #     }
+    #     assert response.status_code == status.HTTP_200_OK
+    #     assert response.data == expected
+
     def test_400_parse_error(self):
         request = factory.post('/', 'f00bar', content_type='application/json')
         response = self.view(request)
@@ -85,6 +110,52 @@ class ClassBasedViewIntegrationTests(TestCase):
 class FunctionBasedViewIntegrationTests(TestCase):
     def setUp(self):
         self.view = basic_view
+
+    def test_get_succeeds(self):
+        request = factory.get('/', content_type='application/json')
+        response = self.view(request)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == {'method': 'GET'}
+
+    # def test_post_succeeds(self):
+    #     request = factory.post('/', {'test': 'foo'}, content_type='application/json')
+    #     response = self.view(request)
+    #     expected = {
+    #         'method': 'POST',
+    #         'data': {'test': 'foo'}
+    #     }
+    #     assert response.status_code == status.HTTP_200_OK
+    #     assert response.data == expected
+
+    def test_400_parse_error(self):
+        request = factory.post('/', 'f00bar', content_type='application/json')
+        response = self.view(request)
+        expected = {
+            'detail': JSON_ERROR
+        }
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert sanitise_json_error(response.data) == expected
+
+
+class ClassBasedAsyncViewIntegrationTests(TestCase):
+    def setUp(self):
+        self.view = BasicAsyncView.as_view()
+
+    def test_get_succeeds(self):
+        request = factory.get('/', content_type='application/json')
+        response = self.view(request)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == {'method': 'GET'}
+
+#     def test_post_succeeds(self):
+#         request = factory.post('/', {'test': 'foo'}, content_type='application/json')
+#         response = self.view(request)
+#         expected = {
+#             'method': 'POST',
+#             'data': {'test': 'foo'}
+#         }
+#         assert response.status_code == status.HTTP_200_OK
+#         assert response.data == expected
 
     def test_400_parse_error(self):
         request = factory.post('/', 'f00bar', content_type='application/json')

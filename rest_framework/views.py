@@ -1,6 +1,8 @@
 """
 Provides an APIView class that is the base of all views in REST framework.
 """
+import asyncio
+from asgiref.sync import async_to_sync
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.db import connections, models
@@ -503,7 +505,10 @@ class APIView(View):
             else:
                 handler = self.http_method_not_allowed
 
-            response = handler(request, *args, **kwargs)
+            if asyncio.iscoroutinefunction(handler):
+                response = async_to_sync(handler)(request, *args, **kwargs)
+            else:
+                response = handler(request, *args, **kwargs)
 
         except Exception as exc:
             response = self.handle_exception(exc)
