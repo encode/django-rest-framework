@@ -41,6 +41,13 @@ except ImportError:
     uritemplate = None
 
 
+# async_to_sync is required for async View support
+if django.VERSION >= (3, 1):
+    from asgiref.sync import async_to_sync
+else:
+    async_to_sync = None
+
+
 # coreschema is optional
 try:
     import coreschema
