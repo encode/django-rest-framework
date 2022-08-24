@@ -21,7 +21,7 @@ class BaseFilterBackend:
     A base class from which all filter backend classes should inherit.
     """
 
-    def filter_queryset(self, request, queryset, view):
+    def filter_queryset(self, request, queryset, view, *args, **kwargs):
         """
         Return a filtered queryset.
         """
