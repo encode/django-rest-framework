@@ -14,7 +14,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
 from rest_framework import exceptions, status
-from rest_framework.compat import async_to_sync
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.schemas import DefaultSchema
@@ -506,12 +505,7 @@ class APIView(View):
             else:
                 handler = self.http_method_not_allowed
 
-            if asyncio.iscoroutinefunction(handler):
-                if not async_to_sync:
-                    raise Exception('Async API views are supported only for django>=3.1.')
-                response = async_to_sync(handler)(request, *args, **kwargs)
-            else:
-                response = handler(request, *args, **kwargs)
+            response = handler(request, *args, **kwargs)
 
         except Exception as exc:
             response = self.handle_exception(exc)
@@ -527,3 +521,37 @@ class APIView(View):
             return self.http_method_not_allowed(request, *args, **kwargs)
         data = self.metadata_class().determine_metadata(request, self)
         return Response(data, status=status.HTTP_200_OK)
+
+
+class AsyncAPIView(APIView):
+    async def dispatch(self, request, *args, **kwargs):
+        """
+        `.dispatch()` is pretty much the same as Django's regular dispatch,
+        but with extra hooks for startup, finalize, and exception handling.
+        """
+        self.args = args
+        self.kwargs = kwargs
+        request = self.initialize_request(request, *args, **kwargs)
+        self.request = request
+        self.headers = self.default_response_headers  # deprecate?
+
+        try:
+            self.initial(request, *args, **kwargs)
+
+            # Get the appropriate handler method
+            if request.method.lower() in self.http_method_names:
+                handler = getattr(self, request.method.lower(),
+                                  self.http_method_not_allowed)
+            else:
+                handler = self.http_method_not_allowed
+
+            if asyncio.iscoroutinefunction(handler):
+                response = await handler(request, *args, **kwargs)
+            else:
+                raise Exception('Async methods should be used on an async view.')
+
+        except Exception as exc:
+            response = self.handle_exception(exc)
+
+        self.response = self.finalize_response(request, response, *args, **kwargs)
+        return self.response

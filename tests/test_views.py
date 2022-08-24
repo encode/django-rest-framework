@@ -5,11 +5,12 @@ import pytest
 from django.test import TestCase
 
 from rest_framework import status
+from rest_framework.compat import async_to_sync
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.settings import APISettings, api_settings
 from rest_framework.test import APIRequestFactory
-from rest_framework.views import APIView
+from rest_framework.views import APIView, AsyncAPIView
 
 factory = APIRequestFactory()
 
@@ -24,7 +25,7 @@ class BasicView(APIView):
         return Response({'method': 'POST', 'data': request.data})
 
 
-class BasicAsyncView(APIView):
+class BasicAsyncView(AsyncAPIView):
     async def get(self, request, *args, **kwargs):
         return Response({'method': 'GET'})
 
@@ -139,8 +140,8 @@ class FunctionBasedViewIntegrationTests(TestCase):
 
 
 @pytest.mark.skipif(
-    django.VERSION < (3, 1),
-    reason="Async view support requires Django 3.1 or higher",
+    django.VERSION < (4, 1),
+    reason="Async view support requires Django 4.1 or higher",
 )
 class ClassBasedAsyncViewIntegrationTests(TestCase):
     def setUp(self):
@@ -148,13 +149,13 @@ class ClassBasedAsyncViewIntegrationTests(TestCase):
 
     def test_get_succeeds(self):
         request = factory.get('/')
-        response = self.view(request)
+        response = async_to_sync(self.view)(request)
         assert response.status_code == status.HTTP_200_OK
         assert response.data == {'method': 'GET'}
 
     def test_post_succeeds(self):
         request = factory.post('/', {'test': 'foo'})
-        response = self.view(request)
+        response = async_to_sync(self.view)(request)
         expected = {
             'method': 'POST',
             'data': {'test': ['foo']}
@@ -164,7 +165,7 @@ class ClassBasedAsyncViewIntegrationTests(TestCase):
 
     def test_400_parse_error(self):
         request = factory.post('/', 'f00bar', content_type='application/json')
-        response = self.view(request)
+        response = async_to_sync(self.view)(request)
         expected = {
             'detail': JSON_ERROR
         }
