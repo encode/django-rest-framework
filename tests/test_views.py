@@ -10,7 +10,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.settings import APISettings, api_settings
 from rest_framework.test import APIRequestFactory
-from rest_framework.views import APIView, AsyncAPIView
+from rest_framework.views import APIView
 
 factory = APIRequestFactory()
 
@@ -25,7 +25,7 @@ class BasicView(APIView):
         return Response({'method': 'POST', 'data': request.data})
 
 
-class BasicAsyncView(AsyncAPIView):
+class BasicAsyncView(APIView):
     async def get(self, request, *args, **kwargs):
         return Response({'method': 'GET'})
 
