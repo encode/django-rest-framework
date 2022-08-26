@@ -901,6 +901,7 @@ class IntegerField(Field):
         'invalid': _('A valid integer is required.'),
         'max_value': _('Ensure this value is less than or equal to {max_value}.'),
         'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
+        'range': _('Ensure this value is in the range between {min_value} and {max_value}.'),
         'max_string_length': _('String value too large.')
     }
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
@@ -910,14 +911,22 @@ class IntegerField(Field):
         self.max_value = kwargs.pop('max_value', None)
         self.min_value = kwargs.pop('min_value', None)
         super().__init__(**kwargs)
+
+        if self.min_value is not None and self.max_value is not None:
+            message = lazy_format(
+                self.error_messages['range'], min_value=self.min_value, max_value=self.max_value)
+        else:
+            message = None
+
         if self.max_value is not None:
-            message = lazy_format(self.error_messages['max_value'], max_value=self.max_value)
             self.validators.append(
-                MaxValueValidator(self.max_value, message=message))
+                MaxValueValidator(self.max_value, message=message or lazy_format(
+                    self.error_messages['max_value'], max_value=self.max_value)))
+
         if self.min_value is not None:
-            message = lazy_format(self.error_messages['min_value'], min_value=self.min_value)
             self.validators.append(
-                MinValueValidator(self.min_value, message=message))
+                MinValueValidator(self.min_value, message=message or lazy_format(
+                    self.error_messages['min_value'], min_value=self.min_value)))
 
     def to_internal_value(self, data):
         if isinstance(data, str) and len(data) > self.MAX_STRING_LENGTH:
@@ -938,6 +947,7 @@ class FloatField(Field):
         'invalid': _('A valid number is required.'),
         'max_value': _('Ensure this value is less than or equal to {max_value}.'),
         'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
+        'range': _('Ensure this value is in the range between {min_value} and {max_value}.'),
         'max_string_length': _('String value too large.')
     }
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
@@ -946,14 +956,22 @@ class FloatField(Field):
         self.max_value = kwargs.pop('max_value', None)
         self.min_value = kwargs.pop('min_value', None)
         super().__init__(**kwargs)
+
+        if self.min_value is not None and self.max_value is not None:
+            message = lazy_format(
+                self.error_messages['range'], min_value=self.min_value, max_value=self.max_value)
+        else:
+            message = None
+
         if self.max_value is not None:
-            message = lazy_format(self.error_messages['max_value'], max_value=self.max_value)
             self.validators.append(
-                MaxValueValidator(self.max_value, message=message))
+                MaxValueValidator(self.max_value, message=message or lazy_format(
+                    self.error_messages['max_value'], max_value=self.max_value)))
+
         if self.min_value is not None:
-            message = lazy_format(self.error_messages['min_value'], min_value=self.min_value)
             self.validators.append(
-                MinValueValidator(self.min_value, message=message))
+                MinValueValidator(self.min_value, message=message or lazy_format(
+                    self.error_messages['min_value'], min_value=self.min_value)))
 
     def to_internal_value(self, data):
 
@@ -974,6 +992,7 @@ class DecimalField(Field):
         'invalid': _('A valid number is required.'),
         'max_value': _('Ensure this value is less than or equal to {max_value}.'),
         'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
+        'range': _('Ensure this value is in the range between {min_value} and {max_value}.'),
         'max_digits': _('Ensure that there are no more than {max_digits} digits in total.'),
         'max_decimal_places': _('Ensure that there are no more than {max_decimal_places} decimal places.'),
         'max_whole_digits': _('Ensure that there are no more than {max_whole_digits} digits before the decimal point.'),
@@ -1001,14 +1020,21 @@ class DecimalField(Field):
 
         super().__init__(**kwargs)
 
+        if self.min_value is not None and self.max_value is not None:
+            message = lazy_format(
+                self.error_messages['range'], min_value=self.min_value, max_value=self.max_value)
+        else:
+            message = None
+
         if self.max_value is not None:
-            message = lazy_format(self.error_messages['max_value'], max_value=self.max_value)
             self.validators.append(
-                MaxValueValidator(self.max_value, message=message))
+                MaxValueValidator(self.max_value, message=message or lazy_format(
+                    self.error_messages['max_value'], max_value=self.max_value)))
+
         if self.min_value is not None:
-            message = lazy_format(self.error_messages['min_value'], min_value=self.min_value)
             self.validators.append(
-                MinValueValidator(self.min_value, message=message))
+                MinValueValidator(self.min_value, message=message or lazy_format(
+                    self.error_messages['min_value'], min_value=self.min_value)))
 
         if rounding is not None:
             valid_roundings = [v for k, v in vars(decimal).items() if k.startswith('ROUND_')]
@@ -1346,20 +1372,29 @@ class DurationField(Field):
         'invalid': _('Duration has wrong format. Use one of these formats instead: {format}.'),
         'max_value': _('Ensure this value is less than or equal to {max_value}.'),
         'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
+        'range': _('Ensure this value is in the range between {min_value} and {max_value}.'),
     }
 
     def __init__(self, **kwargs):
         self.max_value = kwargs.pop('max_value', None)
         self.min_value = kwargs.pop('min_value', None)
         super().__init__(**kwargs)
+
+        if self.min_value is not None and self.max_value is not None:
+            message = lazy_format(
+                self.error_messages['range'], min_value=self.min_value, max_value=self.max_value)
+        else:
+            message = None
+
         if self.max_value is not None:
-            message = lazy_format(self.error_messages['max_value'], max_value=self.max_value)
             self.validators.append(
-                MaxValueValidator(self.max_value, message=message))
+                MaxValueValidator(self.max_value, message=message or lazy_format(
+                    self.error_messages['max_value'], max_value=self.max_value)))
+
         if self.min_value is not None:
-            message = lazy_format(self.error_messages['min_value'], min_value=self.min_value)
             self.validators.append(
-                MinValueValidator(self.min_value, message=message))
+                MinValueValidator(self.min_value, message=message or lazy_format(
+                    self.error_messages['min_value'], min_value=self.min_value)))
 
     def to_internal_value(self, value):
         if isinstance(value, datetime.timedelta):
@@ -1586,7 +1621,8 @@ class ListField(Field):
         'not_a_list': _('Expected a list of items but got type "{input_type}".'),
         'empty': _('This list may not be empty.'),
         'min_length': _('Ensure this field has at least {min_length} elements.'),
-        'max_length': _('Ensure this field has no more than {max_length} elements.')
+        'max_length': _('Ensure this field has no more than {max_length} elements.'),
+        'range': _('Ensure this field has at least {min_length} and no more than {max_length} elements.'),
     }
 
     def __init__(self, **kwargs):
@@ -1603,12 +1639,22 @@ class ListField(Field):
 
         super().__init__(**kwargs)
         self.child.bind(field_name='', parent=self)
+
+        if self.min_length is not None and self.max_length is not None:
+            message = lazy_format(
+                self.error_messages['range'], min_length=self.min_length, max_length=self.max_length)
+        else:
+            message = None
+
         if self.max_length is not None:
-            message = lazy_format(self.error_messages['max_length'], max_length=self.max_length)
-            self.validators.append(MaxLengthValidator(self.max_length, message=message))
+            self.validators.append(
+                MaxLengthValidator(self.max_length, message=message or lazy_format(
+                    self.error_messages['max_length'], max_length=self.max_length)))
+
         if self.min_length is not None:
-            message = lazy_format(self.error_messages['min_length'], min_length=self.min_length)
-            self.validators.append(MinLengthValidator(self.min_length, message=message))
+            self.validators.append(
+                MinLengthValidator(self.min_length, message=message or lazy_format(
+                    self.error_messages['min_length'], min_length=self.min_length)))
 
     def get_value(self, dictionary):
         if self.field_name not in dictionary:
