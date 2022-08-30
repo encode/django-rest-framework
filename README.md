@@ -90,9 +90,10 @@ Startup up a new project like so...
 Now edit the `example/urls.py` module in your project:
 
 ```python
-from django.urls import path, include
 from django.contrib.auth.models import User
-from rest_framework import serializers, viewsets, routers
+from django.urls import include, path
+from rest_framework import routers, serializers, viewsets
+
 
 # Serializers define the API representation.
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -110,7 +111,6 @@ class UserViewSet(viewsets.ModelViewSet):
 # Routers provide a way of automatically determining the URL conf.
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
-
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
