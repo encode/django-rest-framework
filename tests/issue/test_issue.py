@@ -21,7 +21,7 @@ class TestSerializer(TestCase):
         serializer = serializers.SummarySerializer(data=data)
         serializer.is_valid(raise_exception=True)
         expected_data = {
-            "items": [
+            "itemamount_set": [
                 {
                     "item": item,
                     "amount": 100,
@@ -62,5 +62,4 @@ class TestIssueViewSet(TestCase):
             ],
         }
         response = api_client.post(reverse('summary-list'), json.dumps(data), content_type='application/json')
-        print(response.content)
         assert response.status_code == 201

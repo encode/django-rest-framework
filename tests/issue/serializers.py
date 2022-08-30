@@ -12,10 +12,10 @@ class ItemAmountSerializer(serializers.ModelSerializer):
 
 
 class SummarySerializer(serializers.ModelSerializer):
-    items = ItemAmountSerializer(many=True)
+    items = ItemAmountSerializer(source='itemamount_set', many=True)
 
     def create(self, validated_data):
-        items = validated_data.pop('items')
+        items = validated_data.pop('itemamount_set')
         instance = super().create(validated_data)
         for item in items:
             instance.items.add(
