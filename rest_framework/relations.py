@@ -255,23 +255,24 @@ class PrimaryKeyRelatedField(RelatedField):
         return True
 
     def to_internal_value(self, data):
+        pk = "pk"
         if self.pk_field is not None:
-            data = self.pk_field.to_internal_value(data)
+            pk = self.pk_field         
         queryset = self.get_queryset()
         try:
             if isinstance(data, bool):
                 raise TypeError
-            return queryset.get(pk=data)
+            return queryset.get(**{pk: data})
         except ObjectDoesNotExist:
             self.fail('does_not_exist', pk_value=data)
         except (TypeError, ValueError):
             self.fail('incorrect_type', data_type=type(data).__name__)
 
     def to_representation(self, value):
+        pk = "pk"
         if self.pk_field is not None:
-            return self.pk_field.to_representation(value.pk)
-        return value.pk
-
+            pk = self.pk_field
+        return getattr(value, pk)
 
 class HyperlinkedRelatedField(RelatedField):
     lookup_field = 'pk'
