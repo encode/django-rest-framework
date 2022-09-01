@@ -217,6 +217,22 @@ You may pass `None` in order to exclude the view from schema generation.
     def view(request):
         return Response({"message": "Will not appear in schema!"})
 
+# Async Views
+
+When using Django 4.1 and above, REST framework allows you to work with async class based and function based views.
+
+For class based view, the view needs the handler methods such as `.get()`, `.post()`, `put()`, `patch()` and `.delete()` to be all async otherwise Django will raise an exception. For function based view the view needs to be async.
+
+For example:
+
+    class ListUsers(APIView):
+        async def get(self, request):
+            return Response("message": "This is an async class based view."})
+
+
+    @api_view(['GET'])
+    async def view(request):
+        return Response({"message": "This is an async function based view."})
 
 [cite]: https://reinout.vanrees.org/weblog/2011/08/24/class-based-views-usage.html
 [cite2]: http://www.boredomandlaziness.org/2012/05/djangos-cbvs-are-not-mistake-but.html
@@ -224,4 +240,3 @@ You may pass `None` in order to exclude the view from schema generation.
 [throttling]: throttling.md
 [schemas]: schemas.md
 [classy-drf]: http://www.cdrf.co
-
