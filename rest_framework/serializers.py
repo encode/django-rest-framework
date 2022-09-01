@@ -679,9 +679,18 @@ class ListSerializer(BaseSerializer):
         """
         List of object instances -> List of dicts of primitive datatypes.
         """
-        # Dealing with nested relationships, data can be a Manager,
-        # so, first get a queryset from the Manager if needed
-        iterable = data.all() if isinstance(data, models.Manager) else data
+
+        # check for additional instance attributes
+        reload_queryset_class = (models.Manager,)
+        if isinstance(data, models.QuerySet):
+            for qs_first in data:
+                if qs_first.__class__().__dict__.keys() == qs_first.__dict__.keys():
+                    reload_queryset_class.append(models.QuerySet)
+                break
+
+        # Dealing with nested relationships, data can be a Manager or a QuerySet,
+        # so, first get a queryset from the Manager/QuerySet if needed
+        iterable = data.all() if isinstance(data, reload_queryset_class) else data
 
         return [
             self.child.to_representation(item) for item in iterable
