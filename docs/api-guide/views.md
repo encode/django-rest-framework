@@ -227,7 +227,7 @@ For example:
 
     class ListUsers(APIView):
         async def get(self, request):
-            return Response("message": "This is an async class based view."})
+            return Response({"message": "This is an async class based view."})
 
 
     @api_view(['GET'])
