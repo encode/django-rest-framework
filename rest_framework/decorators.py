@@ -6,6 +6,7 @@ There are also various decorators for setting the API policies on function
 based views, as well as the `@action` decorator, which is used to annotate
 methods on viewsets that should be included by routers.
 """
+import asyncio
 import types
 
 from django.forms.utils import pretty_name
@@ -46,11 +47,19 @@ def api_view(http_method_names=None):
         allowed_methods = set(http_method_names) | {'options'}
         WrappedAPIView.http_method_names = [method.lower() for method in allowed_methods]
 
-        def handler(self, *args, **kwargs):
+        def sync_handler(self, *args, **kwargs):
             return func(*args, **kwargs)
 
+        async def async_handler(self, *args, **kwargs):
+            return await func(*args, **kwargs)
+
+        view_is_async = asyncio.iscoroutinefunction(func)
+
         for method in http_method_names:
-            setattr(WrappedAPIView, method.lower(), handler)
+            if view_is_async:
+                setattr(WrappedAPIView, method.lower(), async_handler)
+            else:
+                setattr(WrappedAPIView, method.lower(), sync_handler)
 
         WrappedAPIView.__name__ = func.__name__
         WrappedAPIView.__module__ = func.__module__

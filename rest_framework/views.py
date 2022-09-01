@@ -484,7 +484,7 @@ class APIView(View):
     # be overridden.
     def sync_dispatch(self, request, *args, **kwargs):
         """
-        `.dispatch()` is pretty much the same as Django's regular dispatch,
+        `.sync_dispatch()` is pretty much the same as Django's regular dispatch,
         but with extra hooks for startup, finalize, and exception handling.
         """
         self.args = args
@@ -513,8 +513,9 @@ class APIView(View):
 
     async def async_dispatch(self, request, *args, **kwargs):
         """
-        `.dispatch()` is pretty much the same as Django's regular dispatch,
-        but with extra hooks for startup, finalize, and exception handling.
+        `.async_dispatch()` is pretty much the same as Django's regular dispatch,
+        except for awaiting the handler function and with extra hooks for startup,
+        finalize, and exception handling.
         """
         self.args = args
         self.kwargs = kwargs
@@ -541,6 +542,10 @@ class APIView(View):
         return self.response
 
     def dispatch(self, request, *args, **kwargs):
+        """
+        Dispatch checks if the view is async or not and uses the respective
+        async or sync dispatch method.
+        """
         if hasattr(self, 'view_is_async') and self.view_is_async:
             return self.async_dispatch(request, *args, **kwargs)
         else:
