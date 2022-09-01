@@ -55,10 +55,11 @@ def api_view(http_method_names=None):
 
         view_is_async = asyncio.iscoroutinefunction(func)
 
-        for method in http_method_names:
-            if view_is_async:
+        if view_is_async:
+            for method in http_method_names:
                 setattr(WrappedAPIView, method.lower(), async_handler)
-            else:
+        else:
+            for method in http_method_names:
                 setattr(WrappedAPIView, method.lower(), sync_handler)
 
         WrappedAPIView.__name__ = func.__name__

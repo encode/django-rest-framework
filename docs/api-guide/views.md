@@ -219,9 +219,9 @@ You may pass `None` in order to exclude the view from schema generation.
 
 # Async Views
 
-When using Django 4.1 and above, REST framework allows you to work with async class based and function based views.
+When using Django 4.1 and above, REST framework allows you to work with async class and function based views.
 
-For class based view, the view needs the handler methods such as `.get()`, `.post()`, `put()`, `patch()` and `.delete()` to be all async otherwise Django will raise an exception. For function based view, the view needs to be async.
+For class based views, all handler methods must be async, otherwise Django will raise an exception. For function based views, the function itself must be async.
 
 For example:
 
