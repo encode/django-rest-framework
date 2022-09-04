@@ -886,7 +886,7 @@ Because this class provides the same interface as the `Serializer` class, you ca
 
 The only difference you'll notice when doing so is the `BaseSerializer` classes will not generate HTML forms in the browsable API. This is because the data they return does not include all the field information that would allow each field to be rendered into a suitable HTML input.
 
-##### Read-only `BaseSerializer` classes
+#### Read-only `BaseSerializer` classes
 
 To implement a read-only serializer using the `BaseSerializer` class, we just need to override the `.to_representation()` method. Let's take a look at an example using a simple Django model:
 
@@ -920,7 +920,7 @@ Or use it to serialize multiple instances:
         serializer = HighScoreSerializer(queryset, many=True)
 	    return Response(serializer.data)
 
-##### Read-write `BaseSerializer` classes
+#### Read-write `BaseSerializer` classes
 
 To create a read-write serializer we first need to implement a `.to_internal_value()` method. This method returns the validated values that will be used to construct the object instance, and may raise a `serializers.ValidationError` if the supplied data is in an incorrect format.
 
@@ -969,7 +969,7 @@ Here's a complete example of our previous `HighScoreSerializer`, that's been upd
 
 The `BaseSerializer` class is also useful if you want to implement new generic serializer classes for dealing with particular serialization styles, or for integrating with alternative storage backends.
 
-The following class is an example of a generic serializer that can handle coercing arbitrary objects into primitive representations.
+The following class is an example of a generic serializer that can handle coercing arbitrary complex objects into primitive representations.
 
     class ObjectSerializer(serializers.BaseSerializer):
         """
