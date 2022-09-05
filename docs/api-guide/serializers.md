@@ -602,7 +602,7 @@ A mapping of Django model fields to REST framework serializer fields. You can ov
 
 This property should be the serializer field class, that is used for relational fields by default.
 
-For `ModelSerializer` this defaults to `PrimaryKeyRelatedField`.
+For `ModelSerializer` this defaults to `serializers.PrimaryKeyRelatedField`.
 
 For `HyperlinkedModelSerializer` this defaults to `serializers.HyperlinkedRelatedField`.
 
