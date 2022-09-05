@@ -47,20 +47,17 @@ def api_view(http_method_names=None):
         allowed_methods = set(http_method_names) | {'options'}
         WrappedAPIView.http_method_names = [method.lower() for method in allowed_methods]
 
-        def sync_handler(self, *args, **kwargs):
-            return func(*args, **kwargs)
-
-        async def async_handler(self, *args, **kwargs):
-            return await func(*args, **kwargs)
-
         view_is_async = asyncio.iscoroutinefunction(func)
 
         if view_is_async:
-            for method in http_method_names:
-                setattr(WrappedAPIView, method.lower(), async_handler)
+            async def handler(self, *args, **kwargs):
+                return await func(*args, **kwargs)
         else:
-            for method in http_method_names:
-                setattr(WrappedAPIView, method.lower(), sync_handler)
+            def handler(self, *args, **kwargs):
+                return func(*args, **kwargs)
+
+        for method in http_method_names:
+            setattr(WrappedAPIView, method.lower(), handler)
 
         WrappedAPIView.__name__ = func.__name__
         WrappedAPIView.__module__ = func.__module__
