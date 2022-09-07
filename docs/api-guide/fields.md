@@ -159,14 +159,6 @@ Corresponds to `django.db.models.fields.BooleanField`.
 
 **Signature:** `BooleanField()`
 
-## NullBooleanField
-
-A boolean representation that also accepts `None` as a valid value.
-
-Corresponds to `django.db.models.fields.NullBooleanField`.
-
-**Signature:** `NullBooleanField()`
-
 ---
 
 # String fields
