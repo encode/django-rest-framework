@@ -173,9 +173,9 @@ The `curl` command line tool may be useful for testing token authenticated APIs.
 
 ---
 
-#### Generating Tokens
+### Generating Tokens
 
-##### By using signals
+#### By using signals
 
 If you want every user to have an automatically generated Token, you can simply catch the User's `post_save` signal.
 
@@ -199,7 +199,7 @@ If you've already created some users, you can generate tokens for all existing u
     for user in User.objects.all():
         Token.objects.get_or_create(user=user)
 
-##### By exposing an api endpoint
+#### By exposing an api endpoint
 
 When using `TokenAuthentication`, you may want to provide a mechanism for clients to obtain a token given the username and password.  REST framework provides a built-in view to provide this behaviour.  To use it, add the `obtain_auth_token` view to your URLconf:
 
@@ -248,7 +248,7 @@ And in your `urls.py`:
     ]
 
 
-##### With Django admin
+#### With Django admin
 
 It is also possible to create Tokens manually through the admin interface. In case you are using a large user base, we recommend that you monkey patch the `TokenAdmin` class customize it to your needs, more specifically by declaring the `user` field as `raw_field`.
 
@@ -369,7 +369,7 @@ The following third-party packages are also available.
 
 The [Django OAuth Toolkit][django-oauth-toolkit] package provides OAuth 2.0 support and works with Python 3.4+. The package is maintained by [jazzband][jazzband] and uses the excellent [OAuthLib][oauthlib].  The package is well documented, and well supported and is currently our **recommended package for OAuth 2.0 support**.
 
-#### Installation & configuration
+### Installation & configuration
 
 Install using `pip`.
 
@@ -396,7 +396,7 @@ The [Django REST framework OAuth][django-rest-framework-oauth] package provides 
 
 This package was previously included directly in the REST framework but is now supported and maintained as a third-party package.
 
-#### Installation & configuration
+### Installation & configuration
 
 Install the package using `pip`.
 
