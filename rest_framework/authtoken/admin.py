@@ -22,6 +22,7 @@ class TokenChangeList(ChangeList):
 
 class TokenAdmin(admin.ModelAdmin):
     list_display = ('key', 'user', 'created')
+    raw_id_fields = ('user',)
     fields = ('user',)
     ordering = ('-created',)
     actions = None  # Actions not compatible with mapped IDs.
