@@ -115,7 +115,7 @@ class TestAPITestClient(TestCase):
         """
         user = User.objects.create_user('example', 'example@example.com')
         token = Token.objects.create(key='xyz', user=user)
-        
+
         self.client.force_authenticate(user=user, token=token)
         response = self.client.get('/view/')
 
