@@ -43,9 +43,10 @@ except ImportError:
 
 # async_to_sync is required for async view support
 if django.VERSION >= (4, 1):
-    from asgiref.sync import async_to_sync
+    from asgiref.sync import async_to_sync, sync_to_async
 else:
     async_to_sync = None
+    sync_to_async = None
 
 
 # coreschema is optional

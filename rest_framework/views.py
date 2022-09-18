@@ -11,6 +11,7 @@ from django.utils.encoding import smart_str
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
+from rest_framework.compat import sync_to_async
 from rest_framework import exceptions, status
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -524,7 +525,7 @@ class APIView(View):
         self.headers = self.default_response_headers  # deprecate?
 
         try:
-            self.initial(request, *args, **kwargs)
+            sync_to_async(self.initial)(request, *args, **kwargs)
 
             # Get the appropriate handler method
             if request.method.lower() in self.http_method_names:
@@ -555,7 +556,16 @@ class APIView(View):
         """
         Handler method for HTTP 'OPTIONS' request.
         """
-        if self.metadata_class is None:
-            return self.http_method_not_allowed(request, *args, **kwargs)
-        data = self.metadata_class().determine_metadata(request, self)
-        return Response(data, status=status.HTTP_200_OK)
+        def func():
+            if self.metadata_class is None:
+                return self.http_method_not_allowed(request, *args, **kwargs)
+            data = self.metadata_class().determine_metadata(request, self)
+            return Response(data, status=status.HTTP_200_OK)
+
+        if hasattr(self, 'view_is_async') and self.view_is_async:
+            async def handler():
+                return func()
+        else:
+            def handler():
+                return func()
+        return handler()

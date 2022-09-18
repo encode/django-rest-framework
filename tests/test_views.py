@@ -3,6 +3,7 @@ import copy
 import django
 import pytest
 from django.test import TestCase
+from django.contrib.auth.models import User
 
 from rest_framework import status
 from rest_framework.compat import async_to_sync
@@ -101,6 +102,15 @@ class ClassBasedViewIntegrationTests(TestCase):
         assert response.status_code == status.HTTP_200_OK
         assert response.data == {'method': 'GET'}
 
+    def test_logged_in_get_succeeds(self):
+        user = User.objects.create_user('user', 'user@example.com', 'password')
+        request = factory.get('/')
+        del user.is_active
+        request.user = user
+        response = self.view(request)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == {'method': 'GET'}
+
     def test_post_succeeds(self):
         request = factory.post('/', {'test': 'foo'})
         response = self.view(request)
@@ -110,6 +120,11 @@ class ClassBasedViewIntegrationTests(TestCase):
         }
         assert response.status_code == status.HTTP_200_OK
         assert response.data == expected
+
+    def test_options_succeeds(self):
+        request = factory.options('/')
+        response = self.view(request)
+        assert response.status_code == status.HTTP_200_OK
 
     def test_400_parse_error(self):
         request = factory.post('/', 'f00bar', content_type='application/json')
@@ -131,6 +146,15 @@ class FunctionBasedViewIntegrationTests(TestCase):
         assert response.status_code == status.HTTP_200_OK
         assert response.data == {'method': 'GET'}
 
+    def test_logged_in_get_succeeds(self):
+        user = User.objects.create_user('user', 'user@example.com', 'password')
+        request = factory.get('/')
+        del user.is_active
+        request.user = user
+        response = self.view(request)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == {'method': 'GET'}
+
     def test_post_succeeds(self):
         request = factory.post('/', {'test': 'foo'})
         response = self.view(request)
@@ -140,6 +164,11 @@ class FunctionBasedViewIntegrationTests(TestCase):
         }
         assert response.status_code == status.HTTP_200_OK
         assert response.data == expected
+
+    def test_options_succeeds(self):
+        request = factory.options('/')
+        response = self.view(request)
+        assert response.status_code == status.HTTP_200_OK
 
     def test_400_parse_error(self):
         request = factory.post('/', 'f00bar', content_type='application/json')
@@ -165,6 +194,15 @@ class ClassBasedAsyncViewIntegrationTests(TestCase):
         assert response.status_code == status.HTTP_200_OK
         assert response.data == {'method': 'GET'}
 
+    def test_logged_in_get_succeeds(self):
+        user = User.objects.create_user('user', 'user@example.com', 'password')
+        request = factory.get('/')
+        del user.is_active
+        request.user = user
+        response = async_to_sync(self.view)(request)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == {'method': 'GET'}
+
     def test_post_succeeds(self):
         request = factory.post('/', {'test': 'foo'})
         response = async_to_sync(self.view)(request)
@@ -174,6 +212,11 @@ class ClassBasedAsyncViewIntegrationTests(TestCase):
         }
         assert response.status_code == status.HTTP_200_OK
         assert response.data == expected
+
+    def test_options_succeeds(self):
+        request = factory.options('/')
+        response = async_to_sync(self.view)(request)
+        assert response.status_code == status.HTTP_200_OK
 
     def test_400_parse_error(self):
         request = factory.post('/', 'f00bar', content_type='application/json')
@@ -199,6 +242,15 @@ class FunctionBasedAsyncViewIntegrationTests(TestCase):
         assert response.status_code == status.HTTP_200_OK
         assert response.data == {'method': 'GET'}
 
+    def test_logged_in_get_succeeds(self):
+        user = User.objects.create_user('user', 'user@example.com', 'password')
+        request = factory.get('/')
+        del user.is_active
+        request.user = user
+        response = async_to_sync(self.view)(request)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == {'method': 'GET'}
+
     def test_post_succeeds(self):
         request = factory.post('/', {'test': 'foo'})
         response = async_to_sync(self.view)(request)
@@ -208,6 +260,11 @@ class FunctionBasedAsyncViewIntegrationTests(TestCase):
         }
         assert response.status_code == status.HTTP_200_OK
         assert response.data == expected
+
+    def test_options_succeeds(self):
+        request = factory.options('/')
+        response = async_to_sync(self.view)(request)
+        assert response.status_code == status.HTTP_200_OK
 
     def test_400_parse_error(self):
         request = factory.post('/', 'f00bar', content_type='application/json')
