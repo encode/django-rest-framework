@@ -525,7 +525,7 @@ class APIView(View):
         self.headers = self.default_response_headers  # deprecate?
 
         try:
-            sync_to_async(self.initial)(request, *args, **kwargs)
+            await sync_to_async(self.initial)(request, *args, **kwargs)
 
             # Get the appropriate handler method
             if request.method.lower() in self.http_method_names:
@@ -547,7 +547,7 @@ class APIView(View):
         Dispatch checks if the view is async or not and uses the respective
         async or sync dispatch method.
         """
-        if hasattr(self, 'view_is_async') and self.view_is_async:
+        if getattr(self, 'view_is_async', False):
             return self.async_dispatch(request, *args, **kwargs)
         else:
             return self.sync_dispatch(request, *args, **kwargs)
@@ -562,7 +562,7 @@ class APIView(View):
             data = self.metadata_class().determine_metadata(request, self)
             return Response(data, status=status.HTTP_200_OK)
 
-        if hasattr(self, 'view_is_async') and self.view_is_async:
+        if getattr(self, 'view_is_async', False):
             async def handler():
                 return func()
         else:
