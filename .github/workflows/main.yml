@@ -6,6 +6,9 @@ on:
     - master
   pull_request:
 
+permissions:
+  contents: read # to fetch code (actions/checkout)
+
 jobs:
   tests:
     name: Python ${{ matrix.python-version }}
