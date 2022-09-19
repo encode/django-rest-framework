@@ -6,8 +6,14 @@ on:
       - master
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   pre-commit:
+    permissions:
+      contents: write # to push back fixes to PR branch (pre-commit/action)
+
     runs-on: ubuntu-20.04
 
     steps:
