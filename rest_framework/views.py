@@ -564,7 +564,7 @@ class APIView(View):
 
         if getattr(self, 'view_is_async', False):
             async def handler():
-                return func()
+                return await sync_to_async(func)()
         else:
             def handler():
                 return func()
