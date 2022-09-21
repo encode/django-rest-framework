@@ -38,7 +38,7 @@ You can determine your currently installed version using `pip show`:
 
 ### 3.14.0
 
-Date: 10th August 2022
+Date: 22nd September 2022
 
 * Enforce `is_valid(raise_exception=False)` as a keyword-only argument. [[#7952](https://github.com/encode/django-rest-framework/pull/7952)]
 * Django 4.1 compatability. [[#8591](https://github.com/encode/django-rest-framework/pull/8591)]
