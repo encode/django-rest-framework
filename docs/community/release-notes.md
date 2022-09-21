@@ -34,6 +34,23 @@ You can determine your currently installed version using `pip show`:
 
 ---
 
+## 3.14.x series
+
+### 3.14.0
+
+Date: 10th August 2022
+
+* Enforce `is_valid(raise_exception=False)` as a keyword-only argument. [[#7952](https://github.com/encode/django-rest-framework/pull/7952)]
+* Django 4.1 compatability. [[#8591](https://github.com/encode/django-rest-framework/pull/8591)]
+* Stop calling `set_context` on Validators. [[#8589](https://github.com/encode/django-rest-framework/pull/8589)]
+* Return `NotImplemented` from `ErrorDetails.__ne__`. [[#8538](https://github.com/encode/django-rest-framework/pull/8538)]
+* Don't evaluate `DateTimeField.default_timezone` when a custom timezone is set. [[#8531](https://github.com/encode/django-rest-framework/pull/8531)]
+* Make relative URLs clickable in Browseable API. [[#8464](https://github.com/encode/django-rest-framework/pull/8464)]
+* Support `ManyRelatedField` falling back to the default value when the attribute specified by dot notation doesn't exist. Matches `ManyRelatedField.get_attribute` to `Field.get_attribute`. [[#7574](https://github.com/encode/django-rest-framework/pull/7574)]
+* Make `schemas.openapi.get_reference` public. [[#7515](https://github.com/encode/django-rest-framework/pull/7515)]
+* Make `ReturnDict` support `dict` union operators on Python 3.9 and later. [[#8302](https://github.com/encode/django-rest-framework/pull/8302)]
+* Update throttling to check if `request.user` is set before checking if the user is authenticated. [[#8370](https://github.com/encode/django-rest-framework/pull/8370)]
+
 ## 3.13.x series
 
 ### 3.13.1
