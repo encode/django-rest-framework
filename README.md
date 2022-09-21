@@ -54,8 +54,8 @@ There is a live example API for testing purposes, [available here][sandbox].
 
 # Requirements
 
-* Python (3.6, 3.7, 3.8, 3.9, 3.10)
-* Django (2.2, 3.0, 3.1, 3.2, 4.0, 4.1)
+* Python 3.6+
+* Django 4.1, 4.0, 3.2, 3.1, 3.0
 
 We **highly recommend** and only officially support the latest patch release of
 each Python and Django series.
@@ -90,9 +90,10 @@ Startup up a new project like so...
 Now edit the `example/urls.py` module in your project:
 
 ```python
-from django.urls import path, include
 from django.contrib.auth.models import User
-from rest_framework import serializers, viewsets, routers
+from django.urls import include, path
+from rest_framework import routers, serializers, viewsets
+
 
 # Serializers define the API representation.
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -110,7 +111,6 @@ class UserViewSet(viewsets.ModelViewSet):
 # Routers provide a way of automatically determining the URL conf.
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
-
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
@@ -185,7 +185,7 @@ Please see the [security policy][security-policy].
 [codecov]: https://codecov.io/github/encode/django-rest-framework?branch=master
 [pypi-version]: https://img.shields.io/pypi/v/djangorestframework.svg
 [pypi]: https://pypi.org/project/djangorestframework/
-[twitter]: https://twitter.com/_tomchristie
+[twitter]: https://twitter.com/starletdreaming
 [group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
 [sandbox]: https://restframework.herokuapp.com/
 

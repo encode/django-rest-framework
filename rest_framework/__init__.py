@@ -10,7 +10,7 @@ ______ _____ _____ _____    __
 import django
 
 __title__ = 'Django REST framework'
-__version__ = '3.13.1'
+__version__ = '3.14.0'
 __author__ = 'Tom Christie'
 __license__ = 'BSD 3-Clause'
 __copyright__ = 'Copyright 2011-2019 Encode OSS Ltd'
@@ -34,4 +34,8 @@ class RemovedInDRF313Warning(DeprecationWarning):
 
 
 class RemovedInDRF314Warning(PendingDeprecationWarning):
+    pass
+
+
+class RemovedInDRF315Warning(PendingDeprecationWarning):
     pass

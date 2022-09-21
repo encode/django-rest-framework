@@ -566,7 +566,7 @@ class TestCreateOnlyDefault:
 
     def test_create_only_default_callable_sets_context(self):
         """
-        CreateOnlyDefault instances with a callable default should set_context
+        CreateOnlyDefault instances with a callable default should set context
         on the callable if possible
         """
         class TestCallableDefault:
@@ -679,9 +679,9 @@ class TestBooleanField(FieldValues):
             assert exc_info.value.detail == expected
 
 
-class TestNullBooleanField(TestBooleanField):
+class TestNullableBooleanField(TestBooleanField):
     """
-    Valid and invalid values for `NullBooleanField`.
+    Valid and invalid values for `BooleanField` when `allow_null=True`.
     """
     valid_inputs = {
         'true': True,
@@ -704,16 +704,6 @@ class TestNullBooleanField(TestBooleanField):
         'other': True
     }
     field = serializers.BooleanField(allow_null=True)
-
-
-class TestNullableBooleanField(TestNullBooleanField):
-    """
-    Valid and invalid values for `BooleanField` when `allow_null=True`.
-    """
-
-    @property
-    def field(self):
-        return serializers.BooleanField(allow_null=True)
 
 
 # String types...

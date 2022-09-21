@@ -5,7 +5,6 @@ import functools
 import inspect
 import re
 import uuid
-import warnings
 from collections import OrderedDict
 from collections.abc import Mapping
 
@@ -30,9 +29,7 @@ from django.utils.ipv6 import clean_ipv6_address
 from django.utils.translation import gettext_lazy as _
 from pytz.exceptions import InvalidTimeError
 
-from rest_framework import (
-    ISO_8601, RemovedInDRF313Warning, RemovedInDRF314Warning
-)
+from rest_framework import ISO_8601
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, humanize_datetime, json, representation
@@ -265,16 +262,6 @@ class CreateOnlyDefault:
         if is_update:
             raise SkipField()
         if callable(self.default):
-            if hasattr(self.default, 'set_context'):
-                warnings.warn(
-                    "Method `set_context` on defaults is deprecated and will "
-                    "no longer be called starting with 3.13. Instead set "
-                    "`requires_context = True` on the class, and accept the "
-                    "context as an additional argument.",
-                    RemovedInDRF313Warning, stacklevel=2
-                )
-                self.default.set_context(self)
-
             if getattr(self.default, 'requires_context', False):
                 return self.default(serializer_field)
             else:
@@ -504,16 +491,6 @@ class Field:
             # No default, or this is a partial update.
             raise SkipField()
         if callable(self.default):
-            if hasattr(self.default, 'set_context'):
-                warnings.warn(
-                    "Method `set_context` on defaults is deprecated and will "
-                    "no longer be called starting with 3.13. Instead set "
-                    "`requires_context = True` on the class, and accept the "
-                    "context as an additional argument.",
-                    RemovedInDRF313Warning, stacklevel=2
-                )
-                self.default.set_context(self)
-
             if getattr(self.default, 'requires_context', False):
                 return self.default(self)
             else:
@@ -578,16 +555,6 @@ class Field:
         """
         errors = []
         for validator in self.validators:
-            if hasattr(validator, 'set_context'):
-                warnings.warn(
-                    "Method `set_context` on validators is deprecated and will "
-                    "no longer be called starting with 3.13. Instead set "
-                    "`requires_context = True` on the class, and accept the "
-                    "context as an additional argument.",
-                    RemovedInDRF313Warning, stacklevel=2
-                )
-                validator.set_context(self)
-
             try:
                 if getattr(validator, 'requires_context', False):
                     validator(value, self)
@@ -742,23 +709,6 @@ class BooleanField(Field):
         if value in self.NULL_VALUES and self.allow_null:
             return None
         return bool(value)
-
-
-class NullBooleanField(BooleanField):
-    initial = None
-
-    def __init__(self, **kwargs):
-        warnings.warn(
-            "The `NullBooleanField` is deprecated and will be removed starting "
-            "with 3.14. Instead use the `BooleanField` field and set "
-            "`allow_null=True` which does the same thing.",
-            RemovedInDRF314Warning, stacklevel=2
-        )
-
-        assert 'allow_null' not in kwargs, '`allow_null` is not a valid option.'
-        kwargs['allow_null'] = True
-
-        super().__init__(**kwargs)
 
 
 # String types...

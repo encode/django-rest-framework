@@ -13,7 +13,7 @@ from django.db import models
 from django.utils.encoding import force_str
 
 from rest_framework import (
-    RemovedInDRF314Warning, exceptions, renderers, serializers
+    RemovedInDRF315Warning, exceptions, renderers, serializers
 )
 from rest_framework.compat import uritemplate
 from rest_framework.fields import _UnvalidatedField, empty
@@ -713,106 +713,10 @@ class AutoSchema(ViewInspector):
 
         return [path.split('/')[0].replace('_', '-')]
 
-    def _get_path_parameters(self, path, method):
-        warnings.warn(
-            "Method `_get_path_parameters()` has been renamed to `get_path_parameters()`. "
-            "The old name will be removed in DRF v3.14.",
-            RemovedInDRF314Warning, stacklevel=2
-        )
-        return self.get_path_parameters(path, method)
-
-    def _get_filter_parameters(self, path, method):
-        warnings.warn(
-            "Method `_get_filter_parameters()` has been renamed to `get_filter_parameters()`. "
-            "The old name will be removed in DRF v3.14.",
-            RemovedInDRF314Warning, stacklevel=2
-        )
-        return self.get_filter_parameters(path, method)
-
-    def _get_responses(self, path, method):
-        warnings.warn(
-            "Method `_get_responses()` has been renamed to `get_responses()`. "
-            "The old name will be removed in DRF v3.14.",
-            RemovedInDRF314Warning, stacklevel=2
-        )
-        return self.get_responses(path, method)
-
-    def _get_request_body(self, path, method):
-        warnings.warn(
-            "Method `_get_request_body()` has been renamed to `get_request_body()`. "
-            "The old name will be removed in DRF v3.14.",
-            RemovedInDRF314Warning, stacklevel=2
-        )
-        return self.get_request_body(path, method)
-
-    def _get_serializer(self, path, method):
-        warnings.warn(
-            "Method `_get_serializer()` has been renamed to `get_serializer()`. "
-            "The old name will be removed in DRF v3.14.",
-            RemovedInDRF314Warning, stacklevel=2
-        )
-        return self.get_serializer(path, method)
-
-    def _get_paginator(self):
-        warnings.warn(
-            "Method `_get_paginator()` has been renamed to `get_paginator()`. "
-            "The old name will be removed in DRF v3.14.",
-            RemovedInDRF314Warning, stacklevel=2
-        )
-        return self.get_paginator()
-
-    def _map_field_validators(self, field, schema):
-        warnings.warn(
-            "Method `_map_field_validators()` has been renamed to `map_field_validators()`. "
-            "The old name will be removed in DRF v3.14.",
-            RemovedInDRF314Warning, stacklevel=2
-        )
-        return self.map_field_validators(field, schema)
-
-    def _map_serializer(self, serializer):
-        warnings.warn(
-            "Method `_map_serializer()` has been renamed to `map_serializer()`. "
-            "The old name will be removed in DRF v3.14.",
-            RemovedInDRF314Warning, stacklevel=2
-        )
-        return self.map_serializer(serializer)
-
-    def _map_field(self, field):
-        warnings.warn(
-            "Method `_map_field()` has been renamed to `map_field()`. "
-            "The old name will be removed in DRF v3.14.",
-            RemovedInDRF314Warning, stacklevel=2
-        )
-        return self.map_field(field)
-
-    def _map_choicefield(self, field):
-        warnings.warn(
-            "Method `_map_choicefield()` has been renamed to `map_choicefield()`. "
-            "The old name will be removed in DRF v3.14.",
-            RemovedInDRF314Warning, stacklevel=2
-        )
-        return self.map_choicefield(field)
-
-    def _get_pagination_parameters(self, path, method):
-        warnings.warn(
-            "Method `_get_pagination_parameters()` has been renamed to `get_pagination_parameters()`. "
-            "The old name will be removed in DRF v3.14.",
-            RemovedInDRF314Warning, stacklevel=2
-        )
-        return self.get_pagination_parameters(path, method)
-
-    def _allows_filters(self, path, method):
-        warnings.warn(
-            "Method `_allows_filters()` has been renamed to `allows_filters()`. "
-            "The old name will be removed in DRF v3.14.",
-            RemovedInDRF314Warning, stacklevel=2
-        )
-        return self.allows_filters(path, method)
-
     def _get_reference(self, serializer):
         warnings.warn(
             "Method `_get_reference()` has been renamed to `get_reference()`. "
-            "The old name will be removed in DRF v3.14.",
-            RemovedInDRF314Warning, stacklevel=2
+            "The old name will be removed in DRF v3.15.",
+            RemovedInDRF315Warning, stacklevel=2
         )
         return self.get_reference(serializer)
