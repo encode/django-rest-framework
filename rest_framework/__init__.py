@@ -37,5 +37,5 @@ class RemovedInDRF314Warning(PendingDeprecationWarning):
     pass
 
 
-class RemovedInDRF315Warning(PendingDeprecationWarning):
+class RemovedInDRF315Warning(DeprecationWarning):
     pass
