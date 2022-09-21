@@ -635,7 +635,7 @@ class PermissionsCompositionTests(TestCase):
                 composed_perm = (permissions.IsAuthenticated | permissions.AllowAny)
                 hasperm = composed_perm().has_object_permission(request, None, None)
                 assert hasperm is True
-                assert mock_deny.call_count == 1
+                assert mock_deny.call_count == 0
                 assert mock_allow.call_count == 1
 
     def test_and_lazyness(self):
@@ -677,3 +677,16 @@ class PermissionsCompositionTests(TestCase):
                 assert hasperm is False
                 assert mock_deny.call_count == 1
                 mock_allow.assert_not_called()
+
+    def test_unimplemented_has_object_permission(self):
+        "test for issue 6402 https://github.com/encode/django-rest-framework/issues/6402"
+        request = factory.get('/1', format='json')
+        request.user = AnonymousUser()
+
+        class IsAuthenticatedUserOwner(permissions.IsAuthenticated):
+            def has_object_permission(self, request, view, obj):
+                return True
+
+        composed_perm = (IsAuthenticatedUserOwner | permissions.IsAdminUser)
+        hasperm = composed_perm().has_object_permission(request, None, None)
+        assert hasperm is False
