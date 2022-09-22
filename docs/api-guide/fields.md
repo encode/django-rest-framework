@@ -306,10 +306,6 @@ And to validate numbers up to anything less than one billion with a resolution o
 
     serializers.DecimalField(max_digits=19, decimal_places=10)
 
-This field also takes an optional argument, `coerce_to_string`. If set to `True` the representation will be output as a string. If set to `False` the representation will be left as a `Decimal` instance and the final representation will be determined by the renderer.
-
-If unset, this will default to the same value as the `COERCE_DECIMAL_TO_STRING` setting, which is `True` unless set otherwise.
-
 ---
 
 # Date and time fields
