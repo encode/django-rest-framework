@@ -294,6 +294,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../community/3.14-announcement/">3.14 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../community/3.13-announcement/">3.13 Announcement</a>
                   </li>
                   
@@ -552,7 +556,7 @@ from snippets import views
 
 urlpatterns = [
     path('snippets/', views.snippet_list),
-    path('snippets/&lt;int:pk&gt;', views.snippet_detail),
+    path('snippets/&lt;int:pk&gt;/', views.snippet_detail),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

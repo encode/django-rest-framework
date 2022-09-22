@@ -294,6 +294,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../community/3.14-announcement/">3.14 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../community/3.13-announcement/">3.13 Announcement</a>
                   </li>
                   
@@ -483,6 +487,16 @@
                   
                     <li>
                       <a href="#rest_frameworkexceptionsbad_request">rest_framework.exceptions.bad_request</a>
+                    </li>
+                  
+                
+                  <li class="main">
+                    <a href="#third-party-packages">Third party packages</a>
+                  </li>
+
+                  
+                    <li>
+                      <a href="#drf-standardized-errors">DRF Standardized Errors</a>
                     </li>
                   
                 
@@ -682,6 +696,10 @@ API-only application.)</p>
 <p>Set as <code>handler400</code>:</p>
 <pre><code>handler400 = 'rest_framework.exceptions.bad_request'
 </code></pre>
+<h1 id="third-party-packages"><a class="toclink" href="#third-party-packages">Third party packages</a></h1>
+<p>The following third-party packages are also available.</p>
+<h2 id="drf-standardized-errors"><a class="toclink" href="#drf-standardized-errors">DRF Standardized Errors</a></h2>
+<p>The <a href="https://github.com/ghazi-git/drf-standardized-errors">drf-standardized-errors</a> package provides an exception handler that generates the same format for all 4xx and 5xx responses. It is a drop-in replacement for the default exception handler and allows customizing the error response format without rewriting the whole exception handler. The standardized error response format is easier to document and easier to handle by API consumers.</p>
             
 
           </div> <!--/span-->

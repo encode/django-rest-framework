@@ -294,6 +294,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../community/3.14-announcement/">3.14 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../community/3.13-announcement/">3.13 Announcement</a>
                   </li>
                   
@@ -537,8 +541,8 @@ from snippets import views
 
 # Create a router and register our viewsets with it.
 router = DefaultRouter()
-router.register(r'snippets', views.SnippetViewSet,basename="snippets")
-router.register(r'users', views.UserViewSet,basename="users")
+router.register(r'snippets', views.SnippetViewSet,basename="snippet")
+router.register(r'users', views.UserViewSet,basename="user")
 
 # The API URLs are now determined automatically by the router.
 urlpatterns = [

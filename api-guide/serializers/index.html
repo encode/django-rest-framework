@@ -294,6 +294,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../community/3.14-announcement/">3.14 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../community/3.13-announcement/">3.13 Announcement</a>
                   </li>
                   
@@ -1120,7 +1124,7 @@ AccountSerializer():
 <p>A mapping of Django model fields to REST framework serializer fields. You can override this mapping to alter the default serializer fields that should be used for each model field.</p>
 <h3 id="serializer_related_field"><a class="toclink" href="#serializer_related_field"><code>.serializer_related_field</code></a></h3>
 <p>This property should be the serializer field class, that is used for relational fields by default.</p>
-<p>For <code>ModelSerializer</code> this defaults to <code>PrimaryKeyRelatedField</code>.</p>
+<p>For <code>ModelSerializer</code> this defaults to <code>serializers.PrimaryKeyRelatedField</code>.</p>
 <p>For <code>HyperlinkedModelSerializer</code> this defaults to <code>serializers.HyperlinkedRelatedField</code>.</p>
 <h3 id="serializer_url_field"><a class="toclink" href="#serializer_url_field"><code>.serializer_url_field</code></a></h3>
 <p>The serializer field class that should be used for any <code>url</code> field on the serializer.</p>
@@ -1323,7 +1327,7 @@ class BookSerializer(serializers.Serializer):
 </ul>
 <p>Because this class provides the same interface as the <code>Serializer</code> class, you can use it with the existing generic class-based views exactly as you would for a regular <code>Serializer</code> or <code>ModelSerializer</code>.</p>
 <p>The only difference you'll notice when doing so is the <code>BaseSerializer</code> classes will not generate HTML forms in the browsable API. This is because the data they return does not include all the field information that would allow each field to be rendered into a suitable HTML input.</p>
-<h5 id="read-only-baseserializer-classes"><a class="toclink" href="#read-only-baseserializer-classes">Read-only <code>BaseSerializer</code> classes</a></h5>
+<h4 id="read-only-baseserializer-classes"><a class="toclink" href="#read-only-baseserializer-classes">Read-only <code>BaseSerializer</code> classes</a></h4>
 <p>To implement a read-only serializer using the <code>BaseSerializer</code> class, we just need to override the <code>.to_representation()</code> method. Let's take a look at an example using a simple Django model:</p>
 <pre><code>class HighScore(models.Model):
     created = models.DateTimeField(auto_now_add=True)
@@ -1352,7 +1356,7 @@ def all_high_scores(request):
     serializer = HighScoreSerializer(queryset, many=True)
     return Response(serializer.data)
 </code></pre>
-<h5 id="read-write-baseserializer-classes"><a class="toclink" href="#read-write-baseserializer-classes">Read-write <code>BaseSerializer</code> classes</a></h5>
+<h4 id="read-write-baseserializer-classes"><a class="toclink" href="#read-write-baseserializer-classes">Read-write <code>BaseSerializer</code> classes</a></h4>
 <p>To create a read-write serializer we first need to implement a <code>.to_internal_value()</code> method. This method returns the validated values that will be used to construct the object instance, and may raise a <code>serializers.ValidationError</code> if the supplied data is in an incorrect format.</p>
 <p>Once you've implemented <code>.to_internal_value()</code>, the basic validation API will be available on the serializer, and you will be able to use <code>.is_valid()</code>, <code>.validated_data</code> and <code>.errors</code>.</p>
 <p>If you want to also support <code>.save()</code> you'll need to also implement either or both of the <code>.create()</code> and <code>.update()</code> methods.</p>
@@ -1394,7 +1398,7 @@ def all_high_scores(request):
 </code></pre>
 <h4 id="creating-new-base-classes"><a class="toclink" href="#creating-new-base-classes">Creating new base classes</a></h4>
 <p>The <code>BaseSerializer</code> class is also useful if you want to implement new generic serializer classes for dealing with particular serialization styles, or for integrating with alternative storage backends.</p>
-<p>The following class is an example of a generic serializer that can handle coercing arbitrary objects into primitive representations.</p>
+<p>The following class is an example of a generic serializer that can handle coercing arbitrary complex objects into primitive representations.</p>
 <pre><code>class ObjectSerializer(serializers.BaseSerializer):
     """
     A read-only serializer that coerces arbitrary complex objects

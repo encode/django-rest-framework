@@ -294,6 +294,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../community/3.14-announcement/">3.14 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../community/3.13-announcement/">3.13 Announcement</a>
                   </li>
                   
@@ -558,7 +562,7 @@ urlpatterns += router.urls
     path('api/', include((router.urls, 'app_name'), namespace='instance_name')),
 ]
 </code></pre>
-<p>See Django's <a href="https://docs.djangoproject.com/en/1.11/topics/http/urls/#url-namespaces">URL namespaces docs</a> and the <a href="https://docs.djangoproject.com/en/2.0/ref/urls/#include"><code>include</code> API reference</a> for more details.</p>
+<p>See Django's <a href="https://docs.djangoproject.com/en/4.0/topics/http/urls/#url-namespaces">URL namespaces docs</a> and the <a href="https://docs.djangoproject.com/en/4.0/ref/urls/#include"><code>include</code> API reference</a> for more details.</p>
 <hr />
 <p><strong>Note</strong>: If using namespacing with hyperlinked serializers you'll also need to ensure that any <code>view_name</code> parameters
 on the serializers correctly reflect the namespace. In the examples above you'd need to include a parameter such as

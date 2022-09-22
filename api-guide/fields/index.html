@@ -294,6 +294,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../community/3.14-announcement/">3.14 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../community/3.13-announcement/">3.13 Announcement</a>
                   </li>
                   
@@ -425,10 +429,6 @@
                   
                     <li>
                       <a href="#booleanfield">BooleanField</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#nullbooleanfield">NullBooleanField</a>
                     </li>
                   
                 
@@ -741,10 +741,6 @@ explicitly declare the <code>BooleanField</code> on the serializer class, or use
 <code>extra_kwargs</code> option to set the <code>required</code> flag.</p>
 <p>Corresponds to <code>django.db.models.fields.BooleanField</code>.</p>
 <p><strong>Signature:</strong> <code>BooleanField()</code></p>
-<h2 id="nullbooleanfield"><a class="toclink" href="#nullbooleanfield">NullBooleanField</a></h2>
-<p>A boolean representation that also accepts <code>None</code> as a valid value.</p>
-<p>Corresponds to <code>django.db.models.fields.NullBooleanField</code>.</p>
-<p><strong>Signature:</strong> <code>NullBooleanField()</code></p>
 <hr />
 <h1 id="string-fields"><a class="toclink" href="#string-fields">String fields</a></h1>
 <h2 id="charfield"><a class="toclink" href="#charfield">CharField</a></h2>
@@ -848,8 +844,6 @@ explicitly declare the <code>BooleanField</code> on the serializer class, or use
 <p>And to validate numbers up to anything less than one billion with a resolution of 10 decimal places:</p>
 <pre><code>serializers.DecimalField(max_digits=19, decimal_places=10)
 </code></pre>
-<p>This field also takes an optional argument, <code>coerce_to_string</code>. If set to <code>True</code> the representation will be output as a string. If set to <code>False</code> the representation will be left as a <code>Decimal</code> instance and the final representation will be determined by the renderer.</p>
-<p>If unset, this will default to the same value as the <code>COERCE_DECIMAL_TO_STRING</code> setting, which is <code>True</code> unless set otherwise.</p>
 <hr />
 <h1 id="date-and-time-fields"><a class="toclink" href="#date-and-time-fields">Date and time fields</a></h1>
 <h2 id="datetimefield"><a class="toclink" href="#datetimefield">DateTimeField</a></h2>

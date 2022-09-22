@@ -294,6 +294,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../community/3.14-announcement/">3.14 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../community/3.13-announcement/">3.13 Announcement</a>
                   </li>
                   
@@ -658,8 +662,8 @@ print(token.key)
 <hr />
 <p><strong>Note:</strong> If you use <code>TokenAuthentication</code> in production you must ensure that your API is only available over <code>https</code>.</p>
 <hr />
-<h4 id="generating-tokens"><a class="toclink" href="#generating-tokens">Generating Tokens</a></h4>
-<h5 id="by-using-signals"><a class="toclink" href="#by-using-signals">By using signals</a></h5>
+<h3 id="generating-tokens"><a class="toclink" href="#generating-tokens">Generating Tokens</a></h3>
+<h4 id="by-using-signals"><a class="toclink" href="#by-using-signals">By using signals</a></h4>
 <p>If you want every user to have an automatically generated Token, you can simply catch the User's <code>post_save</code> signal.</p>
 <pre><code>from django.conf import settings
 from django.db.models.signals import post_save
@@ -679,7 +683,7 @@ from rest_framework.authtoken.models import Token
 for user in User.objects.all():
     Token.objects.get_or_create(user=user)
 </code></pre>
-<h5 id="by-exposing-an-api-endpoint"><a class="toclink" href="#by-exposing-an-api-endpoint">By exposing an api endpoint</a></h5>
+<h4 id="by-exposing-an-api-endpoint"><a class="toclink" href="#by-exposing-an-api-endpoint">By exposing an api endpoint</a></h4>
 <p>When using <code>TokenAuthentication</code>, you may want to provide a mechanism for clients to obtain a token given the username and password.  REST framework provides a built-in view to provide this behaviour.  To use it, add the <code>obtain_auth_token</code> view to your URLconf:</p>
 <pre><code>from rest_framework.authtoken import views
 urlpatterns += [
@@ -718,7 +722,7 @@ class CustomAuthToken(ObtainAuthToken):
     path('api-token-auth/', CustomAuthToken.as_view())
 ]
 </code></pre>
-<h5 id="with-django-admin"><a class="toclink" href="#with-django-admin">With Django admin</a></h5>
+<h4 id="with-django-admin"><a class="toclink" href="#with-django-admin">With Django admin</a></h4>
 <p>It is also possible to create Tokens manually through the admin interface. In case you are using a large user base, we recommend that you monkey patch the <code>TokenAdmin</code> class customize it to your needs, more specifically by declaring the <code>user</code> field as <code>raw_field</code>.</p>
 <p><code>your_app/admin.py</code>:</p>
 <pre><code>from rest_framework.authtoken.admin import TokenAdmin
@@ -802,7 +806,7 @@ class ExampleAuthentication(authentication.BaseAuthentication):
 <p><a href="https://github.com/James1345/django-rest-knox">Django-rest-knox</a> library provides models and views to handle token-based authentication in a more secure and extensible way than the built-in TokenAuthentication scheme - with Single Page Applications and Mobile clients in mind. It provides per-client tokens, and views to generate them when provided some other authentication (usually basic authentication), to delete the token (providing a server enforced logout) and to delete all tokens (logs out all clients that a user is logged into).</p>
 <h2 id="django-oauth-toolkit"><a class="toclink" href="#django-oauth-toolkit">Django OAuth Toolkit</a></h2>
 <p>The <a href="https://github.com/evonove/django-oauth-toolkit">Django OAuth Toolkit</a> package provides OAuth 2.0 support and works with Python 3.4+. The package is maintained by <a href="https://github.com/jazzband/">jazzband</a> and uses the excellent <a href="https://github.com/idan/oauthlib">OAuthLib</a>.  The package is well documented, and well supported and is currently our <strong>recommended package for OAuth 2.0 support</strong>.</p>
-<h4 id="installation-configuration"><a class="toclink" href="#installation-configuration">Installation &amp; configuration</a></h4>
+<h3 id="installation-configuration"><a class="toclink" href="#installation-configuration">Installation &amp; configuration</a></h3>
 <p>Install using <code>pip</code>.</p>
 <pre><code>pip install django-oauth-toolkit
 </code></pre>
@@ -822,7 +826,7 @@ REST_FRAMEWORK = {
 <h2 id="django-rest-framework-oauth"><a class="toclink" href="#django-rest-framework-oauth">Django REST framework OAuth</a></h2>
 <p>The <a href="https://jpadilla.github.io/django-rest-framework-oauth/">Django REST framework OAuth</a> package provides both OAuth1 and OAuth2 support for REST framework.</p>
 <p>This package was previously included directly in the REST framework but is now supported and maintained as a third-party package.</p>
-<h4 id="installation-configuration_1"><a class="toclink" href="#installation-configuration_1">Installation &amp; configuration</a></h4>
+<h3 id="installation-configuration_1"><a class="toclink" href="#installation-configuration_1">Installation &amp; configuration</a></h3>
 <p>Install the package using <code>pip</code>.</p>
 <pre><code>pip install djangorestframework-oauth
 </code></pre>

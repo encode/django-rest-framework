@@ -294,6 +294,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../community/3.14-announcement/">3.14 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../community/3.13-announcement/">3.13 Announcement</a>
                   </li>
                   
@@ -590,7 +594,7 @@ do so like so:</p>
 <code>rest_framework.schemas.openapi.SchemaGenerator</code> and provide your subclass
 as an argument to the <code>generateschema</code> command or <code>get_schema_view()</code> helper
 function.</p>
-<h3 id="get_schemaself-request"><a class="toclink" href="#get_schemaself-request">get_schema(self, request)</a></h3>
+<h3 id="get_schemaself-requestnone-publicfalse"><a class="toclink" href="#get_schemaself-requestnone-publicfalse">get_schema(self, request=None, public=False)</a></h3>
 <p>Returns a dictionary that represents the OpenAPI schema:</p>
 <pre><code>generator = SchemaGenerator(title='Stock Prices API')
 schema = generator.get_schema()
@@ -700,6 +704,8 @@ serializers.</p>
 <h4 id="get_component_name"><a class="toclink" href="#get_component_name"><code>get_component_name()</code></a></h4>
 <p>Computes the component's name from the serializer.</p>
 <p>You may see warnings if your API has duplicate component names. If so you can override <code>get_component_name()</code> or pass the <code>component_name</code> <code>__init__()</code> kwarg (see below) to provide different names.</p>
+<h4 id="get_reference"><a class="toclink" href="#get_reference"><code>get_reference()</code></a></h4>
+<p>Returns a reference to the serializer component. This may be useful if you override <code>get_schema()</code>.</p>
 <h4 id="map_serializer"><a class="toclink" href="#map_serializer"><code>map_serializer()</code></a></h4>
 <p>Maps serializers to their OpenAPI representations.</p>
 <p>Most serializers should conform to the standard OpenAPI <code>object</code> type, but you may

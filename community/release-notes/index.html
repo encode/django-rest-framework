@@ -54,7 +54,7 @@
       <div class="navbar-inner">
         <div class="container-fluid">
           <a class="repo-link btn btn-primary btn-small" href="https://github.com/encode/django-rest-framework/tree/master">GitHub</a>
-          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../3.13-announcement/">
+          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../3.14-announcement/">
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
           <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../project-management/">
@@ -294,6 +294,10 @@
                   </li>
                   
                   <li >
+                    <a href="../3.14-announcement/">3.14 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../3.13-announcement/">3.13 Announcement</a>
                   </li>
                   
@@ -426,6 +430,10 @@
                     </li>
                   
                     <li>
+                      <a href="#314x-series">3.14.x series</a>
+                    </li>
+                  
+                    <li>
                       <a href="#313x-series">3.13.x series</a>
                     </li>
                   
@@ -524,6 +532,23 @@
 <pre><code>pip show djangorestframework
 </code></pre>
 <hr />
+<h2 id="314x-series"><a class="toclink" href="#314x-series">3.14.x series</a></h2>
+<h3 id="3140"><a class="toclink" href="#3140">3.14.0</a></h3>
+<p>Date: 22nd September 2022</p>
+<ul>
+<li>Django 2.2 is no longer supported. [<a href="https://github.com/encode/django-rest-framework/pull/8662">#8662</a>]</li>
+<li>Django 4.1 compatibility. [<a href="https://github.com/encode/django-rest-framework/pull/8591">#8591</a>]</li>
+<li>Add <code>--api-version</code> CLI option to <code>generateschema</code> management command. [<a href="https://github.com/encode/django-rest-framework/pull/8663">#8663</a>]</li>
+<li>Enforce <code>is_valid(raise_exception=False)</code> as a keyword-only argument. [<a href="https://github.com/encode/django-rest-framework/pull/7952">#7952</a>]</li>
+<li>Stop calling <code>set_context</code> on Validators. [<a href="https://github.com/encode/django-rest-framework/pull/8589">#8589</a>]</li>
+<li>Return <code>NotImplemented</code> from <code>ErrorDetails.__ne__</code>. [<a href="https://github.com/encode/django-rest-framework/pull/8538">#8538</a>]</li>
+<li>Don't evaluate <code>DateTimeField.default_timezone</code> when a custom timezone is set. [<a href="https://github.com/encode/django-rest-framework/pull/8531">#8531</a>]</li>
+<li>Make relative URLs clickable in Browseable API. [<a href="https://github.com/encode/django-rest-framework/pull/8464">#8464</a>]</li>
+<li>Support <code>ManyRelatedField</code> falling back to the default value when the attribute specified by dot notation doesn't exist. Matches <code>ManyRelatedField.get_attribute</code> to <code>Field.get_attribute</code>. [<a href="https://github.com/encode/django-rest-framework/pull/7574">#7574</a>]</li>
+<li>Make <code>schemas.openapi.get_reference</code> public. [<a href="https://github.com/encode/django-rest-framework/pull/7515">#7515</a>]</li>
+<li>Make <code>ReturnDict</code> support <code>dict</code> union operators on Python 3.9 and later. [<a href="https://github.com/encode/django-rest-framework/pull/8302">#8302</a>]</li>
+<li>Update throttling to check if <code>request.user</code> is set before checking if the user is authenticated. [<a href="https://github.com/encode/django-rest-framework/pull/8370">#8370</a>]</li>
+</ul>
 <h2 id="313x-series"><a class="toclink" href="#313x-series">3.13.x series</a></h2>
 <h3 id="3131"><a class="toclink" href="#3131">3.13.1</a></h3>
 <p>Date: 15th December 2021</p>
