@@ -29,13 +29,5 @@ if django.VERSION < (3, 2):
     default_app_config = 'rest_framework.apps.RestFrameworkConfig'
 
 
-class RemovedInDRF313Warning(DeprecationWarning):
-    pass
-
-
-class RemovedInDRF314Warning(PendingDeprecationWarning):
-    pass
-
-
 class RemovedInDRF315Warning(PendingDeprecationWarning):
     pass
