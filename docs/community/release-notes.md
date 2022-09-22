@@ -40,8 +40,10 @@ You can determine your currently installed version using `pip show`:
 
 Date: 22nd September 2022
 
+* Django 2.2 is no longer supported. [[#8662](https://github.com/encode/django-rest-framework/pull/8662)]
+* Django 4.1 compatibility. [[#8591](https://github.com/encode/django-rest-framework/pull/8591)]
+* Add `--api-version` CLI option to `generateschema` management command. [[#8663](https://github.com/encode/django-rest-framework/pull/8663)]
 * Enforce `is_valid(raise_exception=False)` as a keyword-only argument. [[#7952](https://github.com/encode/django-rest-framework/pull/7952)]
-* Django 4.1 compatability. [[#8591](https://github.com/encode/django-rest-framework/pull/8591)]
 * Stop calling `set_context` on Validators. [[#8589](https://github.com/encode/django-rest-framework/pull/8589)]
 * Return `NotImplemented` from `ErrorDetails.__ne__`. [[#8538](https://github.com/encode/django-rest-framework/pull/8538)]
 * Don't evaluate `DateTimeField.default_timezone` when a custom timezone is set. [[#8531](https://github.com/encode/django-rest-framework/pull/8531)]
