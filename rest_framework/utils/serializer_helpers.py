@@ -1,3 +1,4 @@
+import contextlib
 import sys
 from collections import OrderedDict
 from collections.abc import Mapping, MutableMapping
@@ -103,15 +104,13 @@ class JSONBoundField(BoundField):
         # When HTML form input is used and the input is not valid
         # value will be a JSONString, rather than a JSON primitive.
         if not getattr(value, 'is_json_string', False):
-            try:
+            with contextlib.suppress(TypeError, ValueError):
                 value = json.dumps(
                     self.value,
                     sort_keys=True,
                     indent=4,
                     separators=(',', ': '),
                 )
-            except (TypeError, ValueError):
-                pass
         return self.__class__(self._field, value, self.errors, self._prefix)
 
 
