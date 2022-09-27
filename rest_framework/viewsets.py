@@ -16,6 +16,8 @@ automatically.
     router.register(r'users', UserViewSet, 'user')
     urlpatterns = router.urls
 """
+
+import contextlib
 from collections import OrderedDict
 from functools import update_wrapper
 from inspect import getmembers
@@ -196,7 +198,7 @@ class ViewSetMixin:
         ]
 
         for action in actions:
-            try:
+            with contextlib.suppress(NoReverseMatch):
                 url_name = '%s-%s' % (self.basename, action.url_name)
                 namespace = self.request.resolver_match.namespace
                 if namespace:
@@ -205,9 +207,6 @@ class ViewSetMixin:
                 url = reverse(url_name, self.args, self.kwargs, request=self.request)
                 view = self.__class__(**action.kwargs)
                 action_urls[view.get_view_name()] = url
-            except NoReverseMatch:
-                pass  # URL requires additional arguments, ignore
-
         return action_urls
 
 
