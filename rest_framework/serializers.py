@@ -1502,7 +1502,7 @@ class ModelSerializer(Serializer):
                 field = model._meta.get_field(source)
                 if isinstance(field, DjangoModelField):
                     model_fields[source] = field
-                    
+
         return model_fields
 
     # Determine the validators to apply...

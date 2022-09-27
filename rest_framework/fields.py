@@ -1157,20 +1157,14 @@ class DateTimeField(Field):
             return self.enforce_timezone(value)
 
         for input_format in input_formats:
-            if input_format.lower() == ISO_8601:
-                try:
+            with contextlib.suppress(ValueError, TypeError):
+                if input_format.lower() == ISO_8601:
                     parsed = parse_datetime(value)
                     if parsed is not None:
                         return self.enforce_timezone(parsed)
-                except (ValueError, TypeError):
-                    pass
-            else:
-                try:
+                else:
                     parsed = self.datetime_parser(value, input_format)
                     return self.enforce_timezone(parsed)
-                except (ValueError, TypeError):
-                    pass
-
         humanized_format = humanize_datetime.datetime_formats(input_formats)
         self.fail('invalid', format=humanized_format)
 

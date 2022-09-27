@@ -2,6 +2,8 @@
 Pagination serializers determine the structure of the output that should
 be used for paginated responses.
 """
+
+import contextlib
 from base64 import b64decode, b64encode
 from collections import OrderedDict, namedtuple
 from urllib import parse
@@ -257,15 +259,12 @@ class PageNumberPagination(BasePagination):
 
     def get_page_size(self, request):
         if self.page_size_query_param:
-            try:
+            with contextlib.suppress(KeyError, ValueError):
                 return _positive_int(
                     request.query_params[self.page_size_query_param],
                     strict=True,
                     cutoff=self.max_page_size
                 )
-            except (KeyError, ValueError):
-                pass
-
         return self.page_size
 
     def get_next_link(self):
@@ -430,15 +429,12 @@ class LimitOffsetPagination(BasePagination):
 
     def get_limit(self, request):
         if self.limit_query_param:
-            try:
+            with contextlib.suppress(KeyError, ValueError):
                 return _positive_int(
                     request.query_params[self.limit_query_param],
                     strict=True,
                     cutoff=self.max_limit
                 )
-            except (KeyError, ValueError):
-                pass
-
         return self.default_limit
 
     def get_offset(self, request):
@@ -680,15 +676,12 @@ class CursorPagination(BasePagination):
 
     def get_page_size(self, request):
         if self.page_size_query_param:
-            try:
+            with contextlib.suppress(KeyError, ValueError):
                 return _positive_int(
                     request.query_params[self.page_size_query_param],
                     strict=True,
                     cutoff=self.max_page_size
                 )
-            except (KeyError, ValueError):
-                pass
-
         return self.page_size
 
     def get_next_link(self):

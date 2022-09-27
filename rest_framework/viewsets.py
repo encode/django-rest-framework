@@ -245,4 +245,4 @@ class ModelViewSet(mixins.CreateModelMixin,
     A viewset that provides default `create()`, `retrieve()`, `update()`,
     `partial_update()`, `destroy()` and `list()` actions.
     """
-    pass 
+    pass
