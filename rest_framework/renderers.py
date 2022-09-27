@@ -6,7 +6,9 @@ on the response, such as JSON encoded data or HTML output.
 
 REST framework also provides an HTML renderer that renders the browsable API.
 """
+
 import base64
+import contextlib
 from collections import OrderedDict
 from urllib import parse
 
@@ -72,11 +74,8 @@ class JSONRenderer(BaseRenderer):
             # then pretty print the result.
             # Note that we coerce `indent=0` into `indent=None`.
             base_media_type, params = parse_header_parameters(accepted_media_type)
-            try:
+            with contextlib.suppress(KeyError, ValueError, TypeError):
                 return zero_as_none(max(min(int(params['indent']), 8), 0))
-            except (KeyError, ValueError, TypeError):
-                pass
-
         # If 'indent' is provided in the context, then pretty print the result.
         # E.g. If we're being called by the BrowsableAPIRenderer.
         return renderer_context.get('indent', None)
