@@ -6,8 +6,8 @@ on the request, such as form content or json encoded data.
 """
 
 import codecs
-
 import contextlib
+
 from django.conf import settings
 from django.core.files.uploadhandler import StopFutureHandlers
 from django.http import QueryDict
