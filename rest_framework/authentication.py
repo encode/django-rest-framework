@@ -132,7 +132,8 @@ class SessionAuthentication(BaseAuthentication):
         # CSRF passed with authenticated user
         return (user, None)
 
-    def enforce_csrf(self, request):
+    @classmethod
+    def enforce_csrf(cls, request):
         """
         Enforce CSRF validation for session based authentication.
         """
