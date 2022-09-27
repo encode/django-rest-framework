@@ -487,11 +487,8 @@ class BrowsableAPIRenderer(BaseRenderer):
                 return
 
             if existing_serializer is not None:
-                try:
+                with contextlib.suppress(TypeError):
                     return self.render_form_for_serializer(existing_serializer)
-                except TypeError:
-                    pass
-
             if has_serializer:
                 if method in ('PUT', 'PATCH'):
                     serializer = view.get_serializer(instance=instance, **kwargs)
