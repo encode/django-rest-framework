@@ -1,3 +1,4 @@
+import contextlib
 import copy
 import datetime
 import decimal
@@ -690,15 +691,13 @@ class BooleanField(Field):
     NULL_VALUES = {'null', 'Null', 'NULL', '', None}
 
     def to_internal_value(self, data):
-        try:
+        with contextlib.suppress(TypeError):
             if data in self.TRUE_VALUES:
                 return True
             elif data in self.FALSE_VALUES:
                 return False
             elif data in self.NULL_VALUES and self.allow_null:
                 return None
-        except TypeError:  # Input is an unhashable type
-            pass
         self.fail('invalid', input=data)
 
     def to_representation(self, value):
@@ -1158,19 +1157,14 @@ class DateTimeField(Field):
             return self.enforce_timezone(value)
 
         for input_format in input_formats:
-            if input_format.lower() == ISO_8601:
-                try:
+            with contextlib.suppress(ValueError, TypeError):
+                if input_format.lower() == ISO_8601:
                     parsed = parse_datetime(value)
                     if parsed is not None:
                         return self.enforce_timezone(parsed)
-                except (ValueError, TypeError):
-                    pass
-            else:
-                try:
-                    parsed = self.datetime_parser(value, input_format)
-                    return self.enforce_timezone(parsed)
-                except (ValueError, TypeError):
-                    pass
+
+                parsed = self.datetime_parser(value, input_format)
+                return self.enforce_timezone(parsed)
 
         humanized_format = humanize_datetime.datetime_formats(input_formats)
         self.fail('invalid', format=humanized_format)
