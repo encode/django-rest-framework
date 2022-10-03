@@ -1814,7 +1814,7 @@ class SerializerMethodField(Field):
 
     For example:
 
-    class ExampleSerializer(self):
+    class ExampleSerializer(Serializer):
         extra_info = SerializerMethodField()
 
         def get_extra_info(self, obj):
