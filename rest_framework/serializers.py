@@ -10,6 +10,8 @@ python primitives.
 2. The process of marshalling between python primitives and request and
 response content is handled by parsers and renderers.
 """
+
+import contextlib
 import copy
 import inspect
 import traceback
@@ -1496,12 +1498,10 @@ class ModelSerializer(Serializer):
                 # they can't be nested attribute lookups.
                 continue
 
-            try:
+            with contextlib.suppress(FieldDoesNotExist):
                 field = model._meta.get_field(source)
                 if isinstance(field, DjangoModelField):
                     model_fields[source] = field
-            except FieldDoesNotExist:
-                pass
 
         return model_fields
 
