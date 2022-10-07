@@ -413,7 +413,8 @@ class Request:
         to proxy it to the underlying HttpRequest object.
         """
         try:
-            return getattr(self._request, attr)
+            _request = self.__getattribute__("_request")
+            return getattr(_request, attr)
         except AttributeError:
             return self.__getattribute__(attr)
 
