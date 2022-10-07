@@ -898,10 +898,16 @@ class CursorPagination(BasePagination):
                 'next': {
                     'type': 'string',
                     'nullable': True,
+                    'format': 'uri',
+                    'example': 'http://api.example.org/accounts/?{cursor_query_param}=cD00ODY%3D"'.format(
+                        cursor_query_param=self.cursor_query_param)
                 },
                 'previous': {
                     'type': 'string',
                     'nullable': True,
+                    'format': 'uri',
+                    'example': 'http://api.example.org/accounts/?{cursor_query_param}=cj0xJnA9NDg3'.format(
+                        cursor_query_param=self.cursor_query_param)
                 },
                 'results': schema,
             },
