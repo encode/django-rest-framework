@@ -185,7 +185,7 @@ To use custom model permissions, override `DjangoModelPermissions` and set the `
 
 Similar to `DjangoModelPermissions`, but also allows unauthenticated users to have read-only access to the API.
 
-##  DjangoObjectPermissions
+## DjangoObjectPermissions
 
 This permission class ties into Django's standard [object permissions framework][objectpermissions] that allows per-object permissions on models.  In order to use this permission class, you'll also need to add a permission backend that supports object-level permissions, such as [django-guardian][guardian].
 
