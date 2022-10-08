@@ -149,15 +149,52 @@ The above example would now generate the following URL pattern:
 This router includes routes for the standard set of `list`, `create`, `retrieve`, `update`, `partial_update` and `destroy` actions.  The viewset can also mark additional methods to be routed, using the `@action` decorator.
 
 <table border=1>
-    <tr><th>URL Style</th><th>HTTP Method</th><th>Action</th><th>URL Name</th></tr>
-    <tr><td rowspan=2>{prefix}/</td><td>GET</td><td>list</td><td rowspan=2>{basename}-list</td></tr></tr>
-    <tr><td>POST</td><td>create</td></tr>
-    <tr><td>{prefix}/{url_path}/</td><td>GET, or as specified by `methods` argument</td><td>`@action(detail=False)` decorated method</td><td>{basename}-{url_name}</td></tr>
-    <tr><td rowspan=4>{prefix}/{lookup}/</td><td>GET</td><td>retrieve</td><td rowspan=4>{basename}-detail</td></tr></tr>
-    <tr><td>PUT</td><td>update</td></tr>
-    <tr><td>PATCH</td><td>partial_update</td></tr>
-    <tr><td>DELETE</td><td>destroy</td></tr>
-    <tr><td>{prefix}/{lookup}/{url_path}/</td><td>GET, or as specified by `methods` argument</td><td>`@action(detail=True)` decorated method</td><td>{basename}-{url_name}</td></tr>
+    <tr>
+        <th>URL Style</th>
+        <th>HTTP Method</th>
+        <th>Action</th>
+        <th>URL Name</th>
+    </tr>
+    <tr>
+        <td rowspan=2>{prefix}/</td>
+        <td>GET</td>
+        <td>list</td>
+        <td rowspan=2>{basename}-list</td>
+    </tr>
+    <tr>
+        <td>POST</td>
+        <td>create</td>
+    </tr>
+    <tr>
+        <td>{prefix}/{url_path}/</td>
+        <td>GET, or as specified by `methods` argument</td>
+        <td><code>@action(detail=False)</code> decorated method</td>
+        <td>{basename}-{url_name}</td>
+    </tr>
+    <tr>
+        <td rowspan=4>{prefix}/{lookup}/</td>
+        <td>GET</td>
+        <td>retrieve</td>
+        <td rowspan=4>{basename}-detail</td>
+    </tr>
+    <tr>
+        <td>PUT</td>
+        <td>update</td>
+    </tr>
+    <tr>
+        <td>PATCH</td>
+        <td>partial_update</td>
+    </tr>
+    <tr>
+        <td>DELETE</td>
+        <td>destroy</td>
+    </tr>
+    <tr>
+        <td>{prefix}/{lookup}/{url_path}/</td>
+        <td>GET, or as specified by `methods` argument</td>
+        <td><code>@action(detail=True)</code> decorated method</td>
+        <td>{basename}-{url_name}</td>
+    </tr>
 </table>
 
 By default the URLs created by `SimpleRouter` are appended with a trailing slash.
@@ -178,16 +215,59 @@ The router will match lookup values containing any characters except slashes and
 This router is similar to `SimpleRouter` as above, but additionally includes a default API root view, that returns a response containing hyperlinks to all the list views.  It also generates routes for optional `.json` style format suffixes.
 
 <table border=1>
-    <tr><th>URL Style</th><th>HTTP Method</th><th>Action</th><th>URL Name</th></tr>
-    <tr><td>[.format]</td><td>GET</td><td>automatically generated root view</td><td>api-root</td></tr></tr>
-    <tr><td rowspan=2>{prefix}/[.format]</td><td>GET</td><td>list</td><td rowspan=2>{basename}-list</td></tr></tr>
-    <tr><td>POST</td><td>create</td></tr>
-    <tr><td>{prefix}/{url_path}/[.format]</td><td>GET, or as specified by `methods` argument</td><td>`@action(detail=False)` decorated method</td><td>{basename}-{url_name}</td></tr>
-    <tr><td rowspan=4>{prefix}/{lookup}/[.format]</td><td>GET</td><td>retrieve</td><td rowspan=4>{basename}-detail</td></tr></tr>
-    <tr><td>PUT</td><td>update</td></tr>
-    <tr><td>PATCH</td><td>partial_update</td></tr>
-    <tr><td>DELETE</td><td>destroy</td></tr>
-    <tr><td>{prefix}/{lookup}/{url_path}/[.format]</td><td>GET, or as specified by `methods` argument</td><td>`@action(detail=True)` decorated method</td><td>{basename}-{url_name}</td></tr>
+    <tr>
+        <th>URL Style</th>
+        <th>HTTP Method</th>
+        <th>Action</th>
+        <th>URL Name</th>
+    </tr>
+    <tr>
+        <td>[.format]</td>
+        <td>GET</td>
+        <td>automatically generated root view</td>
+        <td>api-root</td>
+    </tr>
+    <tr>
+        <td rowspan=2>{prefix}/[.format]</td>
+        <td>GET</td>
+        <td>list</td>
+        <td rowspan=2>{basename}-list</td>
+    </tr>
+    <tr>
+        <td>POST</td>
+        <td>create</td>
+    </tr>
+    <tr>
+        <td>{prefix}/{url_path}/[.format]</td>
+        <td>GET, or as specified by `methods` argument</td>
+        <td><code>@action(detail=False)</code> decorated method</td>
+        <td>{basename}-{url_name}</td>
+    </tr>
+    <tr>
+        <td rowspan=4>{prefix}/{lookup}/[.format]</td>
+        <td>GET</td>
+        <td>retrieve</td>
+        <td rowspan=4>{basename}-detail</td>
+    </tr>
+    </tr>
+    <tr>
+        <td>PUT</td>
+        <td>update</td>
+    </tr>
+    <tr>
+        <td>PATCH</td>
+        <td>partial_update</td>
+    </tr>
+    <tr>
+        <td>DELETE</td>
+        <td>destroy</td>
+    </tr>
+    <tr>
+        <td>{prefix}/{lookup}/{url_path}/[.format]</td>
+        <td>GET, or as specified by `methods` argument</td>
+        <td><code>@action(detail=True)</code> decorated method</td>
+        <td>{basename}-{url_name}</td>
+    </tr>
 </table>
 
 As with `SimpleRouter` the trailing slashes on the URL routes can be removed by setting the `trailing_slash` argument to `False` when instantiating the router.
@@ -293,10 +373,30 @@ Let's take a look at the routes our `CustomReadOnlyRouter` would generate for a 
 The following mappings would be generated...
 
 <table border=1>
-    <tr><th>URL</th><th>HTTP Method</th><th>Action</th><th>URL Name</th></tr>
-    <tr><td>/users</td><td>GET</td><td>list</td><td>user-list</td></tr>
-    <tr><td>/users/{username}</td><td>GET</td><td>retrieve</td><td>user-detail</td></tr>
-    <tr><td>/users/{username}/group_names</td><td>GET</td><td>group_names</td><td>user-group-names</td></tr>
+    <tr>
+        <th>URL</th>
+        <th>HTTP Method</th>
+        <th>Action</th>
+        <th>URL Name</th>
+    </tr>
+    <tr>
+        <td>/users</td>
+        <td>GET</td>
+        <td>list</td>
+        <td>user-list</td>
+    </tr>
+    <tr>
+        <td>/users/{username}</td>
+        <td>GET</td>
+        <td>retrieve</td>
+        <td>user-detail</td>
+    </tr>
+    <tr>
+        <td>/users/{username}/group_names</td>
+        <td>GET</td>
+        <td>group_names</td>
+        <td>user-group-names</td>
+    </tr>
 </table>
 
 For another example of setting the `.routes` attribute, see the source code for the `SimpleRouter` class.

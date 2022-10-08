@@ -59,8 +59,8 @@ methods necessary to check object permissions.
 
 If you wish to use the provided permission classes in order to check object
 permissions, **you must** subclass them and implement the
-`has_object_permission()` method described in the [_Custom
-permissions_](#custom-permissions) section (below).
+`has_object_permission()` method described in the [*Custom
+permissions*](#custom-permissions) section (below).
 
 ---
 
@@ -118,7 +118,7 @@ Or, if you're using the `@api_view` decorator with function based views.
         }
         return Response(content)
 
-__Note:__ when you set new permission classes via the class attribute or decorators you're telling the view to ignore the default list set in the __settings.py__ file.
+**Note:** when you set new permission classes via the class attribute or decorators you're telling the view to ignore the default list set in the **settings.py** file.
 
 Provided they inherit from `rest_framework.permissions.BasePermission`, permissions can be composed using standard Python bitwise operators. For example, `IsAuthenticatedOrReadOnly` could be written:
 
@@ -139,7 +139,7 @@ Provided they inherit from `rest_framework.permissions.BasePermission`, permissi
             }
             return Response(content)
 
-__Note:__ it supports & (and), | (or) and ~ (not).
+**Note:** it supports & (and), | (or) and ~ (not).
 
 ---
 
@@ -185,7 +185,7 @@ To use custom model permissions, override `DjangoModelPermissions` and set the `
 
 Similar to `DjangoModelPermissions`, but also allows unauthenticated users to have read-only access to the API.
 
-## DjangoObjectPermissions
+##  DjangoObjectPermissions
 
 This permission class ties into Django's standard [object permissions framework][objectpermissions] that allows per-object permissions on models.  In order to use this permission class, you'll also need to add a permission backend that supports object-level permissions, such as [django-guardian][guardian].
 
@@ -278,22 +278,68 @@ Also note that the generic views will only check the object-level permissions fo
 
 REST framework offers three different methods to customize access restrictions on a case-by-case basis. These apply in different scenarios and have different effects and limitations.
 
- * `queryset`/`get_queryset()`: Limits the general visibility of existing objects from the database. The queryset limits which objects will be listed and which objects can be modified or deleted. The `get_queryset()` method can apply different querysets based on the current action.
- * `permission_classes`/`get_permissions()`: General permission checks based on the current action, request and targeted object. Object level permissions can only be applied to retrieve, modify and deletion actions. Permission checks for list and create will be applied to the entire object type. (In case of list: subject to restrictions in the queryset.)
- * `serializer_class`/`get_serializer()`: Instance level restrictions that apply to all objects on input and output. The serializer may have access to the request context. The `get_serializer()` method can apply different serializers based on the current action.
+* `queryset`/`get_queryset()`: Limits the general visibility of existing objects from the database. The queryset limits which objects will be listed and which objects can be modified or deleted. The `get_queryset()` method can apply different querysets based on the current action.
+* `permission_classes`/`get_permissions()`: General permission checks based on the current action, request and targeted object. Object level permissions can only be applied to retrieve, modify and deletion actions. Permission checks for list and create will be applied to the entire object type. (In case of list: subject to restrictions in the queryset.)
+* `serializer_class`/`get_serializer()`: Instance level restrictions that apply to all objects on input and output. The serializer may have access to the request context. The `get_serializer()` method can apply different serializers based on the current action.
 
 The following table lists the access restriction methods and the level of control they offer over which actions.
 
-|                                    | `queryset` | `permission_classes` | `serializer_class` |
-|------------------------------------|------------|----------------------|--------------------|
-| Action: list                       | global     | global               | object-level*      |
-| Action: create                     | no         | global               | object-level       |
-| Action: retrieve                   | global     | object-level         | object-level       |
-| Action: update                     | global     | object-level         | object-level       |
-| Action: partial_update             | global     | object-level         | object-level       |
-| Action: destroy                    | global     | object-level         | no                 |
-| Can reference action in decision   | no**       | yes                  | no**               |
-| Can reference request in decision  | no**       | yes                  | yes                |
+<table border=1>
+    <tr>
+        <th></th>
+        <th><code>queryset</code></th>
+        <th><code>permission_classes</code></th>
+        <th><code>serializer_class</code></th>
+    </tr>
+    <tr>
+        <td>Action: list</td>
+        <td>global</td>
+        <td>global</td>
+        <td>object-level*</td>
+    </tr>
+    <tr>
+        <td>Action: create</td>
+        <td>no</td>
+        <td>global</td>
+        <td>object-level</td>
+    </tr>
+    <tr>
+        <td>Action: retrieve</td>
+        <td>global</td>
+        <td>object-level</td>
+        <td>object-level</td>
+    </tr>
+    <tr>
+        <td>Action: update</td>
+        <td>global</td>
+        <td>object-level</td>
+        <td>object-level</td>
+    </tr>
+    <tr>
+        <td>Action: partial_update</td>
+        <td>global</td>
+        <td>object-level</td>
+        <td>object-level</td>
+    </tr>
+    <tr>
+        <td>Action: destroy</td>
+        <td>global</td>
+        <td>object-level</td>
+        <td>no</td>
+    </tr>
+    <tr>
+        <td>Can reference action in decision</td>
+        <td>no**</td>
+        <td>yes</td>
+        <td>no**</td>
+    </tr>
+    <tr>
+        <td>Can reference request in decision</td>
+        <td>no**</td>
+        <td>yes</td>
+        <td>yes</td>
+    </tr>
+</table>
 
  \* A Serializer class should not raise PermissionDenied in a list action, or the entire list would not be returned. <br>
  \** The `get_*()` methods have access to the current view and can return different Serializer or QuerySet instances based on the request or action.
@@ -306,7 +352,7 @@ The following third party packages are also available.
 
 ## DRF - Access Policy
 
-The [Django REST - Access Policy][drf-access-policy] package provides a way to define complex access rules in declarative policy classes that are attached to view sets or function-based views. The policies are defined in JSON in a format similar to AWS' Identity & Access Management policies. 
+The [Django REST - Access Policy][drf-access-policy] package provides a way to define complex access rules in declarative policy classes that are attached to view sets or function-based views. The policies are defined in JSON in a format similar to AWS' Identity & Access Management policies.
 
 ## Composed Permissions
 
@@ -326,7 +372,7 @@ The [Django Rest Framework Roles][django-rest-framework-roles] package makes it 
 
 ## Django REST Framework API Key
 
-The [Django REST Framework API Key][djangorestframework-api-key] package provides permissions classes, models and helpers to add API key authorization to your API. It can be used to authorize internal or third-party backends and services (i.e. _machines_) which do not have a user account. API keys are stored securely using Django's password hashing infrastructure, and they can be viewed, edited and revoked at anytime in the Django admin.
+The [Django REST Framework API Key][djangorestframework-api-key] package provides permissions classes, models and helpers to add API key authorization to your API. It can be used to authorize internal or third-party backends and services (i.e. *machines*) which do not have a user account. API keys are stored securely using Django's password hashing infrastructure, and they can be viewed, edited and revoked at anytime in the Django admin.
 
 ## Django Rest Framework Role Filters
 
@@ -336,7 +382,6 @@ The [Django Rest Framework Role Filters][django-rest-framework-role-filters] pac
 
 The [Django Rest Framework PSQ][drf-psq] package is an extension that gives support for having action-based **permission_classes**, **serializer_class**, and **queryset** dependent on permission-based rules.
 
-
 [cite]: https://developer.apple.com/library/mac/#documentation/security/Conceptual/AuthenticationAndAuthorizationGuide/Authorization/Authorization.html
 [authentication]: authentication.md
 [throttling]: throttling.md
@@ -344,7 +389,6 @@ The [Django Rest Framework PSQ][drf-psq] package is an extension that gives supp
 [contribauth]: https://docs.djangoproject.com/en/stable/topics/auth/customizing/#custom-permissions
 [objectpermissions]: https://docs.djangoproject.com/en/stable/topics/auth/customizing/#handling-object-permissions
 [guardian]: https://github.com/lukaszb/django-guardian
-[filtering]: filtering.md
 [composed-permissions]: https://github.com/niwibe/djangorestframework-composed-permissions
 [rest-condition]: https://github.com/caxap/rest_condition
 [dry-rest-permissions]: https://github.com/FJNR-inc/dry-rest-permissions

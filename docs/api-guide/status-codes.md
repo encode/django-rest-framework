@@ -31,7 +31,6 @@ The module also includes a set of helper functions for testing if a status code 
             response = self.client.get(url)
             self.assertTrue(status.is_success(response.status_code))
 
-
 For more information on proper usage of HTTP status codes see [RFC 2616][rfc2616]
 and [RFC 6585][rfc6585].
 

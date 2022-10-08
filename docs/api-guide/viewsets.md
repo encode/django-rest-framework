@@ -9,7 +9,6 @@ source:
 >
 > &mdash; [Ruby on Rails Documentation][cite]
 
-
 Django REST framework allows you to combine the logic for a set of related views in a single class, called a `ViewSet`.  In other frameworks you may also find conceptually similar implementations named something like 'Resources' or 'Controllers'.
 
 A `ViewSet` class is simply **a type of class-based View, that does not provide any method handlers** such as `.get()` or `.post()`, and instead provides actions such as `.list()` and `.create()`.
@@ -72,7 +71,6 @@ There are two main advantages of using a `ViewSet` class over using a `View` cla
 * By using routers, we no longer need to deal with wiring up the URL conf ourselves.
 
 Both of these come with a trade-off.  Using regular views and URL confs is more explicit and gives you more control.  ViewSets are helpful if you want to get up and running quickly, or when you have a large API and you want to enforce a consistent URL configuration throughout.
-
 
 ## ViewSet actions
 
@@ -171,13 +169,11 @@ A more complete example of extra actions:
             serializer = self.get_serializer(recent_users, many=True)
             return Response(serializer.data)
 
-
 The `action` decorator will route `GET` requests by default, but may also accept other HTTP methods by setting the `methods` argument.  For example:
 
         @action(detail=True, methods=['post', 'delete'])
         def unset_password(self, request, pk=None):
            ...
-
 
 The decorator allows you to override any viewset-level configuration such as `permission_classes`, `serializer_class`, `filter_backends`...:
 
@@ -193,7 +189,6 @@ To view all extra actions, call the `.get_extra_actions()` method.
 
 Extra actions can map additional HTTP methods to separate `ViewSet` methods. For example, the above password set/unset methods could be consolidated into a single route. Note that additional mappings do not accept arguments.
 
-```python
     @action(detail=True, methods=['put'], name='Change Password')
     def password(self, request, pk=None):
         """Update the user's password."""
@@ -203,7 +198,6 @@ Extra actions can map additional HTTP methods to separate `ViewSet` methods. For
     def delete_password(self, request, pk=None):
         """Delete the user's password."""
         ...
-```
 
 ## Reversing action URLs
 
@@ -213,17 +207,13 @@ Note that the `basename` is provided by the router during `ViewSet` registration
 
 Using the example from the previous section:
 
-```python
->>> view.reverse_action('set-password', args=['1'])
-'http://localhost:8000/api/users/1/set_password'
-```
+    >>> view.reverse_action('set-password', args=['1'])
+    'http://localhost:8000/api/users/1/set_password'
 
 Alternatively, you can use the `url_name` attribute set by the `@action` decorator.
 
-```python
->>> view.reverse_action(view.set_password.url_name, args=['1'])
-'http://localhost:8000/api/users/1/set_password'
-```
+    >>> view.reverse_action(view.set_password.url_name, args=['1'])
+    'http://localhost:8000/api/users/1/set_password'
 
 The `url_name` argument for `.reverse_action()` should match the same argument to the `@action` decorator. Additionally, this method can be used to reverse the default actions, such as `list` and `create`.
 

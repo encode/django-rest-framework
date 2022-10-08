@@ -38,7 +38,6 @@ For example:
             user = self.request.user
             return Purchase.objects.filter(purchaser=user)
 
-
 ## Filtering against the URL
 
 Another style of filtering might involve restricting the queryset based on some part of the URL.
@@ -187,7 +186,6 @@ For more advanced filtering requirements you can specify a `FilterSet` class tha
 You can read more about `FilterSet`s in the [django-filter documentation][django-filter-docs].
 It's also recommended that you read the section on [DRF integration][django-filter-drf-docs].
 
-
 ## SearchFilter
 
 The `SearchFilter` class supports simple single query parameter based searching, and is based on the [Django admin's search functionality][search-django-admin].
@@ -213,7 +211,7 @@ This will allow the client to filter the items in the list by making queries suc
 You can also perform a related lookup on a ForeignKey or ManyToManyField with the lookup API double-underscore notation:
 
     search_fields = ['username', 'email', 'profile__profession']
-    
+
 For [JSONField][JSONField] and [HStoreField][HStoreField] fields you can filter based on nested values within the data structure using the same double-underscore notation:
 
     search_fields = ['data__breed', 'data__owner__other_pets__0__name']

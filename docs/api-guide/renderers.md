@@ -107,9 +107,7 @@ The TemplateHTMLRenderer will create a `RequestContext`, using the `response.dat
 
 **Note:** When used with a view that makes use of a serializer the `Response` sent for rendering may not be a dictionary and will need to be wrapped in a dict before returning to allow the TemplateHTMLRenderer to render it. For example:
 
-```
-response.data = {'results': response.data}
-```
+    response.data = {'results': response.data}
 
 ---
 
@@ -192,7 +190,7 @@ By default the response content will be rendered with the highest priority rende
         def get_default_renderer(self, view):
             return JSONRenderer()
 
-##  AdminRenderer
+## AdminRenderer
 
 Renders data into HTML for an admin-like display:
 
@@ -209,7 +207,6 @@ Note that views that have nested or list serializers for their input won't work 
 
         class Meta:
             model = Account
-
 
 **.media_type**: `text/html`
 
@@ -527,7 +524,6 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 
 [Rest Framework Latex] provides a renderer that outputs PDFs using Laulatex. It is maintained by [Pebble (S/F Software)][mypebble].
 
-
 [cite]: https://docs.djangoproject.com/en/stable/ref/template-response/#the-rendering-process
 [conneg]: content-negotiation.md
 [html-and-forms]: ../topics/html-and-forms.md
@@ -551,8 +547,6 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 [wharton]: https://github.com/wharton
 [drf-excel]: https://github.com/wharton/drf-excel
 [vbabiy]: https://github.com/vbabiy
-[rest-framework-yaml]: https://jpadilla.github.io/django-rest-framework-yaml/
-[rest-framework-xml]: https://jpadilla.github.io/django-rest-framework-xml/
 [yaml]: http://www.yaml.org/
 [djangorestframework-msgpack]: https://github.com/juanriaza/django-rest-framework-msgpack
 [djangorestframework-csv]: https://github.com/mjumbewu/django-rest-framework-csv

@@ -51,7 +51,6 @@ For example:
 
 ---
 
-
 ## API policy attributes
 
 The following attributes control the pluggable aspects of API views.
@@ -161,7 +160,6 @@ By default only `GET` methods will be accepted. Other methods will respond with 
             return Response({"message": "Got some data!", "data": request.data})
         return Response({"message": "Hello, world!"})
 
-
 ## API policy decorators
 
 To override the default settings, REST framework provides a set of additional decorators which can be added to your views.  These must come *after* (below) the `@api_view` decorator.  For example, to create a view that uses a [throttle][throttling] to ensure it can only be called once per day by a particular user, use the `@throttle_classes` decorator, passing a list of throttle classes:
@@ -188,7 +186,6 @@ The available decorators are:
 * `@permission_classes(...)`
 
 Each of these decorators takes a single argument which must be a list or tuple of classes.
-
 
 ## View schema decorator
 
@@ -217,11 +214,9 @@ You may pass `None` in order to exclude the view from schema generation.
     def view(request):
         return Response({"message": "Will not appear in schema!"})
 
-
 [cite]: https://reinout.vanrees.org/weblog/2011/08/24/class-based-views-usage.html
 [cite2]: http://www.boredomandlaziness.org/2012/05/djangos-cbvs-are-not-mistake-but.html
 [settings]: settings.md
 [throttling]: throttling.md
 [schemas]: schemas.md
 [classy-drf]: http://www.cdrf.co
-

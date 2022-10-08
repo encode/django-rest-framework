@@ -386,7 +386,6 @@ The following third party packages provide additional generic view implementatio
 
 [Django Rest Multiple Models][django-rest-multiple-models] provides a generic view (and mixin) for sending multiple serialized models and/or querysets via a single API request.
 
-
 [cite]: https://docs.djangoproject.com/en/stable/ref/class-based-views/#base-vs-generic-views
 [GenericAPIView]: #genericapiview
 [ListModelMixin]: #listmodelmixin

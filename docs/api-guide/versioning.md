@@ -94,7 +94,7 @@ You can also set your versioning class plus those three values on a per-view or 
 
 # API Reference
 
-## AcceptHeaderVersioning
+## AcceptHeaderVersioning
 
 This scheme requires the client to specify the version as part of the media type in the `Accept` header. The version is included as a media type parameter, that supplements the main media type.
 

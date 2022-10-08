@@ -247,7 +247,6 @@ And in your `urls.py`:
         path('api-token-auth/', CustomAuthToken.as_view())
     ]
 
-
 #### With Django admin
 
 It is also possible to create Tokens manually through the admin interface. In case you are using a large user base, we recommend that you monkey patch the `TokenAdmin` class customize it to your needs, more specifically by declaring the `user` field as `raw_field`.
@@ -257,7 +256,6 @@ It is also possible to create Tokens manually through the admin interface. In ca
     from rest_framework.authtoken.admin import TokenAdmin
 
     TokenAdmin.raw_id_fields = ['user']
-
 
 #### Using Django manage.py command
 
@@ -272,7 +270,6 @@ this command will return the API token for the given user, creating it if it doe
 In case you want to regenerate the token (for example if it has been compromised or leaked) you can pass an additional parameter:
 
     ./manage.py drf_create_token -r <username>
-
 
 ## SessionAuthentication
 
@@ -290,7 +287,6 @@ If you're using an AJAX-style API with SessionAuthentication, you'll need to mak
 **Warning**: Always use Django's standard login view when creating login pages. This will ensure your login views are properly protected.
 
 CSRF validation in REST framework works slightly differently from standard Django due to the need to support both session and non-session based authentication to the same views. This means that only authenticated requests require CSRF tokens, and anonymous requests may be sent without CSRF tokens. This behaviour is not suitable for login views, which should always have CSRF validation applied.
-
 
 ## RemoteUserAuthentication
 
@@ -311,7 +307,6 @@ Consult your web server's documentation for information about configuring an aut
 
 * [Apache Authentication How-To](https://httpd.apache.org/docs/2.4/howto/auth.html)
 * [NGINX (Restricting Access)](https://docs.nginx.com/nginx/admin-guide/security-controls/configuring-http-basic-authentication/)
-
 
 # Custom authentication
 
@@ -338,7 +333,7 @@ If the `.authenticate_header()` method is not overridden, the authentication sch
 
 The following example will authenticate any incoming request as the user given by the username in a custom request header named 'X-USERNAME'.
 
-	from django.contrib.auth.models import User
+    from django.contrib.auth.models import User
     from rest_framework import authentication
     from rest_framework import exceptions
 
@@ -424,7 +419,6 @@ HTTP Signature (currently a [IETF draft][http-signature-ietf-draft]) provides a 
 
 This library provides a set of REST API endpoints for registration, authentication (including social media authentication), password reset, retrieve and update user details, etc. By having these API endpoints, your client apps such as AngularJS, iOS, Android, and others can communicate to your Django backend site independently via REST APIs for user management.
 
-
 There are currently two forks of this project.
 
 * [Django-rest-auth][django-rest-auth] is the original project, [but is not currently receiving updates](https://github.com/Tivix/django-rest-auth/issues/568).
@@ -460,8 +454,6 @@ More information can be found in the [Documentation](https://django-rest-durin.r
 [django-rest-framework-oauth]: https://jpadilla.github.io/django-rest-framework-oauth/
 [django-rest-framework-oauth-authentication]: https://jpadilla.github.io/django-rest-framework-oauth/authentication/
 [django-rest-framework-oauth-permissions]: https://jpadilla.github.io/django-rest-framework-oauth/permissions/
-[juanriaza]: https://github.com/juanriaza
-[djangorestframework-digestauth]: https://github.com/juanriaza/django-rest-framework-digestauth
 [oauth-1.0a]: https://oauth.net/core/1.0a/
 [django-oauth-toolkit]: https://github.com/evonove/django-oauth-toolkit
 [jazzband]: https://github.com/jazzband/

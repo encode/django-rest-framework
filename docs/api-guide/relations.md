@@ -17,9 +17,9 @@ Relational fields are used to represent model relationships.  They can be applie
 
 ---
 
----
-
 **Note:** REST Framework does not attempt to automatically optimize querysets passed to serializers in terms of `select_related` and `prefetch_related` since it would be too much magic. A serializer with a field spanning an orm relation through its source attribute could require an additional database hit to fetch related objects from the database. It is the programmer's responsibility to optimize queries to avoid additional database hits which could occur while using such a serializer.
+
+---
 
 For example, the following serializer would lead to a database hit each time evaluating the tracks field if it is not prefetched:
 
@@ -33,7 +33,7 @@ For example, the following serializer would lead to a database hit each time eva
         class Meta:
             model = Album
             fields = ['album_name', 'artist', 'tracks']
-    
+
     # For each album object, tracks should be fetched from database
     qs = Album.objects.all()
     print(AlbumSerializer(qs, many=True).data)
@@ -149,7 +149,6 @@ By default this field is read-write, although you can change this behavior using
 * `many` - If applied to a to-many relationship, you should set this argument to `True`.
 * `allow_null` - If set to `True`, the field will accept values of `None` or the empty string for nullable relationships. Defaults to `False`.
 * `pk_field` - Set to a field to control serialization/deserialization of the primary key's value. For example, `pk_field=UUIDField(format='hex')` would serialize a UUID primary key into its compact hex representation.
-
 
 ## HyperlinkedRelatedField
 
@@ -278,7 +277,7 @@ This field is always read-only.
 
 As opposed to previously discussed _references_ to another entity, the referred entity can instead also be embedded or _nested_
 in the representation of the object that refers to it.
-Such nested relationships can be expressed by using serializers as fields. 
+Such nested relationships can be expressed by using serializers as fields.
 
 If the field is used to represent a to-many relationship, you should add the `many=True` flag to the serializer field.
 
@@ -468,11 +467,11 @@ Generally we recommend a flat style for API representations where possible, but 
 
 ## The `queryset` argument
 
-The `queryset` argument is only ever required for *writable* relationship field, in which case it is used for performing the model instance lookup, that maps from the primitive user input, into a model instance.
+The `queryset` argument is only ever required for _writable_ relationship field, in which case it is used for performing the model instance lookup, that maps from the primitive user input, into a model instance.
 
-In version 2.x a serializer class could *sometimes* automatically determine the `queryset` argument *if* a `ModelSerializer` class was being used.
+In version 2.x a serializer class could _sometimes_ automatically determine the `queryset` argument _if_ a `ModelSerializer` class was being used.
 
-This behavior is now replaced with *always* using an explicit `queryset` argument for writable relational fields.
+This behavior is now replaced with _always_ using an explicit `queryset` argument for writable relational fields.
 
 Doing so reduces the amount of hidden 'magic' that `ModelSerializer` provides, makes the behavior of the field more clear, and ensures that it is trivial to move between using the `ModelSerializer` shortcut, or using fully explicit `Serializer` classes.
 
@@ -494,8 +493,8 @@ This behavior is intended to prevent a template from being unable to render in a
 
 There are two keyword arguments you can use to control this behavior:
 
-- `html_cutoff` - If set this will be the maximum number of choices that will be displayed by a HTML select drop down. Set to `None` to disable any limiting. Defaults to `1000`.
-- `html_cutoff_text` - If set this will display a textual indicator if the maximum number of items have been cutoff in an HTML select drop down. Defaults to `"More than {count} items…"`
+* `html_cutoff` - If set this will be the maximum number of choices that will be displayed by a HTML select drop down. Set to `None` to disable any limiting. Defaults to `1000`.
+* `html_cutoff_text` - If set this will display a textual indicator if the maximum number of items have been cutoff in an HTML select drop down. Defaults to `"More than {count} items…"`
 
 You can also control these globally using the settings `HTML_SELECT_CUTOFF` and `HTML_SELECT_CUTOFF_TEXT`.
 

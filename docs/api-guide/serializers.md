@@ -556,7 +556,6 @@ Please review the [Validators Documentation](/api-guide/validators/) for details
 
 ---
 
-
 ## Additional keyword arguments
 
 There is also a shortcut allowing you to specify arbitrary additional keyword arguments on fields, using the `extra_kwargs` option. As in the case of `read_only_fields`, this means you do not need to explicitly declare the field on the serializer.
@@ -910,7 +909,7 @@ We can now use this class to serialize single `HighScore` instances:
     def high_score(request, pk):
         instance = HighScore.objects.get(pk=pk)
         serializer = HighScoreSerializer(instance)
-	    return Response(serializer.data)
+        return Response(serializer.data)
 
 Or use it to serialize multiple instances:
 
@@ -918,7 +917,7 @@ Or use it to serialize multiple instances:
     def all_high_scores(request):
         queryset = HighScore.objects.order_by('-score')
         serializer = HighScoreSerializer(queryset, many=True)
-	    return Response(serializer.data)
+        return Response(serializer.data)
 
 #### Read-write `BaseSerializer` classes
 
@@ -949,8 +948,8 @@ Here's a complete example of our previous `HighScoreSerializer`, that's been upd
                     'player_name': 'May not be more than 10 characters.'
                 })
 
-			# Return the validated values. This will be available as
-			# the `.validated_data` property.
+            # Return the validated values. This will be available as
+            # the `.validated_data` property.
             return {
                 'score': int(score),
                 'player_name': player_name
@@ -1189,8 +1188,7 @@ The [drf-writable-nested][drf-writable-nested] package provides writable nested 
 
 ## DRF Encrypt Content
 
-The [drf-encrypt-content][drf-encrypt-content] package helps you encrypt your data, serialized through ModelSerializer. It also contains some helper functions. Which helps you to encrypt your data. 
-
+The [drf-encrypt-content][drf-encrypt-content] package helps you encrypt your data, serialized through ModelSerializer. It also contains some helper functions. Which helps you to encrypt your data.
 
 [cite]: https://groups.google.com/d/topic/django-users/sVFaOfQi4wY/discussion
 [relations]: relations.md

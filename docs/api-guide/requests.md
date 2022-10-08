@@ -133,7 +133,6 @@ As REST framework's `Request` extends Django's `HttpRequest`, all the other stan
 
 Note that due to implementation reasons the `Request` class does not inherit from `HttpRequest` class, but instead extends the class using composition.
 
-
 [cite]: https://groups.google.com/d/topic/django-developers/dxI4qVzrBY4/discussion
 [parsers documentation]: parsers.md
 [JSON data]: parsers.md#jsonparser

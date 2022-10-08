@@ -13,7 +13,7 @@ Most of the time you're dealing with validation in REST framework you'll simply 
 
 However, sometimes you'll want to place your validation logic into reusable components, so that it can easily be reused throughout your codebase. This can be achieved by using validator functions and validator classes.
 
-## Validation in REST framework
+## Validation in REST framework
 
 Validation in Django REST framework serializers is handled a little differently to how validation works in Django's `ModelForm` class.
 
@@ -75,7 +75,7 @@ This validator should be applied to *serializer fields*, like so:
         validators=[UniqueValidator(queryset=BlogPost.objects.all())]
     )
 
-## UniqueTogetherValidator
+## UniqueTogetherValidator
 
 This validator can be used to enforce `unique_together` constraints on model instances.
 It has two required arguments, and a single optional `messages` argument:
@@ -183,7 +183,7 @@ A default class that can be used to represent the current user. In order to use 
         default=serializers.CurrentUserDefault()
     )
 
-#### CreateOnlyDefault
+#### CreateOnlyDefault
 
 A default class that can be used to *only set a default argument during create operations*. During updates the field is omitted.
 
