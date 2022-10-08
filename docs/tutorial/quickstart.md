@@ -137,6 +137,7 @@ Again, if we need more control over the API URLs we can simply drop down to usin
 Finally, we're including default login and logout views for use with the browsable API.  That's optional, but useful if your API requires authentication and you want to use the browsable API.
 
 ## Pagination
+
 Pagination allows you to control how many objects per page are returned. To enable it add the following lines to `tutorial/settings.py`
 
     REST_FRAMEWORK = {
@@ -199,7 +200,6 @@ Or using the [httpie][httpie], command line tool...
             },
         ]
     }
-
 
 Or directly through the browser, by going to the URL `http://127.0.0.1:8000/users/`...
 

@@ -1,8 +1,8 @@
+# Writable nested serializers
+
 > To save HTTP requests, it may be convenient to send related documents along with the request.
 >
 > &mdash; [JSON API specification for Ember Data][cite].
-
-# Writable nested serializers
 
 Although flat data structures serve to properly delineate between the individual entities in your service, there are cases where it may be more appropriate or convenient to use nested data structures.
 
@@ -42,6 +42,5 @@ Let's take a look at updating our nested one-to-many data structure.
 ### Adding and removing items
 
 ### Making PATCH requests
-
 
 [cite]: http://jsonapi.org/format/#url-based-json-api

@@ -25,53 +25,49 @@ Assuming you've followed the example from the schemas documentation for routing
 a dynamic `SchemaView`, a minimal Django template for using Swagger UI might be
 this:
 
-```html
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Swagger</title>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="//unpkg.com/swagger-ui-dist@3/swagger-ui.css" />
-  </head>
-  <body>
-    <div id="swagger-ui"></div>
-    <script src="//unpkg.com/swagger-ui-dist@3/swagger-ui-bundle.js"></script>
-    <script>
-    const ui = SwaggerUIBundle({
-        url: "{% url schema_url %}",
-        dom_id: '#swagger-ui',
-        presets: [
-          SwaggerUIBundle.presets.apis,
-          SwaggerUIBundle.SwaggerUIStandalonePreset
-        ],
-        layout: "BaseLayout",
-        requestInterceptor: (request) => {
-          request.headers['X-CSRFToken'] = "{{ csrf_token }}"
-          return request;
-        }
-      })
-    </script>
-  </body>
-</html>
-```
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Swagger</title>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="//unpkg.com/swagger-ui-dist@3/swagger-ui.css" />
+      </head>
+      <body>
+        <div id="swagger-ui"></div>
+        <script src="//unpkg.com/swagger-ui-dist@3/swagger-ui-bundle.js"></script>
+        <script>
+        const ui = SwaggerUIBundle({
+            url: "{% url schema_url %}",
+            dom_id: '#swagger-ui',
+            presets: [
+              SwaggerUIBundle.presets.apis,
+              SwaggerUIBundle.SwaggerUIStandalonePreset
+            ],
+            layout: "BaseLayout",
+            requestInterceptor: (request) => {
+              request.headers['X-CSRFToken'] = "{{ csrf_token }}"
+              return request;
+            }
+          })
+        </script>
+      </body>
+    </html>
 
 Save this in your templates folder as `swagger-ui.html`. Then route a
 `TemplateView` in your project's URL conf:
 
-```python
-from django.views.generic import TemplateView
+    from django.views.generic import TemplateView
 
-urlpatterns = [
-    # ...
-    # Route TemplateView to serve Swagger UI template.
-    #   * Provide `extra_context` with view name of `SchemaView`.
-    path('swagger-ui/', TemplateView.as_view(
-        template_name='swagger-ui.html',
-        extra_context={'schema_url':'openapi-schema'}
-    ), name='swagger-ui'),
-]
-```
+    urlpatterns = [
+        # ...
+        # Route TemplateView to serve Swagger UI template.
+        #   * Provide `extra_context` with view name of `SchemaView`.
+        path('swagger-ui/', TemplateView.as_view(
+            template_name='swagger-ui.html',
+            extra_context={'schema_url':'openapi-schema'}
+        ), name='swagger-ui'),
+    ]
 
 See the [Swagger UI documentation][swagger-ui] for advanced usage.
 
@@ -81,46 +77,42 @@ Assuming you've followed the example from the schemas documentation for routing
 a dynamic `SchemaView`, a minimal Django template for using ReDoc might be
 this:
 
-```html
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>ReDoc</title>
-    <!-- needed for adaptive design -->
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">
-    <!-- ReDoc doesn't change outer page styles -->
-    <style>
-      body {
-        margin: 0;
-        padding: 0;
-      }
-    </style>
-  </head>
-  <body>
-    <redoc spec-url='{% url schema_url %}'></redoc>
-    <script src="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"> </script>
-  </body>
-</html>
-```
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>ReDoc</title>
+        <!-- needed for adaptive design -->
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">
+        <!-- ReDoc doesn't change outer page styles -->
+        <style>
+          body {
+            margin: 0;
+            padding: 0;
+          }
+        </style>
+      </head>
+      <body>
+        <redoc spec-url='{% url schema_url %}'></redoc>
+        <script src="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"> </script>
+      </body>
+    </html>
 
 Save this in your templates folder as `redoc.html`. Then route a `TemplateView`
 in your project's URL conf:
 
-```python
-from django.views.generic import TemplateView
+    from django.views.generic import TemplateView
 
-urlpatterns = [
-    # ...
-    # Route TemplateView to serve the ReDoc template.
-    #   * Provide `extra_context` with view name of `SchemaView`.
-    path('redoc/', TemplateView.as_view(
-        template_name='redoc.html',
-        extra_context={'schema_url':'openapi-schema'}
-    ), name='redoc'),
-]
-```
+    urlpatterns = [
+        # ...
+        # Route TemplateView to serve the ReDoc template.
+        #   * Provide `extra_context` with view name of `SchemaView`.
+        path('redoc/', TemplateView.as_view(
+            template_name='redoc.html',
+            extra_context={'schema_url':'openapi-schema'}
+        ), name='redoc'),
+    ]
 
 See the [ReDoc documentation][redoc] for advanced usage.
 
@@ -138,7 +130,6 @@ response bodies, enum/pattern/min/max validators, form parameters, etc. - and to
 generation tools like `swagger-codegen`.
 
 This also translates into a very useful interactive documentation viewer in the form of `swagger-ui`:
-
 
 ![Screenshot - drf-yasg][image-drf-yasg]
 

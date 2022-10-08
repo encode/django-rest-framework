@@ -1,7 +1,7 @@
 
-## Built-in API documentation
+# Built-in API documentation
 
-----
+---
 
 **DEPRECATION NOTICE:** Use of CoreAPI-based schemas were deprecated with the introduction of native OpenAPI-based schema generation as of Django REST Framework v3.10. See the [Version 3.10 Release Announcement](../community/3.10-announcement.md) for more details.
 
@@ -10,7 +10,7 @@ If you are looking for information regarding schemas, you might want to look at 
 1. [Schema](../api-guide/schemas.md)
 2. [Documenting your API](../topics/documenting-your-api.md)
 
-----
+---
 
 The built-in API documentation includes:
 
@@ -35,8 +35,8 @@ To install the API documentation, you'll need to include it in your project's UR
 
 This will include two different views:
 
-  * `/docs/` - The documentation page itself.
-  * `/docs/schema.js` - A JavaScript resource that exposes the API schema.
+* `/docs/` - The documentation page itself.
+* `/docs/schema.js` - A JavaScript resource that exposes the API schema.
 
 ---
 
@@ -55,9 +55,7 @@ You may ensure views are given a `request` instance by calling `include_docs_url
         path('docs/', include_docs_urls(title='My API title', public=False))
     ]
 
-
 ---
-
 
 ### Documenting your views
 
@@ -116,7 +114,6 @@ as delimiters or by attaching the documentation to action mapping methods.
             A description of the put method on the custom action.
             """
 
-
 ### `documentation` API Reference
 
 The `rest_framework.documentation` module provides three helper functions to help configure the interactive API documentation, `include_docs_urls` (usage shown above), `get_docs_view` and `get_schemajs_view`.
@@ -157,7 +154,6 @@ The `rest_framework.documentation` module provides three helper functions to hel
 * `generator_class`: Default `rest_framework.schemas.SchemaGenerator`. May be used to specify a `SchemaGenerator` subclass to be passed to the `SchemaView`.
 * `authentication_classes`: Default `api_settings.DEFAULT_AUTHENTICATION_CLASSES`. May be used to pass custom authentication classes to the `SchemaView`.
 * `permission_classes`: Default `api_settings.DEFAULT_PERMISSION_CLASSES` May be used to pass custom permission classes to the `SchemaView`.
-
 
 ### Customising code samples
 

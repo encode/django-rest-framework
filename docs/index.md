@@ -240,7 +240,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [pygments]: https://pypi.org/project/Pygments/
 [django-filter]: https://pypi.org/project/django-filter/
 [django-guardian]: https://github.com/django-guardian/django-guardian
-[index]: .
 [oauth1-section]: api-guide/authentication/#django-rest-framework-oauth
 [oauth2-section]: api-guide/authentication/#django-oauth-toolkit
 [serializer-section]: api-guide/serializers#serializers
@@ -263,5 +262,3 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
 [stack-overflow]: https://stackoverflow.com/
 [django-rest-framework-tag]: https://stackoverflow.com/questions/tagged/django-rest-framework
-[security-mail]: mailto:rest-framework-security@googlegroups.com
-[twitter]: https://twitter.com/_tomchristie

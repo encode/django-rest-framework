@@ -207,14 +207,55 @@ Field templates can also use additional style properties, depending on their typ
 
 The complete list of `base_template` options and their associated style options is listed below.
 
-base_template  | Valid field types  | Additional style options
-----|----|----
-input.html     | Any string, numeric or date/time field | input_type, placeholder, hide_label, autofocus
-textarea.html |  `CharField` | rows, placeholder, hide_label
-select.html | `ChoiceField` or relational field types | hide_label
-radio.html | `ChoiceField` or relational field types | inline, hide_label
-select_multiple.html | `MultipleChoiceField` or relational fields with `many=True` | hide_label
-checkbox_multiple.html | `MultipleChoiceField` or relational fields with `many=True` | inline, hide_label
-checkbox.html | `BooleanField` | hide_label
-fieldset.html | Nested serializer | hide_label
-list_fieldset.html | `ListField` or nested serializer with `many=True` |   hide_label
+<table border=1>
+    <tr>
+        <th>base_template</th>
+        <th>Valid field types</th>
+        <th>Additional style options</th>
+    </tr>
+    <tr>
+        <td>input.html</td>
+        <td>Any string, numeric or date/time field</td>
+        <td>input_type, placeholder, hide_label, autofocus</td>
+    </tr>
+    <tr>
+        <td>textarea.html</td>
+        <td><code>CharField</code></td>
+        <td>rows, placeholder, hide_label</td>
+    </tr>
+    <tr>
+        <td>select.html</td>
+        <td><code>ChoiceField</code> or relational field types</td>
+        <td>hide_label</td>
+    </tr>
+    <tr>
+        <td>radio.html</td>
+        <td><code>ChoiceField</code> or relational field types</td>
+        <td>inline, hide_label</td>
+    </tr>
+    <tr>
+        <td>select_multiple.html</td>
+        <td><code>MultipleChoiceField</code> or relational fields with <code>many=True</code></td>
+        <td>hide_label</td>
+    </tr>
+    <tr>
+        <td>checkbox_multiple.html</td>
+        <td><code>MultipleChoiceField</code> or relational fields with <code>many=True</code></td>
+        <td>inline, hide_label</td>
+    </tr>
+    <tr>
+        <td>checkbox.html</td>
+        <td><code>BooleanField</code></td>
+        <td>hide_label</td>
+    </tr>
+    <tr>
+        <td>fieldset.html</td>
+        <td>Nested serializer</td>
+        <td>hide_label</td>
+    </tr>
+    <tr>
+        <td>list_fieldset.html</td>
+        <td><code>ListField</code> or nested serializer with <code>many=True</code></td>
+        <td>hide_label</td>
+    </tr>
+</table>
