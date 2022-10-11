@@ -922,10 +922,14 @@ class CursorPaginationTestsMixin:
                 'next': {
                     'type': 'string',
                     'nullable': True,
+                    'format': 'uri',
+                    'example': 'http://api.example.org/accounts/?cursor=cD00ODY%3D"'
                 },
                 'previous': {
                     'type': 'string',
                     'nullable': True,
+                    'format': 'uri',
+                    'example': 'http://api.example.org/accounts/?cursor=cj0xJnA9NDg3'
                 },
                 'results': unpaginated_schema,
             },
