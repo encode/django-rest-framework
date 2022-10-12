@@ -338,7 +338,7 @@ If the `.authenticate_header()` method is not overridden, the authentication sch
 
 The following example will authenticate any incoming request as the user given by the username in a custom request header named 'X-USERNAME'.
 
-	from django.contrib.auth.models import User
+    from django.contrib.auth.models import User
     from rest_framework import authentication
     from rest_framework import exceptions
 
