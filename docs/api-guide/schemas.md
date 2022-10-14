@@ -122,6 +122,7 @@ The `get_schema_view()` helper takes the following keyword arguments:
             url='https://www.example.org/api/',
             patterns=schema_url_patterns,
         )
+* `public`: May be used to specify if schema should bypass views permissions. Default to False
 
 * `generator_class`: May be used to specify a `SchemaGenerator` subclass to be
   passed to the `SchemaView`.
