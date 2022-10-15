@@ -301,12 +301,12 @@ Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.
 * Deprecate the `Router.get_default_base_name` method in favor of `Router.get_default_basename`. [#5990][gh5990]
 * Change `CharField` to disallow null bytes. [#6073][gh6073]
   To revert to the old behavior, subclass `CharField` and remove `ProhibitNullCharactersValidator` from the validators.
-  ```python
-  class NullableCharField(serializers.CharField):
-      def __init__(self, *args, **kwargs):
-          super().__init__(*args, **kwargs)
-          self.validators = [v for v in self.validators if not isinstance(v, ProhibitNullCharactersValidator)]
-  ```
+
+        class NullableCharField(serializers.CharField):
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+                self.validators = [v for v in self.validators if not isinstance(v, ProhibitNullCharactersValidator)]
+
 * Add `OpenAPIRenderer` and `generate_schema` management command. [#6229][gh6229]
 * Add OpenAPIRenderer by default, and add schema docs. [#6233][gh6233]
 * Allow permissions to be composed [#5753][gh5753]

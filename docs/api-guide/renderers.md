@@ -107,9 +107,7 @@ The TemplateHTMLRenderer will create a `RequestContext`, using the `response.dat
 
 **Note:** When used with a view that makes use of a serializer the `Response` sent for rendering may not be a dictionary and will need to be wrapped in a dict before returning to allow the TemplateHTMLRenderer to render it. For example:
 
-```
-response.data = {'results': response.data}
-```
+    response.data = {'results': response.data}
 
 ---
 

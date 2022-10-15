@@ -174,16 +174,16 @@ A more complete example of extra actions:
 
 The `action` decorator will route `GET` requests by default, but may also accept other HTTP methods by setting the `methods` argument.  For example:
 
-        @action(detail=True, methods=['post', 'delete'])
-        def unset_password(self, request, pk=None):
-           ...
+    @action(detail=True, methods=['post', 'delete'])
+    def unset_password(self, request, pk=None):
+        ...
 
 
 The decorator allows you to override any viewset-level configuration such as `permission_classes`, `serializer_class`, `filter_backends`...:
 
-        @action(detail=True, methods=['post'], permission_classes=[IsAdminOrIsSelf])
-        def set_password(self, request, pk=None):
-           ...
+    @action(detail=True, methods=['post'], permission_classes=[IsAdminOrIsSelf])
+    def set_password(self, request, pk=None):
+        ...
 
 The two new actions will then be available at the urls `^users/{pk}/set_password/$` and `^users/{pk}/unset_password/$`. Use the `url_path` and `url_name` parameters to change the URL segment and the reverse URL name of the action.
 
@@ -193,7 +193,6 @@ To view all extra actions, call the `.get_extra_actions()` method.
 
 Extra actions can map additional HTTP methods to separate `ViewSet` methods. For example, the above password set/unset methods could be consolidated into a single route. Note that additional mappings do not accept arguments.
 
-```python
     @action(detail=True, methods=['put'], name='Change Password')
     def password(self, request, pk=None):
         """Update the user's password."""
@@ -203,7 +202,6 @@ Extra actions can map additional HTTP methods to separate `ViewSet` methods. For
     def delete_password(self, request, pk=None):
         """Delete the user's password."""
         ...
-```
 
 ## Reversing action URLs
 
@@ -213,17 +211,13 @@ Note that the `basename` is provided by the router during `ViewSet` registration
 
 Using the example from the previous section:
 
-```python
->>> view.reverse_action('set-password', args=['1'])
-'http://localhost:8000/api/users/1/set_password'
-```
+    >>> view.reverse_action('set-password', args=['1'])
+    'http://localhost:8000/api/users/1/set_password'
 
 Alternatively, you can use the `url_name` attribute set by the `@action` decorator.
 
-```python
->>> view.reverse_action(view.set_password.url_name, args=['1'])
-'http://localhost:8000/api/users/1/set_password'
-```
+    >>> view.reverse_action(view.set_password.url_name, args=['1'])
+    'http://localhost:8000/api/users/1/set_password'
 
 The `url_name` argument for `.reverse_action()` should match the same argument to the `@action` decorator. Additionally, this method can be used to reverse the default actions, such as `list` and `create`.
 
