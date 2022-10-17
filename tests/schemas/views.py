@@ -1,4 +1,5 @@
 import uuid
+from datetime import timedelta
 
 from django.core.validators import (
     DecimalValidator, MaxLengthValidator, MaxValueValidator,
@@ -59,6 +60,7 @@ class DocStringExampleDetailView(APIView):
 class ExampleSerializer(serializers.Serializer):
     date = serializers.DateField()
     datetime = serializers.DateTimeField()
+    duration = serializers.DurationField(default=timedelta())
     hstore = serializers.HStoreField()
     uuid_field = serializers.UUIDField(default=uuid.uuid4)
 

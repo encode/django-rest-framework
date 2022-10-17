@@ -10,6 +10,8 @@ python primitives.
 2. The process of marshalling between python primitives and request and
 response content is handled by parsers and renderers.
 """
+
+import contextlib
 import copy
 import inspect
 import traceback
@@ -52,7 +54,7 @@ from rest_framework.fields import (  # NOQA # isort:skip
     BooleanField, CharField, ChoiceField, DateField, DateTimeField, DecimalField,
     DictField, DurationField, EmailField, Field, FileField, FilePathField, FloatField,
     HiddenField, HStoreField, IPAddressField, ImageField, IntegerField, JSONField,
-    ListField, ModelField, MultipleChoiceField, NullBooleanField, ReadOnlyField,
+    ListField, ModelField, MultipleChoiceField, ReadOnlyField,
     RegexField, SerializerMethodField, SlugField, TimeField, URLField, UUIDField,
 )
 from rest_framework.relations import (  # NOQA # isort:skip
@@ -71,7 +73,8 @@ from rest_framework.relations import Hyperlink, PKOnlyObject  # NOQA # isort:ski
 LIST_SERIALIZER_KWARGS = (
     'read_only', 'write_only', 'required', 'default', 'initial', 'source',
     'label', 'help_text', 'style', 'error_messages', 'allow_empty',
-    'instance', 'data', 'partial', 'context', 'allow_null'
+    'instance', 'data', 'partial', 'context', 'allow_null',
+    'max_length', 'min_length'
 )
 
 ALL_FIELDS = '__all__'
@@ -115,7 +118,7 @@ class BaseSerializer(Field):
         super().__init__(**kwargs)
 
     def __new__(cls, *args, **kwargs):
-        # We override this method in order to automagically create
+        # We override this method in order to automatically create
         # `ListSerializer` classes instead when `many=True` is set.
         if kwargs.pop('many', False):
             return cls.many_init(*args, **kwargs)
@@ -143,12 +146,18 @@ class BaseSerializer(Field):
             return CustomListSerializer(*args, **kwargs)
         """
         allow_empty = kwargs.pop('allow_empty', None)
+        max_length = kwargs.pop('max_length', None)
+        min_length = kwargs.pop('min_length', None)
         child_serializer = cls(*args, **kwargs)
         list_kwargs = {
             'child': child_serializer,
         }
         if allow_empty is not None:
             list_kwargs['allow_empty'] = allow_empty
+        if max_length is not None:
+            list_kwargs['max_length'] = max_length
+        if min_length is not None:
+            list_kwargs['min_length'] = min_length
         list_kwargs.update({
             key: value for key, value in kwargs.items()
             if key in LIST_SERIALIZER_KWARGS
@@ -194,10 +203,7 @@ class BaseSerializer(Field):
             "inspect 'serializer.validated_data' instead. "
         )
 
-        validated_data = dict(
-            list(self.validated_data.items()) +
-            list(kwargs.items())
-        )
+        validated_data = {**self.validated_data, **kwargs}
 
         if self.instance is not None:
             self.instance = self.update(self.instance, validated_data)
@@ -212,7 +218,7 @@ class BaseSerializer(Field):
 
         return self.instance
 
-    def is_valid(self, raise_exception=False):
+    def is_valid(self, *, raise_exception=False):
         assert hasattr(self, 'initial_data'), (
             'Cannot call `.is_valid()` as no `data=` keyword argument was '
             'passed when instantiating the serializer instance.'
@@ -571,12 +577,16 @@ class ListSerializer(BaseSerializer):
 
     default_error_messages = {
         'not_a_list': _('Expected a list of items but got type "{input_type}".'),
-        'empty': _('This list may not be empty.')
+        'empty': _('This list may not be empty.'),
+        'max_length': _('Ensure this field has no more than {max_length} elements.'),
+        'min_length': _('Ensure this field has at least {min_length} elements.')
     }
 
     def __init__(self, *args, **kwargs):
         self.child = kwargs.pop('child', copy.deepcopy(self.child))
         self.allow_empty = kwargs.pop('allow_empty', True)
+        self.max_length = kwargs.pop('max_length', None)
+        self.min_length = kwargs.pop('min_length', None)
         assert self.child is not None, '`child` is a required argument.'
         assert not inspect.isclass(self.child), '`child` has not been instantiated.'
         super().__init__(*args, **kwargs)
@@ -637,6 +647,18 @@ class ListSerializer(BaseSerializer):
             raise ValidationError({
                 api_settings.NON_FIELD_ERRORS_KEY: [message]
             }, code='empty')
+
+        if self.max_length is not None and len(data) > self.max_length:
+            message = self.error_messages['max_length'].format(max_length=self.max_length)
+            raise ValidationError({
+                api_settings.NON_FIELD_ERRORS_KEY: [message]
+            }, code='max_length')
+
+        if self.min_length is not None and len(data) < self.min_length:
+            message = self.error_messages['min_length'].format(min_length=self.min_length)
+            raise ValidationError({
+                api_settings.NON_FIELD_ERRORS_KEY: [message]
+            }, code='min_length')
 
         ret = []
         errors = []
@@ -699,8 +721,7 @@ class ListSerializer(BaseSerializer):
         )
 
         validated_data = [
-            dict(list(attrs.items()) + list(kwargs.items()))
-            for attrs in self.validated_data
+            {**attrs, **kwargs} for attrs in self.validated_data
         ]
 
         if self.instance is not None:
@@ -716,7 +737,7 @@ class ListSerializer(BaseSerializer):
 
         return self.instance
 
-    def is_valid(self, raise_exception=False):
+    def is_valid(self, *, raise_exception=False):
         # This implementation is the same as the default,
         # except that we use lists, rather than dicts, as the empty case.
         assert hasattr(self, 'initial_data'), (
@@ -884,6 +905,8 @@ class ModelSerializer(Serializer):
         models.GenericIPAddressField: IPAddressField,
         models.FilePathField: FilePathField,
     }
+    if hasattr(models, 'JSONField'):
+        serializer_field_mapping[models.JSONField] = JSONField
     if postgres_fields:
         serializer_field_mapping[postgres_fields.HStoreField] = HStoreField
         serializer_field_mapping[postgres_fields.ArrayField] = ListField
@@ -1242,10 +1265,13 @@ class ModelSerializer(Serializer):
             # `allow_blank` is only valid for textual fields.
             field_kwargs.pop('allow_blank', None)
 
-        if postgres_fields and isinstance(model_field, postgres_fields.JSONField):
+        is_django_jsonfield = hasattr(models, 'JSONField') and isinstance(model_field, models.JSONField)
+        if (postgres_fields and isinstance(model_field, postgres_fields.JSONField)) or is_django_jsonfield:
             # Populate the `encoder` argument of `JSONField` instances generated
-            # for the PostgreSQL specific `JSONField`.
+            # for the model `JSONField`.
             field_kwargs['encoder'] = getattr(model_field, 'encoder', None)
+            if is_django_jsonfield:
+                field_kwargs['decoder'] = getattr(model_field, 'decoder', None)
 
         if postgres_fields and isinstance(model_field, postgres_fields.ArrayField):
             # Populate the `child` argument on `ListField` instances generated
@@ -1325,9 +1351,8 @@ class ModelSerializer(Serializer):
         """
         if extra_kwargs.get('read_only', False):
             for attr in [
-                'required', 'default', 'allow_blank', 'allow_null',
-                'min_length', 'max_length', 'min_value', 'max_value',
-                'validators', 'queryset'
+                'required', 'default', 'allow_blank', 'min_length',
+                'max_length', 'min_value', 'max_value', 'validators', 'queryset'
             ]:
                 kwargs.pop(attr, None)
 
@@ -1405,7 +1430,7 @@ class ModelSerializer(Serializer):
         # so long as all the field names are included on the serializer.
         for parent_class in [model] + list(model._meta.parents):
             for unique_together_list in parent_class._meta.unique_together:
-                if set(field_names).issuperset(set(unique_together_list)):
+                if set(field_names).issuperset(unique_together_list):
                     unique_constraint_names |= set(unique_together_list)
 
         # Now we have all the field names that have uniqueness constraints
@@ -1473,12 +1498,10 @@ class ModelSerializer(Serializer):
                 # they can't be nested attribute lookups.
                 continue
 
-            try:
+            with contextlib.suppress(FieldDoesNotExist):
                 field = model._meta.get_field(source)
                 if isinstance(field, DjangoModelField):
                     model_fields[source] = field
-            except FieldDoesNotExist:
-                pass
 
         return model_fields
 
@@ -1536,7 +1559,7 @@ class ModelSerializer(Serializer):
         for parent_class in model_class_inheritance_tree:
             for unique_together in parent_class._meta.unique_together:
                 # Skip if serializer does not map to all unique together sources
-                if not set(source_map).issuperset(set(unique_together)):
+                if not set(source_map).issuperset(unique_together):
                     continue
 
                 for source in unique_together:

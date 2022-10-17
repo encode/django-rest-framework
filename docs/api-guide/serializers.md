@@ -116,7 +116,7 @@ Calling `.save()` will either create a new instance, or update an existing insta
     # .save() will update the existing `comment` instance.
     serializer = CommentSerializer(comment, data=data)
 
-Both the `.create()` and `.update()` methods are optional. You can implement either neither, one, or both of them, depending on the use-case for your serializer class.
+Both the `.create()` and `.update()` methods are optional. You can implement either none, one, or both of them, depending on the use-case for your serializer class.
 
 #### Passing additional attributes to `.save()`
 
@@ -161,7 +161,7 @@ Each key in the dictionary will be the field name, and the values will be lists 
 
 When deserializing a list of items, errors will be returned as a list of dictionaries representing each of the deserialized items.
 
-#### Raising an exception on invalid data
+#### Raising an exception on invalid data
 
 The `.is_valid()` method takes an optional `raise_exception` flag that will cause it to raise a `serializers.ValidationError` exception if there are validation errors.
 
@@ -251,7 +251,7 @@ For more information see the [validators documentation](validators.md).
 
 When passing an initial object or queryset to a serializer instance, the object will be made available as `.instance`. If no initial object is passed then the `.instance` attribute will be `None`.
 
-When passing data to a serializer instance, the unmodified data will be made available as `.initial_data`. If the data keyword argument is not passed then the `.initial_data` attribute will not exist.
+When passing data to a serializer instance, the unmodified data will be made available as `.initial_data`. If the `data` keyword argument is not passed then the `.initial_data` attribute will not exist.
 
 ## Partial updates
 
@@ -282,7 +282,7 @@ If a nested representation may optionally accept the `None` value you should pas
         content = serializers.CharField(max_length=200)
         created = serializers.DateTimeField()
 
-Similarly if a nested representation should be a list of items, you should pass the `many=True` flag to the nested serialized.
+Similarly if a nested representation should be a list of items, you should pass the `many=True` flag to the nested serializer.
 
     class CommentSerializer(serializers.Serializer):
         user = UserSerializer(required=False)
@@ -524,6 +524,7 @@ You can add extra fields to a `ModelSerializer` or override the default fields b
 
         class Meta:
             model = Account
+            fields = ['url', 'groups']
 
 Extra fields can correspond to any property or callable on the model.
 
@@ -601,17 +602,17 @@ A mapping of Django model fields to REST framework serializer fields. You can ov
 
 This property should be the serializer field class, that is used for relational fields by default.
 
-For `ModelSerializer` this defaults to `PrimaryKeyRelatedField`.
+For `ModelSerializer` this defaults to `serializers.PrimaryKeyRelatedField`.
 
 For `HyperlinkedModelSerializer` this defaults to `serializers.HyperlinkedRelatedField`.
 
-### `serializer_url_field`
+### `.serializer_url_field`
 
 The serializer field class that should be used for any `url` field on the serializer.
 
 Defaults to `serializers.HyperlinkedIdentityField`
 
-### `serializer_choice_field`
+### `.serializer_choice_field`
 
 The serializer field class that should be used for any choice fields on the serializer.
 
@@ -755,6 +756,14 @@ The following argument can also be passed to a `ListSerializer` field or a seria
 
 This is `True` by default, but can be set to `False` if you want to disallow empty lists as valid input.
 
+### `max_length`
+
+This is `None` by default, but can be set to a positive integer if you want to validates that the list contains no more than this number of elements.
+
+### `min_length`
+
+This is `None` by default, but can be set to a positive integer if you want to validates that the list contains no fewer than this number of elements.
+
 ### Customizing `ListSerializer` behavior
 
 There *are* a few use cases when you might want to customize the `ListSerializer` behavior. For example:
@@ -877,7 +886,7 @@ Because this class provides the same interface as the `Serializer` class, you ca
 
 The only difference you'll notice when doing so is the `BaseSerializer` classes will not generate HTML forms in the browsable API. This is because the data they return does not include all the field information that would allow each field to be rendered into a suitable HTML input.
 
-##### Read-only `BaseSerializer` classes
+#### Read-only `BaseSerializer` classes
 
 To implement a read-only serializer using the `BaseSerializer` class, we just need to override the `.to_representation()` method. Let's take a look at an example using a simple Django model:
 
@@ -901,7 +910,7 @@ We can now use this class to serialize single `HighScore` instances:
     def high_score(request, pk):
         instance = HighScore.objects.get(pk=pk)
         serializer = HighScoreSerializer(instance)
-	    return Response(serializer.data)
+        return Response(serializer.data)
 
 Or use it to serialize multiple instances:
 
@@ -909,9 +918,9 @@ Or use it to serialize multiple instances:
     def all_high_scores(request):
         queryset = HighScore.objects.order_by('-score')
         serializer = HighScoreSerializer(queryset, many=True)
-	    return Response(serializer.data)
+        return Response(serializer.data)
 
-##### Read-write `BaseSerializer` classes
+#### Read-write `BaseSerializer` classes
 
 To create a read-write serializer we first need to implement a `.to_internal_value()` method. This method returns the validated values that will be used to construct the object instance, and may raise a `serializers.ValidationError` if the supplied data is in an incorrect format.
 
@@ -940,8 +949,8 @@ Here's a complete example of our previous `HighScoreSerializer`, that's been upd
                     'player_name': 'May not be more than 10 characters.'
                 })
 
-			# Return the validated values. This will be available as
-			# the `.validated_data` property.
+            # Return the validated values. This will be available as
+            # the `.validated_data` property.
             return {
                 'score': int(score),
                 'player_name': player_name
@@ -960,7 +969,7 @@ Here's a complete example of our previous `HighScoreSerializer`, that's been upd
 
 The `BaseSerializer` class is also useful if you want to implement new generic serializer classes for dealing with particular serialization styles, or for integrating with alternative storage backends.
 
-The following class is an example of a generic serializer that can handle coercing arbitrary objects into primitive representations.
+The following class is an example of a generic serializer that can handle coercing arbitrary complex objects into primitive representations.
 
     class ObjectSerializer(serializers.BaseSerializer):
         """
@@ -1087,7 +1096,7 @@ For example, if you wanted to be able to set which fields should be used by a se
             fields = kwargs.pop('fields', None)
 
             # Instantiate the superclass normally
-            super(DynamicFieldsModelSerializer, self).__init__(*args, **kwargs)
+            super().__init__(*args, **kwargs)
 
             if fields is not None:
                 # Drop any fields that are not specified in the `fields` argument.
@@ -1180,7 +1189,7 @@ The [drf-writable-nested][drf-writable-nested] package provides writable nested 
 
 ## DRF Encrypt Content
 
-The [drf-encrypt-content][drf-encrypt-content] package helps you encrypt your data, serialized through ModelSerializer. It also contains some helper functions. Which helps you to encrypt your data. 
+The [drf-encrypt-content][drf-encrypt-content] package helps you encrypt your data, serialized through ModelSerializer. It also contains some helper functions. Which helps you to encrypt your data.
 
 
 [cite]: https://groups.google.com/d/topic/django-users/sVFaOfQi4wY/discussion

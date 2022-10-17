@@ -1,11 +1,12 @@
 import base64
 
+import django
 import pytest
 from django.conf import settings
-from django.conf.urls import include, url
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.test import TestCase, override_settings
+from django.urls import include, path
 
 from rest_framework import (
     HTTP_HEADER_ENCODING, exceptions, permissions, renderers, status
@@ -47,34 +48,34 @@ class MockView(APIView):
 
 
 urlpatterns = [
-    url(
-        r'^session/$',
+    path(
+        'session/',
         MockView.as_view(authentication_classes=[SessionAuthentication])
     ),
-    url(
-        r'^basic/$',
+    path(
+        'basic/',
         MockView.as_view(authentication_classes=[BasicAuthentication])
     ),
-    url(
-        r'^remote-user/$',
+    path(
+        'remote-user/',
         MockView.as_view(authentication_classes=[RemoteUserAuthentication])
     ),
-    url(
-        r'^token/$',
+    path(
+        'token/',
         MockView.as_view(authentication_classes=[TokenAuthentication])
     ),
-    url(
-        r'^customtoken/$',
+    path(
+        'customtoken/',
         MockView.as_view(authentication_classes=[CustomTokenAuthentication])
     ),
-    url(
-        r'^customkeywordtoken/$',
+    path(
+        'customkeywordtoken/',
         MockView.as_view(
             authentication_classes=[CustomKeywordTokenAuthentication]
         )
     ),
-    url(r'^auth-token/$', obtain_auth_token),
-    url(r'^auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('auth-token/', obtain_auth_token),
+    path('auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
 
 
@@ -218,7 +219,16 @@ class SessionAuthTests(TestCase):
         Ensure POSTing form over session authentication with CSRF token succeeds.
         Regression test for #6088
         """
-        from django.middleware.csrf import _get_new_csrf_token
+        # Remove this shim when dropping support for Django 3.0.
+        if django.VERSION < (3, 1):
+            from django.middleware.csrf import _get_new_csrf_token
+        else:
+            from django.middleware.csrf import (
+                _get_new_csrf_string, _mask_cipher_secret
+            )
+
+            def _get_new_csrf_token():
+                return _mask_cipher_secret(_get_new_csrf_string())
 
         self.csrf_client.login(username=self.username, password=self.password)
 
@@ -395,6 +405,10 @@ class TokenAuthTests(BaseTokenAuthTests, TestCase):
         """Ensure generate_key returns a string"""
         token = self.model()
         key = token.generate_key()
+        assert isinstance(key, str)
+
+    def test_generate_key_accessible_as_classmethod(self):
+        key = self.model.generate_key()
         assert isinstance(key, str)
 
     def test_token_login_json(self):

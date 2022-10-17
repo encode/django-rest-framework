@@ -32,7 +32,8 @@ class Token(models.Model):
             self.key = self.generate_key()
         return super().save(*args, **kwargs)
 
-    def generate_key(self):
+    @classmethod
+    def generate_key(cls):
         return binascii.hexlify(os.urandom(20)).decode()
 
     def __str__(self):
@@ -45,8 +46,9 @@ class TokenProxy(Token):
     """
     @property
     def pk(self):
-        return self.user.pk
+        return self.user_id
 
     class Meta:
-        proxy = True
+        proxy = 'rest_framework.authtoken' in settings.INSTALLED_APPS
+        abstract = 'rest_framework.authtoken' not in settings.INSTALLED_APPS
         verbose_name = "token"

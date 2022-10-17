@@ -1,6 +1,6 @@
-from django.conf.urls import url
 from django.test import TestCase
 from django.test.utils import override_settings
+from django.urls import path
 
 from rest_framework import serializers
 from rest_framework.generics import ListCreateAPIView
@@ -23,7 +23,7 @@ class NestedSerializersView(ListCreateAPIView):
 
 
 urlpatterns = [
-    url(r'^api/$', NestedSerializersView.as_view(), name='api'),
+    path('api/', NestedSerializersView.as_view(), name='api'),
 ]
 
 

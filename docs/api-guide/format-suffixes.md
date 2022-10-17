@@ -32,9 +32,9 @@ Example:
     from blog import views
 
     urlpatterns = [
-        url(r'^/$', views.apt_root),
-        url(r'^comments/$', views.comment_list),
-        url(r'^comments/(?P<pk>[0-9]+)/$', views.comment_detail)
+        path('', views.apt_root),
+        path('comments/', views.comment_list),
+        path('comments/<int:pk>/', views.comment_detail)
     ]
 
     urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'html'])
@@ -62,7 +62,7 @@ Also note that `format_suffix_patterns` does not support descending into `includ
 
 If using the `i18n_patterns` function provided by Django, as well as `format_suffix_patterns` you should make sure that the `i18n_patterns` function is applied as the final, or outermost function. For example:
 
-    url patterns = [
+    urlpatterns = [
         …
     ]
 

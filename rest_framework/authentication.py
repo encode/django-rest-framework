@@ -136,7 +136,10 @@ class SessionAuthentication(BaseAuthentication):
         """
         Enforce CSRF validation for session based authentication.
         """
-        check = CSRFCheck()
+        def dummy_get_response(request):  # pragma: no cover
+            return None
+
+        check = CSRFCheck(dummy_get_response)
         # populates request.META['CSRF_COOKIE'], which is used in process_view()
         check.process_request(request)
         reason = check.process_view(request, None, (), {})
@@ -224,6 +227,6 @@ class RemoteUserAuthentication(BaseAuthentication):
     header = "REMOTE_USER"
 
     def authenticate(self, request):
-        user = authenticate(remote_user=request.META.get(self.header))
+        user = authenticate(request=request, remote_user=request.META.get(self.header))
         if user and user.is_active:
             return (user, None)

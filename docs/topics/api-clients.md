@@ -384,7 +384,7 @@ First, install the API documentation views. These will include the schema resour
 
     urlpatterns = [
         ...
-        url(r'^docs/', include_docs_urls(title='My API service'), name='api-docs'),
+        path('docs/', include_docs_urls(title='My API service'), name='api-docs'),
     ]
 
 Once the API documentation URLs are installed, you'll be able to include both the required JavaScript resources. Note that the ordering of these two lines is important, as the schema loading requires CoreAPI to already be installed.
@@ -453,7 +453,7 @@ For example, using the "Django REST framework JWT" package
 
     function loginUser(username, password) {
         let action = ["api-token-auth", "obtain-token"];
-        let params = {username: "example", email: "example@example.com"};
+        let params = {username: username, password: password};
         client.action(schema, action, params).then(function(result) {
             // On success, instantiate an authenticated client.
             let auth = window.coreapi.auth.TokenAuthentication({

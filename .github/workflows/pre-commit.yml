@@ -1,0 +1,24 @@
+name: pre-commit
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - uses: pre-commit/action@v2.0.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}

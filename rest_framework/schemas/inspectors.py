@@ -88,7 +88,7 @@ class ViewInspector:
                                                  view.get_view_description())
 
     def _get_description_section(self, view, header, description):
-        lines = [line for line in description.splitlines()]
+        lines = description.splitlines()
         current_section = ''
         sections = {'': ''}
 

@@ -114,7 +114,7 @@ The `get_schema_view()` helper takes the following keyword arguments:
   only want the `myproject.api` urls to be exposed in the schema:
 
         schema_url_patterns = [
-            url(r'^api/', include('myproject.api.urls')),
+            path('api/', include('myproject.api.urls')),
         ]
 
         schema_view = get_schema_view(
@@ -122,6 +122,7 @@ The `get_schema_view()` helper takes the following keyword arguments:
             url='https://www.example.org/api/',
             patterns=schema_url_patterns,
         )
+* `public`: May be used to specify if schema should bypass views permissions. Default to False
 
 * `generator_class`: May be used to specify a `SchemaGenerator` subclass to be
   passed to the `SchemaView`.
@@ -165,7 +166,7 @@ In order to customize the top-level schema, subclass
 as an argument to the `generateschema` command or `get_schema_view()` helper
 function.
 
-### get_schema(self, request)
+### get_schema(self, request=None, public=False)
 
 Returns a dictionary that represents the OpenAPI schema:
 
@@ -181,8 +182,8 @@ dictionary For example you might wish to add terms of service to the [top-level
 
 ```
 class TOSSchemaGenerator(SchemaGenerator):
-    def get_schema(self):
-        schema = super().get_schema()
+    def get_schema(self, *args, **kwargs):
+        schema = super().get_schema(*args, **kwargs)
         schema["info"]["termsOfService"] = "https://example.com/tos.html"
         return schema
 ```
@@ -313,6 +314,11 @@ Computes the component's name from the serializer.
 
 You may see warnings if your API has duplicate component names. If so you can override `get_component_name()` or pass the `component_name` `__init__()` kwarg (see below) to provide different names.
 
+#### `get_reference()`
+
+Returns a reference to the serializer component. This may be useful if you override `get_schema()`.
+
+
 #### `map_serializer()`
 
 Maps serializers to their OpenAPI representations.
@@ -375,6 +381,20 @@ operationIds.
 In order to work around this, you can override `get_operation_id_base()` to
 provide a different base for name part of the ID.
 
+#### `get_serializer()`
+
+If the view has implemented `get_serializer()`, returns the result.
+
+#### `get_request_serializer()`
+
+By default returns `get_serializer()` but can be overridden to
+differentiate between request and response objects.
+
+#### `get_response_serializer()`
+
+By default returns `get_serializer()` but can be overridden to
+differentiate between request and response objects.
+
 ### `AutoSchema.__init__()` kwargs
 
 `AutoSchema` provides a number of `__init__()` kwargs that can be used for
@@ -407,6 +427,7 @@ If your views have related customizations that are needed frequently, you can
 create a base `AutoSchema` subclass for your project that takes additional
 `__init__()` kwargs to save subclassing `AutoSchema` for each view.
 
+[cite]: https://blog.heroku.com/archives/2014/1/8/json_schema_for_heroku_platform_api
 [openapi]: https://github.com/OAI/OpenAPI-Specification
 [openapi-specification-extensions]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#specification-extensions
 [openapi-operation]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#operationObject

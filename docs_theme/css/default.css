@@ -37,7 +37,7 @@ body.index-page #main-content iframe.github-star-button {
     margin-right: -15px;
 }
 
-/* Travis CI and PyPI badge */
+/* CI and PyPI badge */
 body.index-page #main-content img.status-badge {
     float: right;
     margin-right: 8px;

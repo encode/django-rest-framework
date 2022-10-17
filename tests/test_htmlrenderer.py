@@ -1,10 +1,10 @@
 import django.template.loader
 import pytest
-from django.conf.urls import url
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from django.http import Http404
 from django.template import TemplateDoesNotExist, engines
 from django.test import TestCase, override_settings
+from django.urls import path
 
 from rest_framework import status
 from rest_framework.decorators import api_view, renderer_classes
@@ -35,9 +35,9 @@ def not_found(request):
 
 
 urlpatterns = [
-    url(r'^$', example),
-    url(r'^permission_denied$', permission_denied),
-    url(r'^not_found$', not_found),
+    path('', example),
+    path('permission_denied', permission_denied),
+    path('not_found', not_found),
 ]
 
 

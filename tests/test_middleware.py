@@ -1,7 +1,7 @@
-from django.conf.urls import url
 from django.contrib.auth.models import User
 from django.http import HttpRequest
 from django.test import override_settings
+from django.urls import path
 
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
@@ -17,8 +17,8 @@ class PostView(APIView):
 
 
 urlpatterns = [
-    url(r'^auth$', APIView.as_view(authentication_classes=(TokenAuthentication,))),
-    url(r'^post$', PostView.as_view()),
+    path('auth', APIView.as_view(authentication_classes=(TokenAuthentication,))),
+    path('post', PostView.as_view()),
 ]
 
 

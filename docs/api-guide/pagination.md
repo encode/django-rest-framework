@@ -78,7 +78,7 @@ This pagination style accepts a single number page number in the request query p
 
     HTTP 200 OK
     {
-        "count": 1023
+        "count": 1023,
         "next": "https://api.example.org/accounts/?page=5",
         "previous": "https://api.example.org/accounts/?page=3",
         "results": [
@@ -126,7 +126,7 @@ This pagination style mirrors the syntax used when looking up multiple database 
 
     HTTP 200 OK
     {
-        "count": 1023
+        "count": 1023,
         "next": "https://api.example.org/accounts/?limit=100&offset=500",
         "previous": "https://api.example.org/accounts/?limit=100&offset=300",
         "results": [
@@ -218,10 +218,10 @@ To set these attributes you should override the `CursorPagination` class, and th
 
 # Custom pagination styles
 
-To create a custom pagination serializer class you should subclass `pagination.BasePagination` and override the `paginate_queryset(self, queryset, request, view=None)` and `get_paginated_response(self, data)` methods:
+To create a custom pagination serializer class, you should inherit the subclass `pagination.BasePagination`, override the `paginate_queryset(self, queryset, request, view=None)`, and `get_paginated_response(self, data)` methods:
 
-* The `paginate_queryset` method is passed the initial queryset and should return an iterable object that contains only the data in the requested page.
-* The `get_paginated_response` method is passed the serialized page data and should return a `Response` instance.
+* The `paginate_queryset` method is passed to the initial queryset and should return an iterable object. That object contains only the data in the requested page.
+* The `get_paginated_response` method is passed to the serialized page data and should return a `Response` instance.
 
 Note that the `paginate_queryset` method may set state on the pagination instance, that may later be used by the `get_paginated_response` method.
 
@@ -312,7 +312,7 @@ The [`drf-proxy-pagination` package][drf-proxy-pagination] includes a `ProxyPagi
 
 ## link-header-pagination
 
-The [`django-rest-framework-link-header-pagination` package][drf-link-header-pagination] includes a `LinkHeaderPagination` class which provides pagination via an HTTP `Link` header as described in [Github's developer documentation](github-link-pagination).
+The [`django-rest-framework-link-header-pagination` package][drf-link-header-pagination] includes a `LinkHeaderPagination` class which provides pagination via an HTTP `Link` header as described in [GitHub REST API documentation][github-traversing-with-pagination].
 
 [cite]: https://docs.djangoproject.com/en/stable/topics/pagination/
 [link-header]: ../img/link-header-pagination.png
@@ -322,3 +322,4 @@ The [`django-rest-framework-link-header-pagination` package][drf-link-header-pag
 [drf-link-header-pagination]: https://github.com/tbeadle/django-rest-framework-link-header-pagination
 [disqus-cursor-api]: https://cra.mr/2011/03/08/building-cursors-for-the-disqus-api
 [float_cursor_pagination_example]: https://gist.github.com/keturn/8bc88525a183fd41c73ffb729b8865be#file-fpcursorpagination-py
+[github-traversing-with-pagination]: https://docs.github.com/en/rest/guides/traversing-with-pagination

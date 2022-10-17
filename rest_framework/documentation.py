@@ -1,4 +1,4 @@
-from django.conf.urls import include, url
+from django.urls import include, path
 
 from rest_framework.renderers import (
     CoreJSONRenderer, DocumentationRenderer, SchemaJSRenderer
@@ -82,7 +82,7 @@ def include_docs_urls(
         permission_classes=permission_classes,
     )
     urls = [
-        url(r'^$', docs_view, name='docs-index'),
-        url(r'^schema.js$', schema_js_view, name='schema-js')
+        path('', docs_view, name='docs-index'),
+        path('schema.js', schema_js_view, name='schema-js')
     ]
     return include((urls, 'api-docs'), namespace='api-docs')

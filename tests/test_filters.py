@@ -424,6 +424,10 @@ class OrderingFilterModel(models.Model):
     title = models.CharField(max_length=20, verbose_name='verbose title')
     text = models.CharField(max_length=100)
 
+    @property
+    def description(self):
+        return self.title + ": " + self.text
+
 
 class OrderingFilterRelatedModel(models.Model):
     related_object = models.ForeignKey(OrderingFilterModel, related_name="relateds", on_delete=models.CASCADE)
@@ -434,6 +438,17 @@ class OrderingFilterSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderingFilterModel
         fields = '__all__'
+
+
+class OrderingFilterSerializerWithModelProperty(serializers.ModelSerializer):
+    class Meta:
+        model = OrderingFilterModel
+        fields = (
+            "id",
+            "title",
+            "text",
+            "description"
+        )
 
 
 class OrderingDottedRelatedSerializer(serializers.ModelSerializer):
@@ -549,6 +564,42 @@ class OrderingFilterTests(TestCase):
             {'id': 3, 'title': 'xwv', 'text': 'cde'},
             {'id': 2, 'title': 'yxw', 'text': 'bcd'},
             {'id': 1, 'title': 'zyx', 'text': 'abc'},
+        ]
+
+    def test_ordering_without_ordering_fields(self):
+        class OrderingListView(generics.ListAPIView):
+            queryset = OrderingFilterModel.objects.all()
+            serializer_class = OrderingFilterSerializerWithModelProperty
+            filter_backends = (filters.OrderingFilter,)
+            ordering = ('title',)
+
+        view = OrderingListView.as_view()
+
+        # Model field ordering works fine.
+        request = factory.get('/', {'ordering': 'text'})
+        response = view(request)
+        assert response.data == [
+            {'id': 1, 'title': 'zyx', 'text': 'abc', 'description': 'zyx: abc'},
+            {'id': 2, 'title': 'yxw', 'text': 'bcd', 'description': 'yxw: bcd'},
+            {'id': 3, 'title': 'xwv', 'text': 'cde', 'description': 'xwv: cde'},
+        ]
+
+        # `incorrectfield` ordering works fine.
+        request = factory.get('/', {'ordering': 'foobar'})
+        response = view(request)
+        assert response.data == [
+            {'id': 3, 'title': 'xwv', 'text': 'cde', 'description': 'xwv: cde'},
+            {'id': 2, 'title': 'yxw', 'text': 'bcd', 'description': 'yxw: bcd'},
+            {'id': 1, 'title': 'zyx', 'text': 'abc', 'description': 'zyx: abc'},
+        ]
+
+        # `description` is a Model property, which should be ignored.
+        request = factory.get('/', {'ordering': 'description'})
+        response = view(request)
+        assert response.data == [
+            {'id': 3, 'title': 'xwv', 'text': 'cde', 'description': 'xwv: cde'},
+            {'id': 2, 'title': 'yxw', 'text': 'bcd', 'description': 'yxw: bcd'},
+            {'id': 1, 'title': 'zyx', 'text': 'abc', 'description': 'zyx: abc'},
         ]
 
     def test_default_ordering(self):

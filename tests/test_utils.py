@@ -1,7 +1,7 @@
 from unittest import mock
 
-from django.conf.urls import url
 from django.test import TestCase, override_settings
+from django.urls import path
 
 from rest_framework.decorators import action
 from rest_framework.routers import SimpleRouter
@@ -64,12 +64,12 @@ class ResourceViewSet(ModelViewSet):
 router = SimpleRouter()
 router.register(r'resources', ResourceViewSet)
 urlpatterns = [
-    url(r'^$', Root.as_view()),
-    url(r'^resource/$', ResourceRoot.as_view()),
-    url(r'^resource/customname$', CustomNameResourceInstance.as_view()),
-    url(r'^resource/(?P<key>[0-9]+)$', ResourceInstance.as_view()),
-    url(r'^resource/(?P<key>[0-9]+)/$', NestedResourceRoot.as_view()),
-    url(r'^resource/(?P<key>[0-9]+)/(?P<other>[A-Za-z]+)$', NestedResourceInstance.as_view()),
+    path('', Root.as_view()),
+    path('resource/', ResourceRoot.as_view()),
+    path('resource/customname', CustomNameResourceInstance.as_view()),
+    path('resource/<int:key>', ResourceInstance.as_view()),
+    path('resource/<int:key>/', NestedResourceRoot.as_view()),
+    path('resource/<int:key>/<str:other>', NestedResourceInstance.as_view()),
 ]
 urlpatterns += router.urls
 
