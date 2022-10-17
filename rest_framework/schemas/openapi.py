@@ -523,7 +523,7 @@ class AutoSchema(ViewInspector):
                 continue
 
             if field.required:
-                required.append(field.field_name)
+                required.append(self.get_field_name(field))
 
             schema = self.map_field(field)
             if field.read_only:
@@ -538,7 +538,7 @@ class AutoSchema(ViewInspector):
                 schema['description'] = str(field.help_text)
             self.map_field_validators(field, schema)
 
-            properties[field.field_name] = schema
+            properties[self.get_field_name(field)] = schema
 
         result = {
             'type': 'object',
@@ -588,6 +588,13 @@ class AutoSchema(ViewInspector):
                         digits -= v.decimal_places
                     schema['maximum'] = int(digits * '9') + 1
                     schema['minimum'] = -schema['maximum']
+
+    def get_field_name(self, field):
+        """
+        Override this method if you want to change schema field name.
+        For example, convert snake_case field name to camelCase.
+        """
+        return field.field_name
 
     def get_paginator(self):
         pagination_class = getattr(self.view, 'pagination_class', None)
