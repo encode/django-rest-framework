@@ -46,6 +46,14 @@ class OperandHolder(OperationHolderMixin):
         op2 = self.op2_class(*args, **kwargs)
         return self.operator_class(op1, op2)
 
+    def __eq__(self, other):
+        return (
+            isinstance(other, OperandHolder) and
+            self.operator_class == other.operator_class and
+            self.op1_class == other.op1_class and
+            self.op2_class == other.op2_class
+        )
+
 
 class AND:
     def __init__(self, op1, op2):
