@@ -1,6 +1,7 @@
 """
 Tests for content parsing, and form-overloaded content parsing.
 """
+import copy
 import os.path
 import tempfile
 
@@ -344,3 +345,10 @@ class TestHttpRequest(TestCase):
         # ensure that request stream was consumed by form parser
         assert request.content_type.startswith('multipart/form-data')
         assert response.data == {'a': ['b']}
+
+
+class TestDeepcopy(TestCase):
+
+    def test_deepcopy_works(self):
+        request = Request(factory.get('/', secure=False))
+        copy.deepcopy(request)

@@ -33,7 +33,7 @@ For example, the following serializer would lead to a database hit each time eva
         class Meta:
             model = Album
             fields = ['album_name', 'artist', 'tracks']
-    
+
     # For each album object, tracks should be fetched from database
     qs = Album.objects.all()
     print(AlbumSerializer(qs, many=True).data)
@@ -278,7 +278,7 @@ This field is always read-only.
 
 As opposed to previously discussed _references_ to another entity, the referred entity can instead also be embedded or _nested_
 in the representation of the object that refers to it.
-Such nested relationships can be expressed by using serializers as fields. 
+Such nested relationships can be expressed by using serializers as fields.
 
 If the field is used to represent a to-many relationship, you should add the `many=True` flag to the serializer field.
 
@@ -494,8 +494,8 @@ This behavior is intended to prevent a template from being unable to render in a
 
 There are two keyword arguments you can use to control this behavior:
 
-- `html_cutoff` - If set this will be the maximum number of choices that will be displayed by a HTML select drop down. Set to `None` to disable any limiting. Defaults to `1000`.
-- `html_cutoff_text` - If set this will display a textual indicator if the maximum number of items have been cutoff in an HTML select drop down. Defaults to `"More than {count} items…"`
+* `html_cutoff` - If set this will be the maximum number of choices that will be displayed by a HTML select drop down. Set to `None` to disable any limiting. Defaults to `1000`.
+* `html_cutoff_text` - If set this will display a textual indicator if the maximum number of items have been cutoff in an HTML select drop down. Defaults to `"More than {count} items…"`
 
 You can also control these globally using the settings `HTML_SELECT_CUTOFF` and `HTML_SELECT_CUTOFF_TEXT`.
 

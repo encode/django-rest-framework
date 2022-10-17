@@ -137,7 +137,7 @@ REST framework continues to be open-source and permissively licensed, but we fir
 ## What future funding will enable
 
 * Realtime API support, using WebSockets. This will consist of documentation and support for using REST framework together with Django Channels, plus integrating WebSocket support into the client libraries.
-* Better authentication defaults, possibly bringing JWT & CORs support into the core package.
+* Better authentication defaults, possibly bringing JWT & CORS support into the core package.
 * Securing the community & operations manager position long-term.
 * Opening up and securing a part-time position to focus on ticket triage and resolution.
 * Paying for development time on building API client libraries in a range of programming languages. These would be integrated directly into the upcoming API documentation.

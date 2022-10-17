@@ -6,7 +6,9 @@ on the response, such as JSON encoded data or HTML output.
 
 REST framework also provides an HTML renderer that renders the browsable API.
 """
+
 import base64
+import contextlib
 from collections import OrderedDict
 from urllib import parse
 
@@ -14,7 +16,6 @@ from django import forms
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.paginator import Page
-from django.http.multipartparser import parse_header
 from django.template import engines, loader
 from django.urls import NoReverseMatch
 from django.utils.html import mark_safe
@@ -22,7 +23,7 @@ from django.utils.html import mark_safe
 from rest_framework import VERSION, exceptions, serializers, status
 from rest_framework.compat import (
     INDENT_SEPARATORS, LONG_SEPARATORS, SHORT_SEPARATORS, coreapi, coreschema,
-    pygments_css, yaml
+    parse_header_parameters, pygments_css, yaml
 )
 from rest_framework.exceptions import ParseError
 from rest_framework.request import is_form_media_type, override_method
@@ -72,12 +73,9 @@ class JSONRenderer(BaseRenderer):
             # If the media type looks like 'application/json; indent=4',
             # then pretty print the result.
             # Note that we coerce `indent=0` into `indent=None`.
-            base_media_type, params = parse_header(accepted_media_type.encode('ascii'))
-            try:
+            base_media_type, params = parse_header_parameters(accepted_media_type)
+            with contextlib.suppress(KeyError, ValueError, TypeError):
                 return zero_as_none(max(min(int(params['indent']), 8), 0))
-            except (KeyError, ValueError, TypeError):
-                pass
-
         # If 'indent' is provided in the context, then pretty print the result.
         # E.g. If we're being called by the BrowsableAPIRenderer.
         return renderer_context.get('indent', None)
@@ -489,11 +487,8 @@ class BrowsableAPIRenderer(BaseRenderer):
                 return
 
             if existing_serializer is not None:
-                try:
+                with contextlib.suppress(TypeError):
                     return self.render_form_for_serializer(existing_serializer)
-                except TypeError:
-                    pass
-
             if has_serializer:
                 if method in ('PUT', 'PATCH'):
                     serializer = view.get_serializer(instance=instance, **kwargs)

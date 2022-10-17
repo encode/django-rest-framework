@@ -10,6 +10,8 @@ python primitives.
 2. The process of marshalling between python primitives and request and
 response content is handled by parsers and renderers.
 """
+
+import contextlib
 import copy
 import inspect
 import traceback
@@ -52,7 +54,7 @@ from rest_framework.fields import (  # NOQA # isort:skip
     BooleanField, CharField, ChoiceField, DateField, DateTimeField, DecimalField,
     DictField, DurationField, EmailField, Field, FileField, FilePathField, FloatField,
     HiddenField, HStoreField, IPAddressField, ImageField, IntegerField, JSONField,
-    ListField, ModelField, MultipleChoiceField, NullBooleanField, ReadOnlyField,
+    ListField, ModelField, MultipleChoiceField, ReadOnlyField,
     RegexField, SerializerMethodField, SlugField, TimeField, URLField, UUIDField,
 )
 from rest_framework.relations import (  # NOQA # isort:skip
@@ -216,7 +218,7 @@ class BaseSerializer(Field):
 
         return self.instance
 
-    def is_valid(self, raise_exception=False):
+    def is_valid(self, *, raise_exception=False):
         assert hasattr(self, 'initial_data'), (
             'Cannot call `.is_valid()` as no `data=` keyword argument was '
             'passed when instantiating the serializer instance.'
@@ -735,7 +737,7 @@ class ListSerializer(BaseSerializer):
 
         return self.instance
 
-    def is_valid(self, raise_exception=False):
+    def is_valid(self, *, raise_exception=False):
         # This implementation is the same as the default,
         # except that we use lists, rather than dicts, as the empty case.
         assert hasattr(self, 'initial_data'), (
@@ -1496,12 +1498,10 @@ class ModelSerializer(Serializer):
                 # they can't be nested attribute lookups.
                 continue
 
-            try:
+            with contextlib.suppress(FieldDoesNotExist):
                 field = model._meta.get_field(source)
                 if isinstance(field, DjangoModelField):
                     model_fields[source] = field
-            except FieldDoesNotExist:
-                pass
 
         return model_fields
 
