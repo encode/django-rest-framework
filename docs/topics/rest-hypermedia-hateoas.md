@@ -4,7 +4,7 @@
 >
 > &mdash; Mike Amundsen, [REST fest 2012 keynote][cite].
 
-First off, the disclaimer.  The name "Django REST framework" was decided back in early 2011 and was chosen simply to sure the project would be easily found by developers. Throughout the documentation we try to use the more simple and technically correct terminology of "Web APIs".
+First off, the disclaimer.  The name "Django REST framework" was decided back in early 2011 and was chosen simply to ensure the project would be easily found by developers. Throughout the documentation we try to use the more simple and technically correct terminology of "Web APIs".
 
 If you are serious about designing a Hypermedia API, you should look to resources outside of this documentation to help inform your design choices.
 
