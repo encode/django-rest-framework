@@ -691,7 +691,7 @@ class BooleanField(Field):
     NULL_VALUES = {'null', 'Null', 'NULL', '', None}
 
     def __init__(self, **kwargs):
-        if 'allow_null' in kwargs:
+        if kwargs.get('allow_null', False):
             self.default_empty_html = None
             self.initial = None
         super().__init__(**kwargs)
