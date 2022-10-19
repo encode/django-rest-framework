@@ -116,7 +116,7 @@ During dispatch, the following attributes are available on the `ViewSet`.
 * `name` - the display name for the viewset. This argument is mutually exclusive to `suffix`.
 * `description` - the display description for the individual view of a viewset.
 
-You may inspect these attributes to adjust behaviour based on the current action. For example, you could restrict permissions to everything except the `list` action similar to this:
+You may inspect these attributes to adjust behavior based on the current action. For example, you could restrict permissions to everything except the `list` action similar to this:
 
     def get_permissions(self):
         """
@@ -247,7 +247,7 @@ In order to use a `GenericViewSet` class you'll override the class and either mi
 
 The `ModelViewSet` class inherits from `GenericAPIView` and includes implementations for various actions, by mixing in the behavior of the various mixin classes.
 
-The actions provided by the `ModelViewSet` class are `.list()`, `.retrieve()`,  `.create()`, `.update()`, `.partial_update()`, and `.destroy()`.
+The actions provided by the `ModelViewSet` class are `.list()`, `.retrieve()`, `.create()`, `.update()`, `.partial_update()`, and `.destroy()`.
 
 #### Example
 

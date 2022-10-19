@@ -227,7 +227,7 @@ Note that the `paginate_queryset` method may set state on the pagination instanc
 
 ## Example
 
-Suppose we want to replace the default pagination output style with a modified format that  includes the next and previous links under in a nested 'links' key. We could specify a custom pagination class like so:
+Suppose we want to replace the default pagination output style with a modified format that includes the next and previous links under in a nested 'links' key. We could specify a custom pagination class like so:
 
     class CustomPagination(pagination.PageNumberPagination):
         def get_paginated_response(self, data):

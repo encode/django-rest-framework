@@ -594,11 +594,11 @@ The ModelSerializer class also exposes an API that you can override in order to 
 
 Normally if a `ModelSerializer` does not generate the fields you need by default then you should either add them to the class explicitly, or simply use a regular `Serializer` class instead. However in some cases you may want to create a new base class that defines how the serializer fields are created for any given model.
 
-### `.serializer_field_mapping`
+### `serializer_field_mapping`
 
 A mapping of Django model fields to REST framework serializer fields. You can override this mapping to alter the default serializer fields that should be used for each model field.
 
-### `.serializer_related_field`
+### `serializer_related_field`
 
 This property should be the serializer field class, that is used for relational fields by default.
 
@@ -606,13 +606,13 @@ For `ModelSerializer` this defaults to `serializers.PrimaryKeyRelatedField`.
 
 For `HyperlinkedModelSerializer` this defaults to `serializers.HyperlinkedRelatedField`.
 
-### `.serializer_url_field`
+### `serializer_url_field`
 
 The serializer field class that should be used for any `url` field on the serializer.
 
 Defaults to `serializers.HyperlinkedIdentityField`
 
-### `.serializer_choice_field`
+### `serializer_choice_field`
 
 The serializer field class that should be used for any choice fields on the serializer.
 
@@ -622,13 +622,13 @@ Defaults to `serializers.ChoiceField`
 
 The following methods are called to determine the class and keyword arguments for each field that should be automatically included on the serializer. Each of these methods should return a two tuple of `(field_class, field_kwargs)`.
 
-### `.build_standard_field(self, field_name, model_field)`
+### `build_standard_field(self, field_name, model_field)`
 
 Called to generate a serializer field that maps to a standard model field.
 
 The default implementation returns a serializer class based on the `serializer_field_mapping` attribute.
 
-### `.build_relational_field(self, field_name, relation_info)`
+### `build_relational_field(self, field_name, relation_info)`
 
 Called to generate a serializer field that maps to a relational model field.
 
@@ -636,7 +636,7 @@ The default implementation returns a serializer class based on the `serializer_r
 
 The `relation_info` argument is a named tuple, that contains `model_field`, `related_model`, `to_many` and `has_through_model` properties.
 
-### `.build_nested_field(self, field_name, relation_info, nested_depth)`
+### `build_nested_field(self, field_name, relation_info, nested_depth)`
 
 Called to generate a serializer field that maps to a relational model field, when the `depth` option has been set.
 
@@ -646,17 +646,17 @@ The `nested_depth` will be the value of the `depth` option, minus one.
 
 The `relation_info` argument is a named tuple, that contains `model_field`, `related_model`, `to_many` and `has_through_model` properties.
 
-### `.build_property_field(self, field_name, model_class)`
+### `build_property_field(self, field_name, model_class)`
 
 Called to generate a serializer field that maps to a property or zero-argument method on the model class.
 
 The default implementation returns a `ReadOnlyField` class.
 
-### `.build_url_field(self, field_name, model_class)`
+### `build_url_field(self, field_name, model_class)`
 
 Called to generate a serializer field for the serializer's own `url` field. The default implementation returns a `HyperlinkedIdentityField` class.
 
-### `.build_unknown_field(self, field_name, model_class)`
+### `build_unknown_field(self, field_name, model_class)`
 
 Called when the field name did not map to any model field or model property.
 The default implementation raises an error, although subclasses may customize this behavior.
@@ -1021,7 +1021,7 @@ Some reasons this might be useful include...
 
 The signatures for these methods are as follows:
 
-#### `.to_representation(self, instance)`
+#### `to_representation(self, instance)`
 
 Takes the object instance that requires serialization, and should return a primitive representation. Typically this means returning a structure of built-in Python datatypes. The exact types that can be handled will depend on the render classes you have configured for your API.
 
@@ -1033,7 +1033,7 @@ May be overridden in order to modify the representation style. For example:
         ret['username'] = ret['username'].lower()
         return ret
 
-#### ``.to_internal_value(self, data)``
+#### ``to_internal_value(self, data)``
 
 Takes the unvalidated incoming data as input and should return the validated data that will be made available as `serializer.validated_data`. The return value will also be passed to the `.create()` or `.update()` methods if `.save()` is called on the serializer class.
 

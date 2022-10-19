@@ -46,7 +46,7 @@ Defaults to `True`. If you're using [Model Serializer](https://www.django-rest-f
 
 ### `default`
 
-If set, this gives the default value that will be used for the field if no input value is supplied. If not set the default behaviour is to not populate the attribute at all.
+If set, this gives the default value that will be used for the field if no input value is supplied. If not set the default behavior is to not populate the attribute at all.
 
 The `default` is not applied during partial update operations. In the partial update case only fields that are provided in the incoming data will have a validated value returned.
 
@@ -85,7 +85,7 @@ When serializing fields with dotted notation, it may be necessary to provide a `
     class CommentSerializer(serializers.Serializer):
         email = serializers.EmailField(source="user.email")
 
-would require user object to be fetched from database when it is not prefetched. If that is not wanted, be sure to be using `prefetch_related` and `select_related` methods appropriately. For more information about the methods refer to [django documentation][django-docs-select-related].
+This case would require user object to be fetched from database when it is not prefetched. If that is not wanted, be sure to be using `prefetch_related` and `select_related` methods appropriately. For more information about the methods refer to [django documentation][django-docs-select-related].
 
 The value `source='*'` has a special meaning, and is used to indicate that the entire object should be passed through to the field.  This can be useful for creating nested representations, or for fields which require access to the complete object in order to determine the output representation.
 
@@ -151,7 +151,7 @@ Prior to Django 2.1 `models.BooleanField` fields were always `blank=True`. Thus
 since Django 2.1 default `serializers.BooleanField` instances will be generated
 without the `required` kwarg (i.e. equivalent to `required=True`) whereas with
 previous versions of Django, default `BooleanField` instances will be generated
-with a `required=False` option.  If you want to control this behaviour manually,
+with a `required=False` option.  If you want to control this behavior manually,
 explicitly declare the `BooleanField` on the serializer class, or use the
 `extra_kwargs` option to set the `required` flag.
 
@@ -771,7 +771,7 @@ Here the mapping between the target and source attribute pairs (`x` and
 `x_coordinate`, `y` and `y_coordinate`) is handled in the `IntegerField`
 declarations. It's our `NestedCoordinateSerializer` that takes `source='*'`.
 
-Our new `DataPointSerializer` exhibits the same behaviour as the custom field
+Our new `DataPointSerializer` exhibits the same behavior as the custom field
 approach.
 
 Serializing:
@@ -831,7 +831,7 @@ the [djangorestframework-recursive][djangorestframework-recursive] package provi
 
 ## django-rest-framework-gis
 
-The [django-rest-framework-gis][django-rest-framework-gis] package provides geographic addons for django rest framework like a  `GeometryField` field and a GeoJSON serializer.
+The [django-rest-framework-gis][django-rest-framework-gis] package provides geographic addons for django rest framework like a `GeometryField` field and a GeoJSON serializer.
 
 ## django-rest-framework-hstore
 

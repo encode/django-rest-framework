@@ -201,7 +201,7 @@ If you've already created some users, you can generate tokens for all existing u
 
 #### By exposing an api endpoint
 
-When using `TokenAuthentication`, you may want to provide a mechanism for clients to obtain a token given the username and password.  REST framework provides a built-in view to provide this behaviour.  To use it, add the `obtain_auth_token` view to your URLconf:
+When using `TokenAuthentication`, you may want to provide a mechanism for clients to obtain a token given the username and password.  REST framework provides a built-in view to provide this behavior.  To use it, add the `obtain_auth_token` view to your URLconf:
 
     from rest_framework.authtoken import views
     urlpatterns += [
@@ -216,7 +216,7 @@ The `obtain_auth_token` view will return a JSON response when valid `username` a
 
 Note that the default `obtain_auth_token` view explicitly uses JSON requests and responses, rather than using default renderer and parser classes in your settings.
 
-By default, there are no permissions or throttling applied to the  `obtain_auth_token` view. If you do wish to apply to throttle you'll need to override the view class,
+By default, there are no permissions or throttling applied to the `obtain_auth_token` view. If you do wish to apply throttling you'll need to override the view class,
 and include them using the `throttle_classes` attribute.
 
 If you need a customized version of the `obtain_auth_token` view, you can do so by subclassing the `ObtainAuthToken` view class, and using that in your url conf instead.
@@ -250,7 +250,7 @@ And in your `urls.py`:
 
 #### With Django admin
 
-It is also possible to create Tokens manually through the admin interface. In case you are using a large user base, we recommend that you monkey patch the `TokenAdmin` class customize it to your needs, more specifically by declaring the `user` field as `raw_field`.
+It is also possible to create Tokens manually through the admin interface. In case you are using a large user base, we recommend that you monkey patch the `TokenAdmin` class to customize it to your needs, more specifically by declaring the `user` field as `raw_field`.
 
 `your_app/admin.py`:
 
@@ -289,7 +289,7 @@ If you're using an AJAX-style API with SessionAuthentication, you'll need to mak
 
 **Warning**: Always use Django's standard login view when creating login pages. This will ensure your login views are properly protected.
 
-CSRF validation in REST framework works slightly differently from standard Django due to the need to support both session and non-session based authentication to the same views. This means that only authenticated requests require CSRF tokens, and anonymous requests may be sent without CSRF tokens. This behaviour is not suitable for login views, which should always have CSRF validation applied.
+CSRF validation in REST framework works slightly differently from standard Django due to the need to support both session and non-session based authentication to the same views. This means that only authenticated requests require CSRF tokens, and anonymous requests may be sent without CSRF tokens. This behavior is not suitable for login views, which should always have CSRF validation applied.
 
 
 ## RemoteUserAuthentication
@@ -299,7 +299,7 @@ environment variable.
 
 To use it, you must have `django.contrib.auth.backends.RemoteUserBackend` (or a subclass) in your
 `AUTHENTICATION_BACKENDS` setting. By default, `RemoteUserBackend` creates `User` objects for usernames that don't
-already exist. To change this and other behaviour, consult the
+already exist. To change this and other behavior, consult the
 [Django documentation](https://docs.djangoproject.com/en/stable/howto/auth-remote-user/).
 
 If successfully authenticated, `RemoteUserAuthentication` provides the following credentials:
@@ -307,7 +307,7 @@ If successfully authenticated, `RemoteUserAuthentication` provides the following
 * `request.user` will be a Django `User` instance.
 * `request.auth` will be `None`.
 
-Consult your web server's documentation for information about configuring an authentication method, e.g.:
+Consult your web server's documentation for information about configuring an authentication method, for example:
 
 * [Apache Authentication How-To](https://httpd.apache.org/docs/2.4/howto/auth.html)
 * [NGINX (Restricting Access)](https://docs.nginx.com/nginx/admin-guide/security-controls/configuring-http-basic-authentication/)
@@ -418,7 +418,7 @@ HTTP Signature (currently a [IETF draft][http-signature-ietf-draft]) provides a 
 
 ## Djoser
 
-[Djoser][djoser] library provides a set of views to handle basic actions such as registration, login, logout, password reset and account activation. The package works with a custom user model and uses token-based authentication. This is ready to use REST implementation of the Django authentication system.
+[Djoser][djoser] library provides a set of views to handle basic actions such as registration, login, logout, password reset and account activation. The package works with a custom user model and uses token-based authentication. This is a ready to use REST implementation of the Django authentication system.
 
 ## django-rest-auth / dj-rest-auth
 

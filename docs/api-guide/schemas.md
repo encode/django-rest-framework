@@ -293,7 +293,7 @@ class CustomView(APIView):
 
 This saves you having to create a custom subclass per-view for a commonly used option.
 
-Not all `AutoSchema` methods expose related  `__init__()` kwargs, but those for
+Not all `AutoSchema` methods expose related `__init__()` kwargs, but those for
 the more commonly needed options do.
 
 ### `AutoSchema` methods
@@ -301,7 +301,7 @@ the more commonly needed options do.
 #### `get_components()`
 
 Generates the OpenAPI components that describe request and response bodies,
-deriving  their properties from the serializer.
+deriving their properties from the serializer.
 
 Returns a dictionary mapping the component name to the generated
 representation. By default this has just a single pair but you may override

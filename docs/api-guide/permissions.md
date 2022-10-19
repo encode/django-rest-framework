@@ -177,7 +177,7 @@ This permission class ties into Django's standard `django.contrib.auth` [model p
 * `PUT` and `PATCH` requests require the user to have the `change` permission on the model.
 * `DELETE` requests require the user to have the `delete` permission on the model.
 
-The default behaviour can also be overridden to support custom model permissions.  For example, you might want to include a `view` model permission for `GET` requests.
+The default behavior can also be overridden to support custom model permissions.  For example, you might want to include a `view` model permission for `GET` requests.
 
 To use custom model permissions, override `DjangoModelPermissions` and set the `.perms_map` property.  Refer to the source code for details.
 

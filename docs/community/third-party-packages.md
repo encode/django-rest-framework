@@ -205,7 +205,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [dry-rest-permissions]: https://github.com/FJNR-inc/dry-rest-permissions
 [django-url-filter]: https://github.com/miki725/django-url-filter
 [drf-url-filter]: https://github.com/manjitkumar/drf-url-filters
-[cookiecutter-django-rest]:  https://github.com/agconti/cookiecutter-django-rest
+[cookiecutter-django-rest]: https://github.com/agconti/cookiecutter-django-rest
 [drf-haystack]: https://drf-haystack.readthedocs.io/en/latest/
 [django-rest-framework-version-transforms]: https://github.com/mrhwick/django-rest-framework-version-transforms
 [djangorestframework-jsonapi]: https://github.com/django-json-api/django-rest-framework-json-api

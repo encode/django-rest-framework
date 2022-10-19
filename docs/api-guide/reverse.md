@@ -38,7 +38,7 @@ You should **include the request as a keyword argument** to the function, for ex
         def get(self, request):
             year = now().year
             data = {
-                 ...
+                ...
                 'year-summary-url': reverse('year-summary', args=[year], request=request)
             }
             return Response(data)
