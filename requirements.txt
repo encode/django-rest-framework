@@ -1,6 +1,7 @@
 # The base set of requirements for REST framework is actually
-# just Django, but for the purposes of development and testing
-# there are a number of packages that are useful to install.
+# just Django and pytz, but for the purposes of development
+# and testing there are a number of packages that are useful
+# to install.
 
 # Laying these out as separate requirements files, allows us to
 # only included the relevant sets when running tox, and ensures

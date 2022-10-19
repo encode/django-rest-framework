@@ -120,6 +120,14 @@ Unauthenticated responses that are denied permission will result in an `HTTP 401
 
 ## TokenAuthentication
 
+---
+
+**Note:** The token authentication provided by Django REST framework is a fairly simple implementation.
+
+For an implementation which allows more than one token per user, has some tighter security implementation details, and supports token expiry, please see the [Django REST Knox][django-rest-knox] third party package.
+
+---
+
 This authentication scheme uses a simple token-based HTTP Authentication scheme.  Token authentication is appropriate for client-server setups, such as native desktop and mobile clients.
 
 To use the `TokenAuthentication` scheme you'll need to [configure the authentication classes](#setting-the-authentication-scheme) to include `TokenAuthentication`, and additionally include `rest_framework.authtoken` in your `INSTALLED_APPS` setting:
@@ -129,11 +137,9 @@ To use the `TokenAuthentication` scheme you'll need to [configure the authentica
         'rest_framework.authtoken'
     ]
 
----
+Make sure to run `manage.py migrate` after changing your settings.
 
-**Note:** Make sure to run `manage.py migrate` after changing your settings. The `rest_framework.authtoken` app provides Django database migrations.
-
----
+The `rest_framework.authtoken` app provides Django database migrations.
 
 You'll also need to create tokens for your users.
 
@@ -146,7 +152,7 @@ For clients to authenticate, the token key should be included in the `Authorizat
 
     Authorization: Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b
 
-**Note:** If you want to use a different keyword in the header, such as `Bearer`, simply subclass `TokenAuthentication` and set the `keyword` class variable.
+*If you want to use a different keyword in the header, such as `Bearer`, simply subclass `TokenAuthentication` and set the `keyword` class variable.*
 
 If successfully authenticated, `TokenAuthentication` provides the following credentials.
 
@@ -167,9 +173,9 @@ The `curl` command line tool may be useful for testing token authenticated APIs.
 
 ---
 
-#### Generating Tokens
+### Generating Tokens
 
-##### By using signals
+#### By using signals
 
 If you want every user to have an automatically generated Token, you can simply catch the User's `post_save` signal.
 
@@ -193,9 +199,9 @@ If you've already created some users, you can generate tokens for all existing u
     for user in User.objects.all():
         Token.objects.get_or_create(user=user)
 
-##### By exposing an api endpoint
+#### By exposing an api endpoint
 
-When using `TokenAuthentication`, you may want to provide a mechanism for clients to obtain a token given the username and password.  REST framework provides a built-in view to provide this behaviour.  To use it, add the `obtain_auth_token` view to your URLconf:
+When using `TokenAuthentication`, you may want to provide a mechanism for clients to obtain a token given the username and password.  REST framework provides a built-in view to provide this behavior.  To use it, add the `obtain_auth_token` view to your URLconf:
 
     from rest_framework.authtoken import views
     urlpatterns += [
@@ -210,7 +216,7 @@ The `obtain_auth_token` view will return a JSON response when valid `username` a
 
 Note that the default `obtain_auth_token` view explicitly uses JSON requests and responses, rather than using default renderer and parser classes in your settings.
 
-By default, there are no permissions or throttling applied to the  `obtain_auth_token` view. If you do wish to apply to throttle you'll need to override the view class,
+By default, there are no permissions or throttling applied to the `obtain_auth_token` view. If you do wish to apply throttling you'll need to override the view class,
 and include them using the `throttle_classes` attribute.
 
 If you need a customized version of the `obtain_auth_token` view, you can do so by subclassing the `ObtainAuthToken` view class, and using that in your url conf instead.
@@ -242,9 +248,9 @@ And in your `urls.py`:
     ]
 
 
-##### With Django admin
+#### With Django admin
 
-It is also possible to create Tokens manually through the admin interface. In case you are using a large user base, we recommend that you monkey patch the `TokenAdmin` class customize it to your needs, more specifically by declaring the `user` field as `raw_field`.
+It is also possible to create Tokens manually through the admin interface. In case you are using a large user base, we recommend that you monkey patch the `TokenAdmin` class to customize it to your needs, more specifically by declaring the `user` field as `raw_field`.
 
 `your_app/admin.py`:
 
@@ -283,7 +289,7 @@ If you're using an AJAX-style API with SessionAuthentication, you'll need to mak
 
 **Warning**: Always use Django's standard login view when creating login pages. This will ensure your login views are properly protected.
 
-CSRF validation in REST framework works slightly differently from standard Django due to the need to support both session and non-session based authentication to the same views. This means that only authenticated requests require CSRF tokens, and anonymous requests may be sent without CSRF tokens. This behaviour is not suitable for login views, which should always have CSRF validation applied.
+CSRF validation in REST framework works slightly differently from standard Django due to the need to support both session and non-session based authentication to the same views. This means that only authenticated requests require CSRF tokens, and anonymous requests may be sent without CSRF tokens. This behavior is not suitable for login views, which should always have CSRF validation applied.
 
 
 ## RemoteUserAuthentication
@@ -293,7 +299,7 @@ environment variable.
 
 To use it, you must have `django.contrib.auth.backends.RemoteUserBackend` (or a subclass) in your
 `AUTHENTICATION_BACKENDS` setting. By default, `RemoteUserBackend` creates `User` objects for usernames that don't
-already exist. To change this and other behaviour, consult the
+already exist. To change this and other behavior, consult the
 [Django documentation](https://docs.djangoproject.com/en/stable/howto/auth-remote-user/).
 
 If successfully authenticated, `RemoteUserAuthentication` provides the following credentials:
@@ -301,7 +307,7 @@ If successfully authenticated, `RemoteUserAuthentication` provides the following
 * `request.user` will be a Django `User` instance.
 * `request.auth` will be `None`.
 
-Consult your web server's documentation for information about configuring an authentication method, e.g.:
+Consult your web server's documentation for information about configuring an authentication method, for example:
 
 * [Apache Authentication How-To](https://httpd.apache.org/docs/2.4/howto/auth.html)
 * [NGINX (Restricting Access)](https://docs.nginx.com/nginx/admin-guide/security-controls/configuring-http-basic-authentication/)
@@ -332,7 +338,7 @@ If the `.authenticate_header()` method is not overridden, the authentication sch
 
 The following example will authenticate any incoming request as the user given by the username in a custom request header named 'X-USERNAME'.
 
-	from django.contrib.auth.models import User
+    from django.contrib.auth.models import User
     from rest_framework import authentication
     from rest_framework import exceptions
 
@@ -355,11 +361,15 @@ The following example will authenticate any incoming request as the user given b
 
 The following third-party packages are also available.
 
+## django-rest-knox
+
+[Django-rest-knox][django-rest-knox] library provides models and views to handle token-based authentication in a more secure and extensible way than the built-in TokenAuthentication scheme - with Single Page Applications and Mobile clients in mind. It provides per-client tokens, and views to generate them when provided some other authentication (usually basic authentication), to delete the token (providing a server enforced logout) and to delete all tokens (logs out all clients that a user is logged into).
+
 ## Django OAuth Toolkit
 
 The [Django OAuth Toolkit][django-oauth-toolkit] package provides OAuth 2.0 support and works with Python 3.4+. The package is maintained by [jazzband][jazzband] and uses the excellent [OAuthLib][oauthlib].  The package is well documented, and well supported and is currently our **recommended package for OAuth 2.0 support**.
 
-#### Installation & configuration
+### Installation & configuration
 
 Install using `pip`.
 
@@ -386,7 +396,7 @@ The [Django REST framework OAuth][django-rest-framework-oauth] package provides 
 
 This package was previously included directly in the REST framework but is now supported and maintained as a third-party package.
 
-#### Installation & configuration
+### Installation & configuration
 
 Install the package using `pip`.
 
@@ -408,7 +418,7 @@ HTTP Signature (currently a [IETF draft][http-signature-ietf-draft]) provides a 
 
 ## Djoser
 
-[Djoser][djoser] library provides a set of views to handle basic actions such as registration, login, logout, password reset and account activation. The package works with a custom user model and uses token-based authentication. This is ready to use REST implementation of the Django authentication system.
+[Djoser][djoser] library provides a set of views to handle basic actions such as registration, login, logout, password reset and account activation. The package works with a custom user model and uses token-based authentication. This is a ready to use REST implementation of the Django authentication system.
 
 ## django-rest-auth / dj-rest-auth
 
@@ -420,13 +430,9 @@ There are currently two forks of this project.
 * [Django-rest-auth][django-rest-auth] is the original project, [but is not currently receiving updates](https://github.com/Tivix/django-rest-auth/issues/568).
 * [Dj-rest-auth][dj-rest-auth] is a newer fork of the project.
 
-## django-rest-framework-social-oauth2
+## drf-social-oauth2
 
-[Django-rest-framework-social-oauth2][django-rest-framework-social-oauth2] library provides an easy way to integrate social plugins (facebook, twitter, google, etc.) to your authentication system and an easy oauth2 setup. With this library, you will be able to authenticate users based on external tokens (e.g. facebook access token), convert these tokens to "in-house" oauth2 tokens and use and generate oauth2 tokens to authenticate your users.
-
-## django-rest-knox
-
-[Django-rest-knox][django-rest-knox] library provides models and views to handle token-based authentication in a more secure and extensible way than the built-in TokenAuthentication scheme - with Single Page Applications and Mobile clients in mind. It provides per-client tokens, and views to generate them when provided some other authentication (usually basic authentication), to delete the token (providing a server enforced logout) and to delete all tokens (logs out all clients that a user is logged into).
+[Drf-social-oauth2][drf-social-oauth2] is a framework that helps you authenticate with major social oauth2 vendors, such as Facebook, Google, Twitter, Orcid, etc. It generates tokens in a JWTed way with an easy setup.
 
 ## drfpasswordless
 
@@ -473,7 +479,7 @@ More information can be found in the [Documentation](https://django-rest-durin.r
 [djoser]: https://github.com/sunscrapers/djoser
 [django-rest-auth]: https://github.com/Tivix/django-rest-auth
 [dj-rest-auth]: https://github.com/jazzband/dj-rest-auth
-[django-rest-framework-social-oauth2]: https://github.com/PhilipGarnero/django-rest-framework-social-oauth2
+[drf-social-oauth2]: https://github.com/wagnerdelima/drf-social-oauth2
 [django-rest-knox]: https://github.com/James1345/django-rest-knox
 [drfpasswordless]: https://github.com/aaronn/django-rest-framework-passwordless
 [django-rest-authemail]: https://github.com/celiao/django-rest-authemail

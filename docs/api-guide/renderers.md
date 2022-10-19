@@ -105,7 +105,7 @@ The TemplateHTMLRenderer will create a `RequestContext`, using the `response.dat
 
 ---
 
-**Note:** When used with a view that makes use of a serializer the `Response` sent for rendering may not be a dictionary and will need to be wrapped in a dict before returning to allow the TemplateHTMLRenderer to render it. For example:
+**Note:** When used with a view that makes use of a serializer the `Response` sent for rendering may not be a dictionary and will need to be wrapped in a dict before returning to allow the `TemplateHTMLRenderer` to render it. For example:
 
 ```
 response.data = {'results': response.data}
@@ -192,7 +192,7 @@ By default the response content will be rendered with the highest priority rende
         def get_default_renderer(self, view):
             return JSONRenderer()
 
-##  AdminRenderer
+## AdminRenderer
 
 Renders data into HTML for an admin-like display:
 
@@ -257,7 +257,7 @@ This renderer is used for rendering HTML multipart form data.  **It is not suita
 
 # Custom renderers
 
-To implement a custom renderer, you should override `BaseRenderer`, set the `.media_type` and `.format` properties, and implement the `.render(self, data, media_type=None, renderer_context=None)` method.
+To implement a custom renderer, you should override `BaseRenderer`, set the `.media_type` and `.format` properties, and implement the `.render(self, data, accepted_media_type=None, renderer_context=None)` method.
 
 The method should return a bytestring, which will be used as the body of the HTTP response.
 
@@ -267,7 +267,7 @@ The arguments passed to the `.render()` method are:
 
 The request data, as set by the `Response()` instantiation.
 
-### `media_type=None`
+### `accepted_media_type=None`
 
 Optional.  If provided, this is the accepted media type, as determined by the content negotiation stage.
 
@@ -291,7 +291,7 @@ The following is an example plaintext renderer that will return a response with 
         media_type = 'text/plain'
         format = 'txt'
 
-        def render(self, data, media_type=None, renderer_context=None):
+        def render(self, data, accepted_media_type=None, renderer_context=None):
             return smart_text(data, encoding=self.charset)
 
 ## Setting the character set
@@ -303,7 +303,7 @@ By default renderer classes are assumed to be using the `UTF-8` encoding.  To us
         format = 'txt'
         charset = 'iso-8859-1'
 
-        def render(self, data, media_type=None, renderer_context=None):
+        def render(self, data, accepted_media_type=None, renderer_context=None):
             return data.encode(self.charset)
 
 Note that if a renderer class returns a unicode string, then the response content will be coerced into a bytestring by the `Response` class, with the `charset` attribute set on the renderer used to determine the encoding.
@@ -318,7 +318,7 @@ In some cases you may also want to set the `render_style` attribute to `'binary'
         charset = None
         render_style = 'binary'
 
-        def render(self, data, media_type=None, renderer_context=None):
+        def render(self, data, accepted_media_type=None, renderer_context=None):
             return data
 
 ---
@@ -332,7 +332,7 @@ You can do some pretty flexible things using REST framework's renderers.  Some e
 * Specify multiple types of HTML representation for API clients to use.
 * Underspecify a renderer's media type, such as using `media_type = 'image/*'`, and use the `Accept` header to vary the encoding of the response.
 
-## Varying behaviour by media type
+## Varying behavior by media type
 
 In some cases you might want your view to use different serialization styles depending on the accepted media type.  If you need to do this you can access `request.accepted_renderer` to determine the negotiated renderer that will be used for the response.
 
@@ -470,15 +470,15 @@ Modify your REST framework settings.
 
 [MessagePack][messagepack] is a fast, efficient binary serialization format.  [Juan Riaza][juanriaza] maintains the [djangorestframework-msgpack][djangorestframework-msgpack] package which provides MessagePack renderer and parser support for REST framework.
 
-## XLSX (Binary Spreadsheet Endpoints)
+## Microsoft Excel: XLSX (Binary Spreadsheet Endpoints)
 
-XLSX is the world's most popular binary spreadsheet format. [Tim Allen][flipperpa] of [The Wharton School][wharton] maintains [drf-renderer-xlsx][drf-renderer-xlsx], which renders an endpoint as an XLSX spreadsheet using OpenPyXL, and allows the client to download it. Spreadsheets can be styled on a per-view basis.
+XLSX is the world's most popular binary spreadsheet format. [Tim Allen][flipperpa] of [The Wharton School][wharton] maintains [drf-excel][drf-excel], which renders an endpoint as an XLSX spreadsheet using OpenPyXL, and allows the client to download it. Spreadsheets can be styled on a per-view basis.
 
 #### Installation & configuration
 
 Install using pip.
 
-    $ pip install drf-renderer-xlsx
+    $ pip install drf-excel
 
 Modify your REST framework settings.
 
@@ -488,15 +488,15 @@ Modify your REST framework settings.
         'DEFAULT_RENDERER_CLASSES': [
             'rest_framework.renderers.JSONRenderer',
             'rest_framework.renderers.BrowsableAPIRenderer',
-            'drf_renderer_xlsx.renderers.XLSXRenderer',
+            'drf_excel.renderers.XLSXRenderer',
         ],
     }
 
 To avoid having a file streamed without a filename (which the browser will often default to the filename "download", with no extension), we need to use a mixin to override the `Content-Disposition` header. If no filename is provided, it will default to `export.xlsx`. For example:
 
     from rest_framework.viewsets import ReadOnlyModelViewSet
-    from drf_renderer_xlsx.mixins import XLSXFileMixin
-    from drf_renderer_xlsx.renderers import XLSXRenderer
+    from drf_excel.mixins import XLSXFileMixin
+    from drf_excel.renderers import XLSXRenderer
 
     from .models import MyExampleModel
     from .serializers import MyExampleSerializer
@@ -549,7 +549,7 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 [mjumbewu]: https://github.com/mjumbewu
 [flipperpa]: https://github.com/flipperpa
 [wharton]: https://github.com/wharton
-[drf-renderer-xlsx]: https://github.com/wharton/drf-renderer-xlsx
+[drf-excel]: https://github.com/wharton/drf-excel
 [vbabiy]: https://github.com/vbabiy
 [rest-framework-yaml]: https://jpadilla.github.io/django-rest-framework-yaml/
 [rest-framework-xml]: https://jpadilla.github.io/django-rest-framework-xml/

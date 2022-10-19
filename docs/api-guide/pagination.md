@@ -78,7 +78,7 @@ This pagination style accepts a single number page number in the request query p
 
     HTTP 200 OK
     {
-        "count": 1023
+        "count": 1023,
         "next": "https://api.example.org/accounts/?page=5",
         "previous": "https://api.example.org/accounts/?page=3",
         "results": [
@@ -126,7 +126,7 @@ This pagination style mirrors the syntax used when looking up multiple database 
 
     HTTP 200 OK
     {
-        "count": 1023
+        "count": 1023,
         "next": "https://api.example.org/accounts/?limit=100&offset=500",
         "previous": "https://api.example.org/accounts/?limit=100&offset=300",
         "results": [
@@ -227,7 +227,7 @@ Note that the `paginate_queryset` method may set state on the pagination instanc
 
 ## Example
 
-Suppose we want to replace the default pagination output style with a modified format that  includes the next and previous links under in a nested 'links' key. We could specify a custom pagination class like so:
+Suppose we want to replace the default pagination output style with a modified format that includes the next and previous links under in a nested 'links' key. We could specify a custom pagination class like so:
 
     class CustomPagination(pagination.PageNumberPagination):
         def get_paginated_response(self, data):

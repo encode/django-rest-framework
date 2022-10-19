@@ -740,3 +740,25 @@ class TestDeclaredFieldInheritance:
             'f4': serializers.CharField,
             'f5': serializers.CharField,
         }
+
+
+class Test8301Regression:
+    @pytest.mark.skipif(
+        sys.version_info < (3, 9),
+        reason="dictionary union operator requires Python 3.9 or higher",
+    )
+    def test_ReturnDict_merging(self):
+        # Serializer.data returns ReturnDict, this is essentially a test for that.
+
+        class TestSerializer(serializers.Serializer):
+            char = serializers.CharField()
+
+        s = TestSerializer(data={'char': 'x'})
+        assert s.is_valid()
+        assert s.data | {} == {'char': 'x'}
+        assert s.data | {'other': 'y'} == {'char': 'x', 'other': 'y'}
+        assert {} | s.data == {'char': 'x'}
+        assert {'other': 'y'} | s.data == {'char': 'x', 'other': 'y'}
+
+        assert (s.data | {}).__class__ == s.data.__class__
+        assert ({} | s.data).__class__ == s.data.__class__

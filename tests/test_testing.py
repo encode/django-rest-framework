@@ -1,12 +1,16 @@
+import itertools
 from io import BytesIO
+from unittest.mock import patch
 
 import django
 from django.contrib.auth.models import User
+from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.test import TestCase, override_settings
 from django.urls import path
 
 from rest_framework import fields, serializers
+from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.test import (
@@ -14,12 +18,14 @@ from rest_framework.test import (
 )
 
 
-@api_view(['GET', 'POST'])
+@api_view(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'])
 def view(request):
-    return Response({
-        'auth': request.META.get('HTTP_AUTHORIZATION', b''),
-        'user': request.user.username
-    })
+    data = {'auth': request.META.get('HTTP_AUTHORIZATION', b'')}
+    if request.user:
+        data['user'] = request.user.username
+    if request.auth:
+        data['token'] = request.auth.key
+    return Response(data)
 
 
 @api_view(['GET', 'POST'])
@@ -34,6 +40,11 @@ def session_view(request):
 @api_view(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'])
 def redirect_view(request):
     return redirect('/view/')
+
+
+@api_view(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'])
+def redirect_307_308_view(request, code):
+    return HttpResponseRedirect('/view/', status=code)
 
 
 class BasicSerializer(serializers.Serializer):
@@ -51,6 +62,7 @@ urlpatterns = [
     path('view/', view),
     path('session-view/', session_view),
     path('redirect-view/', redirect_view),
+    path('redirect-view/<int:code>/', redirect_307_308_view),
     path('post-view/', post_view)
 ]
 
@@ -69,14 +81,46 @@ class TestAPITestClient(TestCase):
             response = self.client.get('/view/')
             assert response.data['auth'] == 'example'
 
-    def test_force_authenticate(self):
+    def test_force_authenticate_with_user(self):
         """
-        Setting `.force_authenticate()` forcibly authenticates each request.
+        Setting `.force_authenticate()` with a user forcibly authenticates each
+        request with that user.
         """
         user = User.objects.create_user('example', 'example@example.com')
-        self.client.force_authenticate(user)
+
+        self.client.force_authenticate(user=user)
         response = self.client.get('/view/')
+
         assert response.data['user'] == 'example'
+        assert 'token' not in response.data
+
+    def test_force_authenticate_with_token(self):
+        """
+        Setting `.force_authenticate()` with a token forcibly authenticates each
+        request with that token.
+        """
+        user = User.objects.create_user('example', 'example@example.com')
+        token = Token.objects.create(key='xyz', user=user)
+
+        self.client.force_authenticate(token=token)
+        response = self.client.get('/view/')
+
+        assert response.data['token'] == 'xyz'
+        assert 'user' not in response.data
+
+    def test_force_authenticate_with_user_and_token(self):
+        """
+        Setting `.force_authenticate()` with a user and token forcibly
+        authenticates each request with that user and token.
+        """
+        user = User.objects.create_user('example', 'example@example.com')
+        token = Token.objects.create(key='xyz', user=user)
+
+        self.client.force_authenticate(user=user, token=token)
+        response = self.client.get('/view/')
+
+        assert response.data['user'] == 'example'
+        assert response.data['token'] == 'xyz'
 
     def test_force_authenticate_with_sessions(self):
         """
@@ -93,8 +137,9 @@ class TestAPITestClient(TestCase):
         response = self.client.get('/session-view/')
         assert response.data['active_session'] is True
 
-        # Force authenticating as `None` should also logout the user session.
-        self.client.force_authenticate(None)
+        # Force authenticating with `None` user and token should also logout
+        # the user session.
+        self.client.force_authenticate(user=None, token=None)
         response = self.client.get('/session-view/')
         assert response.data['active_session'] is False
 
@@ -146,41 +191,32 @@ class TestAPITestClient(TestCase):
         """
         Follow redirect by setting follow argument.
         """
-        response = self.client.get('/redirect-view/')
-        assert response.status_code == 302
-        response = self.client.get('/redirect-view/', follow=True)
-        assert response.redirect_chain is not None
-        assert response.status_code == 200
+        for method in ('get', 'post', 'put', 'patch', 'delete', 'options'):
+            with self.subTest(method=method):
+                req_method = getattr(self.client, method)
+                response = req_method('/redirect-view/')
+                assert response.status_code == 302
+                response = req_method('/redirect-view/', follow=True)
+                assert response.redirect_chain is not None
+                assert response.status_code == 200
 
-        response = self.client.post('/redirect-view/')
-        assert response.status_code == 302
-        response = self.client.post('/redirect-view/', follow=True)
-        assert response.redirect_chain is not None
-        assert response.status_code == 200
-
-        response = self.client.put('/redirect-view/')
-        assert response.status_code == 302
-        response = self.client.put('/redirect-view/', follow=True)
-        assert response.redirect_chain is not None
-        assert response.status_code == 200
-
-        response = self.client.patch('/redirect-view/')
-        assert response.status_code == 302
-        response = self.client.patch('/redirect-view/', follow=True)
-        assert response.redirect_chain is not None
-        assert response.status_code == 200
-
-        response = self.client.delete('/redirect-view/')
-        assert response.status_code == 302
-        response = self.client.delete('/redirect-view/', follow=True)
-        assert response.redirect_chain is not None
-        assert response.status_code == 200
-
-        response = self.client.options('/redirect-view/')
-        assert response.status_code == 302
-        response = self.client.options('/redirect-view/', follow=True)
-        assert response.redirect_chain is not None
-        assert response.status_code == 200
+    def test_follow_307_308_preserve_kwargs(self, *mocked_methods):
+        """
+        Follow redirect by setting follow argument, and make sure the following
+        method called with appropriate kwargs.
+        """
+        methods = ('get', 'post', 'put', 'patch', 'delete', 'options')
+        codes = (307, 308)
+        for method, code in itertools.product(methods, codes):
+            subtest_ctx = self.subTest(method=method, code=code)
+            patch_ctx = patch.object(self.client, method, side_effect=getattr(self.client, method))
+            with subtest_ctx, patch_ctx as req_method:
+                kwargs = {'data': {'example': 'test'}, 'format': 'json'}
+                response = req_method('/redirect-view/%s/' % code, follow=True, **kwargs)
+                assert response.redirect_chain is not None
+                assert response.status_code == 200
+                for _, call_args, call_kwargs in req_method.mock_calls:
+                    assert all(call_kwargs[k] == kwargs[k] for k in kwargs if k in call_kwargs)
 
     def test_invalid_multipart_data(self):
         """

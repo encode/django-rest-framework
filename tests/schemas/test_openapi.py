@@ -111,6 +111,20 @@ class TestFieldMapping(TestCase):
         assert data['properties']['default_false']['default'] is False, "default must be false"
         assert 'default' not in data['properties']['without_default'], "default must not be defined"
 
+    def test_custom_field_name(self):
+        class CustomSchema(AutoSchema):
+            def get_field_name(self, field):
+                return 'custom_' + field.field_name
+
+        class Serializer(serializers.Serializer):
+            text_field = serializers.CharField()
+
+        inspector = CustomSchema()
+
+        data = inspector.map_serializer(Serializer())
+        assert 'custom_text_field' in data['properties']
+        assert 'text_field' not in data['properties']
+
     def test_nullable_fields(self):
         class Model(models.Model):
             rw_field = models.CharField(null=True)

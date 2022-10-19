@@ -42,6 +42,7 @@ The project layout should look like:
     ./tutorial/quickstart/models.py
     ./tutorial/quickstart/tests.py
     ./tutorial/quickstart/views.py
+    ./tutorial/asgi.py
     ./tutorial/settings.py
     ./tutorial/urls.py
     ./tutorial/wsgi.py
@@ -176,12 +177,6 @@ We can now access our API, both from the command-line, using tools like `curl`..
                 "url": "http://127.0.0.1:8000/users/1/",
                 "username": "admin"
             },
-            {
-                "email": "tom@example.com",
-                "groups": [],
-                "url": "http://127.0.0.1:8000/users/2/",
-                "username": "tom"
-            }
         ]
     }
 
@@ -202,12 +197,6 @@ Or using the [httpie][httpie], command line tool...
                 "url": "http://localhost:8000/users/1/",
                 "username": "paul"
             },
-            {
-                "email": "tom@example.com",
-                "groups": [],
-                "url": "http://127.0.0.1:8000/users/2/",
-                "username": "tom"
-            }
         ]
     }
 

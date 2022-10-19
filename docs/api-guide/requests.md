@@ -49,7 +49,7 @@ If a client sends a request with a content-type that cannot be parsed then a `Un
 
 # Content negotiation
 
-The request exposes some properties that allow you to determine the result of the content negotiation stage. This allows you to implement behaviour such as selecting a different serialization schemes for different media types.
+The request exposes some properties that allow you to determine the result of the content negotiation stage. This allows you to implement behavior such as selecting a different serialization schemes for different media types.
 
 ## .accepted_renderer
 

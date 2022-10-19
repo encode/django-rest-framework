@@ -19,7 +19,7 @@ Relational fields are used to represent model relationships.  They can be applie
 
 ---
 
-**Note:** REST Framework does not attempt to automatically optimize querysets passed to serializers in terms of `select_related` and `prefetch_related` since it would be too much magic. A serializer with a field spanning an orm relation through its source attribute could require an additional database hit to fetch related object from the database. It is the programmer's responsibility to optimize queries to avoid additional database hits which could occur while using such a serializer.
+**Note:** REST Framework does not attempt to automatically optimize querysets passed to serializers in terms of `select_related` and `prefetch_related` since it would be too much magic. A serializer with a field spanning an orm relation through its source attribute could require an additional database hit to fetch related objects from the database. It is the programmer's responsibility to optimize queries to avoid additional database hits which could occur while using such a serializer.
 
 For example, the following serializer would lead to a database hit each time evaluating the tracks field if it is not prefetched:
 
@@ -33,7 +33,7 @@ For example, the following serializer would lead to a database hit each time eva
         class Meta:
             model = Album
             fields = ['album_name', 'artist', 'tracks']
-    
+
     # For each album object, tracks should be fetched from database
     qs = Album.objects.all()
     print(AlbumSerializer(qs, many=True).data)
@@ -246,7 +246,7 @@ When using `SlugRelatedField` as a read-write field, you will normally want to e
 
 ## HyperlinkedIdentityField
 
-This field can be applied as an identity relationship, such as the `'url'` field on  a HyperlinkedModelSerializer.  It can also be used for an attribute on the object.  For example, the following serializer:
+This field can be applied as an identity relationship, such as the `'url'` field on a HyperlinkedModelSerializer.  It can also be used for an attribute on the object.  For example, the following serializer:
 
     class AlbumSerializer(serializers.HyperlinkedModelSerializer):
         track_listing = serializers.HyperlinkedIdentityField(view_name='track-list')
@@ -278,7 +278,7 @@ This field is always read-only.
 
 As opposed to previously discussed _references_ to another entity, the referred entity can instead also be embedded or _nested_
 in the representation of the object that refers to it.
-Such nested relationships can be expressed by using serializers as fields. 
+Such nested relationships can be expressed by using serializers as fields.
 
 If the field is used to represent a to-many relationship, you should add the `many=True` flag to the serializer field.
 
@@ -494,8 +494,8 @@ This behavior is intended to prevent a template from being unable to render in a
 
 There are two keyword arguments you can use to control this behavior:
 
-- `html_cutoff` - If set this will be the maximum number of choices that will be displayed by a HTML select drop down. Set to `None` to disable any limiting. Defaults to `1000`.
-- `html_cutoff_text` - If set this will display a textual indicator if the maximum number of items have been cutoff in an HTML select drop down. Defaults to `"More than {count} items…"`
+* `html_cutoff` - If set this will be the maximum number of choices that will be displayed by a HTML select drop down. Set to `None` to disable any limiting. Defaults to `1000`.
+* `html_cutoff_text` - If set this will display a textual indicator if the maximum number of items have been cutoff in an HTML select drop down. Defaults to `"More than {count} items…"`
 
 You can also control these globally using the settings `HTML_SELECT_CUTOFF` and `HTML_SELECT_CUTOFF_TEXT`.
 

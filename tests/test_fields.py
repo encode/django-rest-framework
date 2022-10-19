@@ -9,13 +9,15 @@ import pytz
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.http import QueryDict
 from django.test import TestCase, override_settings
-from django.utils.timezone import activate, deactivate, override, utc
+from django.utils.timezone import activate, deactivate, override
 
 import rest_framework
 from rest_framework import exceptions, serializers
 from rest_framework.fields import (
     BuiltinSignatureError, DjangoImageField, is_simple_callable
 )
+
+utc = datetime.timezone.utc
 
 # Tests for helper functions.
 # ---------------------------
@@ -72,6 +74,10 @@ class TestIsSimpleCallable:
         assert is_simple_callable(valid)
         assert is_simple_callable(valid_vargs_kwargs)
         assert not is_simple_callable(invalid)
+
+    @pytest.mark.parametrize('obj', (True, None, "str", b'bytes', 123, 1.23))
+    def test_not_callable(self, obj):
+        assert not is_simple_callable(obj)
 
     def test_4602_regression(self):
         from django.db import models
@@ -589,7 +595,7 @@ class TestCreateOnlyDefault:
 
     def test_create_only_default_callable_sets_context(self):
         """
-        CreateOnlyDefault instances with a callable default should set_context
+        CreateOnlyDefault instances with a callable default should set context
         on the callable if possible
         """
         class TestCallableDefault:
@@ -702,9 +708,9 @@ class TestBooleanField(FieldValues):
             assert exc_info.value.detail == expected
 
 
-class TestNullBooleanField(TestBooleanField):
+class TestNullableBooleanField(TestBooleanField):
     """
-    Valid and invalid values for `NullBooleanField`.
+    Valid and invalid values for `BooleanField` when `allow_null=True`.
     """
     valid_inputs = {
         'true': True,
@@ -727,16 +733,6 @@ class TestNullBooleanField(TestBooleanField):
         'other': True
     }
     field = serializers.BooleanField(allow_null=True)
-
-
-class TestNullableBooleanField(TestNullBooleanField):
-    """
-    Valid and invalid values for `BooleanField` when `allow_null=True`.
-    """
-
-    @property
-    def field(self):
-        return serializers.BooleanField(allow_null=True)
 
 
 # String types...
@@ -1888,9 +1884,9 @@ class TestMultipleChoiceField(FieldValues):
     def test_against_partial_and_full_updates(self):
         field = serializers.MultipleChoiceField(choices=(('a', 'a'), ('b', 'b')))
         field.partial = False
-        assert field.get_value(QueryDict({})) == []
+        assert field.get_value(QueryDict('')) == []
         field.partial = True
-        assert field.get_value(QueryDict({})) == rest_framework.fields.empty
+        assert field.get_value(QueryDict('')) == rest_framework.fields.empty
 
 
 class TestEmptyMultipleChoiceField(FieldValues):

@@ -277,7 +277,7 @@ class APIClient(APIRequestFactory, DjangoClient):
         """
         self.handler._force_user = user
         self.handler._force_token = token
-        if user is None:
+        if user is None and token is None:
             self.logout()  # Also clear any possible session info if required
 
     def request(self, **kwargs):
@@ -288,7 +288,7 @@ class APIClient(APIRequestFactory, DjangoClient):
     def get(self, path, data=None, follow=False, **extra):
         response = super().get(path, data=data, **extra)
         if follow:
-            response = self._handle_redirects(response, **extra)
+            response = self._handle_redirects(response, data=data, **extra)
         return response
 
     def post(self, path, data=None, format=None, content_type=None,
@@ -296,7 +296,7 @@ class APIClient(APIRequestFactory, DjangoClient):
         response = super().post(
             path, data=data, format=format, content_type=content_type, **extra)
         if follow:
-            response = self._handle_redirects(response, **extra)
+            response = self._handle_redirects(response, data=data, format=format, content_type=content_type, **extra)
         return response
 
     def put(self, path, data=None, format=None, content_type=None,
@@ -304,7 +304,7 @@ class APIClient(APIRequestFactory, DjangoClient):
         response = super().put(
             path, data=data, format=format, content_type=content_type, **extra)
         if follow:
-            response = self._handle_redirects(response, **extra)
+            response = self._handle_redirects(response, data=data, format=format, content_type=content_type, **extra)
         return response
 
     def patch(self, path, data=None, format=None, content_type=None,
@@ -312,7 +312,7 @@ class APIClient(APIRequestFactory, DjangoClient):
         response = super().patch(
             path, data=data, format=format, content_type=content_type, **extra)
         if follow:
-            response = self._handle_redirects(response, **extra)
+            response = self._handle_redirects(response, data=data, format=format, content_type=content_type, **extra)
         return response
 
     def delete(self, path, data=None, format=None, content_type=None,
@@ -320,7 +320,7 @@ class APIClient(APIRequestFactory, DjangoClient):
         response = super().delete(
             path, data=data, format=format, content_type=content_type, **extra)
         if follow:
-            response = self._handle_redirects(response, **extra)
+            response = self._handle_redirects(response, data=data, format=format, content_type=content_type, **extra)
         return response
 
     def options(self, path, data=None, format=None, content_type=None,
@@ -328,7 +328,7 @@ class APIClient(APIRequestFactory, DjangoClient):
         response = super().options(
             path, data=data, format=format, content_type=content_type, **extra)
         if follow:
-            response = self._handle_redirects(response, **extra)
+            response = self._handle_redirects(response, data=data, format=format, content_type=content_type, **extra)
         return response
 
     def logout(self):
