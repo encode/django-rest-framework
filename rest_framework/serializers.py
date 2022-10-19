@@ -337,8 +337,7 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
         'invalid': _('Invalid data. Expected a dictionary, but got {datatype}.')
     }
 
-    @staticmethod
-    def set_value(dictionary, keys, value):
+    def set_value(self, dictionary, keys, value):
         """
         Similar to Python's built in `dictionary[key] = value`,
         but takes a list of nested keys instead of a single key.
