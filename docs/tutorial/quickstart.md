@@ -30,22 +30,24 @@ The project layout should look like:
     <some path>/tutorial
     $ find .
     .
-    ./manage.py
     ./tutorial
+    ./tutorial/asgi.py
     ./tutorial/__init__.py
     ./tutorial/quickstart
-    ./tutorial/quickstart/__init__.py
-    ./tutorial/quickstart/admin.py
-    ./tutorial/quickstart/apps.py
     ./tutorial/quickstart/migrations
     ./tutorial/quickstart/migrations/__init__.py
     ./tutorial/quickstart/models.py
+    ./tutorial/quickstart/__init__.py
+    ./tutorial/quickstart/apps.py
+    ./tutorial/quickstart/admin.py
     ./tutorial/quickstart/tests.py
     ./tutorial/quickstart/views.py
-    ./tutorial/asgi.py
     ./tutorial/settings.py
     ./tutorial/urls.py
     ./tutorial/wsgi.py
+    ./env
+    ./env/...
+    ./manage.py
 
 It may look unusual that the application has been created within the project directory. Using the project's namespace avoids name clashes with external modules (a topic that goes outside the scope of the quickstart).
 
@@ -53,9 +55,9 @@ Now sync your database for the first time:
 
     python manage.py migrate
 
-We'll also create an initial user named `admin` with a password of `password123`. We'll authenticate as that user later in our example.
+We'll also create an initial user named `admin` with a password. We'll authenticate as that user later in our example.
 
-    python manage.py createsuperuser --email admin@example.com --username admin
+    python manage.py createsuperuser --username admin --email admin@example.com
 
 Once you've set up a database and the initial user is created and ready to go, open up the app's directory and we'll get coding...
 
@@ -63,7 +65,7 @@ Once you've set up a database and the initial user is created and ready to go, o
 
 First up we're going to define some serializers. Let's create a new module named `tutorial/quickstart/serializers.py` that we'll use for our data representations.
 
-    from django.contrib.auth.models import User, Group
+    from django.contrib.auth.models import Group, User
     from rest_framework import serializers
 
 
@@ -84,10 +86,10 @@ Notice that we're using hyperlinked relations in this case with `HyperlinkedMode
 
 Right, we'd better write some views then.  Open `tutorial/quickstart/views.py` and get typing.
 
-    from django.contrib.auth.models import User, Group
-    from rest_framework import viewsets
-    from rest_framework import permissions
-    from tutorial.quickstart.serializers import UserSerializer, GroupSerializer
+    from django.contrib.auth.models import Group, User
+    from rest_framework import permissions, viewsets
+
+    from tutorial.quickstart.serializers import GroupSerializer, UserSerializer
 
 
     class UserViewSet(viewsets.ModelViewSet):
@@ -117,6 +119,7 @@ Okay, now let's wire up the API URLs.  On to `tutorial/urls.py`...
 
     from django.urls import include, path
     from rest_framework import routers
+
     from tutorial.quickstart import views
 
     router = routers.DefaultRouter()
@@ -165,9 +168,30 @@ We're now ready to test the API we've built.  Let's fire up the server from the 
 
 We can now access our API, both from the command-line, using tools like `curl`...
 
-    bash: curl -H 'Accept: application/json; indent=4' -u admin:password123 http://127.0.0.1:8000/users/
+    bash: curl -u admin -H 'Accept: application/json; indent=4' http://127.0.0.1:8000/users/
+    Enter host password for user 'admin':
     {
-        "count": 2,
+        "count": 1,
+        "next": null,
+        "previous": null,
+        "results": [
+            {
+                "url": "http://127.0.0.1:8000/users/1/",
+                "username": "admin",
+                "email": "admin@example.com",
+                "groups": []
+            }
+        ]
+    }
+
+Or using the [httpie][httpie], command line tool...
+
+    bash: http -a admin http://127.0.0.1:8000/users/
+    http: password for admin@127.0.0.1:8000:: 
+    $HTTP/1.1 200 OK
+    ...
+    {
+        "count": 1,
         "next": null,
         "previous": null,
         "results": [
@@ -176,27 +200,7 @@ We can now access our API, both from the command-line, using tools like `curl`..
                 "groups": [],
                 "url": "http://127.0.0.1:8000/users/1/",
                 "username": "admin"
-            },
-        ]
-    }
-
-Or using the [httpie][httpie], command line tool...
-
-    bash: http -a admin:password123 http://127.0.0.1:8000/users/
-
-    HTTP/1.1 200 OK
-    ...
-    {
-        "count": 2,
-        "next": null,
-        "previous": null,
-        "results": [
-            {
-                "email": "admin@example.com",
-                "groups": [],
-                "url": "http://localhost:8000/users/1/",
-                "username": "paul"
-            },
+            }
         ]
     }
 
