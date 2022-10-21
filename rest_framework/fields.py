@@ -943,7 +943,7 @@ class FloatField(Field):
 
         try:
             return float(data)
-        except (TypeError, ValueError):
+        except (TypeError, ValueError, OverflowError):
             self.fail('invalid')
 
     def to_representation(self, value):
