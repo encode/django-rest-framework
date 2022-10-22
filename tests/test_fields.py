@@ -1,5 +1,7 @@
 import datetime
+import math
 import os
+import random
 import re
 import uuid
 from decimal import ROUND_DOWN, ROUND_UP, Decimal
@@ -13,6 +15,7 @@ from django.utils.timezone import activate, deactivate, override
 
 import rest_framework
 from rest_framework import exceptions, serializers
+from rest_framework.exceptions import ValidationError
 from rest_framework.fields import (
     BuiltinSignatureError, DjangoImageField, is_simple_callable
 )
@@ -1070,6 +1073,14 @@ class TestMinMaxFloatField(FieldValues):
     }
     outputs = {}
     field = serializers.FloatField(min_value=1, max_value=3)
+
+
+class TestFloatFieldOverFlowError(TestCase):
+    def test_overflow_error_float_field(self):
+        field = serializers.FloatField()
+        with pytest.raises(serializers.ValidationError) as exec_info:
+            field.to_internal_value(data=math.factorial(171))
+        assert "int too large to convert to float" in str(exec_info.value.detail)
 
 
 class TestDecimalField(FieldValues):
