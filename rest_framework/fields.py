@@ -917,6 +917,7 @@ class IntegerField(Field):
 class FloatField(Field):
     default_error_messages = {
         'invalid': _('A valid number is required.'),
+        'overflow': _('Value too large.'),
         'max_value': _('Ensure this value is less than or equal to {max_value}.'),
         'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
         'max_string_length': _('String value too large.')
@@ -955,7 +956,6 @@ class FloatField(Field):
 class DecimalField(Field):
     default_error_messages = {
         'invalid': _('A valid number is required.'),
-        'overflow': _('Integer value too large.'),
         'max_value': _('Ensure this value is less than or equal to {max_value}.'),
         'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
         'max_digits': _('Ensure that there are no more than {max_digits} digits in total.'),
