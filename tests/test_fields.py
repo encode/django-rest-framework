@@ -14,7 +14,6 @@ from django.utils.timezone import activate, deactivate, override
 
 import rest_framework
 from rest_framework import exceptions, serializers
-from rest_framework.exceptions import ValidationError
 from rest_framework.fields import (
     BuiltinSignatureError, DjangoImageField, is_simple_callable
 )
