@@ -945,6 +945,8 @@ class FloatField(Field):
             return float(data)
         except (TypeError, ValueError):
             self.fail('invalid')
+        except OverflowError:
+            self.fail('overflow')
 
     def to_representation(self, value):
         return float(value)
@@ -953,6 +955,7 @@ class FloatField(Field):
 class DecimalField(Field):
     default_error_messages = {
         'invalid': _('A valid number is required.'),
+        'overflow': _('Integer value too large.'),
         'max_value': _('Ensure this value is less than or equal to {max_value}.'),
         'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
         'max_digits': _('Ensure that there are no more than {max_digits} digits in total.'),
