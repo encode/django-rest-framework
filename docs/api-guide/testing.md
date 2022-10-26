@@ -5,7 +5,7 @@ source:
 
 # Testing
 
-> Code without tests is broken as designed.
+> Code without tests is broken by design.
 >
 > &mdash; [Jacob Kaplan-Moss][cite]
 
