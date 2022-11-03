@@ -137,7 +137,7 @@ class AutoSchema(ViewInspector):
         'get': 'retrieve',
         'post': 'create',
         'put': 'update',
-        'patch': 'partialUpdate',
+        'patch': 'partial_update',
         'delete': 'destroy',
     }
 
