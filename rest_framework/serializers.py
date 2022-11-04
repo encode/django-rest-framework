@@ -250,7 +250,7 @@ class BaseSerializer(Field):
             )
             raise AssertionError(msg)
 
-        if not hasattr(self, '_data') and not getattr(self, '_errors', None):
+        if not hasattr(self, '_data') or getattr(self, '_errors', None):
             if self.instance is not None:
                 self._data = self.to_representation(self.instance)
             elif hasattr(self, '_validated_data'):
