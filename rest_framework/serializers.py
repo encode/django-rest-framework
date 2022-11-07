@@ -52,21 +52,21 @@ from rest_framework.validators import (
 # serializer fields more explicit.
 from rest_framework.fields import (  # NOQA # isort:skip
     BooleanField, CharField, ChoiceField, DateField, DateTimeField, DecimalField,
-    DictField, DurationField, EmailField, Field, FileField, FilePathField, FloatField,
+    DurationField, EmailField, Field, FileField, FilePathField, FloatField,
     HiddenField, HStoreField, IPAddressField, ImageField, IntegerField, JSONField,
-    ListField, ModelField, MultipleChoiceField, ReadOnlyField,
-    RegexField, SerializerMethodField, SlugField, TimeField, URLField, UUIDField,
+    ListField, ModelField, ReadOnlyField, SlugField, TimeField, URLField,
+    UUIDField,
 )
 from rest_framework.relations import (  # NOQA # isort:skip
-    HyperlinkedIdentityField, HyperlinkedRelatedField, ManyRelatedField,
-    PrimaryKeyRelatedField, RelatedField, SlugRelatedField, StringRelatedField,
+    HyperlinkedIdentityField, HyperlinkedRelatedField, PrimaryKeyRelatedField,
+    SlugRelatedField
 )
 
 # Non-field imports, but public API
 from rest_framework.fields import (  # NOQA # isort:skip
-    CreateOnlyDefault, CurrentUserDefault, SkipField, empty
+    CreateOnlyDefault, SkipField, empty
 )
-from rest_framework.relations import Hyperlink, PKOnlyObject  # NOQA # isort:skip
+from rest_framework.relations import PKOnlyObject  # NOQA # isort:skip
 
 # We assume that 'validators' are intended for the child serializer,
 # rather than the parent serializer.
