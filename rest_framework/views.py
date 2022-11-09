@@ -497,7 +497,7 @@ class APIView(View):
             self.initial(request, *args, **kwargs)
 
             # Get the appropriate handler method
-            if request.method.lower() in self.http_method_names:
+            if request.method.lower() in list(map(lambda x: x.lower(), self.http_method_names)):
                 handler = getattr(self, request.method.lower(),
                                   self.http_method_not_allowed)
             else:
