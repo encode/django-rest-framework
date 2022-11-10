@@ -87,7 +87,7 @@ You will typically want to use both `FormParser` and `MultiPartParser` together 
 
 ## MultiPartParser
 
-Parses multipart HTML form content, which supports file uploads.  Both `request.data` will be populated with a `QueryDict`.
+Parses multipart HTML form content, which supports file uploads. `request.data` and `request.FILES` will be populated with a `QueryDict` and `MultiValueDict` respectively.
 
 You will typically want to use both `FormParser` and `MultiPartParser` together in order to fully support HTML form data.
 
