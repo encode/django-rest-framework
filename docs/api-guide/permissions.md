@@ -324,6 +324,10 @@ The [DRY Rest Permissions][dry-rest-permissions] package provides the ability to
 
 The [Django Rest Framework Roles][django-rest-framework-roles] package makes it easier to parameterize your API over multiple types of users.
 
+## Rest Framework Roles
+
+The [Rest Framework Roles][rest-framework-roles] makes it super easy to protect views based on roles. Most importantly allows you to decouple accessibility logic from models and views in a clean human-readable way.
+
 ## Django REST Framework API Key
 
 The [Django REST Framework API Key][djangorestframework-api-key] package provides permissions classes, models and helpers to add API key authorization to your API. It can be used to authorize internal or third-party backends and services (i.e. _machines_) which do not have a user account. API keys are stored securely using Django's password hashing infrastructure, and they can be viewed, edited and revoked at anytime in the Django admin.
@@ -349,6 +353,7 @@ The [Django Rest Framework PSQ][drf-psq] package is an extension that gives supp
 [rest-condition]: https://github.com/caxap/rest_condition
 [dry-rest-permissions]: https://github.com/FJNR-inc/dry-rest-permissions
 [django-rest-framework-roles]: https://github.com/computer-lab/django-rest-framework-roles
+[rest-framework-roles]: https://github.com/Pithikos/rest-framework-roles
 [djangorestframework-api-key]: https://florimondmanca.github.io/djangorestframework-api-key/
 [django-rest-framework-role-filters]: https://github.com/allisson/django-rest-framework-role-filters
 [django-rest-framework-guardian]: https://github.com/rpkilby/django-rest-framework-guardian
