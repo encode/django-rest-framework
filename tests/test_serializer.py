@@ -61,7 +61,7 @@ class TestFieldImports:
 # -----------------------------
 
 class TestSerializer:
-    def setup(self):
+    def setup_method(self):
         class ExampleSerializer(serializers.Serializer):
             char = serializers.CharField()
             integer = serializers.IntegerField()
@@ -240,7 +240,7 @@ class TestValidateMethod:
 
 
 class TestBaseSerializer:
-    def setup(self):
+    def setup_method(self):
         class ExampleSerializer(serializers.BaseSerializer):
             def to_representation(self, obj):
                 return {
@@ -337,7 +337,7 @@ class TestStarredSource:
         'nested2': {'c': 3, 'd': 4}
     }
 
-    def setup(self):
+    def setup_method(self):
         class NestedSerializer1(serializers.Serializer):
             a = serializers.IntegerField()
             b = serializers.IntegerField()
@@ -463,7 +463,7 @@ class TestNotRequiredOutput:
 
 
 class TestDefaultOutput:
-    def setup(self):
+    def setup_method(self):
         class ExampleSerializer(serializers.Serializer):
             has_default = serializers.CharField(default='x')
             has_default_callable = serializers.CharField(default=lambda: 'y')
@@ -584,7 +584,7 @@ class TestCacheSerializerData:
 
 
 class TestDefaultInclusions:
-    def setup(self):
+    def setup_method(self):
         class ExampleSerializer(serializers.Serializer):
             char = serializers.CharField(default='abc')
             integer = serializers.IntegerField()
@@ -612,7 +612,7 @@ class TestDefaultInclusions:
 
 
 class TestSerializerValidationWithCompiledRegexField:
-    def setup(self):
+    def setup_method(self):
         class ExampleSerializer(serializers.Serializer):
             name = serializers.RegexField(re.compile(r'\d'), required=True)
         self.Serializer = ExampleSerializer
@@ -641,7 +641,7 @@ class Test2555Regression:
 
 
 class Test4606Regression:
-    def setup(self):
+    def setup_method(self):
         class ExampleSerializer(serializers.Serializer):
             name = serializers.CharField(required=True)
             choices = serializers.CharField(required=True)

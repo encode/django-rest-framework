@@ -9,7 +9,7 @@ from rest_framework.serializers import raise_errors_on_nested_writes
 
 
 class TestNestedSerializer:
-    def setup(self):
+    def setup_method(self):
         class NestedSerializer(serializers.Serializer):
             one = serializers.IntegerField(max_value=10)
             two = serializers.IntegerField(max_value=10)
@@ -54,7 +54,7 @@ class TestNestedSerializer:
 
 
 class TestNotRequiredNestedSerializer:
-    def setup(self):
+    def setup_method(self):
         class NestedSerializer(serializers.Serializer):
             one = serializers.IntegerField(max_value=10)
 
@@ -83,7 +83,7 @@ class TestNotRequiredNestedSerializer:
 
 
 class TestNestedSerializerWithMany:
-    def setup(self):
+    def setup_method(self):
         class NestedSerializer(serializers.Serializer):
             example = serializers.IntegerField(max_value=10)
 
@@ -181,7 +181,7 @@ class TestNestedSerializerWithMany:
 
 
 class TestNestedSerializerWithList:
-    def setup(self):
+    def setup_method(self):
         class NestedSerializer(serializers.Serializer):
             example = serializers.MultipleChoiceField(choices=[1, 2, 3])
 
@@ -210,7 +210,7 @@ class TestNestedSerializerWithList:
 
 
 class TestNotRequiredNestedSerializerWithMany:
-    def setup(self):
+    def setup_method(self):
         class NestedSerializer(serializers.Serializer):
             one = serializers.IntegerField(max_value=10)
 
