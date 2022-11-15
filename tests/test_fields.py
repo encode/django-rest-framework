@@ -239,7 +239,7 @@ class TestSource:
 
 
 class TestReadOnly:
-    def setup(self):
+    def setup_method(self):
         class TestSerializer(serializers.Serializer):
             read_only = serializers.ReadOnlyField(default="789")
             writable = serializers.IntegerField()
@@ -271,7 +271,7 @@ class TestReadOnly:
 
 
 class TestWriteOnly:
-    def setup(self):
+    def setup_method(self):
         class TestSerializer(serializers.Serializer):
             write_only = serializers.IntegerField(write_only=True)
             readable = serializers.IntegerField()
@@ -296,7 +296,7 @@ class TestWriteOnly:
 
 
 class TestInitial:
-    def setup(self):
+    def setup_method(self):
         class TestSerializer(serializers.Serializer):
             initial_field = serializers.IntegerField(initial=123)
             blank_field = serializers.IntegerField()
@@ -313,7 +313,7 @@ class TestInitial:
 
 
 class TestInitialWithCallable:
-    def setup(self):
+    def setup_method(self):
         def initial_value():
             return 123
 
@@ -331,7 +331,7 @@ class TestInitialWithCallable:
 
 
 class TestLabel:
-    def setup(self):
+    def setup_method(self):
         class TestSerializer(serializers.Serializer):
             labeled = serializers.IntegerField(label='My label')
         self.serializer = TestSerializer()
@@ -345,7 +345,7 @@ class TestLabel:
 
 
 class TestInvalidErrorKey:
-    def setup(self):
+    def setup_method(self):
         class ExampleField(serializers.Field):
             def to_native(self, data):
                 self.fail('incorrect')
@@ -539,7 +539,7 @@ class TestHTMLInput:
 
 
 class TestCreateOnlyDefault:
-    def setup(self):
+    def setup_method(self):
         default = serializers.CreateOnlyDefault('2001-01-01')
 
         class TestSerializer(serializers.Serializer):

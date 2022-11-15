@@ -18,7 +18,7 @@ class TestPaginationIntegration:
     Integration tests.
     """
 
-    def setup(self):
+    def setup_method(self):
         class PassThroughSerializer(serializers.BaseSerializer):
             def to_representation(self, item):
                 return item
@@ -140,7 +140,7 @@ class TestPaginationDisabledIntegration:
     Integration tests for disabled pagination.
     """
 
-    def setup(self):
+    def setup_method(self):
         class PassThroughSerializer(serializers.BaseSerializer):
             def to_representation(self, item):
                 return item
@@ -163,7 +163,7 @@ class TestPageNumberPagination:
     Unit tests for `pagination.PageNumberPagination`.
     """
 
-    def setup(self):
+    def setup_method(self):
         class ExamplePagination(pagination.PageNumberPagination):
             page_size = 5
 
@@ -302,7 +302,7 @@ class TestPageNumberPaginationOverride:
     the Django Paginator Class is overridden.
     """
 
-    def setup(self):
+    def setup_method(self):
         class OverriddenDjangoPaginator(DjangoPaginator):
             # override the count in our overridden Django Paginator
             # we will only return one page, with one item
@@ -358,7 +358,7 @@ class TestLimitOffset:
     Unit tests for `pagination.LimitOffsetPagination`.
     """
 
-    def setup(self):
+    def setup_method(self):
         class ExamplePagination(pagination.LimitOffsetPagination):
             default_limit = 10
             max_limit = 15
@@ -941,7 +941,7 @@ class TestCursorPagination(CursorPaginationTestsMixin):
     Unit tests for `pagination.CursorPagination`.
     """
 
-    def setup(self):
+    def setup_method(self):
         class MockObject:
             def __init__(self, idx):
                 self.created = idx
