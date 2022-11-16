@@ -603,6 +603,7 @@ class CursorPagination(BasePagination):
         if not self.page_size:
             return None
 
+        self.request = request
         self.base_url = request.build_absolute_uri()
         self.ordering = self.get_ordering(request, queryset, view)
 
