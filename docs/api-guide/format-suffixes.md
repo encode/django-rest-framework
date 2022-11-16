@@ -1,4 +1,7 @@
-source: urlpatterns.py
+---
+source:
+    - urlpatterns.py
+---
 
 # Format suffixes
 
@@ -20,8 +23,8 @@ Returns a URL pattern list which includes format suffix patterns appended to eac
 Arguments:
 
 * **urlpatterns**: Required.  A URL pattern list.
-* **suffix_required**:  Optional.  A boolean indicating if suffixes in the URLs should be optional or mandatory.  Defaults to `False`, meaning that suffixes are optional by default.
-* **allowed**:  Optional.  A list or tuple of valid format suffixes.  If not provided, a wildcard format suffix pattern will be used.
+* **suffix_required**: Optional.  A boolean indicating if suffixes in the URLs should be optional or mandatory.  Defaults to `False`, meaning that suffixes are optional by default.
+* **allowed**: Optional.  A list or tuple of valid format suffixes.  If not provided, a wildcard format suffix pattern will be used.
 
 Example:
 
@@ -29,16 +32,16 @@ Example:
     from blog import views
 
     urlpatterns = [
-        url(r'^/$', views.apt_root),
-        url(r'^comments/$', views.comment_list),
-        url(r'^comments/(?P<pk>[0-9]+)/$', views.comment_detail)
+        path('', views.apt_root),
+        path('comments/', views.comment_list),
+        path('comments/<int:pk>/', views.comment_detail)
     ]
 
     urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'html'])
 
 When using `format_suffix_patterns`, you must make sure to add the `'format'` keyword argument to the corresponding views.  For example:
 
-    @api_view(('GET', 'POST'))
+    @api_view(['GET', 'POST'])
     def comment_list(request, format=None):
         # do stuff...
 
@@ -59,7 +62,7 @@ Also note that `format_suffix_patterns` does not support descending into `includ
 
 If using the `i18n_patterns` function provided by Django, as well as `format_suffix_patterns` you should make sure that the `i18n_patterns` function is applied as the final, or outermost function. For example:
 
-    url patterns = [
+    urlpatterns = [
         …
     ]
 

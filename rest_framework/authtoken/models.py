@@ -3,11 +3,9 @@ import os
 
 from django.conf import settings
 from django.db import models
-from django.utils.encoding import python_2_unicode_compatible
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 
-@python_2_unicode_compatible
 class Token(models.Model):
     """
     The default authorization token model.
@@ -32,10 +30,25 @@ class Token(models.Model):
     def save(self, *args, **kwargs):
         if not self.key:
             self.key = self.generate_key()
-        return super(Token, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
-    def generate_key(self):
+    @classmethod
+    def generate_key(cls):
         return binascii.hexlify(os.urandom(20)).decode()
 
     def __str__(self):
         return self.key
+
+
+class TokenProxy(Token):
+    """
+    Proxy mapping pk to user pk for use in admin.
+    """
+    @property
+    def pk(self):
+        return self.user_id
+
+    class Meta:
+        proxy = 'rest_framework.authtoken' in settings.INSTALLED_APPS
+        abstract = 'rest_framework.authtoken' not in settings.INSTALLED_APPS
+        verbose_name = "token"

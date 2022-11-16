@@ -4,11 +4,9 @@ it is initialized with unrendered data, instead of a pre-rendered string.
 
 The appropriate renderer is called during Django's template response rendering.
 """
-from __future__ import unicode_literals
+from http.client import responses
 
 from django.template.response import SimpleTemplateResponse
-from django.utils import six
-from django.utils.six.moves.http_client import responses
 
 from rest_framework.serializers import Serializer
 
@@ -29,7 +27,7 @@ class Response(SimpleTemplateResponse):
         Setting 'renderer' and 'media_type' will typically be deferred,
         For example being set automatically by the `APIView`.
         """
-        super(Response, self).__init__(None, status=status)
+        super().__init__(None, status=status)
 
         if isinstance(data, Serializer):
             msg = (
@@ -45,7 +43,7 @@ class Response(SimpleTemplateResponse):
         self.content_type = content_type
 
         if headers:
-            for name, value in six.iteritems(headers):
+            for name, value in headers.items():
                 self[name] = value
 
     @property
@@ -64,18 +62,18 @@ class Response(SimpleTemplateResponse):
         content_type = self.content_type
 
         if content_type is None and charset is not None:
-            content_type = "{0}; charset={1}".format(media_type, charset)
+            content_type = "{}; charset={}".format(media_type, charset)
         elif content_type is None:
             content_type = media_type
         self['Content-Type'] = content_type
 
         ret = renderer.render(self.data, accepted_media_type, context)
-        if isinstance(ret, six.text_type):
+        if isinstance(ret, str):
             assert charset, (
                 'renderer returned unicode, and did not specify '
                 'a charset value.'
             )
-            return bytes(ret.encode(charset))
+            return ret.encode(charset)
 
         if not ret:
             del self['Content-Type']
@@ -94,7 +92,7 @@ class Response(SimpleTemplateResponse):
         """
         Remove attributes from the response that shouldn't be cached.
         """
-        state = super(Response, self).__getstate__()
+        state = super().__getstate__()
         for key in (
             'accepted_renderer', 'renderer_context', 'resolver_match',
             'client', 'request', 'json', 'wsgi_request'

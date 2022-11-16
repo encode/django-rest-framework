@@ -1,9 +1,8 @@
-from __future__ import unicode_literals
+from django.urls import path
 
-from django.conf.urls import url
-
-from .views import MockView
+from .views import BasicModelWithUsersViewSet, MockView
 
 urlpatterns = [
-    url(r'^$', MockView.as_view()),
+    path('', MockView.as_view()),
+    path('basicviewset', BasicModelWithUsersViewSet.as_view({'get': 'list'})),
 ]

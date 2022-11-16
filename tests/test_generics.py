@@ -1,13 +1,11 @@
-from __future__ import unicode_literals
-
 import pytest
 from django.db import models
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.test import TestCase
-from django.utils import six
 
 from rest_framework import generics, renderers, serializers, status
+from rest_framework.exceptions import ErrorDetail
 from rest_framework.response import Response
 from rest_framework.test import APIRequestFactory
 from tests.models import (
@@ -167,7 +165,7 @@ class TestRootView(TestCase):
         request = factory.post('/', data, HTTP_ACCEPT='text/html')
         response = self.view(request).render()
         expected_error = '<span class="help-block">Ensure this field has no more than 100 characters.</span>'
-        assert expected_error in response.rendered_content.decode('utf-8')
+        assert expected_error in response.rendered_content.decode()
 
 
 EXPECTED_QUERIES_FOR_PUT = 2
@@ -245,7 +243,7 @@ class TestInstanceView(TestCase):
         with self.assertNumQueries(2):
             response = self.view(request, pk=1).render()
         assert response.status_code == status.HTTP_204_NO_CONTENT
-        assert response.content == six.b('')
+        assert response.content == b''
         ids = [obj.id for obj in self.objects.all()]
         assert ids == [2, 3]
 
@@ -291,7 +289,7 @@ class TestInstanceView(TestCase):
         """
         data = {'text': 'foo'}
         filtered_out_pk = BasicModel.objects.filter(text='filtered out')[0].pk
-        request = factory.put('/{0}'.format(filtered_out_pk), data, format='json')
+        request = factory.put('/{}'.format(filtered_out_pk), data, format='json')
         response = self.view(request, pk=filtered_out_pk).render()
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
@@ -314,7 +312,7 @@ class TestInstanceView(TestCase):
         request = factory.put('/', data, HTTP_ACCEPT='text/html')
         response = self.view(request, pk=1).render()
         expected_error = '<span class="help-block">Ensure this field has no more than 100 characters.</span>'
-        assert expected_error in response.rendered_content.decode('utf-8')
+        assert expected_error in response.rendered_content.decode()
 
 
 class TestFKInstanceView(TestCase):
@@ -446,12 +444,12 @@ class TestM2MBrowsableAPI(TestCase):
         assert response.status_code == status.HTTP_200_OK
 
 
-class InclusiveFilterBackend(object):
+class InclusiveFilterBackend:
     def filter_queryset(self, request, queryset, view):
         return queryset.filter(text='foo')
 
 
-class ExclusiveFilterBackend(object):
+class ExclusiveFilterBackend:
     def filter_queryset(self, request, queryset, view):
         return queryset.filter(text='other')
 
@@ -522,7 +520,12 @@ class TestFilterBackendAppliedToViews(TestCase):
         request = factory.get('/1')
         response = instance_view(request, pk=1).render()
         assert response.status_code == status.HTTP_404_NOT_FOUND
-        assert response.data == {'detail': 'Not found.'}
+        assert response.data == {
+            'detail': ErrorDetail(
+                string='No BasicModel matches the given query.',
+                code='not_found'
+            )
+        }
 
     def test_get_instance_view_will_return_single_object_when_filter_does_not_exclude_it(self):
         """
@@ -541,7 +544,7 @@ class TestFilterBackendAppliedToViews(TestCase):
         view = DynamicSerializerView.as_view()
         request = factory.get('/')
         response = view(request).render()
-        content = response.content.decode('utf8')
+        content = response.content.decode()
         assert 'field_b' in content
         assert 'field_a' not in content
 
@@ -653,7 +656,7 @@ class ApiViewsTests(TestCase):
 
 class GetObjectOr404Tests(TestCase):
     def setUp(self):
-        super(GetObjectOr404Tests, self).setUp()
+        super().setUp()
         self.uuid_object = UUIDForeignKeyTarget.objects.create(name='bar')
 
     def test_get_object_or_404_with_valid_uuid(self):
@@ -665,3 +668,33 @@ class GetObjectOr404Tests(TestCase):
     def test_get_object_or_404_with_invalid_string_for_uuid(self):
         with pytest.raises(Http404):
             generics.get_object_or_404(UUIDForeignKeyTarget, pk='not-a-uuid')
+
+
+class TestSerializer(TestCase):
+
+    def test_serializer_class_not_provided(self):
+        class NoSerializerClass(generics.GenericAPIView):
+            pass
+
+        with pytest.raises(AssertionError) as excinfo:
+            NoSerializerClass().get_serializer_class()
+
+        assert str(excinfo.value) == (
+            "'NoSerializerClass' should either include a `serializer_class` "
+            "attribute, or override the `get_serializer_class()` method.")
+
+    def test_given_context_not_overridden(self):
+        context = object()
+
+        class View(generics.ListAPIView):
+            serializer_class = serializers.Serializer
+
+            def list(self, request):
+                response = Response()
+                response.serializer = self.get_serializer(context=context)
+                return response
+
+        response = View.as_view()(factory.get('/'))
+        serializer = response.serializer
+
+        assert serializer.context is context

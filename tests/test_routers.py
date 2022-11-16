@@ -1,19 +1,12 @@
-from __future__ import unicode_literals
-
-import warnings
 from collections import namedtuple
 
 import pytest
-from django.conf.urls import include, url
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.test import TestCase, override_settings
-from django.urls import resolve, reverse
+from django.urls import include, path, resolve, reverse
 
-from rest_framework import (
-    RemovedInDRF311Warning, permissions, serializers, viewsets
-)
-from rest_framework.compat import get_regex_pattern
+from rest_framework import permissions, serializers, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.routers import DefaultRouter, SimpleRouter
@@ -121,10 +114,10 @@ class BasicViewSet(viewsets.ViewSet):
 
 class TestSimpleRouter(URLPatternsTestCase, TestCase):
     router = SimpleRouter()
-    router.register('basics', BasicViewSet, base_name='basic')
+    router.register('basics', BasicViewSet, basename='basic')
 
     urlpatterns = [
-        url(r'^api/', include(router.urls)),
+        path('api/', include(router.urls)),
     ]
 
     def setUp(self):
@@ -169,8 +162,8 @@ class TestSimpleRouter(URLPatternsTestCase, TestCase):
 
 class TestRootView(URLPatternsTestCase, TestCase):
     urlpatterns = [
-        url(r'^non-namespaced/', include(namespaced_router.urls)),
-        url(r'^namespaced/', include((namespaced_router.urls, 'namespaced'), namespace='namespaced')),
+        path('non-namespaced/', include(namespaced_router.urls)),
+        path('namespaced/', include((namespaced_router.urls, 'namespaced'), namespace='namespaced')),
     ]
 
     def test_retrieve_namespaced_root(self):
@@ -187,8 +180,8 @@ class TestCustomLookupFields(URLPatternsTestCase, TestCase):
     Ensure that custom lookup fields are correctly routed.
     """
     urlpatterns = [
-        url(r'^example/', include(notes_router.urls)),
-        url(r'^example2/', include(kwarged_notes_router.urls)),
+        path('example/', include(notes_router.urls)),
+        path('example2/', include(kwarged_notes_router.urls)),
     ]
 
     def setUp(self):
@@ -197,8 +190,7 @@ class TestCustomLookupFields(URLPatternsTestCase, TestCase):
 
     def test_custom_lookup_field_route(self):
         detail_route = notes_router.urls[-1]
-        detail_url_pattern = get_regex_pattern(detail_route)
-        assert '<uuid>' in detail_url_pattern
+        assert '<uuid>' in detail_route.pattern.regex.pattern
 
     def test_retrieve_lookup_field_list_view(self):
         response = self.client.get('/example/notes/')
@@ -234,7 +226,7 @@ class TestLookupValueRegex(TestCase):
     def test_urls_limited_by_lookup_value_regex(self):
         expected = ['^notes/$', '^notes/(?P<uuid>[0-9a-f]{32})/$']
         for idx in range(len(expected)):
-            assert expected[idx] == get_regex_pattern(self.urls[idx])
+            assert expected[idx] == self.urls[idx].pattern.regex.pattern
 
 
 @override_settings(ROOT_URLCONF='tests.test_routers')
@@ -245,8 +237,8 @@ class TestLookupUrlKwargs(URLPatternsTestCase, TestCase):
     Setup a deep lookup_field, but map it to a simple URL kwarg.
     """
     urlpatterns = [
-        url(r'^example/', include(notes_router.urls)),
-        url(r'^example2/', include(kwarged_notes_router.urls)),
+        path('example/', include(notes_router.urls)),
+        path('example2/', include(kwarged_notes_router.urls)),
     ]
 
     def setUp(self):
@@ -254,8 +246,7 @@ class TestLookupUrlKwargs(URLPatternsTestCase, TestCase):
 
     def test_custom_lookup_url_kwarg_route(self):
         detail_route = kwarged_notes_router.urls[-1]
-        detail_url_pattern = get_regex_pattern(detail_route)
-        assert '^notes/(?P<text>' in detail_url_pattern
+        assert '^notes/(?P<text>' in detail_route.pattern.regex.pattern
 
     def test_retrieve_lookup_url_kwarg_detail_view(self):
         response = self.client.get('/example2/notes/fo/')
@@ -278,7 +269,7 @@ class TestTrailingSlashIncluded(TestCase):
     def test_urls_have_trailing_slash_by_default(self):
         expected = ['^notes/$', '^notes/(?P<pk>[^/.]+)/$']
         for idx in range(len(expected)):
-            assert expected[idx] == get_regex_pattern(self.urls[idx])
+            assert expected[idx] == self.urls[idx].pattern.regex.pattern
 
 
 class TestTrailingSlashRemoved(TestCase):
@@ -293,7 +284,7 @@ class TestTrailingSlashRemoved(TestCase):
     def test_urls_can_have_trailing_slash_removed(self):
         expected = ['^notes$', '^notes/(?P<pk>[^/.]+)$']
         for idx in range(len(expected)):
-            assert expected[idx] == get_regex_pattern(self.urls[idx])
+            assert expected[idx] == self.urls[idx].pattern.regex.pattern
 
 
 class TestNameableRoot(TestCase):
@@ -434,43 +425,43 @@ class TestDynamicListAndDetailRouter(TestCase):
 
 class TestEmptyPrefix(URLPatternsTestCase, TestCase):
     urlpatterns = [
-        url(r'^empty-prefix/', include(empty_prefix_router.urls)),
+        path('empty-prefix/', include(empty_prefix_router.urls)),
     ]
 
     def test_empty_prefix_list(self):
         response = self.client.get('/empty-prefix/')
         assert response.status_code == 200
-        assert json.loads(response.content.decode('utf-8')) == [{'uuid': '111', 'text': 'First'},
-                                                                {'uuid': '222', 'text': 'Second'}]
+        assert json.loads(response.content.decode()) == [{'uuid': '111', 'text': 'First'},
+                                                         {'uuid': '222', 'text': 'Second'}]
 
     def test_empty_prefix_detail(self):
         response = self.client.get('/empty-prefix/1/')
         assert response.status_code == 200
-        assert json.loads(response.content.decode('utf-8')) == {'uuid': '111', 'text': 'First'}
+        assert json.loads(response.content.decode()) == {'uuid': '111', 'text': 'First'}
 
 
 class TestRegexUrlPath(URLPatternsTestCase, TestCase):
     urlpatterns = [
-        url(r'^regex/', include(regex_url_path_router.urls)),
+        path('regex/', include(regex_url_path_router.urls)),
     ]
 
     def test_regex_url_path_list(self):
         kwarg = '1234'
         response = self.client.get('/regex/list/{}/'.format(kwarg))
         assert response.status_code == 200
-        assert json.loads(response.content.decode('utf-8')) == {'kwarg': kwarg}
+        assert json.loads(response.content.decode()) == {'kwarg': kwarg}
 
     def test_regex_url_path_detail(self):
         pk = '1'
         kwarg = '1234'
         response = self.client.get('/regex/{}/detail/{}/'.format(pk, kwarg))
         assert response.status_code == 200
-        assert json.loads(response.content.decode('utf-8')) == {'pk': pk, 'kwarg': kwarg}
+        assert json.loads(response.content.decode()) == {'pk': pk, 'kwarg': kwarg}
 
 
 class TestViewInitkwargs(URLPatternsTestCase, TestCase):
     urlpatterns = [
-        url(r'^example/', include(notes_router.urls)),
+        path('example/', include(notes_router.urls)),
     ]
 
     def test_suffix(self):
@@ -490,71 +481,3 @@ class TestViewInitkwargs(URLPatternsTestCase, TestCase):
         initkwargs = match.func.initkwargs
 
         assert initkwargs['basename'] == 'routertestmodel'
-
-
-class TestBaseNameRename(TestCase):
-
-    def test_base_name_and_basename_assertion(self):
-        router = SimpleRouter()
-
-        msg = "Do not provide both the `basename` and `base_name` arguments."
-        with warnings.catch_warnings(record=True) as w, \
-                self.assertRaisesMessage(AssertionError, msg):
-            warnings.simplefilter('always')
-            router.register('mock', MockViewSet, 'mock', base_name='mock')
-
-        msg = "The `base_name` argument is pending deprecation in favor of `basename`."
-        assert len(w) == 1
-        assert str(w[0].message) == msg
-
-    def test_base_name_argument_deprecation(self):
-        router = SimpleRouter()
-
-        with pytest.warns(RemovedInDRF311Warning) as w:
-            warnings.simplefilter('always')
-            router.register('mock', MockViewSet, base_name='mock')
-
-        msg = "The `base_name` argument is pending deprecation in favor of `basename`."
-        assert len(w) == 1
-        assert str(w[0].message) == msg
-        assert router.registry == [
-            ('mock', MockViewSet, 'mock'),
-        ]
-
-    def test_basename_argument_no_warnings(self):
-        router = SimpleRouter()
-
-        with warnings.catch_warnings(record=True) as w:
-            warnings.simplefilter('always')
-            router.register('mock', MockViewSet, basename='mock')
-
-        assert len(w) == 0
-        assert router.registry == [
-            ('mock', MockViewSet, 'mock'),
-        ]
-
-    def test_get_default_base_name_deprecation(self):
-        msg = "`CustomRouter.get_default_base_name` method should be renamed `get_default_basename`."
-
-        # Class definition should raise a warning
-        with pytest.warns(RemovedInDRF311Warning) as w:
-            warnings.simplefilter('always')
-
-            class CustomRouter(SimpleRouter):
-                def get_default_base_name(self, viewset):
-                    return 'foo'
-
-        assert len(w) == 1
-        assert str(w[0].message) == msg
-
-        # Deprecated method implementation should still be called
-        with warnings.catch_warnings(record=True) as w:
-            warnings.simplefilter('always')
-
-            router = CustomRouter()
-            router.register('mock', MockViewSet)
-
-        assert len(w) == 0
-        assert router.registry == [
-            ('mock', MockViewSet, 'foo'),
-        ]

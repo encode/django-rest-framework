@@ -1,8 +1,6 @@
 """
 Generic views that provide commonly needed behaviour.
 """
-from __future__ import unicode_literals
-
 from django.core.exceptions import ValidationError
 from django.db.models.query import QuerySet
 from django.http import Http404
@@ -108,7 +106,7 @@ class GenericAPIView(views.APIView):
         deserializing input, and for serializing output.
         """
         serializer_class = self.get_serializer_class()
-        kwargs['context'] = self.get_serializer_context()
+        kwargs.setdefault('context', self.get_serializer_context())
         return serializer_class(*args, **kwargs)
 
     def get_serializer_class(self):

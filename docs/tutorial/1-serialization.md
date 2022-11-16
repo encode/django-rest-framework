@@ -8,24 +8,24 @@ The tutorial is fairly in-depth, so you should probably get a cookie and a cup o
 
 ---
 
-**Note**: The code for this tutorial is available in the [tomchristie/rest-framework-tutorial][repo] repository on GitHub.  The completed implementation is also online as a sandbox version for testing, [available here][sandbox].
+**Note**: The code for this tutorial is available in the [encode/rest-framework-tutorial][repo] repository on GitHub.  The completed implementation is also online as a sandbox version for testing, [available here][sandbox].
 
 ---
 
 ## Setting up a new environment
 
-Before we do anything else we'll create a new virtual environment, using [virtualenv].  This will make sure our package configuration is kept nicely isolated from any other projects we're working on.
+Before we do anything else we'll create a new virtual environment, using [venv]. This will make sure our package configuration is kept nicely isolated from any other projects we're working on.
 
-    virtualenv env
+    python3 -m venv env
     source env/bin/activate
 
-Now that we're inside a virtualenv environment, we can install our package requirements.
+Now that we're inside a virtual environment, we can install our package requirements.
 
     pip install django
     pip install djangorestframework
     pip install pygments  # We'll be using this for the code highlighting
 
-**Note:** To exit the virtualenv environment at any time, just type `deactivate`.  For more information see the [virtualenv documentation][virtualenv].
+**Note:** To exit the virtual environment at any time, just type `deactivate`.  For more information see the [venv documentation][venv].
 
 ## Getting started
 
@@ -42,11 +42,11 @@ Once that's done we can create an app that we'll use to create a simple Web API.
 
 We'll need to add our new `snippets` app and the `rest_framework` app to `INSTALLED_APPS`. Let's edit the `tutorial/settings.py` file:
 
-    INSTALLED_APPS = (
+    INSTALLED_APPS = [
         ...
         'rest_framework',
-        'snippets.apps.SnippetsConfig',
-    )
+        'snippets',
+    ]
 
 Okay, we're ready to roll.
 
@@ -60,7 +60,7 @@ For the purposes of this tutorial we're going to start by creating a simple `Sni
 
     LEXERS = [item for item in get_all_lexers() if item[1]]
     LANGUAGE_CHOICES = sorted([(item[1][0], item[0]) for item in LEXERS])
-    STYLE_CHOICES = sorted((item, item) for item in get_all_styles())
+    STYLE_CHOICES = sorted([(item, item) for item in get_all_styles()])
 
 
     class Snippet(models.Model):
@@ -72,12 +72,12 @@ For the purposes of this tutorial we're going to start by creating a simple `Sni
         style = models.CharField(choices=STYLE_CHOICES, default='friendly', max_length=100)
 
         class Meta:
-            ordering = ('created',)
+            ordering = ['created']
 
 We'll also need to create an initial migration for our snippet model, and sync the database for the first time.
 
     python manage.py makemigrations snippets
-    python manage.py migrate
+    python manage.py migrate snippets
 
 ## Creating a Serializer class
 
@@ -179,7 +179,7 @@ We can also serialize querysets instead of model instances.  To do so we simply 
 
 ## Using ModelSerializers
 
-Our `SnippetSerializer` class is replicating a lot of information that's also contained in the `Snippet` model.  It would be nice if we could keep our code a bit  more concise.
+Our `SnippetSerializer` class is replicating a lot of information that's also contained in the `Snippet` model.  It would be nice if we could keep our code a bit more concise.
 
 In the same way that Django provides both `Form` classes and `ModelForm` classes, REST framework includes both `Serializer` classes, and `ModelSerializer` classes.
 
@@ -189,7 +189,7 @@ Open the file `snippets/serializers.py` again, and replace the `SnippetSerialize
     class SnippetSerializer(serializers.ModelSerializer):
         class Meta:
             model = Snippet
-            fields = ('id', 'title', 'code', 'linenos', 'language', 'style')
+            fields = ['id', 'title', 'code', 'linenos', 'language', 'style']
 
 One nice property that serializers have is that you can inspect all the fields in a serializer instance, by printing its representation. Open the Django shell with `python manage.py shell`, then try the following:
 
@@ -218,7 +218,6 @@ Edit the `snippets/views.py` file, and add the following.
 
     from django.http import HttpResponse, JsonResponse
     from django.views.decorators.csrf import csrf_exempt
-    from rest_framework.renderers import JSONRenderer
     from rest_framework.parsers import JSONParser
     from snippets.models import Snippet
     from snippets.serializers import SnippetSerializer
@@ -308,8 +307,8 @@ Quit out of the shell...
     Validating models...
 
     0 errors found
-    Django version 1.11, using settings 'tutorial.settings'
-    Development server is running at http://127.0.0.1:8000/
+    Django version 4.0, using settings 'tutorial.settings'
+    Starting Development server at http://127.0.0.1:8000/
     Quit the server with CONTROL-C.
 
 In another terminal window, we can test the server.
@@ -373,7 +372,7 @@ We'll see how we can start to improve things in [part 2 of the tutorial][tut-2].
 [quickstart]: quickstart.md
 [repo]: https://github.com/encode/rest-framework-tutorial
 [sandbox]: https://restframework.herokuapp.com/
-[virtualenv]: http://www.virtualenv.org/en/latest/index.html
+[venv]: https://docs.python.org/3/library/venv.html
 [tut-2]: 2-requests-and-responses.md
-[httpie]: https://github.com/jakubroztocil/httpie#installation
+[httpie]: https://github.com/httpie/httpie#installation
 [curl]: https://curl.haxx.se/

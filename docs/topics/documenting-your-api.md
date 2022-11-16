@@ -4,176 +4,125 @@
 >
 > &mdash; Roy Fielding, [REST APIs must be hypertext driven][cite]
 
-REST framework provides built-in support for API documentation. There are also a number of great third-party documentation tools available.
+REST framework provides built-in support for generating OpenAPI schemas, which
+can be used with tools that allow you to build API documentation.
 
-## Built-in API documentation
+There are also a number of great third-party documentation packages available.
 
-The built-in API documentation includes:
+## Generating documentation from OpenAPI schemas
 
-* Documentation of API endpoints.
-* Automatically generated code samples for each of the available API client libraries.
-* Support for API interaction.
+There are a number of packages available that allow you to generate HTML
+documentation pages from OpenAPI schemas.
 
-### Installation
+Two popular options are [Swagger UI][swagger-ui] and [ReDoc][redoc].
 
-The `coreapi` library is required as a dependency for the API docs. Make sure
-to install the latest version. The `pygments` and `markdown` libraries
-are optional but recommended.
+Both require little more than the location of your static schema file or
+dynamic `SchemaView` endpoint.
 
-To install the API documentation, you'll need to include it in your project's URLconf:
+### A minimal example with Swagger UI
 
-    from rest_framework.documentation import include_docs_urls
+Assuming you've followed the example from the schemas documentation for routing
+a dynamic `SchemaView`, a minimal Django template for using Swagger UI might be
+this:
 
-    urlpatterns = [
-        ...
-        url(r'^docs/', include_docs_urls(title='My API title'))
-    ]
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Swagger</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="//unpkg.com/swagger-ui-dist@3/swagger-ui.css" />
+  </head>
+  <body>
+    <div id="swagger-ui"></div>
+    <script src="//unpkg.com/swagger-ui-dist@3/swagger-ui-bundle.js"></script>
+    <script>
+    const ui = SwaggerUIBundle({
+        url: "{% url schema_url %}",
+        dom_id: '#swagger-ui',
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIBundle.SwaggerUIStandalonePreset
+        ],
+        layout: "BaseLayout",
+        requestInterceptor: (request) => {
+          request.headers['X-CSRFToken'] = "{{ csrf_token }}"
+          return request;
+        }
+      })
+    </script>
+  </body>
+</html>
+```
 
-This will include two different views:
+Save this in your templates folder as `swagger-ui.html`. Then route a
+`TemplateView` in your project's URL conf:
 
-  * `/docs/` - The documentation page itself.
-  * `/docs/schema.js` - A JavaScript resource that exposes the API schema.
+```python
+from django.views.generic import TemplateView
 
----
+urlpatterns = [
+    # ...
+    # Route TemplateView to serve Swagger UI template.
+    #   * Provide `extra_context` with view name of `SchemaView`.
+    path('swagger-ui/', TemplateView.as_view(
+        template_name='swagger-ui.html',
+        extra_context={'schema_url':'openapi-schema'}
+    ), name='swagger-ui'),
+]
+```
 
-**Note**: By default `include_docs_urls` configures the underlying `SchemaView` to generate _public_ schemas.
-This means that views will not be instantiated with a `request` instance. i.e. Inside the view `self.request` will be `None`.
+See the [Swagger UI documentation][swagger-ui] for advanced usage.
 
-To be compatible with this behaviour, methods (such as `get_serializer` or `get_serializer_class` etc.) which inspect `self.request` or, particularly, `self.request.user` may need to be adjusted to handle this case.
+### A minimal example with ReDoc.
 
-You may ensure views are given a `request` instance by calling `include_docs_urls` with `public=False`:
+Assuming you've followed the example from the schemas documentation for routing
+a dynamic `SchemaView`, a minimal Django template for using ReDoc might be
+this:
 
-    from rest_framework.documentation import include_docs_urls
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ReDoc</title>
+    <!-- needed for adaptive design -->
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">
+    <!-- ReDoc doesn't change outer page styles -->
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <redoc spec-url='{% url schema_url %}'></redoc>
+    <script src="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"> </script>
+  </body>
+</html>
+```
 
-    urlpatterns = [
-        ...
-        # Generate schema with valid `request` instance:
-        url(r'^docs/', include_docs_urls(title='My API title', public=False))
-    ]
+Save this in your templates folder as `redoc.html`. Then route a `TemplateView`
+in your project's URL conf:
 
+```python
+from django.views.generic import TemplateView
 
----
+urlpatterns = [
+    # ...
+    # Route TemplateView to serve the ReDoc template.
+    #   * Provide `extra_context` with view name of `SchemaView`.
+    path('redoc/', TemplateView.as_view(
+        template_name='redoc.html',
+        extra_context={'schema_url':'openapi-schema'}
+    ), name='redoc'),
+]
+```
 
-
-### Documenting your views
-
-You can document your views by including docstrings that describe each of the available actions.
-For example:
-
-    class UserList(generics.ListAPIView):
-        """
-        Return a list of all the existing users.
-        """
-
-If a view supports multiple methods, you should split your documentation using `method:` style delimiters.
-
-    class UserList(generics.ListCreateAPIView):
-        """
-        get:
-        Return a list of all the existing users.
-
-        post:
-        Create a new user instance.
-        """
-
-When using viewsets, you should use the relevant action names as delimiters.
-
-    class UserViewSet(viewsets.ModelViewSet):
-        """
-        retrieve:
-        Return the given user.
-
-        list:
-        Return a list of all the existing users.
-
-        create:
-        Create a new user instance.
-        """
-
-Custom actions on viewsets can also be documented in a similar way using the method names
-as delimiters or by attaching the documentation to action mapping methods.
-    
-    class UserViewSet(viewsets.ModelViewset):
-        ...
-        
-        @action(detail=False, methods=['get', 'post'])
-        def some_action(self, request, *args, **kwargs):
-            """
-            get:
-            A description of the get method on the custom action.
-    
-            post:
-            A description of the post method on the custom action.
-            """
-
-        @some_action.mapping.put
-        def put_some_action():
-            """
-            A description of the put method on the custom action.
-            """
-
-
-### `documentation` API Reference
-
-The `rest_framework.documentation` module provides three helper functions to help configure the interactive API documentation, `include_docs_urls` (usage shown above), `get_docs_view` and `get_schemajs_view`.
-
- `include_docs_urls` employs `get_docs_view` and `get_schemajs_view` to generate the url patterns for the documentation page and JavaScript resource that exposes the API schema respectively. They expose the following options for customisation. (`get_docs_view` and `get_schemajs_view` ultimately call `rest_frameworks.schemas.get_schema_view()`, see the Schemas docs for more options there.)
-
-#### `include_docs_urls`
-
-* `title`: Default `None`. May be used to provide a descriptive title for the schema definition.
-* `description`: Default `None`. May be used to provide a description for the schema definition.
-* `schema_url`: Default `None`. May be used to pass a canonical base URL for the schema.
-* `public`: Default `True`. Should the schema be considered _public_? If `True` schema is generated without a `request` instance being passed to views.
-* `patterns`: Default `None`. A list of URLs to inspect when generating the schema. If `None` project's URL conf will be used.
-* `generator_class`: Default `rest_framework.schemas.SchemaGenerator`. May be used to specify a `SchemaGenerator` subclass to be passed to the `SchemaView`.
-* `authentication_classes`: Default `api_settings.DEFAULT_AUTHENTICATION_CLASSES`. May be used to pass custom authentication classes to the `SchemaView`.
-* `permission_classes`: Default `api_settings.DEFAULT_PERMISSION_CLASSES` May be used to pass custom permission classes to the `SchemaView`.
-* `renderer_classes`: Default `None`. May be used to pass custom renderer classes to the `SchemaView`.
-
-#### `get_docs_view`
-
-* `title`: Default `None`. May be used to provide a descriptive title for the schema definition.
-* `description`: Default `None`. May be used to provide a description for the schema definition.
-* `schema_url`: Default `None`. May be used to pass a canonical base URL for the schema.
-* `public`: Default `True`. If `True` schema is generated without a `request` instance being passed to views.
-* `patterns`: Default `None`. A list of URLs to inspect when generating the schema. If `None` project's URL conf will be used.
-* `generator_class`: Default `rest_framework.schemas.SchemaGenerator`. May be used to specify a `SchemaGenerator` subclass to be passed to the `SchemaView`.
-* `authentication_classes`: Default `api_settings.DEFAULT_AUTHENTICATION_CLASSES`. May be used to pass custom authentication classes to the `SchemaView`.
-* `permission_classes`: Default `api_settings.DEFAULT_PERMISSION_CLASSES`. May be used to pass custom permission classes to the `SchemaView`.
-* `renderer_classes`: Default `None`. May be used to pass custom renderer classes to the `SchemaView`. If `None` the `SchemaView` will be configured with `DocumentationRenderer` and `CoreJSONRenderer` renderers, corresponding to the (default) `html` and `corejson` formats.
-
-#### `get_schemajs_view`
-
-* `title`: Default `None`. May be used to provide a descriptive title for the schema definition.
-* `description`: Default `None`. May be used to provide a description for the schema definition.
-* `schema_url`: Default `None`. May be used to pass a canonical base URL for the schema.
-* `public`: Default `True`. If `True` schema is generated without a `request` instance being passed to views.
-* `patterns`: Default `None`. A list of URLs to inspect when generating the schema. If `None` project's URL conf will be used.
-* `generator_class`: Default `rest_framework.schemas.SchemaGenerator`. May be used to specify a `SchemaGenerator` subclass to be passed to the `SchemaView`.
-* `authentication_classes`: Default `api_settings.DEFAULT_AUTHENTICATION_CLASSES`. May be used to pass custom authentication classes to the `SchemaView`.
-* `permission_classes`: Default `api_settings.DEFAULT_PERMISSION_CLASSES` May be used to pass custom permission classes to the `SchemaView`.
-
-
-### Customising code samples
-
-The built-in API documentation includes automatically generated code samples for
-each of the available API client libraries.
-
-You may customise these samples by subclassing `DocumentationRenderer`, setting
-`languages` to the list of languages you wish to support:
-
-    from rest_framework.renderers import DocumentationRenderer
-
-
-    class CustomRenderer(DocumentationRenderer):
-        languages = ['ruby', 'go']
-
-For each language you need to provide an `intro` template, detailing installation instructions and such,
-plus a generic template for making API requests, that can be filled with individual request details.
-See the [templates for the bundled languages][client-library-templates] for examples.
-
----
+See the [ReDoc documentation][redoc] for advanced usage.
 
 ## Third party packages
 
@@ -193,67 +142,15 @@ This also translates into a very useful interactive documentation viewer in the 
 
 ![Screenshot - drf-yasg][image-drf-yasg]
 
----
+#### drf-spectacular - Sane and flexible OpenAPI 3.0 schema generation for Django REST framework
 
-#### DRF Docs
+[drf-spectacular][drf-spectacular] is a [OpenAPI 3][open-api] schema generation tool with explicit focus on extensibility,
+customizability and client generation. Usage patterns are very similar to [drf-yasg][drf-yasg].
 
-[DRF Docs][drfdocs-repo] allows you to document Web APIs made with Django REST Framework and it is authored by Emmanouil Konstantinidis. It's made to work out of the box and its setup should not take more than a couple of minutes. Complete documentation can be found on the [website][drfdocs-website] while there is also a [demo][drfdocs-demo] available for people to see what it looks like. **Live API Endpoints** allow you to utilize the endpoints from within the documentation in a neat way.
-
-Features include customizing the template with your branding, settings for hiding the docs depending on the environment and more.
-
-Both this package and Django REST Swagger are fully documented, well supported, and come highly recommended.
-
-![Screenshot - DRF docs][image-drf-docs]
-
----
-
-#### Django REST Swagger
-
-Marc Gibbons' [Django REST Swagger][django-rest-swagger] integrates REST framework with the [Swagger][swagger] API documentation tool.  The package produces well presented API documentation, and includes interactive tools for testing API endpoints.
-
-Django REST Swagger supports REST framework versions 2.3 and above.
-
-Mark is also the author of the [REST Framework Docs][rest-framework-docs] package which offers clean, simple autogenerated documentation for your API but is deprecated and has moved to Django REST Swagger.
-
-Both this package and DRF docs are fully documented, well supported, and come highly recommended.
-
-![Screenshot - Django REST Swagger][image-django-rest-swagger]
-
----
-
-### DRF AutoDocs
-
-Oleksander Mashianovs' [DRF Auto Docs][drfautodocs-repo] automated api renderer.
-
-Collects almost all the code you written into documentation effortlessly.
-
-Supports:
-
- * functional view docs
- * tree-like structure
- * Docstrings:
-  * markdown
-  * preserve space & newlines
-  * formatting with nice syntax
- * Fields:
-  * choices rendering
-  * help_text (to specify SerializerMethodField output, etc)
-  * smart read_only/required rendering
- * Endpoint properties:
-  * filter_backends
-  * authentication_classes
-  * permission_classes
-  * extra url params(GET params)
-
-![whole structure](http://joxi.ru/52aBGNI4k3oyA0.jpg)
-
----
-
-#### Apiary
-
-There are various other online tools and services for providing API documentation.  One notable service is [Apiary][apiary].  With Apiary, you describe your API using a simple markdown-like syntax.  The generated documentation includes API interaction, a mock server for testing & prototyping, and various other tools.
-
-![Screenshot - Apiary][image-apiary]
+It aims to extract as much schema information as possible, while providing decorators and extensions for easy
+customization. There is explicit support for [swagger-codegen][swagger], [SwaggerUI][swagger-ui] and [Redoc][redoc],
+i18n, versioning, authentication, polymorphism (dynamic requests and responses), query/path/header parameters,
+documentation and more. Several popular plugins for DRF are supported out-of-the-box as well.
 
 ---
 
@@ -277,7 +174,7 @@ When working with viewsets, an appropriate suffix is appended to each generated 
 
 The description in the browsable API is generated from the docstring of the view or viewset.
 
-If the python `markdown` library is installed, then [markdown syntax][markdown] may be used in the docstring, and will be converted to HTML in the browsable API.  For example:
+If the python `Markdown` library is installed, then [markdown syntax][markdown] may be used in the docstring, and will be converted to HTML in the browsable API.  For example:
 
     class AccountListView(views.APIView):
         """
@@ -288,7 +185,7 @@ If the python `markdown` library is installed, then [markdown syntax][markdown] 
         [ref]: http://example.com/activating-accounts
         """
 
-Note that when using viewsets the basic docstring is used for all generated views.  To provide descriptions for each view, such as for the the list and retrieve views, use docstring sections as described in [Schemas as documentation: Examples][schemas-examples].
+Note that when using viewsets the basic docstring is used for all generated views.  To provide descriptions for each view, such as for the list and retrieve views, use docstring sections as described in [Schemas as documentation: Examples][schemas-examples].
 
 #### The `OPTIONS` method
 
@@ -305,7 +202,7 @@ You can modify the response behavior to `OPTIONS` requests by overriding the `op
         meta = self.metadata_class()
         data = meta.determine_metadata(request, self)
         data.pop('description')
-        return data
+        return Response(data=data, status=status.HTTP_200_OK)
 
 See [the Metadata docs][metadata-docs] for more details.
 
@@ -320,23 +217,18 @@ In this approach, rather than documenting the available API endpoints up front, 
 To implement a hypermedia API you'll need to decide on an appropriate media type for the API, and implement a custom renderer and parser for that media type.  The [REST, Hypermedia & HATEOAS][hypermedia-docs] section of the documentation includes pointers to background reading, as well as links to various hypermedia formats.
 
 [cite]: https://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
-[drf-yasg]: https://github.com/axnsan12/drf-yasg/
-[image-drf-yasg]: ../img/drf-yasg.png
-[drfdocs-repo]: https://github.com/ekonstantinidis/django-rest-framework-docs
-[drfdocs-website]: https://www.drfdocs.com/
-[drfdocs-demo]: http://demo.drfdocs.com/
-[drfautodocs-repo]: https://github.com/iMakedonsky/drf-autodocs
-[django-rest-swagger]: https://github.com/marcgibbons/django-rest-swagger
-[swagger]: https://swagger.io/
-[open-api]: https://openapis.org/
-[rest-framework-docs]: https://github.com/marcgibbons/django-rest-framework-docs
-[apiary]: https://apiary.io/
-[markdown]: https://daringfireball.net/projects/markdown/
+
 [hypermedia-docs]: rest-hypermedia-hateoas.md
-[image-drf-docs]: ../img/drfdocs.png
-[image-django-rest-swagger]: ../img/django-rest-swagger.png
-[image-apiary]: ../img/apiary.png
+[metadata-docs]: ../api-guide/metadata.md
+[schemas-examples]: ../api-guide/schemas.md#examples
+
+[image-drf-yasg]: ../img/drf-yasg.png
 [image-self-describing-api]: ../img/self-describing.png
-[schemas-examples]: ../api-guide/schemas/#examples
-[metadata-docs]: ../api-guide/metadata/
-[client-library-templates]: https://github.com/encode/django-rest-framework/tree/master/rest_framework/templates/rest_framework/docs/langs
+
+[drf-yasg]: https://github.com/axnsan12/drf-yasg/
+[drf-spectacular]: https://github.com/tfranzel/drf-spectacular/
+[markdown]: https://daringfireball.net/projects/markdown/syntax
+[open-api]: https://openapis.org/
+[redoc]: https://github.com/Rebilly/ReDoc
+[swagger]: https://swagger.io/
+[swagger-ui]: https://swagger.io/tools/swagger-ui/

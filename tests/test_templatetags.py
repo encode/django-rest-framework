@@ -1,17 +1,15 @@
-# encoding: utf-8
-from __future__ import unicode_literals
-
 import unittest
 
 from django.template import Context, Template
 from django.test import TestCase
+from django.utils.html import urlize
 
 from rest_framework.compat import coreapi, coreschema
 from rest_framework.relations import Hyperlink
 from rest_framework.templatetags import rest_framework
 from rest_framework.templatetags.rest_framework import (
     add_nested_class, add_query_param, as_string, break_long_headers,
-    format_value, get_pagination_html, schema_links, urlize_quoted_links
+    format_value, get_pagination_html, schema_links
 )
 from rest_framework.test import APIRequestFactory
 
@@ -225,7 +223,7 @@ class TemplateTagTests(TestCase):
         assert result == ''
 
     def test_get_pagination_html(self):
-        class MockPager(object):
+        class MockPager:
             def __init__(self):
                 self.called = False
 
@@ -249,7 +247,7 @@ class Issue1386Tests(TestCase):
 
     def test_issue_1386(self):
         """
-        Test function urlize_quoted_links with different args
+        Test function urlize with different args
         """
         correct_urls = [
             "asdf.com",
@@ -258,7 +256,7 @@ class Issue1386Tests(TestCase):
             "as.d8f.ghj8.gov",
         ]
         for i in correct_urls:
-            res = urlize_quoted_links(i)
+            res = urlize(i)
             self.assertNotEqual(res, i)
             self.assertIn(i, res)
 
@@ -267,11 +265,11 @@ class Issue1386Tests(TestCase):
             "asdf.netnet",
         ]
         for i in incorrect_urls:
-            res = urlize_quoted_links(i)
+            res = urlize(i)
             self.assertEqual(i, res)
 
         # example from issue #1386, this shouldn't raise an exception
-        urlize_quoted_links("asdf:[/p]zxcv.com")
+        urlize("asdf:[/p]zxcv.com")
 
     def test_smart_urlquote_wrapper_handles_value_error(self):
         def mock_smart_urlquote(url):
@@ -292,7 +290,7 @@ class URLizerTests(TestCase):
         For all items in dict test assert that the value is urlized key
         """
         for original, urlized in data.items():
-            assert urlize_quoted_links(original, nofollow=False) == urlized
+            assert urlize(original, nofollow=False) == urlized
 
     def test_json_with_url(self):
         """
@@ -300,26 +298,26 @@ class URLizerTests(TestCase):
         """
         data = {}
         data['"url": "http://api/users/1/", '] = \
-            '&quot;url&quot;: &quot;<a href="http://api/users/1/">http://api/users/1/</a>&quot;, '
+            '"url": "<a href="http://api/users/1/">http://api/users/1/</a>", '
         data['"foo_set": [\n    "http://api/foos/1/"\n], '] = \
-            '&quot;foo_set&quot;: [\n    &quot;<a href="http://api/foos/1/">http://api/foos/1/</a>&quot;\n], '
+            '"foo_set": [\n    "<a href="http://api/foos/1/">http://api/foos/1/</a>"\n], '
         self._urlize_dict_check(data)
 
     def test_template_render_with_autoescape(self):
         """
         Test that HTML is correctly escaped in Browsable API views.
         """
-        template = Template("{% load rest_framework %}{{ content|urlize_quoted_links }}")
+        template = Template("{% load rest_framework %}{{ content|urlize }}")
         rendered = template.render(Context({'content': '<script>alert()</script> http://example.com'}))
         assert rendered == '&lt;script&gt;alert()&lt;/script&gt;' \
                            ' <a href="http://example.com" rel="nofollow">http://example.com</a>'
 
     def test_template_render_with_noautoescape(self):
         """
-        Test if the autoescape value is getting passed to urlize_quoted_links filter.
+        Test if the autoescape value is getting passed to urlize filter.
         """
         template = Template("{% load rest_framework %}"
-                            "{% autoescape off %}{{ content|urlize_quoted_links }}"
+                            "{% autoescape off %}{{ content|urlize }}"
                             "{% endautoescape %}")
         rendered = template.render(Context({'content': '<b> "http://example.com" </b>'}))
         assert rendered == '<b> "<a href="http://example.com" rel="nofollow">http://example.com</a>" </b>'
@@ -340,7 +338,7 @@ class SchemaLinksTests(TestCase):
         )
         section = schema['users']
         flat_links = schema_links(section)
-        assert len(flat_links) is 0
+        assert len(flat_links) == 0
 
     def test_single_action(self):
         schema = coreapi.Document(
@@ -358,7 +356,7 @@ class SchemaLinksTests(TestCase):
         )
         section = schema['users']
         flat_links = schema_links(section)
-        assert len(flat_links) is 1
+        assert len(flat_links) == 1
         assert 'list' in flat_links
 
     def test_default_actions(self):
@@ -396,7 +394,7 @@ class SchemaLinksTests(TestCase):
         )
         section = schema['users']
         flat_links = schema_links(section)
-        assert len(flat_links) is 4
+        assert len(flat_links) == 4
         assert 'list' in flat_links
         assert 'create' in flat_links
         assert 'read' in flat_links
@@ -444,7 +442,7 @@ class SchemaLinksTests(TestCase):
         )
         section = schema['users']
         flat_links = schema_links(section)
-        assert len(flat_links) is 5
+        assert len(flat_links) == 5
         assert 'list' in flat_links
         assert 'create' in flat_links
         assert 'read' in flat_links
@@ -502,7 +500,7 @@ class SchemaLinksTests(TestCase):
         )
         section = schema['users']
         flat_links = schema_links(section)
-        assert len(flat_links) is 6
+        assert len(flat_links) == 6
         assert 'list' in flat_links
         assert 'create' in flat_links
         assert 'read' in flat_links
@@ -543,7 +541,7 @@ class SchemaLinksTests(TestCase):
                             ]
                         ),
                         'create': coreapi.Link(
-                            url='/aniamls/cat',
+                            url='/animals/cat',
                             action='post',
                             fields=[]
                         )
@@ -553,7 +551,7 @@ class SchemaLinksTests(TestCase):
         )
         section = schema['animals']
         flat_links = schema_links(section)
-        assert len(flat_links) is 4
+        assert len(flat_links) == 4
         assert 'cat > create' in flat_links
         assert 'cat > list' in flat_links
         assert 'dog > read' in flat_links
@@ -592,7 +590,7 @@ class SchemaLinksTests(TestCase):
                             ]
                         ),
                         'create': coreapi.Link(
-                            url='/aniamls/cat',
+                            url='/animals/cat',
                             action='post',
                             fields=[]
                         )
@@ -622,7 +620,7 @@ class SchemaLinksTests(TestCase):
         )
         section = schema['animals']
         flat_links = schema_links(section)
-        assert len(flat_links) is 4
+        assert len(flat_links) == 4
         assert 'cat > create' in flat_links
         assert 'cat > list' in flat_links
         assert 'dog > read' in flat_links
@@ -630,6 +628,6 @@ class SchemaLinksTests(TestCase):
 
         section = schema['farmers']
         flat_links = schema_links(section)
-        assert len(flat_links) is 2
+        assert len(flat_links) == 2
         assert 'silo > list' in flat_links
         assert 'silo > soy > list' in flat_links

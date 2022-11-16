@@ -1,22 +1,19 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 import re
 from collections import OrderedDict
+from collections.abc import MutableMapping
 
 import pytest
-from django.conf.urls import include, url
 from django.core.cache import cache
 from django.db import models
 from django.http.request import HttpRequest
 from django.template import loader
 from django.test import TestCase, override_settings
-from django.utils import six
+from django.urls import include, path, re_path
 from django.utils.safestring import SafeText
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from rest_framework import permissions, serializers, status
-from rest_framework.compat import MutableMapping, coreapi
+from rest_framework.compat import coreapi
 from rest_framework.decorators import action
 from rest_framework.renderers import (
     AdminRenderer, BaseRenderer, BrowsableAPIRenderer, DocumentationRenderer,
@@ -79,8 +76,7 @@ class MockView(APIView):
     renderer_classes = (RendererA, RendererB)
 
     def get(self, request, **kwargs):
-        response = Response(DUMMYCONTENT, status=DUMMYSTATUS)
-        return response
+        return Response(DUMMYCONTENT, status=DUMMYSTATUS)
 
 
 class MockGETView(APIView):
@@ -115,14 +111,14 @@ class HTMLView1(APIView):
 
 
 urlpatterns = [
-    url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
-    url(r'^$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
-    url(r'^cache$', MockGETView.as_view()),
-    url(r'^parseerror$', MockPOSTView.as_view(renderer_classes=[JSONRenderer, BrowsableAPIRenderer])),
-    url(r'^html$', HTMLView.as_view()),
-    url(r'^html1$', HTMLView1.as_view()),
-    url(r'^empty$', EmptyGETView.as_view()),
-    url(r'^api', include('rest_framework.urls', namespace='rest_framework'))
+    re_path(r'^.*\.(?P<format>.+)$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
+    path('', MockView.as_view(renderer_classes=[RendererA, RendererB])),
+    path('cache', MockGETView.as_view()),
+    path('parseerror', MockPOSTView.as_view(renderer_classes=[JSONRenderer, BrowsableAPIRenderer])),
+    path('html', HTMLView.as_view()),
+    path('html1', HTMLView1.as_view()),
+    path('empty', EmptyGETView.as_view()),
+    path('api', include('rest_framework.urls', namespace='rest_framework'))
 ]
 
 
@@ -175,7 +171,7 @@ class RendererEndToEndTests(TestCase):
         resp = self.client.head('/')
         self.assertEqual(resp.status_code, DUMMYSTATUS)
         self.assertEqual(resp['Content-Type'], RendererA.media_type + '; charset=utf-8')
-        self.assertEqual(resp.content, six.b(''))
+        self.assertEqual(resp.content, b'')
 
     def test_default_renderer_serializes_content_on_accept_any(self):
         """If the Accept header is set to */* the default renderer should serialize the response."""
@@ -307,14 +303,14 @@ class JSONRendererTests(TestCase):
         o = DummyTestModel.objects.create(name='dummy')
         qs = DummyTestModel.objects.values('id', 'name')
         ret = JSONRenderer().render(qs)
-        data = json.loads(ret.decode('utf-8'))
+        data = json.loads(ret.decode())
         self.assertEqual(data, [{'id': o.id, 'name': o.name}])
 
     def test_render_queryset_values_list(self):
         o = DummyTestModel.objects.create(name='dummy')
         qs = DummyTestModel.objects.values_list('id', 'name')
         ret = JSONRenderer().render(qs)
-        data = json.loads(ret.decode('utf-8'))
+        data = json.loads(ret.decode())
         self.assertEqual(data, [[o.id, o.name]])
 
     def test_render_dict_abc_obj(self):
@@ -344,11 +340,11 @@ class JSONRendererTests(TestCase):
         x['key'] = 'string value'
         x[2] = 3
         ret = JSONRenderer().render(x)
-        data = json.loads(ret.decode('utf-8'))
+        data = json.loads(ret.decode())
         self.assertEqual(data, {'key': 'string value', '2': 3})
 
     def test_render_obj_with_getitem(self):
-        class DictLike(object):
+        class DictLike:
             def __init__(self):
                 self._dict = {}
 
@@ -384,7 +380,7 @@ class JSONRendererTests(TestCase):
         renderer = JSONRenderer()
         content = renderer.render(obj, 'application/json')
         # Fix failing test case which depends on version of JSON library.
-        self.assertEqual(content.decode('utf-8'), _flat_repr)
+        self.assertEqual(content.decode(), _flat_repr)
 
     def test_with_content_type_args(self):
         """
@@ -393,7 +389,7 @@ class JSONRendererTests(TestCase):
         obj = {'foo': ['bar', 'baz']}
         renderer = JSONRenderer()
         content = renderer.render(obj, 'application/json; indent=2')
-        self.assertEqual(strip_trailing_whitespace(content.decode('utf-8')), _indented_repr)
+        self.assertEqual(strip_trailing_whitespace(content.decode()), _indented_repr)
 
 
 class UnicodeJSONRendererTests(TestCase):
@@ -404,7 +400,7 @@ class UnicodeJSONRendererTests(TestCase):
         obj = {'countries': ['United Kingdom', 'France', 'España']}
         renderer = JSONRenderer()
         content = renderer.render(obj, 'application/json')
-        self.assertEqual(content, '{"countries":["United Kingdom","France","España"]}'.encode('utf-8'))
+        self.assertEqual(content, '{"countries":["United Kingdom","France","España"]}'.encode())
 
     def test_u2028_u2029(self):
         # The \u2028 and \u2029 characters should be escaped,
@@ -413,7 +409,7 @@ class UnicodeJSONRendererTests(TestCase):
         obj = {'should_escape': '\u2028\u2029'}
         renderer = JSONRenderer()
         content = renderer.render(obj, 'application/json')
-        self.assertEqual(content, '{"should_escape":"\\u2028\\u2029"}'.encode('utf-8'))
+        self.assertEqual(content, '{"should_escape":"\\u2028\\u2029"}'.encode())
 
 
 class AsciiJSONRendererTests(TestCase):
@@ -426,7 +422,7 @@ class AsciiJSONRendererTests(TestCase):
         obj = {'countries': ['United Kingdom', 'France', 'España']}
         renderer = AsciiJSONRenderer()
         content = renderer.render(obj, 'application/json')
-        self.assertEqual(content, '{"countries":["United Kingdom","France","Espa\\u00f1a"]}'.encode('utf-8'))
+        self.assertEqual(content, '{"countries":["United Kingdom","France","Espa\\u00f1a"]}'.encode())
 
 
 # Tests for caching issue, #346
@@ -635,9 +631,13 @@ class BrowsableAPIRendererTests(URLPatternsTestCase):
         def list_action(self, request):
             raise NotImplementedError
 
+    class AuthExampleViewSet(ExampleViewSet):
+        permission_classes = [permissions.IsAuthenticated]
+
     router = SimpleRouter()
-    router.register('examples', ExampleViewSet, base_name='example')
-    urlpatterns = [url(r'^api/', include(router.urls))]
+    router.register('examples', ExampleViewSet, basename='example')
+    router.register('auth-examples', AuthExampleViewSet, basename='auth-example')
+    urlpatterns = [path('api/', include(router.urls))]
 
     def setUp(self):
         self.renderer = BrowsableAPIRenderer()
@@ -647,7 +647,7 @@ class BrowsableAPIRendererTests(URLPatternsTestCase):
         assert self.renderer.get_description({}, status_code=403) == ''
 
     def test_get_filter_form_returns_none_if_data_is_not_list_instance(self):
-        class DummyView(object):
+        class DummyView:
             get_queryset = None
             filter_backends = None
 
@@ -657,9 +657,15 @@ class BrowsableAPIRendererTests(URLPatternsTestCase):
 
     def test_extra_actions_dropdown(self):
         resp = self.client.get('/api/examples/', HTTP_ACCEPT='text/html')
-        assert 'id="extra-actions-menu"' in resp.content.decode('utf-8')
-        assert '/api/examples/list_action/' in resp.content.decode('utf-8')
-        assert '>Extra list action<' in resp.content.decode('utf-8')
+        assert 'id="extra-actions-menu"' in resp.content.decode()
+        assert '/api/examples/list_action/' in resp.content.decode()
+        assert '>Extra list action<' in resp.content.decode()
+
+    def test_extra_actions_dropdown_not_authed(self):
+        resp = self.client.get('/api/unauth-examples/', HTTP_ACCEPT='text/html')
+        assert 'id="extra-actions-menu"' not in resp.content.decode()
+        assert '/api/examples/list_action/' not in resp.content.decode()
+        assert '>Extra list action<' not in resp.content.decode()
 
 
 class AdminRendererTests(TestCase):
@@ -735,6 +741,11 @@ class AdminRendererTests(TestCase):
         class DummyGenericViewsetLike(APIView):
             lookup_field = 'test'
 
+            def get(self, request):
+                response = Response()
+                response.view = self
+                return response
+
             def reverse_action(view, *args, **kwargs):
                 self.assertEqual(kwargs['kwargs']['test'], 1)
                 return '/example/'
@@ -743,7 +754,7 @@ class AdminRendererTests(TestCase):
         view = DummyGenericViewsetLike.as_view()
         request = factory.get('/')
         response = view(request)
-        view = response.renderer_context['view']
+        view = response.view
 
         self.assertEqual(self.renderer.get_result_url({'test': 1}, view), '/example/')
         self.assertIsNone(self.renderer.get_result_url({}, view))
@@ -754,11 +765,16 @@ class AdminRendererTests(TestCase):
         class DummyView(APIView):
             lookup_field = 'test'
 
+            def get(self, request):
+                response = Response()
+                response.view = self
+                return response
+
         # get the view instance instead of the view function
         view = DummyView.as_view()
         request = factory.get('/')
         response = view(request)
-        view = response.renderer_context['view']
+        view = response.view
 
         self.assertIsNone(self.renderer.get_result_url({'test': 1}, view))
         self.assertIsNone(self.renderer.get_result_url({}, view))

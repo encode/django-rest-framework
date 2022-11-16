@@ -2,29 +2,21 @@
 Provides generic filtering backends that can be used to filter the results
 returned by list views.
 """
-from __future__ import unicode_literals
-
 import operator
-import warnings
 from functools import reduce
 
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.db.models.constants import LOOKUP_SEP
-from django.db.models.sql.constants import ORDER_PATTERN
 from django.template import loader
-from django.utils import six
-from django.utils.encoding import force_text
-from django.utils.translation import ugettext_lazy as _
+from django.utils.encoding import force_str
+from django.utils.translation import gettext_lazy as _
 
-from rest_framework import RemovedInDRF310Warning
-from rest_framework.compat import (
-    coreapi, coreschema, distinct, is_guardian_installed
-)
+from rest_framework.compat import coreapi, coreschema, distinct
 from rest_framework.settings import api_settings
 
 
-class BaseFilterBackend(object):
+class BaseFilterBackend:
     """
     A base class from which all filter backend classes should inherit.
     """
@@ -38,6 +30,9 @@ class BaseFilterBackend(object):
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
         assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
+        return []
+
+    def get_schema_operation_parameters(self, view):
         return []
 
 
@@ -68,7 +63,9 @@ class SearchFilter(BaseFilterBackend):
         and may be comma and/or whitespace delimited.
         """
         params = request.query_params.get(self.search_param, '')
-        return params.replace(',', ' ').split()
+        params = params.replace('\x00', '')  # strip null characters
+        params = params.replace(',', ' ')
+        return params.split()
 
     def construct_search(self, field_name):
         lookup = self.lookup_prefixes.get(field_name[0])
@@ -88,7 +85,7 @@ class SearchFilter(BaseFilterBackend):
                 search_field = search_field[1:]
             # Annotated fields do not need to be distinct
             if isinstance(queryset, models.QuerySet) and search_field in queryset.query.annotations:
-                return False
+                continue
             parts = search_field.split(LOOKUP_SEP)
             for part in parts:
                 field = opts.get_field(part)
@@ -99,6 +96,9 @@ class SearchFilter(BaseFilterBackend):
                     if any(path.m2m for path in path_info):
                         # This field is a m2m relation so we know we need to call distinct
                         return True
+                else:
+                    # This field has a custom __ query transform but is not a relational field.
+                    break
         return False
 
     def filter_queryset(self, request, queryset, view):
@@ -109,7 +109,7 @@ class SearchFilter(BaseFilterBackend):
             return queryset
 
         orm_lookups = [
-            self.construct_search(six.text_type(search_field))
+            self.construct_search(str(search_field))
             for search_field in search_fields
         ]
 
@@ -153,10 +153,23 @@ class SearchFilter(BaseFilterBackend):
                 required=False,
                 location='query',
                 schema=coreschema.String(
-                    title=force_text(self.search_title),
-                    description=force_text(self.search_description)
+                    title=force_str(self.search_title),
+                    description=force_str(self.search_description)
                 )
             )
+        ]
+
+    def get_schema_operation_parameters(self, view):
+        return [
+            {
+                'name': self.search_param,
+                'required': False,
+                'in': 'query',
+                'description': force_str(self.search_description),
+                'schema': {
+                    'type': 'string',
+                },
+            },
         ]
 
 
@@ -188,7 +201,7 @@ class OrderingFilter(BaseFilterBackend):
 
     def get_default_ordering(self, view):
         ordering = getattr(view, 'ordering', None)
-        if isinstance(ordering, six.string_types):
+        if isinstance(ordering, str):
             return (ordering,)
         return ordering
 
@@ -213,10 +226,20 @@ class OrderingFilter(BaseFilterBackend):
             )
             raise ImproperlyConfigured(msg % self.__class__.__name__)
 
+        model_class = queryset.model
+        model_property_names = [
+            # 'pk' is a property added in Django's Model class, however it is valid for ordering.
+            attr for attr in dir(model_class) if isinstance(getattr(model_class, attr), property) and attr != 'pk'
+        ]
+
         return [
             (field.source.replace('.', '__') or field_name, field.label)
             for field_name, field in serializer_class(context=context).fields.items()
-            if not getattr(field, 'write_only', False) and not field.source == '*'
+            if (
+                not getattr(field, 'write_only', False) and
+                not field.source == '*' and
+                field.source not in model_property_names
+            )
         ]
 
     def get_valid_fields(self, queryset, view, context={}):
@@ -237,7 +260,7 @@ class OrderingFilter(BaseFilterBackend):
             ]
         else:
             valid_fields = [
-                (item, item) if isinstance(item, six.string_types) else item
+                (item, item) if isinstance(item, str) else item
                 for item in valid_fields
             ]
 
@@ -245,7 +268,13 @@ class OrderingFilter(BaseFilterBackend):
 
     def remove_invalid_fields(self, queryset, fields, view, request):
         valid_fields = [item[0] for item in self.get_valid_fields(queryset, view, {'request': request})]
-        return [term for term in fields if term.lstrip('-') in valid_fields and ORDER_PATTERN.match(term)]
+
+        def term_valid(term):
+            if term.startswith("-"):
+                term = term[1:]
+            return term in valid_fields
+
+        return [term for term in fields if term_valid(term)]
 
     def filter_queryset(self, request, queryset, view):
         ordering = self.get_ordering(request, queryset, view)
@@ -284,46 +313,21 @@ class OrderingFilter(BaseFilterBackend):
                 required=False,
                 location='query',
                 schema=coreschema.String(
-                    title=force_text(self.ordering_title),
-                    description=force_text(self.ordering_description)
+                    title=force_str(self.ordering_title),
+                    description=force_str(self.ordering_description)
                 )
             )
         ]
 
-
-class DjangoObjectPermissionsFilter(BaseFilterBackend):
-    """
-    A filter backend that limits results to those where the requesting user
-    has read object level permissions.
-    """
-    def __init__(self):
-        warnings.warn(
-            "`DjangoObjectPermissionsFilter` has been deprecated and moved to "
-            "the 3rd-party django-rest-framework-guardian package.",
-            RemovedInDRF310Warning, stacklevel=2
-        )
-        assert is_guardian_installed(), 'Using DjangoObjectPermissionsFilter, but django-guardian is not installed'
-
-    perm_format = '%(app_label)s.view_%(model_name)s'
-
-    def filter_queryset(self, request, queryset, view):
-        # We want to defer this import until run-time, rather than import-time.
-        # See https://github.com/encode/django-rest-framework/issues/4608
-        # (Also see #1624 for why we need to make this import explicitly)
-        from guardian import VERSION as guardian_version
-        from guardian.shortcuts import get_objects_for_user
-
-        extra = {}
-        user = request.user
-        model_cls = queryset.model
-        kwargs = {
-            'app_label': model_cls._meta.app_label,
-            'model_name': model_cls._meta.model_name
-        }
-        permission = self.perm_format % kwargs
-        if tuple(guardian_version) >= (1, 3):
-            # Maintain behavior compatibility with versions prior to 1.3
-            extra = {'accept_global_perms': False}
-        else:
-            extra = {}
-        return get_objects_for_user(user, permission, queryset, **extra)
+    def get_schema_operation_parameters(self, view):
+        return [
+            {
+                'name': self.ordering_param,
+                'required': False,
+                'in': 'query',
+                'description': force_str(self.ordering_description),
+                'schema': {
+                    'type': 'string',
+                },
+            },
+        ]

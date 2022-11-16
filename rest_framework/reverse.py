@@ -1,11 +1,8 @@
 """
 Provide urlresolver functions that return fully qualified URLs or view names
 """
-from __future__ import unicode_literals
-
 from django.urls import NoReverseMatch
 from django.urls import reverse as django_reverse
-from django.utils import six
 from django.utils.functional import lazy
 
 from rest_framework.settings import api_settings
@@ -66,4 +63,4 @@ def _reverse(viewname, args=None, kwargs=None, request=None, format=None, **extr
     return url
 
 
-reverse_lazy = lazy(reverse, six.text_type)
+reverse_lazy = lazy(reverse, str)

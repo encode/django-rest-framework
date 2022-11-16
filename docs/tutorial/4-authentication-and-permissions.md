@@ -38,7 +38,7 @@ And now we can add a `.save()` method to our model class:
         formatter = HtmlFormatter(style=self.style, linenos=linenos,
                                   full=True, **options)
         self.highlighted = highlight(self.code, lexer, formatter)
-        super(Snippet, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 When that's all done we'll need to update our database tables.
 Normally we'd create a database migration in order to do that, but for the purposes of this tutorial, let's just delete the database and start again.
@@ -63,7 +63,7 @@ Now that we've got some users to work with, we'd better add representations of t
 
         class Meta:
             model = User
-            fields = ('id', 'username', 'snippets')
+            fields = ['id', 'username', 'snippets']
 
 Because `'snippets'` is a *reverse* relationship on the User model, it will not be included by default when using the `ModelSerializer` class, so we needed to add an explicit field for it.
 
@@ -127,7 +127,7 @@ First add the following import in the views module
 
 Then, add the following property to **both** the `SnippetList` and `SnippetDetail` view classes.
 
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 ## Adding login to the Browsable API
 
@@ -137,7 +137,7 @@ We can add a login view for use with the browsable API, by editing the URLconf i
 
 Add the following import at the top of the file:
 
-    from django.conf.urls import include
+    from django.urls import path, include
 
 And, at the end of the file, add a pattern to include the login and logout views for the browsable API.
 
@@ -178,8 +178,8 @@ In the snippets app, create a new file, `permissions.py`
 
 Now we can add that custom permission to our snippet instance endpoint, by editing the `permission_classes` property on the `SnippetDetail` view class:
 
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
-                          IsOwnerOrReadOnly,)
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,
+                          IsOwnerOrReadOnly]
 
 Make sure to also import the `IsOwnerOrReadOnly` class.
 

@@ -2,18 +2,16 @@
 Content negotiation deals with selecting an appropriate renderer given the
 incoming request.  Typically this will be based on the request's Accept header.
 """
-from __future__ import unicode_literals
-
 from django.http import Http404
 
-from rest_framework import HTTP_HEADER_ENCODING, exceptions
+from rest_framework import exceptions
 from rest_framework.settings import api_settings
 from rest_framework.utils.mediatypes import (
     _MediaType, media_type_matches, order_by_precedence
 )
 
 
-class BaseContentNegotiation(object):
+class BaseContentNegotiation:
     def select_parser(self, request, parsers):
         raise NotImplementedError('.select_parser() must be implemented')
 
@@ -66,9 +64,11 @@ class DefaultContentNegotiation(BaseContentNegotiation):
                             # Accepted media type is 'application/json'
                             full_media_type = ';'.join(
                                 (renderer.media_type,) +
-                                tuple('{0}={1}'.format(
-                                    key, value.decode(HTTP_HEADER_ENCODING))
-                                    for key, value in media_type_wrapper.params.items()))
+                                tuple(
+                                    '{}={}'.format(key, value)
+                                    for key, value in media_type_wrapper.params.items()
+                                )
+                            )
                             return renderer, full_media_type
                         else:
                             # Eg client requests 'application/json; indent=8'

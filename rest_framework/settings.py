@@ -3,60 +3,58 @@ Settings for REST framework are all namespaced in the REST_FRAMEWORK setting.
 For example your project's `settings.py` file might look like this:
 
 REST_FRAMEWORK = {
-    'DEFAULT_RENDERER_CLASSES': (
+    'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.TemplateHTMLRenderer',
-    )
-    'DEFAULT_PARSER_CLASSES': (
+    ],
+    'DEFAULT_PARSER_CLASSES': [
         'rest_framework.parsers.JSONParser',
         'rest_framework.parsers.FormParser',
-        'rest_framework.parsers.MultiPartParser'
-    )
+        'rest_framework.parsers.MultiPartParser',
+    ],
 }
 
 This module provides the `api_setting` object, that is used to access
 REST framework settings, checking for user settings first, then falling
 back to the defaults.
 """
-from __future__ import unicode_literals
-
-from importlib import import_module
-
 from django.conf import settings
-from django.test.signals import setting_changed
-from django.utils import six
+# Import from `django.core.signals` instead of the official location
+# `django.test.signals` to avoid importing the test module unnecessarily.
+from django.core.signals import setting_changed
+from django.utils.module_loading import import_string
 
 from rest_framework import ISO_8601
 
 DEFAULTS = {
     # Base API policies
-    'DEFAULT_RENDERER_CLASSES': (
+    'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
-    ),
-    'DEFAULT_PARSER_CLASSES': (
+    ],
+    'DEFAULT_PARSER_CLASSES': [
         'rest_framework.parsers.JSONParser',
         'rest_framework.parsers.FormParser',
         'rest_framework.parsers.MultiPartParser'
-    ),
-    'DEFAULT_AUTHENTICATION_CLASSES': (
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication'
-    ),
-    'DEFAULT_PERMISSION_CLASSES': (
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
-    ),
-    'DEFAULT_THROTTLE_CLASSES': (),
+    ],
+    'DEFAULT_THROTTLE_CLASSES': [],
     'DEFAULT_CONTENT_NEGOTIATION_CLASS': 'rest_framework.negotiation.DefaultContentNegotiation',
     'DEFAULT_METADATA_CLASS': 'rest_framework.metadata.SimpleMetadata',
     'DEFAULT_VERSIONING_CLASS': None,
 
     # Generic view behavior
     'DEFAULT_PAGINATION_CLASS': None,
-    'DEFAULT_FILTER_BACKENDS': (),
+    'DEFAULT_FILTER_BACKENDS': [],
 
     # Schema
-    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema',
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.openapi.AutoSchema',
 
     # Throttling
     'DEFAULT_THROTTLE_RATES': {
@@ -90,10 +88,10 @@ DEFAULTS = {
     'NON_FIELD_ERRORS_KEY': 'non_field_errors',
 
     # Testing
-    'TEST_REQUEST_RENDERER_CLASSES': (
+    'TEST_REQUEST_RENDERER_CLASSES': [
         'rest_framework.renderers.MultiPartRenderer',
         'rest_framework.renderers.JSONRenderer'
-    ),
+    ],
     'TEST_REQUEST_DEFAULT_FORMAT': 'multipart',
 
     # Hyperlink settings
@@ -103,13 +101,13 @@ DEFAULTS = {
 
     # Input and output formats
     'DATE_FORMAT': ISO_8601,
-    'DATE_INPUT_FORMATS': (ISO_8601,),
+    'DATE_INPUT_FORMATS': [ISO_8601],
 
     'DATETIME_FORMAT': ISO_8601,
-    'DATETIME_INPUT_FORMATS': (ISO_8601,),
+    'DATETIME_INPUT_FORMATS': [ISO_8601],
 
     'TIME_FORMAT': ISO_8601,
-    'TIME_INPUT_FORMATS': (ISO_8601,),
+    'TIME_INPUT_FORMATS': [ISO_8601],
 
     # Encoding
     'UNICODE_JSON': True,
@@ -132,7 +130,7 @@ DEFAULTS = {
 
 
 # List of settings that may be in string import notation.
-IMPORT_STRINGS = (
+IMPORT_STRINGS = [
     'DEFAULT_RENDERER_CLASSES',
     'DEFAULT_PARSER_CLASSES',
     'DEFAULT_AUTHENTICATION_CLASSES',
@@ -150,13 +148,13 @@ IMPORT_STRINGS = (
     'UNAUTHENTICATED_TOKEN',
     'VIEW_NAME_FUNCTION',
     'VIEW_DESCRIPTION_FUNCTION'
-)
+]
 
 
 # List of settings that have been removed
-REMOVED_SETTINGS = (
-    "PAGINATE_BY", "PAGINATE_BY_PARAM", "MAX_PAGINATE_BY",
-)
+REMOVED_SETTINGS = [
+    'PAGINATE_BY', 'PAGINATE_BY_PARAM', 'MAX_PAGINATE_BY',
+]
 
 
 def perform_import(val, setting_name):
@@ -166,7 +164,7 @@ def perform_import(val, setting_name):
     """
     if val is None:
         return None
-    elif isinstance(val, six.string_types):
+    elif isinstance(val, str):
         return import_from_string(val, setting_name)
     elif isinstance(val, (list, tuple)):
         return [import_from_string(item, setting_name) for item in val]
@@ -178,25 +176,27 @@ def import_from_string(val, setting_name):
     Attempt to import a class from a string representation.
     """
     try:
-        # Nod to tastypie's use of importlib.
-        module_path, class_name = val.rsplit('.', 1)
-        module = import_module(module_path)
-        return getattr(module, class_name)
-    except (ImportError, AttributeError) as e:
+        return import_string(val)
+    except ImportError as e:
         msg = "Could not import '%s' for API setting '%s'. %s: %s." % (val, setting_name, e.__class__.__name__, e)
         raise ImportError(msg)
 
 
-class APISettings(object):
+class APISettings:
     """
-    A settings object, that allows API settings to be accessed as properties.
-    For example:
+    A settings object that allows REST Framework settings to be accessed as
+    properties. For example:
 
         from rest_framework.settings import api_settings
         print(api_settings.DEFAULT_RENDERER_CLASSES)
 
     Any setting with string import paths will be automatically resolved
     and return the class, rather than the string literal.
+
+    Note:
+    This is an internal class that is only compatible with settings namespaced
+    under the REST_FRAMEWORK name. It is not intended to be used by 3rd-party
+    apps, and test helpers like `override_settings` may not work as expected.
     """
     def __init__(self, user_settings=None, defaults=None, import_strings=None):
         if user_settings:

@@ -6,6 +6,12 @@
 
 There are many ways you can contribute to Django REST framework.  We'd like it to be a community-led project, so please get involved and help shape the future of the project.
 
+---
+
+**Note**: At this point in it's lifespan we consider Django REST framework to be essentially feature-complete. We may accept pull requests that track the continued development of Django versions, but would prefer not to accept new features or code formatting changes.
+
+---
+
 ## Community
 
 The most important thing you can do to help push the REST framework project forward is to be actively involved wherever possible.  Code contributions are often overvalued as being the primary way to get involved in a project, we don't believe that needs to be the case.
@@ -26,14 +32,13 @@ The [Django code of conduct][code-of-conduct] gives a fuller set of guidelines f
 
 # Issues
 
-It's really helpful if you can make sure to address issues on the correct channel.  Usage questions should be directed to the [discussion group][google-group].  Feature requests, bug reports and other issues should be raised on the GitHub [issue tracker][issues].
+Our contribution process is that the [GitHub discussions page](https://github.com/encode/django-rest-framework/discussions) should generally be your starting point. Please only raise an issue or pull request if you've been recommended to do so after discussion.
 
-Some tips on good issue reporting:
+Some tips on good potential issue reporting:
 
 * When describing issues try to phrase your ticket in terms of the *behavior* you think needs changing rather than the *code* you think need changing.
-* Search the issue list first for related items, and make sure you're running the latest version of REST framework before reporting an issue.
-* If reporting a bug, then try to include a pull request with a failing test case.  This will help us quickly identify if there is a valid issue, and make sure that it gets fixed more quickly if there is one.
-* Feature requests will often be closed with a recommendation that they be implemented outside of the core REST framework library.  Keeping new feature requests implemented as third party libraries allows us to keep down the maintenance overhead of REST framework, so that the focus can be on continued stability, bugfixes, and great documentation.
+* Search the GitHub project page for related items, and make sure you're running the latest version of REST framework before reporting an issue.
+* Feature requests will often be closed with a recommendation that they be implemented outside of the core REST framework library.  Keeping new feature requests implemented as third party libraries allows us to keep down the maintenance overhead of REST framework, so that the focus can be on continued stability, bugfixes, and great documentation. At this point in it's lifespan we consider Django REST framework to be essentially feature-complete.
 * Closing an issue doesn't necessarily mean the end of a discussion.  If you believe your issue has been closed incorrectly, explain why and we'll consider if it needs to be reopened.
 
 ## Triaging issues
@@ -54,20 +59,28 @@ To start developing on Django REST framework, first create a Fork from the
 Then clone your fork. The clone command will look like this, with your GitHub
 username instead of YOUR-USERNAME:
 
-    git clone https://github.com/YOUR-USERNAME/Spoon-Knife
+    git clone https://github.com/YOUR-USERNAME/django-rest-framework
 
 See GitHub's [_Fork a Repo_][how-to-fork] Guide for more help.
 
 Changes should broadly follow the [PEP 8][pep-8] style conventions, and we recommend you set up your editor to automatically indicate non-conforming styles.
+You can check your contributions against these conventions each time you commit using the [pre-commit](https://pre-commit.com/) hooks, which we also run on CI.
+To set them up, first ensure you have the pre-commit tool installed, for example:
+
+    python -m pip install pre-commit
+
+Then run:
+
+    pre-commit install
 
 ## Testing
 
 To run the tests, clone the repository, and then:
 
     # Setup the virtual environment
-    virtualenv env
+    python3 -m venv env
     source env/bin/activate
-    pip install django
+    pip install -e .
     pip install -r requirements.txt
 
     # Run the tests
@@ -78,18 +91,6 @@ To run the tests, clone the repository, and then:
 Run using a more concise output style.
 
     ./runtests.py -q
-
-Run the tests using a more concise output style, no coverage, no flake8.
-
-    ./runtests.py --fast
-
-Don't run the flake8 code linting.
-
-    ./runtests.py --nolint
-
-Only run the flake8 code linting, don't run the tests.
-
-    ./runtests.py --lintonly
 
 Run the tests for a given test case.
 
@@ -121,13 +122,13 @@ It's also useful to remember that if you have an outstanding pull request then p
 
 GitHub's documentation for working on pull requests is [available here][pull-requests].
 
-Always run the tests before submitting pull requests, and ideally run `tox` in order to check that your modifications are compatible with both Python 2 and Python 3, and that they run properly on all supported versions of Django.
+Always run the tests before submitting pull requests, and ideally run `tox` in order to check that your modifications are compatible on all supported versions of Python and Django.
 
-Once you've made a pull request take a look at the Travis build status in the GitHub interface and make sure the tests are running as you'd expect.
+Once you've made a pull request take a look at the build status in the GitHub interface and make sure the tests are running as you'd expect.
 
-![Travis status][travis-status]
+![Build status][build-status]
 
-*Above: Travis build notifications*
+*Above: build notifications*
 
 ## Managing compatibility issues
 
@@ -210,7 +211,7 @@ If you want to draw attention to a note or warning, use a pair of enclosing line
 [so-filter]: https://stackexchange.com/filters/66475/rest-framework
 [issues]: https://github.com/encode/django-rest-framework/issues?state=open
 [pep-8]: https://www.python.org/dev/peps/pep-0008/
-[travis-status]: ../img/travis-status.png
+[build-status]: ../img/build-status.png
 [pull-requests]: https://help.github.com/articles/using-pull-requests
 [tox]: https://tox.readthedocs.io/en/latest/
 [markdown]: https://daringfireball.net/projects/markdown/basics

@@ -1,7 +1,4 @@
-from __future__ import unicode_literals
-
 from django.test import TestCase
-from django.utils import six
 
 from rest_framework import serializers
 from tests.models import (
@@ -31,6 +28,25 @@ class ForeignKeyTargetSerializer(serializers.ModelSerializer):
     class Meta:
         model = ForeignKeyTarget
         fields = ('id', 'name', 'sources')
+
+
+class ForeignKeyTargetCallableSourceSerializer(serializers.ModelSerializer):
+    first_source = serializers.PrimaryKeyRelatedField(
+        source='get_first_source',
+        read_only=True,
+    )
+
+    class Meta:
+        model = ForeignKeyTarget
+        fields = ('id', 'name', 'first_source')
+
+
+class ForeignKeyTargetPropertySourceSerializer(serializers.ModelSerializer):
+    first_source = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = ForeignKeyTarget
+        fields = ('id', 'name', 'first_source')
 
 
 class ForeignKeySourceSerializer(serializers.ModelSerializer):
@@ -263,7 +279,7 @@ class PKForeignKeyTests(TestCase):
         instance = ForeignKeySource.objects.get(pk=1)
         serializer = ForeignKeySourceSerializer(instance, data=data)
         assert not serializer.is_valid()
-        assert serializer.errors == {'target': ['Incorrect type. Expected pk value, received %s.' % six.text_type.__name__]}
+        assert serializer.errors == {'target': ['Incorrect type. Expected pk value, received str.']}
 
     def test_reverse_foreign_key_update(self):
         data = {'id': 2, 'name': 'target-2', 'sources': [1, 3]}
@@ -390,6 +406,34 @@ class PKForeignKeyTests(TestCase):
 
         queryset = QLimitedChoicesSerializer().fields["target"].get_queryset()
         assert len(queryset) == 1
+
+
+class PKRelationTests(TestCase):
+
+    def setUp(self):
+        self.target = ForeignKeyTarget.objects.create(name='target-1')
+        ForeignKeySource.objects.create(name='source-1', target=self.target)
+        ForeignKeySource.objects.create(name='source-2', target=self.target)
+
+    def test_relation_field_callable_source(self):
+        serializer = ForeignKeyTargetCallableSourceSerializer(self.target)
+        expected = {
+            'id': 1,
+            'name': 'target-1',
+            'first_source': 1,
+        }
+        with self.assertNumQueries(1):
+            self.assertEqual(serializer.data, expected)
+
+    def test_relation_field_property_source(self):
+        serializer = ForeignKeyTargetPropertySourceSerializer(self.target)
+        expected = {
+            'id': 1,
+            'name': 'target-1',
+            'first_source': 1,
+        }
+        with self.assertNumQueries(1):
+            self.assertEqual(serializer.data, expected)
 
 
 class PKNullableForeignKeyTests(TestCase):
@@ -562,7 +606,7 @@ class OneToOnePrimaryKeyTests(TestCase):
         # When: Trying to create a second object
         second_source = OneToOnePKSourceSerializer(data=data)
         self.assertFalse(second_source.is_valid())
-        expected = {'target': [u'one to one pk source with this target already exists.']}
+        expected = {'target': ['one to one pk source with this target already exists.']}
         self.assertDictEqual(second_source.errors, expected)
 
     def test_one_to_one_when_primary_key_does_not_exist(self):

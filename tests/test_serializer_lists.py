@@ -1,7 +1,11 @@
+import sys
+
+import pytest
 from django.http import QueryDict
 from django.utils.datastructures import MultiValueDict
 
 from rest_framework import serializers
+from rest_framework.exceptions import ErrorDetail
 
 
 class BasicObject:
@@ -28,7 +32,7 @@ class TestListSerializer:
     Note that this is in contrast to using ListSerializer as a field.
     """
 
-    def setup(self):
+    def setup_method(self):
         class IntegerListSerializer(serializers.ListSerializer):
             child = serializers.IntegerField()
         self.Serializer = IntegerListSerializer
@@ -53,13 +57,20 @@ class TestListSerializer:
         assert serializer.is_valid()
         assert serializer.validated_data == expected_output
 
+    @pytest.mark.skipif(
+        sys.version_info < (3, 7),
+        reason="subscriptable classes requires Python 3.7 or higher",
+    )
+    def test_list_serializer_is_subscriptable(self):
+        assert serializers.ListSerializer is serializers.ListSerializer["foo"]
+
 
 class TestListSerializerContainingNestedSerializer:
     """
     Tests for using a ListSerializer containing another serializer.
     """
 
-    def setup(self):
+    def setup_method(self):
         class TestSerializer(serializers.Serializer):
             integer = serializers.IntegerField()
             boolean = serializers.BooleanField()
@@ -145,7 +156,7 @@ class TestNestedListSerializer:
     Tests for using a ListSerializer as a field.
     """
 
-    def setup(self):
+    def setup_method(self):
         class TestSerializer(serializers.Serializer):
             integers = serializers.ListSerializer(child=serializers.IntegerField())
             booleans = serializers.ListSerializer(child=serializers.BooleanField())
@@ -223,8 +234,51 @@ class TestNestedListSerializer:
         assert serializer.validated_data == expected_output
 
 
+class TestNestedListSerializerAllowEmpty:
+    """Tests the behaviour of allow_empty=False when a ListSerializer is used as a field."""
+
+    @pytest.mark.parametrize('partial', (False, True))
+    def test_allow_empty_true(self, partial):
+        """
+        If allow_empty is True, empty lists should be allowed regardless of the value
+        of partial on the parent serializer.
+        """
+        class ChildSerializer(serializers.Serializer):
+            id = serializers.IntegerField()
+
+        class ParentSerializer(serializers.Serializer):
+            ids = ChildSerializer(many=True, allow_empty=True)
+
+        serializer = ParentSerializer(data={'ids': []}, partial=partial)
+        assert serializer.is_valid()
+        assert serializer.validated_data == {
+            'ids': [],
+        }
+
+    @pytest.mark.parametrize('partial', (False, True))
+    def test_allow_empty_false(self, partial):
+        """
+        If allow_empty is False, empty lists should fail validation regardless of the value
+        of partial on the parent serializer.
+        """
+        class ChildSerializer(serializers.Serializer):
+            id = serializers.IntegerField()
+
+        class ParentSerializer(serializers.Serializer):
+            ids = ChildSerializer(many=True, allow_empty=False)
+
+        serializer = ParentSerializer(data={'ids': []}, partial=partial)
+        assert not serializer.is_valid()
+        assert serializer.errors == {
+            'ids': {
+                'non_field_errors': [
+                    ErrorDetail(string='This list may not be empty.', code='empty')],
+            }
+        }
+
+
 class TestNestedListOfListsSerializer:
-    def setup(self):
+    def setup_method(self):
         class TestSerializer(serializers.Serializer):
             integers = serializers.ListSerializer(
                 child=serializers.ListSerializer(
@@ -540,7 +594,7 @@ class TestEmptyListSerializer:
     Tests the behaviour of ListSerializers when there is no data passed to it
     """
 
-    def setup(self):
+    def setup_method(self):
         class ExampleListSerializer(serializers.ListSerializer):
             child = serializers.IntegerField()
 
@@ -562,3 +616,70 @@ class TestEmptyListSerializer:
 
         assert serializer.is_valid()
         assert serializer.validated_data == []
+
+
+class TestMaxMinLengthListSerializer:
+    """
+    Tests the behaviour of ListSerializers when max_length and min_length are used
+    """
+
+    def setup_method(self):
+        class IntegerSerializer(serializers.Serializer):
+            some_int = serializers.IntegerField()
+
+        class MaxLengthSerializer(serializers.Serializer):
+            many_int = IntegerSerializer(many=True, max_length=5)
+
+        class MinLengthSerializer(serializers.Serializer):
+            many_int = IntegerSerializer(many=True, min_length=3)
+
+        class MaxMinLengthSerializer(serializers.Serializer):
+            many_int = IntegerSerializer(many=True, min_length=3, max_length=5)
+
+        self.MaxLengthSerializer = MaxLengthSerializer
+        self.MinLengthSerializer = MinLengthSerializer
+        self.MaxMinLengthSerializer = MaxMinLengthSerializer
+
+    def test_min_max_length_two_items(self):
+        input_data = {'many_int': [{'some_int': i} for i in range(2)]}
+
+        max_serializer = self.MaxLengthSerializer(data=input_data)
+        min_serializer = self.MinLengthSerializer(data=input_data)
+        max_min_serializer = self.MaxMinLengthSerializer(data=input_data)
+
+        assert max_serializer.is_valid()
+        assert max_serializer.validated_data == input_data
+
+        assert not min_serializer.is_valid()
+
+        assert not max_min_serializer.is_valid()
+
+    def test_min_max_length_four_items(self):
+        input_data = {'many_int': [{'some_int': i} for i in range(4)]}
+
+        max_serializer = self.MaxLengthSerializer(data=input_data)
+        min_serializer = self.MinLengthSerializer(data=input_data)
+        max_min_serializer = self.MaxMinLengthSerializer(data=input_data)
+
+        assert max_serializer.is_valid()
+        assert max_serializer.validated_data == input_data
+
+        assert min_serializer.is_valid()
+        assert min_serializer.validated_data == input_data
+
+        assert max_min_serializer.is_valid()
+        assert min_serializer.validated_data == input_data
+
+    def test_min_max_length_six_items(self):
+        input_data = {'many_int': [{'some_int': i} for i in range(6)]}
+
+        max_serializer = self.MaxLengthSerializer(data=input_data)
+        min_serializer = self.MinLengthSerializer(data=input_data)
+        max_min_serializer = self.MaxMinLengthSerializer(data=input_data)
+
+        assert not max_serializer.is_valid()
+
+        assert min_serializer.is_valid()
+        assert min_serializer.validated_data == input_data
+
+        assert not max_min_serializer.is_valid()

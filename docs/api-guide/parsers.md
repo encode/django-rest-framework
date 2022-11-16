@@ -1,4 +1,7 @@
-source: parsers.py
+---
+source:
+    - parsers.py
+---
 
 # Parsers
 
@@ -12,7 +15,7 @@ REST framework includes a number of built in Parser classes, that allow you to a
 
 ## How the parser is determined
 
-The set of valid parsers for a view is always defined as a list of classes.  When  `request.data` is accessed, REST framework will examine the `Content-Type` header on the incoming request, and determine which parser to use to parse the request content.
+The set of valid parsers for a view is always defined as a list of classes.  When `request.data` is accessed, REST framework will examine the `Content-Type` header on the incoming request, and determine which parser to use to parse the request content.
 
 ---
 
@@ -29,9 +32,9 @@ As an example, if you are sending `json` encoded data using jQuery with the [.aj
 The default set of parsers may be set globally, using the `DEFAULT_PARSER_CLASSES` setting. For example, the following settings would allow only requests with `JSON` content, instead of the default of JSON or form data.
 
     REST_FRAMEWORK = {
-        'DEFAULT_PARSER_CLASSES': (
+        'DEFAULT_PARSER_CLASSES': [
             'rest_framework.parsers.JSONParser',
-        )
+        ]
     }
 
 You can also set the parsers used for an individual view, or viewset,
@@ -45,7 +48,7 @@ using the `APIView` class-based views.
         """
         A view that can accept POST requests with JSON content.
         """
-        parser_classes = (JSONParser,)
+        parser_classes = [JSONParser]
 
         def post(self, request, format=None):
             return Response({'received data': request.data})
@@ -57,7 +60,7 @@ Or, if you're using the `@api_view` decorator with function based views.
     from rest_framework.parsers import JSONParser
 
     @api_view(['POST'])
-    @parser_classes((JSONParser,))
+    @parser_classes([JSONParser])
     def example_view(request, format=None):
         """
         A view that can accept POST requests with JSON content.
@@ -70,7 +73,7 @@ Or, if you're using the `@api_view` decorator with function based views.
 
 ## JSONParser
 
-Parses `JSON` request content.
+Parses `JSON` request content. `request.data` will be populated with a dictionary of data.
 
 **.media_type**: `application/json`
 
@@ -84,7 +87,7 @@ You will typically want to use both `FormParser` and `MultiPartParser` together 
 
 ## MultiPartParser
 
-Parses multipart HTML form content, which supports file uploads.  Both `request.data` will be populated with a `QueryDict`.
+Parses multipart HTML form content, which supports file uploads. `request.data` and `request.FILES` will be populated with a `QueryDict` and `MultiValueDict` respectively.
 
 You will typically want to use both `FormParser` and `MultiPartParser` together in order to fully support HTML form data.
 
@@ -110,7 +113,7 @@ If it is called without a `filename` URL keyword argument, then the client must 
 
     # views.py
     class FileUploadView(views.APIView):
-        parser_classes = (FileUploadParser,)
+        parser_classes = [FileUploadParser]
 
         def put(self, request, filename, format=None):
             file_obj = request.data['file']
@@ -122,7 +125,7 @@ If it is called without a `filename` URL keyword argument, then the client must 
     # urls.py
     urlpatterns = [
         # ...
-        url(r'^upload/(?P<filename>[^/]+)$', FileUploadView.as_view())
+        re_path(r'^upload/(?P<filename>[^/]+)$', FileUploadView.as_view())
     ]
 
 ---
@@ -186,12 +189,12 @@ Install using pip.
 Modify your REST framework settings.
 
     REST_FRAMEWORK = {
-        'DEFAULT_PARSER_CLASSES': (
+        'DEFAULT_PARSER_CLASSES': [
             'rest_framework_yaml.parsers.YAMLParser',
-        ),
-        'DEFAULT_RENDERER_CLASSES': (
+        ],
+        'DEFAULT_RENDERER_CLASSES': [
             'rest_framework_yaml.renderers.YAMLRenderer',
-        ),
+        ],
     }
 
 ## XML
@@ -207,12 +210,12 @@ Install using pip.
 Modify your REST framework settings.
 
     REST_FRAMEWORK = {
-        'DEFAULT_PARSER_CLASSES': (
+        'DEFAULT_PARSER_CLASSES': [
             'rest_framework_xml.parsers.XMLParser',
-        ),
-        'DEFAULT_RENDERER_CLASSES': (
+        ],
+        'DEFAULT_RENDERER_CLASSES': [
             'rest_framework_xml.renderers.XMLRenderer',
-        ),
+        ],
     }
 
 ## MessagePack

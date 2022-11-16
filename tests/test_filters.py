@@ -1,14 +1,13 @@
-from __future__ import unicode_literals
-
 import datetime
+from importlib import reload as reload_module
 
 import pytest
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
+from django.db.models import CharField, Transform
 from django.db.models.functions import Concat, Upper
 from django.test import TestCase
 from django.test.utils import override_settings
-from django.utils.six.moves import reload_module
 
 from rest_framework import filters, generics, serializers
 from rest_framework.compat import coreschema
@@ -163,7 +162,7 @@ class SearchFilterTests(TestCase):
             def get_search_fields(self, view, request):
                 if request.query_params.get('title_only'):
                     return ('$title',)
-                return super(CustomSearchFilter, self).get_search_fields(view, request)
+                return super().get_search_fields(view, request)
 
         class SearchListView(generics.ListAPIView):
             queryset = SearchFilterModel.objects.all()
@@ -172,15 +171,59 @@ class SearchFilterTests(TestCase):
             search_fields = ('$title', '$text')
 
         view = SearchListView.as_view()
-        request = factory.get('/', {'search': '^\w{3}$'})
+        request = factory.get('/', {'search': r'^\w{3}$'})
         response = view(request)
         assert len(response.data) == 10
 
-        request = factory.get('/', {'search': '^\w{3}$', 'title_only': 'true'})
+        request = factory.get('/', {'search': r'^\w{3}$', 'title_only': 'true'})
         response = view(request)
         assert response.data == [
             {'id': 3, 'title': 'zzz', 'text': 'cde'}
         ]
+
+    def test_search_field_with_null_characters(self):
+        view = generics.GenericAPIView()
+        request = factory.get('/?search=\0as%00d\x00f')
+        request = view.initialize_request(request)
+
+        terms = filters.SearchFilter().get_search_terms(request)
+
+        assert terms == ['asdf']
+
+    def test_search_field_with_additional_transforms(self):
+        from django.test.utils import register_lookup
+
+        class SearchListView(generics.ListAPIView):
+            queryset = SearchFilterModel.objects.all()
+            serializer_class = SearchFilterSerializer
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('text__trim', )
+
+        view = SearchListView.as_view()
+
+        # an example custom transform, that trims `a` from the string.
+        class TrimA(Transform):
+            function = 'TRIM'
+            lookup_name = 'trim'
+
+            def as_sql(self, compiler, connection):
+                sql, params = compiler.compile(self.lhs)
+                return "trim(%s, 'a')" % sql, params
+
+        with register_lookup(CharField, TrimA):
+            # Search including `a`
+            request = factory.get('/', {'search': 'abc'})
+
+            response = view(request)
+            assert response.data == []
+
+            # Search excluding `a`
+            request = factory.get('/', {'search': 'bc'})
+            response = view(request)
+            assert response.data == [
+                {'id': 1, 'title': 'z', 'text': 'abc'},
+                {'id': 2, 'title': 'zz', 'text': 'bcd'},
+            ]
 
 
 class AttributeModel(models.Model):
@@ -361,10 +404,29 @@ class SearchFilterAnnotatedFieldTests(TestCase):
         assert len(response.data) == 1
         assert response.data[0]['title_text'] == 'ABCDEF'
 
+    def test_must_call_distinct_subsequent_m2m_fields(self):
+        f = filters.SearchFilter()
+
+        queryset = SearchFilterModelM2M.objects.annotate(
+            title_text=Upper(
+                Concat(models.F('title'), models.F('text'))
+            )
+        ).all()
+
+        # Sanity check that m2m must call distinct
+        assert f.must_call_distinct(queryset, ['attributes'])
+
+        # Annotated field should not prevent m2m must call distinct
+        assert f.must_call_distinct(queryset, ['title_text', 'attributes'])
+
 
 class OrderingFilterModel(models.Model):
     title = models.CharField(max_length=20, verbose_name='verbose title')
     text = models.CharField(max_length=100)
+
+    @property
+    def description(self):
+        return self.title + ": " + self.text
 
 
 class OrderingFilterRelatedModel(models.Model):
@@ -376,6 +438,17 @@ class OrderingFilterSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderingFilterModel
         fields = '__all__'
+
+
+class OrderingFilterSerializerWithModelProperty(serializers.ModelSerializer):
+    class Meta:
+        model = OrderingFilterModel
+        fields = (
+            "id",
+            "title",
+            "text",
+            "description"
+        )
 
 
 class OrderingDottedRelatedSerializer(serializers.ModelSerializer):
@@ -491,6 +564,42 @@ class OrderingFilterTests(TestCase):
             {'id': 3, 'title': 'xwv', 'text': 'cde'},
             {'id': 2, 'title': 'yxw', 'text': 'bcd'},
             {'id': 1, 'title': 'zyx', 'text': 'abc'},
+        ]
+
+    def test_ordering_without_ordering_fields(self):
+        class OrderingListView(generics.ListAPIView):
+            queryset = OrderingFilterModel.objects.all()
+            serializer_class = OrderingFilterSerializerWithModelProperty
+            filter_backends = (filters.OrderingFilter,)
+            ordering = ('title',)
+
+        view = OrderingListView.as_view()
+
+        # Model field ordering works fine.
+        request = factory.get('/', {'ordering': 'text'})
+        response = view(request)
+        assert response.data == [
+            {'id': 1, 'title': 'zyx', 'text': 'abc', 'description': 'zyx: abc'},
+            {'id': 2, 'title': 'yxw', 'text': 'bcd', 'description': 'yxw: bcd'},
+            {'id': 3, 'title': 'xwv', 'text': 'cde', 'description': 'xwv: cde'},
+        ]
+
+        # `incorrectfield` ordering works fine.
+        request = factory.get('/', {'ordering': 'foobar'})
+        response = view(request)
+        assert response.data == [
+            {'id': 3, 'title': 'xwv', 'text': 'cde', 'description': 'xwv: cde'},
+            {'id': 2, 'title': 'yxw', 'text': 'bcd', 'description': 'yxw: bcd'},
+            {'id': 1, 'title': 'zyx', 'text': 'abc', 'description': 'zyx: abc'},
+        ]
+
+        # `description` is a Model property, which should be ignored.
+        request = factory.get('/', {'ordering': 'description'})
+        response = view(request)
+        assert response.data == [
+            {'id': 3, 'title': 'xwv', 'text': 'cde', 'description': 'xwv: cde'},
+            {'id': 2, 'title': 'yxw', 'text': 'bcd', 'description': 'yxw: bcd'},
+            {'id': 1, 'title': 'zyx', 'text': 'abc', 'description': 'zyx: abc'},
         ]
 
     def test_default_ordering(self):

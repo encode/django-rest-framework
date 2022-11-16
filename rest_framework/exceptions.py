@@ -1,21 +1,17 @@
 """
 Handled exceptions raised by REST framework.
 
-In addition Django's built in 403 and 404 exceptions are handled.
+In addition, Django's built in 403 and 404 exceptions are handled.
 (`django.http.Http404` and `django.core.exceptions.PermissionDenied`)
 """
-from __future__ import unicode_literals
-
 import math
 
 from django.http import JsonResponse
-from django.utils import six
-from django.utils.encoding import force_text
-from django.utils.translation import ugettext_lazy as _
-from django.utils.translation import ungettext
+from django.utils.encoding import force_str
+from django.utils.translation import gettext_lazy as _
+from django.utils.translation import ngettext
 
 from rest_framework import status
-from rest_framework.compat import unicode_to_repr
 from rest_framework.utils.serializer_helpers import ReturnDict, ReturnList
 
 
@@ -24,7 +20,7 @@ def _get_error_details(data, default_code=None):
     Descend into a nested data structure, forcing any
     lazy translation strings or strings into `ErrorDetail`.
     """
-    if isinstance(data, list):
+    if isinstance(data, (list, tuple)):
         ret = [
             _get_error_details(item, default_code) for item in data
         ]
@@ -40,7 +36,7 @@ def _get_error_details(data, default_code=None):
             return ReturnDict(ret, serializer=data.serializer)
         return ret
 
-    text = force_text(data)
+    text = force_str(data)
     code = getattr(data, 'code', default_code)
     return ErrorDetail(text, code)
 
@@ -64,32 +60,37 @@ def _get_full_details(detail):
     }
 
 
-class ErrorDetail(six.text_type):
+class ErrorDetail(str):
     """
     A string-like object that can additionally have a code.
     """
     code = None
 
     def __new__(cls, string, code=None):
-        self = super(ErrorDetail, cls).__new__(cls, string)
+        self = super().__new__(cls, string)
         self.code = code
         return self
 
     def __eq__(self, other):
-        r = super(ErrorDetail, self).__eq__(other)
+        result = super().__eq__(other)
+        if result is NotImplemented:
+            return NotImplemented
         try:
-            return r and self.code == other.code
+            return result and self.code == other.code
         except AttributeError:
-            return r
+            return result
 
     def __ne__(self, other):
-        return not self.__eq__(other)
+        result = self.__eq__(other)
+        if result is NotImplemented:
+            return NotImplemented
+        return not result
 
     def __repr__(self):
-        return unicode_to_repr('ErrorDetail(string=%r, code=%r)' % (
-            six.text_type(self),
+        return 'ErrorDetail(string=%r, code=%r)' % (
+            str(self),
             self.code,
-        ))
+        )
 
     def __hash__(self):
         return hash(str(self))
@@ -113,7 +114,7 @@ class APIException(Exception):
         self.detail = _get_error_details(detail, code)
 
     def __str__(self):
-        return six.text_type(self.detail)
+        return str(self.detail)
 
     def get_codes(self):
         """
@@ -152,7 +153,9 @@ class ValidationError(APIException):
 
         # For validation failures, we may collect many errors together,
         # so the details should always be coerced to a list if not already.
-        if not isinstance(detail, dict) and not isinstance(detail, list):
+        if isinstance(detail, tuple):
+            detail = list(detail)
+        elif not isinstance(detail, dict) and not isinstance(detail, list):
             detail = [detail]
 
         self.detail = _get_error_details(detail, code)
@@ -195,8 +198,8 @@ class MethodNotAllowed(APIException):
 
     def __init__(self, method, detail=None, code=None):
         if detail is None:
-            detail = force_text(self.default_detail).format(method=method)
-        super(MethodNotAllowed, self).__init__(detail, code)
+            detail = force_str(self.default_detail).format(method=method)
+        super().__init__(detail, code)
 
 
 class NotAcceptable(APIException):
@@ -206,7 +209,7 @@ class NotAcceptable(APIException):
 
     def __init__(self, detail=None, code=None, available_renderers=None):
         self.available_renderers = available_renderers
-        super(NotAcceptable, self).__init__(detail, code)
+        super().__init__(detail, code)
 
 
 class UnsupportedMediaType(APIException):
@@ -216,29 +219,29 @@ class UnsupportedMediaType(APIException):
 
     def __init__(self, media_type, detail=None, code=None):
         if detail is None:
-            detail = force_text(self.default_detail).format(media_type=media_type)
-        super(UnsupportedMediaType, self).__init__(detail, code)
+            detail = force_str(self.default_detail).format(media_type=media_type)
+        super().__init__(detail, code)
 
 
 class Throttled(APIException):
     status_code = status.HTTP_429_TOO_MANY_REQUESTS
     default_detail = _('Request was throttled.')
-    extra_detail_singular = 'Expected available in {wait} second.'
-    extra_detail_plural = 'Expected available in {wait} seconds.'
+    extra_detail_singular = _('Expected available in {wait} second.')
+    extra_detail_plural = _('Expected available in {wait} seconds.')
     default_code = 'throttled'
 
     def __init__(self, wait=None, detail=None, code=None):
         if detail is None:
-            detail = force_text(self.default_detail)
+            detail = force_str(self.default_detail)
         if wait is not None:
             wait = math.ceil(wait)
             detail = ' '.join((
                 detail,
-                force_text(ungettext(self.extra_detail_singular.format(wait=wait),
-                                     self.extra_detail_plural.format(wait=wait),
-                                     wait))))
+                force_str(ngettext(self.extra_detail_singular.format(wait=wait),
+                                   self.extra_detail_plural.format(wait=wait),
+                                   wait))))
         self.wait = wait
-        super(Throttled, self).__init__(detail, code)
+        super().__init__(detail, code)
 
 
 def server_error(request, *args, **kwargs):

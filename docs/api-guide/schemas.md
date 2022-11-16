@@ -1,6 +1,9 @@
-source: schemas.py
+---
+source:
+    - schemas
+---
 
-# Schemas
+# Schema
 
 > A machine-readable [schema] describes what resources are available via the API, what their URLs are, how they are represented and what operations they support.
 >
@@ -10,24 +13,43 @@ API schemas are a useful tool that allow for a range of use cases, including
 generating reference documentation, or driving dynamic client libraries that
 can interact with your API.
 
-## Install Core API & PyYAML
+Django REST Framework provides support for automatic generation of
+[OpenAPI][openapi] schemas.
 
-You'll need to install the `coreapi` package in order to add schema support
-for REST framework. You probably also want to install `pyyaml`, so that you
-can render the schema into the commonly used YAML-based OpenAPI format.
+## Overview
 
-    pip install coreapi pyyaml
+Schema generation has several moving parts. It's worth having an overview:
 
-## Quickstart
+* `SchemaGenerator` is a top-level class that is responsible for walking your
+  configured URL patterns, finding `APIView` subclasses, enquiring for their
+  schema representation, and compiling the final schema object.
+* `AutoSchema` encapsulates all the details necessary for per-view schema
+  introspection. Is attached to each view via the `schema` attribute. You
+  subclass `AutoSchema` in order to customize your schema.
+* The `generateschema` management command allows you to generate a static schema
+  offline.
+* Alternatively, you can route `SchemaView` to dynamically generate and serve
+  your schema.
+* `settings.DEFAULT_SCHEMA_CLASS` allows you to specify an `AutoSchema`
+  subclass to serve as your project's default.
 
-There are two different ways you can serve a schema description for you API.
+The following sections explain more.
 
-### Generating a schema with the `generateschema` management command
+## Generating an OpenAPI Schema
 
-To generate a static API schema, use the `generateschema` management command.
+### Install dependencies
 
-```shell
-$ python manage.py generateschema > schema.yml
+    pip install pyyaml uritemplate
+
+* `pyyaml` is used to generate schema into YAML-based OpenAPI format.
+* `uritemplate` is used internally to get parameters in path.
+
+### Generating a static schema with the `generateschema` management command
+
+If your schema is static, you can use the `generateschema` management command:
+
+```bash
+./manage.py generateschema --file openapi-schema.yml
 ```
 
 Once you've generated a schema in this way you can annotate it with any
@@ -37,802 +59,382 @@ generator.
 You might want to check your API schema into version control and update it
 with each new release, or serve the API schema from your site's static media.
 
-### Adding a view with `get_schema_view`
+### Generating a dynamic schema with `SchemaView`
 
-To add a dynamically generated schema view to your API, use `get_schema_view`.
+If you require a dynamic schema, because foreign key choices depend on database
+values, for example, you can route a `SchemaView` that will generate and serve
+your schema on demand.
+
+To route a `SchemaView`, use the `get_schema_view()` helper.
+
+In `urls.py`:
 
 ```python
 from rest_framework.schemas import get_schema_view
 
-schema_view = get_schema_view(title="Example API")
-
 urlpatterns = [
-    url('^schema$', schema_view),
-    ...
+    # ...
+    # Use the `get_schema_view()` helper to add a `SchemaView` to project URLs.
+    #   * `title` and `description` parameters are passed to `SchemaGenerator`.
+    #   * Provide view name for use with `reverse()`.
+    path('openapi', get_schema_view(
+        title="Your Project",
+        description="API for all things …",
+        version="1.0.0"
+    ), name='openapi-schema'),
+    # ...
 ]
 ```
 
-See below [for more details](#the-get_schema_view-shortcut) on customizing a
-dynamically generated schema view.
+#### `get_schema_view()`
+
+The `get_schema_view()` helper takes the following keyword arguments:
+
+* `title`: May be used to provide a descriptive title for the schema definition.
+* `description`: Longer descriptive text.
+* `version`: The version of the API.
+* `url`: May be used to pass a canonical base URL for the schema.
+
+        schema_view = get_schema_view(
+            title='Server Monitoring API',
+            url='https://www.example.org/api/'
+        )
+
+* `urlconf`: A string representing the import path to the URL conf that you want
+   to generate an API schema for. This defaults to the value of Django's
+   `ROOT_URLCONF` setting.
+
+        schema_view = get_schema_view(
+            title='Server Monitoring API',
+            url='https://www.example.org/api/',
+            urlconf='myproject.urls'
+        )
+
+* `patterns`: List of url patterns to limit the schema introspection to. If you
+  only want the `myproject.api` urls to be exposed in the schema:
+
+        schema_url_patterns = [
+            path('api/', include('myproject.api.urls')),
+        ]
+
+        schema_view = get_schema_view(
+            title='Server Monitoring API',
+            url='https://www.example.org/api/',
+            patterns=schema_url_patterns,
+        )
+* `public`: May be used to specify if schema should bypass views permissions. Default to False
+
+* `generator_class`: May be used to specify a `SchemaGenerator` subclass to be
+  passed to the `SchemaView`.
+* `authentication_classes`: May be used to specify the list of authentication
+  classes that will apply to the schema endpoint. Defaults to
+  `settings.DEFAULT_AUTHENTICATION_CLASSES`
+* `permission_classes`: May be used to specify the list of permission classes
+  that will apply to the schema endpoint. Defaults to
+  `settings.DEFAULT_PERMISSION_CLASSES`.
+* `renderer_classes`: May be used to pass the set of renderer classes that can
+  be used to render the API root endpoint.
 
-## Internal schema representation
-
-REST framework uses [Core API][coreapi] in order to model schema information in
-a format-independent representation. This information can then be rendered
-into various different schema formats, or used to generate API documentation.
-
-When using Core API, a schema is represented as a `Document` which is the
-top-level container object for information about the API. Available API
-interactions are represented using `Link` objects. Each link includes a URL,
-HTTP method, and may include a list of `Field` instances, which describe any
-parameters that may be accepted by the API endpoint. The `Link` and `Field`
-instances may also include descriptions, that allow an API schema to be
-rendered into user documentation.
-
-Here's an example of an API description that includes a single `search`
-endpoint:
-
-    coreapi.Document(
-        title='Flight Search API',
-        url='https://api.example.org/',
-        content={
-            'search': coreapi.Link(
-                url='/search/',
-                action='get',
-                fields=[
-                    coreapi.Field(
-                        name='from',
-                        required=True,
-                        location='query',
-                        description='City name or airport code.'
-                    ),
-                    coreapi.Field(
-                        name='to',
-                        required=True,
-                        location='query',
-                        description='City name or airport code.'
-                    ),
-                    coreapi.Field(
-                        name='date',
-                        required=True,
-                        location='query',
-                        description='Flight date in "YYYY-MM-DD" format.'
-                    )
-                ],
-                description='Return flight availability and prices.'
-            )
-        }
-    )
-
-## Schema output formats
-
-In order to be presented in an HTTP response, the internal representation
-has to be rendered into the actual bytes that are used in the response.
-
-REST framework includes a few different renderers that you can use for
-encoding the API schema.
-
-* `renderers.OpenAPIRenderer` - Renders into YAML-based [OpenAPI][open-api], the most widely used API schema format.
-* `renderers.JSONOpenAPIRenderer` - Renders into JSON-based [OpenAPI][open-api].
-* `renderers.CoreJSONRenderer` - Renders into [Core JSON][corejson], a format designed for
-use with the `coreapi` client library.
-
-
-[Core JSON][corejson] is designed as a canonical format for use with Core API.
-REST framework includes a renderer class for handling this media type, which
-is available as `renderers.CoreJSONRenderer`.
-
-
-## Schemas vs Hypermedia
-
-It's worth pointing out here that Core API can also be used to model hypermedia
-responses, which present an alternative interaction style to API schemas.
-
-With an API schema, the entire available interface is presented up-front
-as a single endpoint. Responses to individual API endpoints are then typically
-presented as plain data, without any further interactions contained in each
-response.
-
-With Hypermedia, the client is instead presented with a document containing
-both data and available interactions. Each interaction results in a new
-document, detailing both the current state and the available interactions.
-
-Further information and support on building Hypermedia APIs with REST framework
-is planned for a future version.
-
-
----
-
-# Creating a schema
-
-REST framework includes functionality for auto-generating a schema,
-or allows you to specify one explicitly.
-
-## Manual Schema Specification
-
-To manually specify a schema you create a Core API `Document`, similar to the
-example above.
-
-    schema = coreapi.Document(
-        title='Flight Search API',
-        content={
-            ...
-        }
-    )
-
-
-## Automatic Schema Generation
-
-Automatic schema generation is provided by the `SchemaGenerator` class.
-
-`SchemaGenerator` processes a list of routed URL patterns and compiles the
-appropriately structured Core API Document.
-
-Basic usage is just to provide the title for your schema and call
-`get_schema()`:
-
-    generator = schemas.SchemaGenerator(title='Flight Search API')
-    schema = generator.get_schema()
-
-## Per-View Schema Customisation
-
-By default, view introspection is performed by an `AutoSchema` instance
-accessible via the `schema` attribute on `APIView`. This provides the
-appropriate Core API `Link` object for the view, request method and path:
-
-    auto_schema = view.schema
-    coreapi_link = auto_schema.get_link(...)
-
-(In compiling the schema, `SchemaGenerator` calls `view.schema.get_link()` for
-each view, allowed method and path.)
-
----
-
-**Note**: For basic `APIView` subclasses, default introspection is essentially
-limited to the URL kwarg path parameters. For `GenericAPIView`
-subclasses, which includes all the provided class based views, `AutoSchema` will
-attempt to introspect serialiser, pagination and filter fields, as well as
-provide richer path field descriptions. (The key hooks here are the relevant
-`GenericAPIView` attributes and methods: `get_serializer`, `pagination_class`,
-`filter_backends` and so on.)
-
----
-
-To customise the `Link` generation you may:
-
-* Instantiate `AutoSchema` on your view with the `manual_fields` kwarg:
-
-        from rest_framework.views import APIView
-        from rest_framework.schemas import AutoSchema
-
-        class CustomView(APIView):
-            ...
-            schema = AutoSchema(
-                manual_fields=[
-                    coreapi.Field("extra_field", ...),
-                ]
-            )
-
-    This allows extension for the most common case without subclassing.
-
-* Provide an `AutoSchema` subclass with more complex customisation:
-
-        from rest_framework.views import APIView
-        from rest_framework.schemas import AutoSchema
-
-        class CustomSchema(AutoSchema):
-            def get_link(...):
-                # Implement custom introspection here (or in other sub-methods)
-
-        class CustomView(APIView):
-            ...
-            schema = CustomSchema()
-
-    This provides complete control over view introspection.
-
-* Instantiate `ManualSchema` on your view, providing the Core API `Fields` for
-  the view explicitly:
-
-        from rest_framework.views import APIView
-        from rest_framework.schemas import ManualSchema
-
-        class CustomView(APIView):
-            ...
-            schema = ManualSchema(fields=[
-                coreapi.Field(
-                    "first_field",
-                    required=True,
-                    location="path",
-                    schema=coreschema.String()
-                ),
-                coreapi.Field(
-                    "second_field",
-                    required=True,
-                    location="path",
-                    schema=coreschema.String()
-                ),
-            ])
-
-    This allows manually specifying the schema for some views whilst maintaining
-    automatic generation elsewhere.
-
-You may disable schema generation for a view by setting `schema` to `None`:
-
-        class CustomView(APIView):
-            ...
-            schema = None  # Will not appear in schema
-
-This also applies to extra actions for `ViewSet`s:
-
-        class CustomViewSet(viewsets.ModelViewSet):
-
-            @action(detail=True, schema=None)
-            def extra_action(self, request, pk=None):
-                ...
-
----
-
-**Note**: For full details on `SchemaGenerator` plus the `AutoSchema` and
-`ManualSchema` descriptors see the [API Reference below](#api-reference).
-
----
-
-# Adding a schema view
-
-There are a few different ways to add a schema view to your API, depending on
-exactly what you need.
-
-## The get_schema_view shortcut
-
-The simplest way to include a schema in your project is to use the
-`get_schema_view()` function.
-
-    from rest_framework.schemas import get_schema_view
-
-    schema_view = get_schema_view(title="Server Monitoring API")
-
-    urlpatterns = [
-        url('^$', schema_view),
-        ...
-    ]
-
-Once the view has been added, you'll be able to make API requests to retrieve
-the auto-generated schema definition.
-
-    $ http http://127.0.0.1:8000/ Accept:application/coreapi+json
-    HTTP/1.0 200 OK
-    Allow: GET, HEAD, OPTIONS
-    Content-Type: application/vnd.coreapi+json
-
-    {
-        "_meta": {
-            "title": "Server Monitoring API"
-        },
-        "_type": "document",
-        ...
-    }
-
-The arguments to `get_schema_view()` are:
-
-#### `title`
-
-May be used to provide a descriptive title for the schema definition.
-
-#### `url`
-
-May be used to pass a canonical URL for the schema.
-
-    schema_view = get_schema_view(
-        title='Server Monitoring API',
-        url='https://www.example.org/api/'
-    )
-
-#### `urlconf`
-
-A string representing the import path to the URL conf that you want
-to generate an API schema for. This defaults to the value of Django's
-ROOT_URLCONF setting.
-
-    schema_view = get_schema_view(
-        title='Server Monitoring API',
-        url='https://www.example.org/api/',
-        urlconf='myproject.urls'
-    )
-
-#### `renderer_classes`
-
-May be used to pass the set of renderer classes that can be used to render the API root endpoint.
-
-    from rest_framework.schemas import get_schema_view
-    from rest_framework.renderers import JSONOpenAPIRenderer
-
-    schema_view = get_schema_view(
-        title='Server Monitoring API',
-        url='https://www.example.org/api/',
-        renderer_classes=[JSONOpenAPIRenderer]
-    )
-
-#### `patterns`
-
-List of url patterns to limit the schema introspection to. If you only want the `myproject.api` urls
-to be exposed in the schema:
-
-    schema_url_patterns = [
-        url(r'^api/', include('myproject.api.urls')),
-    ]
-
-    schema_view = get_schema_view(
-        title='Server Monitoring API',
-        url='https://www.example.org/api/',
-        patterns=schema_url_patterns,
-    )
-
-#### `generator_class`
-
-May be used to specify a `SchemaGenerator` subclass to be passed to the
-`SchemaView`.
-
-#### `authentication_classes`
-
-May be used to specify the list of authentication classes that will apply to the schema endpoint.
-Defaults to `settings.DEFAULT_AUTHENTICATION_CLASSES`
-
-#### `permission_classes`
-
-May be used to specify the list of permission classes that will apply to the schema endpoint.
-Defaults to `settings.DEFAULT_PERMISSION_CLASSES`
-
-## Using an explicit schema view
-
-If you need a little more control than the `get_schema_view()` shortcut gives you,
-then you can use the `SchemaGenerator` class directly to auto-generate the
-`Document` instance, and to return that from a view.
-
-This option gives you the flexibility of setting up the schema endpoint
-with whatever behaviour you want. For example, you can apply different
-permission, throttling, or authentication policies to the schema endpoint.
-
-Here's an example of using `SchemaGenerator` together with a view to
-return the schema.
-
-**views.py:**
-
-    from rest_framework.decorators import api_view, renderer_classes
-    from rest_framework import renderers, response, schemas
-
-    generator = schemas.SchemaGenerator(title='Bookings API')
-
-    @api_view()
-    @renderer_classes([renderers.OpenAPIRenderer])
-    def schema_view(request):
-        schema = generator.get_schema(request)
-        return response.Response(schema)
-
-**urls.py:**
-
-    urlpatterns = [
-        url('/', schema_view),
-        ...
-    ]
-
-You can also serve different schemas to different users, depending on the
-permissions they have available. This approach can be used to ensure that
-unauthenticated requests are presented with a different schema to
-authenticated requests, or to ensure that different parts of the API are
-made visible to different users depending on their role.
-
-In order to present a schema with endpoints filtered by user permissions,
-you need to pass the `request` argument to the `get_schema()` method, like so:
-
-    @api_view()
-    @renderer_classes([renderers.OpenAPIRenderer])
-    def schema_view(request):
-        generator = schemas.SchemaGenerator(title='Bookings API')
-        return response.Response(generator.get_schema(request=request))
-
-## Explicit schema definition
-
-An alternative to the auto-generated approach is to specify the API schema
-explicitly, by declaring a `Document` object in your codebase. Doing so is a
-little more work, but ensures that you have full control over the schema
-representation.
-
-    import coreapi
-    from rest_framework.decorators import api_view, renderer_classes
-    from rest_framework import renderers, response
-
-    schema = coreapi.Document(
-        title='Bookings API',
-        content={
-            ...
-        }
-    )
-
-    @api_view()
-    @renderer_classes([renderers.OpenAPIRenderer])
-    def schema_view(request):
-        return response.Response(schema)
-
----
-
-# Schemas as documentation
-
-One common usage of API schemas is to use them to build documentation pages.
-
-The schema generation in REST framework uses docstrings to automatically
-populate descriptions in the schema document.
-
-These descriptions will be based on:
-
-* The corresponding method docstring if one exists.
-* A named section within the class docstring, which can be either single line or multi-line.
-* The class docstring.
-
-## Examples
-
-An `APIView`, with an explicit method docstring.
-
-    class ListUsernames(APIView):
-        def get(self, request):
-            """
-            Return a list of all user names in the system.
-            """
-            usernames = [user.username for user in User.objects.all()]
-            return Response(usernames)
-
-A `ViewSet`, with an explict action docstring.
-
-    class ListUsernames(ViewSet):
-        def list(self, request):
-            """
-            Return a list of all user names in the system.
-            """
-            usernames = [user.username for user in User.objects.all()]
-            return Response(usernames)
-
-A generic view with sections in the class docstring, using single-line style.
-
-    class UserList(generics.ListCreateAPIView):
-        """
-        get: List all the users.
-        post: Create a new user.
-        """
-        queryset = User.objects.all()
-        serializer_class = UserSerializer
-        permission_classes = (IsAdminUser,)
-
-A generic viewset with sections in the class docstring, using multi-line style.
-
-    class UserViewSet(viewsets.ModelViewSet):
-        """
-        API endpoint that allows users to be viewed or edited.
-
-        retrieve:
-        Return a user instance.
-
-        list:
-        Return all users, ordered by most recently joined.
-        """
-        queryset = User.objects.all().order_by('-date_joined')
-        serializer_class = UserSerializer
-
----
-
-# API Reference
 
 ## SchemaGenerator
 
-A class that walks a list of routed URL patterns, requests the schema for each view,
-and collates the resulting CoreAPI Document.
+**Schema-level customization**
 
-Typically you'll instantiate `SchemaGenerator` with a single argument, like so:
+```python
+from rest_framework.schemas.openapi import SchemaGenerator
+```
+
+`SchemaGenerator` is a class that walks a list of routed URL patterns, requests
+the schema for each view and collates the resulting OpenAPI schema.
+
+Typically you won't need to instantiate `SchemaGenerator` yourself, but you can
+do so like so:
 
     generator = SchemaGenerator(title='Stock Prices API')
 
 Arguments:
 
-* `title` **required** - The name of the API.
-* `url` - The root URL of the API schema. This option is not required unless the schema is included under path prefix.
-* `patterns` - A list of URLs to inspect when generating the schema. Defaults to the project's URL conf.
-* `urlconf` - A URL conf module name to use when generating the schema. Defaults to `settings.ROOT_URLCONF`.
+* `title` **required**: The name of the API.
+* `description`: Longer descriptive text.
+* `version`: The version of the API. Defaults to `0.1.0`.
+* `url`: The root URL of the API schema. This option is not required unless the schema is included under path prefix.
+* `patterns`: A list of URLs to inspect when generating the schema. Defaults to the project's URL conf.
+* `urlconf`: A URL conf module name to use when generating the schema. Defaults to `settings.ROOT_URLCONF`.
 
-### get_schema(self, request)
+In order to customize the top-level schema, subclass
+`rest_framework.schemas.openapi.SchemaGenerator` and provide your subclass
+as an argument to the `generateschema` command or `get_schema_view()` helper
+function.
 
-Returns a `coreapi.Document` instance that represents the API schema.
+### get_schema(self, request=None, public=False)
 
-    @api_view
-    @renderer_classes([renderers.OpenAPIRenderer])
-    def schema_view(request):
-        generator = schemas.SchemaGenerator(title='Bookings API')
-        return Response(generator.get_schema())
+Returns a dictionary that represents the OpenAPI schema:
 
-The `request` argument is optional, and may be used if you want to apply per-user
-permissions to the resulting schema generation.
+    generator = SchemaGenerator(title='Stock Prices API')
+    schema = generator.get_schema()
 
-### get_links(self, request)
+The `request` argument is optional, and may be used if you want to apply
+per-user permissions to the resulting schema generation.
 
-Return a nested dictionary containing all the links that should be included in the API schema.
+This is a good point to override if you want to customize the generated
+dictionary For example you might wish to add terms of service to the [top-level
+`info` object][info-object]:
 
-This is a good point to override if you want to modify the resulting structure of the generated schema,
-as you can build a new dictionary with a different layout.
-
+```
+class TOSSchemaGenerator(SchemaGenerator):
+    def get_schema(self, *args, **kwargs):
+        schema = super().get_schema(*args, **kwargs)
+        schema["info"]["termsOfService"] = "https://example.com/tos.html"
+        return schema
+```
 
 ## AutoSchema
 
-A class that deals with introspection of individual views for schema generation.
-
-`AutoSchema` is attached to `APIView` via the `schema` attribute.
-
-The `AutoSchema` constructor takes a single keyword argument  `manual_fields`.
-
-**`manual_fields`**: a `list` of `coreapi.Field` instances that will be added to
-the generated fields. Generated fields with a matching `name` will be overwritten.
-
-    class CustomView(APIView):
-        schema = AutoSchema(manual_fields=[
-            coreapi.Field(
-                "my_extra_field",
-                required=True,
-                location="path",
-                schema=coreschema.String()
-            ),
-        ])
-
-For more advanced customisation subclass `AutoSchema` to customise schema generation.
-
-    class CustomViewSchema(AutoSchema):
-        """
-        Overrides `get_link()` to provide Custom Behavior X
-        """
-
-        def get_link(self, path, method, base_url):
-            link = super().get_link(path, method, base_url)
-            # Do something to customize link here...
-            return link
-
-    class MyView(APIView):
-      schema = CustomViewSchema()
-
-The following methods are available to override.
-
-### get_link(self, path, method, base_url)
-
-Returns a `coreapi.Link` instance corresponding to the given view.
-
-This is the main entry point.
-You can override this if you need to provide custom behaviors for particular views.
-
-### get_description(self, path, method)
-
-Returns a string to use as the link description. By default this is based on the
-view docstring as described in the "Schemas as Documentation" section above.
-
-### get_encoding(self, path, method)
-
-Returns a string to indicate the encoding for any request body, when interacting
-with the given view. Eg. `'application/json'`. May return a blank string for views
-that do not expect a request body.
-
-### get_path_fields(self, path, method):
-
-Return a list of `coreapi.Field()` instances. One for each path parameter in the URL.
-
-### get_serializer_fields(self, path, method)
-
-Return a list of `coreapi.Field()` instances. One for each field in the serializer class used by the view.
-
-### get_pagination_fields(self, path, method)
-
-Return a list of `coreapi.Field()` instances, as returned by the `get_schema_fields()` method on any pagination class used by the view.
-
-### get_filter_fields(self, path, method)
-
-Return a list of `coreapi.Field()` instances, as returned by the `get_schema_fields()` method of any filter classes used by the view.
-
-### get_manual_fields(self, path, method)
-
-Return a list of `coreapi.Field()` instances to be added to or replace generated fields. Defaults to (optional) `manual_fields` passed to `AutoSchema` constructor.
-
-May be overridden to customise manual fields by `path` or `method`. For example, a per-method adjustment may look like this:
+**Per-View Customization**
 
 ```python
-def get_manual_fields(self, path, method):
-    """Example adding per-method fields."""
-
-    extra_fields = []
-    if method=='GET':
-        extra_fields = # ... list of extra fields for GET ...
-    if method=='POST':
-        extra_fields = # ... list of extra fields for POST ...
-
-    manual_fields = super().get_manual_fields(path, method)
-    return manual_fields + extra_fields
+from rest_framework.schemas.openapi import AutoSchema
 ```
 
-### update_fields(fields, update_with)
+By default, view introspection is performed by an `AutoSchema` instance
+accessible via the `schema` attribute on `APIView`.
+
+    auto_schema = some_view.schema
 
-Utility `staticmethod`. Encapsulates logic to add or replace fields from a list
-by `Field.name`. May be overridden to adjust replacement criteria.
+`AutoSchema` provides the OpenAPI elements needed for each view, request method
+and path:
 
+* A list of [OpenAPI components][openapi-components]. In DRF terms these are
+  mappings of serializers that describe request and response bodies.
+* The appropriate [OpenAPI operation object][openapi-operation] that describes
+  the endpoint, including path and query parameters for pagination, filtering,
+  and so on.
+
+```python
+components = auto_schema.get_components(...)
+operation = auto_schema.get_operation(...)
+```
 
-## ManualSchema
+In compiling the schema, `SchemaGenerator` calls `get_components()` and
+`get_operation()` for each view, allowed method, and path.
 
-Allows manually providing a list of `coreapi.Field` instances for the schema,
-plus an optional description.
+----
 
-    class MyView(APIView):
-      schema = ManualSchema(fields=[
-            coreapi.Field(
-                "first_field",
-                required=True,
-                location="path",
-                schema=coreschema.String()
-            ),
-            coreapi.Field(
-                "second_field",
-                required=True,
-                location="path",
-                schema=coreschema.String()
-            ),
-        ]
-      )
+**Note**: The automatic introspection of components, and many operation
+parameters relies on the relevant attributes and methods of
+`GenericAPIView`: `get_serializer()`, `pagination_class`, `filter_backends`,
+etc. For basic `APIView` subclasses, default introspection is essentially limited to
+the URL kwarg path parameters for this reason.
 
-The `ManualSchema` constructor takes two arguments:
+----
 
-**`fields`**: A list of `coreapi.Field` instances. Required.
+`AutoSchema` encapsulates the view introspection needed for schema generation.
+Because of this all the schema generation logic is kept in a single place,
+rather than being spread around the already extensive view, serializer and
+field APIs.
 
-**`description`**: A string description. Optional.
+Keeping with this pattern, try not to let schema logic leak into your own
+views, serializers, or fields when customizing the schema generation. You might
+be tempted to do something like this:
 
-**`encoding`**: Default `None`. A string encoding, e.g `application/json`. Optional.
+```python
+class CustomSchema(AutoSchema):
+    """
+    AutoSchema subclass using schema_extra_info on the view.
+    """
+    ...
 
----
+class CustomView(APIView):
+    schema = CustomSchema()
+    schema_extra_info = ... some extra info ...
+```
 
-## Core API
+Here, the `AutoSchema` subclass goes looking for `schema_extra_info` on the
+view. This is _OK_ (it doesn't actually hurt) but it means you'll end up with
+your schema logic spread out in a number of different places.
 
-This documentation gives a brief overview of the components within the `coreapi`
-package that are used to represent an API schema.
+Instead try to subclass `AutoSchema` such that the `extra_info` doesn't leak
+out into the view:
 
-Note that these classes are imported from the `coreapi` package, rather than
-from the `rest_framework` package.
+```python
+class BaseSchema(AutoSchema):
+    """
+    AutoSchema subclass that knows how to use extra_info.
+    """
+    ...
 
-### Document
+class CustomSchema(BaseSchema):
+    extra_info = ... some extra info ...
 
-Represents a container for the API schema.
+class CustomView(APIView):
+    schema = CustomSchema()
+```
 
-#### `title`
+This style is slightly more verbose but maintains the encapsulation of the
+schema related code. It's more _cohesive_ in the _parlance_. It'll keep the
+rest of your API code more tidy.
 
-A name for the API.
+If an option applies to many view classes, rather than creating a specific
+subclass per-view, you may find it more convenient to allow specifying the
+option as an `__init__()` kwarg to your base `AutoSchema` subclass:
 
-#### `url`
+```python
+class CustomSchema(BaseSchema):
+    def __init__(self, **kwargs):
+        # store extra_info for later
+        self.extra_info = kwargs.pop("extra_info")
+        super().__init__(**kwargs)
 
-A canonical URL for the API.
+class CustomView(APIView):
+    schema = CustomSchema(
+        extra_info=... some extra info ...
+    )
+```
 
-#### `content`
+This saves you having to create a custom subclass per-view for a commonly used option.
 
-A dictionary, containing the `Link` objects that the schema contains.
+Not all `AutoSchema` methods expose related `__init__()` kwargs, but those for
+the more commonly needed options do.
 
-In order to provide more structure to the schema, the `content` dictionary
-may be nested, typically to a second level. For example:
+### `AutoSchema` methods
 
-    content={
-        "bookings": {
-            "list": Link(...),
-            "create": Link(...),
-            ...
-        },
-        "venues": {
-            "list": Link(...),
-            ...
-        },
-        ...
-    }
+#### `get_components()`
 
-### Link
+Generates the OpenAPI components that describe request and response bodies,
+deriving their properties from the serializer.
 
-Represents an individual API endpoint.
+Returns a dictionary mapping the component name to the generated
+representation. By default this has just a single pair but you may override
+`get_components()` to return multiple pairs if your view uses multiple
+serializers.
 
-#### `url`
+#### `get_component_name()`
 
-The URL of the endpoint. May be a URI template, such as `/users/{username}/`.
+Computes the component's name from the serializer.
 
-#### `action`
+You may see warnings if your API has duplicate component names. If so you can override `get_component_name()` or pass the `component_name` `__init__()` kwarg (see below) to provide different names.
 
-The HTTP method associated with the endpoint. Note that URLs that support
-more than one HTTP method, should correspond to a single `Link` for each.
+#### `get_reference()`
 
-#### `fields`
+Returns a reference to the serializer component. This may be useful if you override `get_schema()`.
 
-A list of `Field` instances, describing the available parameters on the input.
 
-#### `description`
+#### `map_serializer()`
 
-A short description of the meaning and intended usage of the endpoint.
+Maps serializers to their OpenAPI representations.
 
-### Field
+Most serializers should conform to the standard OpenAPI `object` type, but you may
+wish to override `map_serializer()` in order to customize this or other
+serializer-level fields.
 
-Represents a single input parameter on a given API endpoint.
+#### `map_field()`
 
-#### `name`
+Maps individual serializer fields to their schema representation. The base implementation
+will handle the default fields that Django REST Framework provides.
 
-A descriptive name for the input.
+For `SerializerMethodField` instances, for which the schema is unknown, or custom field subclasses you should override `map_field()` to generate the correct schema:
 
-#### `required`
+```python
+class CustomSchema(AutoSchema):
+    """Extension of ``AutoSchema`` to add support for custom field schemas."""
 
-A boolean, indicated if the client is required to included a value, or if
-the parameter can be omitted.
+    def map_field(self, field):
+        # Handle SerializerMethodFields or custom fields here...
+        # ...
+        return super().map_field(field)
+```
 
-#### `location`
+Authors of third-party packages should aim to provide an `AutoSchema` subclass,
+and a mixin, overriding `map_field()` so that users can easily generate schemas
+for their custom fields.
 
-Determines how the information is encoded into the request. Should be one of
-the following strings:
+#### `get_tags()`
 
-**"path"**
+OpenAPI groups operations by tags. By default tags taken from the first path
+segment of the routed URL. For example, a URL like `/users/{id}/` will generate
+the tag `users`.
 
-Included in a templated URI. For example a `url` value of `/products/{product_code}/` could be used together with a `"path"` field, to handle API inputs in a URL path such as `/products/slim-fit-jeans/`.
+You can pass an `__init__()` kwarg to manually specify tags (see below), or
+override `get_tags()` to provide custom logic.
 
-These fields will normally correspond with [named arguments in the project URL conf][named-arguments].
+#### `get_operation()`
 
-**"query"**
+Returns the [OpenAPI operation object][openapi-operation] that describes the
+endpoint, including path and query parameters for pagination, filtering, and so
+on.
 
-Included as a URL query parameter. For example `?search=sale`. Typically for `GET` requests.
+Together with `get_components()`, this is the main entry point to the view
+introspection.
 
-These fields will normally correspond with pagination and filtering controls on a view.
+#### `get_operation_id()`
 
-**"form"**
+There must be a unique [operationid](openapi-operationid) for each operation.
+By default the `operationId` is deduced from the model name, serializer name or
+view name. The operationId looks like "listItems", "retrieveItem",
+"updateItem", etc. The `operationId` is camelCase by convention.
 
-Included in the request body, as a single item of a JSON object or HTML form. For example `{"colour": "blue", ...}`. Typically for `POST`, `PUT` and `PATCH` requests. Multiple `"form"` fields may be included on a single link.
+#### `get_operation_id_base()`
 
-These fields will normally correspond with serializer fields on a view.
+If you have several views with the same model name, you may see duplicate
+operationIds.
 
-**"body"**
+In order to work around this, you can override `get_operation_id_base()` to
+provide a different base for name part of the ID.
 
-Included as the complete request body. Typically for `POST`, `PUT` and `PATCH` requests. No more than one `"body"` field may exist on a link. May not be used together with `"form"` fields.
+#### `get_serializer()`
 
-These fields will normally correspond with views that use `ListSerializer` to validate the request input, or with file upload views.
+If the view has implemented `get_serializer()`, returns the result.
 
-#### `encoding`
+#### `get_request_serializer()`
 
-**"application/json"**
+By default returns `get_serializer()` but can be overridden to
+differentiate between request and response objects.
 
-JSON encoded request content. Corresponds to views using `JSONParser`.
-Valid only if either one or more `location="form"` fields, or a single
-`location="body"` field is included on the `Link`.
+#### `get_response_serializer()`
 
-**"multipart/form-data"**
+By default returns `get_serializer()` but can be overridden to
+differentiate between request and response objects.
 
-Multipart encoded request content. Corresponds to views using `MultiPartParser`.
-Valid only if one or more `location="form"` fields is included on the `Link`.
+### `AutoSchema.__init__()` kwargs
 
-**"application/x-www-form-urlencoded"**
+`AutoSchema` provides a number of `__init__()` kwargs that can be used for
+common customizations, if the default generated values are not appropriate.
 
-URL encoded request content. Corresponds to views using `FormParser`. Valid
-only if one or more `location="form"` fields is included on the `Link`.
+The available kwargs are:
 
-**"application/octet-stream"**
+* `tags`: Specify a list of tags.
+* `component_name`: Specify the component name.
+* `operation_id_base`: Specify the resource-name part of operation IDs.
 
-Binary upload request content. Corresponds to views using `FileUploadParser`.
-Valid only if a `location="body"` field is included on the `Link`.
+You pass the kwargs when declaring the `AutoSchema` instance on your view:
 
-#### `description`
+```
+class PetDetailView(generics.RetrieveUpdateDestroyAPIView):
+    schema = AutoSchema(
+        tags=['Pets'],
+        component_name='Pet',
+        operation_id_base='Pet',
+    )
+    ...
+```
 
-A short description of the meaning and intended usage of the input field.
+Assuming a `Pet` model and `PetSerializer` serializer, the kwargs in this
+example are probably not needed. Often, though, you'll need to pass the kwargs
+if you have multiple view targeting the same model, or have multiple views with
+identically named serializers.
 
-
----
-
-# Third party packages
-
-## drf-yasg - Yet Another Swagger Generator
-
-[drf-yasg][drf-yasg] generates [OpenAPI][open-api] documents suitable for code generation - nested schemas,
-named models, response bodies, enum/pattern/min/max validators, form parameters, etc.
+If your views have related customizations that are needed frequently, you can
+create a base `AutoSchema` subclass for your project that takes additional
+`__init__()` kwargs to save subclassing `AutoSchema` for each view.
 
 [cite]: https://blog.heroku.com/archives/2014/1/8/json_schema_for_heroku_platform_api
-[coreapi]: https://www.coreapi.org/
-[corejson]: https://www.coreapi.org/specification/encoding/#core-json-encoding
-[drf-yasg]: https://github.com/axnsan12/drf-yasg/
-[open-api]: https://openapis.org/
-[json-hyperschema]: https://json-schema.org/latest/json-schema-hypermedia.html
-[api-blueprint]: https://apiblueprint.org/
-[static-files]: https://docs.djangoproject.com/en/stable/howto/static-files/
-[named-arguments]: https://docs.djangoproject.com/en/stable/topics/http/urls/#named-groups
+[openapi]: https://github.com/OAI/OpenAPI-Specification
+[openapi-specification-extensions]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#specification-extensions
+[openapi-operation]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#operationObject
+[openapi-tags]: https://swagger.io/specification/#tagObject
+[openapi-operationid]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#fixed-fields-17
+[openapi-components]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#componentsObject
+[openapi-reference]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#referenceObject
+[openapi-generator]: https://github.com/OpenAPITools/openapi-generator
+[swagger-codegen]: https://github.com/swagger-api/swagger-codegen
+[info-object]: https://swagger.io/specification/#infoObject

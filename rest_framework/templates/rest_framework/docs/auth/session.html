@@ -12,7 +12,7 @@
     <div class="modal-body">
 
         {% if user.is_authenticated %}
-          <h4 class="text-center">You are logged in as {{ user.username }}.</h4>
+          <h4 class="text-center">You are logged in as {{ user.get_username }}.</h4>
         {% else %}
 
           <div class="text-center">

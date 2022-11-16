@@ -2,7 +2,7 @@
 
 REST framework includes an abstraction for dealing with `ViewSets`, that allows the developer to concentrate on modeling the state and interactions of the API, and leave the URL construction to be handled automatically, based on common conventions.
 
-`ViewSet` classes are almost the same thing as `View` classes, except that they provide operations such as `read`, or `update`, and not method handlers such as `get` or `put`.
+`ViewSet` classes are almost the same thing as `View` classes, except that they provide operations such as `retrieve`, or `update`, and not method handlers such as `get` or `put`.
 
 A `ViewSet` class is only bound to a set of method handlers at the last moment, when it is instantiated into a set of views, typically by using a `Router` class which handles the complexities of defining the URL conf for you.
 
@@ -16,7 +16,7 @@ First of all let's refactor our `UserList` and `UserDetail` views into a single 
 
     class UserViewSet(viewsets.ReadOnlyModelViewSet):
         """
-        This viewset automatically provides `list` and `detail` actions.
+        This viewset automatically provides `list` and `retrieve` actions.
         """
         queryset = User.objects.all()
         serializer_class = UserSerializer
@@ -27,6 +27,7 @@ Next we're going to replace the `SnippetList`, `SnippetDetail` and `SnippetHighl
 
     from rest_framework.decorators import action
     from rest_framework.response import Response
+    from rest_framework import permissions
 
     class SnippetViewSet(viewsets.ModelViewSet):
         """
@@ -37,8 +38,8 @@ Next we're going to replace the `SnippetList`, `SnippetDetail` and `SnippetHighl
         """
         queryset = Snippet.objects.all()
         serializer_class = SnippetSerializer
-        permission_classes = (permissions.IsAuthenticatedOrReadOnly,
-                              IsOwnerOrReadOnly,)
+        permission_classes = [permissions.IsAuthenticatedOrReadOnly,
+                              IsOwnerOrReadOnly]
 
         @action(detail=True, renderer_classes=[renderers.StaticHTMLRenderer])
         def highlight(self, request, *args, **kwargs):
@@ -111,8 +112,8 @@ Here's our re-wired `snippets/urls.py` file.
 
     # Create a router and register our viewsets with it.
     router = DefaultRouter()
-    router.register(r'snippets', views.SnippetViewSet)
-    router.register(r'users', views.UserViewSet)
+    router.register(r'snippets', views.SnippetViewSet, basename='snippet')
+    router.register(r'users', views.UserViewSet, basename='user')
 
     # The API URLs are now determined automatically by the router.
     urlpatterns = [
@@ -128,8 +129,3 @@ The `DefaultRouter` class we're using also automatically creates the API root vi
 Using viewsets can be a really useful abstraction.  It helps ensure that URL conventions will be consistent across your API, minimizes the amount of code you need to write, and allows you to concentrate on the interactions and representations your API provides rather than the specifics of the URL conf.
 
 That doesn't mean it's always the right approach to take.  There's a similar set of trade-offs to consider as when using class-based views instead of function based views.  Using viewsets is less explicit than building your views individually.
-
-In [part 7][tut-7] of the tutorial we'll look at how we can add an API schema,
-and interact with our API using a client library or command line tool.
-
-[tut-7]: 7-schemas-and-client-libraries.md

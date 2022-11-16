@@ -7,15 +7,15 @@ h1 {
 }
 
 pre.highlight code * {
-  white-space: nowrap;    // this sets all children inside to nowrap
+  white-space: nowrap;    /* this sets all children inside to nowrap */
 }
 
 pre.highlight {
-  overflow-x: auto;       // this sets the scrolling in x
+  overflow-x: auto;       /* this sets the scrolling in x */
 }
 
 pre.highlight code {
-  white-space: pre;       // forces <code> to respect <pre> formatting
+  white-space: pre;       /* forces <code> to respect <pre> formatting */
 }
 
 .main-container {
@@ -30,7 +30,7 @@ pre.highlight code {
 
 .sidebar {
   overflow: auto;
-  font-family: verdana;
+  font-family: verdana, sans-serif;
   font-size: 12px;
   font-weight: 200;
   background-color: #2e353d;
@@ -111,7 +111,11 @@ pre.highlight code {
   border: none;
   border-bottom: 1px solid #23282e;
   margin-left: 0px;
-  text-indent: 10px;
+  line-height: 1.4;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-right: 10px;
+  padding-left: 25px;
 }
 
 .sidebar .menu-list ul .sub-menu li:hover,
@@ -128,11 +132,14 @@ pre.highlight code {
 .sidebar .menu-list ul .sub-menu li a:before,
 .sidebar .menu-list li .sub-menu li a:before {
   font-family: FontAwesome;
+  font-size: 14px;
+  font-weight: bold;
   content: "\f105";
-  display: inline-block;
-  padding-left: 10px;
-  padding-right: 10px;
+  display: inline;
   vertical-align: middle;
+  padding-left: 0;
+  padding-right: 7px;
+  margin-left: -12px;
 }
 
 .sidebar .menu-list li {

@@ -15,14 +15,14 @@ Nested data structures are easy enough to work with if they're read-only - simpl
     class ToDoItemSerializer(serializers.ModelSerializer):
         class Meta:
             model = ToDoItem
-            fields = ('text', 'is_completed')
+            fields = ['text', 'is_completed']
 
     class ToDoListSerializer(serializers.ModelSerializer):
         items = ToDoItemSerializer(many=True, read_only=True)
 
         class Meta:
             model = ToDoList
-            fields = ('title', 'items')
+            fields = ['title', 'items']
 
 Some example output from our serializer.
 

@@ -1,16 +1,14 @@
-# coding: utf-8
-from __future__ import unicode_literals
-
 import inspect
 import pickle
 import re
-import unittest
+import sys
+from collections import ChainMap
+from collections.abc import Mapping
 
 import pytest
 from django.db import models
 
 from rest_framework import exceptions, fields, relations, serializers
-from rest_framework.compat import Mapping, unicode_repr
 from rest_framework.fields import Field
 
 from .models import (
@@ -18,15 +16,9 @@ from .models import (
 )
 from .utils import MockObject
 
-try:
-    from collections import ChainMap
-except ImportError:
-    ChainMap = False
-
 
 # Test serializer fields imports.
 # -------------------------------
-
 class TestFieldImports:
     def is_field(self, name, value):
         return (
@@ -69,7 +61,7 @@ class TestFieldImports:
 # -----------------------------
 
 class TestSerializer:
-    def setup(self):
+    def setup_method(self):
         class ExampleSerializer(serializers.Serializer):
             char = serializers.CharField()
             integer = serializers.IntegerField()
@@ -130,7 +122,6 @@ class TestSerializer:
         assert not serializer.is_valid()
         assert serializer.errors == {'non_field_errors': ['No data provided']}
 
-    @unittest.skipUnless(ChainMap, 'requires python 3.3')
     def test_serialize_chainmap(self):
         data = ChainMap({'char': 'abc'}, {'integer': 123})
         serializer = self.Serializer(data=data)
@@ -160,7 +151,7 @@ class TestSerializer:
         to_internal_value() is expected to return a dict, but subclasses may
         return application specific type.
         """
-        class Point(object):
+        class Point:
             def __init__(self, srid, x, y):
                 self.srid = srid
                 self.coords = (x, y)
@@ -171,7 +162,7 @@ class TestSerializer:
             latitude = serializers.FloatField(source='y')
 
             def to_internal_value(self, data):
-                kwargs = super(NestedPointSerializer, self).to_internal_value(data)
+                kwargs = super().to_internal_value(data)
                 return Point(srid=4326, **kwargs)
 
         serializer = NestedPointSerializer(data={'longitude': 6.958307, 'latitude': 50.941357})
@@ -201,7 +192,7 @@ class TestSerializer:
         def raise_exception(value):
             raise exceptions.ValidationError('Raised error')
 
-        for validators in ([raise_exception], (raise_exception,), set([raise_exception])):
+        for validators in ([raise_exception], (raise_exception,), {raise_exception}):
             class ExampleSerializer(serializers.Serializer):
                 char = serializers.CharField(validators=validators)
                 integer = serializers.IntegerField()
@@ -213,6 +204,13 @@ class TestSerializer:
             assert serializer.errors == {'char': [
                 exceptions.ErrorDetail(string='Raised error', code='invalid')
             ]}
+
+    @pytest.mark.skipif(
+        sys.version_info < (3, 7),
+        reason="subscriptable classes requires Python 3.7 or higher",
+    )
+    def test_serializer_is_subscriptable(self):
+        assert serializers.Serializer is serializers.Serializer["foo"]
 
 
 class TestValidateMethod:
@@ -242,7 +240,7 @@ class TestValidateMethod:
 
 
 class TestBaseSerializer:
-    def setup(self):
+    def setup_method(self):
         class ExampleSerializer(serializers.BaseSerializer):
             def to_representation(self, obj):
                 return {
@@ -327,7 +325,8 @@ class TestBaseSerializer:
 
 class TestStarredSource:
     """
-    Tests for `source='*'` argument, which is used for nested representations.
+    Tests for `source='*'` argument, which is often used for complex field or
+    nested representations.
 
     For example:
 
@@ -338,7 +337,7 @@ class TestStarredSource:
         'nested2': {'c': 3, 'd': 4}
     }
 
-    def setup(self):
+    def setup_method(self):
         class NestedSerializer1(serializers.Serializer):
             a = serializers.IntegerField()
             b = serializers.IntegerField()
@@ -347,11 +346,28 @@ class TestStarredSource:
             c = serializers.IntegerField()
             d = serializers.IntegerField()
 
-        class TestSerializer(serializers.Serializer):
+        class NestedBaseSerializer(serializers.Serializer):
             nested1 = NestedSerializer1(source='*')
             nested2 = NestedSerializer2(source='*')
 
-        self.Serializer = TestSerializer
+        # nullable nested serializer testing
+        class NullableNestedSerializer(serializers.Serializer):
+            nested = NestedSerializer1(source='*', allow_null=True)
+
+        # nullable custom field testing
+        class CustomField(serializers.Field):
+            def to_representation(self, instance):
+                return getattr(instance, 'foo', None)
+
+            def to_internal_value(self, data):
+                return {'foo': data}
+
+        class NullableFieldSerializer(serializers.Serializer):
+            field = CustomField(source='*', allow_null=True)
+
+        self.Serializer = NestedBaseSerializer
+        self.NullableNestedSerializer = NullableNestedSerializer
+        self.NullableFieldSerializer = NullableFieldSerializer
 
     def test_nested_validate(self):
         """
@@ -366,6 +382,12 @@ class TestStarredSource:
             'd': 4
         }
 
+    def test_nested_null_validate(self):
+        serializer = self.NullableNestedSerializer(data={'nested': None})
+
+        # validation should fail (but not error) since nested fields are required
+        assert not serializer.is_valid()
+
     def test_nested_serialize(self):
         """
         An object can be serialized into a nested representation.
@@ -373,6 +395,20 @@ class TestStarredSource:
         instance = {'a': 1, 'b': 2, 'c': 3, 'd': 4}
         serializer = self.Serializer(instance)
         assert serializer.data == self.data
+
+    def test_field_validate(self):
+        serializer = self.NullableFieldSerializer(data={'field': 'bar'})
+
+        # validation should pass since no internal validation
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'foo': 'bar'}
+
+    def test_field_null_validate(self):
+        serializer = self.NullableFieldSerializer(data={'field': None})
+
+        # validation should pass since no internal validation
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'foo': None}
 
 
 class TestIncorrectlyConfigured:
@@ -394,23 +430,6 @@ class TestIncorrectlyConfigured:
             "The serializer field might be named incorrectly and not match any attribute or key on the `ExampleObject` instance.\n"
             "Original exception text was:"
         )
-
-
-class TestUnicodeRepr:
-    def test_unicode_repr(self):
-        class ExampleSerializer(serializers.Serializer):
-            example = serializers.CharField()
-
-        class ExampleObject:
-            def __init__(self):
-                self.example = '한국'
-
-            def __repr__(self):
-                return unicode_repr(self.example)
-
-        instance = ExampleObject()
-        serializer = ExampleSerializer(instance)
-        repr(serializer)  # Should not error.
 
 
 class TestNotRequiredOutput:
@@ -444,7 +463,7 @@ class TestNotRequiredOutput:
 
 
 class TestDefaultOutput:
-    def setup(self):
+    def setup_method(self):
         class ExampleSerializer(serializers.Serializer):
             has_default = serializers.CharField(default='x')
             has_default_callable = serializers.CharField(default=lambda: 'y')
@@ -544,7 +563,7 @@ class TestDefaultOutput:
             bar = serializers.CharField(source='foo.bar', allow_null=True)
             optional = serializers.CharField(required=False, allow_null=True)
 
-        # allow_null=True should imply default=None when serialising:
+        # allow_null=True should imply default=None when serializing:
         assert Serializer({'foo': None}).data == {'foo': None, 'bar': None, 'optional': None, }
 
 
@@ -565,7 +584,7 @@ class TestCacheSerializerData:
 
 
 class TestDefaultInclusions:
-    def setup(self):
+    def setup_method(self):
         class ExampleSerializer(serializers.Serializer):
             char = serializers.CharField(default='abc')
             integer = serializers.IntegerField()
@@ -593,7 +612,7 @@ class TestDefaultInclusions:
 
 
 class TestSerializerValidationWithCompiledRegexField:
-    def setup(self):
+    def setup_method(self):
         class ExampleSerializer(serializers.Serializer):
             name = serializers.RegexField(re.compile(r'\d'), required=True)
         self.Serializer = ExampleSerializer
@@ -609,7 +628,7 @@ class Test2555Regression:
     def test_serializer_context(self):
         class NestedSerializer(serializers.Serializer):
             def __init__(self, *args, **kwargs):
-                super(NestedSerializer, self).__init__(*args, **kwargs)
+                super().__init__(*args, **kwargs)
                 # .context should not cache
                 self.context
 
@@ -622,7 +641,7 @@ class Test2555Regression:
 
 
 class Test4606Regression:
-    def setup(self):
+    def setup_method(self):
         class ExampleSerializer(serializers.Serializer):
             name = serializers.CharField(required=True)
             choices = serializers.CharField(required=True)
@@ -671,3 +690,75 @@ class TestDeclaredFieldInheritance:
         assert len(Parent().get_fields()) == 2
         assert len(Child().get_fields()) == 2
         assert len(Grandchild().get_fields()) == 2
+
+    def test_multiple_inheritance(self):
+        class A(serializers.Serializer):
+            field = serializers.CharField()
+
+        class B(serializers.Serializer):
+            field = serializers.IntegerField()
+
+        class TestSerializer(A, B):
+            pass
+
+        fields = {
+            name: type(f) for name, f
+            in TestSerializer()._declared_fields.items()
+        }
+        assert fields == {
+            'field': serializers.CharField,
+        }
+
+    def test_field_ordering(self):
+        class Base(serializers.Serializer):
+            f1 = serializers.CharField()
+            f2 = serializers.CharField()
+
+        class A(Base):
+            f3 = serializers.IntegerField()
+
+        class B(serializers.Serializer):
+            f3 = serializers.CharField()
+            f4 = serializers.CharField()
+
+        class TestSerializer(A, B):
+            f2 = serializers.IntegerField()
+            f5 = serializers.CharField()
+
+        fields = {
+            name: type(f) for name, f
+            in TestSerializer()._declared_fields.items()
+        }
+
+        # `IntegerField`s should be the 'winners' in field name conflicts
+        # - `TestSerializer.f2` should override `Base.F2`
+        # - `A.f3` should override `B.f3`
+        assert fields == {
+            'f1': serializers.CharField,
+            'f2': serializers.IntegerField,
+            'f3': serializers.IntegerField,
+            'f4': serializers.CharField,
+            'f5': serializers.CharField,
+        }
+
+
+class Test8301Regression:
+    @pytest.mark.skipif(
+        sys.version_info < (3, 9),
+        reason="dictionary union operator requires Python 3.9 or higher",
+    )
+    def test_ReturnDict_merging(self):
+        # Serializer.data returns ReturnDict, this is essentially a test for that.
+
+        class TestSerializer(serializers.Serializer):
+            char = serializers.CharField()
+
+        s = TestSerializer(data={'char': 'x'})
+        assert s.is_valid()
+        assert s.data | {} == {'char': 'x'}
+        assert s.data | {'other': 'y'} == {'char': 'x', 'other': 'y'}
+        assert {} | s.data == {'char': 'x'}
+        assert {'other': 'y'} | s.data == {'char': 'x', 'other': 'y'}
+
+        assert (s.data | {}).__class__ == s.data.__class__
+        assert ({} | s.data).__class__ == s.data.__class__

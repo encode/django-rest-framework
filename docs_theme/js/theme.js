@@ -9,11 +9,6 @@ var getSearchTerm = function() {
   }
 };
 
-var initilizeSearch = function() {
-  require.config({ baseUrl: '/mkdocs/js' });
-  require(['search']);
-};
-
 $(function() {
   var searchTerm = getSearchTerm(),
     $searchModal = $('#mkdocs_search_modal'),
@@ -30,6 +25,5 @@ $(function() {
 
   $searchModal.on('shown', function() {
     $searchQuery.focus();
-    initilizeSearch();
   });
 });

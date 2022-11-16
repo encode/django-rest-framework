@@ -3,18 +3,13 @@ The most important decorator in this module is `@api_view`, which is used
 for writing function-based views with REST framework.
 
 There are also various decorators for setting the API policies on function
-based views, as well as the `@detail_route` and `@list_route` decorators, which are
-used to annotate methods on viewsets that should be included by routers.
+based views, as well as the `@action` decorator, which is used to annotate
+methods on viewsets that should be included by routers.
 """
-from __future__ import unicode_literals
-
 import types
-import warnings
 
 from django.forms.utils import pretty_name
-from django.utils import six
 
-from rest_framework import RemovedInDRF310Warning
 from rest_framework.views import APIView
 
 
@@ -28,7 +23,7 @@ def api_view(http_method_names=None):
     def decorator(func):
 
         WrappedAPIView = type(
-            six.PY3 and 'WrappedAPIView' or b'WrappedAPIView',
+            'WrappedAPIView',
             (APIView,),
             {'__doc__': func.__doc__}
         )
@@ -129,10 +124,25 @@ def action(methods=None, detail=None, url_path=None, url_name=None, **kwargs):
     """
     Mark a ViewSet method as a routable action.
 
-    Set the `detail` boolean to determine if this action should apply to
-    instance/detail requests or collection/list requests.
+    `@action`-decorated functions will be endowed with a `mapping` property,
+    a `MethodMapper` that can be used to add additional method-based behaviors
+    on the routed action.
+
+    :param methods: A list of HTTP method names this action responds to.
+                    Defaults to GET only.
+    :param detail: Required. Determines whether this action applies to
+                   instance/detail requests or collection/list requests.
+    :param url_path: Define the URL segment for this action. Defaults to the
+                     name of the method decorated.
+    :param url_name: Define the internal (`reverse`) URL name for this action.
+                     Defaults to the name of the method decorated with underscores
+                     replaced with dashes.
+    :param kwargs: Additional properties to set on the view.  This can be used
+                   to override viewset-level *_classes settings, equivalent to
+                   how the `@renderer_classes` etc. decorators work for function-
+                   based API views.
     """
-    methods = ['get'] if (methods is None) else methods
+    methods = ['get'] if methods is None else methods
     methods = [method.lower() for method in methods]
 
     assert detail is not None, (
@@ -149,6 +159,10 @@ def action(methods=None, detail=None, url_path=None, url_name=None, **kwargs):
         func.detail = detail
         func.url_path = url_path if url_path else func.__name__
         func.url_name = url_name if url_name else func.__name__.replace('_', '-')
+
+        # These kwargs will end up being passed to `ViewSet.as_view()` within
+        # the router, which eventually delegates to Django's CBV `View`,
+        # which assigns them as instance attributes for each request.
         func.kwargs = kwargs
 
         # Set descriptive arguments for viewsets
@@ -217,39 +231,3 @@ class MethodMapper(dict):
 
     def trace(self, func):
         return self._map('trace', func)
-
-
-def detail_route(methods=None, **kwargs):
-    """
-    Used to mark a method on a ViewSet that should be routed for detail requests.
-    """
-    warnings.warn(
-        "`detail_route` is deprecated and will be removed in 3.10 in favor of "
-        "`action`, which accepts a `detail` bool. Use `@action(detail=True)` instead.",
-        RemovedInDRF310Warning, stacklevel=2
-    )
-
-    def decorator(func):
-        func = action(methods, detail=True, **kwargs)(func)
-        if 'url_name' not in kwargs:
-            func.url_name = func.url_path.replace('_', '-')
-        return func
-    return decorator
-
-
-def list_route(methods=None, **kwargs):
-    """
-    Used to mark a method on a ViewSet that should be routed for list requests.
-    """
-    warnings.warn(
-        "`list_route` is deprecated and will be removed in 3.10 in favor of "
-        "`action`, which accepts a `detail` bool. Use `@action(detail=False)` instead.",
-        RemovedInDRF310Warning, stacklevel=2
-    )
-
-    def decorator(func):
-        func = action(methods, detail=False, **kwargs)(func)
-        if 'url_name' not in kwargs:
-            func.url_name = func.url_path.replace('_', '-')
-        return func
-    return decorator

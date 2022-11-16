@@ -1,11 +1,7 @@
-# coding: utf-8
-from __future__ import unicode_literals
-
 import pytest
 from django.core.paginator import Paginator as DjangoPaginator
 from django.db import models
 from django.test import TestCase
-from django.utils import six
 
 from rest_framework import (
     exceptions, filters, generics, pagination, serializers, status
@@ -22,7 +18,7 @@ class TestPaginationIntegration:
     Integration tests.
     """
 
-    def setup(self):
+    def setup_method(self):
         class PassThroughSerializer(serializers.BaseSerializer):
             def to_representation(self, item):
                 return item
@@ -144,7 +140,7 @@ class TestPaginationDisabledIntegration:
     Integration tests for disabled pagination.
     """
 
-    def setup(self):
+    def setup_method(self):
         class PassThroughSerializer(serializers.BaseSerializer):
             def to_representation(self, item):
                 return item
@@ -167,7 +163,7 @@ class TestPageNumberPagination:
     Unit tests for `pagination.PageNumberPagination`.
     """
 
-    def setup(self):
+    def setup_method(self):
         class ExamplePagination(pagination.PageNumberPagination):
             page_size = 5
 
@@ -208,7 +204,7 @@ class TestPageNumberPagination:
             ]
         }
         assert self.pagination.display_page_controls
-        assert isinstance(self.pagination.to_html(), six.text_type)
+        assert isinstance(self.pagination.to_html(), str)
 
     def test_second_page(self):
         request = Request(factory.get('/', {'page': 2}))
@@ -263,6 +259,41 @@ class TestPageNumberPagination:
         with pytest.raises(exceptions.NotFound):
             self.paginate_queryset(request)
 
+    def test_get_paginated_response_schema(self):
+        unpaginated_schema = {
+            'type': 'object',
+            'item': {
+                'properties': {
+                    'test-property': {
+                        'type': 'integer',
+                    },
+                },
+            },
+        }
+
+        assert self.pagination.get_paginated_response_schema(unpaginated_schema) == {
+            'type': 'object',
+            'properties': {
+                'count': {
+                    'type': 'integer',
+                    'example': 123,
+                },
+                'next': {
+                    'type': 'string',
+                    'nullable': True,
+                    'format': 'uri',
+                    'example': 'http://api.example.org/accounts/?page=4',
+                },
+                'previous': {
+                    'type': 'string',
+                    'nullable': True,
+                    'format': 'uri',
+                    'example': 'http://api.example.org/accounts/?page=2',
+                },
+                'results': unpaginated_schema,
+            },
+        }
+
 
 class TestPageNumberPaginationOverride:
     """
@@ -271,7 +302,7 @@ class TestPageNumberPaginationOverride:
     the Django Paginator Class is overridden.
     """
 
-    def setup(self):
+    def setup_method(self):
         class OverriddenDjangoPaginator(DjangoPaginator):
             # override the count in our overridden Django Paginator
             # we will only return one page, with one item
@@ -314,7 +345,7 @@ class TestPageNumberPaginationOverride:
             ]
         }
         assert not self.pagination.display_page_controls
-        assert isinstance(self.pagination.to_html(), six.text_type)
+        assert isinstance(self.pagination.to_html(), str)
 
     def test_invalid_page(self):
         request = Request(factory.get('/', {'page': 'invalid'}))
@@ -327,7 +358,7 @@ class TestLimitOffset:
     Unit tests for `pagination.LimitOffsetPagination`.
     """
 
-    def setup(self):
+    def setup_method(self):
         class ExamplePagination(pagination.LimitOffsetPagination):
             default_limit = 10
             max_limit = 15
@@ -369,7 +400,7 @@ class TestLimitOffset:
             ]
         }
         assert self.pagination.display_page_controls
-        assert isinstance(self.pagination.to_html(), six.text_type)
+        assert isinstance(self.pagination.to_html(), str)
 
     def test_pagination_not_applied_if_limit_or_default_limit_not_set(self):
         class MockPagination(pagination.LimitOffsetPagination):
@@ -503,7 +534,7 @@ class TestLimitOffset:
         content = self.get_paginated_content(queryset)
         next_limit = self.pagination.default_limit
         next_offset = self.pagination.default_limit
-        next_url = 'http://testserver/?limit={0}&offset={1}'.format(next_limit, next_offset)
+        next_url = 'http://testserver/?limit={}&offset={}'.format(next_limit, next_offset)
         assert queryset == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
         assert content.get('next') == next_url
 
@@ -516,7 +547,7 @@ class TestLimitOffset:
         content = self.get_paginated_content(queryset)
         next_limit = self.pagination.default_limit
         next_offset = self.pagination.default_limit
-        next_url = 'http://testserver/?limit={0}&offset={1}'.format(next_limit, next_offset)
+        next_url = 'http://testserver/?limit={}&offset={}'.format(next_limit, next_offset)
         assert queryset == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
         assert content.get('next') == next_url
 
@@ -532,12 +563,47 @@ class TestLimitOffset:
         max_limit = self.pagination.max_limit
         next_offset = offset + max_limit
         prev_offset = offset - max_limit
-        base_url = 'http://testserver/?limit={0}'.format(max_limit)
-        next_url = base_url + '&offset={0}'.format(next_offset)
-        prev_url = base_url + '&offset={0}'.format(prev_offset)
+        base_url = 'http://testserver/?limit={}'.format(max_limit)
+        next_url = base_url + '&offset={}'.format(next_offset)
+        prev_url = base_url + '&offset={}'.format(prev_offset)
         assert queryset == list(range(51, 66))
         assert content.get('next') == next_url
         assert content.get('previous') == prev_url
+
+    def test_get_paginated_response_schema(self):
+        unpaginated_schema = {
+            'type': 'object',
+            'item': {
+                'properties': {
+                    'test-property': {
+                        'type': 'integer',
+                    },
+                },
+            },
+        }
+
+        assert self.pagination.get_paginated_response_schema(unpaginated_schema) == {
+            'type': 'object',
+            'properties': {
+                'count': {
+                    'type': 'integer',
+                    'example': 123,
+                },
+                'next': {
+                    'type': 'string',
+                    'nullable': True,
+                    'format': 'uri',
+                    'example': 'http://api.example.org/accounts/?offset=400&limit=100',
+                },
+                'previous': {
+                    'type': 'string',
+                    'nullable': True,
+                    'format': 'uri',
+                    'example': 'http://api.example.org/accounts/?offset=200&limit=100',
+                },
+                'results': unpaginated_schema,
+            },
+        }
 
 
 class CursorPaginationTestsMixin:
@@ -632,7 +698,53 @@ class CursorPaginationTestsMixin:
         assert current == [1, 1, 1, 1, 1]
         assert next == [1, 2, 3, 4, 4]
 
-        assert isinstance(self.pagination.to_html(), six.text_type)
+        assert isinstance(self.pagination.to_html(), str)
+
+    def test_cursor_pagination_current_page_empty_forward(self):
+        # Regression test for #6504
+        self.pagination.base_url = "/"
+
+        # We have a cursor on the element at position 100, but this element doesn't exist
+        # anymore.
+        cursor = pagination.Cursor(reverse=False, offset=0, position=100)
+        url = self.pagination.encode_cursor(cursor)
+        self.pagination.base_url = "/"
+
+        # Loading the page with this cursor doesn't crash
+        (previous, current, next, previous_url, next_url) = self.get_pages(url)
+
+        # The previous url doesn't crash either
+        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
+
+        # And point to things that are not completely off.
+        assert previous == [7, 7, 7, 8, 9]
+        assert current == [9, 9, 9, 9, 9]
+        assert next == []
+        assert previous_url is not None
+        assert next_url is not None
+
+    def test_cursor_pagination_current_page_empty_reverse(self):
+        # Regression test for #6504
+        self.pagination.base_url = "/"
+
+        # We have a cursor on the element at position 100, but this element doesn't exist
+        # anymore.
+        cursor = pagination.Cursor(reverse=True, offset=0, position=100)
+        url = self.pagination.encode_cursor(cursor)
+        self.pagination.base_url = "/"
+
+        # Loading the page with this cursor doesn't crash
+        (previous, current, next, previous_url, next_url) = self.get_pages(url)
+
+        # The previous url doesn't crash either
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+
+        # And point to things that are not completely off.
+        assert previous == [7, 7, 7, 7, 8]
+        assert current == []
+        assert next is None
+        assert previous_url is not None
+        assert next_url is None
 
     def test_cursor_pagination_with_page_size(self):
         (previous, current, next, previous_url, next_url) = self.get_pages('/?page_size=20')
@@ -792,18 +904,49 @@ class CursorPaginationTestsMixin:
         assert current == [1, 1, 1, 1, 1]
         assert next == [1, 2, 3, 4, 4]
 
+    def test_get_paginated_response_schema(self):
+        unpaginated_schema = {
+            'type': 'object',
+            'item': {
+                'properties': {
+                    'test-property': {
+                        'type': 'integer',
+                    },
+                },
+            },
+        }
+
+        assert self.pagination.get_paginated_response_schema(unpaginated_schema) == {
+            'type': 'object',
+            'properties': {
+                'next': {
+                    'type': 'string',
+                    'nullable': True,
+                    'format': 'uri',
+                    'example': 'http://api.example.org/accounts/?cursor=cD00ODY%3D"'
+                },
+                'previous': {
+                    'type': 'string',
+                    'nullable': True,
+                    'format': 'uri',
+                    'example': 'http://api.example.org/accounts/?cursor=cj0xJnA9NDg3'
+                },
+                'results': unpaginated_schema,
+            },
+        }
+
 
 class TestCursorPagination(CursorPaginationTestsMixin):
     """
     Unit tests for `pagination.CursorPagination`.
     """
 
-    def setup(self):
-        class MockObject(object):
+    def setup_method(self):
+        class MockObject:
             def __init__(self, idx):
                 self.created = idx
 
-        class MockQuerySet(object):
+        class MockQuerySet:
             def __init__(self, items):
                 self.items = items
 

@@ -124,7 +124,7 @@ REST framework continues to be open-source and permissively licensed, but we fir
 ## What funding has enabled so far
 
 * The [3.4](https://www.django-rest-framework.org/community/3.4-announcement/) and [3.5](https://www.django-rest-framework.org/community/3.5-announcement/) releases, including schema generation for both Swagger and RAML, a Python client library, a Command Line client, and addressing of a large number of outstanding issues.
-* The [3.6](https://www.django-rest-framework.org/community/3.6-announcement/) release, including  JavaScript client library, and API documentation, complete with auto-generated code samples.
+* The [3.6](https://www.django-rest-framework.org/community/3.6-announcement/) release, including JavaScript client library, and API documentation, complete with auto-generated code samples.
 * The [3.7 release](https://www.django-rest-framework.org/community/3.7-announcement/), made possible due to our collaborative funding model, focuses on improvements to schema generation and the interactive API documentation.
 * The recent [3.8 release](https://www.django-rest-framework.org/community/3.8-announcement/).
 * Tom Christie, the creator of Django REST framework, working on the project full-time.
@@ -137,7 +137,7 @@ REST framework continues to be open-source and permissively licensed, but we fir
 ## What future funding will enable
 
 * Realtime API support, using WebSockets. This will consist of documentation and support for using REST framework together with Django Channels, plus integrating WebSocket support into the client libraries.
-* Better authentication defaults, possibly bringing JWT & CORs support into the core package.
+* Better authentication defaults, possibly bringing JWT & CORS support into the core package.
 * Securing the community & operations manager position long-term.
 * Opening up and securing a part-time position to focus on ticket triage and resolution.
 * Paying for development time on building API client libraries in a range of programming languages. These would be integrated directly into the upcoming API documentation.
@@ -154,13 +154,13 @@ Sign up for a paid plan today, and help ensure that REST framework becomes a sus
 
 &nbsp;
 
->  The number one feature of the Python programming language is its community. Such a community is only possible because of the Open Source nature of the language and all the culture that comes from it. Building great Open Source projects require great minds. Given that, we at Vinta are not only proud to sponsor the team behind DRF but we also recognize the ROI that comes from it.
+> The number one feature of the Python programming language is its community. Such a community is only possible because of the Open Source nature of the language and all the culture that comes from it. Building great Open Source projects require great minds. Given that, we at Vinta are not only proud to sponsor the team behind DRF but we also recognize the ROI that comes from it.
 >
 > &mdash; Filipe Ximenes, Vinta Software
 
 &nbsp;
 
->  It's really awesome that this project continues to endure. The code base is top notch and the maintainers are committed to the highest level of quality.
+> It's really awesome that this project continues to endure. The code base is top notch and the maintainers are committed to the highest level of quality.
 DRF is one of the core reasons why Django is top choice among web frameworks today. In my opinion, it sets the standard for rest frameworks for the development community at large.
 >
 > &mdash; Andrew Conti, Django REST framework user

@@ -1,22 +1,17 @@
-from __future__ import unicode_literals
-
 import base64
 import unittest
-import warnings
+from unittest import mock
 
-import django
-import pytest
+from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, Group, Permission, User
 from django.db import models
 from django.test import TestCase
 from django.urls import ResolverMatch
 
 from rest_framework import (
-    HTTP_HEADER_ENCODING, RemovedInDRF310Warning, authentication, generics,
-    permissions, serializers, status, views
+    HTTP_HEADER_ENCODING, authentication, generics, permissions, serializers,
+    status, views
 )
-from rest_framework.compat import PY36, is_guardian_installed, mock
-from rest_framework.filters import DjangoObjectPermissionsFilter
 from rest_framework.routers import DefaultRouter
 from rest_framework.test import APIRequestFactory
 from tests.models import BasicModel
@@ -252,12 +247,6 @@ class BasicPermModel(models.Model):
     class Meta:
         app_label = 'tests'
 
-        if django.VERSION < (2, 1):
-            permissions = (
-                ('view_basicpermmodel', 'Can view basic perm model'),
-                # add, change, delete built in to django
-            )
-
 
 class BasicPermSerializer(serializers.ModelSerializer):
     class Meta:
@@ -310,7 +299,7 @@ class GetQuerysetObjectPermissionInstanceView(generics.RetrieveUpdateDestroyAPIV
 get_queryset_object_permissions_view = GetQuerysetObjectPermissionInstanceView.as_view()
 
 
-@unittest.skipUnless(is_guardian_installed(), 'django-guardian not installed')
+@unittest.skipUnless('guardian' in settings.INSTALLED_APPS, 'django-guardian not installed')
 class ObjectPermissionsIntegrationTests(TestCase):
     """
     Integration tests for the object level permissions API.
@@ -331,14 +320,14 @@ class ObjectPermissionsIntegrationTests(TestCase):
         everyone = Group.objects.create(name='everyone')
         model_name = BasicPermModel._meta.model_name
         app_label = BasicPermModel._meta.app_label
-        f = '{0}_{1}'.format
+        f = '{}_{}'.format
         perms = {
             'view': f('view', model_name),
             'change': f('change', model_name),
             'delete': f('delete', model_name)
         }
         for perm in perms.values():
-            perm = '{0}.{1}'.format(app_label, perm)
+            perm = '{}.{}'.format(app_label, perm)
             assign_perm(perm, everyone)
         everyone.user_set.add(*users.values())
 
@@ -419,36 +408,13 @@ class ObjectPermissionsIntegrationTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     # Read list
-    def test_django_object_permissions_filter_deprecated(self):
-        with warnings.catch_warnings(record=True) as w:
-            warnings.simplefilter("always")
-            DjangoObjectPermissionsFilter()
-
-        message = ("`DjangoObjectPermissionsFilter` has been deprecated and moved "
-                   "to the 3rd-party django-rest-framework-guardian package.")
-        self.assertEqual(len(w), 1)
-        self.assertIs(w[-1].category, RemovedInDRF310Warning)
-        self.assertEqual(str(w[-1].message), message)
-
+    # Note: this previously tested `DjangoObjectPermissionsFilter`, which has
+    # since been moved to a separate package. These now act as sanity checks.
     def test_can_read_list_permissions(self):
         request = factory.get('/', HTTP_AUTHORIZATION=self.credentials['readonly'])
-        object_permissions_list_view.cls.filter_backends = (DjangoObjectPermissionsFilter,)
-        # TODO: remove in version 3.10
-        with warnings.catch_warnings(record=True):
-            warnings.simplefilter("always")
-            response = object_permissions_list_view(request)
+        response = object_permissions_list_view(request)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data[0].get('id'), 1)
-
-    def test_cannot_read_list_permissions(self):
-        request = factory.get('/', HTTP_AUTHORIZATION=self.credentials['writeonly'])
-        object_permissions_list_view.cls.filter_backends = (DjangoObjectPermissionsFilter,)
-        # TODO: remove in version 3.10
-        with warnings.catch_warnings(record=True):
-            warnings.simplefilter("always")
-            response = object_permissions_list_view(request)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertListEqual(response.data, [])
 
     def test_cannot_method_not_allowed(self):
         request = factory.generic('METHOD_NOT_ALLOWED', '/', HTTP_AUTHORIZATION=self.credentials['readonly'])
@@ -463,6 +429,7 @@ class BasicPerm(permissions.BasePermission):
 
 class BasicPermWithDetail(permissions.BasePermission):
     message = 'Custom: You cannot access this resource'
+    code = 'permission_denied_custom'
 
     def has_permission(self, request, view):
         return False
@@ -475,6 +442,7 @@ class BasicObjectPerm(permissions.BasePermission):
 
 class BasicObjectPermWithDetail(permissions.BasePermission):
     message = 'Custom: You cannot access this resource'
+    code = 'permission_denied_custom'
 
     def has_object_permission(self, request, view, obj):
         return False
@@ -517,30 +485,35 @@ class CustomPermissionsTests(TestCase):
         credentials = basic_auth_header('username', 'password')
         self.request = factory.get('/1', format='json', HTTP_AUTHORIZATION=credentials)
         self.custom_message = 'Custom: You cannot access this resource'
+        self.custom_code = 'permission_denied_custom'
 
     def test_permission_denied(self):
-            response = denied_view(self.request, pk=1)
-            detail = response.data.get('detail')
-            self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-            self.assertNotEqual(detail, self.custom_message)
+        response = denied_view(self.request, pk=1)
+        detail = response.data.get('detail')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertNotEqual(detail, self.custom_message)
+        self.assertNotEqual(detail.code, self.custom_code)
 
     def test_permission_denied_with_custom_detail(self):
-            response = denied_view_with_detail(self.request, pk=1)
-            detail = response.data.get('detail')
-            self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-            self.assertEqual(detail, self.custom_message)
+        response = denied_view_with_detail(self.request, pk=1)
+        detail = response.data.get('detail')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(detail, self.custom_message)
+        self.assertEqual(detail.code, self.custom_code)
 
     def test_permission_denied_for_object(self):
-            response = denied_object_view(self.request, pk=1)
-            detail = response.data.get('detail')
-            self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-            self.assertNotEqual(detail, self.custom_message)
+        response = denied_object_view(self.request, pk=1)
+        detail = response.data.get('detail')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertNotEqual(detail, self.custom_message)
+        self.assertNotEqual(detail.code, self.custom_code)
 
     def test_permission_denied_for_object_with_custom_detail(self):
-            response = denied_object_view_with_detail(self.request, pk=1)
-            detail = response.data.get('detail')
-            self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-            self.assertEqual(detail, self.custom_message)
+        response = denied_object_view_with_detail(self.request, pk=1)
+        detail = response.data.get('detail')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(detail, self.custom_message)
+        self.assertEqual(detail.code, self.custom_code)
 
 
 class PermissionsCompositionTests(TestCase):
@@ -625,7 +598,6 @@ class PermissionsCompositionTests(TestCase):
         )
         assert composed_perm().has_permission(request, None) is True
 
-    @pytest.mark.skipif(not PY36, reason="assert_called_once() not available")
     def test_or_lazyness(self):
         request = factory.get('/1', format='json')
         request.user = AnonymousUser()
@@ -634,19 +606,18 @@ class PermissionsCompositionTests(TestCase):
             with mock.patch.object(permissions.IsAuthenticated, 'has_permission', return_value=False) as mock_deny:
                 composed_perm = (permissions.AllowAny | permissions.IsAuthenticated)
                 hasperm = composed_perm().has_permission(request, None)
-                self.assertIs(hasperm, True)
-                mock_allow.assert_called_once()
+                assert hasperm is True
+                assert mock_allow.call_count == 1
                 mock_deny.assert_not_called()
 
         with mock.patch.object(permissions.AllowAny, 'has_permission', return_value=True) as mock_allow:
             with mock.patch.object(permissions.IsAuthenticated, 'has_permission', return_value=False) as mock_deny:
                 composed_perm = (permissions.IsAuthenticated | permissions.AllowAny)
                 hasperm = composed_perm().has_permission(request, None)
-                self.assertIs(hasperm, True)
-                mock_deny.assert_called_once()
-                mock_allow.assert_called_once()
+                assert hasperm is True
+                assert mock_deny.call_count == 1
+                assert mock_allow.call_count == 1
 
-    @pytest.mark.skipif(not PY36, reason="assert_called_once() not available")
     def test_object_or_lazyness(self):
         request = factory.get('/1', format='json')
         request.user = AnonymousUser()
@@ -655,19 +626,18 @@ class PermissionsCompositionTests(TestCase):
             with mock.patch.object(permissions.IsAuthenticated, 'has_object_permission', return_value=False) as mock_deny:
                 composed_perm = (permissions.AllowAny | permissions.IsAuthenticated)
                 hasperm = composed_perm().has_object_permission(request, None, None)
-                self.assertIs(hasperm, True)
-                mock_allow.assert_called_once()
+                assert hasperm is True
+                assert mock_allow.call_count == 1
                 mock_deny.assert_not_called()
 
         with mock.patch.object(permissions.AllowAny, 'has_object_permission', return_value=True) as mock_allow:
             with mock.patch.object(permissions.IsAuthenticated, 'has_object_permission', return_value=False) as mock_deny:
                 composed_perm = (permissions.IsAuthenticated | permissions.AllowAny)
                 hasperm = composed_perm().has_object_permission(request, None, None)
-                self.assertIs(hasperm, True)
-                mock_deny.assert_called_once()
-                mock_allow.assert_called_once()
+                assert hasperm is True
+                assert mock_deny.call_count == 0
+                assert mock_allow.call_count == 1
 
-    @pytest.mark.skipif(not PY36, reason="assert_called_once() not available")
     def test_and_lazyness(self):
         request = factory.get('/1', format='json')
         request.user = AnonymousUser()
@@ -676,19 +646,18 @@ class PermissionsCompositionTests(TestCase):
             with mock.patch.object(permissions.IsAuthenticated, 'has_permission', return_value=False) as mock_deny:
                 composed_perm = (permissions.AllowAny & permissions.IsAuthenticated)
                 hasperm = composed_perm().has_permission(request, None)
-                self.assertIs(hasperm, False)
-                mock_allow.assert_called_once()
-                mock_deny.assert_called_once()
+                assert hasperm is False
+                assert mock_allow.call_count == 1
+                assert mock_deny.call_count == 1
 
         with mock.patch.object(permissions.AllowAny, 'has_permission', return_value=True) as mock_allow:
             with mock.patch.object(permissions.IsAuthenticated, 'has_permission', return_value=False) as mock_deny:
                 composed_perm = (permissions.IsAuthenticated & permissions.AllowAny)
                 hasperm = composed_perm().has_permission(request, None)
-                self.assertIs(hasperm, False)
+                assert hasperm is False
+                assert mock_deny.call_count == 1
                 mock_allow.assert_not_called()
-                mock_deny.assert_called_once()
 
-    @pytest.mark.skipif(not PY36, reason="assert_called_once() not available")
     def test_object_and_lazyness(self):
         request = factory.get('/1', format='json')
         request.user = AnonymousUser()
@@ -697,14 +666,27 @@ class PermissionsCompositionTests(TestCase):
             with mock.patch.object(permissions.IsAuthenticated, 'has_object_permission', return_value=False) as mock_deny:
                 composed_perm = (permissions.AllowAny & permissions.IsAuthenticated)
                 hasperm = composed_perm().has_object_permission(request, None, None)
-                self.assertIs(hasperm, False)
-                mock_allow.assert_called_once()
-                mock_deny.assert_called_once()
+                assert hasperm is False
+                assert mock_allow.call_count == 1
+                assert mock_deny.call_count == 1
 
         with mock.patch.object(permissions.AllowAny, 'has_object_permission', return_value=True) as mock_allow:
             with mock.patch.object(permissions.IsAuthenticated, 'has_object_permission', return_value=False) as mock_deny:
                 composed_perm = (permissions.IsAuthenticated & permissions.AllowAny)
                 hasperm = composed_perm().has_object_permission(request, None, None)
-                self.assertIs(hasperm, False)
+                assert hasperm is False
+                assert mock_deny.call_count == 1
                 mock_allow.assert_not_called()
-                mock_deny.assert_called_once()
+
+    def test_unimplemented_has_object_permission(self):
+        "test for issue 6402 https://github.com/encode/django-rest-framework/issues/6402"
+        request = factory.get('/1', format='json')
+        request.user = AnonymousUser()
+
+        class IsAuthenticatedUserOwner(permissions.IsAuthenticated):
+            def has_object_permission(self, request, view, obj):
+                return True
+
+        composed_perm = (IsAuthenticatedUserOwner | permissions.IsAdminUser)
+        hasperm = composed_perm().has_object_permission(request, None, None)
+        assert hasperm is False
