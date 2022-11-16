@@ -295,6 +295,7 @@ Corresponds to `django.db.models.fields.DecimalField`.
 * `min_value` Validate that the number provided is no less than this value.
 * `localize` Set to `True` to enable localization of input and output based on the current locale. This will also force `coerce_to_string` to `True`. Defaults to `False`. Note that data formatting is enabled if you have set `USE_L10N=True` in your settings file.
 * `rounding` Sets the rounding mode used when quantising to the configured precision. Valid values are [`decimal` module rounding modes][python-decimal-rounding-modes]. Defaults to `None`.
+* `normalize_output` Will normalize the decimal value when serialized. This will strip all trailing zeroes and change the value's precision to the minimum required precision to be able to represent the value without loosing data. Defaults to `False`.
 
 #### Example usage
 
