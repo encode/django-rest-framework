@@ -195,6 +195,7 @@ class PageNumberPagination(BasePagination):
         Paginate a queryset if required, either returning a
         page object, or `None` if pagination is not configured for this view.
         """
+        self.request = request
         page_size = self.get_page_size(request)
         if not page_size:
             return None
@@ -214,7 +215,6 @@ class PageNumberPagination(BasePagination):
             # The browsable API should display pagination controls.
             self.display_page_controls = True
 
-        self.request = request
         return list(self.page)
 
     def get_page_number(self, request, paginator):
@@ -379,13 +379,13 @@ class LimitOffsetPagination(BasePagination):
     template = 'rest_framework/pagination/numbers.html'
 
     def paginate_queryset(self, queryset, request, view=None):
+        self.request = request
         self.limit = self.get_limit(request)
         if self.limit is None:
             return None
 
         self.count = self.get_count(queryset)
         self.offset = self.get_offset(request)
-        self.request = request
         if self.count > self.limit and self.template is not None:
             self.display_page_controls = True
 
@@ -599,6 +599,7 @@ class CursorPagination(BasePagination):
     offset_cutoff = 1000
 
     def paginate_queryset(self, queryset, request, view=None):
+        self.request = request
         self.page_size = self.get_page_size(request)
         if not self.page_size:
             return None
