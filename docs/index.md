@@ -85,7 +85,7 @@ continued development by **[signing up for a paid plan][funding]**.
 
 REST framework requires the following:
 
-* Python (3.6, 3.7, 3.8, 3.9, 3.10)
+* Python (3.6, 3.7, 3.8, 3.9, 3.10, 3.11)
 * Django (2.2, 3.0, 3.1, 3.2, 4.0, 4.1)
 
 We **highly recommend** and only officially support the latest patch release of
@@ -188,7 +188,7 @@ Framework.
 
 ## Support
 
-For support please see the [REST framework discussion group][group], try the  `#restframework` channel on `irc.libera.chat`, or raise a  question on [Stack Overflow][stack-overflow], making sure to include the ['django-rest-framework'][django-rest-framework-tag] tag.
+For support please see the [REST framework discussion group][group], try the `#restframework` channel on `irc.libera.chat`, or raise a question on [Stack Overflow][stack-overflow], making sure to include the ['django-rest-framework'][django-rest-framework-tag] tag.
 
 For priority support please sign up for a [professional or premium sponsorship plan](https://fund.django-rest-framework.org/topics/funding/).
 

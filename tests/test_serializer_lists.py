@@ -32,7 +32,7 @@ class TestListSerializer:
     Note that this is in contrast to using ListSerializer as a field.
     """
 
-    def setup(self):
+    def setup_method(self):
         class IntegerListSerializer(serializers.ListSerializer):
             child = serializers.IntegerField()
         self.Serializer = IntegerListSerializer
@@ -70,7 +70,7 @@ class TestListSerializerContainingNestedSerializer:
     Tests for using a ListSerializer containing another serializer.
     """
 
-    def setup(self):
+    def setup_method(self):
         class TestSerializer(serializers.Serializer):
             integer = serializers.IntegerField()
             boolean = serializers.BooleanField()
@@ -156,7 +156,7 @@ class TestNestedListSerializer:
     Tests for using a ListSerializer as a field.
     """
 
-    def setup(self):
+    def setup_method(self):
         class TestSerializer(serializers.Serializer):
             integers = serializers.ListSerializer(child=serializers.IntegerField())
             booleans = serializers.ListSerializer(child=serializers.BooleanField())
@@ -278,7 +278,7 @@ class TestNestedListSerializerAllowEmpty:
 
 
 class TestNestedListOfListsSerializer:
-    def setup(self):
+    def setup_method(self):
         class TestSerializer(serializers.Serializer):
             integers = serializers.ListSerializer(
                 child=serializers.ListSerializer(
@@ -594,7 +594,7 @@ class TestEmptyListSerializer:
     Tests the behaviour of ListSerializers when there is no data passed to it
     """
 
-    def setup(self):
+    def setup_method(self):
         class ExampleListSerializer(serializers.ListSerializer):
             child = serializers.IntegerField()
 
@@ -623,7 +623,7 @@ class TestMaxMinLengthListSerializer:
     Tests the behaviour of ListSerializers when max_length and min_length are used
     """
 
-    def setup(self):
+    def setup_method(self):
         class IntegerSerializer(serializers.Serializer):
             some_int = serializers.IntegerField()
 

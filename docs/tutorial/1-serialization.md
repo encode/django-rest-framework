@@ -179,7 +179,7 @@ We can also serialize querysets instead of model instances.  To do so we simply 
 
 ## Using ModelSerializers
 
-Our `SnippetSerializer` class is replicating a lot of information that's also contained in the `Snippet` model.  It would be nice if we could keep our code a bit  more concise.
+Our `SnippetSerializer` class is replicating a lot of information that's also contained in the `Snippet` model.  It would be nice if we could keep our code a bit more concise.
 
 In the same way that Django provides both `Form` classes and `ModelForm` classes, REST framework includes both `Serializer` classes, and `ModelSerializer` classes.
 
@@ -307,7 +307,7 @@ Quit out of the shell...
     Validating models...
 
     0 errors found
-    Django version 4.0,1 using settings 'tutorial.settings'
+    Django version 4.0, using settings 'tutorial.settings'
     Starting Development server at http://127.0.0.1:8000/
     Quit the server with CONTROL-C.
 

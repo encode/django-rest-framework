@@ -239,7 +239,7 @@ class TestSource:
 
 
 class TestReadOnly:
-    def setup(self):
+    def setup_method(self):
         class TestSerializer(serializers.Serializer):
             read_only = serializers.ReadOnlyField(default="789")
             writable = serializers.IntegerField()
@@ -271,7 +271,7 @@ class TestReadOnly:
 
 
 class TestWriteOnly:
-    def setup(self):
+    def setup_method(self):
         class TestSerializer(serializers.Serializer):
             write_only = serializers.IntegerField(write_only=True)
             readable = serializers.IntegerField()
@@ -296,7 +296,7 @@ class TestWriteOnly:
 
 
 class TestInitial:
-    def setup(self):
+    def setup_method(self):
         class TestSerializer(serializers.Serializer):
             initial_field = serializers.IntegerField(initial=123)
             blank_field = serializers.IntegerField()
@@ -313,7 +313,7 @@ class TestInitial:
 
 
 class TestInitialWithCallable:
-    def setup(self):
+    def setup_method(self):
         def initial_value():
             return 123
 
@@ -331,7 +331,7 @@ class TestInitialWithCallable:
 
 
 class TestLabel:
-    def setup(self):
+    def setup_method(self):
         class TestSerializer(serializers.Serializer):
             labeled = serializers.IntegerField(label='My label')
         self.serializer = TestSerializer()
@@ -345,7 +345,7 @@ class TestLabel:
 
 
 class TestInvalidErrorKey:
-    def setup(self):
+    def setup_method(self):
         class ExampleField(serializers.Field):
             def to_native(self, data):
                 self.fail('incorrect')
@@ -539,7 +539,7 @@ class TestHTMLInput:
 
 
 class TestCreateOnlyDefault:
-    def setup(self):
+    def setup_method(self):
         default = serializers.CreateOnlyDefault('2001-01-01')
 
         class TestSerializer(serializers.Serializer):
@@ -679,9 +679,9 @@ class TestBooleanField(FieldValues):
             assert exc_info.value.detail == expected
 
 
-class TestNullBooleanField(TestBooleanField):
+class TestNullableBooleanField(TestBooleanField):
     """
-    Valid and invalid values for `NullBooleanField`.
+    Valid and invalid values for `BooleanField` when `allow_null=True`.
     """
     valid_inputs = {
         'true': True,
@@ -704,16 +704,6 @@ class TestNullBooleanField(TestBooleanField):
         'other': True
     }
     field = serializers.BooleanField(allow_null=True)
-
-
-class TestNullableBooleanField(TestNullBooleanField):
-    """
-    Valid and invalid values for `BooleanField` when `allow_null=True`.
-    """
-
-    @property
-    def field(self):
-        return serializers.BooleanField(allow_null=True)
 
 
 # String types...
@@ -1259,6 +1249,27 @@ class TestQuantizedValueForDecimal(TestCase):
         value = field.to_internal_value('12.0').as_tuple()
         expected_digit_tuple = (0, (1, 2, 0, 0), -2)
         assert value == expected_digit_tuple
+
+
+class TestNormalizedOutputValueDecimalField(TestCase):
+    """
+    Test that we get the expected behavior of on DecimalField when normalize=True
+    """
+
+    def test_normalize_output(self):
+        field = serializers.DecimalField(max_digits=4, decimal_places=3, normalize_output=True)
+        output = field.to_representation(Decimal('1.000'))
+        assert output == '1'
+
+    def test_non_normalize_output(self):
+        field = serializers.DecimalField(max_digits=4, decimal_places=3, normalize_output=False)
+        output = field.to_representation(Decimal('1.000'))
+        assert output == '1.000'
+
+    def test_normalize_coeherce_to_string(self):
+        field = serializers.DecimalField(max_digits=4, decimal_places=3, normalize_output=True, coerce_to_string=False)
+        output = field.to_representation(Decimal('1.000'))
+        assert output == Decimal('1')
 
 
 class TestNoDecimalPlaces(FieldValues):

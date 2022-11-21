@@ -122,6 +122,7 @@ The `get_schema_view()` helper takes the following keyword arguments:
             url='https://www.example.org/api/',
             patterns=schema_url_patterns,
         )
+* `public`: May be used to specify if schema should bypass views permissions. Default to False
 
 * `generator_class`: May be used to specify a `SchemaGenerator` subclass to be
   passed to the `SchemaView`.
@@ -292,7 +293,7 @@ class CustomView(APIView):
 
 This saves you having to create a custom subclass per-view for a commonly used option.
 
-Not all `AutoSchema` methods expose related  `__init__()` kwargs, but those for
+Not all `AutoSchema` methods expose related `__init__()` kwargs, but those for
 the more commonly needed options do.
 
 ### `AutoSchema` methods
@@ -300,7 +301,7 @@ the more commonly needed options do.
 #### `get_components()`
 
 Generates the OpenAPI components that describe request and response bodies,
-deriving  their properties from the serializer.
+deriving their properties from the serializer.
 
 Returns a dictionary mapping the component name to the generated
 representation. By default this has just a single pair but you may override

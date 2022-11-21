@@ -131,13 +131,7 @@ $(function () {
         if (value !== undefined) {
           params[paramKey] = value
         }
-      } else if (dataType === 'array' && paramValue) {
-        try {
-          params[paramKey] = JSON.parse(paramValue)
-        } catch (err) {
-          // Ignore malformed JSON
-        }
-      } else if (dataType === 'object' && paramValue) {
+      } else if ((dataType === 'array' && paramValue) || (dataType === 'object' && paramValue)) {
         try {
           params[paramKey] = JSON.parse(paramValue)
         } catch (err) {

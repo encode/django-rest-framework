@@ -112,8 +112,8 @@ Here's our re-wired `snippets/urls.py` file.
 
     # Create a router and register our viewsets with it.
     router = DefaultRouter()
-    router.register(r'snippets', views.SnippetViewSet,basename="snippet")
-    router.register(r'users', views.UserViewSet,basename="user")
+    router.register(r'snippets', views.SnippetViewSet, basename='snippet')
+    router.register(r'users', views.UserViewSet, basename='user')
 
     # The API URLs are now determined automatically by the router.
     urlpatterns = [

@@ -4,7 +4,9 @@ Parsers are used to parse the content of incoming HTTP requests.
 They give us a generic way of being able to handle various media types
 on the request, such as form content or json encoded data.
 """
+
 import codecs
+import contextlib
 
 from django.conf import settings
 from django.core.files.uploadhandler import StopFutureHandlers
@@ -193,17 +195,12 @@ class FileUploadParser(BaseParser):
         Detects the uploaded file name. First searches a 'filename' url kwarg.
         Then tries to parse Content-Disposition header.
         """
-        try:
+        with contextlib.suppress(KeyError):
             return parser_context['kwargs']['filename']
-        except KeyError:
-            pass
 
-        try:
+        with contextlib.suppress(AttributeError, KeyError, ValueError):
             meta = parser_context['request'].META
             disposition, params = parse_header_parameters(meta['HTTP_CONTENT_DISPOSITION'])
             if 'filename*' in params:
                 return params['filename*']
-            else:
-                return params['filename']
-        except (AttributeError, KeyError, ValueError):
-            pass
+            return params['filename']

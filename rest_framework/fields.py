@@ -1,3 +1,4 @@
+import contextlib
 import copy
 import datetime
 import decimal
@@ -5,7 +6,6 @@ import functools
 import inspect
 import re
 import uuid
-import warnings
 from collections import OrderedDict
 from collections.abc import Mapping
 
@@ -30,7 +30,7 @@ from django.utils.ipv6 import clean_ipv6_address
 from django.utils.translation import gettext_lazy as _
 from pytz.exceptions import InvalidTimeError
 
-from rest_framework import ISO_8601, RemovedInDRF314Warning
+from rest_framework import ISO_8601
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, humanize_datetime, json, representation
@@ -691,15 +691,13 @@ class BooleanField(Field):
     NULL_VALUES = {'null', 'Null', 'NULL', '', None}
 
     def to_internal_value(self, data):
-        try:
+        with contextlib.suppress(TypeError):
             if data in self.TRUE_VALUES:
                 return True
             elif data in self.FALSE_VALUES:
                 return False
             elif data in self.NULL_VALUES and self.allow_null:
                 return None
-        except TypeError:  # Input is an unhashable type
-            pass
         self.fail('invalid', input=data)
 
     def to_representation(self, value):
@@ -710,23 +708,6 @@ class BooleanField(Field):
         if value in self.NULL_VALUES and self.allow_null:
             return None
         return bool(value)
-
-
-class NullBooleanField(BooleanField):
-    initial = None
-
-    def __init__(self, **kwargs):
-        warnings.warn(
-            "The `NullBooleanField` is deprecated and will be removed starting "
-            "with 3.14. Instead use the `BooleanField` field and set "
-            "`allow_null=True` which does the same thing.",
-            RemovedInDRF314Warning, stacklevel=2
-        )
-
-        assert 'allow_null' not in kwargs, '`allow_null` is not a valid option.'
-        kwargs['allow_null'] = True
-
-        super().__init__(**kwargs)
 
 
 # String types...
@@ -982,10 +963,11 @@ class DecimalField(Field):
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
 
     def __init__(self, max_digits, decimal_places, coerce_to_string=None, max_value=None, min_value=None,
-                 localize=False, rounding=None, **kwargs):
+                 localize=False, rounding=None, normalize_output=False, **kwargs):
         self.max_digits = max_digits
         self.decimal_places = decimal_places
         self.localize = localize
+        self.normalize_output = normalize_output
         if coerce_to_string is not None:
             self.coerce_to_string = coerce_to_string
         if self.localize:
@@ -1098,6 +1080,9 @@ class DecimalField(Field):
 
         quantized = self.quantize(value)
 
+        if self.normalize_output:
+            quantized = quantized.normalize()
+
         if not coerce_to_string:
             return quantized
         if self.localize:
@@ -1176,19 +1161,14 @@ class DateTimeField(Field):
             return self.enforce_timezone(value)
 
         for input_format in input_formats:
-            if input_format.lower() == ISO_8601:
-                try:
+            with contextlib.suppress(ValueError, TypeError):
+                if input_format.lower() == ISO_8601:
                     parsed = parse_datetime(value)
                     if parsed is not None:
                         return self.enforce_timezone(parsed)
-                except (ValueError, TypeError):
-                    pass
-            else:
-                try:
-                    parsed = self.datetime_parser(value, input_format)
-                    return self.enforce_timezone(parsed)
-                except (ValueError, TypeError):
-                    pass
+
+                parsed = self.datetime_parser(value, input_format)
+                return self.enforce_timezone(parsed)
 
         humanized_format = humanize_datetime.datetime_formats(input_formats)
         self.fail('invalid', format=humanized_format)
@@ -1832,7 +1812,7 @@ class SerializerMethodField(Field):
 
     For example:
 
-    class ExampleSerializer(self):
+    class ExampleSerializer(Serializer):
         extra_info = SerializerMethodField()
 
         def get_extra_info(self, obj):

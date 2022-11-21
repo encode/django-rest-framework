@@ -2,7 +2,7 @@
 
 > "Take a close look at possible CSRF / XSRF vulnerabilities on your own websites.  They're the worst kind of vulnerability &mdash; very easy to exploit by attackers, yet not so intuitively easy to understand for software developers, at least until you've been bitten by one."
 >
->  &mdash; [Jeff Atwood][cite]
+> &mdash; [Jeff Atwood][cite]
 
 ## Javascript clients
 

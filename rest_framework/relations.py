@@ -1,3 +1,4 @@
+import contextlib
 import sys
 from collections import OrderedDict
 from urllib import parse
@@ -170,7 +171,7 @@ class RelatedField(Field):
     def get_attribute(self, instance):
         if self.use_pk_only_optimization() and self.source_attrs:
             # Optimized case, return a mock object only containing the pk attribute.
-            try:
+            with contextlib.suppress(AttributeError):
                 attribute_instance = get_attribute(instance, self.source_attrs[:-1])
                 value = attribute_instance.serializable_value(self.source_attrs[-1])
                 if is_simple_callable(value):
@@ -183,9 +184,6 @@ class RelatedField(Field):
                 value = getattr(value, 'pk', value)
 
                 return PKOnlyObject(pk=value)
-            except AttributeError:
-                pass
-
         # Standard case, return the object instance.
         return super().get_attribute(instance)
 

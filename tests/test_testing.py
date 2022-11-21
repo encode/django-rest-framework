@@ -10,6 +10,7 @@ from django.test import TestCase, override_settings
 from django.urls import path
 
 from rest_framework import fields, serializers
+from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.test import (
@@ -19,10 +20,12 @@ from rest_framework.test import (
 
 @api_view(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'])
 def view(request):
-    return Response({
-        'auth': request.META.get('HTTP_AUTHORIZATION', b''),
-        'user': request.user.username
-    })
+    data = {'auth': request.META.get('HTTP_AUTHORIZATION', b'')}
+    if request.user:
+        data['user'] = request.user.username
+    if request.auth:
+        data['token'] = request.auth.key
+    return Response(data)
 
 
 @api_view(['GET', 'POST'])
@@ -78,14 +81,46 @@ class TestAPITestClient(TestCase):
             response = self.client.get('/view/')
             assert response.data['auth'] == 'example'
 
-    def test_force_authenticate(self):
+    def test_force_authenticate_with_user(self):
         """
-        Setting `.force_authenticate()` forcibly authenticates each request.
+        Setting `.force_authenticate()` with a user forcibly authenticates each
+        request with that user.
         """
         user = User.objects.create_user('example', 'example@example.com')
-        self.client.force_authenticate(user)
+
+        self.client.force_authenticate(user=user)
         response = self.client.get('/view/')
+
         assert response.data['user'] == 'example'
+        assert 'token' not in response.data
+
+    def test_force_authenticate_with_token(self):
+        """
+        Setting `.force_authenticate()` with a token forcibly authenticates each
+        request with that token.
+        """
+        user = User.objects.create_user('example', 'example@example.com')
+        token = Token.objects.create(key='xyz', user=user)
+
+        self.client.force_authenticate(token=token)
+        response = self.client.get('/view/')
+
+        assert response.data['token'] == 'xyz'
+        assert 'user' not in response.data
+
+    def test_force_authenticate_with_user_and_token(self):
+        """
+        Setting `.force_authenticate()` with a user and token forcibly
+        authenticates each request with that user and token.
+        """
+        user = User.objects.create_user('example', 'example@example.com')
+        token = Token.objects.create(key='xyz', user=user)
+
+        self.client.force_authenticate(user=user, token=token)
+        response = self.client.get('/view/')
+
+        assert response.data['user'] == 'example'
+        assert response.data['token'] == 'xyz'
 
     def test_force_authenticate_with_sessions(self):
         """
@@ -102,8 +137,9 @@ class TestAPITestClient(TestCase):
         response = self.client.get('/session-view/')
         assert response.data['active_session'] is True
 
-        # Force authenticating as `None` should also logout the user session.
-        self.client.force_authenticate(None)
+        # Force authenticating with `None` user and token should also logout
+        # the user session.
+        self.client.force_authenticate(user=None, token=None)
         response = self.client.get('/session-view/')
         assert response.data['active_session'] is False
 
