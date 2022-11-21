@@ -362,7 +362,7 @@ class DefaultRouter(SimpleRouter):
 
         if self.include_root_view:
             view = self.get_api_root_view(api_urls=urls)
-            root_url = re_path(r'^$', view, name=self.root_view_name)
+            root_url = path('', view, name=self.root_view_name)
             urls.append(root_url)
 
         if self.include_format_suffixes:
