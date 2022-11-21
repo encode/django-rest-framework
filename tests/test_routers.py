@@ -96,6 +96,9 @@ notes_router.register(r'notes', NoteViewSet)
 notes_path_router = SimpleRouter(use_regex_path=False)
 notes_path_router.register('notes', NoteViewSet)
 
+notes_path_default_router = DefaultRouter(use_regex_path=False)
+notes_path_default_router.register('notes', NoteViewSet)
+
 kwarged_notes_router = SimpleRouter()
 kwarged_notes_router.register(r'notes', KWargedNoteViewSet)
 
@@ -484,7 +487,8 @@ class TestUrlPath(URLPatternsTestCase, TestCase):
     client_class = APIClient
     urlpatterns = [
         path('path/', include(url_path_router.urls)),
-        path('example/', include(notes_path_router.urls))
+        path('default/', include(notes_path_default_router.urls)),
+        path('example/', include(notes_path_router.urls)),
     ]
 
     def setUp(self):
@@ -503,17 +507,23 @@ class TestUrlPath(URLPatternsTestCase, TestCase):
         assert RouterTestModel.objects.filter(uuid='foo').exists()
 
     def test_retrieve(self):
-        response = self.client.get('/example/notes/123/')
-        assert response.status_code == 200
-        assert response.data == {"url": "http://testserver/example/notes/123/", "uuid": "123", "text": "foo bar"}
+        for url in ('/example/notes/123/', '/default/notes/123/'):
+            with self.subTest(url=url):
+                response = self.client.get(url)
+                assert response.status_code == 200
+                # only gets example path since was the last to be registered
+                assert response.data == {"url": "http://testserver/example/notes/123/", "uuid": "123", "text": "foo bar"}
 
     def test_list(self):
-        response = self.client.get('/example/notes/')
-        assert response.status_code == 200
-        assert response.data == [
-            {"url": "http://testserver/example/notes/123/", "uuid": "123", "text": "foo bar"},
-            {"url": "http://testserver/example/notes/a%20b/", "uuid": "a b", "text": "baz qux"},
-        ]
+        for url in ('/example/notes/', '/default/notes/'):
+            with self.subTest(url=url):
+                response = self.client.get(url)
+                assert response.status_code == 200
+                # only gets example path since was the last to be registered
+                assert response.data == [
+                    {"url": "http://testserver/example/notes/123/", "uuid": "123", "text": "foo bar"},
+                    {"url": "http://testserver/example/notes/a%20b/", "uuid": "a b", "text": "baz qux"},
+                ]
 
     def test_update(self):
         updated_note = {
@@ -540,6 +550,12 @@ class TestUrlPath(URLPatternsTestCase, TestCase):
         response = self.client.get('/path/{}/detail/{}/'.format(pk, kwarg))
         assert response.status_code == 200
         assert json.loads(response.content.decode()) == {'pk': pk, 'kwarg': kwarg}
+
+    def test_defaultrouter_root(self):
+        response = self.client.get('/default/')
+        assert response.status_code == 200
+        # only gets example path since was the last to be registered
+        assert response.data == {"notes": "http://testserver/example/notes/"}
 
 
 class TestViewInitkwargs(URLPatternsTestCase, TestCase):
