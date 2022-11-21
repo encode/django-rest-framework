@@ -173,7 +173,7 @@ The router will match lookup values containing any characters except slashes and
         lookup_field = 'my_model_id'
         lookup_value_regex = '[0-9a-f]{32}'
 
-By default the URLs created by `SimpleRouter` uses _regexs_ to build urls. This behavior can be modified by setting the `use_regex_path` argument to `False` when instantiating the router, in this case [path converters][path-convertes-topic-reference] are used. For example:
+By default, the URLs created by `SimpleRouter` use regular expressions. This behavior can be modified by setting the `use_regex_path` argument to `False` when instantiating the router, in this case [path converters][path-converters-topic-reference] are used. For example:
 
     router = SimpleRouter(use_regex_path=False)
 
