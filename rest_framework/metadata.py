@@ -48,6 +48,7 @@ class SimpleMetadata(BaseMetadata):
         serializers.DateField: 'date',
         serializers.DateTimeField: 'datetime',
         serializers.TimeField: 'time',
+        serializers.DurationField: 'duration',
         serializers.ChoiceField: 'choice',
         serializers.MultipleChoiceField: 'multiple choice',
         serializers.FileField: 'file upload',
