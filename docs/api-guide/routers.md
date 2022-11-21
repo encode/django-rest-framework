@@ -347,4 +347,4 @@ The [`DRF-extensions` package][drf-extensions] provides [routers][drf-extensions
 [url-namespace-docs]: https://docs.djangoproject.com/en/4.0/topics/http/urls/#url-namespaces
 [include-api-reference]: https://docs.djangoproject.com/en/4.0/ref/urls/#include
 [simplified-routing-release-note]: https://docs.djangoproject.com/en/2.0/releases/2.0/#simplified-url-routing-syntax
-[path-convertes-topic-reference]: https://docs.djangoproject.com/en/2.0/topics/http/urls/#path-converters
+[path-converters-topic-reference]: https://docs.djangoproject.com/en/2.0/topics/http/urls/#path-converters
