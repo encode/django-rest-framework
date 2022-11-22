@@ -9,6 +9,23 @@ source:
 >
 > &mdash; Heroku, [JSON Schema for the Heroku Platform API][cite]
 
+---
+
+**Deprecation notice:**
+
+REST framework's built-in support for generating OpenAPI schemas is
+**deprecated** in favor of 3rd party packages that can provide this
+functionality instead. The built-in support will be moved into a separate
+package and then subsequently retired over the next releases.
+
+As a full-fledged replacement, we recommend the [drf-spectacular] package.
+It has extensive support for generating OpenAPI 3 schemas from
+REST framework APIs, with both automatic and customisable options available.
+For further information please refer to
+[Documenting your API](../topics/documenting-your-api.md#drf-spectacular).
+
+---
+
 API schemas are a useful tool that allow for a range of use cases, including
 generating reference documentation, or driving dynamic client libraries that
 can interact with your API.
@@ -438,3 +455,4 @@ create a base `AutoSchema` subclass for your project that takes additional
 [openapi-generator]: https://github.com/OpenAPITools/openapi-generator
 [swagger-codegen]: https://github.com/swagger-api/swagger-codegen
 [info-object]: https://swagger.io/specification/#infoObject
+[drf-spectacular]: https://drf-spectacular.readthedocs.io/en/latest/readme.html
