@@ -35,7 +35,7 @@ This also translates into a very useful interactive documentation viewer in the 
 
 ---
 
-## Build-in OpenAPI schema generation (deprecated)
+## Built-in OpenAPI schema generation (deprecated)
 
 **Deprecation notice: REST framework's built-in support for generating OpenAPI schemas is
 deprecated in favor of 3rd party packages that can provide this functionality instead.
