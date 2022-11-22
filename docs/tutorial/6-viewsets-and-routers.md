@@ -6,7 +6,7 @@ REST framework includes an abstraction for dealing with `ViewSets`, that allows 
 
 A `ViewSet` class is only bound to a set of method handlers at the last moment, when it is instantiated into a set of views, typically by using a `Router` class which handles the complexities of defining the URL conf for you.
 
-## Refactoring to use view sets
+## Refactoring to use ViewSets
 
 Let's take our current set of views, and refactor them into view sets.
 
