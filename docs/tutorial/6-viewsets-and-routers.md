@@ -124,7 +124,7 @@ Here's our re-wired `snippets/urls.py` file.
         path('', include(router.urls)),
     ]
 
-Registering the view sets with the router is similar to providing a urlpattern.  We include two arguments - the URL prefix for the views, and the view set itself.
+Registering the ViewSets with the router is similar to providing a urlpattern.  We include two arguments - the URL prefix for the views, and the view set itself.
 
 The `DefaultRouter` class we're using also automatically creates the API root view for us, so we can now delete the `api_root` function from our `views` module.
 
