@@ -218,7 +218,7 @@ class PageNumberPagination(BasePagination):
         return list(self.page)
 
     def get_page_number(self, request, paginator):
-        page_number = request.query_params.get(self.page_query_param, 1)
+        page_number = request.query_params.get(self.page_query_param) or 1
         if page_number in self.last_page_strings:
             page_number = paginator.num_pages
         return page_number
