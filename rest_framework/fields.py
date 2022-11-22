@@ -920,7 +920,7 @@ class FloatField(Field):
         'max_value': _('Ensure this value is less than or equal to {max_value}.'),
         'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
         'max_string_length': _('String value too large.'),
-        'overflow': _('int too large to convert to float')
+        'overflow': _('Integer value too large to convert to float')
     }
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
 
