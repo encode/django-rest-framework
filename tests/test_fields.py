@@ -1078,7 +1078,7 @@ class TestFloatFieldOverFlowError(TestCase):
         field = serializers.FloatField()
         with pytest.raises(serializers.ValidationError) as exec_info:
             field.to_internal_value(data=math.factorial(171))
-        assert "int too large to convert to float" in str(exec_info.value.detail)
+        assert "Integer value too large to convert to float" in str(exec_info.value.detail)
 
 
 class TestDecimalField(FieldValues):
