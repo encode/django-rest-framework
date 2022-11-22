@@ -919,7 +919,8 @@ class FloatField(Field):
         'invalid': _('A valid number is required.'),
         'max_value': _('Ensure this value is less than or equal to {max_value}.'),
         'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
-        'max_string_length': _('String value too large.')
+        'max_string_length': _('String value too large.'),
+        'overflow': _('Integer value too large to convert to float')
     }
     MAX_STRING_LENGTH = 1000  # Guard against malicious string inputs.
 
@@ -945,6 +946,8 @@ class FloatField(Field):
             return float(data)
         except (TypeError, ValueError):
             self.fail('invalid')
+        except OverflowError:
+            self.fail('overflow')
 
     def to_representation(self, value):
         return float(value)
