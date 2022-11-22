@@ -11,7 +11,7 @@ is a non-exhaustive list of the most popular ones.
 
 ### drf-spectacular
 
-[drf-spectacular][drf-spectacular] is a [OpenAPI 3][open-api] schema generation library with explicit
+[drf-spectacular][drf-spectacular] is an [OpenAPI 3][open-api] schema generation library with explicit
 focus on extensibility, customizability and client generation. It is the recommended way for
 generating and presenting OpenAPI schemas.
 
