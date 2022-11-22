@@ -1,4 +1,5 @@
 import datetime
+import math
 import os
 import re
 import uuid
@@ -1070,6 +1071,14 @@ class TestMinMaxFloatField(FieldValues):
     }
     outputs = {}
     field = serializers.FloatField(min_value=1, max_value=3)
+
+
+class TestFloatFieldOverFlowError(TestCase):
+    def test_overflow_error_float_field(self):
+        field = serializers.FloatField()
+        with pytest.raises(serializers.ValidationError) as exec_info:
+            field.to_internal_value(data=math.factorial(171))
+        assert "Integer value too large to convert to float" in str(exec_info.value.detail)
 
 
 class TestDecimalField(FieldValues):
