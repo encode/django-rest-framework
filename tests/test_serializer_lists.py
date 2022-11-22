@@ -6,7 +6,9 @@ from django.utils.datastructures import MultiValueDict
 
 from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail
-from tests.models import CustomManagerModel, NullableOneToOneSource, OneToOneTarget
+from tests.models import (
+    CustomManagerModel, NullableOneToOneSource, OneToOneTarget
+)
 
 
 class BasicObject:
