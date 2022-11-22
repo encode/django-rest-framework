@@ -33,7 +33,7 @@ Next we're going to replace the `SnippetList`, `SnippetDetail` and `SnippetHighl
 
     class SnippetViewSet(viewsets.ModelViewSet):
         """
-        This view set automatically provides `list`, `create`, `retrieve`,
+        This ViewSet automatically provides `list`, `create`, `retrieve`,
         `update` and `destroy` actions.
 
         Additionally we also provide an extra `highlight` action.
