@@ -55,11 +55,16 @@ class EmptyListView(generics.ListCreateAPIView):
     permission_classes = [permissions.DjangoModelPermissions]
 
 
+class IgnoredGetQuerySetListView(GetQuerySetListView):
+    _ignore_model_permissions = True
+
+
 root_view = RootView.as_view()
 api_root_view = DefaultRouter().get_api_root_view()
 instance_view = InstanceView.as_view()
 get_queryset_list_view = GetQuerySetListView.as_view()
 empty_list_view = EmptyListView.as_view()
+ignored_get_queryset_list_view = IgnoredGetQuerySetListView.as_view()
 
 
 def basic_auth_header(username, password):
@@ -105,6 +110,27 @@ class ModelPermissionsIntegrationTests(TestCase):
                               HTTP_AUTHORIZATION=self.permitted_credentials)
         request.resolver_match = ResolverMatch('get', (), {})
         response = api_root_view(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_ignore_model_permissions_with_unauthenticated_user(self):
+        """
+        We check that the ``_ignore_model_permissions`` attribute
+        doesn't ignore the authentication.
+        """
+        request = factory.get('/', format='json')
+        request.resolver_match = ResolverMatch('get', (), {})
+        response = ignored_get_queryset_list_view(request)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_ignore_model_permissions_with_authenticated_user(self):
+        """
+        We check that the ``_ignore_model_permissions`` attribute
+        with an authenticated user.
+        """
+        request = factory.get('/', format='json',
+                              HTTP_AUTHORIZATION=self.permitted_credentials)
+        request.resolver_match = ResolverMatch('get', (), {})
+        response = ignored_get_queryset_list_view(request)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_get_queryset_has_create_permissions(self):
