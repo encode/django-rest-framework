@@ -62,7 +62,7 @@ The URLs for custom actions by default depend on the method name itself. If you 
 ## Binding view sets to URLs explicitly
 
 The handler methods only get bound to the actions when we define the URLConf.
-To see what's going on under the hood let's first explicitly create a set of views from our view sets.
+To see what's going on under the hood let's first explicitly create a set of views from our ViewSets.
 
 In the `snippets/urls.py` file we bind our `ViewSet` classes into a set of concrete views.
 
