@@ -696,7 +696,7 @@ class TestToRepresentationManagerCheck:
     https://github.com/encode/django-rest-framework/issues/8726
     """
 
-    def setup(self):
+    def setup_method(self):
         class CustomManagerModelSerializer(serializers.ModelSerializer):
             class Meta:
                 model = CustomManagerModel
