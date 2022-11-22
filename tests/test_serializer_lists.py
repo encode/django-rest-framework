@@ -6,6 +6,9 @@ from django.utils.datastructures import MultiValueDict
 
 from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail
+from tests.models import (
+    CustomManagerModel, NullableOneToOneSource, OneToOneTarget
+)
 
 
 class BasicObject:
@@ -683,3 +686,43 @@ class TestMaxMinLengthListSerializer:
         assert min_serializer.validated_data == input_data
 
         assert not max_min_serializer.is_valid()
+
+
+@pytest.mark.django_db()
+class TestToRepresentationManagerCheck:
+    """
+    https://github.com/encode/django-rest-framework/issues/8726
+    """
+
+    def setup_method(self):
+        class CustomManagerModelSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = CustomManagerModel
+                fields = '__all__'
+
+        class OneToOneTargetSerializer(serializers.ModelSerializer):
+            my_model = CustomManagerModelSerializer(many=True, source="custommanagermodel_set")
+
+            class Meta:
+                model = OneToOneTarget
+                fields = '__all__'
+                depth = 3
+
+        class NullableOneToOneSourceSerializer(serializers.ModelSerializer):
+            target = OneToOneTargetSerializer()
+
+            class Meta:
+                model = NullableOneToOneSource
+                fields = '__all__'
+
+        self.serializer = NullableOneToOneSourceSerializer
+
+    def test(self):
+        o2o_target = OneToOneTarget.objects.create(name='OneToOneTarget')
+        NullableOneToOneSource.objects.create(
+            name='NullableOneToOneSource',
+            target=o2o_target
+        )
+        queryset = NullableOneToOneSource.objects.all()
+        serializer = self.serializer(queryset, many=True)
+        assert serializer.data
