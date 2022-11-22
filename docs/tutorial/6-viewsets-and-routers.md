@@ -59,7 +59,7 @@ Custom actions which use the `@action` decorator will respond to `GET` requests 
 
 The URLs for custom actions by default depend on the method name itself. If you want to change the way url should be constructed, you can include `url_path` as a decorator keyword argument.
 
-## Binding view sets to URLs explicitly
+## Binding ViewSets to URLs explicitly
 
 The handler methods only get bound to the actions when we define the URLConf.
 To see what's going on under the hood let's first explicitly create a set of views from our ViewSets.
