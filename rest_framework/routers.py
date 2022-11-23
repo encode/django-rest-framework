@@ -125,13 +125,14 @@ class SimpleRouter(BaseRouter):
 
     def __init__(self, trailing_slash=True, use_regex_path=True):
         self.trailing_slash = '/' if trailing_slash else ''
+        self._use_regex = use_regex_path
         if use_regex_path:
-            self._base_regex = '(?P<{lookup_prefix}{lookup_url_kwarg}>{lookup_value})'
-            self._default_regex = '[^/.]+'
+            self._base_pattern = '(?P<{lookup_prefix}{lookup_url_kwarg}>{lookup_value})'
+            self._default_value_pattern = '[^/.]+'
             self._url_conf = re_path
         else:
-            self._base_regex = '<{lookup_value}:{lookup_prefix}{lookup_url_kwarg}>'
-            self._default_regex = 'path'
+            self._base_pattern = '<{lookup_value}:{lookup_prefix}{lookup_url_kwarg}>'
+            self._default_value_pattern = 'path'
             self._url_conf = path
             # remove regex characters from routes
             _routes = []
@@ -237,8 +238,14 @@ class SimpleRouter(BaseRouter):
         # consume `.json` style suffixes and should break at '/' boundaries.
         lookup_field = getattr(viewset, 'lookup_field', 'pk')
         lookup_url_kwarg = getattr(viewset, 'lookup_url_kwarg', None) or lookup_field
-        lookup_value = getattr(viewset, 'lookup_value_regex', self._default_regex)
-        return self._base_regex.format(
+        lookup_value = None
+        if not self._use_regex:
+            # try to get a more appropriate attribute when not using regex
+            lookup_value = getattr(viewset, 'lookup_value_converter', None)
+        if lookup_value is None:
+            # fallback to legacy
+            lookup_value = getattr(viewset, 'lookup_value_regex', self._default_value_pattern)
+        return self._base_pattern.format(
             lookup_prefix=lookup_prefix,
             lookup_url_kwarg=lookup_url_kwarg,
             lookup_value=lookup_value
