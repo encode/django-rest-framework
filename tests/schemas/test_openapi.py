@@ -5,6 +5,7 @@ import pytest
 from django.db import models
 from django.test import RequestFactory, TestCase, override_settings
 from django.urls import path
+from django.utils.safestring import SafeString
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import filters, generics, pagination, routers, serializers
@@ -582,6 +583,11 @@ class TestOperationIntrospection(TestCase):
             renderer.render(data) == b'o1:\n  test: test\no2:\n  test: test\n' or
             renderer.render(data) == b'o2:\n  test: test\no1:\n  test: test\n'  # py <= 3.5
         )
+
+    def test_openapi_yaml_safestring_render(self):
+        renderer = OpenAPIRenderer()
+        data = {'o1': SafeString('test')}
+        assert renderer.render(data) == b'o1: test\n'
 
     def test_serializer_filefield(self):
         path = '/{id}/'

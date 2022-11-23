@@ -19,6 +19,7 @@ from django.core.paginator import Page
 from django.template import engines, loader
 from django.urls import NoReverseMatch
 from django.utils.html import mark_safe
+from django.utils.safestring import SafeString
 
 from rest_framework import VERSION, exceptions, serializers, status
 from rest_framework.compat import (
@@ -1055,6 +1056,7 @@ class OpenAPIRenderer(BaseRenderer):
         class Dumper(yaml.Dumper):
             def ignore_aliases(self, data):
                 return True
+        Dumper.add_representer(SafeString, Dumper.represent_str)
         return yaml.dump(data, default_flow_style=False, sort_keys=False, Dumper=Dumper).encode('utf-8')
 
 
