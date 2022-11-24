@@ -1329,6 +1329,7 @@ class DurationField(Field):
         'invalid': _('Duration has wrong format. Use one of these formats instead: {format}.'),
         'max_value': _('Ensure this value is less than or equal to {max_value}.'),
         'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
+        'overflow': _('The number of days must be between {min_days} and {max_days}.'),
     }
 
     def __init__(self, **kwargs):
@@ -1347,7 +1348,10 @@ class DurationField(Field):
     def to_internal_value(self, value):
         if isinstance(value, datetime.timedelta):
             return value
-        parsed = parse_duration(str(value))
+        try:
+            parsed = parse_duration(str(value))
+        except OverflowError:
+            self.fail('overflow', min_days=datetime.timedelta.min.days, max_days=datetime.timedelta.max.days)
         if parsed is not None:
             return parsed
         self.fail('invalid', format='[DD] [HH:[MM:]]ss[.uuuuuu]')

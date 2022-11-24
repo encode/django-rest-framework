@@ -1642,10 +1642,14 @@ class TestDurationField(FieldValues):
         '08:01': datetime.timedelta(minutes=8, seconds=1),
         datetime.timedelta(days=3, hours=8, minutes=32, seconds=1, microseconds=123): datetime.timedelta(days=3, hours=8, minutes=32, seconds=1, microseconds=123),
         3600: datetime.timedelta(hours=1),
+        '-999999999 00': datetime.timedelta(days=-999999999),
+        '999999999 00': datetime.timedelta(days=999999999),
     }
     invalid_inputs = {
         'abc': ['Duration has wrong format. Use one of these formats instead: [DD] [HH:[MM:]]ss[.uuuuuu].'],
         '3 08:32 01.123': ['Duration has wrong format. Use one of these formats instead: [DD] [HH:[MM:]]ss[.uuuuuu].'],
+        '-1000000000 00': ['The number of days must be between -999999999 and 999999999.'],
+        '1000000000 00': ['The number of days must be between -999999999 and 999999999.'],
     }
     outputs = {
         datetime.timedelta(days=3, hours=8, minutes=32, seconds=1, microseconds=123): '3 08:32:01.000123',
