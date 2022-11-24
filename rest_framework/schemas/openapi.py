@@ -11,6 +11,7 @@ from django.core.validators import (
 )
 from django.db import models
 from django.utils.encoding import force_str
+from inflection import pluralize
 
 from rest_framework import (
     RemovedInDRF315Warning, exceptions, renderers, serializers
@@ -247,8 +248,8 @@ class AutoSchema(ViewInspector):
             if name.endswith(action.title()):  # ListView, UpdateAPIView, ThingDelete ...
                 name = name[:-len(action)]
 
-        if action == 'list' and not name.endswith('s'):  # listThings instead of listThing
-            name += 's'
+        if action == 'list':
+            name = pluralize(name)
 
         return name
 
