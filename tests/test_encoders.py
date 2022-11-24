@@ -1,14 +1,15 @@
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal
 from uuid import uuid4
 
 import pytest
 from django.test import TestCase
-from django.utils.timezone import utc
 
 from rest_framework.compat import coreapi
 from rest_framework.utils.encoders import JSONEncoder
 from rest_framework.utils.serializer_helpers import ReturnList
+
+utc = timezone.utc
 
 
 class MockList:

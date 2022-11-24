@@ -1,6 +1,17 @@
 
 ## Built-in API documentation
 
+----
+
+**DEPRECATION NOTICE:** Use of CoreAPI-based schemas were deprecated with the introduction of native OpenAPI-based schema generation as of Django REST Framework v3.10. See the [Version 3.10 Release Announcement](../community/3.10-announcement.md) for more details.
+
+If you are looking for information regarding schemas, you might want to look at these updated resources:
+
+1. [Schema](../api-guide/schemas.md)
+2. [Documenting your API](../topics/documenting-your-api.md)
+
+----
+
 The built-in API documentation includes:
 
 * Documentation of API endpoints.
@@ -32,7 +43,7 @@ This will include two different views:
 **Note**: By default `include_docs_urls` configures the underlying `SchemaView` to generate _public_ schemas.
 This means that views will not be instantiated with a `request` instance. i.e. Inside the view `self.request` will be `None`.
 
-To be compatible with this behaviour, methods (such as `get_serializer` or `get_serializer_class` etc.) which inspect `self.request` or, particularly, `self.request.user` may need to be adjusted to handle this case.
+To be compatible with this behavior, methods (such as `get_serializer` or `get_serializer_class` etc.) which inspect `self.request` or, particularly, `self.request.user` may need to be adjusted to handle this case.
 
 You may ensure views are given a `request` instance by calling `include_docs_urls` with `public=False`:
 

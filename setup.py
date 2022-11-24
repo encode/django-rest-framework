@@ -8,7 +8,7 @@ from io import open
 from setuptools import find_packages, setup
 
 CURRENT_PYTHON = sys.version_info[:2]
-REQUIRED_PYTHON = (3, 5)
+REQUIRED_PYTHON = (3, 6)
 
 # This check and everything above must remain compatible with Python 2.7.
 if CURRENT_PYTHON < REQUIRED_PYTHON:
@@ -82,32 +82,36 @@ setup(
     author_email='tom@tomchristie.com',  # SEE NOTE BELOW (*)
     packages=find_packages(exclude=['tests*']),
     include_package_data=True,
-    install_requires=["django>=2.2"],
-    python_requires=">=3.5",
+    install_requires=["django>=3.0", "pytz"],
+    python_requires=">=3.6",
     zip_safe=False,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
         'Framework :: Django',
-        'Framework :: Django :: 2.2',
         'Framework :: Django :: 3.0',
         'Framework :: Django :: 3.1',
+        'Framework :: Django :: 3.2',
+        'Framework :: Django :: 4.0',
+        'Framework :: Django :: 4.1',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
         'Programming Language :: Python :: 3 :: Only',
         'Topic :: Internet :: WWW/HTTP',
     ],
     project_urls={
         'Funding': 'https://fund.django-rest-framework.org/topics/funding/',
         'Source': 'https://github.com/encode/django-rest-framework',
+        'Changelog': 'https://www.django-rest-framework.org/community/release-notes/',
     },
 )
 

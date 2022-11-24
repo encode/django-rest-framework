@@ -2,6 +2,14 @@ source: schemas.py
 
 # Schemas
 
+----
+
+**DEPRECATION NOTICE:** Use of CoreAPI-based schemas were deprecated with the introduction of native OpenAPI-based schema generation as of Django REST Framework v3.10. See the [Version 3.10 Release Announcement](../community/3.10-announcement.md) for more details.
+
+You are probably looking for [this page](../api-guide/schemas.md) if you want latest information regarding schemas.
+
+----
+
 > A machine-readable [schema] describes what resources are available via the API, what their URLs are, how they are represented and what operations they support.
 >
 > &mdash; Heroku, [JSON Schema for the Heroku Platform API][cite]
@@ -390,7 +398,7 @@ then you can use the `SchemaGenerator` class directly to auto-generate the
 `Document` instance, and to return that from a view.
 
 This option gives you the flexibility of setting up the schema endpoint
-with whatever behaviour you want. For example, you can apply different
+with whatever behavior you want. For example, you can apply different
 permission, throttling, or authentication policies to the schema endpoint.
 
 Here's an example of using `SchemaGenerator` together with a view to
@@ -564,7 +572,7 @@ A class that deals with introspection of individual views for schema generation.
 
 `AutoSchema` is attached to `APIView` via the `schema` attribute.
 
-The `AutoSchema` constructor takes a single keyword argument  `manual_fields`.
+The `AutoSchema` constructor takes a single keyword argument `manual_fields`.
 
 **`manual_fields`**: a `list` of `coreapi.Field` instances that will be added to
 the generated fields. Generated fields with a matching `name` will be overwritten.
@@ -641,10 +649,10 @@ def get_manual_fields(self, path, method):
     """Example adding per-method fields."""
 
     extra_fields = []
-    if method=='GET':
-        extra_fields = # ... list of extra fields for GET ...
-    if method=='POST':
-        extra_fields = # ... list of extra fields for POST ...
+    if method == 'GET':
+        extra_fields = ...  # list of extra fields for GET
+    if method == 'POST':
+        extra_fields = ...  # list of extra fields for POST
 
     manual_fields = super().get_manual_fields(path, method)
     return manual_fields + extra_fields

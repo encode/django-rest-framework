@@ -224,7 +224,7 @@ The search behavior may be restricted by prepending various characters to the `s
 
 * '^' Starts-with search.
 * '=' Exact matches.
-* '@' Full-text search.  (Currently only supported Django's [PostgreSQL backend](https://docs.djangoproject.com/en/dev/ref/contrib/postgres/search/).)
+* '@' Full-text search.  (Currently only supported Django's [PostgreSQL backend][postgres-search].)
 * '$' Regex search.
 
 For example:
@@ -241,7 +241,7 @@ To dynamically change search fields based on request content, it's possible to s
         def get_search_fields(self, view, request):
             if request.query_params.get('title_only'):
                 return ['title']
-            return super(CustomSearchFilter, self).get_search_fields(view, request)
+            return super().get_search_fields(view, request)
 
 For more details, see the [Django documentation][search-django-admin].
 
@@ -335,7 +335,7 @@ Generic filters may also present an interface in the browsable API. To do so you
 
 The method should return a rendered HTML string.
 
-## Pagination & schemas
+## Filtering & schemas
 
 You can also make the filter controls available to the schema autogeneration
 that REST framework provides, by implementing a `get_schema_fields()` method. This method should have the following signature:
@@ -374,3 +374,4 @@ The [djangorestframework-word-filter][django-rest-framework-word-search-filter] 
 [drf-url-filter]: https://github.com/manjitkumar/drf-url-filters
 [HStoreField]: https://docs.djangoproject.com/en/3.0/ref/contrib/postgres/fields/#hstorefield
 [JSONField]: https://docs.djangoproject.com/en/3.0/ref/contrib/postgres/fields/#jsonfield
+[postgres-search]: https://docs.djangoproject.com/en/stable/ref/contrib/postgres/search/

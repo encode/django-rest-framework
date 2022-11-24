@@ -230,7 +230,7 @@ started.
 In order to start working with an API, we first need a `Client` instance. The
 client holds any configuration around which codecs and transports are supported
 when interacting with an API, which allows you to provide for more advanced
-kinds of behaviour.
+kinds of behavior.
 
     import coreapi
     client = coreapi.Client()
