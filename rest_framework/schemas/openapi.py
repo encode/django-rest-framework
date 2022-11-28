@@ -11,7 +11,6 @@ from django.core.validators import (
 )
 from django.db import models
 from django.utils.encoding import force_str
-from inflection import pluralize
 
 from rest_framework import (
     RemovedInDRF315Warning, exceptions, renderers, serializers
@@ -249,6 +248,8 @@ class AutoSchema(ViewInspector):
                 name = name[:-len(action)]
 
         if action == 'list':
+            from inflection import pluralize
+
             name = pluralize(name)
 
         return name
