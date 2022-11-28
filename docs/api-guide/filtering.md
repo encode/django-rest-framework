@@ -335,15 +335,6 @@ Generic filters may also present an interface in the browsable API. To do so you
 
 The method should return a rendered HTML string.
 
-## Filtering & schemas
-
-You can also make the filter controls available to the schema autogeneration
-that REST framework provides, by implementing a `get_schema_fields()` method. This method should have the following signature:
-
-`get_schema_fields(self, view)`
-
-The method should return a list of `coreapi.Field` instances.
-
 # Third party packages
 
 The following third party packages provide additional filter implementations.
