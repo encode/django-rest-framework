@@ -19,6 +19,10 @@ Multiple throttles can also be used if you want to impose both burst throttling 
 
 Throttles do not necessarily only refer to rate-limiting requests.  For example a storage service might also need to throttle against bandwidth, and a paid data service might want to throttle against a certain number of a records being accessed.
 
+**The application-level throttling that REST framework provides should not be considered a security measure or protection against brute forcing or denial-of-service attacks. Deliberately malicious actors will always be able to spoof IP origins. In addition to this, the built-in throttling implementations are implemented using Django's cache framework, and use non-atomic operations to determine the request rate, which may sometimes result in some fuzziness.
+
+The application-level throttling provided by REST framework is intended for implementing policies such as different business tiers and basic protections against service over-use.**
+
 ## How throttling is determined
 
 As with permissions and authentication, throttling in REST framework is always defined as a list of classes.
@@ -46,9 +50,9 @@ The rate descriptions used in `DEFAULT_THROTTLE_RATES` may include `second`, `mi
 You can also set the throttling policy on a per-view or per-viewset basis,
 using the `APIView` class-based views.
 
-	from rest_framework.response import Response
+    from rest_framework.response import Response
     from rest_framework.throttling import UserRateThrottle
-	from rest_framework.views import APIView
+    from rest_framework.views import APIView
 
     class ExampleView(APIView):
         throttle_classes = [UserRateThrottle]
@@ -59,7 +63,7 @@ using the `APIView` class-based views.
             }
             return Response(content)
 
-Or, if you're using the `@api_view` decorator with function based views.
+If you're using the `@api_view` decorator with function based views you can use the following decorator.
 
     @api_view(['GET'])
     @throttle_classes([UserRateThrottle])
@@ -69,7 +73,17 @@ Or, if you're using the `@api_view` decorator with function based views.
         }
         return Response(content)
 
-## How clients are identified
+It's also possible to set throttle classes for routes that are created using the `@action` decorator.
+Throttle classes set in this way will override any viewset level class settings.
+
+    @action(detail=True, methods=["post"], throttle_classes=[UserRateThrottle])
+    def example_adhoc_method(request, pk=None):
+        content = {
+            'status': 'request was permitted'
+        }
+        return Response(content)
+
+## How clients are identified
 
 The `X-Forwarded-For` HTTP header and `REMOTE_ADDR` WSGI variable are used to uniquely identify client IP addresses for throttling.  If the `X-Forwarded-For` header is present then it will be used, otherwise the value of the `REMOTE_ADDR` variable from the WSGI environment will be used.
 
@@ -91,6 +105,12 @@ If you need to use a cache other than `'default'`, you can do so by creating a c
         cache = caches['alternate']
 
 You'll need to remember to also set your custom throttle class in the `'DEFAULT_THROTTLE_CLASSES'` settings key, or using the `throttle_classes` view attribute.
+
+## A note on concurrency
+
+The built-in throttle implementations are open to [race conditions][race], so under high concurrency they may allow a few extra requests through.
+
+If your project relies on guaranteeing the number of requests during concurrent requests, you will need to implement your own throttle class. See [issue #5181][gh5181] for more details.
 
 ---
 
@@ -200,3 +220,5 @@ The following is an example of a rate throttle, that will randomly throttle 1 in
 [identifying-clients]: http://oxpedia.org/wiki/index.php?title=AppSuite:Grizzly#Multiple_Proxies_in_front_of_the_cluster
 [cache-setting]: https://docs.djangoproject.com/en/stable/ref/settings/#caches
 [cache-docs]: https://docs.djangoproject.com/en/stable/topics/cache/#setting-up-the-cache
+[gh5181]: https://github.com/encode/django-rest-framework/issues/5181
+[race]: https://en.wikipedia.org/wiki/Race_condition#Data_race

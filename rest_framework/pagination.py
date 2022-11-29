@@ -2,7 +2,10 @@
 Pagination serializers determine the structure of the output that should
 be used for paginated responses.
 """
+
+import contextlib
 import warnings
+
 from base64 import b64decode, b64encode
 from collections import OrderedDict, namedtuple
 from urllib import parse
@@ -197,14 +200,13 @@ class PageNumberPagination(BasePagination):
         Paginate a queryset if required, either returning a
         page object, or `None` if pagination is not configured for this view.
         """
+        self.request = request
         page_size = self.get_page_size(request)
         if not page_size:
             return None
 
         paginator = self.django_paginator_class(queryset, page_size)
-        page_number = request.query_params.get(self.page_query_param, 1)
-        if page_number in self.last_page_strings:
-            page_number = paginator.num_pages
+        page_number = self.get_page_number(request, paginator)
 
         try:
             self.page = paginator.page(page_number)
@@ -218,8 +220,13 @@ class PageNumberPagination(BasePagination):
             # The browsable API should display pagination controls.
             self.display_page_controls = True
 
-        self.request = request
         return list(self.page)
+
+    def get_page_number(self, request, paginator):
+        page_number = request.query_params.get(self.page_query_param) or 1
+        if page_number in self.last_page_strings:
+            page_number = paginator.num_pages
+        return page_number
 
     def get_paginated_response(self, data):
         return Response(OrderedDict([
@@ -257,15 +264,12 @@ class PageNumberPagination(BasePagination):
 
     def get_page_size(self, request):
         if self.page_size_query_param:
-            try:
+            with contextlib.suppress(KeyError, ValueError):
                 return _positive_int(
                     request.query_params[self.page_size_query_param],
                     strict=True,
                     cutoff=self.max_page_size
                 )
-            except (KeyError, ValueError):
-                pass
-
         return self.page_size
 
     def get_next_link(self):
@@ -382,13 +386,13 @@ class LimitOffsetPagination(BasePagination):
     template = 'rest_framework/pagination/numbers.html'
 
     def paginate_queryset(self, queryset, request, view=None):
-        self.count = self.get_count(queryset)
+        self.request = request
         self.limit = self.get_limit(request)
         if self.limit is None:
             return None
 
+        self.count = self.get_count(queryset)
         self.offset = self.get_offset(request)
-        self.request = request
         if self.count > self.limit and self.template is not None:
             self.display_page_controls = True
 
@@ -432,15 +436,12 @@ class LimitOffsetPagination(BasePagination):
 
     def get_limit(self, request):
         if self.limit_query_param:
-            try:
+            with contextlib.suppress(KeyError, ValueError):
                 return _positive_int(
                     request.query_params[self.limit_query_param],
                     strict=True,
                     cutoff=self.max_limit
                 )
-            except (KeyError, ValueError):
-                pass
-
         return self.default_limit
 
     def get_offset(self, request):
@@ -490,8 +491,7 @@ class LimitOffsetPagination(BasePagination):
                 _divide_with_ceil(self.offset, self.limit)
             )
 
-            if final < 1:
-                final = 1
+            final = max(final, 1)
         else:
             current = 1
             final = 1
@@ -608,6 +608,7 @@ class CursorPagination(BasePagination):
     offset_cutoff = 1000
 
     def paginate_queryset(self, queryset, request, view=None):
+        self.request = request
         self.page_size = self.get_page_size(request)
         if not self.page_size:
             return None
@@ -685,15 +686,12 @@ class CursorPagination(BasePagination):
 
     def get_page_size(self, request):
         if self.page_size_query_param:
-            try:
+            with contextlib.suppress(KeyError, ValueError):
                 return _positive_int(
                     request.query_params[self.page_size_query_param],
                     strict=True,
                     cutoff=self.max_page_size
                 )
-            except (KeyError, ValueError):
-                pass
-
         return self.page_size
 
     def get_next_link(self):
@@ -910,10 +908,16 @@ class CursorPagination(BasePagination):
                 'next': {
                     'type': 'string',
                     'nullable': True,
+                    'format': 'uri',
+                    'example': 'http://api.example.org/accounts/?{cursor_query_param}=cD00ODY%3D"'.format(
+                        cursor_query_param=self.cursor_query_param)
                 },
                 'previous': {
                     'type': 'string',
                     'nullable': True,
+                    'format': 'uri',
+                    'example': 'http://api.example.org/accounts/?{cursor_query_param}=cj0xJnA9NDg3'.format(
+                        cursor_query_param=self.cursor_query_param)
                 },
                 'results': schema,
             },
@@ -968,7 +972,7 @@ class CursorPagination(BasePagination):
                 'in': 'query',
                 'description': force_str(self.cursor_query_description),
                 'schema': {
-                    'type': 'integer',
+                    'type': 'string',
                 },
             }
         ]

@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+
+jobs:
+  tests:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-20.04
+
+    strategy:
+      matrix:
+        python-version:
+        - '3.6'
+        - '3.7'
+        - '3.8'
+        - '3.9'
+        - '3.10'
+        - '3.11'
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+        cache-dependency-path: 'requirements/*.txt'
+
+    - name: Upgrade packaging tools
+      run: python -m pip install --upgrade pip setuptools virtualenv wheel
+
+    - name: Install dependencies
+      run: python -m pip install --upgrade codecov tox tox-py
+
+    - name: Run tox targets for ${{ matrix.python-version }}
+      run: tox --py current
+
+    - name: Run extra tox targets
+      if: ${{ matrix.python-version == '3.9' }}
+      run: |
+        python setup.py bdist_wheel
+        rm -r djangorestframework.egg-info  # see #6139
+        tox -e base,dist,docs
+        tox -e dist --installpkg ./dist/djangorestframework-*.whl
+
+    - name: Upload coverage
+      run: |
+        codecov -e TOXENV,DJANGO

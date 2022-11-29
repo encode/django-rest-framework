@@ -116,7 +116,7 @@ During dispatch, the following attributes are available on the `ViewSet`.
 * `name` - the display name for the viewset. This argument is mutually exclusive to `suffix`.
 * `description` - the display description for the individual view of a viewset.
 
-You may inspect these attributes to adjust behaviour based on the current action. For example, you could restrict permissions to everything except the `list` action similar to this:
+You may inspect these attributes to adjust behavior based on the current action. For example, you could restrict permissions to everything except the `list` action similar to this:
 
     def get_permissions(self):
         """
@@ -125,7 +125,7 @@ You may inspect these attributes to adjust behaviour based on the current action
         if self.action == 'list':
             permission_classes = [IsAuthenticated]
         else:
-            permission_classes = [IsAdmin]
+            permission_classes = [IsAdminUser]
         return [permission() for permission in permission_classes]
 
 ## Marking extra actions for routing
@@ -152,7 +152,7 @@ A more complete example of extra actions:
             user = self.get_object()
             serializer = PasswordSerializer(data=request.data)
             if serializer.is_valid():
-                user.set_password(serializer.data['password'])
+                user.set_password(serializer.validated_data['password'])
                 user.save()
                 return Response({'status': 'password set'})
             else:
@@ -171,11 +171,6 @@ A more complete example of extra actions:
             serializer = self.get_serializer(recent_users, many=True)
             return Response(serializer.data)
 
-The decorator can additionally take extra arguments that will be set for the routed view only.  For example:
-
-        @action(detail=True, methods=['post'], permission_classes=[IsAdminOrIsSelf])
-        def set_password(self, request, pk=None):
-           ...
 
 The `action` decorator will route `GET` requests by default, but may also accept other HTTP methods by setting the `methods` argument.  For example:
 
@@ -183,7 +178,14 @@ The `action` decorator will route `GET` requests by default, but may also accept
         def unset_password(self, request, pk=None):
            ...
 
-The two new actions will then be available at the urls `^users/{pk}/set_password/$` and `^users/{pk}/unset_password/$`
+
+The decorator allows you to override any viewset-level configuration such as `permission_classes`, `serializer_class`, `filter_backends`...:
+
+        @action(detail=True, methods=['post'], permission_classes=[IsAdminOrIsSelf])
+        def set_password(self, request, pk=None):
+           ...
+
+The two new actions will then be available at the urls `^users/{pk}/set_password/$` and `^users/{pk}/unset_password/$`. Use the `url_path` and `url_name` parameters to change the URL segment and the reverse URL name of the action.
 
 To view all extra actions, call the `.get_extra_actions()` method.
 
@@ -245,7 +247,7 @@ In order to use a `GenericViewSet` class you'll override the class and either mi
 
 The `ModelViewSet` class inherits from `GenericAPIView` and includes implementations for various actions, by mixing in the behavior of the various mixin classes.
 
-The actions provided by the `ModelViewSet` class are `.list()`, `.retrieve()`,  `.create()`, `.update()`, `.partial_update()`, and `.destroy()`.
+The actions provided by the `ModelViewSet` class are `.list()`, `.retrieve()`, `.create()`, `.update()`, `.partial_update()`, and `.destroy()`.
 
 #### Example
 

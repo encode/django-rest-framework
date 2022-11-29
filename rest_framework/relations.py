@@ -1,3 +1,4 @@
+import contextlib
 import sys
 from collections import OrderedDict
 from urllib import parse
@@ -10,7 +11,7 @@ from django.utils.encoding import smart_str, uri_to_iri
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework.fields import (
-    Field, empty, get_attribute, is_simple_callable, iter_options
+    Field, SkipField, empty, get_attribute, is_simple_callable, iter_options
 )
 from rest_framework.reverse import reverse
 from rest_framework.settings import api_settings
@@ -104,11 +105,11 @@ class RelatedField(Field):
             self.html_cutoff_text or _(api_settings.HTML_SELECT_CUTOFF_TEXT)
         )
         if not method_overridden('get_queryset', RelatedField, self):
-            assert self.queryset is not None or kwargs.get('read_only', None), (
+            assert self.queryset is not None or kwargs.get('read_only'), (
                 'Relational field must provide a `queryset` argument, '
                 'override `get_queryset`, or set read_only=`True`.'
             )
-        assert not (self.queryset is not None and kwargs.get('read_only', None)), (
+        assert not (self.queryset is not None and kwargs.get('read_only')), (
             'Relational fields should not provide a `queryset` argument, '
             'when setting read_only=`True`.'
         )
@@ -170,7 +171,7 @@ class RelatedField(Field):
     def get_attribute(self, instance):
         if self.use_pk_only_optimization() and self.source_attrs:
             # Optimized case, return a mock object only containing the pk attribute.
-            try:
+            with contextlib.suppress(AttributeError):
                 attribute_instance = get_attribute(instance, self.source_attrs[:-1])
                 value = attribute_instance.serializable_value(self.source_attrs[-1])
                 if is_simple_callable(value):
@@ -183,9 +184,6 @@ class RelatedField(Field):
                 value = getattr(value, 'pk', value)
 
                 return PKOnlyObject(pk=value)
-            except AttributeError:
-                pass
-
         # Standard case, return the object instance.
         return super().get_attribute(instance)
 
@@ -259,6 +257,8 @@ class PrimaryKeyRelatedField(RelatedField):
             data = self.pk_field.to_internal_value(data)
         queryset = self.get_queryset()
         try:
+            if isinstance(data, bool):
+                raise TypeError
             return queryset.get(pk=data)
         except ObjectDoesNotExist:
             self.fail('does_not_exist', pk_value=data)
@@ -337,7 +337,7 @@ class HyperlinkedRelatedField(RelatedField):
         return self.reverse(view_name, kwargs=kwargs, request=request, format=format)
 
     def to_internal_value(self, data):
-        request = self.context.get('request', None)
+        request = self.context.get('request')
         try:
             http_prefix = data.startswith(('http:', 'https:'))
         except AttributeError:
@@ -380,7 +380,7 @@ class HyperlinkedRelatedField(RelatedField):
         )
 
         request = self.context['request']
-        format = self.context.get('format', None)
+        format = self.context.get('format')
 
         # By default use whatever format is given for the current context
         # unless the target is a different type to the source.
@@ -533,7 +533,30 @@ class ManyRelatedField(Field):
         if hasattr(instance, 'pk') and instance.pk is None:
             return []
 
-        relationship = get_attribute(instance, self.source_attrs)
+        try:
+            relationship = get_attribute(instance, self.source_attrs)
+        except (KeyError, AttributeError) as exc:
+            if self.default is not empty:
+                return self.get_default()
+            if self.allow_null:
+                return None
+            if not self.required:
+                raise SkipField()
+            msg = (
+                'Got {exc_type} when attempting to get a value for field '
+                '`{field}` on serializer `{serializer}`.\nThe serializer '
+                'field might be named incorrectly and not match '
+                'any attribute or key on the `{instance}` instance.\n'
+                'Original exception text was: {exc}.'.format(
+                    exc_type=type(exc).__name__,
+                    field=self.field_name,
+                    serializer=self.parent.__class__.__name__,
+                    instance=instance.__class__.__name__,
+                    exc=exc
+                )
+            )
+            raise type(exc)(msg)
+
         return relationship.all() if hasattr(relationship, 'all') else relationship
 
     def to_representation(self, iterable):

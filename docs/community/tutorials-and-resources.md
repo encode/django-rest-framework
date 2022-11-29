@@ -76,6 +76,7 @@ There are a wide range of resources available for learning and using Django REST
 * [Chatbot Using Django REST Framework + api.ai + Slack — Part 1/3][chatbot-using-drf-part1]
 * [New Django Admin with DRF and EmberJS... What are the News?][new-django-admin-with-drf-and-emberjs]
 * [Blog posts about Django REST Framework][medium-django-rest-framework]
+* [Implementing Rest APIs With Embedded Privacy][doordash-implementing-rest-apis]
 
 ### Documentations
 * [Classy Django REST Framework][cdrf.co]
@@ -95,7 +96,7 @@ Want your Django REST Framework talk/tutorial/article to be added to our website
 [ember-and-django-part 1-video]: http://www.neckbeardrepublic.com/screencasts/ember-and-django-part-1
 [django-rest-framework-part-1-video]: http://www.neckbeardrepublic.com/screencasts/django-rest-framework-part-1
 [web-api-performance-profiling-django-rest-framework]: https://www.dabapps.com/blog/api-performance-profiling-django-rest-framework/
-[api-development-with-django-and-django-rest-framework]: https://bnotions.com/api-development-with-django-and-django-rest-framework/
+[api-development-with-django-and-django-rest-framework]: https://bnotions.com/news-and-insights/api-development-with-django-and-django-rest-framework/
 [cdrf.co]:http://www.cdrf.co
 [medium-django-rest-framework]: https://medium.com/django-rest-framework
 [django-rest-framework-course]: https://teamtreehouse.com/library/django-rest-framework
@@ -128,3 +129,4 @@ Want your Django REST Framework talk/tutorial/article to be added to our website
 [anna-email]: mailto:anna@django-rest-framework.org
 [pycon-us-2017]: https://www.youtube.com/watch?v=Rk6MHZdust4
 [django-rest-react-valentinog]: https://www.valentinog.com/blog/tutorial-api-django-rest-react/
+[doordash-implementing-rest-apis]: https://doordash.engineering/2013/10/07/implementing-rest-apis-with-embedded-privacy/

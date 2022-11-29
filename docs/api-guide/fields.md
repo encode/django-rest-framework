@@ -42,11 +42,11 @@ Set to false if this field is not required to be present during deserialization.
 
 Setting this to `False` also allows the object attribute or dictionary key to be omitted from output when serializing the instance. If the key is not present it will simply not be included in the output representation.
 
-Defaults to `True`.
+Defaults to `True`. If you're using [Model Serializer](https://www.django-rest-framework.org/api-guide/serializers/#modelserializer) default value will be `False` if you have specified `blank=True` or `default` or `null=True` at your field in your `Model`.
 
 ### `default`
 
-If set, this gives the default value that will be used for the field if no input value is supplied. If not set the default behaviour is to not populate the attribute at all.
+If set, this gives the default value that will be used for the field if no input value is supplied. If not set the default behavior is to not populate the attribute at all.
 
 The `default` is not applied during partial update operations. In the partial update case only fields that are provided in the incoming data will have a validated value returned.
 
@@ -78,7 +78,14 @@ Defaults to `False`
 
 ### `source`
 
-The name of the attribute that will be used to populate the field.  May be a method that only takes a `self` argument, such as `URLField(source='get_absolute_url')`, or may use dotted notation to traverse attributes, such as `EmailField(source='user.email')`. When serializing fields with dotted notation, it may be necessary to provide a `default` value if any object is not present or is empty during attribute traversal.
+The name of the attribute that will be used to populate the field.  May be a method that only takes a `self` argument, such as `URLField(source='get_absolute_url')`, or may use dotted notation to traverse attributes, such as `EmailField(source='user.email')`.
+
+When serializing fields with dotted notation, it may be necessary to provide a `default` value if any object is not present or is empty during attribute traversal. Beware of possible n+1 problems when using source attribute if you are accessing a relational orm model. For example:
+
+    class CommentSerializer(serializers.Serializer):
+        email = serializers.EmailField(source="user.email")
+
+This case would require user object to be fetched from database when it is not prefetched. If that is not wanted, be sure to be using `prefetch_related` and `select_related` methods appropriately. For more information about the methods refer to [django documentation][django-docs-select-related].
 
 The value `source='*'` has a special meaning, and is used to indicate that the entire object should be passed through to the field.  This can be useful for creating nested representations, or for fields which require access to the complete object in order to determine the output representation.
 
@@ -144,21 +151,13 @@ Prior to Django 2.1 `models.BooleanField` fields were always `blank=True`. Thus
 since Django 2.1 default `serializers.BooleanField` instances will be generated
 without the `required` kwarg (i.e. equivalent to `required=True`) whereas with
 previous versions of Django, default `BooleanField` instances will be generated
-with a `required=False` option.  If you want to control this behaviour manually,
+with a `required=False` option.  If you want to control this behavior manually,
 explicitly declare the `BooleanField` on the serializer class, or use the
 `extra_kwargs` option to set the `required` flag.
 
 Corresponds to `django.db.models.fields.BooleanField`.
 
 **Signature:** `BooleanField()`
-
-## NullBooleanField
-
-A boolean representation that also accepts `None` as a valid value.
-
-Corresponds to `django.db.models.fields.NullBooleanField`.
-
-**Signature:** `NullBooleanField()`
 
 ---
 
@@ -172,10 +171,10 @@ Corresponds to `django.db.models.fields.CharField` or `django.db.models.fields.T
 
 **Signature:** `CharField(max_length=None, min_length=None, allow_blank=False, trim_whitespace=True)`
 
-- `max_length` - Validates that the input contains no more than this number of characters.
-- `min_length` - Validates that the input contains no fewer than this number of characters.
-- `allow_blank` - If set to `True` then the empty string should be considered a valid value. If set to `False` then the empty string is considered invalid and will raise a validation error. Defaults to `False`.
-- `trim_whitespace` - If set to `True` then leading and trailing whitespace is trimmed. Defaults to `True`.
+* `max_length` - Validates that the input contains no more than this number of characters.
+* `min_length` - Validates that the input contains no fewer than this number of characters.
+* `allow_blank` - If set to `True` then the empty string should be considered a valid value. If set to `False` then the empty string is considered invalid and will raise a validation error. Defaults to `False`.
+* `trim_whitespace` - If set to `True` then leading and trailing whitespace is trimmed. Defaults to `True`.
 
 The `allow_null` option is also available for string fields, although its usage is discouraged in favor of `allow_blank`. It is valid to set both `allow_blank=True` and `allow_null=True`, but doing so means that there will be two differing types of empty value permissible for string representations, which can lead to data inconsistencies and subtle application bugs.
 
@@ -223,11 +222,11 @@ A field that ensures the input is a valid UUID string. The `to_internal_value` m
 
 **Signature:** `UUIDField(format='hex_verbose')`
 
-- `format`: Determines the representation format of the uuid value
-    - `'hex_verbose'` - The canonical hex representation, including hyphens: `"5ce0e9a5-5ffa-654b-cee0-1238041fb31a"`
-    - `'hex'` - The compact hex representation of the UUID, not including hyphens: `"5ce0e9a55ffa654bcee01238041fb31a"`
-    - `'int'` - A 128 bit integer representation of the UUID: `"123456789012312313134124512351145145114"`
-    - `'urn'` - RFC 4122 URN representation of the UUID: `"urn:uuid:5ce0e9a5-5ffa-654b-cee0-1238041fb31a"`
+* `format`: Determines the representation format of the uuid value
+    * `'hex_verbose'` - The canonical hex representation, including hyphens: `"5ce0e9a5-5ffa-654b-cee0-1238041fb31a"`
+    * `'hex'` - The compact hex representation of the UUID, not including hyphens: `"5ce0e9a55ffa654bcee01238041fb31a"`
+    * `'int'` - A 128 bit integer representation of the UUID: `"123456789012312313134124512351145145114"`
+    * `'urn'` - RFC 4122 URN representation of the UUID: `"urn:uuid:5ce0e9a5-5ffa-654b-cee0-1238041fb31a"`
   Changing the `format` parameters only affects representation values. All formats are accepted by `to_internal_value`
 
 ## FilePathField
@@ -238,11 +237,11 @@ Corresponds to `django.forms.fields.FilePathField`.
 
 **Signature:** `FilePathField(path, match=None, recursive=False, allow_files=True, allow_folders=False, required=None, **kwargs)`
 
-- `path` - The absolute filesystem path to a directory from which this FilePathField should get its choice.
-- `match` - A regular expression, as a string, that FilePathField will use to filter filenames.
-- `recursive` - Specifies whether all subdirectories of path should be included.  Default is `False`.
-- `allow_files` - Specifies whether files in the specified location should be included. Default is `True`. Either this or `allow_folders` must be `True`.
-- `allow_folders` - Specifies whether folders in the specified location should be included. Default is `False`. Either this or `allow_files` must be `True`.
+* `path` - The absolute filesystem path to a directory from which this FilePathField should get its choice.
+* `match` - A regular expression, as a string, that FilePathField will use to filter filenames.
+* `recursive` - Specifies whether all subdirectories of path should be included.  Default is `False`.
+* `allow_files` - Specifies whether files in the specified location should be included. Default is `True`. Either this or `allow_folders` must be `True`.
+* `allow_folders` - Specifies whether folders in the specified location should be included. Default is `False`. Either this or `allow_files` must be `True`.
 
 ## IPAddressField
 
@@ -252,8 +251,8 @@ Corresponds to `django.forms.fields.IPAddressField` and `django.forms.fields.Gen
 
 **Signature**: `IPAddressField(protocol='both', unpack_ipv4=False, **options)`
 
-- `protocol` Limits valid inputs to the specified protocol. Accepted values are 'both' (default), 'IPv4' or 'IPv6'. Matching is case insensitive.
-- `unpack_ipv4` Unpacks IPv4 mapped addresses like ::ffff:192.0.2.1. If this option is enabled that address would be unpacked to 192.0.2.1. Default is disabled. Can only be used when protocol is set to 'both'.
+* `protocol` Limits valid inputs to the specified protocol. Accepted values are 'both' (default), 'IPv4' or 'IPv6'. Matching is case insensitive.
+* `unpack_ipv4` Unpacks IPv4 mapped addresses like ::ffff:192.0.2.1. If this option is enabled that address would be unpacked to 192.0.2.1. Default is disabled. Can only be used when protocol is set to 'both'.
 
 ---
 
@@ -267,8 +266,8 @@ Corresponds to `django.db.models.fields.IntegerField`, `django.db.models.fields.
 
 **Signature**: `IntegerField(max_value=None, min_value=None)`
 
-- `max_value` Validate that the number provided is no greater than this value.
-- `min_value` Validate that the number provided is no less than this value.
+* `max_value` Validate that the number provided is no greater than this value.
+* `min_value` Validate that the number provided is no less than this value.
 
 ## FloatField
 
@@ -278,8 +277,8 @@ Corresponds to `django.db.models.fields.FloatField`.
 
 **Signature**: `FloatField(max_value=None, min_value=None)`
 
-- `max_value` Validate that the number provided is no greater than this value.
-- `min_value` Validate that the number provided is no less than this value.
+* `max_value` Validate that the number provided is no greater than this value.
+* `min_value` Validate that the number provided is no less than this value.
 
 ## DecimalField
 
@@ -289,13 +288,14 @@ Corresponds to `django.db.models.fields.DecimalField`.
 
 **Signature**: `DecimalField(max_digits, decimal_places, coerce_to_string=None, max_value=None, min_value=None)`
 
-- `max_digits` The maximum number of digits allowed in the number. It must be either `None` or an integer greater than or equal to `decimal_places`.
-- `decimal_places` The number of decimal places to store with the number.
-- `coerce_to_string` Set to `True` if string values should be returned for the representation, or `False` if `Decimal` objects should be returned. Defaults to the same value as the `COERCE_DECIMAL_TO_STRING` settings key, which will be `True` unless overridden. If `Decimal` objects are returned by the serializer, then the final output format will be determined by the renderer. Note that setting `localize` will force the value to `True`.
-- `max_value` Validate that the number provided is no greater than this value.
-- `min_value` Validate that the number provided is no less than this value.
-- `localize` Set to `True` to enable localization of input and output based on the current locale. This will also force `coerce_to_string` to `True`. Defaults to `False`. Note that data formatting is enabled if you have set `USE_L10N=True` in your settings file.
-- `rounding` Sets the rounding mode used when quantising to the configured precision. Valid values are [`decimal` module rounding modes][python-decimal-rounding-modes]. Defaults to `None`.
+* `max_digits` The maximum number of digits allowed in the number. It must be either `None` or an integer greater than or equal to `decimal_places`.
+* `decimal_places` The number of decimal places to store with the number.
+* `coerce_to_string` Set to `True` if string values should be returned for the representation, or `False` if `Decimal` objects should be returned. Defaults to the same value as the `COERCE_DECIMAL_TO_STRING` settings key, which will be `True` unless overridden. If `Decimal` objects are returned by the serializer, then the final output format will be determined by the renderer. Note that setting `localize` will force the value to `True`.
+* `max_value` Validate that the number provided is no greater than this value.
+* `min_value` Validate that the number provided is no less than this value.
+* `localize` Set to `True` to enable localization of input and output based on the current locale. This will also force `coerce_to_string` to `True`. Defaults to `False`. Note that data formatting is enabled if you have set `USE_L10N=True` in your settings file.
+* `rounding` Sets the rounding mode used when quantising to the configured precision. Valid values are [`decimal` module rounding modes][python-decimal-rounding-modes]. Defaults to `None`.
+* `normalize_output` Will normalize the decimal value when serialized. This will strip all trailing zeroes and change the value's precision to the minimum required precision to be able to represent the value without loosing data. Defaults to `False`.
 
 #### Example usage
 
@@ -306,10 +306,6 @@ To validate numbers up to 999 with a resolution of 2 decimal places, you would u
 And to validate numbers up to anything less than one billion with a resolution of 10 decimal places:
 
     serializers.DecimalField(max_digits=19, decimal_places=10)
-
-This field also takes an optional argument, `coerce_to_string`. If set to `True` the representation will be output as a string. If set to `False` the representation will be left as a `Decimal` instance and the final representation will be determined by the renderer.
-
-If unset, this will default to the same value as the `COERCE_DECIMAL_TO_STRING` setting, which is `True` unless set otherwise.
 
 ---
 
@@ -325,7 +321,7 @@ Corresponds to `django.db.models.fields.DateTimeField`.
 
 * `format` - A string representing the output format. If not specified, this defaults to the same value as the `DATETIME_FORMAT` settings key, which will be `'iso-8601'` unless set. Setting to a format string indicates that `to_representation` return values should be coerced to string output. Format strings are described below. Setting this value to `None` indicates that Python `datetime` objects should be returned by `to_representation`. In this case the datetime encoding will be determined by the renderer.
 * `input_formats` - A list of strings representing the input formats which may be used to parse the date.  If not specified, the `DATETIME_INPUT_FORMATS` setting will be used, which defaults to `['iso-8601']`.
-* `default_timezone` - A `pytz.timezone` representing the timezone. If not specified and the `USE_TZ` setting is enabled, this defaults to the [current timezone][django-current-timezone]. If `USE_TZ` is disabled, then datetime objects will be naive.
+* `default_timezone` - A `tzinfo` subclass (`zoneinfo` or `pytz`) prepresenting the timezone. If not specified and the `USE_TZ` setting is enabled, this defaults to the [current timezone][django-current-timezone]. If `USE_TZ` is disabled, then datetime objects will be naive.
 
 #### `DateTimeField` format strings.
 
@@ -385,8 +381,8 @@ The representation is a string following this format `'[DD] [HH:[MM:]]ss[.uuuuuu
 
 **Signature:** `DurationField(max_value=None, min_value=None)`
 
-- `max_value` Validate that the duration provided is no greater than this value.
-- `min_value` Validate that the duration provided is no less than this value.
+* `max_value` Validate that the duration provided is no greater than this value.
+* `min_value` Validate that the duration provided is no less than this value.
 
 ---
 
@@ -400,10 +396,10 @@ Used by `ModelSerializer` to automatically generate fields if the corresponding 
 
 **Signature:** `ChoiceField(choices)`
 
-- `choices` - A list of valid values, or a list of `(key, display_name)` tuples.
-- `allow_blank` - If set to `True` then the empty string should be considered a valid value. If set to `False` then the empty string is considered invalid and will raise a validation error. Defaults to `False`.
-- `html_cutoff` - If set this will be the maximum number of choices that will be displayed by a HTML select drop down. Can be used to ensure that automatically generated ChoiceFields with very large possible selections do not prevent a template from rendering. Defaults to `None`.
-- `html_cutoff_text` - If set this will display a textual indicator if the maximum number of items have been cutoff in an HTML select drop down. Defaults to `"More than {count} items…"`
+* `choices` - A list of valid values, or a list of `(key, display_name)` tuples.
+* `allow_blank` - If set to `True` then the empty string should be considered a valid value. If set to `False` then the empty string is considered invalid and will raise a validation error. Defaults to `False`.
+* `html_cutoff` - If set this will be the maximum number of choices that will be displayed by a HTML select drop down. Can be used to ensure that automatically generated ChoiceFields with very large possible selections do not prevent a template from rendering. Defaults to `None`.
+* `html_cutoff_text` - If set this will display a textual indicator if the maximum number of items have been cutoff in an HTML select drop down. Defaults to `"More than {count} items…"`
 
 Both the `allow_blank` and `allow_null` are valid options on `ChoiceField`, although it is highly recommended that you only use one and not both. `allow_blank` should be preferred for textual choices, and `allow_null` should be preferred for numeric or other non-textual choices.
 
@@ -413,10 +409,10 @@ A field that can accept a set of zero, one or many values, chosen from a limited
 
 **Signature:** `MultipleChoiceField(choices)`
 
-- `choices` - A list of valid values, or a list of `(key, display_name)` tuples.
-- `allow_blank` - If set to `True` then the empty string should be considered a valid value. If set to `False` then the empty string is considered invalid and will raise a validation error. Defaults to `False`.
-- `html_cutoff` - If set this will be the maximum number of choices that will be displayed by a HTML select drop down. Can be used to ensure that automatically generated ChoiceFields with very large possible selections do not prevent a template from rendering. Defaults to `None`.
-- `html_cutoff_text` - If set this will display a textual indicator if the maximum number of items have been cutoff in an HTML select drop down. Defaults to `"More than {count} items…"`
+* `choices` - A list of valid values, or a list of `(key, display_name)` tuples.
+* `allow_blank` - If set to `True` then the empty string should be considered a valid value. If set to `False` then the empty string is considered invalid and will raise a validation error. Defaults to `False`.
+* `html_cutoff` - If set this will be the maximum number of choices that will be displayed by a HTML select drop down. Can be used to ensure that automatically generated ChoiceFields with very large possible selections do not prevent a template from rendering. Defaults to `None`.
+* `html_cutoff_text` - If set this will display a textual indicator if the maximum number of items have been cutoff in an HTML select drop down. Defaults to `"More than {count} items…"`
 
 As with `ChoiceField`, both the `allow_blank` and `allow_null` options are valid, although it is highly recommended that you only use one and not both. `allow_blank` should be preferred for textual choices, and `allow_null` should be preferred for numeric or other non-textual choices.
 
@@ -437,9 +433,9 @@ Corresponds to `django.forms.fields.FileField`.
 
 **Signature:** `FileField(max_length=None, allow_empty_file=False, use_url=UPLOADED_FILES_USE_URL)`
 
- - `max_length` - Designates the maximum length for the file name.
- - `allow_empty_file` - Designates if empty files are allowed.
-- `use_url` - If set to `True` then URL string values will be used for the output representation. If set to `False` then filename string values will be used for the output representation. Defaults to the value of the `UPLOADED_FILES_USE_URL` settings key, which is `True` unless set otherwise.
+* `max_length` - Designates the maximum length for the file name.
+* `allow_empty_file` - Designates if empty files are allowed.
+* `use_url` - If set to `True` then URL string values will be used for the output representation. If set to `False` then filename string values will be used for the output representation. Defaults to the value of the `UPLOADED_FILES_USE_URL` settings key, which is `True` unless set otherwise.
 
 ## ImageField
 
@@ -449,9 +445,9 @@ Corresponds to `django.forms.fields.ImageField`.
 
 **Signature:** `ImageField(max_length=None, allow_empty_file=False, use_url=UPLOADED_FILES_USE_URL)`
 
- - `max_length` - Designates the maximum length for the file name.
- - `allow_empty_file` - Designates if empty files are allowed.
-- `use_url` - If set to `True` then URL string values will be used for the output representation. If set to `False` then filename string values will be used for the output representation. Defaults to the value of the `UPLOADED_FILES_USE_URL` settings key, which is `True` unless set otherwise.
+* `max_length` - Designates the maximum length for the file name.
+* `allow_empty_file` - Designates if empty files are allowed.
+* `use_url` - If set to `True` then URL string values will be used for the output representation. If set to `False` then filename string values will be used for the output representation. Defaults to the value of the `UPLOADED_FILES_USE_URL` settings key, which is `True` unless set otherwise.
 
 Requires either the `Pillow` package or `PIL` package.  The `Pillow` package is recommended, as `PIL` is no longer actively maintained.
 
@@ -465,10 +461,10 @@ A field class that validates a list of objects.
 
 **Signature**: `ListField(child=<A_FIELD_INSTANCE>, allow_empty=True, min_length=None, max_length=None)`
 
-- `child` - A field instance that should be used for validating the objects in the list. If this argument is not provided then objects in the list will not be validated.
-- `allow_empty` - Designates if empty lists are allowed.
-- `min_length` - Validates that the list contains no fewer than this number of elements.
-- `max_length` - Validates that the list contains no more than this number of elements.
+* `child` - A field instance that should be used for validating the objects in the list. If this argument is not provided then objects in the list will not be validated.
+* `allow_empty` - Designates if empty lists are allowed.
+* `min_length` - Validates that the list contains no fewer than this number of elements.
+* `max_length` - Validates that the list contains no more than this number of elements.
 
 For example, to validate a list of integers you might use something like the following:
 
@@ -489,8 +485,8 @@ A field class that validates a dictionary of objects. The keys in `DictField` ar
 
 **Signature**: `DictField(child=<A_FIELD_INSTANCE>, allow_empty=True)`
 
-- `child` - A field instance that should be used for validating the values in the dictionary. If this argument is not provided then values in the mapping will not be validated.
-- `allow_empty` - Designates if empty dictionaries are allowed.
+* `child` - A field instance that should be used for validating the values in the dictionary. If this argument is not provided then values in the mapping will not be validated.
+* `allow_empty` - Designates if empty dictionaries are allowed.
 
 For example, to create a field that validates a mapping of strings to strings, you would write something like this:
 
@@ -507,8 +503,8 @@ A preconfigured `DictField` that is compatible with Django's postgres `HStoreFie
 
 **Signature**: `HStoreField(child=<A_FIELD_INSTANCE>, allow_empty=True)`
 
-- `child` - A field instance that is used for validating the values in the dictionary. The default child field accepts both empty strings and null values.
-- `allow_empty` - Designates if empty dictionaries are allowed.
+* `child` - A field instance that is used for validating the values in the dictionary. The default child field accepts both empty strings and null values.
+* `allow_empty` - Designates if empty dictionaries are allowed.
 
 Note that the child field **must** be an instance of `CharField`, as the hstore extension stores values as strings.
 
@@ -518,8 +514,8 @@ A field class that validates that the incoming data structure consists of valid 
 
 **Signature**: `JSONField(binary, encoder)`
 
-- `binary` - If set to `True` then the field will output and validate a JSON encoded string, rather than a primitive data structure. Defaults to `False`.
-- `encoder` - Use this JSON encoder to serialize input object. Defaults to `None`.
+* `binary` - If set to `True` then the field will output and validate a JSON encoded string, rather than a primitive data structure. Defaults to `False`.
+* `encoder` - Use this JSON encoder to serialize input object. Defaults to `None`.
 
 ---
 
@@ -570,7 +566,7 @@ This is a read-only field. It gets its value by calling a method on the serializ
 
 **Signature**: `SerializerMethodField(method_name=None)`
 
-- `method_name` - The name of the method on the serializer to be called. If not included this defaults to `get_<field_name>`.
+* `method_name` - The name of the method on the serializer to be called. If not included this defaults to `get_<field_name>`.
 
 The serializer method referred to by the `method_name` argument should accept a single argument (in addition to `self`), which is the object being serialized. It should return whatever you want to be included in the serialized representation of the object. For example:
 
@@ -583,6 +579,7 @@ The serializer method referred to by the `method_name` argument should accept a 
 
         class Meta:
             model = User
+            fields = '__all__'
 
         def get_days_since_joined(self, obj):
             return (now() - obj.date_joined).days
@@ -775,7 +772,7 @@ Here the mapping between the target and source attribute pairs (`x` and
 `x_coordinate`, `y` and `y_coordinate`) is handled in the `IntegerField`
 declarations. It's our `NestedCoordinateSerializer` that takes `source='*'`.
 
-Our new `DataPointSerializer` exhibits the same behaviour as the custom field
+Our new `DataPointSerializer` exhibits the same behavior as the custom field
 approach.
 
 Serializing:
@@ -835,7 +832,7 @@ the [djangorestframework-recursive][djangorestframework-recursive] package provi
 
 ## django-rest-framework-gis
 
-The [django-rest-framework-gis][django-rest-framework-gis] package provides geographic addons for django rest framework like a  `GeometryField` field and a GeoJSON serializer.
+The [django-rest-framework-gis][django-rest-framework-gis] package provides geographic addons for django rest framework like a `GeometryField` field and a GeoJSON serializer.
 
 ## django-rest-framework-hstore
 
@@ -854,3 +851,4 @@ The [django-rest-framework-hstore][django-rest-framework-hstore] package provide
 [django-hstore]: https://github.com/djangonauts/django-hstore
 [python-decimal-rounding-modes]: https://docs.python.org/3/library/decimal.html#rounding-modes
 [django-current-timezone]: https://docs.djangoproject.com/en/stable/topics/i18n/timezones/#default-time-zone-and-current-time-zone
+[django-docs-select-related]: https://docs.djangoproject.com/en/3.1/ref/models/querysets/#django.db.models.query.QuerySet.select_related

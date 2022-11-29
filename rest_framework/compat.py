@@ -2,6 +2,7 @@
 The `compat` module provides support for backwards compatibility with older
 versions of Django/Python, and compatibility wrappers around optional packages.
 """
+import django
 from django.conf import settings
 from django.views.generic import View
 
@@ -150,6 +151,30 @@ if markdown is not None and pygments is not None:
 else:
     def md_filter_add_syntax_highlight(md):
         return False
+
+
+if django.VERSION >= (4, 2):
+    # Django 4.2+: use the stock parse_header_parameters function
+    # Note: Django 4.1 also has an implementation of parse_header_parameters
+    #       which is slightly different from the one in 4.2, it needs
+    #       the compatibility shim as well.
+    from django.utils.http import parse_header_parameters
+else:
+    # Django <= 4.1: create a compatibility shim for parse_header_parameters
+    from django.http.multipartparser import parse_header
+
+    def parse_header_parameters(line):
+        # parse_header works with bytes, but parse_header_parameters
+        # works with strings. Call encode to convert the line to bytes.
+        main_value_pair, params = parse_header(line.encode())
+        return main_value_pair, {
+            # parse_header will convert *some* values to string.
+            # parse_header_parameters converts *all* values to string.
+            # Make sure all values are converted by calling decode on
+            # any remaining non-string values.
+            k: v if isinstance(v, str) else v.decode()
+            for k, v in params.items()
+        }
 
 
 # `separators` argument to `json.dumps()` differs between 2.x and 3.x
