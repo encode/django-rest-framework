@@ -54,7 +54,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [hawkrest][hawkrest] - Provides Hawk HTTP Authorization.
 * [djangorestframework-httpsignature][djangorestframework-httpsignature] - Provides an easy to use HTTP Signature Authentication mechanism.
 * [djoser][djoser] - Provides a set of views to handle basic actions such as registration, login, logout, password reset and account activation.
-* [django-rest-auth][django-rest-auth] - Provides a set of REST API endpoints for registration, authentication (including social media authentication), password reset, retrieve and update user details, etc.
+* [dj-rest-auth][dj-rest-auth] - Provides a set of REST API endpoints for registration, authentication (including social media authentication), password reset, retrieve and update user details, etc.
 * [drf-oidc-auth][drf-oidc-auth] - Implements OpenID Connect token authentication for DRF.
 * [drfpasswordless][drfpasswordless] - Adds (Medium, Square Cash inspired) passwordless logins and signups via email and mobile numbers.
 * [django-rest-authemail][django-rest-authemail] - Provides a RESTful API for user signup and authentication using email addresses.
@@ -106,6 +106,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [djangorestframework-msgpack][djangorestframework-msgpack] - Provides MessagePack renderer and parser support.
 * [djangorestframework-jsonapi][djangorestframework-jsonapi] - Provides a parser, renderer, serializers, and other tools to help build an API that is compliant with the jsonapi.org spec.
 * [djangorestframework-camel-case][djangorestframework-camel-case] - Provides camel case JSON renderers and parsers.
+* [nested-multipart-parser][nested-multipart-parser] - Provides nested parser for http multipart request
 
 ### Renderers
 
@@ -147,6 +148,8 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [django-elasticsearch-dsl-drf][django-elasticsearch-dsl-drf] - Integrate Elasticsearch DSL with Django REST framework. Package provides views, serializers, filter backends, pagination and other handy add-ons.
 * [django-api-client][django-api-client] - DRF client that groups the Endpoint response, for use in CBVs and FBV as if you were working with Django's Native Models..
 * [fast-drf] - A model based library for making API development faster and easier.
+* [django-requestlogs] - Providing middleware and other helpers for audit logging for REST framework.
+* [drf-standardized-errors][drf-standardized-errors] - DRF exception handler to standardize error responses for all API endpoints.
 
 [cite]: http://www.software-ecosystems.com/Software_Ecosystems/Ecosystems.html
 [cookiecutter]: https://github.com/jpadilla/cookiecutter-django-rest-framework
@@ -183,6 +186,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [wq.db.rest]: https://wq.io/docs/about-rest
 [djangorestframework-msgpack]: https://github.com/juanriaza/django-rest-framework-msgpack
 [djangorestframework-camel-case]: https://github.com/vbabiy/djangorestframework-camel-case
+[nested-multipart-parser]: https://github.com/remigermain/nested-multipart-parser
 [djangorestframework-csv]: https://github.com/mjumbewu/django-rest-framework-csv
 [drf_ujson2]: https://github.com/Amertz08/drf_ujson2
 [rest-pandas]: https://github.com/wq/django-rest-pandas
@@ -193,7 +197,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [gaiarestframework]: https://github.com/AppsFuel/gaiarestframework
 [drf-extensions]: https://github.com/chibisov/drf-extensions
 [ember-django-adapter]: https://github.com/dustinfarris/ember-django-adapter
-[django-rest-auth]: https://github.com/Tivix/django-rest-auth/
+[dj-rest-auth]: https://github.com/iMerica/dj-rest-auth
 [django-versatileimagefield]: https://github.com/WGBH/django-versatileimagefield
 [django-versatileimagefield-drf-docs]:https://django-versatileimagefield.readthedocs.io/en/latest/drf_integration.html
 [drf-tracking]: https://github.com/aschn/drf-tracking
@@ -201,7 +205,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [dry-rest-permissions]: https://github.com/FJNR-inc/dry-rest-permissions
 [django-url-filter]: https://github.com/miki725/django-url-filter
 [drf-url-filter]: https://github.com/manjitkumar/drf-url-filters
-[cookiecutter-django-rest]:  https://github.com/agconti/cookiecutter-django-rest
+[cookiecutter-django-rest]: https://github.com/agconti/cookiecutter-django-rest
 [drf-haystack]: https://drf-haystack.readthedocs.io/en/latest/
 [django-rest-framework-version-transforms]: https://github.com/mrhwick/django-rest-framework-version-transforms
 [djangorestframework-jsonapi]: https://github.com/django-json-api/django-rest-framework-json-api
@@ -235,3 +239,5 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [graphwrap]: https://github.com/PaulGilmartin/graph_wrap
 [rest-framework-actions]: https://github.com/AlexisMunera98/rest-framework-actions
 [fast-drf]: https://github.com/iashraful/fast-drf
+[django-requestlogs]: https://github.com/Raekkeri/django-requestlogs
+[drf-standardized-errors]: https://github.com/ghazi-git/drf-standardized-errors

@@ -207,14 +207,14 @@ Field templates can also use additional style properties, depending on their typ
 
 The complete list of `base_template` options and their associated style options is listed below.
 
-base_template  | Valid field types  | Additional style options
-----|----|----
-input.html     | Any string, numeric or date/time field | input_type, placeholder, hide_label, autofocus
-textarea.html |  `CharField` | rows, placeholder, hide_label
-select.html | `ChoiceField` or relational field types | hide_label
-radio.html | `ChoiceField` or relational field types | inline, hide_label
-select_multiple.html | `MultipleChoiceField` or relational fields with `many=True` | hide_label
+base_template          | Valid field types                                           | Additional style options
+-----------------------|-------------------------------------------------------------|-----------------------------------------------
+input.html             | Any string, numeric or date/time field                      | input_type, placeholder, hide_label, autofocus
+textarea.html          | `CharField`                                                 | rows, placeholder, hide_label
+select.html            | `ChoiceField` or relational field types                     | hide_label
+radio.html             | `ChoiceField` or relational field types                     | inline, hide_label
+select_multiple.html   | `MultipleChoiceField` or relational fields with `many=True` | hide_label
 checkbox_multiple.html | `MultipleChoiceField` or relational fields with `many=True` | inline, hide_label
-checkbox.html | `BooleanField` | hide_label
-fieldset.html | Nested serializer | hide_label
-list_fieldset.html | `ListField` or nested serializer with `many=True` |   hide_label
+checkbox.html          | `BooleanField`                                              | hide_label
+fieldset.html          | Nested serializer                                           | hide_label
+list_fieldset.html     | `ListField` or nested serializer with `many=True`           | hide_label

@@ -31,7 +31,6 @@ The other thing we need to consider when creating the code highlight view is tha
 Instead of using a concrete generic view, we'll use the base class for representing instances, and create our own `.get()` method.  In your `snippets/views.py` add:
 
     from rest_framework import renderers
-    from rest_framework.response import Response
 
     class SnippetHighlight(generics.GenericAPIView):
         queryset = Snippet.objects.all()

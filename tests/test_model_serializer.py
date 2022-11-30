@@ -12,6 +12,7 @@ import sys
 import tempfile
 from collections import OrderedDict
 
+import django
 import pytest
 from django.core.exceptions import ImproperlyConfigured
 from django.core.serializers.json import DjangoJSONEncoder
@@ -452,11 +453,14 @@ class TestPosgresFieldsMapping(TestCase):
                 model = ArrayFieldModel
                 fields = ['array_field', 'array_field_with_blank']
 
+        validators = ""
+        if django.VERSION < (4, 1):
+            validators = ", validators=[<django.core.validators.MaxLengthValidator object>]"
         expected = dedent("""
             TestSerializer():
-                array_field = ListField(allow_empty=False, child=CharField(label='Array field', validators=[<django.core.validators.MaxLengthValidator object>]))
-                array_field_with_blank = ListField(child=CharField(label='Array field with blank', validators=[<django.core.validators.MaxLengthValidator object>]), required=False)
-        """)
+                array_field = ListField(allow_empty=False, child=CharField(label='Array field'%s))
+                array_field_with_blank = ListField(child=CharField(label='Array field with blank'%s), required=False)
+        """ % (validators, validators))
         self.assertEqual(repr(TestSerializer()), expected)
 
     @pytest.mark.skipif(hasattr(models, 'JSONField'), reason='has models.JSONField')
@@ -1019,6 +1023,73 @@ class Issue2704TestCase(TestCase):
         }]
 
         assert serializer.data == expected
+
+
+class Issue7550FooModel(models.Model):
+    text = models.CharField(max_length=100)
+    bar = models.ForeignKey(
+        'Issue7550BarModel', null=True, blank=True, on_delete=models.SET_NULL,
+        related_name='foos', related_query_name='foo')
+
+
+class Issue7550BarModel(models.Model):
+    pass
+
+
+class Issue7550TestCase(TestCase):
+
+    def test_dotted_source(self):
+
+        class _FooSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Issue7550FooModel
+                fields = ('id', 'text')
+
+        class FooSerializer(serializers.ModelSerializer):
+            other_foos = _FooSerializer(source='bar.foos', many=True)
+
+            class Meta:
+                model = Issue7550BarModel
+                fields = ('id', 'other_foos')
+
+        bar = Issue7550BarModel.objects.create()
+        foo_a = Issue7550FooModel.objects.create(bar=bar, text='abc')
+        foo_b = Issue7550FooModel.objects.create(bar=bar, text='123')
+
+        assert FooSerializer(foo_a).data == {
+            'id': foo_a.id,
+            'other_foos': [
+                {
+                    'id': foo_a.id,
+                    'text': foo_a.text,
+                },
+                {
+                    'id': foo_b.id,
+                    'text': foo_b.text,
+                },
+            ],
+        }
+
+    def test_dotted_source_with_default(self):
+
+        class _FooSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Issue7550FooModel
+                fields = ('id', 'text')
+
+        class FooSerializer(serializers.ModelSerializer):
+            other_foos = _FooSerializer(source='bar.foos', default=[], many=True)
+
+            class Meta:
+                model = Issue7550FooModel
+                fields = ('id', 'other_foos')
+
+        foo = Issue7550FooModel.objects.create(bar=None, text='abc')
+
+        assert FooSerializer(foo).data == {
+            'id': foo.id,
+            'other_foos': [],
+        }
 
 
 class DecimalFieldModel(models.Model):

@@ -29,7 +29,7 @@ REST framework provides two wrappers you can use to write API views.
 
 These wrappers provide a few bits of functionality such as making sure you receive `Request` instances in your view, and adding context to `Response` objects so that content negotiation can be performed.
 
-The wrappers also provide behaviour such as returning `405 Method Not Allowed` responses when appropriate, and handling any `ParseError` exceptions that occur when accessing `request.data` with malformed input.
+The wrappers also provide behavior such as returning `405 Method Not Allowed` responses when appropriate, and handling any `ParseError` exceptions that occur when accessing `request.data` with malformed input.
 
 ## Pulling it all together
 
@@ -112,7 +112,7 @@ Now update the `snippets/urls.py` file slightly, to append a set of `format_suff
 
     urlpatterns = [
         path('snippets/', views.snippet_list),
-        path('snippets/<int:pk>', views.snippet_detail),
+        path('snippets/<int:pk>/', views.snippet_detail),
     ]
 
     urlpatterns = format_suffix_patterns(urlpatterns)

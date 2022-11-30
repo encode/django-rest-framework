@@ -374,7 +374,7 @@ class TestManyRelatedField(APISimpleTestCase):
 
 
 class TestHyperlink:
-    def setup(self):
+    def setup_method(self):
         self.default_hyperlink = serializers.Hyperlink('http://example.com', 'test')
 
     def test_can_be_pickled(self):

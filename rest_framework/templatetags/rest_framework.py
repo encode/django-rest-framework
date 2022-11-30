@@ -218,7 +218,7 @@ def format_value(value):
         return template.render(context)
     elif isinstance(value, str):
         if (
-            (value.startswith('http:') or value.startswith('https:')) and not
+            (value.startswith('http:') or value.startswith('https:') or value.startswith('/')) and not
             re.search(r'\s', value)
         ):
             return mark_safe('<a href="{value}">{value}</a>'.format(value=escape(value)))

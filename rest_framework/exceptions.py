@@ -1,7 +1,7 @@
 """
 Handled exceptions raised by REST framework.
 
-In addition Django's built in 403 and 404 exceptions are handled.
+In addition, Django's built in 403 and 404 exceptions are handled.
 (`django.http.Http404` and `django.core.exceptions.PermissionDenied`)
 """
 import math
@@ -72,16 +72,19 @@ class ErrorDetail(str):
         return self
 
     def __eq__(self, other):
-        r = super().__eq__(other)
-        if r is NotImplemented:
+        result = super().__eq__(other)
+        if result is NotImplemented:
             return NotImplemented
         try:
-            return r and self.code == other.code
+            return result and self.code == other.code
         except AttributeError:
-            return r
+            return result
 
     def __ne__(self, other):
-        return not self.__eq__(other)
+        result = self.__eq__(other)
+        if result is NotImplemented:
+            return NotImplemented
+        return not result
 
     def __repr__(self):
         return 'ErrorDetail(string=%r, code=%r)' % (

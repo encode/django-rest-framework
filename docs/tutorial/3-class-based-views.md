@@ -79,9 +79,9 @@ Okay, we're done.  If you run the development server everything should be workin
 
 ## Using mixins
 
-One of the big wins of using class-based views is that it allows us to easily compose reusable bits of behaviour.
+One of the big wins of using class-based views is that it allows us to easily compose reusable bits of behavior.
 
-The create/retrieve/update/delete operations that we've been using so far are going to be pretty similar for any model-backed API views we create.  Those bits of common behaviour are implemented in REST framework's mixin classes.
+The create/retrieve/update/delete operations that we've been using so far are going to be pretty similar for any model-backed API views we create.  Those bits of common behavior are implemented in REST framework's mixin classes.
 
 Let's take a look at how we can compose the views by using the mixin classes.  Here's our `views.py` module again.
 
