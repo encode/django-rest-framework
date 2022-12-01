@@ -53,25 +53,22 @@ class BaseRouter:
         if basename is None:
             basename = self.get_default_basename(viewset)
 
-        if not self.basename_already_registered(basename):
-            self.registry.append((prefix, viewset, basename))
+        if self.is_already_registered(basename):
+            msg = (f'Route with basename "{basename}" is already registered. '
+                   f'Please provide a unique basename for viewset "{viewset}"')
+            raise ImproperlyConfigured(msg)
+
+        self.registry.append((prefix, viewset, basename))
 
         # invalidate the urls cache
         if hasattr(self, '_urls'):
             del self._urls
 
-    def basename_already_registered(self, new_basename):
+    def is_already_registered(self, new_basename):
         """
-        If `basename` is already registered, raise an exception
+        Check if `basename` is already registered
         """
-        for route in self.registry:
-            prefix, viewset, basename = route
-            if new_basename == basename:
-                msg = (f'Route with basename "{new_basename}" is already registered. '
-                       f'Please provide a unique basename for viewset "{viewset}"')
-                raise ImproperlyConfigured(msg)
-
-        return False
+        return any(basename == new_basename for _prefix, _viewset, basename in self.registry)
 
     def get_default_basename(self, viewset):
         """
