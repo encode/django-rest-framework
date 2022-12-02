@@ -158,19 +158,19 @@
               <div class="page-header">
                 <h1>{{ name }}</h1>
               </div>
-              <div style="float:left">
+              <div class="pull-left">
                 {% block description %}
                   {{ description }}
                 {% endblock %}
               </div>
 
               {% if paginator %}
-                <nav style="float: right">
+                <nav class="pull-right">
                   {% get_pagination_html paginator %}
                 </nav>
               {% endif %}
 
-              <div class="request-info" style="clear: both" aria-label="{% trans "request info" %}">
+              <div class="request-info" aria-label="{% trans "request info" %}">
                 <pre class="prettyprint"><b>{{ request.method }}</b> {{ request.get_full_path }}</pre>
               </div>
 
