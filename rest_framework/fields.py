@@ -1639,6 +1639,8 @@ class ListField(Field):
                 result.append(self.child.run_validation(item))
             except ValidationError as e:
                 errors[idx] = e.detail
+            except DjangoValidationError as e:
+                errors[idx] = get_error_detail(e)
 
         if not errors:
             return result
