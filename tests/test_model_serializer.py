@@ -27,7 +27,7 @@ from django.test import TestCase
 from rest_framework import serializers
 from rest_framework.compat import postgres_fields
 
-from .models import NestedForeignKeySource
+from .models import NestedForeignKeySource, UUIDForeignKeyTarget
 
 
 def dedent(blocktext):
@@ -732,6 +732,25 @@ class TestRelationalFieldMappings(TestCase):
                 id = IntegerField(label='ID', read_only=True)
                 name = CharField(max_length=100)
                 reverse_through = PrimaryKeyRelatedField(many=True, read_only=True)
+        """)
+        self.assertEqual(repr(TestSerializer()), expected)
+
+
+class UUIDForeignKeyModel(models.Model):
+    foreign_key = models.ForeignKey(UUIDForeignKeyTarget, related_name='reverse_foreign_key', on_delete=models.CASCADE)
+
+
+class TestUUIDForeignKeyMapping(TestCase):
+    def test_uuid_pk_relation(self):
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = UUIDForeignKeyModel
+                fields = '__all__'
+
+        expected = dedent("""
+            TestSerializer():
+                id = IntegerField(label='ID', read_only=True)
+                foreign_key = PrimaryKeyRelatedField(pk_field=<django.db.models.fields.UUIDField>, queryset=UUIDForeignKeyTarget.objects.all())
         """)
         self.assertEqual(repr(TestSerializer()), expected)
 
