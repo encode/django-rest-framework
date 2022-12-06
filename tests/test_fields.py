@@ -371,7 +371,7 @@ class TestBooleanHTMLInput:
     def test_empty_html_checkbox(self):
         """
         HTML checkboxes do not send any value, but should be treated
-        as `False` by BooleanField.
+        as `False` by BooleanField if allow_null=False.
         """
         class TestSerializer(serializers.Serializer):
             archived = serializers.BooleanField()
@@ -383,7 +383,8 @@ class TestBooleanHTMLInput:
     def test_empty_html_checkbox_not_required(self):
         """
         HTML checkboxes do not send any value, but should be treated
-        as `False` by BooleanField, even if the field is required=False.
+        as `False` by BooleanField when the field is required=False
+        and allow_null=False.
         """
         class TestSerializer(serializers.Serializer):
             archived = serializers.BooleanField(required=False)
@@ -391,6 +392,34 @@ class TestBooleanHTMLInput:
         serializer = TestSerializer(data=QueryDict(''))
         assert serializer.is_valid()
         assert serializer.validated_data == {'archived': False}
+
+    def test_empty_html_checkbox_allow_null(self):
+        """
+        HTML checkboxes do not send any value and should be treated
+        as `None` by BooleanField if allow_null is True.
+        """
+        class TestSerializer(serializers.Serializer):
+            archived = serializers.BooleanField(allow_null=True)
+
+        serializer = TestSerializer(data=QueryDict(''))
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'archived': None}
+
+    def test_empty_html_checkbox_allow_null_with_default(self):
+        """
+        BooleanField should respect default if set and still allow
+        setting null values.
+        """
+        class TestSerializer(serializers.Serializer):
+            archived = serializers.BooleanField(allow_null=True, default=True)
+
+        serializer = TestSerializer(data=QueryDict(''))
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'archived': True}
+
+        serializer = TestSerializer(data=QueryDict('archived='))
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'archived': None}
 
 
 class TestHTMLInput:
