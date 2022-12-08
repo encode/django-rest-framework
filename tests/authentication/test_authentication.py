@@ -120,6 +120,22 @@ class BasicAuthTests(TestCase):
         )
         assert response.status_code == status.HTTP_200_OK
 
+    def test_post_json_without_password_failing_basic_auth(self):
+        """Ensure POSTing json without password (even if password is empty string) returns 401"""
+        self.user.set_password("")
+        credentials = ('%s' % (self.username))
+        base64_credentials = base64.b64encode(
+            credentials.encode(HTTP_HEADER_ENCODING)
+        ).decode(HTTP_HEADER_ENCODING)
+        auth = 'Basic %s' % base64_credentials
+        response = self.csrf_client.post(
+            '/basic/',
+            {'example': 'example'},
+            format='json',
+            HTTP_AUTHORIZATION=auth
+        )
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
     def test_regression_handle_bad_base64_basic_auth_header(self):
         """Ensure POSTing JSON over basic auth with incorrectly padded Base64 string is handled correctly"""
         # regression test for issue in 'rest_framework.authentication.BasicAuthentication.authenticate'
