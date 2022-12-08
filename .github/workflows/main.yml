@@ -49,7 +49,7 @@ jobs:
       run: tox --py current
 
     - name: Run extra tox targets
-      if: ${{ matrix.python-version == '3.10' }}
+      if: ${{ matrix.python-version == '3.9' }}
       run: |
         python setup.py bdist_wheel
         rm -r djangorestframework.egg-info  # see #6139
