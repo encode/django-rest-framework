@@ -54,7 +54,7 @@ class BaseRouter:
             basename = self.get_default_basename(viewset)
 
         if self.is_already_registered(basename):
-            msg = (f'Route with basename "{basename}" is already registered. '
+            msg = (f'Router with basename "{basename}" is already registered. '
                    f'Please provide a unique basename for viewset "{viewset}"')
             raise ImproperlyConfigured(msg)
 
