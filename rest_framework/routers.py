@@ -52,11 +52,23 @@ class BaseRouter:
     def register(self, prefix, viewset, basename=None):
         if basename is None:
             basename = self.get_default_basename(viewset)
+
+        if self.is_already_registered(basename):
+            msg = (f'Router with basename "{basename}" is already registered. '
+                   f'Please provide a unique basename for viewset "{viewset}"')
+            raise ImproperlyConfigured(msg)
+
         self.registry.append((prefix, viewset, basename))
 
         # invalidate the urls cache
         if hasattr(self, '_urls'):
             del self._urls
+
+    def is_already_registered(self, new_basename):
+        """
+        Check if `basename` is already registered
+        """
+        return any(basename == new_basename for _prefix, _viewset, basename in self.registry)
 
     def get_default_basename(self, viewset):
         """
