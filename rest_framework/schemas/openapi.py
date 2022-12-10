@@ -387,6 +387,8 @@ class AutoSchema(ViewInspector):
                 'items': self.map_field(field.child_relation)
             }
         if isinstance(field, serializers.PrimaryKeyRelatedField):
+            if getattr(field, "pk_field", False):
+                return self.map_field(field=field.pk_field)
             model = getattr(field.queryset, 'model', None)
             if model is not None:
                 model_field = model._meta.pk

@@ -19,6 +19,7 @@ from rest_framework.renderers import (
 from rest_framework.request import Request
 from rest_framework.schemas.openapi import AutoSchema, SchemaGenerator
 
+from ..models import BasicModel
 from . import views
 
 
@@ -143,6 +144,22 @@ class TestFieldMapping(TestCase):
         assert data['properties']['rw_field']['nullable'], "rw_field nullable must be true"
         assert data['properties']['ro_field']['nullable'], "ro_field nullable must be true"
         assert data['properties']['ro_field']['readOnly'], "ro_field read_only must be true"
+
+    def test_primary_key_related_field(self):
+        class PrimaryKeyRelatedFieldSerializer(serializers.Serializer):
+            basic = serializers.PrimaryKeyRelatedField(queryset=BasicModel.objects.all())
+            uuid = serializers.PrimaryKeyRelatedField(queryset=BasicModel.objects.all(),
+                                                      pk_field=serializers.UUIDField())
+            char = serializers.PrimaryKeyRelatedField(queryset=BasicModel.objects.all(),
+                                                      pk_field=serializers.CharField())
+
+        serializer = PrimaryKeyRelatedFieldSerializer()
+        inspector = AutoSchema()
+
+        data = inspector.map_serializer(serializer=serializer)
+        assert data['properties']['basic']['type'] == "integer"
+        assert data['properties']['uuid']['format'] == "uuid"
+        assert data['properties']['char']['type'] == "string"
 
 
 @pytest.mark.skipif(uritemplate is None, reason='uritemplate not installed.')
