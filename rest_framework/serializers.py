@@ -1296,6 +1296,10 @@ class ModelSerializer(Serializer):
             field_kwargs['slug_field'] = to_field
             field_class = self.serializer_related_to_field
 
+        # `pk_field` is only valid for PrimaryKeyRelatedField
+        if not issubclass(field_class, PrimaryKeyRelatedField):
+            field_kwargs.pop('pk_field', None)
+
         # `view_name` is only valid for hyperlinked relationships.
         if not issubclass(field_class, HyperlinkedRelatedField):
             field_kwargs.pop('view_name', None)

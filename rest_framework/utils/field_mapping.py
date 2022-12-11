@@ -265,6 +265,8 @@ def get_relation_kwargs(field_name, relation_info):
             kwargs.pop('queryset', None)
         if model_field.null:
             kwargs['allow_null'] = True
+        if isinstance(model_field.target_field, models.UUIDField):
+            kwargs['pk_field'] = models.UUIDField()
         if kwargs.get('read_only', False):
             # If this field is read-only, then return early.
             # No further keyword arguments are valid.
