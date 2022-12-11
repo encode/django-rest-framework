@@ -754,6 +754,20 @@ class TestUUIDForeignKeyMapping(TestCase):
         """)
         self.assertEqual(repr(TestSerializer()), expected)
 
+    def test_uuid_pk_relation_override(self):
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = UUIDForeignKeyModel
+                fields = '__all__'
+                extra_kwargs = {'foreign_key': {'pk_field': serializers.UUIDField(format='int')}}
+
+        expected = dedent("""
+            TestSerializer():
+                id = IntegerField(label='ID', read_only=True)
+                foreign_key = PrimaryKeyRelatedField(pk_field=UUIDField(format='int'), queryset=UUIDForeignKeyTarget.objects.all())
+        """)
+        self.assertEqual(repr(TestSerializer()), expected)
+
 
 class DisplayValueTargetModel(models.Model):
     name = models.CharField(max_length=100)
