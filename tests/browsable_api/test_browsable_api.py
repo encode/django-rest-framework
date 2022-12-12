@@ -121,8 +121,8 @@ class ResourceViewSet(ModelViewSet):
 
 
 router = SimpleRouter()
-router.register(r'resources', ResourceViewSet)
-router.register(r'resources-2', ResourceViewSet)
+router.register(r'resources', ResourceViewSet, basename="basicmodel")
+router.register(r'resources-2', ResourceViewSet, basename="basicmodel2")
 urlpatterns = []
 urlpatterns += router.urls
 
