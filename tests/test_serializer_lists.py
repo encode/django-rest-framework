@@ -481,7 +481,7 @@ class TestSerializerPartialUsage:
         assert serializer.validated_data == {}
         assert serializer.errors == {}
 
-    def test_udate_as_field_allow_empty_true(self):
+    def test_update_as_field_allow_empty_true(self):
         class ListSerializer(serializers.Serializer):
             update_field = serializers.IntegerField()
             store_field = serializers.IntegerField()
