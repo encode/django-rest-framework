@@ -34,7 +34,78 @@ You can determine your currently installed version using `pip show`:
 
 ---
 
+## 3.14.x series
+
+### 3.14.0
+
+Date: 22nd September 2022
+
+* Django 2.2 is no longer supported. [[#8662](https://github.com/encode/django-rest-framework/pull/8662)]
+* Django 4.1 compatibility. [[#8591](https://github.com/encode/django-rest-framework/pull/8591)]
+* Add `--api-version` CLI option to `generateschema` management command. [[#8663](https://github.com/encode/django-rest-framework/pull/8663)]
+* Enforce `is_valid(raise_exception=False)` as a keyword-only argument. [[#7952](https://github.com/encode/django-rest-framework/pull/7952)]
+* Stop calling `set_context` on Validators. [[#8589](https://github.com/encode/django-rest-framework/pull/8589)]
+* Return `NotImplemented` from `ErrorDetails.__ne__`. [[#8538](https://github.com/encode/django-rest-framework/pull/8538)]
+* Don't evaluate `DateTimeField.default_timezone` when a custom timezone is set. [[#8531](https://github.com/encode/django-rest-framework/pull/8531)]
+* Make relative URLs clickable in Browseable API. [[#8464](https://github.com/encode/django-rest-framework/pull/8464)]
+* Support `ManyRelatedField` falling back to the default value when the attribute specified by dot notation doesn't exist. Matches `ManyRelatedField.get_attribute` to `Field.get_attribute`. [[#7574](https://github.com/encode/django-rest-framework/pull/7574)]
+* Make `schemas.openapi.get_reference` public. [[#7515](https://github.com/encode/django-rest-framework/pull/7515)]
+* Make `ReturnDict` support `dict` union operators on Python 3.9 and later. [[#8302](https://github.com/encode/django-rest-framework/pull/8302)]
+* Update throttling to check if `request.user` is set before checking if the user is authenticated. [[#8370](https://github.com/encode/django-rest-framework/pull/8370)]
+
+## 3.13.x series
+
+### 3.13.1
+
+Date: 15th December 2021
+
+* Revert schema naming changes with function based `@api_view`. [#8297]
+
+### 3.13.0
+
+Date: 13th December 2021
+
+* Django 4.0 compatability. [#8178]
+* Add `max_length` and `min_length` options to `ListSerializer`. [#8165]
+* Add `get_request_serializer` and `get_response_serializer` hooks to `AutoSchema`. [#7424]
+* Fix OpenAPI representation of null-able read only fields. [#8116]
+* Respect `UNICODE_JSON` setting in API schema outputs. [#7991]
+* Fix for `RemoteUserAuthentication`. [#7158]
+* Make Field constructors keyword-only. [#7632]
+
+---
+
 ## 3.12.x series
+
+### 3.12.4
+
+Date: 26th March 2021
+
+* Revert use of `deque` instead of `list` for tracking throttling `.history`. (Due to incompatibility with DjangoRedis cache backend. See #7870) [#7872]
+
+### 3.12.3
+
+Date: 25th March 2021
+
+* Properly handle ATOMIC_REQUESTS when multiple database configurations are used. [#7739]
+* Bypass `COUNT` query when `LimitOffsetPagination` is configured but pagination params are not included on the request. [#6098]
+* Respect `allow_null=True` on `DecimalField`. [#7718]
+* Allow title cased `"Yes"`/`"No"` values with `BooleanField`. [#7739]
+* Add `PageNumberPagination.get_page_number()` method for overriding behavior. [#7652]
+* Fixed rendering of timedelta values in OpenAPI schemas, when present as default, min, or max fields. [#7641]
+* Render JSONFields with indentation in browsable API forms. [#6243]
+* Remove unnecessary database query in admin Token views. [#7852]
+* Raise validation errors when bools are passed to `PrimaryKeyRelatedField` fields, instead of casting to ints. [#7597]
+* Don't include model properties as automatically generated ordering fields with `OrderingFilter`. [#7609]
+* Use `deque` instead of `list` for tracking throttling `.history`. [#7849]
+
+### 3.12.2
+
+Date: 13th October 2020
+
+* Fix issue if `rest_framework.authtoken.models` is imported, but `rest_framework.authtoken` is not in INSTALLED_APPS. [#7571]
+* Ignore subclasses of BrowsableAPIRenderer in OpenAPI schema. [#7497]
+* Narrower exception catching in serilizer fields, to ensure that any errors in broken `get_queryset()` methods are not masked. [#7480]
 
 ### 3.12.1
 
@@ -90,6 +161,18 @@ Date: 28th September 2020
 ---
 
 ## 3.11.x series
+
+### 3.11.2
+
+**Date**: 30th September 2020
+
+* **Security**: Drop `urlize_quoted_links` template tag in favour of Django's built-in `urlize`. Removes a XSS vulnerability for some kinds of content in the browsable API.
+
+### 3.11.1
+
+**Date**: 5th August 2020
+
+* Fix compat with Django 3.1
 
 ### 3.11.0
 
@@ -157,6 +240,8 @@ Date: 28th September 2020
 * Don't strict disallow redundant `SerializerMethodField` field name arguments.
 * Don't render extra actions in browable API if not authenticated.
 * Strip null characters from search parameters.
+* Deprecate the `detail_route` decorator in favor of `action`, which accepts a `detail` bool. Use `@action(detail=True)` instead. [gh6687]
+* Deprecate the `list_route` decorator in favor of `action`, which accepts a `detail` bool. Use `@action(detail=False)` instead. [gh6687]
 
 ## 3.9.x series
 
@@ -2250,6 +2335,7 @@ For older release notes, [please see the version 2.x documentation][old-release-
 <!-- 3.10.0 -->
 [gh6680]: https://github.com/encode/django-rest-framework/issues/6680
 [gh6317]: https://github.com/encode/django-rest-framework/issues/6317
+[gh6687]: https://github.com/encode/django-rest-framework/issues/6687
 
 <!-- 3.11.0 -->
 [gh6892]: https://github.com/encode/django-rest-framework/issues/6892

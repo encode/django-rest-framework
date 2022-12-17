@@ -290,9 +290,6 @@ class URLizerTests(TestCase):
         For all items in dict test assert that the value is urlized key
         """
         for original, urlized in data.items():
-            print('====')
-            print(repr(urlize(original, nofollow=False)))
-            print(repr(urlized))
             assert urlize(original, nofollow=False) == urlized
 
     def test_json_with_url(self):

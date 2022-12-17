@@ -46,8 +46,10 @@ class TokenProxy(Token):
     """
     @property
     def pk(self):
-        return self.user.pk
+        return self.user_id
 
     class Meta:
-        proxy = True
-        verbose_name = "token"
+        proxy = 'rest_framework.authtoken' in settings.INSTALLED_APPS
+        abstract = 'rest_framework.authtoken' not in settings.INSTALLED_APPS
+        verbose_name = _("Token")
+        verbose_name_plural = _("Tokens")
