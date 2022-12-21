@@ -1480,6 +1480,7 @@ class FilePathField(ChoiceField):
             allow_folders=allow_folders, required=required
         )
         kwargs['choices'] = field.choices
+        kwargs['required'] = required
         super().__init__(**kwargs)
 
 

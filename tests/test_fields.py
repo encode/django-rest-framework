@@ -15,7 +15,8 @@ from django.utils.timezone import activate, deactivate, override
 import rest_framework
 from rest_framework import exceptions, serializers
 from rest_framework.fields import (
-    BuiltinSignatureError, DjangoImageField, is_simple_callable
+    BuiltinSignatureError, DjangoImageField, SkipField, empty,
+    is_simple_callable
 )
 from tests.models import UUIDForeignKeyTarget
 
@@ -2388,6 +2389,21 @@ class TestFileFieldContext:
         obj = MockFile(name='example.txt', url='/example.txt')
         value = field.to_representation(obj)
         assert value == 'http://example.com/example.txt'
+
+
+# Tests for FilePathField.
+# --------------------
+
+class TestFilePathFieldRequired:
+    def test_required_passed_to_both_django_file_path_field_and_base(self):
+        field = serializers.FilePathField(
+            path=os.path.abspath(os.path.dirname(__file__)),
+            required=False,
+        )
+        assert "" in field.choices  # Django adds empty choice if not required
+        assert field.required is False
+        with pytest.raises(SkipField):
+            field.run_validation(empty)
 
 
 # Tests for SerializerMethodField.
