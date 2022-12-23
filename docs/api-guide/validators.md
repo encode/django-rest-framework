@@ -271,7 +271,6 @@ A validator may be any callable that raises a `serializers.ValidationError` on f
     def even_number(value):
         if value % 2 != 0:
             raise serializers.ValidationError('This field must be an even number.')
-        return value
 
 #### Field-level validation
 
