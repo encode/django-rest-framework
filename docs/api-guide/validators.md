@@ -20,7 +20,7 @@ Validation in Django REST framework serializers is handled a little differently 
 With `ModelForm` the validation is performed partially on the form, and partially on the model instance. With REST framework the validation is performed entirely on the serializer class. This is advantageous for the following reasons:
 
 * It introduces a proper separation of concerns, making your code behavior more obvious.
-* It is easy to switch between using shortcut `ModelSerializer` classes and using  explicit `Serializer` classes. Any validation behavior being used for `ModelSerializer` is simple to replicate.
+* It is easy to switch between using shortcut `ModelSerializer` classes and using explicit `Serializer` classes. Any validation behavior being used for `ModelSerializer` is simple to replicate.
 * Printing the `repr` of a serializer instance will show you exactly what validation rules it applies. There's no extra hidden validation behavior being called on the model instance.
 
 When you're using `ModelSerializer` all of this is handled automatically for you. If you want to drop down to using `Serializer` classes instead, then you need to define the validation rules explicitly.
@@ -208,7 +208,7 @@ by specifying an empty list for the serializer `Meta.validators` attribute.
 
 By default "unique together" validation enforces that all fields be
 `required=True`. In some cases, you might want to explicit apply
-`required=False` to one of the fields, in which case the desired behaviour
+`required=False` to one of the fields, in which case the desired behavior
 of the validation is ambiguous.
 
 In this case you will typically need to exclude the validator from the
@@ -238,7 +238,7 @@ In the case of update operations on *nested* serializers there's no way of
 applying this exclusion, because the instance is not available.
 
 Again, you'll probably want to explicitly remove the validator from the
-serializer class, and write the code the for the validation constraint
+serializer class, and write the code for the validation constraint
 explicitly, in a `.validate()` method, or in the view.
 
 ## Debugging complex cases
@@ -271,6 +271,7 @@ A validator may be any callable that raises a `serializers.ValidationError` on f
     def even_number(value):
         if value % 2 != 0:
             raise serializers.ValidationError('This field must be an even number.')
+        return value
 
 #### Field-level validation
 
@@ -282,7 +283,7 @@ to your `Serializer` subclass. This is documented in the
 
 To write a class-based validator, use the `__call__` method. Class-based validators are useful as they allow you to parameterize and reuse behavior.
 
-    class MultipleOf(object):
+    class MultipleOf:
         def __init__(self, base):
             self.base = base
 

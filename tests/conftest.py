@@ -18,10 +18,16 @@ def pytest_addoption(parser):
 def pytest_configure(config):
     from django.conf import settings
 
+    # USE_L10N is deprecated, and will be removed in Django 5.0.
+    use_l10n = {"USE_L10N": True} if django.VERSION < (4, 0) else {}
     settings.configure(
         DEBUG_PROPAGATE_EXCEPTIONS=True,
         DATABASES={
             'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': ':memory:'
+            },
+            'secondary': {
                 'ENGINE': 'django.db.backends.sqlite3',
                 'NAME': ':memory:'
             }
@@ -29,7 +35,6 @@ def pytest_configure(config):
         SITE_ID=1,
         SECRET_KEY='not very secret in tests',
         USE_I18N=True,
-        USE_L10N=True,
         STATIC_URL='/static/',
         ROOT_URLCONF='tests.urls',
         TEMPLATES=[
@@ -64,25 +69,23 @@ def pytest_configure(config):
         PASSWORD_HASHERS=(
             'django.contrib.auth.hashers.MD5PasswordHasher',
         ),
+        **use_l10n,
     )
 
     # guardian is optional
-    # Note that for the test cases we're installing a version of django-guardian
-    # that's only compatible with Django 2.0+.
-    if django.VERSION >= (2, 0, 0):
-        try:
-            import guardian  # NOQA
-        except ImportError:
-            pass
-        else:
-            settings.ANONYMOUS_USER_ID = -1
-            settings.AUTHENTICATION_BACKENDS = (
-                'django.contrib.auth.backends.ModelBackend',
-                'guardian.backends.ObjectPermissionBackend',
-            )
-            settings.INSTALLED_APPS += (
-                'guardian',
-            )
+    try:
+        import guardian  # NOQA
+    except ImportError:
+        pass
+    else:
+        settings.ANONYMOUS_USER_ID = -1
+        settings.AUTHENTICATION_BACKENDS = (
+            'django.contrib.auth.backends.ModelBackend',
+            'guardian.backends.ObjectPermissionBackend',
+        )
+        settings.INSTALLED_APPS += (
+            'guardian',
+        )
 
     if config.getoption('--no-pkgroot'):
         sys.path.pop(0)

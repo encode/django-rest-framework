@@ -3,12 +3,12 @@ from collections import OrderedDict
 from collections.abc import MutableMapping
 
 import pytest
-from django.conf.urls import include, url
 from django.core.cache import cache
 from django.db import models
 from django.http.request import HttpRequest
 from django.template import loader
 from django.test import TestCase, override_settings
+from django.urls import include, path, re_path
 from django.utils.safestring import SafeText
 from django.utils.translation import gettext_lazy as _
 
@@ -111,14 +111,14 @@ class HTMLView1(APIView):
 
 
 urlpatterns = [
-    url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
-    url(r'^$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
-    url(r'^cache$', MockGETView.as_view()),
-    url(r'^parseerror$', MockPOSTView.as_view(renderer_classes=[JSONRenderer, BrowsableAPIRenderer])),
-    url(r'^html$', HTMLView.as_view()),
-    url(r'^html1$', HTMLView1.as_view()),
-    url(r'^empty$', EmptyGETView.as_view()),
-    url(r'^api', include('rest_framework.urls', namespace='rest_framework'))
+    re_path(r'^.*\.(?P<format>.+)$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
+    path('', MockView.as_view(renderer_classes=[RendererA, RendererB])),
+    path('cache', MockGETView.as_view()),
+    path('parseerror', MockPOSTView.as_view(renderer_classes=[JSONRenderer, BrowsableAPIRenderer])),
+    path('html', HTMLView.as_view()),
+    path('html1', HTMLView1.as_view()),
+    path('empty', EmptyGETView.as_view()),
+    path('api', include('rest_framework.urls', namespace='rest_framework'))
 ]
 
 
@@ -637,7 +637,7 @@ class BrowsableAPIRendererTests(URLPatternsTestCase):
     router = SimpleRouter()
     router.register('examples', ExampleViewSet, basename='example')
     router.register('auth-examples', AuthExampleViewSet, basename='auth-example')
-    urlpatterns = [url(r'^api/', include(router.urls))]
+    urlpatterns = [path('api/', include(router.urls))]
 
     def setUp(self):
         self.renderer = BrowsableAPIRenderer()
@@ -741,6 +741,11 @@ class AdminRendererTests(TestCase):
         class DummyGenericViewsetLike(APIView):
             lookup_field = 'test'
 
+            def get(self, request):
+                response = Response()
+                response.view = self
+                return response
+
             def reverse_action(view, *args, **kwargs):
                 self.assertEqual(kwargs['kwargs']['test'], 1)
                 return '/example/'
@@ -749,7 +754,7 @@ class AdminRendererTests(TestCase):
         view = DummyGenericViewsetLike.as_view()
         request = factory.get('/')
         response = view(request)
-        view = response.renderer_context['view']
+        view = response.view
 
         self.assertEqual(self.renderer.get_result_url({'test': 1}, view), '/example/')
         self.assertIsNone(self.renderer.get_result_url({}, view))
@@ -760,11 +765,16 @@ class AdminRendererTests(TestCase):
         class DummyView(APIView):
             lookup_field = 'test'
 
+            def get(self, request):
+                response = Response()
+                response.view = self
+                return response
+
         # get the view instance instead of the view function
         view = DummyView.as_view()
         request = factory.get('/')
         response = view(request)
-        view = response.renderer_context['view']
+        view = response.view
 
         self.assertIsNone(self.renderer.get_result_url({'test': 1}, view))
         self.assertIsNone(self.renderer.get_result_url({}, view))

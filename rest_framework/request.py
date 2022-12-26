@@ -14,11 +14,11 @@ from contextlib import contextmanager
 
 from django.conf import settings
 from django.http import HttpRequest, QueryDict
-from django.http.multipartparser import parse_header
 from django.http.request import RawPostDataException
 from django.utils.datastructures import MultiValueDict
 
-from rest_framework import HTTP_HEADER_ENCODING, exceptions
+from rest_framework import exceptions
+from rest_framework.compat import parse_header_parameters
 from rest_framework.settings import api_settings
 
 
@@ -26,7 +26,7 @@ def is_form_media_type(media_type):
     """
     Return True if the media type is a valid form media type.
     """
-    base_media_type, params = parse_header(media_type.encode(HTTP_HEADER_ENCODING))
+    base_media_type, params = parse_header_parameters(media_type)
     return (base_media_type == 'application/x-www-form-urlencoded' or
             base_media_type == 'multipart/form-data')
 
@@ -143,9 +143,9 @@ class Request:
 
     Kwargs:
         - request(HttpRequest). The original request instance.
-        - parsers_classes(list/tuple). The parsers to use for parsing the
+        - parsers(list/tuple). The parsers to use for parsing the
           request content.
-        - authentication_classes(list/tuple). The authentications used to try
+        - authenticators(list/tuple). The authenticators used to try
           authenticating the request's user.
     """
 
@@ -178,6 +178,13 @@ class Request:
         if force_user is not None or force_token is not None:
             forced_auth = ForcedAuthentication(force_user, force_token)
             self.authenticators = (forced_auth,)
+
+    def __repr__(self):
+        return '<%s.%s: %s %r>' % (
+            self.__class__.__module__,
+            self.__class__.__name__,
+            self.method,
+            self.get_full_path())
 
     def _default_negotiator(self):
         return api_settings.DEFAULT_CONTENT_NEGOTIATION_CLASS()
@@ -309,7 +316,7 @@ class Request:
             'application/x-www-form-urlencoded',
             'multipart/form-data'
         )
-        return any([parser.media_type in form_media for parser in self.parsers])
+        return any(parser.media_type in form_media for parser in self.parsers)
 
     def _parse(self):
         """
@@ -406,7 +413,8 @@ class Request:
         to proxy it to the underlying HttpRequest object.
         """
         try:
-            return getattr(self._request, attr)
+            _request = self.__getattribute__("_request")
+            return getattr(_request, attr)
         except AttributeError:
             return self.__getattribute__(attr)
 

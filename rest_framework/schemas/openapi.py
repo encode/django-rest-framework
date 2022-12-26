@@ -12,9 +12,12 @@ from django.core.validators import (
 from django.db import models
 from django.utils.encoding import force_str
 
-from rest_framework import exceptions, renderers, serializers
+from rest_framework import (
+    RemovedInDRF315Warning, exceptions, renderers, serializers
+)
 from rest_framework.compat import uritemplate
 from rest_framework.fields import _UnvalidatedField, empty
+from rest_framework.settings import api_settings
 
 from .generators import BaseSchemaGenerator
 from .inspectors import ViewInspector
@@ -47,7 +50,7 @@ class SchemaGenerator(BaseSchemaGenerator):
                         'You have a duplicated operationId in your OpenAPI schema: {operation_id}\n'
                         '\tRoute: {route1}, Method: {method1}\n'
                         '\tRoute: {route2}, Method: {method2}\n'
-                        '\tAn operationId has to be unique accros your schema. Your schema may not work in other tools.'
+                        '\tAn operationId has to be unique across your schema. Your schema may not work in other tools.'
                         .format(
                             route1=ids[operation_id]['route'],
                             method1=ids[operation_id]['method'],
@@ -145,15 +148,15 @@ class AutoSchema(ViewInspector):
         operation['description'] = self.get_description(path, method)
 
         parameters = []
-        parameters += self._get_path_parameters(path, method)
-        parameters += self._get_pagination_parameters(path, method)
-        parameters += self._get_filter_parameters(path, method)
+        parameters += self.get_path_parameters(path, method)
+        parameters += self.get_pagination_parameters(path, method)
+        parameters += self.get_filter_parameters(path, method)
         operation['parameters'] = parameters
 
-        request_body = self._get_request_body(path, method)
+        request_body = self.get_request_body(path, method)
         if request_body:
             operation['requestBody'] = request_body
-        operation['responses'] = self._get_responses(path, method)
+        operation['responses'] = self.get_responses(path, method)
         operation['tags'] = self.get_tags(path, method)
 
         return operation
@@ -185,15 +188,26 @@ class AutoSchema(ViewInspector):
         """
         Return components with their properties from the serializer.
         """
-        serializer = self._get_serializer(path, method)
 
-        if not isinstance(serializer, serializers.Serializer):
+        if method.lower() == 'delete':
             return {}
 
-        component_name = self.get_component_name(serializer)
+        request_serializer = self.get_request_serializer(path, method)
+        response_serializer = self.get_response_serializer(path, method)
 
-        content = self._map_serializer(serializer)
-        return {component_name: content}
+        components = {}
+
+        if isinstance(request_serializer, serializers.Serializer):
+            component_name = self.get_component_name(request_serializer)
+            content = self.map_serializer(request_serializer)
+            components.setdefault(component_name, content)
+
+        if isinstance(response_serializer, serializers.Serializer):
+            component_name = self.get_component_name(response_serializer)
+            content = self.map_serializer(response_serializer)
+            components.setdefault(component_name, content)
+
+        return components
 
     def _to_camel_case(self, snake_str):
         components = snake_str.split('_')
@@ -215,8 +229,8 @@ class AutoSchema(ViewInspector):
             name = model.__name__
 
         # Try with the serializer class name
-        elif self._get_serializer(path, method) is not None:
-            name = self._get_serializer(path, method).__class__.__name__
+        elif self.get_serializer(path, method) is not None:
+            name = self.get_serializer(path, method).__class__.__name__
             if name.endswith('Serializer'):
                 name = name[:-10]
 
@@ -233,8 +247,10 @@ class AutoSchema(ViewInspector):
             if name.endswith(action.title()):  # ListView, UpdateAPIView, ThingDelete ...
                 name = name[:-len(action)]
 
-        if action == 'list' and not name.endswith('s'):  # listThings instead of listThing
-            name += 's'
+        if action == 'list':
+            from inflection import pluralize
+
+            name = pluralize(name)
 
         return name
 
@@ -254,7 +270,7 @@ class AutoSchema(ViewInspector):
 
         return action + name
 
-    def _get_path_parameters(self, path, method):
+    def get_path_parameters(self, path, method):
         """
         Return a list of parameters from templated path variables.
         """
@@ -290,15 +306,15 @@ class AutoSchema(ViewInspector):
 
         return parameters
 
-    def _get_filter_parameters(self, path, method):
-        if not self._allows_filters(path, method):
+    def get_filter_parameters(self, path, method):
+        if not self.allows_filters(path, method):
             return []
         parameters = []
         for filter_backend in self.view.filter_backends:
             parameters += filter_backend().get_schema_operation_parameters(self.view)
         return parameters
 
-    def _allows_filters(self, path, method):
+    def allows_filters(self, path, method):
         """
         Determine whether to include filter Fields in schema.
 
@@ -311,19 +327,19 @@ class AutoSchema(ViewInspector):
             return self.view.action in ["list", "retrieve", "update", "partial_update", "destroy"]
         return method.lower() in ["get", "put", "patch", "delete"]
 
-    def _get_pagination_parameters(self, path, method):
+    def get_pagination_parameters(self, path, method):
         view = self.view
 
         if not is_list_view(path, method, view):
             return []
 
-        paginator = self._get_paginator()
+        paginator = self.get_paginator()
         if not paginator:
             return []
 
         return paginator.get_schema_operation_parameters(view)
 
-    def _map_choicefield(self, field):
+    def map_choicefield(self, field):
         choices = list(OrderedDict.fromkeys(field.choices))  # preserve order and remove duplicates
         if all(isinstance(choice, bool) for choice in choices):
             type = 'boolean'
@@ -351,16 +367,16 @@ class AutoSchema(ViewInspector):
             mapping['type'] = type
         return mapping
 
-    def _map_field(self, field):
+    def map_field(self, field):
 
         # Nested Serializers, `many` or not.
         if isinstance(field, serializers.ListSerializer):
             return {
                 'type': 'array',
-                'items': self._map_serializer(field.child)
+                'items': self.map_serializer(field.child)
             }
         if isinstance(field, serializers.Serializer):
-            data = self._map_serializer(field)
+            data = self.map_serializer(field)
             data['type'] = 'object'
             return data
 
@@ -368,9 +384,11 @@ class AutoSchema(ViewInspector):
         if isinstance(field, serializers.ManyRelatedField):
             return {
                 'type': 'array',
-                'items': self._map_field(field.child_relation)
+                'items': self.map_field(field.child_relation)
             }
         if isinstance(field, serializers.PrimaryKeyRelatedField):
+            if getattr(field, "pk_field", False):
+                return self.map_field(field=field.pk_field)
             model = getattr(field.queryset, 'model', None)
             if model is not None:
                 model_field = model._meta.pk
@@ -384,11 +402,11 @@ class AutoSchema(ViewInspector):
         if isinstance(field, serializers.MultipleChoiceField):
             return {
                 'type': 'array',
-                'items': self._map_choicefield(field)
+                'items': self.map_choicefield(field)
             }
 
         if isinstance(field, serializers.ChoiceField):
-            return self._map_choicefield(field)
+            return self.map_choicefield(field)
 
         # ListField.
         if isinstance(field, serializers.ListField):
@@ -397,7 +415,7 @@ class AutoSchema(ViewInspector):
                 'items': {},
             }
             if not isinstance(field.child, _UnvalidatedField):
-                mapping['items'] = self._map_field(field.child)
+                mapping['items'] = self.map_field(field.child)
             return mapping
 
         # DateField and DateTimeField type is string
@@ -442,11 +460,17 @@ class AutoSchema(ViewInspector):
                 content['format'] = field.protocol
             return content
 
-        # DecimalField has multipleOf based on decimal_places
         if isinstance(field, serializers.DecimalField):
-            content = {
-                'type': 'number'
-            }
+            if getattr(field, 'coerce_to_string', api_settings.COERCE_DECIMAL_TO_STRING):
+                content = {
+                    'type': 'string',
+                    'format': 'decimal',
+                }
+            else:
+                content = {
+                    'type': 'number'
+                }
+
             if field.decimal_places:
                 content['multipleOf'] = float('.' + (field.decimal_places - 1) * '0' + '1')
             if field.max_whole_digits:
@@ -457,7 +481,7 @@ class AutoSchema(ViewInspector):
 
         if isinstance(field, serializers.FloatField):
             content = {
-                'type': 'number'
+                'type': 'number',
             }
             self._map_min_max(field, content)
             return content
@@ -493,7 +517,7 @@ class AutoSchema(ViewInspector):
         if field.min_value:
             content['minimum'] = field.min_value
 
-    def _map_serializer(self, serializer):
+    def map_serializer(self, serializer):
         # Assuming we have a valid serializer instance.
         required = []
         properties = {}
@@ -503,9 +527,9 @@ class AutoSchema(ViewInspector):
                 continue
 
             if field.required:
-                required.append(field.field_name)
+                required.append(self.get_field_name(field))
 
-            schema = self._map_field(field)
+            schema = self.map_field(field)
             if field.read_only:
                 schema['readOnly'] = True
             if field.write_only:
@@ -516,9 +540,9 @@ class AutoSchema(ViewInspector):
                 schema['default'] = field.default
             if field.help_text:
                 schema['description'] = str(field.help_text)
-            self._map_field_validators(field, schema)
+            self.map_field_validators(field, schema)
 
-            properties[field.field_name] = schema
+            properties[self.get_field_name(field)] = schema
 
         result = {
             'type': 'object',
@@ -529,7 +553,7 @@ class AutoSchema(ViewInspector):
 
         return result
 
-    def _map_field_validators(self, field, schema):
+    def map_field_validators(self, field, schema):
         """
         map field validators
         """
@@ -541,7 +565,9 @@ class AutoSchema(ViewInspector):
             if isinstance(v, URLValidator):
                 schema['format'] = 'uri'
             if isinstance(v, RegexValidator):
-                schema['pattern'] = v.regex.pattern
+                # In Python, the token \Z does what \z does in other engines.
+                # https://stackoverflow.com/questions/53283160
+                schema['pattern'] = v.regex.pattern.replace('\\Z', '\\z')
             elif isinstance(v, MaxLengthValidator):
                 attr_name = 'maxLength'
                 if isinstance(field, serializers.ListField):
@@ -556,7 +582,8 @@ class AutoSchema(ViewInspector):
                 schema['maximum'] = v.limit_value
             elif isinstance(v, MinValueValidator):
                 schema['minimum'] = v.limit_value
-            elif isinstance(v, DecimalValidator):
+            elif isinstance(v, DecimalValidator) and \
+                    not getattr(field, 'coerce_to_string', api_settings.COERCE_DECIMAL_TO_STRING):
                 if v.decimal_places:
                     schema['multipleOf'] = float('.' + (v.decimal_places - 1) * '0' + '1')
                 if v.max_digits:
@@ -566,7 +593,14 @@ class AutoSchema(ViewInspector):
                     schema['maximum'] = int(digits * '9') + 1
                     schema['minimum'] = -schema['maximum']
 
-    def _get_paginator(self):
+    def get_field_name(self, field):
+        """
+        Override this method if you want to change schema field name.
+        For example, convert snake_case field name to camelCase.
+        """
+        return field.field_name
+
+    def get_paginator(self):
         pagination_class = getattr(self.view, 'pagination_class', None)
         if pagination_class:
             return pagination_class()
@@ -579,12 +613,12 @@ class AutoSchema(ViewInspector):
         media_types = []
         for renderer in self.view.renderer_classes:
             # BrowsableAPIRenderer not relevant to OpenAPI spec
-            if renderer == renderers.BrowsableAPIRenderer:
+            if issubclass(renderer, renderers.BrowsableAPIRenderer):
                 continue
             media_types.append(renderer.media_type)
         return media_types
 
-    def _get_serializer(self, path, method):
+    def get_serializer(self, path, method):
         view = self.view
 
         if not hasattr(view, 'get_serializer'):
@@ -599,21 +633,35 @@ class AutoSchema(ViewInspector):
                           .format(view.__class__.__name__, method, path))
             return None
 
-    def _get_reference(self, serializer):
+    def get_request_serializer(self, path, method):
+        """
+        Override this method if your view uses a different serializer for
+        handling request body.
+        """
+        return self.get_serializer(path, method)
+
+    def get_response_serializer(self, path, method):
+        """
+        Override this method if your view uses a different serializer for
+        populating response data.
+        """
+        return self.get_serializer(path, method)
+
+    def get_reference(self, serializer):
         return {'$ref': '#/components/schemas/{}'.format(self.get_component_name(serializer))}
 
-    def _get_request_body(self, path, method):
+    def get_request_body(self, path, method):
         if method not in ('PUT', 'PATCH', 'POST'):
             return {}
 
         self.request_media_types = self.map_parsers(path, method)
 
-        serializer = self._get_serializer(path, method)
+        serializer = self.get_request_serializer(path, method)
 
         if not isinstance(serializer, serializers.Serializer):
             item_schema = {}
         else:
-            item_schema = self._get_reference(serializer)
+            item_schema = self.get_reference(serializer)
 
         return {
             'content': {
@@ -622,8 +670,7 @@ class AutoSchema(ViewInspector):
             }
         }
 
-    def _get_responses(self, path, method):
-        # TODO: Handle multiple codes and pagination classes.
+    def get_responses(self, path, method):
         if method == 'DELETE':
             return {
                 '204': {
@@ -633,19 +680,19 @@ class AutoSchema(ViewInspector):
 
         self.response_media_types = self.map_renderers(path, method)
 
-        serializer = self._get_serializer(path, method)
+        serializer = self.get_response_serializer(path, method)
 
         if not isinstance(serializer, serializers.Serializer):
             item_schema = {}
         else:
-            item_schema = self._get_reference(serializer)
+            item_schema = self.get_reference(serializer)
 
         if is_list_view(path, method, self.view):
             response_schema = {
                 'type': 'array',
                 'items': item_schema,
             }
-            paginator = self._get_paginator()
+            paginator = self.get_paginator()
             if paginator:
                 response_schema = paginator.get_paginated_response_schema(response_schema)
         else:
@@ -676,3 +723,11 @@ class AutoSchema(ViewInspector):
             path = path[1:]
 
         return [path.split('/')[0].replace('_', '-')]
+
+    def _get_reference(self, serializer):
+        warnings.warn(
+            "Method `_get_reference()` has been renamed to `get_reference()`. "
+            "The old name will be removed in DRF v3.15.",
+            RemovedInDRF315Warning, stacklevel=2
+        )
+        return self.get_reference(serializer)

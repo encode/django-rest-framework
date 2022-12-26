@@ -1,6 +1,8 @@
 """
 Helper classes for parsers.
 """
+
+import contextlib
 import datetime
 import decimal
 import json  # noqa
@@ -58,10 +60,8 @@ class JSONEncoder(json.JSONEncoder):
             )
         elif hasattr(obj, '__getitem__'):
             cls = (list if isinstance(obj, (list, tuple)) else dict)
-            try:
+            with contextlib.suppress(Exception):
                 return cls(obj)
-            except Exception:
-                pass
         elif hasattr(obj, '__iter__'):
             return tuple(item for item in obj)
         return super().default(obj)

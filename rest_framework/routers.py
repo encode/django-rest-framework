@@ -16,9 +16,8 @@ For example, you might have a `urls.py` that looks something like this:
 import itertools
 from collections import OrderedDict, namedtuple
 
-from django.conf.urls import url
 from django.core.exceptions import ImproperlyConfigured
-from django.urls import NoReverseMatch
+from django.urls import NoReverseMatch, re_path
 
 from rest_framework import views
 from rest_framework.response import Response
@@ -53,11 +52,23 @@ class BaseRouter:
     def register(self, prefix, viewset, basename=None):
         if basename is None:
             basename = self.get_default_basename(viewset)
+
+        if self.is_already_registered(basename):
+            msg = (f'Router with basename "{basename}" is already registered. '
+                   f'Please provide a unique basename for viewset "{viewset}"')
+            raise ImproperlyConfigured(msg)
+
         self.registry.append((prefix, viewset, basename))
 
         # invalidate the urls cache
         if hasattr(self, '_urls'):
             del self._urls
+
+    def is_already_registered(self, new_basename):
+        """
+        Check if `basename` is already registered
+        """
+        return any(basename == new_basename for _prefix, _viewset, basename in self.registry)
 
     def get_default_basename(self, viewset):
         """
@@ -265,7 +276,7 @@ class SimpleRouter(BaseRouter):
 
                 view = viewset.as_view(mapping, **initkwargs)
                 name = route.name.format(basename=basename)
-                ret.append(url(regex, view, name=name))
+                ret.append(re_path(regex, view, name=name))
 
         return ret
 
@@ -291,7 +302,7 @@ class APIRootView(views.APIView):
                     args=args,
                     kwargs=kwargs,
                     request=request,
-                    format=kwargs.get('format', None)
+                    format=kwargs.get('format')
                 )
             except NoReverseMatch:
                 # Don't bail out if eg. no list routes exist, only detail routes.
@@ -340,7 +351,7 @@ class DefaultRouter(SimpleRouter):
 
         if self.include_root_view:
             view = self.get_api_root_view(api_urls=urls)
-            root_url = url(r'^$', view, name=self.root_view_name)
+            root_url = re_path(r'^$', view, name=self.root_view_name)
             urls.append(root_url)
 
         if self.include_format_suffixes:

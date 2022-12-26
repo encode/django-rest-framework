@@ -22,10 +22,6 @@ class DecoratorTestCase(TestCase):
     def setUp(self):
         self.factory = APIRequestFactory()
 
-    def _finalize_response(self, request, response, *args, **kwargs):
-        response.request = request
-        return APIView.finalize_response(self, request, response, *args, **kwargs)
-
     def test_api_view_incorrect(self):
         """
         If @api_view is not applied correct, we should raise an assertion.

@@ -142,7 +142,7 @@ def action(methods=None, detail=None, url_path=None, url_name=None, **kwargs):
                    how the `@renderer_classes` etc. decorators work for function-
                    based API views.
     """
-    methods = ['get'] if (methods is None) else methods
+    methods = ['get'] if methods is None else methods
     methods = [method.lower() for method in methods]
 
     assert detail is not None, (

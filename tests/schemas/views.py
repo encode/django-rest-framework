@@ -1,4 +1,5 @@
 import uuid
+from datetime import timedelta
 
 from django.core.validators import (
     DecimalValidator, MaxLengthValidator, MaxValueValidator,
@@ -59,6 +60,7 @@ class DocStringExampleDetailView(APIView):
 class ExampleSerializer(serializers.Serializer):
     date = serializers.DateField()
     datetime = serializers.DateTimeField()
+    duration = serializers.DurationField(default=timedelta())
     hstore = serializers.HStoreField()
     uuid_field = serializers.UUIDField(default=uuid.uuid4)
 
@@ -119,9 +121,13 @@ class ExampleValidatedSerializer(serializers.Serializer):
             MinLengthValidator(limit_value=2),
         )
     )
-    decimal1 = serializers.DecimalField(max_digits=6, decimal_places=2)
-    decimal2 = serializers.DecimalField(max_digits=5, decimal_places=0,
+    decimal1 = serializers.DecimalField(max_digits=6, decimal_places=2, coerce_to_string=False)
+    decimal2 = serializers.DecimalField(max_digits=5, decimal_places=0, coerce_to_string=False,
                                         validators=(DecimalValidator(max_digits=17, decimal_places=4),))
+    decimal3 = serializers.DecimalField(max_digits=8, decimal_places=2, coerce_to_string=True)
+    decimal4 = serializers.DecimalField(max_digits=8, decimal_places=2, coerce_to_string=True,
+                                        validators=(DecimalValidator(max_digits=17, decimal_places=4),))
+    decimal5 = serializers.DecimalField(max_digits=6, decimal_places=2)
     email = serializers.EmailField(default='foo@bar.com')
     url = serializers.URLField(default='http://www.example.com', allow_null=True)
     uuid = serializers.UUIDField()

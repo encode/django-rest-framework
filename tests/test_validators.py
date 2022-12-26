@@ -7,8 +7,7 @@ from django.test import TestCase
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.validators import (
-    BaseUniqueForValidator, UniqueTogetherValidator, UniqueValidator,
-    qs_exists
+    BaseUniqueForValidator, UniqueTogetherValidator, UniqueValidator, qs_exists
 )
 
 
@@ -41,6 +40,12 @@ class RelatedModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = RelatedModel
         fields = ('username', 'email')
+
+
+class RelatedModelUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RelatedModel
+        fields = ('user',)
 
 
 class AnotherUniquenessModel(models.Model):
@@ -83,6 +88,13 @@ class TestUniquenessValidation(TestCase):
         serializer = UniquenessSerializer(data=data)
         assert not serializer.is_valid()
         assert serializer.errors == {'username': ['uniqueness model with this username already exists.']}
+
+    def test_relation_is_not_unique(self):
+        RelatedModel.objects.create(user=self.instance)
+        data = {'user': self.instance.pk}
+        serializer = RelatedModelUserSerializer(data=data)
+        assert not serializer.is_valid()
+        assert serializer.errors == {'user': ['related model with this user already exists.']}
 
     def test_is_unique(self):
         data = {'username': 'other'}
@@ -343,6 +355,49 @@ class TestUniquenessTogetherValidation(TestCase):
                 'This field is required.'
             ]
         }
+
+    def test_default_validator_with_fields_with_source(self):
+        class TestSerializer(serializers.ModelSerializer):
+            name = serializers.CharField(source='race_name')
+
+            class Meta:
+                model = UniquenessTogetherModel
+                fields = ['name', 'position']
+
+        serializer = TestSerializer()
+        expected = dedent("""
+            TestSerializer():
+                name = CharField(source='race_name')
+                position = IntegerField()
+                class Meta:
+                    validators = [<UniqueTogetherValidator(queryset=UniquenessTogetherModel.objects.all(), fields=('name', 'position'))>]
+        """)
+        assert repr(serializer) == expected
+
+    def test_default_validator_with_multiple_fields_with_same_source(self):
+        class TestSerializer(serializers.ModelSerializer):
+            name = serializers.CharField(source='race_name')
+            other_name = serializers.CharField(source='race_name')
+
+            class Meta:
+                model = UniquenessTogetherModel
+                fields = ['name', 'other_name', 'position']
+
+        serializer = TestSerializer(data={
+            'name': 'foo',
+            'other_name': 'foo',
+            'position': 1,
+        })
+        with pytest.raises(AssertionError) as excinfo:
+            serializer.is_valid()
+
+        expected = (
+            "Unable to create `UniqueTogetherValidator` for "
+            "`UniquenessTogetherModel.race_name` as `TestSerializer` has "
+            "multiple fields (name, other_name) that map to this model field. "
+            "Either remove the extra fields, or override `Meta.validators` "
+            "with a `UniqueTogetherValidator` using the desired field names.")
+        assert str(excinfo.value) == expected
 
     def test_allow_explict_override(self):
         """

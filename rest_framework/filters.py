@@ -8,7 +8,6 @@ from functools import reduce
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.db.models.constants import LOOKUP_SEP
-from django.db.models.sql.constants import ORDER_PATTERN
 from django.template import loader
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
@@ -86,7 +85,7 @@ class SearchFilter(BaseFilterBackend):
                 search_field = search_field[1:]
             # Annotated fields do not need to be distinct
             if isinstance(queryset, models.QuerySet) and search_field in queryset.query.annotations:
-                return False
+                continue
             parts = search_field.split(LOOKUP_SEP)
             for part in parts:
                 field = opts.get_field(part)
@@ -97,6 +96,9 @@ class SearchFilter(BaseFilterBackend):
                     if any(path.m2m for path in path_info):
                         # This field is a m2m relation so we know we need to call distinct
                         return True
+                else:
+                    # This field has a custom __ query transform but is not a relational field.
+                    break
         return False
 
     def filter_queryset(self, request, queryset, view):
@@ -224,10 +226,20 @@ class OrderingFilter(BaseFilterBackend):
             )
             raise ImproperlyConfigured(msg % self.__class__.__name__)
 
+        model_class = queryset.model
+        model_property_names = [
+            # 'pk' is a property added in Django's Model class, however it is valid for ordering.
+            attr for attr in dir(model_class) if isinstance(getattr(model_class, attr), property) and attr != 'pk'
+        ]
+
         return [
             (field.source.replace('.', '__') or field_name, field.label)
             for field_name, field in serializer_class(context=context).fields.items()
-            if not getattr(field, 'write_only', False) and not field.source == '*'
+            if (
+                not getattr(field, 'write_only', False) and
+                not field.source == '*' and
+                field.source not in model_property_names
+            )
         ]
 
     def get_valid_fields(self, queryset, view, context={}):
@@ -256,7 +268,13 @@ class OrderingFilter(BaseFilterBackend):
 
     def remove_invalid_fields(self, queryset, fields, view, request):
         valid_fields = [item[0] for item in self.get_valid_fields(queryset, view, {'request': request})]
-        return [term for term in fields if term.lstrip('-') in valid_fields and ORDER_PATTERN.match(term)]
+
+        def term_valid(term):
+            if term.startswith("-"):
+                term = term[1:]
+            return term in valid_fields
+
+        return [term for term in fields if term_valid(term)]
 
     def filter_queryset(self, request, queryset, view):
         ordering = self.get_ordering(request, queryset, view)

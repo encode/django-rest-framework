@@ -1,4 +1,4 @@
-*Note*: Before submitting this pull request, please review our [contributing guidelines](https://github.com/encode/django-rest-framework/blob/master/CONTRIBUTING.md#pull-requests).
+*Note*: Before submitting this pull request, please review our [contributing guidelines](https://www.django-rest-framework.org/community/contributing/#pull-requests).
 
 ## Description
 

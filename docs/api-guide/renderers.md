@@ -103,6 +103,16 @@ Unlike other renderers, the data passed to the `Response` does not need to be se
 
 The TemplateHTMLRenderer will create a `RequestContext`, using the `response.data` as the context dict, and determine a template name to use to render the context.
 
+---
+
+**Note:** When used with a view that makes use of a serializer the `Response` sent for rendering may not be a dictionary and will need to be wrapped in a dict before returning to allow the `TemplateHTMLRenderer` to render it. For example:
+
+```
+response.data = {'results': response.data}
+```
+
+---
+
 The template name is determined by (in order of preference):
 
 1. An explicit `template_name` argument passed to the response.
@@ -182,7 +192,7 @@ By default the response content will be rendered with the highest priority rende
         def get_default_renderer(self, view):
             return JSONRenderer()
 
-##  AdminRenderer
+## AdminRenderer
 
 Renders data into HTML for an admin-like display:
 
@@ -247,7 +257,7 @@ This renderer is used for rendering HTML multipart form data.  **It is not suita
 
 # Custom renderers
 
-To implement a custom renderer, you should override `BaseRenderer`, set the `.media_type` and `.format` properties, and implement the `.render(self, data, media_type=None, renderer_context=None)` method.
+To implement a custom renderer, you should override `BaseRenderer`, set the `.media_type` and `.format` properties, and implement the `.render(self, data, accepted_media_type=None, renderer_context=None)` method.
 
 The method should return a bytestring, which will be used as the body of the HTTP response.
 
@@ -257,7 +267,7 @@ The arguments passed to the `.render()` method are:
 
 The request data, as set by the `Response()` instantiation.
 
-### `media_type=None`
+### `accepted_media_type=None`
 
 Optional.  If provided, this is the accepted media type, as determined by the content negotiation stage.
 
@@ -273,7 +283,7 @@ By default this will include the following keys: `view`, `request`, `response`, 
 
 The following is an example plaintext renderer that will return a response with the `data` parameter as the content of the response.
 
-    from django.utils.encoding import smart_unicode
+    from django.utils.encoding import smart_text
     from rest_framework import renderers
 
 
@@ -281,8 +291,8 @@ The following is an example plaintext renderer that will return a response with 
         media_type = 'text/plain'
         format = 'txt'
 
-        def render(self, data, media_type=None, renderer_context=None):
-            return data.encode(self.charset)
+        def render(self, data, accepted_media_type=None, renderer_context=None):
+            return smart_text(data, encoding=self.charset)
 
 ## Setting the character set
 
@@ -293,7 +303,7 @@ By default renderer classes are assumed to be using the `UTF-8` encoding.  To us
         format = 'txt'
         charset = 'iso-8859-1'
 
-        def render(self, data, media_type=None, renderer_context=None):
+        def render(self, data, accepted_media_type=None, renderer_context=None):
             return data.encode(self.charset)
 
 Note that if a renderer class returns a unicode string, then the response content will be coerced into a bytestring by the `Response` class, with the `charset` attribute set on the renderer used to determine the encoding.
@@ -308,7 +318,7 @@ In some cases you may also want to set the `render_style` attribute to `'binary'
         charset = None
         render_style = 'binary'
 
-        def render(self, data, media_type=None, renderer_context=None):
+        def render(self, data, accepted_media_type=None, renderer_context=None):
             return data
 
 ---
@@ -322,7 +332,7 @@ You can do some pretty flexible things using REST framework's renderers.  Some e
 * Specify multiple types of HTML representation for API clients to use.
 * Underspecify a renderer's media type, such as using `media_type = 'image/*'`, and use the `Accept` header to vary the encoding of the response.
 
-## Varying behaviour by media type
+## Varying behavior by media type
 
 In some cases you might want your view to use different serialization styles depending on the accepted media type.  If you need to do this you can access `request.accepted_renderer` to determine the negotiated renderer that will be used for the response.
 
@@ -460,15 +470,15 @@ Modify your REST framework settings.
 
 [MessagePack][messagepack] is a fast, efficient binary serialization format.  [Juan Riaza][juanriaza] maintains the [djangorestframework-msgpack][djangorestframework-msgpack] package which provides MessagePack renderer and parser support for REST framework.
 
-## XLSX (Binary Spreadsheet Endpoints)
+## Microsoft Excel: XLSX (Binary Spreadsheet Endpoints)
 
-XLSX is the world's most popular binary spreadsheet format. [Tim Allen][flipperpa] of [The Wharton School][wharton] maintains [drf-renderer-xlsx][drf-renderer-xlsx], which renders an endpoint as an XLSX spreadsheet using OpenPyXL, and allows the client to download it. Spreadsheets can be styled on a per-view basis.
+XLSX is the world's most popular binary spreadsheet format. [Tim Allen][flipperpa] of [The Wharton School][wharton] maintains [drf-excel][drf-excel], which renders an endpoint as an XLSX spreadsheet using OpenPyXL, and allows the client to download it. Spreadsheets can be styled on a per-view basis.
 
 #### Installation & configuration
 
 Install using pip.
 
-    $ pip install drf-renderer-xlsx
+    $ pip install drf-excel
 
 Modify your REST framework settings.
 
@@ -478,15 +488,15 @@ Modify your REST framework settings.
         'DEFAULT_RENDERER_CLASSES': [
             'rest_framework.renderers.JSONRenderer',
             'rest_framework.renderers.BrowsableAPIRenderer',
-            'drf_renderer_xlsx.renderers.XLSXRenderer',
+            'drf_excel.renderers.XLSXRenderer',
         ],
     }
 
 To avoid having a file streamed without a filename (which the browser will often default to the filename "download", with no extension), we need to use a mixin to override the `Content-Disposition` header. If no filename is provided, it will default to `export.xlsx`. For example:
 
     from rest_framework.viewsets import ReadOnlyModelViewSet
-    from drf_renderer_xlsx.mixins import XLSXFileMixin
-    from drf_renderer_xlsx.renderers import XLSXRenderer
+    from drf_excel.mixins import XLSXFileMixin
+    from drf_excel.renderers import XLSXRenderer
 
     from .models import MyExampleModel
     from .serializers import MyExampleSerializer
@@ -503,7 +513,7 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 
 ## UltraJSON
 
-[UltraJSON][ultrajson] is an optimized C JSON encoder which can give significantly faster JSON rendering. [Jacob Haslehurst][hzy] maintains the [drf-ujson-renderer][drf-ujson-renderer] package which implements JSON rendering using the UJSON package.
+[UltraJSON][ultrajson] is an optimized C JSON encoder which can give significantly faster JSON rendering. [Adam Mertz][Amertz08] maintains [drf_ujson2][drf_ujson2], a fork of the now unmaintained [drf-ujson-renderer][drf-ujson-renderer], which implements JSON rendering using the UJSON package.
 
 ## CamelCase JSON
 
@@ -518,7 +528,7 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 [Rest Framework Latex] provides a renderer that outputs PDFs using Laulatex. It is maintained by [Pebble (S/F Software)][mypebble].
 
 
-[cite]: https://docs.djangoproject.com/en/stable/stable/template-response/#the-rendering-process
+[cite]: https://docs.djangoproject.com/en/stable/ref/template-response/#the-rendering-process
 [conneg]: content-negotiation.md
 [html-and-forms]: ../topics/html-and-forms.md
 [browser-accept-headers]: http://www.gethifi.com/blog/browser-rest-http-accept-headers
@@ -539,7 +549,7 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 [mjumbewu]: https://github.com/mjumbewu
 [flipperpa]: https://github.com/flipperpa
 [wharton]: https://github.com/wharton
-[drf-renderer-xlsx]: https://github.com/wharton/drf-renderer-xlsx
+[drf-excel]: https://github.com/wharton/drf-excel
 [vbabiy]: https://github.com/vbabiy
 [rest-framework-yaml]: https://jpadilla.github.io/django-rest-framework-yaml/
 [rest-framework-xml]: https://jpadilla.github.io/django-rest-framework-xml/
@@ -547,8 +557,9 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 [djangorestframework-msgpack]: https://github.com/juanriaza/django-rest-framework-msgpack
 [djangorestframework-csv]: https://github.com/mjumbewu/django-rest-framework-csv
 [ultrajson]: https://github.com/esnme/ultrajson
-[hzy]: https://github.com/hzy
+[Amertz08]: https://github.com/Amertz08
 [drf-ujson-renderer]: https://github.com/gizmag/drf-ujson-renderer
+[drf_ujson2]: https://github.com/Amertz08/drf_ujson2
 [djangorestframework-camel-case]: https://github.com/vbabiy/djangorestframework-camel-case
 [Django REST Pandas]: https://github.com/wq/django-rest-pandas
 [Pandas]: https://pandas.pydata.org/

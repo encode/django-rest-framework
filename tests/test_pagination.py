@@ -18,7 +18,7 @@ class TestPaginationIntegration:
     Integration tests.
     """
 
-    def setup(self):
+    def setup_method(self):
         class PassThroughSerializer(serializers.BaseSerializer):
             def to_representation(self, item):
                 return item
@@ -140,7 +140,7 @@ class TestPaginationDisabledIntegration:
     Integration tests for disabled pagination.
     """
 
-    def setup(self):
+    def setup_method(self):
         class PassThroughSerializer(serializers.BaseSerializer):
             def to_representation(self, item):
                 return item
@@ -163,7 +163,7 @@ class TestPageNumberPagination:
     Unit tests for `pagination.PageNumberPagination`.
     """
 
-    def setup(self):
+    def setup_method(self):
         class ExamplePagination(pagination.PageNumberPagination):
             page_size = 5
 
@@ -180,8 +180,9 @@ class TestPageNumberPagination:
     def get_html_context(self):
         return self.pagination.get_html_context()
 
-    def test_no_page_number(self):
-        request = Request(factory.get('/'))
+    @pytest.mark.parametrize('url', ['/', '/?page='])
+    def test_no_page_number(self, url):
+        request = Request(factory.get(url))
         queryset = self.paginate_queryset(request)
         content = self.get_paginated_content(queryset)
         context = self.get_html_context()
@@ -281,10 +282,14 @@ class TestPageNumberPagination:
                 'next': {
                     'type': 'string',
                     'nullable': True,
+                    'format': 'uri',
+                    'example': 'http://api.example.org/accounts/?page=4',
                 },
                 'previous': {
                     'type': 'string',
                     'nullable': True,
+                    'format': 'uri',
+                    'example': 'http://api.example.org/accounts/?page=2',
                 },
                 'results': unpaginated_schema,
             },
@@ -298,7 +303,7 @@ class TestPageNumberPaginationOverride:
     the Django Paginator Class is overridden.
     """
 
-    def setup(self):
+    def setup_method(self):
         class OverriddenDjangoPaginator(DjangoPaginator):
             # override the count in our overridden Django Paginator
             # we will only return one page, with one item
@@ -354,7 +359,7 @@ class TestLimitOffset:
     Unit tests for `pagination.LimitOffsetPagination`.
     """
 
-    def setup(self):
+    def setup_method(self):
         class ExamplePagination(pagination.LimitOffsetPagination):
             default_limit = 10
             max_limit = 15
@@ -588,10 +593,14 @@ class TestLimitOffset:
                 'next': {
                     'type': 'string',
                     'nullable': True,
+                    'format': 'uri',
+                    'example': 'http://api.example.org/accounts/?offset=400&limit=100',
                 },
                 'previous': {
                     'type': 'string',
                     'nullable': True,
+                    'format': 'uri',
+                    'example': 'http://api.example.org/accounts/?offset=200&limit=100',
                 },
                 'results': unpaginated_schema,
             },
@@ -914,10 +923,14 @@ class CursorPaginationTestsMixin:
                 'next': {
                     'type': 'string',
                     'nullable': True,
+                    'format': 'uri',
+                    'example': 'http://api.example.org/accounts/?cursor=cD00ODY%3D"'
                 },
                 'previous': {
                     'type': 'string',
                     'nullable': True,
+                    'format': 'uri',
+                    'example': 'http://api.example.org/accounts/?cursor=cj0xJnA9NDg3'
                 },
                 'results': unpaginated_schema,
             },
@@ -929,7 +942,7 @@ class TestCursorPagination(CursorPaginationTestsMixin):
     Unit tests for `pagination.CursorPagination`.
     """
 
-    def setup(self):
+    def setup_method(self):
         class MockObject:
             def __init__(self, idx):
                 self.created = idx

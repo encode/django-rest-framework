@@ -7,7 +7,9 @@ an appropriate set of serializer fields for each case.
 """
 import datetime
 import decimal
+import json  # noqa
 import sys
+import tempfile
 from collections import OrderedDict
 
 import django
@@ -61,7 +63,7 @@ class RegularFieldsModel(models.Model):
     email_field = models.EmailField(max_length=100)
     float_field = models.FloatField()
     integer_field = models.IntegerField()
-    null_boolean_field = models.NullBooleanField()
+    null_boolean_field = models.BooleanField(null=True, default=False)
     positive_integer_field = models.PositiveIntegerField()
     positive_small_integer_field = models.PositiveSmallIntegerField()
     slug_field = models.SlugField(max_length=100)
@@ -71,7 +73,7 @@ class RegularFieldsModel(models.Model):
     time_field = models.TimeField()
     url_field = models.URLField(max_length=100)
     custom_field = CustomField()
-    file_path_field = models.FilePathField(path='/tmp/')
+    file_path_field = models.FilePathField(path=tempfile.gettempdir())
 
     def method(self):
         return 'method'
@@ -181,7 +183,7 @@ class TestRegularFieldMappings(TestCase):
                 email_field = EmailField(max_length=100)
                 float_field = FloatField()
                 integer_field = IntegerField()
-                null_boolean_field = NullBooleanField(required=False)
+                null_boolean_field = BooleanField(allow_null=True, required=False)
                 positive_integer_field = IntegerField()
                 positive_small_integer_field = IntegerField()
                 slug_field = SlugField(allow_unicode=False, max_length=100)
@@ -191,8 +193,8 @@ class TestRegularFieldMappings(TestCase):
                 time_field = TimeField()
                 url_field = URLField(max_length=100)
                 custom_field = ModelField(model_field=<tests.test_model_serializer.CustomField: custom_field>)
-                file_path_field = FilePathField(path='/tmp/')
-        """)
+                file_path_field = FilePathField(path=%r)
+        """ % tempfile.gettempdir())
 
         self.assertEqual(repr(TestSerializer()), expected)
 
@@ -216,24 +218,26 @@ class TestRegularFieldMappings(TestCase):
         """)
         self.assertEqual(repr(TestSerializer()), expected)
 
-    # merge this into test_regular_fields / RegularFieldsModel when
-    # Django 2.1 is the minimum supported version
-    @pytest.mark.skipif(django.VERSION < (2, 1), reason='Django version < 2.1')
-    def test_nullable_boolean_field(self):
-        class NullableBooleanModel(models.Model):
-            field = models.BooleanField(null=True, default=False)
+    def test_nullable_boolean_field_choices(self):
+        class NullableBooleanChoicesModel(models.Model):
+            CHECKLIST_OPTIONS = (
+                (None, 'Unknown'),
+                (True, 'Yes'),
+                (False, 'No'),
+            )
 
-        class NullableBooleanSerializer(serializers.ModelSerializer):
+            field = models.BooleanField(null=True, choices=CHECKLIST_OPTIONS)
+
+        class NullableBooleanChoicesSerializer(serializers.ModelSerializer):
             class Meta:
-                model = NullableBooleanModel
+                model = NullableBooleanChoicesModel
                 fields = ['field']
 
-        expected = dedent("""
-            NullableBooleanSerializer():
-                field = BooleanField(allow_null=True, required=False)
-        """)
-
-        self.assertEqual(repr(NullableBooleanSerializer()), expected)
+        serializer = NullableBooleanChoicesSerializer(data=dict(
+            field=None,
+        ))
+        self.assertTrue(serializer.is_valid())
+        self.assertEqual(serializer.errors, {})
 
     def test_method_field(self):
         """
@@ -449,13 +453,17 @@ class TestPosgresFieldsMapping(TestCase):
                 model = ArrayFieldModel
                 fields = ['array_field', 'array_field_with_blank']
 
+        validators = ""
+        if django.VERSION < (4, 1):
+            validators = ", validators=[<django.core.validators.MaxLengthValidator object>]"
         expected = dedent("""
             TestSerializer():
-                array_field = ListField(allow_empty=False, child=CharField(label='Array field', validators=[<django.core.validators.MaxLengthValidator object>]))
-                array_field_with_blank = ListField(child=CharField(label='Array field with blank', validators=[<django.core.validators.MaxLengthValidator object>]), required=False)
-        """)
+                array_field = ListField(allow_empty=False, child=CharField(label='Array field'%s))
+                array_field_with_blank = ListField(child=CharField(label='Array field with blank'%s), required=False)
+        """ % (validators, validators))
         self.assertEqual(repr(TestSerializer()), expected)
 
+    @pytest.mark.skipif(hasattr(models, 'JSONField'), reason='has models.JSONField')
     def test_json_field(self):
         class JSONFieldModel(models.Model):
             json_field = postgres_fields.JSONField()
@@ -470,6 +478,30 @@ class TestPosgresFieldsMapping(TestCase):
             TestSerializer():
                 json_field = JSONField(encoder=None, style={'base_template': 'textarea.html'})
                 json_field_with_encoder = JSONField(encoder=<class 'django.core.serializers.json.DjangoJSONEncoder'>, style={'base_template': 'textarea.html'})
+        """)
+        self.assertEqual(repr(TestSerializer()), expected)
+
+
+class CustomJSONDecoder(json.JSONDecoder):
+    pass
+
+
+@pytest.mark.skipif(not hasattr(models, 'JSONField'), reason='no models.JSONField')
+class TestDjangoJSONFieldMapping(TestCase):
+    def test_json_field(self):
+        class JSONFieldModel(models.Model):
+            json_field = models.JSONField()
+            json_field_with_encoder = models.JSONField(encoder=DjangoJSONEncoder, decoder=CustomJSONDecoder)
+
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = JSONFieldModel
+                fields = ['json_field', 'json_field_with_encoder']
+
+        expected = dedent("""
+            TestSerializer():
+                json_field = JSONField(decoder=None, encoder=None, style={'base_template': 'textarea.html'})
+                json_field_with_encoder = JSONField(decoder=<class 'tests.test_model_serializer.CustomJSONDecoder'>, encoder=<class 'django.core.serializers.json.DjangoJSONEncoder'>, style={'base_template': 'textarea.html'})
         """)
         self.assertEqual(repr(TestSerializer()), expected)
 
@@ -991,6 +1023,73 @@ class Issue2704TestCase(TestCase):
         }]
 
         assert serializer.data == expected
+
+
+class Issue7550FooModel(models.Model):
+    text = models.CharField(max_length=100)
+    bar = models.ForeignKey(
+        'Issue7550BarModel', null=True, blank=True, on_delete=models.SET_NULL,
+        related_name='foos', related_query_name='foo')
+
+
+class Issue7550BarModel(models.Model):
+    pass
+
+
+class Issue7550TestCase(TestCase):
+
+    def test_dotted_source(self):
+
+        class _FooSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Issue7550FooModel
+                fields = ('id', 'text')
+
+        class FooSerializer(serializers.ModelSerializer):
+            other_foos = _FooSerializer(source='bar.foos', many=True)
+
+            class Meta:
+                model = Issue7550BarModel
+                fields = ('id', 'other_foos')
+
+        bar = Issue7550BarModel.objects.create()
+        foo_a = Issue7550FooModel.objects.create(bar=bar, text='abc')
+        foo_b = Issue7550FooModel.objects.create(bar=bar, text='123')
+
+        assert FooSerializer(foo_a).data == {
+            'id': foo_a.id,
+            'other_foos': [
+                {
+                    'id': foo_a.id,
+                    'text': foo_a.text,
+                },
+                {
+                    'id': foo_b.id,
+                    'text': foo_b.text,
+                },
+            ],
+        }
+
+    def test_dotted_source_with_default(self):
+
+        class _FooSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Issue7550FooModel
+                fields = ('id', 'text')
+
+        class FooSerializer(serializers.ModelSerializer):
+            other_foos = _FooSerializer(source='bar.foos', default=[], many=True)
+
+            class Meta:
+                model = Issue7550FooModel
+                fields = ('id', 'other_foos')
+
+        foo = Issue7550FooModel.objects.create(bar=None, text='abc')
+
+        assert FooSerializer(foo).data == {
+            'id': foo.id,
+            'other_foos': [],
+        }
 
 
 class DecimalFieldModel(models.Model):

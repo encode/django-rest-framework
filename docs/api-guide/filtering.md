@@ -45,7 +45,7 @@ Another style of filtering might involve restricting the queryset based on some 
 
 For example if your URL config contained an entry like this:
 
-    url('^purchases/(?P<username>.+)/$', PurchaseList.as_view()),
+    re_path('^purchases/(?P<username>.+)/$', PurchaseList.as_view()),
 
 You could then write a view that returned a purchase queryset filtered by the username portion of the URL:
 
@@ -75,7 +75,7 @@ We can override `.get_queryset()` to deal with URLs such as `http://example.com/
             by filtering against a `username` query parameter in the URL.
             """
             queryset = Purchase.objects.all()
-            username = self.request.query_params.get('username', None)
+            username = self.request.query_params.get('username')
             if username is not None:
                 queryset = queryset.filter(purchaser__username=username)
             return queryset
@@ -145,9 +145,17 @@ Note that you can use both an overridden `.get_queryset()` and generic filtering
 The [`django-filter`][django-filter-docs] library includes a `DjangoFilterBackend` class which
 supports highly customizable field filtering for REST framework.
 
-To use `DjangoFilterBackend`, first install `django-filter`. Then add `django_filters` to Django's `INSTALLED_APPS`
+To use `DjangoFilterBackend`, first install `django-filter`.
 
     pip install django-filter
+
+Then add `'django_filters'` to Django's `INSTALLED_APPS`:
+
+    INSTALLED_APPS = [
+        ...
+        'django_filters',
+        ...
+    ]
 
 You should now either add the filter backend to your settings:
 
@@ -205,6 +213,10 @@ This will allow the client to filter the items in the list by making queries suc
 You can also perform a related lookup on a ForeignKey or ManyToManyField with the lookup API double-underscore notation:
 
     search_fields = ['username', 'email', 'profile__profession']
+    
+For [JSONField][JSONField] and [HStoreField][HStoreField] fields you can filter based on nested values within the data structure using the same double-underscore notation:
+
+    search_fields = ['data__breed', 'data__owner__other_pets__0__name']
 
 By default, searches will use case-insensitive partial matches.  The search parameter may contain multiple search terms, which should be whitespace and/or comma separated.  If multiple search terms are used then objects will be returned in the list only if all the provided terms are matched.
 
@@ -212,7 +224,7 @@ The search behavior may be restricted by prepending various characters to the `s
 
 * '^' Starts-with search.
 * '=' Exact matches.
-* '@' Full-text search.  (Currently only supported Django's [PostgreSQL backend](https://docs.djangoproject.com/en/dev/ref/contrib/postgres/search/).)
+* '@' Full-text search.  (Currently only supported Django's [PostgreSQL backend][postgres-search].)
 * '$' Regex search.
 
 For example:
@@ -229,7 +241,7 @@ To dynamically change search fields based on request content, it's possible to s
         def get_search_fields(self, view, request):
             if request.query_params.get('title_only'):
                 return ['title']
-            return super(CustomSearchFilter, self).get_search_fields(view, request)
+            return super().get_search_fields(view, request)
 
 For more details, see the [Django documentation][search-django-admin].
 
@@ -323,15 +335,6 @@ Generic filters may also present an interface in the browsable API. To do so you
 
 The method should return a rendered HTML string.
 
-## Pagination & schemas
-
-You can also make the filter controls available to the schema autogeneration
-that REST framework provides, by implementing a `get_schema_fields()` method. This method should have the following signature:
-
-`get_schema_fields(self, view)`
-
-The method should return a list of `coreapi.Field` instances.
-
 # Third party packages
 
 The following third party packages provide additional filter implementations.
@@ -360,3 +363,6 @@ The [djangorestframework-word-filter][django-rest-framework-word-search-filter] 
 [django-rest-framework-word-search-filter]: https://github.com/trollknurr/django-rest-framework-word-search-filter
 [django-url-filter]: https://github.com/miki725/django-url-filter
 [drf-url-filter]: https://github.com/manjitkumar/drf-url-filters
+[HStoreField]: https://docs.djangoproject.com/en/3.0/ref/contrib/postgres/fields/#hstorefield
+[JSONField]: https://docs.djangoproject.com/en/3.0/ref/contrib/postgres/fields/#jsonfield
+[postgres-search]: https://docs.djangoproject.com/en/stable/ref/contrib/postgres/search/

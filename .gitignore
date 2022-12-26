@@ -2,6 +2,8 @@
 *.db
 *~
 .*
+*.py.bak
+
 
 /site/
 /htmlcov/
@@ -13,6 +15,6 @@
 MANIFEST
 coverage.*
 
+!.github
 !.gitignore
-!.travis.yml
-!.isort.cfg
+!.pre-commit-config.yaml

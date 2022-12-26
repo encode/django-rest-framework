@@ -1,6 +1,7 @@
 import inspect
 import pickle
 import re
+import sys
 from collections import ChainMap
 from collections.abc import Mapping
 
@@ -60,7 +61,7 @@ class TestFieldImports:
 # -----------------------------
 
 class TestSerializer:
-    def setup(self):
+    def setup_method(self):
         class ExampleSerializer(serializers.Serializer):
             char = serializers.CharField()
             integer = serializers.IntegerField()
@@ -204,6 +205,13 @@ class TestSerializer:
                 exceptions.ErrorDetail(string='Raised error', code='invalid')
             ]}
 
+    @pytest.mark.skipif(
+        sys.version_info < (3, 7),
+        reason="subscriptable classes requires Python 3.7 or higher",
+    )
+    def test_serializer_is_subscriptable(self):
+        assert serializers.Serializer is serializers.Serializer["foo"]
+
 
 class TestValidateMethod:
     def test_non_field_error_validate_method(self):
@@ -232,7 +240,7 @@ class TestValidateMethod:
 
 
 class TestBaseSerializer:
-    def setup(self):
+    def setup_method(self):
         class ExampleSerializer(serializers.BaseSerializer):
             def to_representation(self, obj):
                 return {
@@ -329,7 +337,7 @@ class TestStarredSource:
         'nested2': {'c': 3, 'd': 4}
     }
 
-    def setup(self):
+    def setup_method(self):
         class NestedSerializer1(serializers.Serializer):
             a = serializers.IntegerField()
             b = serializers.IntegerField()
@@ -455,7 +463,7 @@ class TestNotRequiredOutput:
 
 
 class TestDefaultOutput:
-    def setup(self):
+    def setup_method(self):
         class ExampleSerializer(serializers.Serializer):
             has_default = serializers.CharField(default='x')
             has_default_callable = serializers.CharField(default=lambda: 'y')
@@ -576,7 +584,7 @@ class TestCacheSerializerData:
 
 
 class TestDefaultInclusions:
-    def setup(self):
+    def setup_method(self):
         class ExampleSerializer(serializers.Serializer):
             char = serializers.CharField(default='abc')
             integer = serializers.IntegerField()
@@ -604,7 +612,7 @@ class TestDefaultInclusions:
 
 
 class TestSerializerValidationWithCompiledRegexField:
-    def setup(self):
+    def setup_method(self):
         class ExampleSerializer(serializers.Serializer):
             name = serializers.RegexField(re.compile(r'\d'), required=True)
         self.Serializer = ExampleSerializer
@@ -633,7 +641,7 @@ class Test2555Regression:
 
 
 class Test4606Regression:
-    def setup(self):
+    def setup_method(self):
         class ExampleSerializer(serializers.Serializer):
             name = serializers.CharField(required=True)
             choices = serializers.CharField(required=True)
@@ -732,3 +740,25 @@ class TestDeclaredFieldInheritance:
             'f4': serializers.CharField,
             'f5': serializers.CharField,
         }
+
+
+class Test8301Regression:
+    @pytest.mark.skipif(
+        sys.version_info < (3, 9),
+        reason="dictionary union operator requires Python 3.9 or higher",
+    )
+    def test_ReturnDict_merging(self):
+        # Serializer.data returns ReturnDict, this is essentially a test for that.
+
+        class TestSerializer(serializers.Serializer):
+            char = serializers.CharField()
+
+        s = TestSerializer(data={'char': 'x'})
+        assert s.is_valid()
+        assert s.data | {} == {'char': 'x'}
+        assert s.data | {'other': 'y'} == {'char': 'x', 'other': 'y'}
+        assert {} | s.data == {'char': 'x'}
+        assert {'other': 'y'} | s.data == {'char': 'x', 'other': 'y'}
+
+        assert (s.data | {}).__class__ == s.data.__class__
+        assert ({} | s.data).__class__ == s.data.__class__
