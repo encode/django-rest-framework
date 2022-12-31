@@ -356,6 +356,6 @@ The [Django Rest Framework PSQ][drf-psq] package is an extension that gives supp
 [rest-framework-roles]: https://github.com/Pithikos/rest-framework-roles
 [djangorestframework-api-key]: https://florimondmanca.github.io/djangorestframework-api-key/
 [django-rest-framework-role-filters]: https://github.com/allisson/django-rest-framework-role-filters
-[django-rest-framework-guardian2]: https://github.com/johnthagen/django-rest-framework-guardian
+[django-rest-framework-guardian2]: https://github.com/johnthagen/django-rest-framework-guardian2
 [drf-access-policy]: https://github.com/rsinger86/drf-access-policy
 [drf-psq]: https://github.com/drf-psq/drf-psq

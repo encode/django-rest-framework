@@ -229,7 +229,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [djangorestframework-dataclasses]: https://github.com/oxan/djangorestframework-dataclasses
 [django-restql]: https://github.com/yezyilomo/django-restql
 [djangorestframework-mvt]: https://github.com/corteva/djangorestframework-mvt
-[django-rest-framework-guardian2]: https://github.com/johnthagen/django-rest-framework-guardian
+[django-rest-framework-guardian2]: https://github.com/johnthagen/django-rest-framework-guardian2
 [drf-viewset-profiler]: https://github.com/fvlima/drf-viewset-profiler
 [djangorestframework-features]: https://github.com/cloudcode-hungary/django-rest-framework-features/
 [django-elasticsearch-dsl-drf]: https://github.com/barseghyanartur/django-elasticsearch-dsl-drf
