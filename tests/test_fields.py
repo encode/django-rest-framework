@@ -2,6 +2,7 @@ import datetime
 import math
 import os
 import re
+import sys
 import uuid
 from decimal import ROUND_DOWN, ROUND_UP, Decimal
 
@@ -623,6 +624,15 @@ class Test5087Regression:
         assert field.root is field
         field.bind('name', parent)
         assert field.root is parent
+
+
+class TestTyping(TestCase):
+    @pytest.mark.skipif(
+        sys.version_info < (3, 7),
+        reason="subscriptable classes requires Python 3.7 or higher",
+    )
+    def test_field_is_subscriptable(self):
+        assert serializers.Field is serializers.Field["foo"]
 
 
 # Tests for field input and output values.

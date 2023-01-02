@@ -356,6 +356,10 @@ class Field:
         messages.update(error_messages or {})
         self.error_messages = messages
 
+    # Allow generic typing checking for fields.
+    def __class_getitem__(cls, *args, **kwargs):
+        return cls
+
     def bind(self, field_name, parent):
         """
         Initializes the field name and parent for the field instance.
