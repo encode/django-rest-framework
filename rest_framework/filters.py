@@ -48,6 +48,7 @@ class SearchFilter(BaseFilterBackend):
     }
     search_title = _('Search')
     search_description = _('A search term.')
+    search_fields = None
 
     def get_search_fields(self, view, request):
         """
@@ -55,7 +56,7 @@ class SearchFilter(BaseFilterBackend):
         passed to this method. Sub-classes can override this method to
         dynamically change the search fields based on request content.
         """
-        return getattr(view, 'search_fields', None)
+        return getattr(view, 'search_fields', getattr(self, 'search_fields'))
 
     def get_search_terms(self, request):
         """
