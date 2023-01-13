@@ -80,7 +80,8 @@ class ModelPermissionsIntegrationTests(TestCase):
         user.user_permissions.set([
             Permission.objects.get(codename='add_basicmodel'),
             Permission.objects.get(codename='change_basicmodel'),
-            Permission.objects.get(codename='delete_basicmodel')
+            Permission.objects.get(codename='delete_basicmodel'),
+            Permission.objects.get(codename='view_basicmodel')
         ])
 
         user = User.objects.create_user('updateonly', 'updateonly@example.com', 'password')
@@ -139,6 +140,15 @@ class ModelPermissionsIntegrationTests(TestCase):
         response = get_queryset_list_view(request, pk=1)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
+    def test_has_get_permissions(self):
+        request = factory.get('/', HTTP_AUTHORIZATION=self.permitted_credentials)
+        response = root_view(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        request = factory.get('/1', HTTP_AUTHORIZATION=self.updateonly_credentials)
+        response = root_view(request, pk=1)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
     def test_has_put_permissions(self):
         request = factory.put('/1', {'text': 'foobar'}, format='json',
                               HTTP_AUTHORIZATION=self.permitted_credentials)
@@ -153,6 +163,15 @@ class ModelPermissionsIntegrationTests(TestCase):
     def test_does_not_have_create_permissions(self):
         request = factory.post('/', {'text': 'foobar'}, format='json',
                                HTTP_AUTHORIZATION=self.disallowed_credentials)
+        response = root_view(request, pk=1)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_does_not_have_get_permissions(self):
+        request = factory.get('/', HTTP_AUTHORIZATION=self.disallowed_credentials)
+        response = root_view(request)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        request = factory.get('/1', HTTP_AUTHORIZATION=self.disallowed_credentials)
         response = root_view(request, pk=1)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
