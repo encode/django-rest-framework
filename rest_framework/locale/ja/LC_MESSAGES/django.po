@@ -5,12 +5,13 @@
 # Translators:
 # Hiroaki Nakamura <hnakamur@gmail.com>, 2016
 # Kouichi Nishizawa <kouichi.nishizawa@gmail.com>, 2017
+# Masataka Ikezoe <ikezoe@sakura.ad.jp>, 2023
 msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-13 21:45+0200\n"
-"PO-Revision-Date: 2020-10-13 19:45+0000\n"
+"PO-Revision-Date: 2023-01-15 13:20+0000\n"
 "Last-Translator: Xavier Ordoquy <xordoquy@linovia.com>\n"
 "Language-Team: Japanese (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/ja/)\n"
 "MIME-Version: 1.0\n"
@@ -102,7 +103,7 @@ msgstr "サーバエラーが発生しました。"
 
 #: exceptions.py:142
 msgid "Invalid input."
-msgstr ""
+msgstr "不正な入力です。"
 
 #: exceptions.py:161
 msgid "Malformed request."
@@ -145,12 +146,12 @@ msgstr "リクエストの処理は絞られました。"
 #: exceptions.py:224
 #, python-brace-format
 msgid "Expected available in {wait} second."
-msgstr ""
+msgstr "\"{wait}\"秒後に利用できるようになる見込みです。"
 
 #: exceptions.py:225
 #, python-brace-format
 msgid "Expected available in {wait} seconds."
-msgstr ""
+msgstr "\"{wait}\"秒後に利用できるようになる見込みです。"
 
 #: fields.py:316 relations.py:245 relations.py:279 validators.py:90
 #: validators.py:183
@@ -163,11 +164,11 @@ msgstr "この項目はnullにできません。"
 
 #: fields.py:701
 msgid "Must be a valid boolean."
-msgstr ""
+msgstr "真偽値でなければなりません。"
 
 #: fields.py:766
 msgid "Not a valid string."
-msgstr ""
+msgstr "有効な文字列ではありません。"
 
 #: fields.py:767
 msgid "This field may not be blank."
@@ -201,7 +202,7 @@ msgstr "文字、数字、アンダースコア、またはハイフンから成
 msgid ""
 "Enter a valid \"slug\" consisting of Unicode letters, numbers, underscores, "
 "or hyphens."
-msgstr ""
+msgstr "ユニコード文字、数字、アンダースコア、またはハイフンから成る有効な \"slug\" を入力してください。"
 
 #: fields.py:854
 msgid "Enter a valid URL."
@@ -209,7 +210,7 @@ msgstr "有効なURLを入力してください。"
 
 #: fields.py:867
 msgid "Must be a valid UUID."
-msgstr ""
+msgstr "有効なUUIDでなければなりません。"
 
 #: fields.py:903
 msgid "Enter a valid IPv4 or IPv6 address."
@@ -267,11 +268,11 @@ msgstr "日付ではなく日時を入力してください。"
 #: fields.py:1150
 #, python-brace-format
 msgid "Invalid datetime for the timezone \"{timezone}\"."
-msgstr ""
+msgstr "タイムゾーン\"{timezone}\"にとって無効な日時です。"
 
 #: fields.py:1151
 msgid "Datetime value out of range."
-msgstr ""
+msgstr "日時の値が範囲外です。"
 
 #: fields.py:1236
 #, python-brace-format
@@ -352,12 +353,12 @@ msgstr "リストは空ではいけません。"
 #: fields.py:1605
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} elements."
-msgstr ""
+msgstr "少なくとも{min_length}個より多くの要素が必要です。"
 
 #: fields.py:1606
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} elements."
-msgstr ""
+msgstr "{max_length}個未満の要素にする必要があります。"
 
 #: fields.py:1682
 #, python-brace-format
@@ -366,7 +367,7 @@ msgstr "\"{input_type}\" 型のデータではなく項目の辞書を入力し�
 
 #: fields.py:1683
 msgid "This dictionary may not be empty."
-msgstr ""
+msgstr "辞書は空ではいけません。"
 
 #: fields.py:1755
 msgid "Value must be valid JSON."
@@ -378,7 +379,7 @@ msgstr "検索"
 
 #: filters.py:50
 msgid "A search term."
-msgstr ""
+msgstr "検索語"
 
 #: filters.py:180 templates/rest_framework/filters/ordering.html:3
 msgid "Ordering"
@@ -386,7 +387,7 @@ msgstr "順序"
 
 #: filters.py:181
 msgid "Which field to use when ordering the results."
-msgstr ""
+msgstr "結果の並び順にどのフィールドを使うか"
 
 #: filters.py:287
 msgid "ascending"
@@ -398,11 +399,11 @@ msgstr "降順"
 
 #: pagination.py:174
 msgid "A page number within the paginated result set."
-msgstr ""
+msgstr "ページネーション結果のページ数"
 
 #: pagination.py:179 pagination.py:372 pagination.py:590
 msgid "Number of results to return per page."
-msgstr ""
+msgstr "1ページあたりの結果の数"
 
 #: pagination.py:189
 msgid "Invalid page."
@@ -410,11 +411,11 @@ msgstr "不正なページです。"
 
 #: pagination.py:374
 msgid "The initial index from which to return the results."
-msgstr ""
+msgstr "結果を返す開始位置"
 
 #: pagination.py:581
 msgid "The pagination cursor value."
-msgstr ""
+msgstr "ページネーションのカーソル値"
 
 #: pagination.py:583
 msgid "Invalid cursor"
@@ -458,15 +459,15 @@ msgstr "不正な値です。"
 
 #: schemas/utils.py:32
 msgid "unique integer value"
-msgstr ""
+msgstr "ユニークな整数値"
 
 #: schemas/utils.py:34
 msgid "UUID string"
-msgstr ""
+msgstr "UUID文字列"
 
 #: schemas/utils.py:36
 msgid "unique value"
-msgstr ""
+msgstr "ユニークな値"
 
 #: schemas/utils.py:38
 #, python-brace-format
@@ -481,7 +482,7 @@ msgstr "不正なデータです。{datatype} 型ではなく辞書を入力し�
 #: templates/rest_framework/admin.html:116
 #: templates/rest_framework/base.html:136
 msgid "Extra Actions"
-msgstr ""
+msgstr "追加アクション"
 
 #: templates/rest_framework/admin.html:130
 #: templates/rest_framework/base.html:150
@@ -490,27 +491,27 @@ msgstr "フィルタ"
 
 #: templates/rest_framework/base.html:37
 msgid "navbar"
-msgstr ""
+msgstr "ナビゲーションバー"
 
 #: templates/rest_framework/base.html:75
 msgid "content"
-msgstr ""
+msgstr "コンテンツ"
 
 #: templates/rest_framework/base.html:78
 msgid "request form"
-msgstr ""
+msgstr "リクエストフォーム"
 
 #: templates/rest_framework/base.html:157
 msgid "main content"
-msgstr ""
+msgstr "メインコンテンツ"
 
 #: templates/rest_framework/base.html:173
 msgid "request info"
-msgstr ""
+msgstr "リクエスト情報"
 
 #: templates/rest_framework/base.html:177
 msgid "response info"
-msgstr ""
+msgstr "レスポンス情報"
 
 #: templates/rest_framework/horizontal/radio.html:4
 #: templates/rest_framework/inline/radio.html:3
@@ -536,7 +537,7 @@ msgstr "項目 {field_names} は一意な組でなければなりません。"
 #: validators.py:171
 #, python-brace-format
 msgid "Surrogate characters are not allowed: U+{code_point:X}."
-msgstr ""
+msgstr "サロゲートペア: U+{code_point:X} は許されていません。"
 
 #: validators.py:243
 #, python-brace-format
