@@ -181,12 +181,12 @@ msgstr "Bidang ini tidak boleh kosong."
 #: fields.py:768 fields.py:1881
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} characters."
-msgstr "Pastikan bagian ini tidak lebih dari {max_length} karakter."
+msgstr "Pastikan bidang ini tidak memiliki lebih dari {max_length} karakter."
 
 #: fields.py:769
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} characters."
-msgstr "Pastikan bagian ini memiliki setidaknya {min_length} karakter."
+msgstr "Pastikan bidang ini memiliki setidaknya {min_length} karakter."
 
 #: fields.py:816
 msgid "Enter a valid email address."
@@ -213,7 +213,7 @@ msgstr ""
 
 #: fields.py:854
 msgid "Enter a valid URL."
-msgstr "Masukkan URL dengan benar."
+msgstr "Masukkan URL yang valid."
 
 #: fields.py:867
 msgid "Must be a valid UUID."
@@ -221,7 +221,7 @@ msgstr "Harus berupa UUID yang valid."
 
 #: fields.py:903
 msgid "Enter a valid IPv4 or IPv6 address."
-msgstr "Masukkan alamat IPv4 atau IPv6 dengan benar."
+msgstr "Masukkan alamat IPv4 atau IPv6 yang valid."
 
 #: fields.py:931
 msgid "A valid integer is required."
@@ -248,13 +248,13 @@ msgstr "Diperlukan angka yang valid."
 #: fields.py:1007
 #, python-brace-format
 msgid "Ensure that there are no more than {max_digits} digits in total."
-msgstr "Pastikan jumlah seluruh digit tidak lebih dari {max_digits}."
+msgstr "Pastikan bahwa jumlah seluruh digit tidak lebih dari {max_digits}."
 
 #: fields.py:1008
 #, python-brace-format
 msgid ""
 "Ensure that there are no more than {max_decimal_places} decimal places."
-msgstr "Pastikan jumlah digit di belakang koma tidak lebih dari "
+msgstr "Pastikan bahwa jumlah digit di belakang koma tidak lebih dari "
 "{max_decimal_places}."
 
 #: fields.py:1009
@@ -262,8 +262,8 @@ msgstr "Pastikan jumlah digit di belakang koma tidak lebih dari "
 msgid ""
 "Ensure that there are no more than {max_whole_digits} digits before the "
 "decimal point."
-msgstr "Pastikan jumlah digit tidak lebih dari {max_whole_digits} sebelum"
-" koma"
+msgstr "Pastikan bahwa jumlah digit di depan koma tidak lebih dari "
+"{max_whole_digits}"
 
 #: fields.py:1148
 #, python-brace-format
@@ -356,7 +356,7 @@ msgid ""
 "corrupted image."
 msgstr ""
 "Unggah gambar yang valid. File yang anda unggah bukan gambar atau gambar "
-"rusak."
+"telah rusak."
 
 #: fields.py:1604 relations.py:486 serializers.py:571
 msgid "This list may not be empty."
