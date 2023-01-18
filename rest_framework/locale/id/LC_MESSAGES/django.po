@@ -7,6 +7,7 @@
 # aslam hadi <aslamhadi@gmail.com>, 2017
 # Joseph Aditya P G, 2019
 # Xavier Ordoquy <xordoquy@linovia.com>, 2020
+# kiraware <github.com/kiraware>, 2023
 msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
@@ -23,19 +24,20 @@ msgstr ""
 
 #: authentication.py:70
 msgid "Invalid basic header. No credentials provided."
-msgstr ""
+msgstr "Header dasar tidak valid. Tidak ada kredensial yang diberikan."
 
 #: authentication.py:73
 msgid "Invalid basic header. Credentials string should not contain spaces."
-msgstr ""
+msgstr "Header dasar tidak valid. String kredensial tidak boleh berisi spasi."
 
 #: authentication.py:83
 msgid "Invalid basic header. Credentials not correctly base64 encoded."
-msgstr ""
+msgstr "Header dasar tidak valid. Kredensial tidak dikodekan oleh base64 "
+"dengan benar."
 
 #: authentication.py:101
 msgid "Invalid username/password."
-msgstr "Nama pengguna atau kata sandi salah."
+msgstr "Nama pengguna atau kata sandi tidak valid."
 
 #: authentication.py:104 authentication.py:206
 msgid "User inactive or deleted."
@@ -43,20 +45,21 @@ msgstr "Pengguna tidak akfif atau telah dihapus."
 
 #: authentication.py:184
 msgid "Invalid token header. No credentials provided."
-msgstr ""
+msgstr "Header token tidak valid. Tidak ada kredensial yang diberikan."
 
 #: authentication.py:187
 msgid "Invalid token header. Token string should not contain spaces."
-msgstr ""
+msgstr "Header token tidak valid. String token tidak boleh berisi spasi."
 
 #: authentication.py:193
 msgid ""
 "Invalid token header. Token string should not contain invalid characters."
-msgstr ""
+msgstr "Header token tidak valid. String token tidak boleh berisi karakter "
+"yang tidak valid."
 
 #: authentication.py:203
 msgid "Invalid token."
-msgstr ""
+msgstr "Token tidak valid."
 
 #: authtoken/apps.py:7
 msgid "Auth Token"
@@ -64,7 +67,7 @@ msgstr "Token Autentikasi"
 
 #: authtoken/models.py:13
 msgid "Key"
-msgstr ""
+msgstr "Kunci"
 
 #: authtoken/models.py:16
 msgid "User"
@@ -72,7 +75,7 @@ msgstr "Pengguna"
 
 #: authtoken/models.py:18
 msgid "Created"
-msgstr ""
+msgstr "Dibuat"
 
 #: authtoken/models.py:27 authtoken/serializers.py:19
 msgid "Token"
@@ -92,31 +95,31 @@ msgstr "Kata sandi"
 
 #: authtoken/serializers.py:35
 msgid "Unable to log in with provided credentials."
-msgstr "Tidak dapat masuk dengan data pengguna ini."
+msgstr "Tidak dapat masuk dengan kredensial yang diberikan."
 
 #: authtoken/serializers.py:38
 msgid "Must include \"username\" and \"password\"."
-msgstr "Nama pengguna dan password harus diisi."
+msgstr "Harus menyertakan \"nama pengguna\" dan \"kata sandi\"."
 
 #: exceptions.py:102
 msgid "A server error occurred."
-msgstr "Terjadi galat di server."
+msgstr "Terjadi kesalahan server."
 
 #: exceptions.py:142
 msgid "Invalid input."
-msgstr ""
+msgstr "Masukan tidak valid."
 
 #: exceptions.py:161
 msgid "Malformed request."
-msgstr ""
+msgstr "Permintaan rusak."
 
 #: exceptions.py:167
 msgid "Incorrect authentication credentials."
-msgstr "Data autentikasi salah."
+msgstr "Kredensial autentikasi salah."
 
 #: exceptions.py:173
 msgid "Authentication credentials were not provided."
-msgstr "Data autentikasi tidak diberikan."
+msgstr "Kredensial autentikasi tidak diberikan."
 
 #: exceptions.py:179
 msgid "You do not have permission to perform this action."
@@ -124,21 +127,21 @@ msgstr "Anda tidak memiliki izin untuk melakukan tindakan ini."
 
 #: exceptions.py:185
 msgid "Not found."
-msgstr "Data tidak ditemukan."
+msgstr "Tidak ditemukan."
 
 #: exceptions.py:191
 #, python-brace-format
 msgid "Method \"{method}\" not allowed."
-msgstr ""
+msgstr "Metode \"{method}\" tidak diperbolehkan."
 
 #: exceptions.py:202
 msgid "Could not satisfy the request Accept header."
-msgstr "Permintaan dengan header Accept ini tidak dapat dipenuhi."
+msgstr "Tidak dapat memenuhi permintaan Accept header."
 
 #: exceptions.py:212
 #, python-brace-format
 msgid "Unsupported media type \"{media_type}\" in request."
-msgstr "Jenis media \"{media_type}\" dalam permintaan ini tidak didukung."
+msgstr "Jenis media \"{media_type}\" yang diminta tidak didukung."
 
 #: exceptions.py:223
 msgid "Request was throttled."
@@ -147,12 +150,12 @@ msgstr "Permintaan ini telah dibatasi."
 #: exceptions.py:224
 #, python-brace-format
 msgid "Expected available in {wait} second."
-msgstr ""
+msgstr "Diharapkan tersedia dalam {wait} detik."
 
 #: exceptions.py:225
 #, python-brace-format
 msgid "Expected available in {wait} seconds."
-msgstr ""
+msgstr "Diharapkan tersedia dalam {wait} detik."
 
 #: fields.py:316 relations.py:245 relations.py:279 validators.py:90
 #: validators.py:183
@@ -161,15 +164,15 @@ msgstr "Bidang ini harus diisi."
 
 #: fields.py:317
 msgid "This field may not be null."
-msgstr "Bidang ini tidak boleh diisi dengan \"null\"."
+msgstr "Bidang ini tidak boleh diisi dengan null."
 
 #: fields.py:701
 msgid "Must be a valid boolean."
-msgstr ""
+msgstr "Harus berupa boolean yang valid."
 
 #: fields.py:766
 msgid "Not a valid string."
-msgstr ""
+msgstr "Bukan string yang valid."
 
 #: fields.py:767
 msgid "This field may not be blank."
@@ -178,102 +181,107 @@ msgstr "Bidang ini tidak boleh kosong."
 #: fields.py:768 fields.py:1881
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} characters."
-msgstr "Isi bidang ini tidak boleh melebihi {max_length} karakter."
+msgstr "Pastikan bidang ini tidak memiliki lebih dari {max_length} karakter."
 
 #: fields.py:769
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} characters."
-msgstr "Isi bidang ini minimal {min_length} karakter."
+msgstr "Pastikan bidang ini memiliki setidaknya {min_length} karakter."
 
 #: fields.py:816
 msgid "Enter a valid email address."
-msgstr "Masukkan alamat email dengan format yang benar."
+msgstr "Masukkan alamat email dengan benar."
 
 #: fields.py:827
 msgid "This value does not match the required pattern."
-msgstr ""
+msgstr "Nilai ini tidak sesuai dengan pola yang dibutuhkan."
 
 #: fields.py:838
 msgid ""
 "Enter a valid \"slug\" consisting of letters, numbers, underscores or "
 "hyphens."
-msgstr "Karakter \"slug\" hanya dapat terdiri dari huruf, angka, underscore dan tanda hubung."
+msgstr "Masukkan \"slug\" valid yang terdiri dari huruf, angka, garis bawah "
+"atau tanda hubung."
 
 #: fields.py:839
 msgid ""
 "Enter a valid \"slug\" consisting of Unicode letters, numbers, underscores, "
 "or hyphens."
 msgstr ""
+"Masukkan \"slug\" valid yang terdiri dari huruf Unicode, angka, garis bawah "
+"atau tanda hubung."
 
 #: fields.py:854
 msgid "Enter a valid URL."
-msgstr "Masukkan URL dengan format yang benar."
+msgstr "Masukkan URL yang valid."
 
 #: fields.py:867
 msgid "Must be a valid UUID."
-msgstr ""
+msgstr "Harus berupa UUID yang valid."
 
 #: fields.py:903
 msgid "Enter a valid IPv4 or IPv6 address."
-msgstr "Masukkan alamat IPv4 atau IPv6 dengan format yang benar."
+msgstr "Masukkan alamat IPv4 atau IPv6 yang valid."
 
 #: fields.py:931
 msgid "A valid integer is required."
-msgstr "Nilai bidang ini harus berupa bilangan bulat."
+msgstr "Diperlukan bilangan bulat yang valid."
 
 #: fields.py:932 fields.py:969 fields.py:1005 fields.py:1366
 #, python-brace-format
 msgid "Ensure this value is less than or equal to {max_value}."
-msgstr "Isi bidang ini harus kurang atau sama dengan {max_value}."
+msgstr "Pastikan nilai ini kurang dari atau sama dengan {max_value}."
 
 #: fields.py:933 fields.py:970 fields.py:1006 fields.py:1367
 #, python-brace-format
 msgid "Ensure this value is greater than or equal to {min_value}."
-msgstr "Isi bidang ini harus lebih atau sama dengan {min_value}."
+msgstr "Pastikan nilai ini lebih besar dari atau sama dengan {min_value}."
 
 #: fields.py:934 fields.py:971 fields.py:1010
 msgid "String value too large."
-msgstr ""
+msgstr "Nilai string terlalu besar."
 
 #: fields.py:968 fields.py:1004
 msgid "A valid number is required."
-msgstr ""
+msgstr "Diperlukan angka yang valid."
 
 #: fields.py:1007
 #, python-brace-format
 msgid "Ensure that there are no more than {max_digits} digits in total."
-msgstr "Panjang angka tidak boleh lebih dari {max_digits}."
+msgstr "Pastikan bahwa jumlah seluruh digit tidak lebih dari {max_digits}."
 
 #: fields.py:1008
 #, python-brace-format
 msgid ""
 "Ensure that there are no more than {max_decimal_places} decimal places."
-msgstr "Panjang angka di belakang koma tidak boleh lebih dari {max_decimal_places}."
+msgstr "Pastikan bahwa jumlah digit di belakang koma tidak lebih dari "
+"{max_decimal_places}."
 
 #: fields.py:1009
 #, python-brace-format
 msgid ""
 "Ensure that there are no more than {max_whole_digits} digits before the "
 "decimal point."
-msgstr "Panjang angka bulat tidak boleh lebih dari {max_whole_digits}."
+msgstr "Pastikan bahwa jumlah digit di depan koma tidak lebih dari "
+"{max_whole_digits}"
 
 #: fields.py:1148
 #, python-brace-format
 msgid "Datetime has wrong format. Use one of these formats instead: {format}."
-msgstr "Format tanggal dan waktu salah. Gunakan salah satu format berikut: {format}."
+msgstr "Format tanggal waktu salah. Gunakan salah satu format berikut: {format}."
 
 #: fields.py:1149
 msgid "Expected a datetime but got a date."
-msgstr ""
+msgstr "Mengharapkan tanggal waktu tetapi mendapatkan tanggal."
 
 #: fields.py:1150
 #, python-brace-format
 msgid "Invalid datetime for the timezone \"{timezone}\"."
-msgstr ""
+msgstr "Tanggal waktu tidak valid untuk zona waktu \"{timezone}\"."
 
 #: fields.py:1151
 msgid "Datetime value out of range."
-msgstr ""
+msgstr "Nilai tanggal waktu di luar rentang."
 
 #: fields.py:1236
 #, python-brace-format
@@ -282,7 +290,7 @@ msgstr "Format tanggal salah. Gunakan salah satu format berikut: {format}."
 
 #: fields.py:1237
 msgid "Expected a date but got a datetime."
-msgstr ""
+msgstr "Mengharapkan tanggal tetapi mendapatkan tanggal waktu."
 
 #: fields.py:1303
 #, python-brace-format
@@ -297,280 +305,285 @@ msgstr "Format durasi salah. Gunakan salah satu format berikut: {format}."
 #: fields.py:1399 fields.py:1456
 #, python-brace-format
 msgid "\"{input}\" is not a valid choice."
-msgstr "\"{input}\" tidak ada dalam daftar pilihan."
+msgstr "\"{input}\" bukan pilihan yang valid."
 
 #: fields.py:1402
 #, python-brace-format
 msgid "More than {count} items..."
-msgstr ""
+msgstr "Lebih dari {count} item..."
 
 #: fields.py:1457 fields.py:1603 relations.py:485 serializers.py:570
 #, python-brace-format
 msgid "Expected a list of items but got type \"{input_type}\"."
-msgstr ""
+msgstr "Mengharapkan daftar item tetapi mendapatkan tipe \"{input_type}\"."
 
 #: fields.py:1458
 msgid "This selection may not be empty."
-msgstr "Pilihan tidak boleh kosong."
+msgstr "Pilihan ini tidak boleh kosong."
 
 #: fields.py:1495
 #, python-brace-format
 msgid "\"{input}\" is not a valid path choice."
-msgstr ""
+msgstr "\"{input}\" bukan pilihan path yang valid."
 
 #: fields.py:1514
 msgid "No file was submitted."
-msgstr "Pilih berkas terlebih dahulu."
+msgstr "Tidak ada file yang dikirimkan."
 
 #: fields.py:1515
 msgid ""
 "The submitted data was not a file. Check the encoding type on the form."
-msgstr ""
+msgstr "Data yang dikirimkan bukan file. Periksa jenis encoding pada form."
 
 #: fields.py:1516
 msgid "No filename could be determined."
-msgstr ""
+msgstr "Tidak ada nama file yang dapat ditentukan."
 
 #: fields.py:1517
 msgid "The submitted file is empty."
-msgstr "Berkas kosong."
+msgstr "File yang dikirimkan kosong."
 
 #: fields.py:1518
 #, python-brace-format
 msgid ""
 "Ensure this filename has at most {max_length} characters (it has {length})."
-msgstr "Panjang nama berkas tidak boleh lebih dari {max_length}. Panjang nama berkas ini {length} karakter."
+msgstr "Pastikan nama file ini paling banyak memiliki {max_length} karakter "
+"(memiliki {length})."
 
 #: fields.py:1566
 msgid ""
 "Upload a valid image. The file you uploaded was either not an image or a "
 "corrupted image."
 msgstr ""
+"Unggah gambar yang valid. File yang anda unggah bukan gambar atau gambar "
+"telah rusak."
 
 #: fields.py:1604 relations.py:486 serializers.py:571
 msgid "This list may not be empty."
-msgstr ""
+msgstr "Daftar ini tidak boleh kosong."
 
 #: fields.py:1605
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} elements."
-msgstr ""
+msgstr "Pastikan bidang ini memiliki setidaknya {min_length} elemen."
 
 #: fields.py:1606
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} elements."
-msgstr ""
+msgstr "Pastikan bidang ini memiliki tidak lebih dari {max_length} elemen."
 
 #: fields.py:1682
 #, python-brace-format
 msgid "Expected a dictionary of items but got type \"{input_type}\"."
-msgstr "Isi bidang ini harus berupa dictionary, bukan \"{input_type}\"."
+msgstr "mengharapkan dictionary dari item tetapi mendapat tipe \"{input_type}\"
+"."
 
 #: fields.py:1683
 msgid "This dictionary may not be empty."
-msgstr ""
+msgstr "Dictionary ini tidak boleh kosong"
 
 #: fields.py:1755
 msgid "Value must be valid JSON."
-msgstr "Isi bidang ini harus berupa JSON."
+msgstr "Nilai harus berupa JSON yang valid."
 
 #: filters.py:49 templates/rest_framework/filters/search.html:2
 msgid "Search"
-msgstr ""
+msgstr "Cari"
 
 #: filters.py:50
 msgid "A search term."
-msgstr ""
+msgstr "Istilah pencarian."
 
 #: filters.py:180 templates/rest_framework/filters/ordering.html:3
 msgid "Ordering"
-msgstr ""
+msgstr "Pengurutan"
 
 #: filters.py:181
 msgid "Which field to use when ordering the results."
-msgstr ""
+msgstr "Bidang mana yang akan digunakan saat mengurutkan hasil."
 
 #: filters.py:287
 msgid "ascending"
-msgstr ""
+msgstr "naik"
 
 #: filters.py:288
 msgid "descending"
-msgstr ""
+msgstr "turun"
 
 #: pagination.py:174
 msgid "A page number within the paginated result set."
-msgstr ""
+msgstr "Nomor halaman dalam kumpulan hasil paginasi."
 
 #: pagination.py:179 pagination.py:372 pagination.py:590
 msgid "Number of results to return per page."
-msgstr ""
+msgstr "Jumlah hasil untuk dikembalikan per halaman."
 
 #: pagination.py:189
 msgid "Invalid page."
-msgstr ""
+msgstr "Halaman tidak valid."
 
 #: pagination.py:374
 msgid "The initial index from which to return the results."
-msgstr ""
+msgstr "Indeks awal dari mana untuk mengembalikan hasil."
 
 #: pagination.py:581
 msgid "The pagination cursor value."
-msgstr ""
+msgstr "Nilai kursor paginasi."
 
 #: pagination.py:583
 msgid "Invalid cursor"
-msgstr ""
+msgstr "Kursor tidak valid"
 
 #: relations.py:246
 #, python-brace-format
 msgid "Invalid pk \"{pk_value}\" - object does not exist."
-msgstr "Objek dengan primary key \"{pk_value}\" tidak ditemukan."
+msgstr "pk tidak valid \"{pk_value}\" - objek tidak ada."
 
 #: relations.py:247
 #, python-brace-format
 msgid "Incorrect type. Expected pk value, received {data_type}."
-msgstr ""
+msgstr "Tipe salah. Mengharapkan nilai pk, menerima {data_type}."
 
 #: relations.py:280
 msgid "Invalid hyperlink - No URL match."
-msgstr ""
+msgstr "Hyperlink tidak valid - Tidak ada URL yang cocok."
 
 #: relations.py:281
 msgid "Invalid hyperlink - Incorrect URL match."
-msgstr ""
+msgstr "Hyperlink tidak valid - Pencocokan URL salah."
 
 #: relations.py:282
 msgid "Invalid hyperlink - Object does not exist."
-msgstr ""
+msgstr "Hyperlink tidak valid - Objek tidak ada."
 
 #: relations.py:283
 #, python-brace-format
 msgid "Incorrect type. Expected URL string, received {data_type}."
-msgstr ""
+msgstr "Tipe salah. Mengharapkan string URL, menerima {data_type}."
 
 #: relations.py:448
 #, python-brace-format
 msgid "Object with {slug_name}={value} does not exist."
-msgstr ""
+msgstr "Objek dengan {slug_name}={value} tidak ada."
 
 #: relations.py:449
 msgid "Invalid value."
-msgstr ""
+msgstr "Nilai tidak valid"
 
 #: schemas/utils.py:32
 msgid "unique integer value"
-msgstr ""
+msgstr "nilai bilangan bulat unik"
 
 #: schemas/utils.py:34
 msgid "UUID string"
-msgstr ""
+msgstr "String UUID"
 
 #: schemas/utils.py:36
 msgid "unique value"
-msgstr ""
+msgstr "nilai unik"
 
 #: schemas/utils.py:38
 #, python-brace-format
 msgid "A {value_type} identifying this {name}."
-msgstr ""
+msgstr "Sebuah {value_type} yang mengidentifikasi {name} ini."
 
 #: serializers.py:337
 #, python-brace-format
 msgid "Invalid data. Expected a dictionary, but got {datatype}."
-msgstr ""
+msgstr "Data tidak valid. Mengharapkan dictionary, tetapi mendapatkan "
+"{datatype}."
 
 #: templates/rest_framework/admin.html:116
 #: templates/rest_framework/base.html:136
 msgid "Extra Actions"
-msgstr ""
+msgstr "Tindakan Ekstra"
 
 #: templates/rest_framework/admin.html:130
 #: templates/rest_framework/base.html:150
 msgid "Filters"
-msgstr ""
+msgstr "Filter"
 
 #: templates/rest_framework/base.html:37
 msgid "navbar"
-msgstr ""
+msgstr "navbar"
 
 #: templates/rest_framework/base.html:75
 msgid "content"
-msgstr ""
+msgstr "konten"
 
 #: templates/rest_framework/base.html:78
 msgid "request form"
-msgstr ""
+msgstr "form permintaan"
 
 #: templates/rest_framework/base.html:157
 msgid "main content"
-msgstr ""
+msgstr "konten utama"
 
 #: templates/rest_framework/base.html:173
 msgid "request info"
-msgstr ""
+msgstr "info permintaan"
 
 #: templates/rest_framework/base.html:177
 msgid "response info"
-msgstr ""
+msgstr "info tanggapan"
 
 #: templates/rest_framework/horizontal/radio.html:4
 #: templates/rest_framework/inline/radio.html:3
 #: templates/rest_framework/vertical/radio.html:3
 msgid "None"
-msgstr ""
+msgstr "Tidak ada"
 
 #: templates/rest_framework/horizontal/select_multiple.html:4
 #: templates/rest_framework/inline/select_multiple.html:3
 #: templates/rest_framework/vertical/select_multiple.html:3
 msgid "No items to select."
-msgstr ""
+msgstr "Tidak ada item untuk dipilih."
 
 #: validators.py:39
 msgid "This field must be unique."
-msgstr ""
+msgstr "Bidang ini harus unik."
 
 #: validators.py:89
 #, python-brace-format
 msgid "The fields {field_names} must make a unique set."
-msgstr ""
+msgstr "Bidang {field_names} harus membuat kumpulan yang unik."
 
 #: validators.py:171
 #, python-brace-format
 msgid "Surrogate characters are not allowed: U+{code_point:X}."
-msgstr ""
+msgstr "Karakter pengganti tidak diperbolehkan: U+{code_point:X}."
 
 #: validators.py:243
 #, python-brace-format
 msgid "This field must be unique for the \"{date_field}\" date."
-msgstr ""
+msgstr "Bidang ini harus unik untuk tanggal \"{date_field}\"."
 
 #: validators.py:258
 #, python-brace-format
 msgid "This field must be unique for the \"{date_field}\" month."
-msgstr ""
+msgstr "Kolom ini harus unik untuk bulan \"{date_field}\"."
 
 #: validators.py:271
 #, python-brace-format
 msgid "This field must be unique for the \"{date_field}\" year."
-msgstr ""
+msgstr "Kolom ini harus unik untuk tahun \"{date_field}\"."
 
 #: versioning.py:40
 msgid "Invalid version in \"Accept\" header."
-msgstr ""
+msgstr "Versi tidak valid di header \"Accept\"."
 
 #: versioning.py:71
 msgid "Invalid version in URL path."
-msgstr ""
+msgstr "Versi tidak valid di path URL."
 
 #: versioning.py:116
 msgid "Invalid version in URL path. Does not match any version namespace."
-msgstr ""
+msgstr "Versi tidak valid di path URL. Tidak cocok dengan namespace versi apa pun."
 
 #: versioning.py:148
 msgid "Invalid version in hostname."
-msgstr ""
+msgstr "Versi tidak valid dalam nama host."
 
 #: versioning.py:170
 msgid "Invalid version in query parameter."
-msgstr ""
+msgstr "Versi tidak valid dalam parameter kueri."
