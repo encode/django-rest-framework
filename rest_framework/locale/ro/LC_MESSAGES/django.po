@@ -181,7 +181,7 @@ msgstr "Asigurați-vă că acest câmp nu are mai mult de {max_length} caractere
 #: fields.py:769
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} characters."
-msgstr "Asigurați-vă că acest câmp are cel puțin{min_length} caractere."
+msgstr "Asigurați-vă că acest câmp are cel puțin {min_length} caractere."
 
 #: fields.py:816
 msgid "Enter a valid email address."
