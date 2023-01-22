@@ -1,6 +1,7 @@
 import re
 from collections import OrderedDict
 from collections.abc import MutableMapping
+from xml.etree import ElementTree
 
 import pytest
 from django.core.cache import cache
@@ -852,7 +853,8 @@ class TestDocumentationRenderer(TestCase):
             'link': coreapi.Link(url='/data/', action='get', fields=[]),
         }
         html = template.render(context)
-        assert 'testcases list' in html
+        text = "".join(ElementTree.fromstring(html).itertext())
+        assert 'testcases list' in text
 
 
 @pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
