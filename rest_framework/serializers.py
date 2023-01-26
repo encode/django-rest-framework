@@ -1259,7 +1259,12 @@ class ModelSerializer(Serializer):
             # `model_field` is only valid for the fallback case of
             # `ModelField`, which is used when no other typed field
             # matched to the model field.
-            field_kwargs.pop('model_field', None)
+            if 'model_field' in field_kwargs:
+                model_field = field_kwargs.pop('model_field')
+
+                # Use the model field default value if provided
+                if 'default' not in field_kwargs and model_field.default != models.fields.NOT_PROVIDED:
+                    field_kwargs['default'] = model_field.default
 
         if not issubclass(field_class, CharField) and not issubclass(field_class, ChoiceField):
             # `allow_blank` is only valid for textual fields.
