@@ -1,6 +1,6 @@
 import pytest
 from django.test import override_settings
-from django.urls import include, path, re_path, ResolverMatch
+from django.urls import ResolverMatch, include, path, re_path
 
 from rest_framework import serializers, status, versioning
 from rest_framework.decorators import APIView
