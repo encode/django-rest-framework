@@ -4,6 +4,7 @@ from django.contrib.admin.views.main import ChangeList
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.urls import reverse
+from django.contrib.admin.sites import AlreadyRegistered
 
 from rest_framework.authtoken.models import Token, TokenProxy
 
@@ -48,5 +49,8 @@ class TokenAdmin(admin.ModelAdmin):
         token = Token.objects.get(key=obj.key)
         return super().delete_model(request, token)
 
-
-admin.site.register(TokenProxy, TokenAdmin)
+try:
+    admin.site.register(TokenProxy, TokenAdmin)
+except AlreadyRegistered:
+    # handle already registered
+    pass
