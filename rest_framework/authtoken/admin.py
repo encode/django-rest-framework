@@ -49,6 +49,7 @@ class TokenAdmin(admin.ModelAdmin):
         token = Token.objects.get(key=obj.key)
         return super().delete_model(request, token)
 
+
 try:
     admin.site.register(TokenProxy, TokenAdmin)
 except AlreadyRegistered:
