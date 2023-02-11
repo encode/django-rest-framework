@@ -218,7 +218,6 @@ class SearchFilterTests(TestCase):
             {'id': 3, 'title': 'zzz', 'text': 'cde'}
         ]
 
-
     def test_search_field_with_null_characters(self):
         view = generics.GenericAPIView()
         request = factory.get('/?search=\0as%00d\x00f')
