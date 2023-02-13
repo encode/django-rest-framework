@@ -107,9 +107,30 @@ def throttle_classes(throttle_classes):
 
 
 def permission_classes(permission_classes):
+    def decorator(obj):
+        obj.permission_classes = permission_classes
+        return obj
+    return decorator
+
+
+def extra_permissions(permission_classes):
+    """Decorate a CBV method to add specific permissions on the instance."""
     def decorator(func):
-        func.permission_classes = permission_classes
-        return func
+        def decorated_func(self, *args, **kwargs):
+            for permission_class in permission_classes:
+                # Check the extra view level permissions.
+                permission = permission_class()
+                if not permission.has_permission(self.request, self):
+                    self.permission_denied(
+                        self.request,
+                        message=getattr(permission, "message", None),
+                        code=getattr(permission, "code", None)
+                    )
+                # Add them to permission classes for obj level checks.
+                # Reassignment is for global tests as they call the same CBV intances.
+                self.permission_classes = self.permission_classes + [permission_class]
+            return func(self, *args, **kwargs)
+        return decorated_func
     return decorator
 
 
