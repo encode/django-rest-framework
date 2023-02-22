@@ -186,6 +186,10 @@ class Request:
             self.method,
             self.get_full_path())
 
+    # Allow generic typing checking for requests.
+    def __class_getitem__(cls, *args, **kwargs):
+        return cls
+
     def _default_negotiator(self):
         return api_settings.DEFAULT_CONTENT_NEGOTIATION_CLASS()
 
