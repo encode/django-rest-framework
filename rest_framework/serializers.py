@@ -1103,6 +1103,7 @@ class ModelSerializer(Serializer):
         """
         fields = getattr(self.Meta, 'fields', None)
         exclude = getattr(self.Meta, 'exclude', None)
+        extra_fields = getattr(self.Meta, 'extra_fields', None)
 
         if fields and fields != ALL_FIELDS and not isinstance(fields, (list, tuple)):
             raise TypeError(
@@ -1114,6 +1115,12 @@ class ModelSerializer(Serializer):
             raise TypeError(
                 'The `exclude` option must be a list or tuple. Got %s.' %
                 type(exclude).__name__
+            )
+
+        if extra_fields and not isinstance(extra_fields, (list, tuple)):
+            raise TypeError(
+                'The `extra_fields` option must be a list or tuple. Got %s.' %
+                type(extra_fields).__name__
             )
 
         assert not (fields and exclude), (
@@ -1159,6 +1166,9 @@ class ModelSerializer(Serializer):
 
         # Use the default set of field names if `Meta.fields` is not specified.
         fields = self.get_default_field_names(declared_fields, info)
+        # Add extra field names, if any.
+        if extra_fields is not None:
+            fields += list(extra_fields)
 
         if exclude is not None:
             # If `Meta.exclude` is included, then remove those fields.
