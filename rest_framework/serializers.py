@@ -1100,6 +1100,32 @@ class ModelSerializer(Serializer):
         instantiating this serializer class. This is based on the default
         set of fields, but also takes into account the `Meta.fields` or
         `Meta.exclude` options if they have been specified.
+
+        Additionally, you can use the `Meta.extra_fields` attribute to include
+        fields that are not included when setting `Meta.fields` to `ALL_FIELDS`
+        or when using `Meta.exclude`. For example, to include a related field:
+
+            class Something(models.Model):
+                owner = models.ForeignKey(
+                    User,
+                    on_delete=models.CASCADE,
+                    related_name='user_stuff',
+                )
+
+            class UserSerializer(serializers.ModelSerializer):
+                class Meta:
+                    model = User
+                    exclude = [
+                        'email',
+                        'password',
+                    ]
+                    extra_fields = [
+                        'user_stuff',
+                    ]
+
+        Note that the `Meta.extra_fields` option has no effect if `Meta.fields`
+        is set to an explicit list or tuple of field names. In that case, you
+        must include all the desired fields in that list or tuple.
         """
         fields = getattr(self.Meta, 'fields', None)
         exclude = getattr(self.Meta, 'exclude', None)
