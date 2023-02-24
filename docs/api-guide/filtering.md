@@ -196,7 +196,7 @@ When in use, the browsable API will include a `SearchFilter` control:
 
 ![Search Filter](../img/search-filter.png)
 
-The `SearchFilter` class will only be applied if the view or `SearchFilter` class itself has a `search_fields` attribute set. The `search_fields` attribute should be a list of names of text type fields on the model, such as `CharField` or `TextField`.
+The `SearchFilter` class will only be applied if `SearchFilter` class itself or the view has a `search_fields` attribute set. The `search_fields` attribute should be a list of names of text type fields on the model, such as `CharField` or `TextField`.
 
     from rest_framework import filters
 

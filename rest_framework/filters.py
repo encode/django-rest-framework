@@ -56,7 +56,7 @@ class SearchFilter(BaseFilterBackend):
         always passed to this method. Sub-classes can override this method to
         dynamically change the search fields based on request content.
         """
-        return getattr(view, 'search_fields', getattr(self, 'search_fields'))
+        return getattr(self, 'search_fields', getattr(view, 'search_fields'))
 
     def get_search_terms(self, request):
         """
