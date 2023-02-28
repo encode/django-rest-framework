@@ -1137,7 +1137,7 @@ class ModelSerializer(Serializer):
             "and is now disallowed. Add an explicit fields = '__all__' to the "
             "{serializer_class} serializer.".format(
                 serializer_class=self.__class__.__name__
-            ),
+            )
         )
 
         if fields == ALL_FIELDS:
