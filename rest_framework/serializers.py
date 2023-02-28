@@ -1098,38 +1098,12 @@ class ModelSerializer(Serializer):
         """
         Returns the list of all field names that should be created when
         instantiating this serializer class. This is based on the default
-        set of fields, but also takes into account the `Meta.fields` or
-        `Meta.exclude` options if they have been specified.
-
-        Additionally, you can use the `Meta.extra_fields` attribute to include
-        fields that are not included when setting `Meta.fields` to `ALL_FIELDS`
-        or when using `Meta.exclude`. For example, to include a related field:
-
-            class Something(models.Model):
-                owner = models.ForeignKey(
-                    User,
-                    on_delete=models.CASCADE,
-                    related_name='user_stuff',
-                )
-
-            class UserSerializer(serializers.ModelSerializer):
-                class Meta:
-                    model = User
-                    exclude = [
-                        'email',
-                        'password',
-                    ]
-                    extra_fields = [
-                        'user_stuff',
-                    ]
-
-        Note that the `Meta.extra_fields` option has no effect if `Meta.fields`
-        is set to an explicit list or tuple of field names. In that case, you
-        must include all the desired fields in that list or tuple.
+        set of fields, but also takes into account the `Meta.fields`,
+        `Meta.exclude` or `Meta.include` options if they have been specified.
         """
         fields = getattr(self.Meta, 'fields', None)
         exclude = getattr(self.Meta, 'exclude', None)
-        extra_fields = getattr(self.Meta, 'extra_fields', None)
+        include = getattr(self.Meta, 'include', None)
 
         if fields and fields != ALL_FIELDS and not isinstance(fields, (list, tuple)):
             raise TypeError(
@@ -1143,22 +1117,23 @@ class ModelSerializer(Serializer):
                 type(exclude).__name__
             )
 
-        if extra_fields and not isinstance(extra_fields, (list, tuple)):
+        if include and not isinstance(include, (list, tuple)):
             raise TypeError(
-                'The `extra_fields` option must be a list or tuple. Got %s.' %
-                type(extra_fields).__name__
+                'The `include` option must be a list or tuple. Got %s.' %
+                type(include).__name__
             )
 
-        assert not (fields and exclude), (
-            "Cannot set both 'fields' and 'exclude' options on "
-            "serializer {serializer_class}.".format(
+        assert not (fields and (exclude or include)), (
+            "Cannot set 'fields' together with 'exclude' or 'include' options "
+            "on serializer {serializer_class}.".format(
                 serializer_class=self.__class__.__name__
             )
         )
 
-        assert not (fields is None and exclude is None), (
-            "Creating a ModelSerializer without either the 'fields' attribute "
-            "or the 'exclude' attribute has been deprecated since 3.3.0, "
+        # TODO Review the message of this assertion.
+        assert not (fields is None and exclude is None and include is None), (
+            "Creating a ModelSerializer without either the 'fields', 'exclude' "
+            "or 'include' attributes has been deprecated since 3.3.0, "
             "and is now disallowed. Add an explicit fields = '__all__' to the "
             "{serializer_class} serializer.".format(
                 serializer_class=self.__class__.__name__
@@ -1192,9 +1167,12 @@ class ModelSerializer(Serializer):
 
         # Use the default set of field names if `Meta.fields` is not specified.
         fields = self.get_default_field_names(declared_fields, info)
-        # Add extra field names, if any.
-        if extra_fields is not None:
-            fields += list(extra_fields)
+
+        if include is not None:
+            # If `Meta.include` is specified, then add those fields. If an
+            # invalid field name is present, it will raise an exception thanks
+            # to the `build_unknown_field` method.
+            fields += list(include)
 
         if exclude is not None:
             # If `Meta.exclude` is included, then remove those fields.
