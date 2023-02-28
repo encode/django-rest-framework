@@ -740,3 +740,24 @@ class TestDeclaredFieldInheritance:
             'f4': serializers.CharField,
             'f5': serializers.CharField,
         }
+
+
+class TestSetValueMethod:
+    # Serializer.set_value() modifies the first parameter in-place.
+
+    s = serializers.Serializer()
+
+    def test_no_keys(self):
+        ret = {'a': 1}
+        self.s.set_value(ret, [], {'b': 2})
+        assert ret == {'a': 1, 'b': 2}
+
+    def test_one_key(self):
+        ret = {'a': 1}
+        self.s.set_value(ret, ['x'], 2)
+        assert ret == {'a': 1, 'x': 2}
+
+    def test_nested_key(self):
+        ret = {'a': 1}
+        self.s.set_value(ret, ['x', 'y'], 2)
+        assert ret == {'a': 1, 'x': {'y': 2}}
