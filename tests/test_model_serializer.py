@@ -979,7 +979,7 @@ class TestSerializerMetaClass(TestCase):
                 fields = ('text',)
                 exclude = ('text',)
 
-        msginitial = "Cannot set both 'fields' and 'exclude' options on serializer ExampleSerializer."
+        msginitial = "Cannot set 'fields' together with 'exclude' or 'include' options on serializer ExampleSerializer."
         with self.assertRaisesMessage(AssertionError, msginitial):
             ExampleSerializer().fields
 
