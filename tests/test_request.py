@@ -1,7 +1,9 @@
 """
 Tests for content parsing, and form-overloaded content parsing.
 """
+import copy
 import os.path
+import sys
 import tempfile
 
 import pytest
@@ -344,3 +346,19 @@ class TestHttpRequest(TestCase):
         # ensure that request stream was consumed by form parser
         assert request.content_type.startswith('multipart/form-data')
         assert response.data == {'a': ['b']}
+
+
+class TestDeepcopy(TestCase):
+
+    def test_deepcopy_works(self):
+        request = Request(factory.get('/', secure=False))
+        copy.deepcopy(request)
+
+
+class TestTyping(TestCase):
+    @pytest.mark.skipif(
+        sys.version_info < (3, 7),
+        reason="subscriptable classes requires Python 3.7 or higher",
+    )
+    def test_request_is_subscriptable(self):
+        assert Request is Request["foo"]

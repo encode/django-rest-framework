@@ -10,6 +10,8 @@ python primitives.
 2. The process of marshalling between python primitives and request and
 response content is handled by parsers and renderers.
 """
+
+import contextlib
 import copy
 import inspect
 import traceback
@@ -52,7 +54,7 @@ from rest_framework.fields import (  # NOQA # isort:skip
     BooleanField, CharField, ChoiceField, DateField, DateTimeField, DecimalField,
     DictField, DurationField, EmailField, Field, FileField, FilePathField, FloatField,
     HiddenField, HStoreField, IPAddressField, ImageField, IntegerField, JSONField,
-    ListField, ModelField, MultipleChoiceField, NullBooleanField, ReadOnlyField,
+    ListField, ModelField, MultipleChoiceField, ReadOnlyField,
     RegexField, SerializerMethodField, SlugField, TimeField, URLField, UUIDField,
 )
 from rest_framework.relations import (  # NOQA # isort:skip
@@ -71,7 +73,8 @@ from rest_framework.relations import Hyperlink, PKOnlyObject  # NOQA # isort:ski
 LIST_SERIALIZER_KWARGS = (
     'read_only', 'write_only', 'required', 'default', 'initial', 'source',
     'label', 'help_text', 'style', 'error_messages', 'allow_empty',
-    'instance', 'data', 'partial', 'context', 'allow_null'
+    'instance', 'data', 'partial', 'context', 'allow_null',
+    'max_length', 'min_length'
 )
 
 ALL_FIELDS = '__all__'
@@ -143,12 +146,18 @@ class BaseSerializer(Field):
             return CustomListSerializer(*args, **kwargs)
         """
         allow_empty = kwargs.pop('allow_empty', None)
+        max_length = kwargs.pop('max_length', None)
+        min_length = kwargs.pop('min_length', None)
         child_serializer = cls(*args, **kwargs)
         list_kwargs = {
             'child': child_serializer,
         }
         if allow_empty is not None:
             list_kwargs['allow_empty'] = allow_empty
+        if max_length is not None:
+            list_kwargs['max_length'] = max_length
+        if min_length is not None:
+            list_kwargs['min_length'] = min_length
         list_kwargs.update({
             key: value for key, value in kwargs.items()
             if key in LIST_SERIALIZER_KWARGS
@@ -209,7 +218,7 @@ class BaseSerializer(Field):
 
         return self.instance
 
-    def is_valid(self, raise_exception=False):
+    def is_valid(self, *, raise_exception=False):
         assert hasattr(self, 'initial_data'), (
             'Cannot call `.is_valid()` as no `data=` keyword argument was '
             'passed when instantiating the serializer instance.'
@@ -588,12 +597,16 @@ class ListSerializer(BaseSerializer):
 
     default_error_messages = {
         'not_a_list': _('Expected a list of items but got type "{input_type}".'),
-        'empty': _('This list may not be empty.')
+        'empty': _('This list may not be empty.'),
+        'max_length': _('Ensure this field has no more than {max_length} elements.'),
+        'min_length': _('Ensure this field has at least {min_length} elements.')
     }
 
     def __init__(self, *args, **kwargs):
         self.child = kwargs.pop('child', copy.deepcopy(self.child))
         self.allow_empty = kwargs.pop('allow_empty', True)
+        self.max_length = kwargs.pop('max_length', None)
+        self.min_length = kwargs.pop('min_length', None)
         assert self.child is not None, '`child` is a required argument.'
         assert not inspect.isclass(self.child), '`child` has not been instantiated.'
         super().__init__(*args, **kwargs)
@@ -655,6 +668,18 @@ class ListSerializer(BaseSerializer):
                 api_settings.NON_FIELD_ERRORS_KEY: [message]
             }, code='empty')
 
+        if self.max_length is not None and len(data) > self.max_length:
+            message = self.error_messages['max_length'].format(max_length=self.max_length)
+            raise ValidationError({
+                api_settings.NON_FIELD_ERRORS_KEY: [message]
+            }, code='max_length')
+
+        if self.min_length is not None and len(data) < self.min_length:
+            message = self.error_messages['min_length'].format(min_length=self.min_length)
+            raise ValidationError({
+                api_settings.NON_FIELD_ERRORS_KEY: [message]
+            }, code='min_length')
+
         ret = []
         errors = []
 
@@ -678,7 +703,7 @@ class ListSerializer(BaseSerializer):
         """
         # Dealing with nested relationships, data can be a Manager,
         # so, first get a queryset from the Manager if needed
-        iterable = data.all() if isinstance(data, models.Manager) else data
+        iterable = data.all() if isinstance(data, models.manager.BaseManager) else data
 
         return [
             self.child.to_representation(item) for item in iterable
@@ -732,7 +757,7 @@ class ListSerializer(BaseSerializer):
 
         return self.instance
 
-    def is_valid(self, raise_exception=False):
+    def is_valid(self, *, raise_exception=False):
         # This implementation is the same as the default,
         # except that we use lists, rather than dicts, as the empty case.
         assert hasattr(self, 'initial_data'), (
@@ -1346,9 +1371,8 @@ class ModelSerializer(Serializer):
         """
         if extra_kwargs.get('read_only', False):
             for attr in [
-                'required', 'default', 'allow_blank', 'allow_null',
-                'min_length', 'max_length', 'min_value', 'max_value',
-                'validators', 'queryset'
+                'required', 'default', 'allow_blank', 'min_length',
+                'max_length', 'min_value', 'max_value', 'validators', 'queryset'
             ]:
                 kwargs.pop(attr, None)
 
@@ -1494,12 +1518,10 @@ class ModelSerializer(Serializer):
                 # they can't be nested attribute lookups.
                 continue
 
-            try:
+            with contextlib.suppress(FieldDoesNotExist):
                 field = model._meta.get_field(source)
                 if isinstance(field, DjangoModelField):
                     model_fields[source] = field
-            except FieldDoesNotExist:
-                pass
 
         return model_fields
 

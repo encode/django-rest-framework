@@ -45,7 +45,7 @@ We'll need to add our new `snippets` app and the `rest_framework` app to `INSTAL
     INSTALLED_APPS = [
         ...
         'rest_framework',
-        'snippets.apps.SnippetsConfig',
+        'snippets',
     ]
 
 Okay, we're ready to roll.
@@ -77,7 +77,7 @@ For the purposes of this tutorial we're going to start by creating a simple `Sni
 We'll also need to create an initial migration for our snippet model, and sync the database for the first time.
 
     python manage.py makemigrations snippets
-    python manage.py migrate
+    python manage.py migrate snippets
 
 ## Creating a Serializer class
 
@@ -179,7 +179,7 @@ We can also serialize querysets instead of model instances.  To do so we simply 
 
 ## Using ModelSerializers
 
-Our `SnippetSerializer` class is replicating a lot of information that's also contained in the `Snippet` model.  It would be nice if we could keep our code a bit  more concise.
+Our `SnippetSerializer` class is replicating a lot of information that's also contained in the `Snippet` model.  It would be nice if we could keep our code a bit more concise.
 
 In the same way that Django provides both `Form` classes and `ModelForm` classes, REST framework includes both `Serializer` classes, and `ModelSerializer` classes.
 
@@ -307,8 +307,8 @@ Quit out of the shell...
     Validating models...
 
     0 errors found
-    Django version 1.11, using settings 'tutorial.settings'
-    Development server is running at http://127.0.0.1:8000/
+    Django version 4.0, using settings 'tutorial.settings'
+    Starting Development server at http://127.0.0.1:8000/
     Quit the server with CONTROL-C.
 
 In another terminal window, we can test the server.
@@ -374,5 +374,5 @@ We'll see how we can start to improve things in [part 2 of the tutorial][tut-2].
 [sandbox]: https://restframework.herokuapp.com/
 [venv]: https://docs.python.org/3/library/venv.html
 [tut-2]: 2-requests-and-responses.md
-[httpie]: https://github.com/jakubroztocil/httpie#installation
+[httpie]: https://github.com/httpie/httpie#installation
 [curl]: https://curl.haxx.se/

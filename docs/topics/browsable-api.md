@@ -17,7 +17,7 @@ By default, the API will return the format specified by the headers, which in th
 
 ## Customizing
 
-The browsable API is built with [Twitter's Bootstrap][bootstrap] (v 3.3.5), making it easy to customize the look-and-feel.
+The browsable API is built with [Twitter's Bootstrap][bootstrap] (v 3.4.1), making it easy to customize the look-and-feel.
 
 To customize the default style, create a template called `rest_framework/api.html` that extends from `rest_framework/base.html`.  For example:
 
@@ -35,7 +35,7 @@ To replace the default theme, add a `bootstrap_theme` block to your `api.html` a
         <link rel="stylesheet" href="/path/to/my/bootstrap.css" type="text/css">
     {% endblock %}
 
-Suitable pre-made replacement themes are available at [Bootswatch][bswatch].  To use any of the Bootswatch themes, simply download the theme's `bootstrap.min.css` file, add it to your project, and replace the default one as described above.
+Suitable pre-made replacement themes are available at [Bootswatch][bswatch].  To use any of the Bootswatch themes, simply download the theme's `bootstrap.min.css` file, add it to your project, and replace the default one as described above. Make sure that the Bootstrap version of the new theme matches that of the default theme.
 
 You can also change the navbar variant, which by default is `navbar-inverse`, using the `bootstrap_navbar_variant` block.  The empty `{% block bootstrap_navbar_variant %}{% endblock %}` will use the original Bootstrap navbar style.
 
@@ -44,7 +44,7 @@ Full example:
     {% extends "rest_framework/base.html" %}
 
     {% block bootstrap_theme %}
-        <link rel="stylesheet" href="https://bootswatch.com/flatly/bootstrap.min.css" type="text/css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@3.4.1/flatly/bootstrap.min.css" type="text/css">
     {% endblock %}
 
     {% block bootstrap_navbar_variant %}{% endblock %}

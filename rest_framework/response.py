@@ -46,6 +46,10 @@ class Response(SimpleTemplateResponse):
             for name, value in headers.items():
                 self[name] = value
 
+    # Allow generic typing checking for responses.
+    def __class_getitem__(cls, *args, **kwargs):
+        return cls
+
     @property
     def rendered_content(self):
         renderer = getattr(self, 'accepted_renderer', None)

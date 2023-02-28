@@ -46,6 +46,14 @@ class OperandHolder(OperationHolderMixin):
         op2 = self.op2_class(*args, **kwargs)
         return self.operator_class(op1, op2)
 
+    def __eq__(self, other):
+        return (
+            isinstance(other, OperandHolder) and
+            self.operator_class == other.operator_class and
+            self.op1_class == other.op1_class and
+            self.op2_class == other.op2_class
+        )
+
 
 class AND:
     def __init__(self, op1, op2):
@@ -78,8 +86,11 @@ class OR:
 
     def has_object_permission(self, request, view, obj):
         return (
-            self.op1.has_object_permission(request, view, obj) or
-            self.op2.has_object_permission(request, view, obj)
+            self.op1.has_permission(request, view)
+            and self.op1.has_object_permission(request, view, obj)
+        ) or (
+            self.op2.has_permission(request, view)
+            and self.op2.has_object_permission(request, view, obj)
         )
 
 
@@ -175,9 +186,9 @@ class DjangoModelPermissions(BasePermission):
     # Override this if you need to also provide 'view' permissions,
     # or if you want to provide custom permission codes.
     perms_map = {
-        'GET': [],
+        'GET': ['%(app_label)s.view_%(model_name)s'],
         'OPTIONS': [],
-        'HEAD': [],
+        'HEAD': ['%(app_label)s.view_%(model_name)s'],
         'POST': ['%(app_label)s.add_%(model_name)s'],
         'PUT': ['%(app_label)s.change_%(model_name)s'],
         'PATCH': ['%(app_label)s.change_%(model_name)s'],
@@ -217,19 +228,24 @@ class DjangoModelPermissions(BasePermission):
         return view.queryset
 
     def has_permission(self, request, view):
+        if not request.user or (
+           not request.user.is_authenticated and self.authenticated_users_only):
+            return False
+
         # Workaround to ensure DjangoModelPermissions are not applied
         # to the root view when using DefaultRouter.
         if getattr(view, '_ignore_model_permissions', False):
             return True
 
-        if not request.user or (
-           not request.user.is_authenticated and self.authenticated_users_only):
-            return False
-
         queryset = self._queryset(view)
         perms = self.get_required_permissions(request.method, queryset.model)
+        change_perm = self.get_required_permissions('PUT', queryset.model)
 
-        return request.user.has_perms(perms)
+        user = request.user
+        if request.method == 'GET':
+            return user.has_perms(perms) or user.has_perms(change_perm)
+
+        return user.has_perms(perms)
 
 
 class DjangoModelPermissionsOrAnonReadOnly(DjangoModelPermissions):

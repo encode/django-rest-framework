@@ -198,6 +198,10 @@ class ViewSetMixin:
         for action in actions:
             try:
                 url_name = '%s-%s' % (self.basename, action.url_name)
+                namespace = self.request.resolver_match.namespace
+                if namespace:
+                    url_name = '%s:%s' % (namespace, url_name)
+
                 url = reverse(url_name, self.args, self.kwargs, request=self.request)
                 view = self.__class__(**action.kwargs)
                 action_urls[view.get_view_name()] = url

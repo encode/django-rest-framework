@@ -234,7 +234,7 @@ If you're using `SessionAuthentication` then you'll need to include a CSRF token
 for any `POST`, `PUT`, `PATCH` or `DELETE` requests.
 
 You can do so by following the same flow that a JavaScript based client would use.
-First make a `GET` request in order to obtain a CRSF token, then present that
+First, make a `GET` request in order to obtain a CSRF token, then present that
 token in the following request.
 
 For example...
@@ -259,7 +259,7 @@ With careful usage both the `RequestsClient` and the `CoreAPIClient` provide
 the ability to write test cases that can run either in development, or be run
 directly against your staging server or production environment.
 
-Using this style to create basic tests of a few core piece of functionality is
+Using this style to create basic tests of a few core pieces of functionality is
 a powerful way to validate your live service. Doing so may require some careful
 attention to setup and teardown to ensure that the tests run in a way that they
 do not directly affect customer data.
@@ -299,7 +299,7 @@ similar way as with `RequestsClient`.
 
 # API Test cases
 
-REST framework includes the following test case classes, that mirror the existing Django test case classes, but use `APIClient` instead of Django's default `Client`.
+REST framework includes the following test case classes, that mirror the existing [Django's test case classes][provided_test_case_classes], but use `APIClient` instead of Django's default `Client`.
 
 * `APISimpleTestCase`
 * `APITransactionTestCase`
@@ -413,5 +413,6 @@ For example, to add support for using `format='html'` in test requests, you migh
 [client]: https://docs.djangoproject.com/en/stable/topics/testing/tools/#the-test-client
 [requestfactory]: https://docs.djangoproject.com/en/stable/topics/testing/advanced/#django.test.client.RequestFactory
 [configuration]: #configuration
-[refresh_from_db_docs]: https://docs.djangoproject.com/en/1.11/ref/models/instances/#django.db.models.Model.refresh_from_db
+[refresh_from_db_docs]: https://docs.djangoproject.com/en/stable/ref/models/instances/#django.db.models.Model.refresh_from_db
 [session_objects]: https://requests.readthedocs.io/en/master/user/advanced/#session-objects
+[provided_test_case_classes]: https://docs.djangoproject.com/en/stable/topics/testing/tools/#provided-test-case-classes

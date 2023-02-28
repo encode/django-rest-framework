@@ -14,11 +14,11 @@ from contextlib import contextmanager
 
 from django.conf import settings
 from django.http import HttpRequest, QueryDict
-from django.http.multipartparser import parse_header
 from django.http.request import RawPostDataException
 from django.utils.datastructures import MultiValueDict
 
-from rest_framework import HTTP_HEADER_ENCODING, exceptions
+from rest_framework import exceptions
+from rest_framework.compat import parse_header_parameters
 from rest_framework.settings import api_settings
 
 
@@ -26,7 +26,7 @@ def is_form_media_type(media_type):
     """
     Return True if the media type is a valid form media type.
     """
-    base_media_type, params = parse_header(media_type.encode(HTTP_HEADER_ENCODING))
+    base_media_type, params = parse_header_parameters(media_type)
     return (base_media_type == 'application/x-www-form-urlencoded' or
             base_media_type == 'multipart/form-data')
 
@@ -185,6 +185,10 @@ class Request:
             self.__class__.__name__,
             self.method,
             self.get_full_path())
+
+    # Allow generic typing checking for requests.
+    def __class_getitem__(cls, *args, **kwargs):
+        return cls
 
     def _default_negotiator(self):
         return api_settings.DEFAULT_CONTENT_NEGOTIATION_CLASS()
@@ -413,7 +417,8 @@ class Request:
         to proxy it to the underlying HttpRequest object.
         """
         try:
-            return getattr(self._request, attr)
+            _request = self.__getattribute__("_request")
+            return getattr(_request, attr)
         except AttributeError:
             return self.__getattribute__(attr)
 

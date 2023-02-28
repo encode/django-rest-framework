@@ -1,6 +1,6 @@
 import pytest
 from django.test import override_settings
-from django.urls import include, path, re_path
+from django.urls import ResolverMatch, include, path, re_path
 
 from rest_framework import serializers, status, versioning
 from rest_framework.decorators import APIView
@@ -126,7 +126,7 @@ class TestRequestVersion:
         assert response.data == {'version': None}
 
     def test_namespace_versioning(self):
-        class FakeResolverMatch:
+        class FakeResolverMatch(ResolverMatch):
             namespace = 'v1'
 
         scheme = versioning.NamespaceVersioning
@@ -199,7 +199,7 @@ class TestURLReversing(URLPatternsTestCase, APITestCase):
         assert response.data == {'url': 'http://testserver/another/'}
 
     def test_reverse_namespace_versioning(self):
-        class FakeResolverMatch:
+        class FakeResolverMatch(ResolverMatch):
             namespace = 'v1'
 
         scheme = versioning.NamespaceVersioning
@@ -250,7 +250,7 @@ class TestInvalidVersion:
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_invalid_namespace_versioning(self):
-        class FakeResolverMatch:
+        class FakeResolverMatch(ResolverMatch):
             namespace = 'v3'
 
         scheme = versioning.NamespaceVersioning

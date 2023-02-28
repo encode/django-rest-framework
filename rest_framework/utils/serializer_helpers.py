@@ -1,3 +1,5 @@
+import contextlib
+import sys
 from collections import OrderedDict
 from collections.abc import Mapping, MutableMapping
 
@@ -27,6 +29,22 @@ class ReturnDict(OrderedDict):
         # Pickling these objects will drop the .serializer backlink,
         # but preserve the raw data.
         return (dict, (dict(self),))
+
+    if sys.version_info >= (3, 9):
+        # These are basically copied from OrderedDict, with `serializer` added.
+        def __or__(self, other):
+            if not isinstance(other, dict):
+                return NotImplemented
+            new = self.__class__(self, serializer=self.serializer)
+            new.update(other)
+            return new
+
+        def __ror__(self, other):
+            if not isinstance(other, dict):
+                return NotImplemented
+            new = self.__class__(other, serializer=self.serializer)
+            new.update(self)
+            return new
 
 
 class ReturnList(list):
@@ -86,15 +104,13 @@ class JSONBoundField(BoundField):
         # When HTML form input is used and the input is not valid
         # value will be a JSONString, rather than a JSON primitive.
         if not getattr(value, 'is_json_string', False):
-            try:
+            with contextlib.suppress(TypeError, ValueError):
                 value = json.dumps(
                     self.value,
                     sort_keys=True,
                     indent=4,
                     separators=(',', ': '),
                 )
-            except (TypeError, ValueError):
-                pass
         return self.__class__(self._field, value, self.errors, self._prefix)
 
 

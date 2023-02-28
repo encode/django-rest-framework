@@ -9,6 +9,23 @@ source:
 >
 > &mdash; Heroku, [JSON Schema for the Heroku Platform API][cite]
 
+---
+
+**Deprecation notice:**
+
+REST framework's built-in support for generating OpenAPI schemas is
+**deprecated** in favor of 3rd party packages that can provide this
+functionality instead. The built-in support will be moved into a separate
+package and then subsequently retired over the next releases.
+
+As a full-fledged replacement, we recommend the [drf-spectacular] package.
+It has extensive support for generating OpenAPI 3 schemas from
+REST framework APIs, with both automatic and customisable options available.
+For further information please refer to
+[Documenting your API](../topics/documenting-your-api.md#drf-spectacular).
+
+---
+
 API schemas are a useful tool that allow for a range of use cases, including
 generating reference documentation, or driving dynamic client libraries that
 can interact with your API.
@@ -122,6 +139,7 @@ The `get_schema_view()` helper takes the following keyword arguments:
             url='https://www.example.org/api/',
             patterns=schema_url_patterns,
         )
+* `public`: May be used to specify if schema should bypass views permissions. Default to False
 
 * `generator_class`: May be used to specify a `SchemaGenerator` subclass to be
   passed to the `SchemaView`.
@@ -165,7 +183,7 @@ In order to customize the top-level schema, subclass
 as an argument to the `generateschema` command or `get_schema_view()` helper
 function.
 
-### get_schema(self, request)
+### get_schema(self, request=None, public=False)
 
 Returns a dictionary that represents the OpenAPI schema:
 
@@ -292,7 +310,7 @@ class CustomView(APIView):
 
 This saves you having to create a custom subclass per-view for a commonly used option.
 
-Not all `AutoSchema` methods expose related  `__init__()` kwargs, but those for
+Not all `AutoSchema` methods expose related `__init__()` kwargs, but those for
 the more commonly needed options do.
 
 ### `AutoSchema` methods
@@ -300,7 +318,7 @@ the more commonly needed options do.
 #### `get_components()`
 
 Generates the OpenAPI components that describe request and response bodies,
-deriving  their properties from the serializer.
+deriving their properties from the serializer.
 
 Returns a dictionary mapping the component name to the generated
 representation. By default this has just a single pair but you may override
@@ -312,6 +330,11 @@ serializers.
 Computes the component's name from the serializer.
 
 You may see warnings if your API has duplicate component names. If so you can override `get_component_name()` or pass the `component_name` `__init__()` kwarg (see below) to provide different names.
+
+#### `get_reference()`
+
+Returns a reference to the serializer component. This may be useful if you override `get_schema()`.
+
 
 #### `map_serializer()`
 
@@ -432,3 +455,4 @@ create a base `AutoSchema` subclass for your project that takes additional
 [openapi-generator]: https://github.com/OpenAPITools/openapi-generator
 [swagger-codegen]: https://github.com/swagger-api/swagger-codegen
 [info-object]: https://swagger.io/specification/#infoObject
+[drf-spectacular]: https://drf-spectacular.readthedocs.io/en/latest/readme.html
