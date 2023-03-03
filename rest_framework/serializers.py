@@ -1398,6 +1398,23 @@ class ModelSerializer(Serializer):
 
         return extra_kwargs
 
+    def get_unique_together_constraints(self, model):
+        """
+        Returns iterator of (fields, queryset), each entry describes an unique together
+        constraint on `fields` in `queryset`.
+        """
+        for parent_class in [model] + list(model._meta.parents):
+            for unique_together in parent_class._meta.unique_together:
+                yield unique_together, model._default_manager
+            for constraint in parent_class._meta.constraints:
+                if isinstance(constraint, models.UniqueConstraint) and len(constraint.fields) > 1:
+                    yield (
+                        constraint.fields,
+                        model._default_manager
+                        if constraint.condition is None
+                        else model._default_manager.filter(constraint.condition)
+                    )
+
     def get_uniqueness_extra_kwargs(self, field_names, declared_fields, extra_kwargs):
         """
         Return any additional field options that need to be included as a
@@ -1426,12 +1443,11 @@ class ModelSerializer(Serializer):
 
         unique_constraint_names -= {None}
 
-        # Include each of the `unique_together` field names,
+        # Include each of the `unique_together` and `UniqueConstraint` field names,
         # so long as all the field names are included on the serializer.
-        for parent_class in [model] + list(model._meta.parents):
-            for unique_together_list in parent_class._meta.unique_together:
-                if set(field_names).issuperset(unique_together_list):
-                    unique_constraint_names |= set(unique_together_list)
+        for unique_together_list, queryset in self.get_unique_together_constraints(model):
+            if set(field_names).issuperset(unique_together_list):
+                unique_constraint_names |= set(unique_together_list)
 
         # Now we have all the field names that have uniqueness constraints
         # applied, we can add the extra 'required=...' or 'default=...'
@@ -1526,11 +1542,6 @@ class ModelSerializer(Serializer):
         """
         Determine a default set of validators for any unique_together constraints.
         """
-        model_class_inheritance_tree = (
-            [self.Meta.model] +
-            list(self.Meta.model._meta.parents)
-        )
-
         # The field names we're passing though here only include fields
         # which may map onto a model field. Any dotted field name lookups
         # cannot map to a field, and must be a traversal, so we're not
@@ -1556,34 +1567,33 @@ class ModelSerializer(Serializer):
         # Note that we make sure to check `unique_together` both on the
         # base model class, but also on any parent classes.
         validators = []
-        for parent_class in model_class_inheritance_tree:
-            for unique_together in parent_class._meta.unique_together:
-                # Skip if serializer does not map to all unique together sources
-                if not set(source_map).issuperset(unique_together):
-                    continue
+        for unique_together, queryset in self.get_unique_together_constraints(self.Meta.model):
+            # Skip if serializer does not map to all unique together sources
+            if not set(source_map).issuperset(unique_together):
+                continue
 
-                for source in unique_together:
-                    assert len(source_map[source]) == 1, (
-                        "Unable to create `UniqueTogetherValidator` for "
-                        "`{model}.{field}` as `{serializer}` has multiple "
-                        "fields ({fields}) that map to this model field. "
-                        "Either remove the extra fields, or override "
-                        "`Meta.validators` with a `UniqueTogetherValidator` "
-                        "using the desired field names."
-                        .format(
-                            model=self.Meta.model.__name__,
-                            serializer=self.__class__.__name__,
-                            field=source,
-                            fields=', '.join(source_map[source]),
-                        )
+            for source in unique_together:
+                assert len(source_map[source]) == 1, (
+                    "Unable to create `UniqueTogetherValidator` for "
+                    "`{model}.{field}` as `{serializer}` has multiple "
+                    "fields ({fields}) that map to this model field. "
+                    "Either remove the extra fields, or override "
+                    "`Meta.validators` with a `UniqueTogetherValidator` "
+                    "using the desired field names."
+                    .format(
+                        model=self.Meta.model.__name__,
+                        serializer=self.__class__.__name__,
+                        field=source,
+                        fields=', '.join(source_map[source]),
                     )
-
-                field_names = tuple(source_map[f][0] for f in unique_together)
-                validator = UniqueTogetherValidator(
-                    queryset=parent_class._default_manager,
-                    fields=field_names
                 )
-                validators.append(validator)
+
+            field_names = tuple(source_map[f][0] for f in unique_together)
+            validator = UniqueTogetherValidator(
+                queryset=queryset,
+                fields=field_names
+            )
+            validators.append(validator)
         return validators
 
     def get_unique_for_date_validators(self):

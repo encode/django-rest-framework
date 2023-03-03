@@ -464,6 +464,106 @@ class TestUniquenessTogetherValidation(TestCase):
         assert queryset.called_with == {'race_name': 'bar', 'position': 1}
 
 
+class UniqueConstraintModel(models.Model):
+    race_name = models.CharField(max_length=100)
+    position = models.IntegerField()
+    global_id = models.IntegerField()
+    fancy_conditions = models.IntegerField(null=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                name="unique_constraint_model_global_id_uniq",
+                fields=('global_id',),
+            ),
+            models.UniqueConstraint(
+                name="unique_constraint_model_fancy_1_uniq",
+                fields=('fancy_conditions',),
+                condition=models.Q(global_id__lte=1)
+            ),
+            models.UniqueConstraint(
+                name="unique_constraint_model_fancy_3_uniq",
+                fields=('fancy_conditions',),
+                condition=models.Q(global_id__gte=3)
+            ),
+            models.UniqueConstraint(
+                name="unique_constraint_model_together_uniq",
+                fields=('race_name', 'position'),
+                condition=models.Q(race_name='example'),
+            )
+        ]
+
+
+class UniqueConstraintSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UniqueConstraintModel
+        fields = '__all__'
+
+
+class TestUniqueConstraintValidation(TestCase):
+    def setUp(self):
+        self.instance = UniqueConstraintModel.objects.create(
+            race_name='example',
+            position=1,
+            global_id=1
+        )
+        UniqueConstraintModel.objects.create(
+            race_name='example',
+            position=2,
+            global_id=2
+        )
+        UniqueConstraintModel.objects.create(
+            race_name='other',
+            position=1,
+            global_id=3
+        )
+
+    def test_repr(self):
+        serializer = UniqueConstraintSerializer()
+        # the order of validators isn't deterministic so delete
+        # fancy_conditions field that has two of them
+        del serializer.fields['fancy_conditions']
+        expected = dedent("""
+            UniqueConstraintSerializer():
+                id = IntegerField(label='ID', read_only=True)
+                race_name = CharField(max_length=100, required=True)
+                position = IntegerField(required=True)
+                global_id = IntegerField(validators=[<UniqueValidator(queryset=UniqueConstraintModel.objects.all())>])
+                class Meta:
+                    validators = [<UniqueTogetherValidator(queryset=<QuerySet [<UniqueConstraintModel: UniqueConstraintModel object (1)>, <UniqueConstraintModel: UniqueConstraintModel object (2)>]>, fields=('race_name', 'position'))>]
+        """)
+        assert repr(serializer) == expected
+
+    def test_unique_together_field(self):
+        """
+        UniqueConstraint fields and condition attributes must be passed
+        to UniqueTogetherValidator as fields and queryset
+        """
+        serializer = UniqueConstraintSerializer()
+        assert len(serializer.validators) == 1
+        validator = serializer.validators[0]
+        assert validator.fields == ('race_name', 'position')
+        assert set(validator.queryset.values_list(flat=True)) == set(
+            UniqueConstraintModel.objects.filter(race_name='example').values_list(flat=True)
+        )
+
+    def test_single_field_uniq_validators(self):
+        """
+        UniqueConstraint with single field must be transformed into
+        field's UniqueValidator
+        """
+        serializer = UniqueConstraintSerializer()
+        assert len(serializer.validators) == 1
+        validators = serializer.fields['global_id'].validators
+        assert len(validators) == 1
+        assert validators[0].queryset == UniqueConstraintModel.objects
+
+        validators = serializer.fields['fancy_conditions'].validators
+        assert len(validators) == 2
+        ids_in_qs = {frozenset(v.queryset.values_list(flat=True)) for v in validators}
+        assert ids_in_qs == {frozenset([1]), frozenset([3])}
+
+
 # Tests for `UniqueForDateValidator`
 # ----------------------------------
 
