@@ -1,3 +1,5 @@
+import sys
+
 import pytest
 from django.db import models
 from django.http import Http404
@@ -698,3 +700,26 @@ class TestSerializer(TestCase):
         serializer = response.serializer
 
         assert serializer.context is context
+
+
+class TestTyping(TestCase):
+    @pytest.mark.skipif(
+        sys.version_info < (3, 7),
+        reason="subscriptable classes requires Python 3.7 or higher",
+    )
+    def test_genericview_is_subscriptable(self):
+        assert generics.GenericAPIView is generics.GenericAPIView["foo"]
+
+    @pytest.mark.skipif(
+        sys.version_info < (3, 7),
+        reason="subscriptable classes requires Python 3.7 or higher",
+    )
+    def test_listview_is_subscriptable(self):
+        assert generics.ListAPIView is generics.ListAPIView["foo"]
+
+    @pytest.mark.skipif(
+        sys.version_info < (3, 7),
+        reason="subscriptable classes requires Python 3.7 or higher",
+    )
+    def test_instanceview_is_subscriptable(self):
+        assert generics.RetrieveAPIView is generics.RetrieveAPIView["foo"]

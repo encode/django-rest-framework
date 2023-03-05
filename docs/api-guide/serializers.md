@@ -226,7 +226,7 @@ Individual fields on a serializer can include validators, by declaring them on t
             raise serializers.ValidationError('Not a multiple of ten')
 
     class GameRecord(serializers.Serializer):
-        score = IntegerField(validators=[multiple_of_ten])
+        score = serializers.IntegerField(validators=[multiple_of_ten])
         ...
 
 Serializer classes can also include reusable validators that are applied to the complete set of field data. These validators are included by declaring them on an inner `Meta` class, like so:
