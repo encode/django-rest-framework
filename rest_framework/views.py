@@ -275,7 +275,11 @@ class APIView(View):
         """
         Instantiates and returns the list of permissions that this view requires.
         """
-        return [permission() for permission in self.permission_classes]
+        try:
+            return [permission() for permission in self.permission_classes_by_action[self.action]]
+        except Exception:
+            return [permission() for permission in self.permission_classes]
+
 
     def get_throttles(self):
         """
