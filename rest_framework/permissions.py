@@ -127,6 +127,15 @@ class BasePermission(metaclass=BasePermissionMetaclass):
         return True
 
 
+class IsNotAuthenticated(BasePermission):
+    """
+    Allows access only to unauthenticated users.
+    """
+
+    def has_permission(self, request, view):
+        return str(request.user) == 'AnonymousUser'
+
+
 class AllowAny(BasePermission):
     """
     Allow any access.
