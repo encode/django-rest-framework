@@ -179,7 +179,7 @@ By default this exception results in a response with the HTTP status code "403 F
 
 **Signature:** `NotFound(detail=None, code=None)`
 
-Raised when a resource does not exists at the given URL. This exception is equivalent to the standard `Http404` Django exception.
+Raised when a resource does not exist at the given URL. This exception is equivalent to the standard `Http404` Django exception.
 
 By default this exception results in a response with the HTTP status code "404 Not Found".
 

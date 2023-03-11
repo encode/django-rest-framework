@@ -240,7 +240,7 @@ Suppose we want to replace the default pagination output style with a modified f
                 'results': data
             })
 
-We'd then need to setup the custom class in our configuration:
+We'd then need to set up the custom class in our configuration:
 
     REST_FRAMEWORK = {
         'DEFAULT_PAGINATION_CLASS': 'my_project.apps.core.pagination.CustomPagination',
@@ -262,7 +262,7 @@ API responses for list endpoints will now include a `Link` header, instead of in
 
 ![Link Header][link-header]
 
-*A custom pagination style, using the 'Link' header'*
+*A custom pagination style, using the 'Link' header*
 
 ---
 
