@@ -327,7 +327,7 @@ Corresponds to `django.db.models.fields.DateTimeField`.
 
 Format strings may either be [Python strftime formats][strftime] which explicitly specify the format, or the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style datetimes should be used. (eg `'2013-01-29T12:34:56.000000Z'`)
 
-When a value of `None` is used for the format `datetime` objects will be returned by `to_representation` and the final output representation wil be determined by the renderer class.
+When a value of `None` is used for the format `datetime` objects will be returned by `to_representation` and the final output representation will be determined by the renderer class.
 
 #### `auto_now` and `auto_now_add` model fields.
 
