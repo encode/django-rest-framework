@@ -251,7 +251,7 @@ Corresponds to `django.forms.fields.IPAddressField` and `django.forms.fields.Gen
 
 **Signature**: `IPAddressField(protocol='both', unpack_ipv4=False, **options)`
 
-* `protocol` Limits valid inputs to the specified protocol. Accepted values are 'both' (default), 'IPv4' or 'IPv6'. Matching is case insensitive.
+* `protocol` Limits valid inputs to the specified protocol. Accepted values are 'both' (default), 'IPv4' or 'IPv6'. Matching is case-insensitive.
 * `unpack_ipv4` Unpacks IPv4 mapped addresses like ::ffff:192.0.2.1. If this option is enabled that address would be unpacked to 192.0.2.1. Default is disabled. Can only be used when protocol is set to 'both'.
 
 ---
@@ -294,7 +294,7 @@ Corresponds to `django.db.models.fields.DecimalField`.
 * `max_value` Validate that the number provided is no greater than this value.
 * `min_value` Validate that the number provided is no less than this value.
 * `localize` Set to `True` to enable localization of input and output based on the current locale. This will also force `coerce_to_string` to `True`. Defaults to `False`. Note that data formatting is enabled if you have set `USE_L10N=True` in your settings file.
-* `rounding` Sets the rounding mode used when quantising to the configured precision. Valid values are [`decimal` module rounding modes][python-decimal-rounding-modes]. Defaults to `None`.
+* `rounding` Sets the rounding mode used when quantizing to the configured precision. Valid values are [`decimal` module rounding modes][python-decimal-rounding-modes]. Defaults to `None`.
 * `normalize_output` Will normalize the decimal value when serialized. This will strip all trailing zeroes and change the value's precision to the minimum required precision to be able to represent the value without loosing data. Defaults to `False`.
 
 #### Example usage
@@ -321,13 +321,13 @@ Corresponds to `django.db.models.fields.DateTimeField`.
 
 * `format` - A string representing the output format. If not specified, this defaults to the same value as the `DATETIME_FORMAT` settings key, which will be `'iso-8601'` unless set. Setting to a format string indicates that `to_representation` return values should be coerced to string output. Format strings are described below. Setting this value to `None` indicates that Python `datetime` objects should be returned by `to_representation`. In this case the datetime encoding will be determined by the renderer.
 * `input_formats` - A list of strings representing the input formats which may be used to parse the date.  If not specified, the `DATETIME_INPUT_FORMATS` setting will be used, which defaults to `['iso-8601']`.
-* `default_timezone` - A `tzinfo` subclass (`zoneinfo` or `pytz`) prepresenting the timezone. If not specified and the `USE_TZ` setting is enabled, this defaults to the [current timezone][django-current-timezone]. If `USE_TZ` is disabled, then datetime objects will be naive.
+* `default_timezone` - A `tzinfo` subclass (`zoneinfo` or `pytz`) representing the timezone. If not specified and the `USE_TZ` setting is enabled, this defaults to the [current timezone][django-current-timezone]. If `USE_TZ` is disabled, then datetime objects will be naive.
 
 #### `DateTimeField` format strings.
 
 Format strings may either be [Python strftime formats][strftime] which explicitly specify the format, or the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style datetimes should be used. (eg `'2013-01-29T12:34:56.000000Z'`)
 
-When a value of `None` is used for the format `datetime` objects will be returned by `to_representation` and the final output representation will determined by the renderer class.
+When a value of `None` is used for the format `datetime` objects will be returned by `to_representation` and the final output representation will be determined by the renderer class.
 
 #### `auto_now` and `auto_now_add` model fields.
 

@@ -253,7 +253,7 @@ The `OrderingFilter` class supports simple query parameter controlled ordering o
 
 ![Ordering Filter](../img/ordering-filter.png)
 
-By default, the query parameter is named `'ordering'`, but this may by overridden with the `ORDERING_PARAM` setting.
+By default, the query parameter is named `'ordering'`, but this may be overridden with the `ORDERING_PARAM` setting.
 
 For example, to order users by username:
 
@@ -269,7 +269,7 @@ Multiple orderings may also be specified:
 
 ### Specifying which fields may be ordered against
 
-It's recommended that you explicitly specify which fields the API should allowing in the ordering filter.  You can do this by setting an `ordering_fields` attribute on the view, like so:
+It's recommended that you explicitly specify which fields the API should allow in the ordering filter.  You can do this by setting an `ordering_fields` attribute on the view, like so:
 
     class UserListView(generics.ListAPIView):
         queryset = User.objects.all()
