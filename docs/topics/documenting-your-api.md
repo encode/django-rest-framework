@@ -96,10 +96,14 @@ urlpatterns = [
     # ...
     # Route TemplateView to serve Swagger UI template.
     #   * Provide `extra_context` with view name of `SchemaView`.
-    path('swagger-ui/', TemplateView.as_view(
-        template_name='swagger-ui.html',
-        extra_context={'schema_url':'openapi-schema'}
-    ), name='swagger-ui'),
+    path(
+        "swagger-ui/",
+        TemplateView.as_view(
+            template_name="swagger-ui.html",
+            extra_context={"schema_url": "openapi-schema"},
+        ),
+        name="swagger-ui",
+    ),
 ]
 ```
 
@@ -145,10 +149,13 @@ urlpatterns = [
     # ...
     # Route TemplateView to serve the ReDoc template.
     #   * Provide `extra_context` with view name of `SchemaView`.
-    path('redoc/', TemplateView.as_view(
-        template_name='redoc.html',
-        extra_context={'schema_url':'openapi-schema'}
-    ), name='redoc'),
+    path(
+        "redoc/",
+        TemplateView.as_view(
+            template_name="redoc.html", extra_context={"schema_url": "openapi-schema"}
+        ),
+        name="redoc",
+    ),
 ]
 ```
 

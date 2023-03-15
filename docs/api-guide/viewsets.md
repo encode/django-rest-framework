@@ -194,15 +194,16 @@ To view all extra actions, call the `.get_extra_actions()` method.
 Extra actions can map additional HTTP methods to separate `ViewSet` methods. For example, the above password set/unset methods could be consolidated into a single route. Note that additional mappings do not accept arguments.
 
 ```python
-    @action(detail=True, methods=['put'], name='Change Password')
-    def password(self, request, pk=None):
-        """Update the user's password."""
-        ...
+@action(detail=True, methods=["put"], name="Change Password")
+def password(self, request, pk=None):
+    """Update the user's password."""
+    ...
 
-    @password.mapping.delete
-    def delete_password(self, request, pk=None):
-        """Delete the user's password."""
-        ...
+
+@password.mapping.delete
+def delete_password(self, request, pk=None):
+    """Delete the user's password."""
+    ...
 ```
 
 ## Reversing action URLs
@@ -214,7 +215,7 @@ Note that the `basename` is provided by the router during `ViewSet` registration
 Using the example from the previous section:
 
 ```pycon
->>> view.reverse_action('set-password', args=['1'])
+>>> view.reverse_action("set-password", args=["1"])
 'http://localhost:8000/api/users/1/set_password'
 ```
 
