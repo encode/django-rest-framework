@@ -22,6 +22,6 @@ repos:
   rev: 1.13.0
   hooks:
   - id: blacken-docs
-    files: docs
+    exclude: ^(?!docs).*$
     additional_dependencies:
     - black==23.1.0
