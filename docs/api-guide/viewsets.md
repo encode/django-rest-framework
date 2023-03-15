@@ -213,14 +213,14 @@ Note that the `basename` is provided by the router during `ViewSet` registration
 
 Using the example from the previous section:
 
-```python
+```pycon
 >>> view.reverse_action('set-password', args=['1'])
 'http://localhost:8000/api/users/1/set_password'
 ```
 
 Alternatively, you can use the `url_name` attribute set by the `@action` decorator.
 
-```python
+```pycon
 >>> view.reverse_action(view.set_password.url_name, args=['1'])
 'http://localhost:8000/api/users/1/set_password'
 ```

@@ -263,7 +263,7 @@ class CustomSchema(AutoSchema):
 
 class CustomView(APIView):
     schema = CustomSchema()
-    schema_extra_info = ... some extra info ...
+    schema_extra_info = ...  # some extra info
 ```
 
 Here, the `AutoSchema` subclass goes looking for `schema_extra_info` on the
@@ -281,7 +281,7 @@ class BaseSchema(AutoSchema):
     ...
 
 class CustomSchema(BaseSchema):
-    extra_info = ... some extra info ...
+    extra_info = ...  # some extra info
 
 class CustomView(APIView):
     schema = CustomSchema()
@@ -304,7 +304,7 @@ class CustomSchema(BaseSchema):
 
 class CustomView(APIView):
     schema = CustomSchema(
-        extra_info=... some extra info ...
+        extra_info=...   # some extra info
     )
 ```
 
