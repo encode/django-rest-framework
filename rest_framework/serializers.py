@@ -1130,6 +1130,13 @@ class ModelSerializer(Serializer):
             )
         )
 
+        assert set(exclude or []).isdisjoint(include or []), (
+            "Cannot set the same field name in both 'exclude' and 'include' options "
+            "on serializer {serializer_class}.".format(
+                serializer_class=self.__class__.__name__
+            )
+        )
+
         # TODO Review the message of this assertion.
         assert not (fields is None and exclude is None and include is None), (
             "Creating a ModelSerializer without either the 'fields', 'exclude' "
