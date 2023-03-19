@@ -999,6 +999,74 @@ class TestSerializerMetaClass(TestCase):
         with self.assertRaisesMessage(AssertionError, expected):
             ExampleSerializer().fields
 
+    def test_meta_class_include_option(self):
+        class ExampleSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = MetaClassTestModel
+                include = 'text'
+
+        msginitial = "The `include` option must be a list or tuple"
+        with self.assertRaisesMessage(TypeError, msginitial):
+            ExampleSerializer().fields
+
+    def test_meta_class_fields_and_include_options(self):
+        class ExampleSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = MetaClassTestModel
+                fields = ('text',)
+                include = ('text',)
+
+        msginitial = "Cannot set 'fields' together with 'exclude' or 'include' options on serializer ExampleSerializer."
+        with self.assertRaisesMessage(AssertionError, msginitial):
+            ExampleSerializer().fields
+
+    def test_disjoint_exclude_and_include(self):
+        class ExampleSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = MetaClassTestModel
+                exclude = ('text',)
+                include = ('text',)
+
+        expected = "Cannot set the same field name in both 'exclude' and 'include' options on serializer ExampleSerializer."
+        with self.assertRaisesMessage(AssertionError, expected):
+            ExampleSerializer().fields
+
+
+class IncludeRelatedFooModel(models.Model):
+    text = models.CharField(max_length=100)
+
+
+class IncludeRelatedBarModel(models.Model):
+    foo = models.ForeignKey(
+        IncludeRelatedFooModel,
+        on_delete=models.SET_NULL,
+        related_name='bars',
+    )
+
+
+class TestIncludeMetaOption(TestCase):
+    def test_include_related_fields(self):
+        class IncludeRelatedFooSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = IncludeRelatedFooModel
+                include = ['bars']
+
+        # Since `get_fields` returns an OrderedDict we can ensure order in the keys.
+        assert list(IncludeRelatedFooSerializer().get_fields().keys()) == ['id', 'text', 'bars']
+
+    def test_include_none_equals_all(self):
+        class IncludeNoneSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = IncludeRelatedBarModel
+                include = []
+
+        class FieldsAllSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = IncludeRelatedBarModel
+                fields = '__all__'
+
+        assert IncludeNoneSerializer().get_fields().keys() == FieldsAllSerializer().get_fields().keys()
+
 
 class Issue2704TestCase(TestCase):
     def test_queryset_all(self):
