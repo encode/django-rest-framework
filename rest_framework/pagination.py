@@ -634,7 +634,7 @@ class CursorPagination(BasePagination):
 
             # If some records contain a null for the ordering field, don't lose them.
             filter_query = Q(**kwargs) | Q(**{order_attr + '__isnull': True})
-            
+
             queryset = queryset.filter(filter_query)
 
         # If we have an offset cursor then offset the entire page by that amount.
