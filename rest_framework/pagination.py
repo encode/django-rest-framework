@@ -10,6 +10,7 @@ from urllib import parse
 
 from django.core.paginator import InvalidPage
 from django.core.paginator import Paginator as DjangoPaginator
+from django.db.models import Q
 from django.template import loader
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
@@ -631,7 +632,10 @@ class CursorPagination(BasePagination):
             else:
                 kwargs = {order_attr + '__gt': current_position}
 
-            queryset = queryset.filter(**kwargs)
+            # If some records contain a null for the ordering field, don't lose them.
+            filter_query = Q(**kwargs) | Q(**{order_attr + '__isnull': True})
+            
+            queryset = queryset.filter(filter_query)
 
         # If we have an offset cursor then offset the entire page by that amount.
         # We also always fetch an extra item in order to determine if there is a
