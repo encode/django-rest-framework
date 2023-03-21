@@ -489,9 +489,11 @@ class APIView(View):
         """
         self.args = args
         self.kwargs = kwargs
+        self.headers = self.default_response_headers  # deprecate?
+
         request = self.initialize_request(request, *args, **kwargs)
         self.request = request
-        self.headers = self.default_response_headers  # deprecate?
+        Request.set_current(request)
 
         try:
             self.initial(request, *args, **kwargs)

@@ -29,6 +29,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework.compat import postgres_fields
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.fields import get_error_detail, set_value
+from rest_framework.request import Request
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, model_meta, representation
 from rest_framework.utils.field_mapping import (
@@ -115,6 +116,12 @@ class BaseSerializer(Field):
         self.partial = kwargs.pop('partial', False)
         self._context = kwargs.pop('context', {})
         kwargs.pop('many', None)
+
+        if isinstance(self._context, dict) and ('request' not in self._context):
+            request = Request.get_current()
+            if request:
+                self._context['request'] = request
+
         super().__init__(**kwargs)
 
     def __new__(cls, *args, **kwargs):
