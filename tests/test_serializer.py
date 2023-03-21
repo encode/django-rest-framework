@@ -636,6 +636,8 @@ class Test2555Regression:
             nested = NestedSerializer()
 
         serializer = ParentSerializer(data={}, context={'foo': 'bar'})
+        serializer.context.pop('request', None)
+        serializer.fields['nested'].context.pop('request', None)
         assert serializer.context == {'foo': 'bar'}
         assert serializer.fields['nested'].context == {'foo': 'bar'}
 
