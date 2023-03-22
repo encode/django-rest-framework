@@ -951,17 +951,21 @@ class TestCursorPagination(CursorPaginationTestsMixin):
             def __init__(self, items):
                 self.items = items
 
-            def filter(self, created__gt=None, created__lt=None):
+            def filter(self, q):
+                q_args = dict(q.deconstruct()[1])
+                created__gt = q_args.get('created__gt')
+                created__lt = q_args.get('created__lt')
+
                 if created__gt is not None:
                     return MockQuerySet([
                         item for item in self.items
-                        if item.created > int(created__gt)
+                        if item.created is None or item.created > int(created__gt)
                     ])
 
                 assert created__lt is not None
                 return MockQuerySet([
                     item for item in self.items
-                    if item.created < int(created__lt)
+                    if item.created is None or item.created < int(created__lt)
                 ])
 
             def order_by(self, *ordering):

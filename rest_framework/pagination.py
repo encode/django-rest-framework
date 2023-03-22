@@ -621,7 +621,7 @@ class CursorPagination(BasePagination):
             queryset = queryset.order_by(*self.ordering)
 
         # If we have a cursor with a fixed position then filter by that.
-        if current_position is not None:
+        if str(current_position) != 'None':
             order = self.ordering[0]
             is_reversed = order.startswith('-')
             order_attr = order.lstrip('-')
