@@ -1084,6 +1084,78 @@ class TestCursorPaginationWithValueQueryset(CursorPaginationTestsMixin, TestCase
         return (previous, current, next, previous_url, next_url)
 
 
+class NullableCursorPaginationModel(models.Model):
+    created = models.IntegerField(null=True)
+
+
+class TestCursorPaginationWithNulls(TestCase):
+    """
+    Unit tests for `pagination.CursorPagination` with ordering on a nullable field.
+    """
+
+    def setUp(self):
+        class ExamplePagination(pagination.CursorPagination):
+            page_size = 1
+            ordering = 'created'
+
+        self.pagination = ExamplePagination()
+        data = [
+            None, None, 3, 4
+        ]
+        for idx in data:
+            NullableCursorPaginationModel.objects.create(created=idx)
+
+        self.queryset = NullableCursorPaginationModel.objects.all()
+
+    get_pages = TestCursorPagination.get_pages
+
+    def test_ascending(self):
+        (previous, current, next, previous_url, next_url) = self.get_pages('/')
+
+        assert previous is None
+        assert current == [None]
+        assert next == [None]
+        assert previous_url is None
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+
+        assert previous == [None]
+        assert current == [None]
+        assert next == [3]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+
+        assert previous == [3]  # [None] paging artifact documented at https://github.com/ddelange/django-rest-framework/blob/3.14.0/rest_framework/pagination.py#L789
+        assert current == [3]
+        assert next == [4]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+
+        assert previous == [3]
+        assert current == [4]
+        assert next is None
+        assert next_url is None
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
+
+        assert previous == [None]
+        assert current == [3]
+        assert next == [4]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
+
+        assert previous == [None]
+        assert current == [None]
+        assert next == [None]  # [3] paging artifact documented at https://github.com/ddelange/django-rest-framework/blob/3.14.0/rest_framework/pagination.py#L731
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
+
+        assert previous is None
+        assert current == [None]
+        assert next == [None]
+        assert previous_url is None
+
+
 def test_get_displayed_page_numbers():
     """
     Test our contextual page display function.

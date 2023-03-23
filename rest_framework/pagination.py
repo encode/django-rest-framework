@@ -633,8 +633,9 @@ class CursorPagination(BasePagination):
                 kwargs = {order_attr + '__gt': current_position}
 
             # If some records contain a null for the ordering field, don't lose them.
-            filter_query = Q(**kwargs) | Q(**{order_attr + '__isnull': True})
-
+            filter_query = Q(**kwargs)
+            if reverse:
+                filter_query |= Q(**{order_attr + '__isnull': True})
             queryset = queryset.filter(filter_query)
 
         # If we have an offset cursor then offset the entire page by that amount.
@@ -708,7 +709,7 @@ class CursorPagination(BasePagination):
                 # The item in this position and the item following it
                 # have different positions. We can use this position as
                 # our marker.
-                has_item_with_unique_position = True
+                has_item_with_unique_position = position is not None
                 break
 
             # The item in this position has the same position as the item
@@ -761,7 +762,7 @@ class CursorPagination(BasePagination):
                 # The item in this position and the item following it
                 # have different positions. We can use this position as
                 # our marker.
-                has_item_with_unique_position = True
+                has_item_with_unique_position = position is not None
                 break
 
             # The item in this position has the same position as the item
@@ -887,7 +888,7 @@ class CursorPagination(BasePagination):
             attr = instance[field_name]
         else:
             attr = getattr(instance, field_name)
-        return str(attr)
+        return None if attr is None else str(attr)
 
     def get_paginated_response(self, data):
         return Response(OrderedDict([
