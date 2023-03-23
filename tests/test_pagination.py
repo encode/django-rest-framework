@@ -1110,12 +1110,12 @@ class TestCursorPaginationWithNulls(TestCase):
     get_pages = TestCursorPagination.get_pages
 
     def test_ascending(self):
+        """Test paginating one row at a time, current should go 1, 2, 3, 4, 3, 2, 1."""
         (previous, current, next, previous_url, next_url) = self.get_pages('/')
 
         assert previous is None
         assert current == [None]
         assert next == [None]
-        assert previous_url is None
 
         (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
 
@@ -1153,7 +1153,56 @@ class TestCursorPaginationWithNulls(TestCase):
         assert previous is None
         assert current == [None]
         assert next == [None]
-        assert previous_url is None
+
+    def test_decending(self):
+        """Test paginating one row at a time, current should go 4, 3, 2, 1, 2, 3, 4."""
+        self.pagination.ordering = ('-created',)
+        (previous, current, next, previous_url, next_url) = self.get_pages('/')
+
+        assert previous is None
+        assert current == [4]
+        assert next == [3]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+
+        assert previous == [None]  # [4] paging artifact
+        assert current == [3]
+        assert next == [None]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+
+        assert previous == [None]  # [3] paging artifact
+        assert current == [None]
+        assert next == [None]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
+
+        assert previous == [None]
+        assert current == [None]
+        assert next is None
+        assert next_url is None
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
+
+        assert previous == [3]
+        assert current == [None]
+        assert next == [None]
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
+
+        assert previous == [None]
+        assert current == [3]
+        assert next == [3]  # [4] paging artifact documented at https://github.com/ddelange/django-rest-framework/blob/3.14.0/rest_framework/pagination.py#L731
+
+        # skip back artifact
+        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
+        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
+
+        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
+
+        assert previous is None
+        assert current == [4]
+        assert next == [3]
 
 
 def test_get_displayed_page_numbers():
