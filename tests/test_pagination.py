@@ -1154,7 +1154,7 @@ class TestCursorPaginationWithNulls(TestCase):
         assert current == [None]
         assert next == [None]
 
-    def test_decending(self):
+    def test_descending(self):
         """Test paginating one row at a time, current should go 4, 3, 2, 1, 2, 3, 4."""
         self.pagination.ordering = ('-created',)
         (previous, current, next, previous_url, next_url) = self.get_pages('/')
