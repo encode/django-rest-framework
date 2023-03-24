@@ -634,6 +634,7 @@ class CursorPagination(BasePagination):
 
             filter_query = Q(**kwargs)
             # If some records contain a null for the ordering field, don't lose them.
+            # When reverse ordering, nulls will come last and need to be included.
             if (reverse and not is_reversed) or is_reversed:
                 filter_query |= Q(**{order_attr + '__isnull': True})
             queryset = queryset.filter(filter_query)
