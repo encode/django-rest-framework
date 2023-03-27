@@ -49,7 +49,12 @@ class BaseRouter:
     def __init__(self):
         self.registry = []
 
-    def register(self, prefix, viewset, basename=None):
+    def register(self, prefix, viewset=None, basename=None):
+        if viewset is None:
+            def decorator(viewset):
+                self.register(prefix, viewset, basename=basename)
+                return viewset
+            return decorator
         if basename is None:
             basename = self.get_default_basename(viewset)
 
