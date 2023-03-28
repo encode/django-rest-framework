@@ -52,11 +52,11 @@ class SearchFilter(BaseFilterBackend):
 
     def get_search_fields(self, view, request):
         """
-        Search fields are obtained from the view / search backend, but the request is
+        Search fields are obtained from the search backend / view, but the request is
         always passed to this method. Sub-classes can override this method to
         dynamically change the search fields based on request content.
         """
-        return getattr(self, 'search_fields', getattr(view, 'search_fields'))
+        return getattr(self, 'search_fields') or getattr(view, 'search_fields', None)
 
     def get_search_terms(self, request):
         """
