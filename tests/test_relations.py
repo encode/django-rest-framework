@@ -304,7 +304,7 @@ class TestSlugRelatedField(APISimpleTestCase):
         self.queryset = MockQueryset([
             MockObject(pk=1, name='foo'),
             MockObject(pk=2, name='bar'),
-            MockObject(pk=3, name='baz')
+            MockObject(pk=3, name='baz'),
         ])
         self.instance = self.queryset.items[2]
         self.field = serializers.SlugRelatedField(
@@ -340,6 +340,49 @@ class TestSlugRelatedField(APISimpleTestCase):
 
         field = NoQuerySetSlugRelatedField(slug_field='name')
         field.to_internal_value(self.instance.name)
+
+
+class TestNestedSlugRelatedField(APISimpleTestCase):
+    def setUp(self):
+        self.queryset = MockQueryset([
+            MockObject(pk=1, name='foo', nested=MockObject(pk=2, name='bar')),
+            MockObject(pk=3, name='hello', nested=MockObject(pk=4, name='world')),
+            MockObject(pk=3, name='harry', nested=MockObject(pk=4, name='potter'))
+        ])
+        self.instance = self.queryset.items[2]
+        self.field = serializers.SlugRelatedField(
+            slug_field='nested__name', queryset=self.queryset
+        )
+
+    def test_slug_related_lookup_exists(self):
+        instance = self.field.to_internal_value(self.instance.nested.name)
+        assert instance is self.instance
+
+    def test_slug_related_lookup_does_not_exist(self):
+        with pytest.raises(serializers.ValidationError) as excinfo:
+            self.field.to_internal_value('doesnotexist')
+        msg = excinfo.value.detail[0]
+        assert msg == 'Object with nested__name=doesnotexist does not exist.'
+
+    def test_slug_related_lookup_invalid_type(self):
+        with pytest.raises(serializers.ValidationError) as excinfo:
+            self.field.to_internal_value(BadType())
+        msg = excinfo.value.detail[0]
+        assert msg == 'Invalid value.'
+
+    def test_representation(self):
+        representation = self.field.to_representation(self.instance)
+        assert representation == self.instance.nested.name
+
+    def test_overriding_get_queryset(self):
+        qs = self.queryset
+
+        class NoQuerySetSlugRelatedField(serializers.SlugRelatedField):
+            def get_queryset(self):
+                return qs
+
+        field = NoQuerySetSlugRelatedField(slug_field='nested__name')
+        field.to_internal_value(self.instance.nested.name)
 
 
 class TestManyRelatedField(APISimpleTestCase):

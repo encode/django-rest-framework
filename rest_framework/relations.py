@@ -72,6 +72,7 @@ class PKOnlyObject:
     instance, but still want to return an object with a .pk attribute,
     in order to keep the same interface as a regular model instance.
     """
+
     def __init__(self, pk):
         self.pk = pk
 
@@ -469,7 +470,7 @@ class SlugRelatedField(RelatedField):
         if "__" in slug:
             # handling nested relationship defined by double underscore
             slug = slug.replace('__', '.')
-        return attrgetter(obj, slug)
+        return attrgetter(slug)(obj)
 
 
 class ManyRelatedField(Field):
