@@ -135,8 +135,10 @@ class NamespaceVersioning(BaseVersioning):
         )
 
     def get_versioned_viewname(self, viewname, request):
-        return request.version + ':' + viewname
-
+        if not ":" in viewname:
+            return request.version + ":" + viewname
+        else:
+            return viewname
 
 class HostNameVersioning(BaseVersioning):
     """
