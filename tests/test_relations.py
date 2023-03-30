@@ -347,7 +347,7 @@ class TestNestedSlugRelatedField(APISimpleTestCase):
         self.queryset = MockQueryset([
             MockObject(pk=1, name='foo', nested=MockObject(pk=2, name='bar')),
             MockObject(pk=3, name='hello', nested=MockObject(pk=4, name='world')),
-            MockObject(pk=3, name='harry', nested=MockObject(pk=4, name='potter'))
+            MockObject(pk=5, name='harry', nested=MockObject(pk=6, name='potter'))
         ])
         self.instance = self.queryset.items[2]
         self.field = serializers.SlugRelatedField(
