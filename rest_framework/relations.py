@@ -1,8 +1,8 @@
 import contextlib
 import sys
 from collections import OrderedDict
-from urllib import parse
 from operator import attrgetter
+from urllib import parse
 
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.db.models import Manager
@@ -468,7 +468,7 @@ class SlugRelatedField(RelatedField):
     def to_representation(self, obj):
         slug = self.slug_field
         if "__" in slug:
-            # handling nested relationship defined by double underscore
+            # handling nested relationship if defined
             slug = slug.replace('__', '.')
         return attrgetter(slug)(obj)
 
