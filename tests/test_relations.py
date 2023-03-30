@@ -304,7 +304,7 @@ class TestSlugRelatedField(APISimpleTestCase):
         self.queryset = MockQueryset([
             MockObject(pk=1, name='foo'),
             MockObject(pk=2, name='bar'),
-            MockObject(pk=3, name='baz'),
+            MockObject(pk=3, name='baz')
         ])
         self.instance = self.queryset.items[2]
         self.field = serializers.SlugRelatedField(
