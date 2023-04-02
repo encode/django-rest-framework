@@ -149,7 +149,6 @@ class TestURLReversing(URLPatternsTestCase, APITestCase):
     ]
 
     urlpatterns = [
-
         path('v1/', include((included, 'v1'), namespace='v1')),
         path('another/', dummy_view, name='another'),
         re_path(r'^(?P<version>[v1|v2]+)/another/$', dummy_view, name='another'),
