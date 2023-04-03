@@ -165,7 +165,7 @@ This permission is suitable if you want your API to only be accessible to a subs
 
 ## IsAuthenticatedOrReadOnly
 
-The `IsAuthenticatedOrReadOnly` will allow authenticated users to perform any request.  Requests for unauthorised users will only be permitted if the request method is one of the "safe" methods; `GET`, `HEAD` or `OPTIONS`.
+The `IsAuthenticatedOrReadOnly` will allow authenticated users to perform any request.  Requests for unauthorized users will only be permitted if the request method is one of the "safe" methods; `GET`, `HEAD` or `OPTIONS`.
 
 This permission is suitable if you want to your API to allow read permissions to anonymous users, and only allow write permissions to authenticated users.
 
