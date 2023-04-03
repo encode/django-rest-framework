@@ -953,6 +953,9 @@ class TestCursorPagination(CursorPaginationTestsMixin):
 
             def filter(self, q):
                 q_args = dict(q.deconstruct()[1])
+                if not q_args:
+                    # django 3.0.x artifact
+                    q_args = dict(q.deconstruct()[2])
                 created__gt = q_args.get('created__gt')
                 created__lt = q_args.get('created__lt')
 
