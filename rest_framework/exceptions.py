@@ -1,7 +1,7 @@
 """
 Handled exceptions raised by REST framework.
 
-In addition Django's built in 403 and 404 exceptions are handled.
+In addition, Django's built in 403 and 404 exceptions are handled.
 (`django.http.Http404` and `django.core.exceptions.PermissionDenied`)
 """
 import math
@@ -20,7 +20,7 @@ def _get_error_details(data, default_code=None):
     Descend into a nested data structure, forcing any
     lazy translation strings or strings into `ErrorDetail`.
     """
-    if isinstance(data, list):
+    if isinstance(data, (list, tuple)):
         ret = [
             _get_error_details(item, default_code) for item in data
         ]
@@ -72,14 +72,19 @@ class ErrorDetail(str):
         return self
 
     def __eq__(self, other):
-        r = super().__eq__(other)
+        result = super().__eq__(other)
+        if result is NotImplemented:
+            return NotImplemented
         try:
-            return r and self.code == other.code
+            return result and self.code == other.code
         except AttributeError:
-            return r
+            return result
 
     def __ne__(self, other):
-        return not self.__eq__(other)
+        result = self.__eq__(other)
+        if result is NotImplemented:
+            return NotImplemented
+        return not result
 
     def __repr__(self):
         return 'ErrorDetail(string=%r, code=%r)' % (
@@ -139,16 +144,31 @@ class ValidationError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = _('Invalid input.')
     default_code = 'invalid'
+    default_params = {}
 
-    def __init__(self, detail=None, code=None):
+    def __init__(self, detail=None, code=None, params=None):
         if detail is None:
             detail = self.default_detail
         if code is None:
             code = self.default_code
+        if params is None:
+            params = self.default_params
 
         # For validation failures, we may collect many errors together,
         # so the details should always be coerced to a list if not already.
-        if not isinstance(detail, dict) and not isinstance(detail, list):
+        if isinstance(detail, str):
+            detail = [detail % params]
+        elif isinstance(detail, ValidationError):
+            detail = detail.detail
+        elif isinstance(detail, (list, tuple)):
+            final_detail = []
+            for detail_item in detail:
+                if isinstance(detail_item, ValidationError):
+                    final_detail += detail_item.detail
+                else:
+                    final_detail += [detail_item % params if isinstance(detail_item, str) else detail_item]
+            detail = final_detail
+        elif not isinstance(detail, dict) and not isinstance(detail, list):
             detail = [detail]
 
         self.detail = _get_error_details(detail, code)

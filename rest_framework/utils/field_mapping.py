@@ -58,9 +58,31 @@ def get_detail_view_name(model):
     that refer to instances of the model.
     """
     return '%(model_name)s-detail' % {
-        'app_label': model._meta.app_label,
         'model_name': model._meta.object_name.lower()
     }
+
+
+def get_unique_validators(field_name, model_field):
+    """
+    Returns a list of UniqueValidators that should be applied to the field.
+    """
+    field_set = set([field_name])
+    conditions = {
+        c.condition
+        for c in model_field.model._meta.constraints
+        if isinstance(c, models.UniqueConstraint) and set(c.fields) == field_set
+    }
+    if getattr(model_field, 'unique', False):
+        conditions.add(None)
+    if not conditions:
+        return
+    unique_error_message = get_unique_error_message(model_field)
+    queryset = model_field.model._default_manager
+    for condition in conditions:
+        yield UniqueValidator(
+            queryset=queryset if condition is None else queryset.filter(condition),
+            message=unique_error_message
+        )
 
 
 def get_field_kwargs(field_name, model_field):
@@ -92,8 +114,12 @@ def get_field_kwargs(field_name, model_field):
         kwargs['allow_unicode'] = model_field.allow_unicode
 
     if isinstance(model_field, models.TextField) and not model_field.choices or \
-            (postgres_fields and isinstance(model_field, postgres_fields.JSONField)):
+            (postgres_fields and isinstance(model_field, postgres_fields.JSONField)) or \
+            (hasattr(models, 'JSONField') and isinstance(model_field, models.JSONField)):
         kwargs['style'] = {'base_template': 'textarea.html'}
+
+    if model_field.null:
+        kwargs['allow_null'] = True
 
     if isinstance(model_field, models.AutoField) or not model_field.editable:
         # If this field is read-only, then return early.
@@ -103,9 +129,6 @@ def get_field_kwargs(field_name, model_field):
 
     if model_field.has_default() or model_field.blank or model_field.null:
         kwargs['required'] = False
-
-    if model_field.null:
-        kwargs['allow_null'] = True
 
     if model_field.blank and (isinstance(model_field, (models.CharField, models.TextField))):
         kwargs['allow_blank'] = True
@@ -216,17 +239,7 @@ def get_field_kwargs(field_name, model_field):
             if not isinstance(validator, validators.MinLengthValidator)
         ]
 
-    if getattr(model_field, 'unique', False):
-        unique_error_message = model_field.error_messages.get('unique', None)
-        if unique_error_message:
-            unique_error_message = unique_error_message % {
-                'model_name': model_field.model._meta.verbose_name,
-                'field_label': model_field.verbose_name
-            }
-        validator = UniqueValidator(
-            queryset=model_field.model._default_manager,
-            message=unique_error_message)
-        validator_kwarg.append(validator)
+    validator_kwarg += get_unique_validators(field_name, model_field)
 
     if validator_kwarg:
         kwargs['validators'] = validator_kwarg
@@ -269,6 +282,8 @@ def get_relation_kwargs(field_name, relation_info):
         if not model_field.editable:
             kwargs['read_only'] = True
             kwargs.pop('queryset', None)
+        if model_field.null:
+            kwargs['allow_null'] = True
         if kwargs.get('read_only', False):
             # If this field is read-only, then return early.
             # No further keyword arguments are valid.
@@ -276,12 +291,12 @@ def get_relation_kwargs(field_name, relation_info):
 
         if model_field.has_default() or model_field.blank or model_field.null:
             kwargs['required'] = False
-        if model_field.null:
-            kwargs['allow_null'] = True
         if model_field.validators:
             kwargs['validators'] = model_field.validators
         if getattr(model_field, 'unique', False):
-            validator = UniqueValidator(queryset=model_field.model._default_manager)
+            validator = UniqueValidator(
+                queryset=model_field.model._default_manager,
+                message=get_unique_error_message(model_field))
             kwargs['validators'] = kwargs.get('validators', []) + [validator]
         if to_many and not model_field.blank:
             kwargs['allow_empty'] = False
@@ -300,3 +315,13 @@ def get_url_kwargs(model_field):
     return {
         'view_name': get_detail_view_name(model_field)
     }
+
+
+def get_unique_error_message(model_field):
+    unique_error_message = model_field.error_messages.get('unique', None)
+    if unique_error_message:
+        unique_error_message = unique_error_message % {
+            'model_name': model_field.model._meta.verbose_name,
+            'field_label': model_field.verbose_name
+        }
+    return unique_error_message

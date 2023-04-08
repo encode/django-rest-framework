@@ -1,5 +1,5 @@
-from django.conf.urls import url
 from django.test import TestCase, override_settings
+from django.urls import path
 
 from rest_framework import serializers
 from rest_framework.test import APIRequestFactory
@@ -17,14 +17,14 @@ def dummy_view(request, pk):
 
 
 urlpatterns = [
-    url(r'^dummyurl/(?P<pk>[0-9]+)/$', dummy_view, name='dummy-url'),
-    url(r'^manytomanysource/(?P<pk>[0-9]+)/$', dummy_view, name='manytomanysource-detail'),
-    url(r'^manytomanytarget/(?P<pk>[0-9]+)/$', dummy_view, name='manytomanytarget-detail'),
-    url(r'^foreignkeysource/(?P<pk>[0-9]+)/$', dummy_view, name='foreignkeysource-detail'),
-    url(r'^foreignkeytarget/(?P<pk>[0-9]+)/$', dummy_view, name='foreignkeytarget-detail'),
-    url(r'^nullableforeignkeysource/(?P<pk>[0-9]+)/$', dummy_view, name='nullableforeignkeysource-detail'),
-    url(r'^onetoonetarget/(?P<pk>[0-9]+)/$', dummy_view, name='onetoonetarget-detail'),
-    url(r'^nullableonetoonesource/(?P<pk>[0-9]+)/$', dummy_view, name='nullableonetoonesource-detail'),
+    path('dummyurl/<int:pk>/', dummy_view, name='dummy-url'),
+    path('manytomanysource/<int:pk>/', dummy_view, name='manytomanysource-detail'),
+    path('manytomanytarget/<int:pk>/', dummy_view, name='manytomanytarget-detail'),
+    path('foreignkeysource/<int:pk>/', dummy_view, name='foreignkeysource-detail'),
+    path('foreignkeytarget/<int:pk>/', dummy_view, name='foreignkeytarget-detail'),
+    path('nullableforeignkeysource/<int:pk>/', dummy_view, name='nullableforeignkeysource-detail'),
+    path('onetoonetarget/<int:pk>/', dummy_view, name='onetoonetarget-detail'),
+    path('nullableonetoonesource/<int:pk>/', dummy_view, name='nullableonetoonesource-detail'),
 ]
 
 

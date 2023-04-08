@@ -145,6 +145,7 @@ REST framework also allows you to work with regular function based views.  It pr
 The core of this functionality is the `api_view` decorator, which takes a list of HTTP methods that your view should respond to. For example, this is how you would write a very simple view that just manually returns some data:
 
     from rest_framework.decorators import api_view
+    from rest_framework.response import Response
 
     @api_view()
     def hello_world(request):
@@ -152,7 +153,7 @@ The core of this functionality is the `api_view` decorator, which takes a list o
 
 This view will use the default renderers, parsers, authentication classes etc specified in the [settings].
 
-By default only `GET` methods will be accepted. Other methods will respond with "405 Method Not Allowed". To alter this behaviour, specify which methods the view allows, like so:
+By default only `GET` methods will be accepted. Other methods will respond with "405 Method Not Allowed". To alter this behavior, specify which methods the view allows, like so:
 
     @api_view(['GET', 'POST'])
     def hello_world(request):
@@ -169,7 +170,7 @@ To override the default settings, REST framework provides a set of additional de
     from rest_framework.throttling import UserRateThrottle
 
     class OncePerDayUserThrottle(UserRateThrottle):
-            rate = '1/day'
+        rate = '1/day'
 
     @api_view(['GET'])
     @throttle_classes([OncePerDayUserThrottle])

@@ -2,18 +2,24 @@ import uuid
 import warnings
 
 import pytest
-from django.conf.urls import url
+from django.db import models
 from django.test import RequestFactory, TestCase, override_settings
+from django.urls import path
+from django.utils.safestring import SafeString
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import filters, generics, pagination, routers, serializers
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.compat import uritemplate
 from rest_framework.parsers import JSONParser, MultiPartParser
-from rest_framework.renderers import JSONRenderer, OpenAPIRenderer
+from rest_framework.renderers import (
+    BaseRenderer, BrowsableAPIRenderer, JSONOpenAPIRenderer, JSONRenderer,
+    OpenAPIRenderer
+)
 from rest_framework.request import Request
 from rest_framework.schemas.openapi import AutoSchema, SchemaGenerator
 
+from ..models import BasicModel
 from . import views
 
 
@@ -106,6 +112,54 @@ class TestFieldMapping(TestCase):
         assert data['properties']['default_true']['default'] is True, "default must be true"
         assert data['properties']['default_false']['default'] is False, "default must be false"
         assert 'default' not in data['properties']['without_default'], "default must not be defined"
+
+    def test_custom_field_name(self):
+        class CustomSchema(AutoSchema):
+            def get_field_name(self, field):
+                return 'custom_' + field.field_name
+
+        class Serializer(serializers.Serializer):
+            text_field = serializers.CharField()
+
+        inspector = CustomSchema()
+
+        data = inspector.map_serializer(Serializer())
+        assert 'custom_text_field' in data['properties']
+        assert 'text_field' not in data['properties']
+
+    def test_nullable_fields(self):
+        class Model(models.Model):
+            rw_field = models.CharField(null=True)
+            ro_field = models.CharField(null=True)
+
+        class Serializer(serializers.ModelSerializer):
+            class Meta:
+                model = Model
+                fields = ["rw_field", "ro_field"]
+                read_only_fields = ["ro_field"]
+
+        inspector = AutoSchema()
+
+        data = inspector.map_serializer(Serializer())
+        assert data['properties']['rw_field']['nullable'], "rw_field nullable must be true"
+        assert data['properties']['ro_field']['nullable'], "ro_field nullable must be true"
+        assert data['properties']['ro_field']['readOnly'], "ro_field read_only must be true"
+
+    def test_primary_key_related_field(self):
+        class PrimaryKeyRelatedFieldSerializer(serializers.Serializer):
+            basic = serializers.PrimaryKeyRelatedField(queryset=BasicModel.objects.all())
+            uuid = serializers.PrimaryKeyRelatedField(queryset=BasicModel.objects.all(),
+                                                      pk_field=serializers.UUIDField())
+            char = serializers.PrimaryKeyRelatedField(queryset=BasicModel.objects.all(),
+                                                      pk_field=serializers.CharField())
+
+        serializer = PrimaryKeyRelatedFieldSerializer()
+        inspector = AutoSchema()
+
+        data = inspector.map_serializer(serializer=serializer)
+        assert data['properties']['basic']['type'] == "integer"
+        assert data['properties']['uuid']['format'] == "uuid"
+        assert data['properties']['char']['type'] == "string"
 
 
 @pytest.mark.skipif(uritemplate is None, reason='uritemplate not installed.')
@@ -507,9 +561,16 @@ class TestOperationIntrospection(TestCase):
         path = '/{id}/'
         method = 'GET'
 
+        class CustomBrowsableAPIRenderer(BrowsableAPIRenderer):
+            media_type = 'image/jpeg'  # that's a wild API renderer
+
+        class TextRenderer(BaseRenderer):
+            media_type = 'text/plain'
+            format = 'text'
+
         class View(generics.CreateAPIView):
             serializer_class = views.ExampleSerializer
-            renderer_classes = [JSONRenderer]
+            renderer_classes = [JSONRenderer, TextRenderer, BrowsableAPIRenderer, CustomBrowsableAPIRenderer]
 
         view = create_view(
             View,
@@ -524,8 +585,8 @@ class TestOperationIntrospection(TestCase):
         # schema support is there
         success_response = responses['200']
 
-        assert len(success_response['content'].keys()) == 1
-        assert 'application/json' in success_response['content']
+        # Check that the API renderers aren't included, but custom renderers are
+        assert set(success_response['content']) == {'application/json', 'text/plain'}
 
     def test_openapi_yaml_rendering_without_aliases(self):
         renderer = OpenAPIRenderer()
@@ -539,6 +600,11 @@ class TestOperationIntrospection(TestCase):
             renderer.render(data) == b'o1:\n  test: test\no2:\n  test: test\n' or
             renderer.render(data) == b'o2:\n  test: test\no1:\n  test: test\n'  # py <= 3.5
         )
+
+    def test_openapi_yaml_safestring_render(self):
+        renderer = OpenAPIRenderer()
+        data = {'o1': SafeString('test')}
+        assert renderer.render(data) == b'o1: test\n'
 
     def test_serializer_filefield(self):
         path = '/{id}/'
@@ -666,6 +732,21 @@ class TestOperationIntrospection(TestCase):
         operationId = inspector.get_operation_id(path, method)
         assert operationId == 'listUlysses'
 
+    def test_operation_id_plural(self):
+        path = '/'
+        method = 'GET'
+
+        view = create_view(
+            views.ExampleGenericAPIView,
+            method,
+            create_request(path),
+        )
+        inspector = AutoSchema(operation_id_base='City')
+        inspector.view = view
+
+        operationId = inspector.get_operation_id(path, method)
+        assert operationId == 'listCities'
+
     def test_operation_id_override_get(self):
         class CustomSchema(AutoSchema):
             def get_operation_id(self, path, method):
@@ -702,6 +783,91 @@ class TestOperationIntrospection(TestCase):
         operationId = inspector.get_operation_id(path, method)
         assert operationId == 'listItem'
 
+    def test_different_request_response_objects(self):
+        class RequestSerializer(serializers.Serializer):
+            text = serializers.CharField()
+
+        class ResponseSerializer(serializers.Serializer):
+            text = serializers.BooleanField()
+
+        class CustomSchema(AutoSchema):
+            def get_request_serializer(self, path, method):
+                return RequestSerializer()
+
+            def get_response_serializer(self, path, method):
+                return ResponseSerializer()
+
+        path = '/'
+        method = 'POST'
+        view = create_view(
+            views.ExampleGenericAPIView,
+            method,
+            create_request(path),
+        )
+        inspector = CustomSchema()
+        inspector.view = view
+
+        components = inspector.get_components(path, method)
+        assert components == {
+            'Request': {
+                'properties': {
+                    'text': {
+                        'type': 'string'
+                    }
+                },
+                'required': ['text'],
+                'type': 'object'
+            },
+            'Response': {
+                'properties': {
+                    'text': {
+                        'type': 'boolean'
+                    }
+                },
+                'required': ['text'],
+                'type': 'object'
+            }
+        }
+
+        operation = inspector.get_operation(path, method)
+        assert operation == {
+            'operationId': 'createExample',
+            'description': '',
+            'parameters': [],
+            'requestBody': {
+                'content': {
+                    'application/json': {
+                        'schema': {
+                            '$ref': '#/components/schemas/Request'
+                        }
+                    },
+                    'application/x-www-form-urlencoded': {
+                        'schema': {
+                            '$ref': '#/components/schemas/Request'
+                        }
+                    },
+                    'multipart/form-data': {
+                        'schema': {
+                            '$ref': '#/components/schemas/Request'
+                        }
+                    }
+                }
+            },
+            'responses': {
+                '201': {
+                    'content': {
+                        'application/json': {
+                            'schema': {
+                                '$ref': '#/components/schemas/Response'
+                            }
+                        }
+                    },
+                    'description': ''
+                }
+            },
+            'tags': ['']
+        }
+
     def test_repeat_operation_ids(self):
         router = routers.SimpleRouter()
         router.register('account', views.ExampleGenericViewSet, basename="account")
@@ -719,8 +885,8 @@ class TestOperationIntrospection(TestCase):
 
     def test_duplicate_operation_id(self):
         patterns = [
-            url(r'^duplicate1/?$', views.ExampleOperationIdDuplicate1.as_view()),
-            url(r'^duplicate2/?$', views.ExampleOperationIdDuplicate2.as_view()),
+            path('duplicate1/', views.ExampleOperationIdDuplicate1.as_view()),
+            path('duplicate2/', views.ExampleOperationIdDuplicate2.as_view()),
         ]
 
         generator = SchemaGenerator(patterns=patterns)
@@ -874,7 +1040,7 @@ class TestOperationIntrospection(TestCase):
             schema = AutoSchema(tags=['example1', 'example2'])
 
         url_patterns = [
-            url(r'^test/?$', ExampleStringTagsViewSet.as_view()),
+            path('test/', ExampleStringTagsViewSet.as_view()),
         ]
         generator = SchemaGenerator(patterns=url_patterns)
         schema = generator.get_schema(request=create_request('/'))
@@ -911,8 +1077,8 @@ class TestOperationIntrospection(TestCase):
             pass
 
         url_patterns = [
-            url(r'^any-dash_underscore/?$', RestaurantAPIView.as_view()),
-            url(r'^restaurants/branches/?$', BranchAPIView.as_view())
+            path('any-dash_underscore/', RestaurantAPIView.as_view()),
+            path('restaurants/branches/', BranchAPIView.as_view())
         ]
         generator = SchemaGenerator(patterns=url_patterns)
         schema = generator.get_schema(request=create_request('/'))
@@ -930,7 +1096,7 @@ class TestGenerator(TestCase):
     def test_paths_construction(self):
         """Construction of the `paths` key."""
         patterns = [
-            url(r'^example/?$', views.ExampleListView.as_view()),
+            path('example/', views.ExampleListView.as_view()),
         ]
         generator = SchemaGenerator(patterns=patterns)
         generator._initialise_endpoints()
@@ -946,8 +1112,8 @@ class TestGenerator(TestCase):
     def test_prefixed_paths_construction(self):
         """Construction of the `paths` key maintains a common prefix."""
         patterns = [
-            url(r'^v1/example/?$', views.ExampleListView.as_view()),
-            url(r'^v1/example/{pk}/?$', views.ExampleDetailView.as_view()),
+            path('v1/example/', views.ExampleListView.as_view()),
+            path('v1/example/{pk}/', views.ExampleDetailView.as_view()),
         ]
         generator = SchemaGenerator(patterns=patterns)
         generator._initialise_endpoints()
@@ -959,8 +1125,8 @@ class TestGenerator(TestCase):
 
     def test_mount_url_prefixed_to_paths(self):
         patterns = [
-            url(r'^example/?$', views.ExampleListView.as_view()),
-            url(r'^example/{pk}/?$', views.ExampleDetailView.as_view()),
+            path('example/', views.ExampleListView.as_view()),
+            path('example/{pk}/', views.ExampleDetailView.as_view()),
         ]
         generator = SchemaGenerator(patterns=patterns, url='/api')
         generator._initialise_endpoints()
@@ -973,7 +1139,7 @@ class TestGenerator(TestCase):
     def test_schema_construction(self):
         """Construction of the top level dictionary."""
         patterns = [
-            url(r'^example/?$', views.ExampleListView.as_view()),
+            path('example/', views.ExampleListView.as_view()),
         ]
         generator = SchemaGenerator(patterns=patterns)
 
@@ -982,6 +1148,19 @@ class TestGenerator(TestCase):
 
         assert 'openapi' in schema
         assert 'paths' in schema
+
+    def test_schema_rendering_to_json(self):
+        patterns = [
+            path('example/', views.ExampleGenericAPIView.as_view()),
+        ]
+        generator = SchemaGenerator(patterns=patterns)
+
+        request = create_request('/')
+        schema = generator.get_schema(request=request)
+        ret = JSONOpenAPIRenderer().render(schema)
+
+        assert b'"openapi": "' in ret
+        assert b'"default": "0.0"' in ret
 
     def test_schema_with_no_paths(self):
         patterns = []
@@ -995,7 +1174,7 @@ class TestGenerator(TestCase):
     def test_schema_information(self):
         """Construction of the top level dictionary."""
         patterns = [
-            url(r'^example/?$', views.ExampleListView.as_view()),
+            path('example/', views.ExampleListView.as_view()),
         ]
         generator = SchemaGenerator(patterns=patterns, title='My title', version='1.2.3', description='My description')
 
@@ -1009,7 +1188,7 @@ class TestGenerator(TestCase):
     def test_schema_information_empty(self):
         """Construction of the top level dictionary."""
         patterns = [
-            url(r'^example/?$', views.ExampleListView.as_view()),
+            path('example/', views.ExampleListView.as_view()),
         ]
         generator = SchemaGenerator(patterns=patterns)
 
@@ -1022,7 +1201,7 @@ class TestGenerator(TestCase):
     def test_serializer_model(self):
         """Construction of the top level dictionary."""
         patterns = [
-            url(r'^example/?$', views.ExampleGenericAPIViewModel.as_view()),
+            path('example/', views.ExampleGenericAPIViewModel.as_view()),
         ]
 
         generator = SchemaGenerator(patterns=patterns)
@@ -1038,7 +1217,7 @@ class TestGenerator(TestCase):
 
     def test_authtoken_serializer(self):
         patterns = [
-            url(r'^api-token-auth/', obtain_auth_token)
+            path('api-token-auth/', obtain_auth_token)
         ]
         generator = SchemaGenerator(patterns=patterns)
 
@@ -1065,7 +1244,7 @@ class TestGenerator(TestCase):
 
     def test_component_name(self):
         patterns = [
-            url(r'^example/?$', views.ExampleAutoSchemaComponentName.as_view()),
+            path('example/', views.ExampleAutoSchemaComponentName.as_view()),
         ]
 
         generator = SchemaGenerator(patterns=patterns)
@@ -1080,8 +1259,8 @@ class TestGenerator(TestCase):
 
     def test_duplicate_component_name(self):
         patterns = [
-            url(r'^duplicate1/?$', views.ExampleAutoSchemaDuplicate1.as_view()),
-            url(r'^duplicate2/?$', views.ExampleAutoSchemaDuplicate2.as_view()),
+            path('duplicate1/', views.ExampleAutoSchemaDuplicate1.as_view()),
+            path('duplicate2/', views.ExampleAutoSchemaDuplicate2.as_view()),
         ]
 
         generator = SchemaGenerator(patterns=patterns)
@@ -1104,7 +1283,7 @@ class TestGenerator(TestCase):
             schema = AutoSchema(operation_id_base='example')
 
         url_patterns = [
-            url(r'^example/?$', ExampleView.as_view()),
+            path('example/', ExampleView.as_view()),
         ]
         generator = SchemaGenerator(patterns=url_patterns)
         schema = generator.get_schema(request=create_request('/'))

@@ -2,7 +2,6 @@ import base64
 import unittest
 from unittest import mock
 
-import django
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, Group, Permission, User
 from django.db import models
@@ -56,11 +55,16 @@ class EmptyListView(generics.ListCreateAPIView):
     permission_classes = [permissions.DjangoModelPermissions]
 
 
+class IgnoredGetQuerySetListView(GetQuerySetListView):
+    _ignore_model_permissions = True
+
+
 root_view = RootView.as_view()
 api_root_view = DefaultRouter().get_api_root_view()
 instance_view = InstanceView.as_view()
 get_queryset_list_view = GetQuerySetListView.as_view()
 empty_list_view = EmptyListView.as_view()
+ignored_get_queryset_list_view = IgnoredGetQuerySetListView.as_view()
 
 
 def basic_auth_header(username, password):
@@ -76,7 +80,8 @@ class ModelPermissionsIntegrationTests(TestCase):
         user.user_permissions.set([
             Permission.objects.get(codename='add_basicmodel'),
             Permission.objects.get(codename='change_basicmodel'),
-            Permission.objects.get(codename='delete_basicmodel')
+            Permission.objects.get(codename='delete_basicmodel'),
+            Permission.objects.get(codename='view_basicmodel')
         ])
 
         user = User.objects.create_user('updateonly', 'updateonly@example.com', 'password')
@@ -108,11 +113,41 @@ class ModelPermissionsIntegrationTests(TestCase):
         response = api_root_view(request)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def test_ignore_model_permissions_with_unauthenticated_user(self):
+        """
+        We check that the ``_ignore_model_permissions`` attribute
+        doesn't ignore the authentication.
+        """
+        request = factory.get('/', format='json')
+        request.resolver_match = ResolverMatch('get', (), {})
+        response = ignored_get_queryset_list_view(request)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_ignore_model_permissions_with_authenticated_user(self):
+        """
+        We check that the ``_ignore_model_permissions`` attribute
+        with an authenticated user.
+        """
+        request = factory.get('/', format='json',
+                              HTTP_AUTHORIZATION=self.permitted_credentials)
+        request.resolver_match = ResolverMatch('get', (), {})
+        response = ignored_get_queryset_list_view(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
     def test_get_queryset_has_create_permissions(self):
         request = factory.post('/', {'text': 'foobar'}, format='json',
                                HTTP_AUTHORIZATION=self.permitted_credentials)
         response = get_queryset_list_view(request, pk=1)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_has_get_permissions(self):
+        request = factory.get('/', HTTP_AUTHORIZATION=self.permitted_credentials)
+        response = root_view(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        request = factory.get('/1', HTTP_AUTHORIZATION=self.updateonly_credentials)
+        response = root_view(request, pk=1)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_has_put_permissions(self):
         request = factory.put('/1', {'text': 'foobar'}, format='json',
@@ -128,6 +163,15 @@ class ModelPermissionsIntegrationTests(TestCase):
     def test_does_not_have_create_permissions(self):
         request = factory.post('/', {'text': 'foobar'}, format='json',
                                HTTP_AUTHORIZATION=self.disallowed_credentials)
+        response = root_view(request, pk=1)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_does_not_have_get_permissions(self):
+        request = factory.get('/', HTTP_AUTHORIZATION=self.disallowed_credentials)
+        response = root_view(request)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        request = factory.get('/1', HTTP_AUTHORIZATION=self.disallowed_credentials)
         response = root_view(request, pk=1)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -247,12 +291,6 @@ class BasicPermModel(models.Model):
 
     class Meta:
         app_label = 'tests'
-
-        if django.VERSION < (2, 1):
-            permissions = (
-                ('view_basicpermmodel', 'Can view basic perm model'),
-                # add, change, delete built in to django
-            )
 
 
 class BasicPermSerializer(serializers.ModelSerializer):
@@ -642,7 +680,7 @@ class PermissionsCompositionTests(TestCase):
                 composed_perm = (permissions.IsAuthenticated | permissions.AllowAny)
                 hasperm = composed_perm().has_object_permission(request, None, None)
                 assert hasperm is True
-                assert mock_deny.call_count == 1
+                assert mock_deny.call_count == 0
                 assert mock_allow.call_count == 1
 
     def test_and_lazyness(self):
@@ -684,3 +722,16 @@ class PermissionsCompositionTests(TestCase):
                 assert hasperm is False
                 assert mock_deny.call_count == 1
                 mock_allow.assert_not_called()
+
+    def test_unimplemented_has_object_permission(self):
+        "test for issue 6402 https://github.com/encode/django-rest-framework/issues/6402"
+        request = factory.get('/1', format='json')
+        request.user = AnonymousUser()
+
+        class IsAuthenticatedUserOwner(permissions.IsAuthenticated):
+            def has_object_permission(self, request, view, obj):
+                return True
+
+        composed_perm = (IsAuthenticatedUserOwner | permissions.IsAdminUser)
+        hasperm = composed_perm().has_object_permission(request, None, None)
+        assert hasperm is False

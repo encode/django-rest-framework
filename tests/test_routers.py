@@ -1,23 +1,29 @@
 from collections import namedtuple
 
 import pytest
-from django.conf.urls import include, url
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.test import TestCase, override_settings
-from django.urls import resolve, reverse
+from django.urls import include, path, resolve, reverse
 
 from rest_framework import permissions, serializers, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.routers import DefaultRouter, SimpleRouter
-from rest_framework.test import APIRequestFactory, URLPatternsTestCase
+from rest_framework.test import (
+    APIClient, APIRequestFactory, URLPatternsTestCase
+)
 from rest_framework.utils import json
 
 factory = APIRequestFactory()
 
 
 class RouterTestModel(models.Model):
+    uuid = models.CharField(max_length=20)
+    text = models.CharField(max_length=200)
+
+
+class BasenameTestModel(models.Model):
     uuid = models.CharField(max_length=20)
     text = models.CharField(max_length=200)
 
@@ -41,6 +47,11 @@ class KWargedNoteViewSet(viewsets.ModelViewSet):
     serializer_class = NoteSerializer
     lookup_field = 'text__contains'
     lookup_url_kwarg = 'text'
+
+
+class BasenameViewSet(viewsets.ModelViewSet):
+    queryset = BasenameTestModel.objects.all()
+    serializer_class = None
 
 
 class MockViewSet(viewsets.ModelViewSet):
@@ -76,8 +87,27 @@ class RegexUrlPathViewSet(viewsets.ViewSet):
         return Response({'pk': pk, 'kwarg': kwarg})
 
 
+class UrlPathViewSet(viewsets.ViewSet):
+    @action(detail=False, url_path='list/<int:kwarg>')
+    def url_path_list(self, request, *args, **kwargs):
+        kwarg = self.kwargs.get('kwarg', '')
+        return Response({'kwarg': kwarg})
+
+    @action(detail=True, url_path='detail/<int:kwarg>')
+    def url_path_detail(self, request, *args, **kwargs):
+        pk = self.kwargs.get('pk', '')
+        kwarg = self.kwargs.get('kwarg', '')
+        return Response({'pk': pk, 'kwarg': kwarg})
+
+
 notes_router = SimpleRouter()
 notes_router.register(r'notes', NoteViewSet)
+
+notes_path_router = SimpleRouter(use_regex_path=False)
+notes_path_router.register('notes', NoteViewSet)
+
+notes_path_default_router = DefaultRouter(use_regex_path=False)
+notes_path_default_router.register('notes', NoteViewSet)
 
 kwarged_notes_router = SimpleRouter()
 kwarged_notes_router.register(r'notes', KWargedNoteViewSet)
@@ -90,6 +120,9 @@ empty_prefix_router.register(r'', EmptyPrefixViewSet, basename='empty_prefix')
 
 regex_url_path_router = SimpleRouter()
 regex_url_path_router.register(r'', RegexUrlPathViewSet, basename='regex')
+
+url_path_router = SimpleRouter(use_regex_path=False)
+url_path_router.register('', UrlPathViewSet, basename='path')
 
 
 class BasicViewSet(viewsets.ViewSet):
@@ -118,7 +151,7 @@ class TestSimpleRouter(URLPatternsTestCase, TestCase):
     router.register('basics', BasicViewSet, basename='basic')
 
     urlpatterns = [
-        url(r'^api/', include(router.urls)),
+        path('api/', include(router.urls)),
     ]
 
     def setUp(self):
@@ -157,14 +190,14 @@ class TestSimpleRouter(URLPatternsTestCase, TestCase):
     def test_register_after_accessing_urls(self):
         self.router.register(r'notes', NoteViewSet)
         assert len(self.router.urls) == 2  # list and detail
-        self.router.register(r'notes_bis', NoteViewSet)
+        self.router.register(r'notes_bis', NoteViewSet, basename='notes_bis')
         assert len(self.router.urls) == 4
 
 
 class TestRootView(URLPatternsTestCase, TestCase):
     urlpatterns = [
-        url(r'^non-namespaced/', include(namespaced_router.urls)),
-        url(r'^namespaced/', include((namespaced_router.urls, 'namespaced'), namespace='namespaced')),
+        path('non-namespaced/', include(namespaced_router.urls)),
+        path('namespaced/', include((namespaced_router.urls, 'namespaced'), namespace='namespaced')),
     ]
 
     def test_retrieve_namespaced_root(self):
@@ -181,8 +214,8 @@ class TestCustomLookupFields(URLPatternsTestCase, TestCase):
     Ensure that custom lookup fields are correctly routed.
     """
     urlpatterns = [
-        url(r'^example/', include(notes_router.urls)),
-        url(r'^example2/', include(kwarged_notes_router.urls)),
+        path('example/', include(notes_router.urls)),
+        path('example2/', include(kwarged_notes_router.urls)),
     ]
 
     def setUp(self):
@@ -238,8 +271,8 @@ class TestLookupUrlKwargs(URLPatternsTestCase, TestCase):
     Setup a deep lookup_field, but map it to a simple URL kwarg.
     """
     urlpatterns = [
-        url(r'^example/', include(notes_router.urls)),
-        url(r'^example2/', include(kwarged_notes_router.urls)),
+        path('example/', include(notes_router.urls)),
+        path('example2/', include(kwarged_notes_router.urls)),
     ]
 
     def setUp(self):
@@ -426,7 +459,7 @@ class TestDynamicListAndDetailRouter(TestCase):
 
 class TestEmptyPrefix(URLPatternsTestCase, TestCase):
     urlpatterns = [
-        url(r'^empty-prefix/', include(empty_prefix_router.urls)),
+        path('empty-prefix/', include(empty_prefix_router.urls)),
     ]
 
     def test_empty_prefix_list(self):
@@ -443,7 +476,7 @@ class TestEmptyPrefix(URLPatternsTestCase, TestCase):
 
 class TestRegexUrlPath(URLPatternsTestCase, TestCase):
     urlpatterns = [
-        url(r'^regex/', include(regex_url_path_router.urls)),
+        path('regex/', include(regex_url_path_router.urls)),
     ]
 
     def test_regex_url_path_list(self):
@@ -460,9 +493,84 @@ class TestRegexUrlPath(URLPatternsTestCase, TestCase):
         assert json.loads(response.content.decode()) == {'pk': pk, 'kwarg': kwarg}
 
 
+class TestUrlPath(URLPatternsTestCase, TestCase):
+    client_class = APIClient
+    urlpatterns = [
+        path('path/', include(url_path_router.urls)),
+        path('default/', include(notes_path_default_router.urls)),
+        path('example/', include(notes_path_router.urls)),
+    ]
+
+    def setUp(self):
+        RouterTestModel.objects.create(uuid='123', text='foo bar')
+        RouterTestModel.objects.create(uuid='a b', text='baz qux')
+
+    def test_create(self):
+        new_note = {
+            'uuid': 'foo',
+            'text': 'example'
+        }
+        response = self.client.post('/example/notes/', data=new_note)
+        assert response.status_code == 201
+        assert response['location'] == 'http://testserver/example/notes/foo/'
+        assert response.data == {"url": "http://testserver/example/notes/foo/", "uuid": "foo", "text": "example"}
+        assert RouterTestModel.objects.filter(uuid='foo').exists()
+
+    def test_retrieve(self):
+        for url in ('/example/notes/123/', '/default/notes/123/'):
+            with self.subTest(url=url):
+                response = self.client.get(url)
+                assert response.status_code == 200
+                # only gets example path since was the last to be registered
+                assert response.data == {"url": "http://testserver/example/notes/123/", "uuid": "123", "text": "foo bar"}
+
+    def test_list(self):
+        for url in ('/example/notes/', '/default/notes/'):
+            with self.subTest(url=url):
+                response = self.client.get(url)
+                assert response.status_code == 200
+                # only gets example path since was the last to be registered
+                assert response.data == [
+                    {"url": "http://testserver/example/notes/123/", "uuid": "123", "text": "foo bar"},
+                    {"url": "http://testserver/example/notes/a%20b/", "uuid": "a b", "text": "baz qux"},
+                ]
+
+    def test_update(self):
+        updated_note = {
+            'text': 'foo bar example'
+        }
+        response = self.client.patch('/example/notes/123/', data=updated_note)
+        assert response.status_code == 200
+        assert response.data == {"url": "http://testserver/example/notes/123/", "uuid": "123", "text": "foo bar example"}
+
+    def test_delete(self):
+        response = self.client.delete('/example/notes/123/')
+        assert response.status_code == 204
+        assert not RouterTestModel.objects.filter(uuid='123').exists()
+
+    def test_list_extra_action(self):
+        kwarg = 1234
+        response = self.client.get('/path/list/{}/'.format(kwarg))
+        assert response.status_code == 200
+        assert json.loads(response.content.decode()) == {'kwarg': kwarg}
+
+    def test_detail_extra_action(self):
+        pk = '1'
+        kwarg = 1234
+        response = self.client.get('/path/{}/detail/{}/'.format(pk, kwarg))
+        assert response.status_code == 200
+        assert json.loads(response.content.decode()) == {'pk': pk, 'kwarg': kwarg}
+
+    def test_defaultrouter_root(self):
+        response = self.client.get('/default/')
+        assert response.status_code == 200
+        # only gets example path since was the last to be registered
+        assert response.data == {"notes": "http://testserver/example/notes/"}
+
+
 class TestViewInitkwargs(URLPatternsTestCase, TestCase):
     urlpatterns = [
-        url(r'^example/', include(notes_router.urls)),
+        path('example/', include(notes_router.urls)),
     ]
 
     def test_suffix(self):
@@ -482,3 +590,103 @@ class TestViewInitkwargs(URLPatternsTestCase, TestCase):
         initkwargs = match.func.initkwargs
 
         assert initkwargs['basename'] == 'routertestmodel'
+
+
+class BasenameTestCase:
+    def test_conflicting_autogenerated_basenames(self):
+        """
+        Ensure 2 routers with the same model, and no basename specified
+        throws an ImproperlyConfigured exception
+        """
+        self.router.register(r'notes', NoteViewSet)
+
+        with pytest.raises(ImproperlyConfigured):
+            self.router.register(r'notes_kwduplicate', KWargedNoteViewSet)
+
+        with pytest.raises(ImproperlyConfigured):
+            self.router.register(r'notes_duplicate', NoteViewSet)
+
+    def test_conflicting_mixed_basenames(self):
+        """
+        Ensure 2 routers with the same model, and no basename specified on 1
+        throws an ImproperlyConfigured exception
+        """
+        self.router.register(r'notes', NoteViewSet)
+
+        with pytest.raises(ImproperlyConfigured):
+            self.router.register(r'notes_kwduplicate', KWargedNoteViewSet, basename='routertestmodel')
+
+        with pytest.raises(ImproperlyConfigured):
+            self.router.register(r'notes_duplicate', NoteViewSet, basename='routertestmodel')
+
+    def test_nonconflicting_mixed_basenames(self):
+        """
+        Ensure 2 routers with the same model, and a distinct basename
+        specified on the second router does not fail
+        """
+        self.router.register(r'notes', NoteViewSet)
+        self.router.register(r'notes_kwduplicate', KWargedNoteViewSet, basename='routertestmodel_kwduplicate')
+        self.router.register(r'notes_duplicate', NoteViewSet, basename='routertestmodel_duplicate')
+
+    def test_conflicting_specified_basename(self):
+        """
+        Ensure 2 routers with the same model, and the same basename specified
+        on both throws an ImproperlyConfigured exception
+        """
+        self.router.register(r'notes', NoteViewSet, basename='notes')
+
+        with pytest.raises(ImproperlyConfigured):
+            self.router.register(r'notes_kwduplicate', KWargedNoteViewSet, basename='notes')
+
+        with pytest.raises(ImproperlyConfigured):
+            self.router.register(r'notes_duplicate', KWargedNoteViewSet, basename='notes')
+
+    def test_nonconflicting_specified_basename(self):
+        """
+        Ensure 2 routers with the same model, and a distinct basename specified
+        on each does not throw an exception
+        """
+        self.router.register(r'notes', NoteViewSet, basename='notes')
+        self.router.register(r'notes_kwduplicate', KWargedNoteViewSet, basename='notes_kwduplicate')
+        self.router.register(r'notes_duplicate', NoteViewSet, basename='notes_duplicate')
+
+    def test_nonconflicting_specified_basename_different_models(self):
+        """
+        Ensure 2 routers with different models, and a distinct basename specified
+        on each does not throw an exception
+        """
+        self.router.register(r'notes', NoteViewSet, basename='notes')
+        self.router.register(r'notes_basename', BasenameViewSet, basename='notes_basename')
+
+    def test_conflicting_specified_basename_different_models(self):
+        """
+        Ensure 2 routers with different models, and a conflicting basename specified
+        throws an exception
+        """
+        self.router.register(r'notes', NoteViewSet)
+        with pytest.raises(ImproperlyConfigured):
+            self.router.register(r'notes_basename', BasenameViewSet, basename='routertestmodel')
+
+    def test_nonconflicting_autogenerated_basename_different_models(self):
+        """
+        Ensure 2 routers with different models, and a distinct basename specified
+        on each does not throw an exception
+        """
+        self.router.register(r'notes', NoteViewSet)
+        self.router.register(r'notes_basename', BasenameViewSet)
+
+
+class TestDuplicateBasenameSimpleRouter(BasenameTestCase, TestCase):
+    def setUp(self):
+        self.router = SimpleRouter(trailing_slash=False)
+
+
+class TestDuplicateBasenameDefaultRouter(BasenameTestCase, TestCase):
+    def setUp(self):
+        self.router = DefaultRouter()
+
+
+class TestDuplicateBasenameDefaultRouterRootViewName(BasenameTestCase, TestCase):
+    def setUp(self):
+        self.router = DefaultRouter()
+        self.router.root_view_name = 'nameable-root'

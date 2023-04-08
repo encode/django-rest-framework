@@ -1,21 +1,33 @@
 import datetime
+import math
 import os
 import re
+import sys
 import uuid
 from decimal import ROUND_DOWN, ROUND_UP, Decimal
+from unittest.mock import patch
 
 import pytest
 import pytz
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.http import QueryDict
 from django.test import TestCase, override_settings
-from django.utils.timezone import activate, deactivate, override, utc
+from django.utils.timezone import activate, deactivate, override
 
 import rest_framework
 from rest_framework import exceptions, serializers
 from rest_framework.fields import (
-    BuiltinSignatureError, DjangoImageField, is_simple_callable
+    BuiltinSignatureError, DjangoImageField, SkipField, empty,
+    is_simple_callable
 )
+from tests.models import UUIDForeignKeyTarget
+
+if sys.version_info >= (3, 9):
+    from zoneinfo import ZoneInfo
+else:
+    from backports.zoneinfo import ZoneInfo
+
+utc = datetime.timezone.utc
 
 # Tests for helper functions.
 # ---------------------------
@@ -72,6 +84,10 @@ class TestIsSimpleCallable:
         assert is_simple_callable(valid)
         assert is_simple_callable(valid_vargs_kwargs)
         assert not is_simple_callable(invalid)
+
+    @pytest.mark.parametrize('obj', (True, None, "str", b'bytes', 123, 1.23))
+    def test_not_callable(self, obj):
+        assert not is_simple_callable(obj)
 
     def test_4602_regression(self):
         from django.db import models
@@ -233,7 +249,7 @@ class TestSource:
 
 
 class TestReadOnly:
-    def setup(self):
+    def setup_method(self):
         class TestSerializer(serializers.Serializer):
             read_only = serializers.ReadOnlyField(default="789")
             writable = serializers.IntegerField()
@@ -265,7 +281,7 @@ class TestReadOnly:
 
 
 class TestWriteOnly:
-    def setup(self):
+    def setup_method(self):
         class TestSerializer(serializers.Serializer):
             write_only = serializers.IntegerField(write_only=True)
             readable = serializers.IntegerField()
@@ -290,7 +306,7 @@ class TestWriteOnly:
 
 
 class TestInitial:
-    def setup(self):
+    def setup_method(self):
         class TestSerializer(serializers.Serializer):
             initial_field = serializers.IntegerField(initial=123)
             blank_field = serializers.IntegerField()
@@ -307,7 +323,7 @@ class TestInitial:
 
 
 class TestInitialWithCallable:
-    def setup(self):
+    def setup_method(self):
         def initial_value():
             return 123
 
@@ -325,7 +341,7 @@ class TestInitialWithCallable:
 
 
 class TestLabel:
-    def setup(self):
+    def setup_method(self):
         class TestSerializer(serializers.Serializer):
             labeled = serializers.IntegerField(label='My label')
         self.serializer = TestSerializer()
@@ -339,7 +355,7 @@ class TestLabel:
 
 
 class TestInvalidErrorKey:
-    def setup(self):
+    def setup_method(self):
         class ExampleField(serializers.Field):
             def to_native(self, data):
                 self.fail('incorrect')
@@ -363,7 +379,7 @@ class TestBooleanHTMLInput:
     def test_empty_html_checkbox(self):
         """
         HTML checkboxes do not send any value, but should be treated
-        as `False` by BooleanField.
+        as `False` by BooleanField if allow_null=False.
         """
         class TestSerializer(serializers.Serializer):
             archived = serializers.BooleanField()
@@ -375,7 +391,8 @@ class TestBooleanHTMLInput:
     def test_empty_html_checkbox_not_required(self):
         """
         HTML checkboxes do not send any value, but should be treated
-        as `False` by BooleanField, even if the field is required=False.
+        as `False` by BooleanField when the field is required=False
+        and allow_null=False.
         """
         class TestSerializer(serializers.Serializer):
             archived = serializers.BooleanField(required=False)
@@ -383,6 +400,34 @@ class TestBooleanHTMLInput:
         serializer = TestSerializer(data=QueryDict(''))
         assert serializer.is_valid()
         assert serializer.validated_data == {'archived': False}
+
+    def test_empty_html_checkbox_allow_null(self):
+        """
+        HTML checkboxes do not send any value and should be treated
+        as `None` by BooleanField if allow_null is True.
+        """
+        class TestSerializer(serializers.Serializer):
+            archived = serializers.BooleanField(allow_null=True)
+
+        serializer = TestSerializer(data=QueryDict(''))
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'archived': None}
+
+    def test_empty_html_checkbox_allow_null_with_default(self):
+        """
+        BooleanField should respect default if set and still allow
+        setting null values.
+        """
+        class TestSerializer(serializers.Serializer):
+            archived = serializers.BooleanField(allow_null=True, default=True)
+
+        serializer = TestSerializer(data=QueryDict(''))
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'archived': True}
+
+        serializer = TestSerializer(data=QueryDict('archived='))
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'archived': None}
 
 
 class TestHTMLInput:
@@ -533,7 +578,7 @@ class TestHTMLInput:
 
 
 class TestCreateOnlyDefault:
-    def setup(self):
+    def setup_method(self):
         default = serializers.CreateOnlyDefault('2001-01-01')
 
         class TestSerializer(serializers.Serializer):
@@ -560,7 +605,7 @@ class TestCreateOnlyDefault:
 
     def test_create_only_default_callable_sets_context(self):
         """
-        CreateOnlyDefault instances with a callable default should set_context
+        CreateOnlyDefault instances with a callable default should set context
         on the callable if possible
         """
         class TestCallableDefault:
@@ -587,6 +632,15 @@ class Test5087Regression:
         assert field.root is parent
 
 
+class TestTyping(TestCase):
+    @pytest.mark.skipif(
+        sys.version_info < (3, 7),
+        reason="subscriptable classes requires Python 3.7 or higher",
+    )
+    def test_field_is_subscriptable(self):
+        assert serializers.Field is serializers.Field["foo"]
+
+
 # Tests for field input and output values.
 # ----------------------------------------
 
@@ -603,7 +657,7 @@ class FieldValues:
     """
     Base class for testing valid and invalid input values.
     """
-    def test_valid_inputs(self):
+    def test_valid_inputs(self, *args):
         """
         Ensure that valid values return the expected validated data.
         """
@@ -611,7 +665,7 @@ class FieldValues:
             assert self.field.run_validation(input_value) == expected_output, \
                 'input value: {}'.format(repr(input_value))
 
-    def test_invalid_inputs(self):
+    def test_invalid_inputs(self, *args):
         """
         Ensure that invalid values raise the expected validation error.
         """
@@ -621,7 +675,7 @@ class FieldValues:
             assert exc_info.value.detail == expected_failure, \
                 'input value: {}'.format(repr(input_value))
 
-    def test_outputs(self):
+    def test_outputs(self, *args):
         for output_value, expected_output in get_items(self.outputs):
             assert self.field.to_representation(output_value) == expected_output, \
                 'output value: {}'.format(repr(output_value))
@@ -669,7 +723,7 @@ class TestBooleanField(FieldValues):
         for input_value in inputs:
             with pytest.raises(serializers.ValidationError) as exc_info:
                 field.run_validation(input_value)
-            expected = ['Must be a valid boolean.'.format(input_value)]
+            expected = ['Must be a valid boolean.']
             assert exc_info.value.detail == expected
 
 
@@ -1079,6 +1133,14 @@ class TestMinMaxFloatField(FieldValues):
     field = serializers.FloatField(min_value=1, max_value=3)
 
 
+class TestFloatFieldOverFlowError(TestCase):
+    def test_overflow_error_float_field(self):
+        field = serializers.FloatField()
+        with pytest.raises(serializers.ValidationError) as exec_info:
+            field.to_internal_value(data=math.factorial(171))
+        assert "Integer value too large to convert to float" in str(exec_info.value.detail)
+
+
 class TestDecimalField(FieldValues):
     """
     Valid and invalid values for `DecimalField`.
@@ -1093,6 +1155,9 @@ class TestDecimalField(FieldValues):
         '2E+1': Decimal('20'),
     }
     invalid_inputs = (
+        (None, ["This field may not be null."]),
+        ('', ["A valid number is required."]),
+        (' ', ["A valid number is required."]),
         ('abc', ["A valid number is required."]),
         (Decimal('Nan'), ["A valid number is required."]),
         (Decimal('Snan'), ["A valid number is required."]),
@@ -1118,6 +1183,32 @@ class TestDecimalField(FieldValues):
     field = serializers.DecimalField(max_digits=3, decimal_places=1)
 
 
+class TestAllowNullDecimalField(FieldValues):
+    valid_inputs = {
+        None: None,
+        '': None,
+        ' ': None,
+    }
+    invalid_inputs = {}
+    outputs = {
+        None: '',
+    }
+    field = serializers.DecimalField(max_digits=3, decimal_places=1, allow_null=True)
+
+
+class TestAllowNullNoStringCoercionDecimalField(FieldValues):
+    valid_inputs = {
+        None: None,
+        '': None,
+        ' ': None,
+    }
+    invalid_inputs = {}
+    outputs = {
+        None: None,
+    }
+    field = serializers.DecimalField(max_digits=3, decimal_places=1, allow_null=True, coerce_to_string=False)
+
+
 class TestMinMaxDecimalField(FieldValues):
     """
     Valid and invalid values for `DecimalField` with min and max limits.
@@ -1135,6 +1226,30 @@ class TestMinMaxDecimalField(FieldValues):
         max_digits=3, decimal_places=1,
         min_value=10, max_value=20
     )
+
+
+class TestAllowEmptyStrDecimalFieldWithValidators(FieldValues):
+    """
+    Check that empty string ('', ' ') is acceptable value for the DecimalField
+    if allow_null=True and there are max/min validators
+    """
+    valid_inputs = {
+        None: None,
+        '': None,
+        ' ': None,
+        '  ': None,
+        5: Decimal('5'),
+        '0': Decimal('0'),
+        '10': Decimal('10'),
+    }
+    invalid_inputs = {
+        -1: ['Ensure this value is greater than or equal to 0.'],
+        11: ['Ensure this value is less than or equal to 10.'],
+    }
+    outputs = {
+        None: '',
+    }
+    field = serializers.DecimalField(max_digits=3, decimal_places=1, allow_null=True, min_value=0, max_value=10)
 
 
 class TestNoMaxDigitsDecimalField(FieldValues):
@@ -1170,12 +1285,12 @@ class TestNoStringCoercionDecimalField(FieldValues):
 
 
 class TestLocalizedDecimalField(TestCase):
-    @override_settings(USE_L10N=True, LANGUAGE_CODE='pl')
+    @override_settings(LANGUAGE_CODE='pl')
     def test_to_internal_value(self):
         field = serializers.DecimalField(max_digits=2, decimal_places=1, localize=True)
         assert field.to_internal_value('1,1') == Decimal('1.1')
 
-    @override_settings(USE_L10N=True, LANGUAGE_CODE='pl')
+    @override_settings(LANGUAGE_CODE='pl')
     def test_to_representation(self):
         field = serializers.DecimalField(max_digits=2, decimal_places=1, localize=True)
         assert field.to_representation(Decimal('1.1')) == '1,1'
@@ -1203,6 +1318,27 @@ class TestQuantizedValueForDecimal(TestCase):
         value = field.to_internal_value('12.0').as_tuple()
         expected_digit_tuple = (0, (1, 2, 0, 0), -2)
         assert value == expected_digit_tuple
+
+
+class TestNormalizedOutputValueDecimalField(TestCase):
+    """
+    Test that we get the expected behavior of on DecimalField when normalize=True
+    """
+
+    def test_normalize_output(self):
+        field = serializers.DecimalField(max_digits=4, decimal_places=3, normalize_output=True)
+        output = field.to_representation(Decimal('1.000'))
+        assert output == '1'
+
+    def test_non_normalize_output(self):
+        field = serializers.DecimalField(max_digits=4, decimal_places=3, normalize_output=False)
+        output = field.to_representation(Decimal('1.000'))
+        assert output == '1.000'
+
+    def test_normalize_coeherce_to_string(self):
+        field = serializers.DecimalField(max_digits=4, decimal_places=3, normalize_output=True, coerce_to_string=False)
+        output = field.to_representation(Decimal('1.000'))
+        assert output == Decimal('1')
 
 
 class TestNoDecimalPlaces(FieldValues):
@@ -1388,12 +1524,12 @@ class TestTZWithDateTimeField(FieldValues):
     @classmethod
     def setup_class(cls):
         # use class setup method, as class-level attribute will still be evaluated even if test is skipped
-        kolkata = pytz.timezone('Asia/Kolkata')
+        kolkata = ZoneInfo('Asia/Kolkata')
 
         cls.valid_inputs = {
-            '2016-12-19T10:00:00': kolkata.localize(datetime.datetime(2016, 12, 19, 10)),
-            '2016-12-19T10:00:00+05:30': kolkata.localize(datetime.datetime(2016, 12, 19, 10)),
-            datetime.datetime(2016, 12, 19, 10): kolkata.localize(datetime.datetime(2016, 12, 19, 10)),
+            '2016-12-19T10:00:00': datetime.datetime(2016, 12, 19, 10, tzinfo=kolkata),
+            '2016-12-19T10:00:00+05:30': datetime.datetime(2016, 12, 19, 10, tzinfo=kolkata),
+            datetime.datetime(2016, 12, 19, 10): datetime.datetime(2016, 12, 19, 10, tzinfo=kolkata),
         }
         cls.invalid_inputs = {}
         cls.outputs = {
@@ -1412,31 +1548,39 @@ class TestDefaultTZDateTimeField(TestCase):
     @classmethod
     def setup_class(cls):
         cls.field = serializers.DateTimeField()
-        cls.kolkata = pytz.timezone('Asia/Kolkata')
+        cls.kolkata = ZoneInfo('Asia/Kolkata')
+
+    def assertUTC(self, tzinfo):
+        """
+        Check UTC for datetime.timezone, ZoneInfo, and pytz tzinfo instances.
+        """
+        assert (
+            tzinfo is utc or
+            (getattr(tzinfo, "key", None) or getattr(tzinfo, "zone", None)) == "UTC"
+        )
 
     def test_default_timezone(self):
-        assert self.field.default_timezone() == utc
+        self.assertUTC(self.field.default_timezone())
 
     def test_current_timezone(self):
-        assert self.field.default_timezone() == utc
+        self.assertUTC(self.field.default_timezone())
         activate(self.kolkata)
         assert self.field.default_timezone() == self.kolkata
         deactivate()
-        assert self.field.default_timezone() == utc
+        self.assertUTC(self.field.default_timezone())
 
 
-@pytest.mark.skipif(pytz is None, reason='pytz not installed')
 @override_settings(TIME_ZONE='UTC', USE_TZ=True)
 class TestCustomTimezoneForDateTimeField(TestCase):
 
     @classmethod
     def setup_class(cls):
-        cls.kolkata = pytz.timezone('Asia/Kolkata')
+        cls.kolkata = ZoneInfo('Asia/Kolkata')
         cls.date_format = '%d/%m/%Y %H:%M'
 
     def test_should_render_date_time_in_default_timezone(self):
         field = serializers.DateTimeField(default_timezone=self.kolkata, format=self.date_format)
-        dt = datetime.datetime(2018, 2, 8, 14, 15, 16, tzinfo=pytz.utc)
+        dt = datetime.datetime(2018, 2, 8, 14, 15, 16, tzinfo=ZoneInfo("UTC"))
 
         with override(self.kolkata):
             rendered_date = field.to_representation(dt)
@@ -1446,6 +1590,32 @@ class TestCustomTimezoneForDateTimeField(TestCase):
         assert rendered_date == rendered_date_in_timezone
 
 
+@pytest.mark.skipif(pytz is None, reason="As Django 4.0 has deprecated pytz, this test should eventually be able to get removed.")
+class TestPytzNaiveDayLightSavingTimeTimeZoneDateTimeField(FieldValues):
+    """
+    Invalid values for `DateTimeField` with datetime in DST shift (non-existing or ambiguous) and timezone with DST.
+    Timezone America/New_York has DST shift from 2017-03-12T02:00:00 to 2017-03-12T03:00:00 and
+     from 2017-11-05T02:00:00 to 2017-11-05T01:00:00 in 2017.
+    """
+    valid_inputs = {}
+    invalid_inputs = {
+        '2017-03-12T02:30:00': ['Invalid datetime for the timezone "America/New_York".'],
+        '2017-11-05T01:30:00': ['Invalid datetime for the timezone "America/New_York".']
+    }
+    outputs = {}
+
+    class MockTimezone(pytz.BaseTzInfo):
+        @staticmethod
+        def localize(value, is_dst):
+            raise pytz.InvalidTimeError()
+
+        def __str__(self):
+            return 'America/New_York'
+
+    field = serializers.DateTimeField(default_timezone=MockTimezone())
+
+
+@patch('rest_framework.utils.timezone.datetime_ambiguous', return_value=True)
 class TestNaiveDayLightSavingTimeTimeZoneDateTimeField(FieldValues):
     """
     Invalid values for `DateTimeField` with datetime in DST shift (non-existing or ambiguous) and timezone with DST.
@@ -1459,15 +1629,11 @@ class TestNaiveDayLightSavingTimeTimeZoneDateTimeField(FieldValues):
     }
     outputs = {}
 
-    class MockTimezone:
-        @staticmethod
-        def localize(value, is_dst):
-            raise pytz.InvalidTimeError()
-
+    class MockZoneInfoTimezone(datetime.tzinfo):
         def __str__(self):
             return 'America/New_York'
 
-    field = serializers.DateTimeField(default_timezone=MockTimezone())
+    field = serializers.DateTimeField(default_timezone=MockZoneInfoTimezone())
 
 
 class TestTimeField(FieldValues):
@@ -1557,10 +1723,14 @@ class TestDurationField(FieldValues):
         '08:01': datetime.timedelta(minutes=8, seconds=1),
         datetime.timedelta(days=3, hours=8, minutes=32, seconds=1, microseconds=123): datetime.timedelta(days=3, hours=8, minutes=32, seconds=1, microseconds=123),
         3600: datetime.timedelta(hours=1),
+        '-999999999 00': datetime.timedelta(days=-999999999),
+        '999999999 00': datetime.timedelta(days=999999999),
     }
     invalid_inputs = {
         'abc': ['Duration has wrong format. Use one of these formats instead: [DD] [HH:[MM:]]ss[.uuuuuu].'],
         '3 08:32 01.123': ['Duration has wrong format. Use one of these formats instead: [DD] [HH:[MM:]]ss[.uuuuuu].'],
+        '-1000000000 00': ['The number of days must be between -999999999 and 999999999.'],
+        '1000000000 00': ['The number of days must be between -999999999 and 999999999.'],
     }
     outputs = {
         datetime.timedelta(days=3, hours=8, minutes=32, seconds=1, microseconds=123): '3 08:32:01.000123',
@@ -1800,9 +1970,9 @@ class TestMultipleChoiceField(FieldValues):
     def test_against_partial_and_full_updates(self):
         field = serializers.MultipleChoiceField(choices=(('a', 'a'), ('b', 'b')))
         field.partial = False
-        assert field.get_value(QueryDict({})) == []
+        assert field.get_value(QueryDict('')) == []
         field.partial = True
-        assert field.get_value(QueryDict({})) == rest_framework.fields.empty
+        assert field.get_value(QueryDict('')) == rest_framework.fields.empty
 
 
 class TestEmptyMultipleChoiceField(FieldValues):
@@ -1960,6 +2130,11 @@ class TestListField(FieldValues):
             field.to_internal_value(input_value)
         assert exc_info.value.detail == ['Expected a list of items but got type "dict".']
 
+    def test_constructor_misuse_raises(self):
+        # Test that `ListField` can only be instantiated with keyword arguments
+        with pytest.raises(TypeError):
+            serializers.ListField(serializers.CharField())
+
 
 class TestNestedListField(FieldValues):
     """
@@ -1978,6 +2153,35 @@ class TestNestedListField(FieldValues):
         ([[1, 2], [3]], [[1, 2], [3]]),
     ]
     field = serializers.ListField(child=serializers.ListField(child=serializers.IntegerField()))
+
+
+class TestListFieldWithDjangoValidationErrors(FieldValues, TestCase):
+    """
+    Values for `ListField` with UUIDField as child
+    (since UUIDField can throw ValidationErrors from Django).
+    The idea is to test that Django's ValidationErrors raised
+    from Django internals are caught and serializers in a way
+    that is structurally consistent with DRF's ValidationErrors.
+    """
+
+    valid_inputs = []
+    invalid_inputs = [
+        (
+            ['not-a-valid-uuid', 'd7364368-d1b3-4455-aaa3-56439b460ca2', 'some-other-invalid-uuid'],
+            {
+                0: [exceptions.ErrorDetail(string='“not-a-valid-uuid” is not a valid UUID.', code='invalid')],
+                1: [
+                    exceptions.ErrorDetail(
+                        string='Invalid pk "d7364368-d1b3-4455-aaa3-56439b460ca2" - object does not exist.',
+                        code='does_not_exist',
+                    )
+                ],
+                2: [exceptions.ErrorDetail(string='“some-other-invalid-uuid” is not a valid UUID.', code='invalid')],
+            },
+        ),
+    ]
+    outputs = {}
+    field = serializers.ListField(child=serializers.PrimaryKeyRelatedField(queryset=UUIDForeignKeyTarget.objects.all()))
 
 
 class TestEmptyListField(FieldValues):
@@ -2235,6 +2439,21 @@ class TestFileFieldContext:
         obj = MockFile(name='example.txt', url='/example.txt')
         value = field.to_representation(obj)
         assert value == 'http://example.com/example.txt'
+
+
+# Tests for FilePathField.
+# --------------------
+
+class TestFilePathFieldRequired:
+    def test_required_passed_to_both_django_file_path_field_and_base(self):
+        field = serializers.FilePathField(
+            path=os.path.abspath(os.path.dirname(__file__)),
+            required=False,
+        )
+        assert "" in field.choices  # Django adds empty choice if not required
+        assert field.required is False
+        with pytest.raises(SkipField):
+            field.run_validation(empty)
 
 
 # Tests for SerializerMethodField.

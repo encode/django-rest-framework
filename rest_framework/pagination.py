@@ -2,12 +2,15 @@
 Pagination serializers determine the structure of the output that should
 be used for paginated responses.
 """
+
+import contextlib
 from base64 import b64decode, b64encode
 from collections import OrderedDict, namedtuple
 from urllib import parse
 
 from django.core.paginator import InvalidPage
 from django.core.paginator import Paginator as DjangoPaginator
+from django.db.models import Q
 from django.template import loader
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
@@ -80,7 +83,7 @@ def _get_displayed_page_numbers(current, final):
 
     # Now sort the page numbers and drop anything outside the limits.
     included = [
-        idx for idx in sorted(list(included))
+        idx for idx in sorted(included)
         if 0 < idx <= final
     ]
 
@@ -193,14 +196,13 @@ class PageNumberPagination(BasePagination):
         Paginate a queryset if required, either returning a
         page object, or `None` if pagination is not configured for this view.
         """
+        self.request = request
         page_size = self.get_page_size(request)
         if not page_size:
             return None
 
         paginator = self.django_paginator_class(queryset, page_size)
-        page_number = request.query_params.get(self.page_query_param, 1)
-        if page_number in self.last_page_strings:
-            page_number = paginator.num_pages
+        page_number = self.get_page_number(request, paginator)
 
         try:
             self.page = paginator.page(page_number)
@@ -214,8 +216,13 @@ class PageNumberPagination(BasePagination):
             # The browsable API should display pagination controls.
             self.display_page_controls = True
 
-        self.request = request
         return list(self.page)
+
+    def get_page_number(self, request, paginator):
+        page_number = request.query_params.get(self.page_query_param) or 1
+        if page_number in self.last_page_strings:
+            page_number = paginator.num_pages
+        return page_number
 
     def get_paginated_response(self, data):
         return Response(OrderedDict([
@@ -253,15 +260,12 @@ class PageNumberPagination(BasePagination):
 
     def get_page_size(self, request):
         if self.page_size_query_param:
-            try:
+            with contextlib.suppress(KeyError, ValueError):
                 return _positive_int(
                     request.query_params[self.page_size_query_param],
                     strict=True,
                     cutoff=self.max_page_size
                 )
-            except (KeyError, ValueError):
-                pass
-
         return self.page_size
 
     def get_next_link(self):
@@ -376,13 +380,13 @@ class LimitOffsetPagination(BasePagination):
     template = 'rest_framework/pagination/numbers.html'
 
     def paginate_queryset(self, queryset, request, view=None):
-        self.count = self.get_count(queryset)
+        self.request = request
         self.limit = self.get_limit(request)
         if self.limit is None:
             return None
 
+        self.count = self.get_count(queryset)
         self.offset = self.get_offset(request)
-        self.request = request
         if self.count > self.limit and self.template is not None:
             self.display_page_controls = True
 
@@ -426,15 +430,12 @@ class LimitOffsetPagination(BasePagination):
 
     def get_limit(self, request):
         if self.limit_query_param:
-            try:
+            with contextlib.suppress(KeyError, ValueError):
                 return _positive_int(
                     request.query_params[self.limit_query_param],
                     strict=True,
                     cutoff=self.max_limit
                 )
-            except (KeyError, ValueError):
-                pass
-
         return self.default_limit
 
     def get_offset(self, request):
@@ -484,8 +485,7 @@ class LimitOffsetPagination(BasePagination):
                 _divide_with_ceil(self.offset, self.limit)
             )
 
-            if final < 1:
-                final = 1
+            final = max(final, 1)
         else:
             current = 1
             final = 1
@@ -600,6 +600,7 @@ class CursorPagination(BasePagination):
     offset_cutoff = 1000
 
     def paginate_queryset(self, queryset, request, view=None):
+        self.request = request
         self.page_size = self.get_page_size(request)
         if not self.page_size:
             return None
@@ -620,7 +621,7 @@ class CursorPagination(BasePagination):
             queryset = queryset.order_by(*self.ordering)
 
         # If we have a cursor with a fixed position then filter by that.
-        if current_position is not None:
+        if str(current_position) != 'None':
             order = self.ordering[0]
             is_reversed = order.startswith('-')
             order_attr = order.lstrip('-')
@@ -631,7 +632,12 @@ class CursorPagination(BasePagination):
             else:
                 kwargs = {order_attr + '__gt': current_position}
 
-            queryset = queryset.filter(**kwargs)
+            filter_query = Q(**kwargs)
+            # If some records contain a null for the ordering field, don't lose them.
+            # When reverse ordering, nulls will come last and need to be included.
+            if (reverse and not is_reversed) or is_reversed:
+                filter_query |= Q(**{order_attr + '__isnull': True})
+            queryset = queryset.filter(filter_query)
 
         # If we have an offset cursor then offset the entire page by that amount.
         # We also always fetch an extra item in order to determine if there is a
@@ -677,15 +683,12 @@ class CursorPagination(BasePagination):
 
     def get_page_size(self, request):
         if self.page_size_query_param:
-            try:
+            with contextlib.suppress(KeyError, ValueError):
                 return _positive_int(
                     request.query_params[self.page_size_query_param],
                     strict=True,
                     cutoff=self.max_page_size
                 )
-            except (KeyError, ValueError):
-                pass
-
         return self.page_size
 
     def get_next_link(self):
@@ -707,7 +710,7 @@ class CursorPagination(BasePagination):
                 # The item in this position and the item following it
                 # have different positions. We can use this position as
                 # our marker.
-                has_item_with_unique_position = True
+                has_item_with_unique_position = position is not None
                 break
 
             # The item in this position has the same position as the item
@@ -760,7 +763,7 @@ class CursorPagination(BasePagination):
                 # The item in this position and the item following it
                 # have different positions. We can use this position as
                 # our marker.
-                has_item_with_unique_position = True
+                has_item_with_unique_position = position is not None
                 break
 
             # The item in this position has the same position as the item
@@ -886,7 +889,7 @@ class CursorPagination(BasePagination):
             attr = instance[field_name]
         else:
             attr = getattr(instance, field_name)
-        return str(attr)
+        return None if attr is None else str(attr)
 
     def get_paginated_response(self, data):
         return Response(OrderedDict([
@@ -902,10 +905,16 @@ class CursorPagination(BasePagination):
                 'next': {
                     'type': 'string',
                     'nullable': True,
+                    'format': 'uri',
+                    'example': 'http://api.example.org/accounts/?{cursor_query_param}=cD00ODY%3D"'.format(
+                        cursor_query_param=self.cursor_query_param)
                 },
                 'previous': {
                     'type': 'string',
                     'nullable': True,
+                    'format': 'uri',
+                    'example': 'http://api.example.org/accounts/?{cursor_query_param}=cj0xJnA9NDg3'.format(
+                        cursor_query_param=self.cursor_query_param)
                 },
                 'results': schema,
             },
@@ -958,7 +967,7 @@ class CursorPagination(BasePagination):
                 'in': 'query',
                 'description': force_str(self.cursor_query_description),
                 'schema': {
-                    'type': 'integer',
+                    'type': 'string',
                 },
             }
         ]
