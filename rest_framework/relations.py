@@ -1,6 +1,7 @@
 import contextlib
 import sys
 from collections import OrderedDict
+from operator import attrgetter
 from urllib import parse
 
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
@@ -71,6 +72,7 @@ class PKOnlyObject:
     instance, but still want to return an object with a .pk attribute,
     in order to keep the same interface as a regular model instance.
     """
+
     def __init__(self, pk):
         self.pk = pk
 
@@ -464,7 +466,11 @@ class SlugRelatedField(RelatedField):
             self.fail('invalid')
 
     def to_representation(self, obj):
-        return getattr(obj, self.slug_field)
+        slug = self.slug_field
+        if "__" in slug:
+            # handling nested relationship if defined
+            slug = slug.replace('__', '.')
+        return attrgetter(slug)(obj)
 
 
 class ManyRelatedField(Field):
