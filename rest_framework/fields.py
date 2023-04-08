@@ -35,6 +35,7 @@ from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, humanize_datetime, json, representation
 from rest_framework.utils.formatting import lazy_format
+from rest_framework.utils.timezone import valid_datetime
 from rest_framework.validators import ProhibitSurrogateCharactersValidator
 
 
@@ -1154,7 +1155,12 @@ class DateTimeField(Field):
                 except OverflowError:
                     self.fail('overflow')
             try:
-                return timezone.make_aware(value, field_timezone)
+                dt = timezone.make_aware(value, field_timezone)
+                # When the resulting datetime is a ZoneInfo instance, it won't necessarily
+                # throw given an invalid datetime, so we need to specifically check.
+                if not valid_datetime(dt):
+                    self.fail('make_aware', timezone=field_timezone)
+                return dt
             except InvalidTimeError:
                 self.fail('make_aware', timezone=field_timezone)
         elif (field_timezone is None) and timezone.is_aware(value):
