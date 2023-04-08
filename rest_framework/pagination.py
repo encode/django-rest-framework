@@ -10,6 +10,7 @@ from urllib import parse
 
 from django.core.paginator import InvalidPage
 from django.core.paginator import Paginator as DjangoPaginator
+from django.db.models import Q
 from django.template import loader
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
@@ -620,7 +621,7 @@ class CursorPagination(BasePagination):
             queryset = queryset.order_by(*self.ordering)
 
         # If we have a cursor with a fixed position then filter by that.
-        if current_position is not None:
+        if str(current_position) != 'None':
             order = self.ordering[0]
             is_reversed = order.startswith('-')
             order_attr = order.lstrip('-')
@@ -631,7 +632,12 @@ class CursorPagination(BasePagination):
             else:
                 kwargs = {order_attr + '__gt': current_position}
 
-            queryset = queryset.filter(**kwargs)
+            filter_query = Q(**kwargs)
+            # If some records contain a null for the ordering field, don't lose them.
+            # When reverse ordering, nulls will come last and need to be included.
+            if (reverse and not is_reversed) or is_reversed:
+                filter_query |= Q(**{order_attr + '__isnull': True})
+            queryset = queryset.filter(filter_query)
 
         # If we have an offset cursor then offset the entire page by that amount.
         # We also always fetch an extra item in order to determine if there is a
@@ -704,7 +710,7 @@ class CursorPagination(BasePagination):
                 # The item in this position and the item following it
                 # have different positions. We can use this position as
                 # our marker.
-                has_item_with_unique_position = True
+                has_item_with_unique_position = position is not None
                 break
 
             # The item in this position has the same position as the item
@@ -757,7 +763,7 @@ class CursorPagination(BasePagination):
                 # The item in this position and the item following it
                 # have different positions. We can use this position as
                 # our marker.
-                has_item_with_unique_position = True
+                has_item_with_unique_position = position is not None
                 break
 
             # The item in this position has the same position as the item
@@ -883,7 +889,7 @@ class CursorPagination(BasePagination):
             attr = instance[field_name]
         else:
             attr = getattr(instance, field_name)
-        return str(attr)
+        return None if attr is None else str(attr)
 
     def get_paginated_response(self, data):
         return Response(OrderedDict([
