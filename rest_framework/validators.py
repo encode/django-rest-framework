@@ -79,6 +79,15 @@ class UniqueValidator:
             smart_repr(self.queryset)
         )
 
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return (self.message == other.message
+                and self.requires_context == other.requires_context
+                and self.queryset == other.queryset
+                and self.lookup == other.lookup
+                )
+
 
 class UniqueTogetherValidator:
     """
@@ -166,6 +175,16 @@ class UniqueTogetherValidator:
             smart_repr(self.fields)
         )
 
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return (self.message == other.message
+                and self.requires_context == other.requires_context
+                and self.missing_message == other.missing_message
+                and self.queryset == other.queryset
+                and self.fields == other.fields
+                )
+
 
 class ProhibitSurrogateCharactersValidator:
     message = _('Surrogate characters are not allowed: U+{code_point:X}.')
@@ -176,6 +195,13 @@ class ProhibitSurrogateCharactersValidator:
                                     if 0xD800 <= ord(ch) <= 0xDFFF):
             message = self.message.format(code_point=ord(surrogate_character))
             raise ValidationError(message, code=self.code)
+
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return (self.message == other.message
+                and self.code == other.code
+                )
 
 
 class BaseUniqueForValidator:
@@ -229,6 +255,17 @@ class BaseUniqueForValidator:
             raise ValidationError({
                 self.field: message
             }, code='unique')
+
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return (self.message == other.message
+                and self.missing_message == other.missing_message
+                and self.requires_context == other.requires_context
+                and self.queryset == other.queryset
+                and self.field == other.field
+                and self.date_field == other.date_field
+                )
 
     def __repr__(self):
         return '<%s(queryset=%s, field=%s, date_field=%s)>' % (

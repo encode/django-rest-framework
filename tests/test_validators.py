@@ -1,4 +1,5 @@
 import datetime
+from unittest.mock import MagicMock
 
 import pytest
 from django.db import DataError, models
@@ -787,3 +788,13 @@ class ValidatorsTests(TestCase):
             validator.filter_queryset(
                 attrs=None, queryset=None, field_name='', date_field_name=''
             )
+
+    def test_equality_operator(self):
+        mock_queryset = MagicMock()
+        validator = BaseUniqueForValidator(queryset=mock_queryset, field='foo',
+                                           date_field='bar')
+        validator2 = BaseUniqueForValidator(queryset=mock_queryset, field='foo',
+                                            date_field='bar')
+        assert validator == validator2
+        validator2.date_field = "bar2"
+        assert validator != validator2

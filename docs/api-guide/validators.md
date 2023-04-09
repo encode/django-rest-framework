@@ -53,7 +53,7 @@ If we open up the Django shell using `manage.py shell` we can now
 
 The interesting bit here is the `reference` field. We can see that the uniqueness constraint is being explicitly enforced by a validator on the serializer field.
 
-Because of this more explicit style REST framework includes a few validator classes that are not available in core Django. These classes are detailed below.
+Because of this more explicit style REST framework includes a few validator classes that are not available in core Django. These classes are detailed below.  REST framework validators, like their Django counterparts, implement the `__eq__` method, allowing you to compare instances for equality.
 
 ---
 
