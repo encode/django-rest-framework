@@ -548,7 +548,7 @@ class DeniedObjectViewWithDetailAND1(PermissionInstanceView):
 
 
 class DeniedObjectViewWithDetailAND2(PermissionInstanceView):
-    permission_classes = (permissions.AllowAny & AnotherBasicObjectPermWithDetail,)
+    permission_classes = (permissions.AllowAny & AnotherBasicObjectPermWithDetail)
 
 
 class DeniedObjectViewWithDetailAND3(PermissionInstanceView):
