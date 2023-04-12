@@ -530,7 +530,7 @@ class DeniedObjectViewWithDetailAND3(PermissionInstanceView):
 
 
 class DeniedObjectViewWithDetailOR1(PermissionInstanceView):
-    permission_classes = (BasicObjectPerm | BasicObjectPermWithDetail,)
+    permission_classes = (BasicObjectPerm | BasicObjectPermWithDetail)
 
 
 class DeniedObjectViewWithDetailOR2(PermissionInstanceView):
