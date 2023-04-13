@@ -9,7 +9,7 @@ on:
 jobs:
   tests:
     name: Python ${{ matrix.python-version }}
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     strategy:
       matrix:
@@ -34,7 +34,7 @@ jobs:
       run: python -m pip install --upgrade pip setuptools virtualenv wheel
 
     - name: Install dependencies
-      run: python -m pip install --upgrade codecov tox
+      run: python -m pip install --upgrade tox
 
     - name: Install tox-py
       if: ${{ matrix.python-version == '3.6' }}
@@ -54,5 +54,8 @@ jobs:
         tox -e base,dist,docs
 
     - name: Upload coverage
-      run: |
-        codecov -e TOXENV,DJANGO
+    - uses: codecov/codecov-action@v3.1.0
+      with:
+        flags: unittests # optional
+        fail_ci_if_error: true # optional (default = false)
+        verbose: true # optional (default = false)
