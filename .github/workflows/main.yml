@@ -54,6 +54,8 @@ jobs:
         tox -e base,dist,docs
 
     - name: Upload coverage
+      run: |
+       pytest --cov=./ --cov-report=xml
     - uses: codecov/codecov-action@v3.1.0
       with:
         flags: unittests # optional
