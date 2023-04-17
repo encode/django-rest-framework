@@ -41,15 +41,10 @@ class ListModelMixin:
         queryset = self.filter_queryset(self.get_queryset())
 
         query_params = request.query_params
-        if query_params is not None:
-            params = {}
-            for key, value in query_params.items():
-            try:
-                if self.model._meta.get_field(key):
-                    params[key] = value
-            except FieldDoesNotExist:
-                pass      
-            if(params):
+        params = {key: value for key, value in query_params.items() 
+                  if key in self.model._meta.get_fields()}
+
+        if params:
             queryset = self.queryset.filter(**params)
 
         page = self.paginate_queryset(queryset)
