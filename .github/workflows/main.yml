@@ -55,7 +55,7 @@ jobs:
 
     - name: Upload coverage
       run: |
-       pytest --cov=./ --cov-report=xml
+        pytest --cov=./ --cov-report=xml
     - uses: codecov/codecov-action@v3.1.0
       with:
         flags: unittests # optional
