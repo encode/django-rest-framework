@@ -37,15 +37,14 @@ class ListModelMixin:
     List a queryset.
     """
     def list(self, request, *args, **kwargs):
-            
         queryset = self.filter_queryset(self.get_queryset())
 
-        query_params = request.query_params
-        params = {key: value for key, value in query_params.items() 
-                  if key in self.model._meta.get_fields()}
-
-        if params:
-            queryset = self.queryset.filter(**params)
+        try:
+            params = {key: value for key, value in request.query_params.items() if key in self.model._meta.get_fields()}
+            if params is not None:
+                queryset = queryset.filter(**params)
+        except AttributeError:
+            pass
 
         page = self.paginate_queryset(queryset)
         if page is not None:
@@ -54,8 +53,6 @@ class ListModelMixin:
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
-
-        
 
 
 class RetrieveModelMixin:
