@@ -34,7 +34,7 @@ jobs:
       run: python -m pip install --upgrade pip setuptools virtualenv wheel
 
     - name: Install dependencies
-      run: python -m pip install --upgrade tox
+      run: python -m pip install --upgrade tox pytest-cov
 
     - name: Install tox-py
       if: ${{ matrix.python-version == '3.6' }}
