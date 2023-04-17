@@ -38,6 +38,7 @@ class ListModelMixin:
     """
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
+
         try:
             params = {key: value for key, value in request.query_params.items() if key in self.model._meta.get_fields()}
             if params is not None:
