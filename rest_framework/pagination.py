@@ -801,6 +801,10 @@ class CursorPagination(BasePagination):
         """
         Return a tuple of strings, that may be used in an `order_by` method.
         """
+        # The default case is to check for an `ordering` attribute
+        # on this pagination instance.
+        ordering = self.ordering
+
         ordering_filters = [
             filter_cls for filter_cls in getattr(view, 'filter_backends', [])
             if hasattr(filter_cls, 'get_ordering')
@@ -811,26 +815,19 @@ class CursorPagination(BasePagination):
             # then we defer to that filter to determine the ordering.
             filter_cls = ordering_filters[0]
             filter_instance = filter_cls()
-            ordering = filter_instance.get_ordering(request, queryset, view)
-            assert ordering is not None, (
-                'Using cursor pagination, but filter class {filter_cls} '
-                'returned a `None` ordering.'.format(
-                    filter_cls=filter_cls.__name__
-                )
-            )
-        else:
-            # The default case is to check for an `ordering` attribute
-            # on this pagination instance.
-            ordering = self.ordering
-            assert ordering is not None, (
-                'Using cursor pagination, but no ordering attribute was declared '
-                'on the pagination class.'
-            )
-            assert '__' not in ordering, (
-                'Cursor pagination does not support double underscore lookups '
-                'for orderings. Orderings should be an unchanging, unique or '
-                'nearly-unique field on the model, such as "-created" or "pk".'
-            )
+            ordering_from_filter = filter_instance.get_ordering(request, queryset, view)
+            if ordering_from_filter:
+                ordering = ordering_from_filter
+
+        assert ordering is not None, (
+            'Using cursor pagination, but no ordering attribute was declared '
+            'on the pagination class.'
+        )
+        assert '__' not in ordering, (
+            'Cursor pagination does not support double underscore lookups '
+            'for orderings. Orderings should be an unchanging, unique or '
+            'nearly-unique field on the model, such as "-created" or "pk".'
+        )
 
         assert isinstance(ordering, (str, list, tuple)), (
             'Invalid ordering. Expected string or tuple, but got {type}'.format(
