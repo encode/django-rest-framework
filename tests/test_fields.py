@@ -1875,6 +1875,31 @@ class TestChoiceField(FieldValues):
             field.run_validation(2)
         assert exc_info.value.detail == ['"2" is not a valid choice.']
 
+    def test_enum_integer_choices(self):
+        from enum import IntEnum
+
+        class ChoiceCase(IntEnum):
+            first = auto()
+            second = auto()
+        # Enum validate
+        choices = [
+            (ChoiceCase.first, "1"),
+            (ChoiceCase.second, "2")
+        ]
+        field = serializers.ChoiceField(choices=choices)
+        assert field.run_validation(1) == 1
+        assert field.run_validation(ChoiceCase.first) == 1
+        assert field.run_validation("1") == 1
+        # Enum.value validate
+        choices = [
+            (ChoiceCase.first.value, "1"),
+            (ChoiceCase.second.value, "2")
+        ]
+        field = serializers.ChoiceField(choices=choices)
+        assert field.run_validation(1) == 1
+        assert field.run_validation(ChoiceCase.first) == 1
+        assert field.run_validation("1") == 1
+
     def test_integer_choices(self):
         class ChoiceCase(IntegerChoices):
             first = auto()
