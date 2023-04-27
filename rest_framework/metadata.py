@@ -124,7 +124,8 @@ class SimpleMetadata(BaseMetadata):
         attrs = [
             'read_only', 'label', 'help_text',
             'min_length', 'max_length',
-            'min_value', 'max_value'
+            'min_value', 'max_value',
+            'max_digits', 'decimal_places'
         ]
 
         for attr in attrs:
