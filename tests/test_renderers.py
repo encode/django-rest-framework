@@ -1,5 +1,4 @@
 import re
-from collections import OrderedDict
 from collections.abc import MutableMapping
 
 import pytest
@@ -457,12 +456,12 @@ class CacheRenderTest(TestCase):
 class TestJSONIndentationStyles:
     def test_indented(self):
         renderer = JSONRenderer()
-        data = OrderedDict([('a', 1), ('b', 2)])
+        data = {"a": 1, "b": 2}
         assert renderer.render(data) == b'{"a":1,"b":2}'
 
     def test_compact(self):
         renderer = JSONRenderer()
-        data = OrderedDict([('a', 1), ('b', 2)])
+        data = {"a": 1, "b": 2}
         context = {'indent': 4}
         assert (
             renderer.render(data, renderer_context=context) ==
@@ -472,7 +471,7 @@ class TestJSONIndentationStyles:
     def test_long_form(self):
         renderer = JSONRenderer()
         renderer.compact = False
-        data = OrderedDict([('a', 1), ('b', 2)])
+        data = {"a": 1, "b": 2}
         assert renderer.render(data) == b'{"a": 1, "b": 2}'
 
 

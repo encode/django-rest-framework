@@ -1,6 +1,5 @@
 import contextlib
 import sys
-from collections import OrderedDict
 from operator import attrgetter
 from urllib import parse
 
@@ -199,13 +198,9 @@ class RelatedField(Field):
         if cutoff is not None:
             queryset = queryset[:cutoff]
 
-        return OrderedDict([
-            (
-                self.to_representation(item),
-                self.display_value(item)
-            )
-            for item in queryset
-        ])
+        return {
+            self.to_representation(item): self.display_value(item) for item in queryset
+        }
 
     @property
     def choices(self):
