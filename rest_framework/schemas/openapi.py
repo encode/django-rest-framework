@@ -1,6 +1,5 @@
 import re
 import warnings
-from collections import OrderedDict
 from decimal import Decimal
 from operator import attrgetter
 from urllib.parse import urljoin
@@ -340,7 +339,7 @@ class AutoSchema(ViewInspector):
         return paginator.get_schema_operation_parameters(view)
 
     def map_choicefield(self, field):
-        choices = list(OrderedDict.fromkeys(field.choices))  # preserve order and remove duplicates
+        choices = list(dict.fromkeys(field.choices))  # preserve order and remove duplicates
         if all(isinstance(choice, bool) for choice in choices):
             type = 'boolean'
         elif all(isinstance(choice, int) for choice in choices):
