@@ -9,7 +9,6 @@ import uuid
 from collections import OrderedDict
 from collections.abc import Mapping
 
-from django.db.models import IntegerChoices
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import ValidationError as DjangoValidationError
@@ -18,6 +17,7 @@ from django.core.validators import (
     MinValueValidator, ProhibitNullCharactersValidator, RegexValidator,
     URLValidator, ip_address_validators
 )
+from django.db.models import IntegerChoices
 from django.forms import FilePathField as DjangoFilePathField
 from django.forms import ImageField as DjangoImageField
 from django.utils import timezone
