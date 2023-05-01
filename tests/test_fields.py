@@ -1836,8 +1836,8 @@ class TestChoiceField(FieldValues):
             (ChoiceCase.first, "1"),
             (ChoiceCase.second, "2")
         ]
-        field = serializers.ChoiceField(choices=choices)
 
+        field = serializers.ChoiceField(choices=choices)
         assert field.run_validation(1) == 1
         assert field.run_validation(ChoiceCase.first) == 1
         assert field.run_validation("1") == 1
