@@ -9,6 +9,7 @@ import uuid
 from collections import OrderedDict
 from collections.abc import Mapping
 
+from django.db.models import IntegerChoices
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import ValidationError as DjangoValidationError
@@ -1398,6 +1399,9 @@ class ChoiceField(Field):
         if data == '' and self.allow_blank:
             return ''
 
+        if isinstance(data, IntegerChoices) and str(data) != str(data.value):
+            data = data.value
+
         try:
             return self.choice_strings_to_values[str(data)]
         except KeyError:
@@ -1406,6 +1410,10 @@ class ChoiceField(Field):
     def to_representation(self, value):
         if value in ('', None):
             return value
+
+        if isinstance(value, IntegerChoices) and str(value) != str(value.value):
+            value = value.value
+
         return self.choice_strings_to_values.get(str(value), value)
 
     def iter_options(self):
@@ -1429,7 +1437,8 @@ class ChoiceField(Field):
         # Allows us to deal with eg. integer choices while supporting either
         # integer or string input, but still get the correct datatype out.
         self.choice_strings_to_values = {
-            str(key): key for key in self.choices
+            str(key.value) if isinstance(key, IntegerChoices) and str(key) != str(
+                key.value) else str(key): key for key in self.choices
         }
 
     choices = property(_get_choices, _set_choices)
