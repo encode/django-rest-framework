@@ -11,7 +11,7 @@ from unittest.mock import patch
 import pytest
 import pytz
 from django.core.exceptions import ValidationError as DjangoValidationError
-from django.db.models import IntegerChoices
+from django.db.models import IntegerChoices, TextChoices
 from django.http import QueryDict
 from django.test import TestCase, override_settings
 from django.utils.timezone import activate, deactivate, override
@@ -1826,7 +1826,7 @@ class TestChoiceField(FieldValues):
             field.run_validation(2)
         assert exc_info.value.detail == ['"2" is not a valid choice.']
 
-    def test_enum_choices(self):
+    def test_integer_choices(self):
         class ChoiceCase(IntegerChoices):
             first = auto()
             second = auto()
@@ -1850,6 +1850,29 @@ class TestChoiceField(FieldValues):
         assert field.run_validation(1) == 1
         assert field.run_validation(ChoiceCase.first) == 1
         assert field.run_validation("1") == 1
+
+    def test_text_choices(self):
+        class ChoiceCase(TextChoices):
+            first = auto()
+            second = auto()
+        # Enum validate
+        choices = [
+            (ChoiceCase.first, "first"),
+            (ChoiceCase.second, "second")
+        ]
+
+        field = serializers.ChoiceField(choices=choices)
+        assert field.run_validation(ChoiceCase.first) == "first"
+        assert field.run_validation("first") == "first"
+
+        choices = [
+            (ChoiceCase.first.value, "first"),
+            (ChoiceCase.second.value, "second")
+        ]
+
+        field = serializers.ChoiceField(choices=choices)
+        assert field.run_validation(ChoiceCase.first) == "first"
+        assert field.run_validation("first") == "first"
 
 
 class TestChoiceFieldWithType(FieldValues):
