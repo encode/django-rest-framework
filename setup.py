@@ -37,7 +37,8 @@ an older version of Django REST Framework:
 
 
 def read(f):
-    return open(f, 'r', encoding='utf-8').read()
+    with open(f, 'r', encoding='utf-8') as file:
+        return file.read()
 
 
 def get_version(package):
