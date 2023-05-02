@@ -17,7 +17,7 @@ from django.core.validators import (
     MinValueValidator, ProhibitNullCharactersValidator, RegexValidator,
     URLValidator, ip_address_validators
 )
-from django.db.models import IntegerChoices
+from django.db.models import IntegerChoices, TextChoices
 from django.forms import FilePathField as DjangoFilePathField
 from django.forms import ImageField as DjangoImageField
 from django.utils import timezone
@@ -1399,7 +1399,8 @@ class ChoiceField(Field):
         if data == '' and self.allow_blank:
             return ''
 
-        if isinstance(data, IntegerChoices) and str(data) != str(data.value):
+        if isinstance(data, (IntegerChoices, TextChoices)) and str(data) != \
+                str(data.value):
             data = data.value
 
         try:
@@ -1411,7 +1412,8 @@ class ChoiceField(Field):
         if value in ('', None):
             return value
 
-        if isinstance(value, IntegerChoices) and str(value) != str(value.value):
+        if isinstance(value, (IntegerChoices, TextChoices)) and str(value) != \
+                str(value.value):
             value = value.value
 
         return self.choice_strings_to_values.get(str(value), value)
@@ -1437,7 +1439,8 @@ class ChoiceField(Field):
         # Allows us to deal with eg. integer choices while supporting either
         # integer or string input, but still get the correct datatype out.
         self.choice_strings_to_values = {
-            str(key.value) if isinstance(key, IntegerChoices) and str(key) != str(
+            str(key.value) if isinstance(key, (IntegerChoices, TextChoices))
+                              and str(key) != str(
                 key.value) else str(key): key for key in self.choices
         }
 
