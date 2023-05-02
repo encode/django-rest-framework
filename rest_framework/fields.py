@@ -1440,8 +1440,7 @@ class ChoiceField(Field):
         # integer or string input, but still get the correct datatype out.
         self.choice_strings_to_values = {
             str(key.value) if isinstance(key, (IntegerChoices, TextChoices))
-                              and str(key) != str(
-                key.value) else str(key): key for key in self.choices
+            and str(key) != str(key.value) else str(key): key for key in self.choices
         }
 
     choices = property(_get_choices, _set_choices)
