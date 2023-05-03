@@ -690,8 +690,24 @@ class TestBooleanField(FieldValues):
     Valid and invalid values for `BooleanField`.
     """
     valid_inputs = {
+        'True': True,
+        'TRUE': True,
+        'tRuE': True,
+        't': True,
+        'T': True,
         'true': True,
+        'on': True,
+        'ON': True,
+        'oN': True,
+        'False': False,
+        'FALSE': False,
+        'fALse': False,
+        'f': False,
+        'F': False,
         'false': False,
+        'off': False,
+        'OFF': False,
+        'oFf': False,
         '1': True,
         '0': False,
         1: True,
@@ -704,8 +720,24 @@ class TestBooleanField(FieldValues):
         None: ['This field may not be null.']
     }
     outputs = {
+        'True': True,
+        'TRUE': True,
+        'tRuE': True,
+        't': True,
+        'T': True,
         'true': True,
+        'on': True,
+        'ON': True,
+        'oN': True,
+        'False': False,
+        'FALSE': False,
+        'fALse': False,
+        'f': False,
+        'F': False,
         'false': False,
+        'off': False,
+        'OFF': False,
+        'oFf': False,
         '1': True,
         '0': False,
         1: True,
@@ -726,7 +758,7 @@ class TestBooleanField(FieldValues):
             with pytest.raises(serializers.ValidationError) as exc_info:
                 field.run_validation(input_value)
             expected = ['Must be a valid boolean.']
-            assert exc_info.value.detail == expected
+            assert exc_info.value.detail == expected        
 
 
 class TestNullableBooleanField(TestBooleanField):
