@@ -758,7 +758,7 @@ class TestBooleanField(FieldValues):
             with pytest.raises(serializers.ValidationError) as exc_info:
                 field.run_validation(input_value)
             expected = ['Must be a valid boolean.']
-            assert exc_info.value.detail == expected        
+            assert exc_info.value.detail == expected
 
 
 class TestNullableBooleanField(TestBooleanField):
