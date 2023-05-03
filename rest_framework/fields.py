@@ -713,15 +713,13 @@ class BooleanField(Field):
         return value
 
     def to_internal_value(self, data):
-        try:
+        with contextlib.suppress(TypeError):
             if self._lower_if_str(data) in self.TRUE_VALUES:
                 return True
             elif self._lower_if_str(data) in self.FALSE_VALUES:
                 return False
             elif self._lower_if_str(data) in self.NULL_VALUES and self.allow_null:
                 return None
-        except TypeError:  # Input is an unhashable type
-            pass
         self.fail("invalid", input=data)
 
     def to_representation(self, value):
