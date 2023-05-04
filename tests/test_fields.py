@@ -1203,17 +1203,17 @@ class TestMinMaxDecimalField(FieldValues):
     Valid and invalid values for `DecimalField` with min and max limits.
     """
     valid_inputs = {
-        '10.0': Decimal('10.0'),
-        '20.0': Decimal('20.0'),
+        '10.1': Decimal('10.1'),
+        '20.1': Decimal('20.1'),
     }
     invalid_inputs = {
-        '9.9': ['Ensure this value is greater than or equal to 10.'],
-        '20.1': ['Ensure this value is less than or equal to 20.'],
+        '9.9': ['Ensure this value is greater than or equal to 10.1.'],
+        '20.2': ['Ensure this value is less than or equal to 20.2.'],
     }
     outputs = {}
     field = serializers.DecimalField(
         max_digits=3, decimal_places=1,
-        min_value=10, max_value=20
+        min_value=Decimal('10.1'), max_value=Decimal('20.1')
     )
 
 
@@ -1238,12 +1238,12 @@ class TestAllowEmptyStrDecimalFieldWithValidators(FieldValues):
     outputs = {
         None: '',
     }
-    field = serializers.DecimalField(max_digits=3, decimal_places=1, allow_null=True, min_value=0, max_value=10)
+    field = serializers.DecimalField(max_digits=3, decimal_places=1, allow_null=True, min_value=Decimal('0'), max_value=Decimal('10'))
 
 
 class TestNoMaxDigitsDecimalField(FieldValues):
     field = serializers.DecimalField(
-        max_value=100, min_value=0,
+        max_value=Decimal('100'), min_value=Decimal('0'),
         decimal_places=2, max_digits=None
     )
     valid_inputs = {

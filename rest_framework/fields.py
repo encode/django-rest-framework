@@ -990,6 +990,11 @@ class DecimalField(Field):
         self.max_value = max_value
         self.min_value = min_value
 
+        if self.max_value is not None and isinstance(self.max_value) is not decimal.Decimal:
+            raise ValueError("Invalid max_value argument. It must be decimal type.")
+        if self.min_value is not None and isinstance(self.min_value) is not decimal.Decimal:
+            raise ValueError("Invalid min_value argument. It must be decimal type.")
+
         if self.max_digits is not None and self.decimal_places is not None:
             self.max_whole_digits = self.max_digits - self.decimal_places
         else:
