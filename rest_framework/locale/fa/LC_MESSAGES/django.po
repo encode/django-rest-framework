@@ -1,24 +1,26 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # Ali Mahdiyar <alimahdiyar77@gmail.com>, 2020
 # Aryan Baghi <ar.baghi.ce@gmail.com>, 2020
 # Omid Zarin <zarinpy@gmail.com>, 2019
 # Xavier Ordoquy <xordoquy@linovia.com>, 2020
+# Mahdi Rahimi <alimahdiyar77@gmail.com>, 2023
 msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-13 21:45+0200\n"
+"POT-Creation-Date: 2023-05-07 14:34+0330\n"
 "PO-Revision-Date: 2020-10-13 19:58+0000\n"
 "Last-Translator: Xavier Ordoquy <xordoquy@linovia.com>\n"
-"Language-Team: Persian (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/fa/)\n"
+"Language-Team: Persian (http://www.transifex.com/django-rest-framework-1/"
+"django-rest-framework/language/fa/)\n"
+"Language: fa\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: fa\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: authentication.py:70
@@ -29,9 +31,11 @@ msgstr "هدر اولیه نامعتبر است. اطلاعات هویتی ار�
 msgid "Invalid basic header. Credentials string should not contain spaces."
 msgstr "هدر اولیه نامعتبر است. رشته ی اطلاعات هویتی نباید شامل فاصله باشد."
 
-#: authentication.py:83
+#: authentication.py:84
 msgid "Invalid basic header. Credentials not correctly base64 encoded."
-msgstr "هدر اولیه نامعتبر است. اطلاعات هویتی با متد base64 به درستی رمزنگاری نشده است."
+msgstr ""
+"هدر اولیه نامعتبر است. اطلاعات هویتی با متد base64 به درستی رمزنگاری نشده "
+"است."
 
 #: authentication.py:101
 msgid "Invalid username/password."
@@ -43,7 +47,7 @@ msgstr "کاربر غیر فعال یا حذف شده است."
 
 #: authentication.py:184
 msgid "Invalid token header. No credentials provided."
-msgstr "توکن هدر نامعتبر است. اطلاعات هویتی ارائه نشده است. "
+msgstr "توکن هدر نامعتبر است. اطلاعات هویتی ارائه نشده است."
 
 #: authentication.py:187
 msgid "Invalid token header. Token string should not contain spaces."
@@ -57,6 +61,10 @@ msgstr "توکن هدر نامعتبر است. توکن شامل کاراکتر�
 #: authentication.py:203
 msgid "Invalid token."
 msgstr "توکن هدر نامعتبر است. "
+
+#: authtoken/admin.py:28 authtoken/serializers.py:9
+msgid "Username"
+msgstr "نام‌کاربری"
 
 #: authtoken/apps.py:7
 msgid "Auth Token"
@@ -72,19 +80,15 @@ msgstr "کاربر"
 
 #: authtoken/models.py:18
 msgid "Created"
-msgstr "ایجاد‌شد"
+msgstr "ایجاد‌شده"
 
-#: authtoken/models.py:27 authtoken/serializers.py:19
+#: authtoken/models.py:27 authtoken/models.py:54 authtoken/serializers.py:19
 msgid "Token"
 msgstr "توکن"
 
-#: authtoken/models.py:28
+#: authtoken/models.py:28 authtoken/models.py:55
 msgid "Tokens"
 msgstr "توکن‌ها"
-
-#: authtoken/serializers.py:9
-msgid "Username"
-msgstr "نام‌کاربری"
 
 #: authtoken/serializers.py:13
 msgid "Password"
@@ -98,289 +102,301 @@ msgstr "با اطلاعات ارسال شده نمیتوان وارد شد."
 msgid "Must include \"username\" and \"password\"."
 msgstr "باید شامل نام‌کاربری و رمز‌عبود باشد."
 
-#: exceptions.py:102
+#: exceptions.py:105
 msgid "A server error occurred."
 msgstr "خطای سمت سرور رخ داده است."
 
-#: exceptions.py:142
+#: exceptions.py:145
 msgid "Invalid input."
-msgstr ""
+msgstr "ورودی نامعتبر"
 
-#: exceptions.py:161
+#: exceptions.py:179
 msgid "Malformed request."
 msgstr "درخواست ناقص."
 
-#: exceptions.py:167
+#: exceptions.py:185
 msgid "Incorrect authentication credentials."
 msgstr "اطلاعات احراز هویت صحیح نیست."
 
-#: exceptions.py:173
+#: exceptions.py:191
 msgid "Authentication credentials were not provided."
 msgstr "اطلاعات برای اعتبارسنجی ارسال نشده است."
 
-#: exceptions.py:179
+#: exceptions.py:197
 msgid "You do not have permission to perform this action."
 msgstr "شما اجازه انجام این دستور را ندارید."
 
-#: exceptions.py:185
+#: exceptions.py:203
 msgid "Not found."
 msgstr "یافت نشد."
 
-#: exceptions.py:191
+#: exceptions.py:209
 #, python-brace-format
 msgid "Method \"{method}\" not allowed."
 msgstr "متد {method} مجاز نیست."
 
-#: exceptions.py:202
+#: exceptions.py:220
 msgid "Could not satisfy the request Accept header."
 msgstr "نوع محتوای درخواستی در هدر قابل قبول نیست."
 
-#: exceptions.py:212
+#: exceptions.py:230
 #, python-brace-format
 msgid "Unsupported media type \"{media_type}\" in request."
 msgstr "نوع رسانه {media_type} در درخواست پشتیبانی نمیشود."
 
-#: exceptions.py:223
+#: exceptions.py:241
 msgid "Request was throttled."
 msgstr "تعداد درخواست‌های شما محدود شده است."
 
-#: exceptions.py:224
+#: exceptions.py:242
 #, python-brace-format
 msgid "Expected available in {wait} second."
-msgstr ""
+msgstr "پیش‌بینی می‌شود تا {wait} ثانیه دیگر در دسترس باشد."
 
-#: exceptions.py:225
+#: exceptions.py:243
 #, python-brace-format
 msgid "Expected available in {wait} seconds."
-msgstr ""
+msgstr "پیش‌بینی می‌شود تا {wait} ثانیه دیگر در دسترس باشد."
 
-#: fields.py:316 relations.py:245 relations.py:279 validators.py:90
-#: validators.py:183
+#: fields.py:307 relations.py:240 relations.py:276 validators.py:99
+#: validators.py:209
 msgid "This field is required."
 msgstr "این مقدار لازم است."
 
-#: fields.py:317
+#: fields.py:308
 msgid "This field may not be null."
-msgstr "این مقدار نباید توهی باشد."
+msgstr "این مقدار نباید تهی باشد."
 
-#: fields.py:701
+#: fields.py:676
 msgid "Must be a valid boolean."
-msgstr ""
+msgstr "باید یک مقدار بولین باشد"
 
-#: fields.py:766
+#: fields.py:728
 msgid "Not a valid string."
-msgstr ""
+msgstr "رشته معتبر نیست"
 
-#: fields.py:767
+#: fields.py:729
 msgid "This field may not be blank."
 msgstr "این مقدار نباید خالی باشد."
 
-#: fields.py:768 fields.py:1881
+#: fields.py:730 fields.py:1883
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} characters."
-msgstr "مطمعن شوید طول این مقدار بیشتر از {max_length} نیست."
+msgstr "مطمئن شوید طول این مقدار بیشتر از {max_length} نیست."
 
-#: fields.py:769
+#: fields.py:731
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} characters."
-msgstr "مطمعن شوید طول این مقدار حداقل {min_length} است."
+msgstr "مطمئن شوید طول این مقدار حداقل {min_length} است."
 
-#: fields.py:816
+#: fields.py:778
 msgid "Enter a valid email address."
 msgstr "پست الکترونیکی صحبح وارد کنید."
 
-#: fields.py:827
+#: fields.py:789
 msgid "This value does not match the required pattern."
 msgstr "مقدار وارد شده با الگو مطابقت ندارد."
 
-#: fields.py:838
+#: fields.py:800
 msgid ""
 "Enter a valid \"slug\" consisting of letters, numbers, underscores or "
 "hyphens."
 msgstr "یک \"slug\" معتبر شامل حروف، اعداد، آندرلاین یا خط فاصله وارد کنید"
 
-#: fields.py:839
+#: fields.py:801
 msgid ""
 "Enter a valid \"slug\" consisting of Unicode letters, numbers, underscores, "
 "or hyphens."
-msgstr ""
+msgstr "یک \"Slug\" معتبر متشکل از حروف یونیکد، اعداد، زیرخط یا خط فاصله وارد کنید."
 
-#: fields.py:854
+#: fields.py:816
 msgid "Enter a valid URL."
 msgstr "یک URL معتبر وارد کنید"
 
-#: fields.py:867
+#: fields.py:829
 msgid "Must be a valid UUID."
-msgstr ""
+msgstr "باید یک UUID معتبر باشد."
 
-#: fields.py:903
+#: fields.py:865
 msgid "Enter a valid IPv4 or IPv6 address."
 msgstr "یک آدرس IPv4 یا IPv6 معتبر وارد کنید."
 
-#: fields.py:931
+#: fields.py:893
 msgid "A valid integer is required."
 msgstr "یک مقدار عددی معتبر لازم است."
 
-#: fields.py:932 fields.py:969 fields.py:1005 fields.py:1366
+#: fields.py:894 fields.py:931 fields.py:970 fields.py:1346
 #, python-brace-format
 msgid "Ensure this value is less than or equal to {max_value}."
 msgstr "این مقدار باید کوچکتر یا مساوی با {max_value} باشد."
 
-#: fields.py:933 fields.py:970 fields.py:1006 fields.py:1367
+#: fields.py:895 fields.py:932 fields.py:971 fields.py:1347
 #, python-brace-format
 msgid "Ensure this value is greater than or equal to {min_value}."
 msgstr "این مقدار باید بزرگتر یا مساوی با {min_value} باشد."
 
-#: fields.py:934 fields.py:971 fields.py:1010
+#: fields.py:896 fields.py:933 fields.py:975
 msgid "String value too large."
 msgstr "رشته بسیار طولانی است."
 
-#: fields.py:968 fields.py:1004
+#: fields.py:930 fields.py:969
 msgid "A valid number is required."
 msgstr "یک عدد معتبر نیاز است."
 
-#: fields.py:1007
+#: fields.py:934
+msgid "Integer value too large to convert to float"
+msgstr "مقدار صحیح برای تبدیل به عدد اعشار خیلی بزرگ است."
+
+#: fields.py:972
 #, python-brace-format
 msgid "Ensure that there are no more than {max_digits} digits in total."
 msgstr "بیشتر از {max_digits} رقم نباید وجود داشته باشد."
 
-#: fields.py:1008
+#: fields.py:973
 #, python-brace-format
-msgid ""
-"Ensure that there are no more than {max_decimal_places} decimal places."
+msgid "Ensure that there are no more than {max_decimal_places} decimal places."
 msgstr "بیشتر از {max_decimal_places} ممیز اعشار نباید وجود داشته باشد"
 
-#: fields.py:1009
+#: fields.py:974
 #, python-brace-format
 msgid ""
 "Ensure that there are no more than {max_whole_digits} digits before the "
 "decimal point."
 msgstr "بیشتر از {max_whole_digits} رقم نباید قبل از ممیز اعشار باشد."
 
-#: fields.py:1148
+#: fields.py:1128
 #, python-brace-format
 msgid "Datetime has wrong format. Use one of these formats instead: {format}."
-msgstr "فرمت Datetime اشتباه است. از یکی از این فرمت ها استفاده کنید: {format}."
+msgstr ""
+"فرمت Datetime اشتباه است. از یکی از این فرمت ها استفاده کنید: {format}."
 
-#: fields.py:1149
+#: fields.py:1129
 msgid "Expected a datetime but got a date."
 msgstr "باید datetime باشد اما date دریافت شد."
 
-#: fields.py:1150
+#: fields.py:1130
 #, python-brace-format
 msgid "Invalid datetime for the timezone \"{timezone}\"."
-msgstr ""
+msgstr "زمان تاریخ برای منطقه زمانی \"{timezone}\" نامعتبر است."
 
-#: fields.py:1151
+#: fields.py:1131
 msgid "Datetime value out of range."
-msgstr ""
+msgstr "مقدار تاریخ خارج از محدوده است."
 
-#: fields.py:1236
+#: fields.py:1216
 #, python-brace-format
 msgid "Date has wrong format. Use one of these formats instead: {format}."
 msgstr "فرمت تاریخ اشتباه است. از یکی از این فرمت ها استفاده کنید: {format}."
 
-#: fields.py:1237
+#: fields.py:1217
 msgid "Expected a date but got a datetime."
 msgstr "باید date باشد اما datetime دریافت شد."
 
-#: fields.py:1303
+#: fields.py:1283
 #, python-brace-format
 msgid "Time has wrong format. Use one of these formats instead: {format}."
 msgstr "فرمت Time اشتباه است. از یکی از این فرمت ها استفاده کنید: {format}."
 
-#: fields.py:1365
+#: fields.py:1345
 #, python-brace-format
 msgid "Duration has wrong format. Use one of these formats instead: {format}."
-msgstr "فرمت Duration اشتباه است. از یکی از این فرمت ها استفاده کنید: {format}."
+msgstr ""
+"فرمت Duration اشتباه است. از یکی از این فرمت ها استفاده کنید: {format}."
 
-#: fields.py:1399 fields.py:1456
+#: fields.py:1348
+#, python-brace-format
+msgid "The number of days must be between {min_days} and {max_days}."
+msgstr "تعداد روزها باید بین {min_days} و {max_days} باشد."
+
+#: fields.py:1383 fields.py:1450
 #, python-brace-format
 msgid "\"{input}\" is not a valid choice."
 msgstr "\"{input}\" یک انتخاب معتبر نیست."
 
-#: fields.py:1402
+#: fields.py:1386
 #, python-brace-format
 msgid "More than {count} items..."
 msgstr "بیشتر از {count} آیتم..."
 
-#: fields.py:1457 fields.py:1603 relations.py:485 serializers.py:570
+#: fields.py:1451 fields.py:1600 relations.py:486 serializers.py:579
 #, python-brace-format
 msgid "Expected a list of items but got type \"{input_type}\"."
 msgstr "باید یک لیست از مقادیر ارسال شود اما یک «{input_type}» دریافت شد."
 
-#: fields.py:1458
+#: fields.py:1452
 msgid "This selection may not be empty."
 msgstr "این بخش نمی‌تواند خالی باشد."
 
-#: fields.py:1495
+#: fields.py:1491
 #, python-brace-format
 msgid "\"{input}\" is not a valid path choice."
 msgstr "\"{input}\" یک مسیر انتخاب معتبر نیست."
 
-#: fields.py:1514
+#: fields.py:1511
 msgid "No file was submitted."
 msgstr "فایلی ارسال نشده است."
 
-#: fields.py:1515
-msgid ""
-"The submitted data was not a file. Check the encoding type on the form."
+#: fields.py:1512
+msgid "The submitted data was not a file. Check the encoding type on the form."
 msgstr "دیتای ارسال شده فایل نیست. encoding type فرم را چک کنید."
 
-#: fields.py:1516
+#: fields.py:1513
 msgid "No filename could be determined."
 msgstr "اسم فایل مشخص نیست."
 
-#: fields.py:1517
+#: fields.py:1514
 msgid "The submitted file is empty."
 msgstr "فایل ارسال شده خالی است."
 
-#: fields.py:1518
+#: fields.py:1515
 #, python-brace-format
 msgid ""
 "Ensure this filename has at most {max_length} characters (it has {length})."
-msgstr "نام این فایل باید حداکثر {max_length} کاراکتر باشد ({length} کاراکتر دارد)."
+msgstr ""
+"نام این فایل باید حداکثر {max_length} کاراکتر باشد ({length} کاراکتر دارد)."
 
-#: fields.py:1566
+#: fields.py:1563
 msgid ""
 "Upload a valid image. The file you uploaded was either not an image or a "
 "corrupted image."
 msgstr "یک عکس معتبر آپلود کنید. فایلی که ارسال کردید عکس یا عکس خراب شده نیست"
 
-#: fields.py:1604 relations.py:486 serializers.py:571
+#: fields.py:1601 relations.py:487 serializers.py:580
 msgid "This list may not be empty."
 msgstr "این لیست نمی تواند خالی باشد"
 
-#: fields.py:1605
+#: fields.py:1602 serializers.py:582
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} elements."
-msgstr ""
+msgstr "مطمئن شوید که این فیلد حداقل دارای عناصر {min_length} است."
 
-#: fields.py:1606
+#: fields.py:1603 serializers.py:581
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} elements."
-msgstr ""
+msgstr "اطمینان حاصل کنید که این فیلد بیش از {max_length} عناصر ندارد."
 
-#: fields.py:1682
+#: fields.py:1681
 #, python-brace-format
 msgid "Expected a dictionary of items but got type \"{input_type}\"."
-msgstr "باید دیکشنری از آیتم ها ارسال می شد، اما \"{input_type}\" ارسال شده است."
-
-#: fields.py:1683
-msgid "This dictionary may not be empty."
 msgstr ""
+"باید دیکشنری از آیتم ها ارسال می شد، اما \"{input_type}\" ارسال شده است."
 
-#: fields.py:1755
+#: fields.py:1682
+msgid "This dictionary may not be empty."
+msgstr "این دیکشنری ممکن است خالی نباشد."
+
+#: fields.py:1754
 msgid "Value must be valid JSON."
 msgstr "مقدار باید JSON معتبر باشد."
 
 #: filters.py:49 templates/rest_framework/filters/search.html:2
+#: templates/rest_framework/filters/search.html:8
 msgid "Search"
 msgstr "جستجو"
 
 #: filters.py:50
 msgid "A search term."
-msgstr ""
+msgstr "یک عبارت جستجو"
 
 #: filters.py:180 templates/rest_framework/filters/ordering.html:3
 msgid "Ordering"
@@ -388,94 +404,94 @@ msgstr "ترتیب"
 
 #: filters.py:181
 msgid "Which field to use when ordering the results."
-msgstr ""
+msgstr "هنگام مرتب سازی نتایج از کدام فیلد استفاده می شود."
 
-#: filters.py:287
+#: filters.py:297
 msgid "ascending"
 msgstr "صعودی"
 
-#: filters.py:288
+#: filters.py:298
 msgid "descending"
 msgstr "نزولی"
 
-#: pagination.py:174
+#: pagination.py:177
 msgid "A page number within the paginated result set."
-msgstr ""
+msgstr "یک شماره صفحه در مجموعه نتایج صفحه‌بندی شده."
 
-#: pagination.py:179 pagination.py:372 pagination.py:590
+#: pagination.py:182 pagination.py:376 pagination.py:590
 msgid "Number of results to return per page."
-msgstr ""
+msgstr "تعداد نتایج برای بازگشت در هر صفحه"
 
-#: pagination.py:189
+#: pagination.py:192
 msgid "Invalid page."
 msgstr "صفحه نامعتبر"
 
-#: pagination.py:374
+#: pagination.py:378
 msgid "The initial index from which to return the results."
-msgstr ""
+msgstr "شاخص اولیه که از آن نتایج را برمی گرداند."
 
 #: pagination.py:581
 msgid "The pagination cursor value."
-msgstr ""
+msgstr "مقدار مکان نما صفحه بندی"
 
 #: pagination.py:583
 msgid "Invalid cursor"
 msgstr "مکان نمای نامعتبر"
 
-#: relations.py:246
+#: relations.py:241
 #, python-brace-format
 msgid "Invalid pk \"{pk_value}\" - object does not exist."
 msgstr "pk نامعتبر \"{pk_value}\" - این Object وجود ندارد"
 
-#: relations.py:247
+#: relations.py:242
 #, python-brace-format
 msgid "Incorrect type. Expected pk value, received {data_type}."
 msgstr "تایپ نامعتبر. باید pk ارسال می شد اما {data_type} ارسال شده است."
 
-#: relations.py:280
+#: relations.py:277
 msgid "Invalid hyperlink - No URL match."
 msgstr "هایپرلینک نامعتبر - URL مطابق وجود ندارد"
 
-#: relations.py:281
+#: relations.py:278
 msgid "Invalid hyperlink - Incorrect URL match."
 msgstr "هایپرلینک نامعتبر - خطا در تطابق URL"
 
-#: relations.py:282
+#: relations.py:279
 msgid "Invalid hyperlink - Object does not exist."
 msgstr "هایپرلینک نامعبتر - Object وجود ندارد."
 
-#: relations.py:283
+#: relations.py:280
 #, python-brace-format
 msgid "Incorrect type. Expected URL string, received {data_type}."
 msgstr "داده نامعتبر. باید رشته ی URL باشد، اما {data_type} دریافت شد."
 
-#: relations.py:448
+#: relations.py:445
 #, python-brace-format
 msgid "Object with {slug_name}={value} does not exist."
 msgstr "Object با {slug_name}={value} وجود ندارد."
 
-#: relations.py:449
+#: relations.py:446
 msgid "Invalid value."
 msgstr "مقدار نامعتبر."
 
 #: schemas/utils.py:32
 msgid "unique integer value"
-msgstr ""
+msgstr "مقدار عدد صحیح منحصر به فرد"
 
 #: schemas/utils.py:34
 msgid "UUID string"
-msgstr ""
+msgstr "رشته UUID"
 
 #: schemas/utils.py:36
 msgid "unique value"
-msgstr ""
+msgstr "مقدار منحصر به فرد"
 
 #: schemas/utils.py:38
 #, python-brace-format
 msgid "A {value_type} identifying this {name}."
-msgstr ""
+msgstr "یک {value_type} که این {name} را مشخص می‌کند."
 
-#: serializers.py:337
+#: serializers.py:346
 #, python-brace-format
 msgid "Invalid data. Expected a dictionary, but got {datatype}."
 msgstr "داده نامعتبر. باید دیکشنری ارسال می شد، اما {datatype} ارسال شده است."
@@ -483,7 +499,7 @@ msgstr "داده نامعتبر. باید دیکشنری ارسال می شد، 
 #: templates/rest_framework/admin.html:116
 #: templates/rest_framework/base.html:136
 msgid "Extra Actions"
-msgstr ""
+msgstr "اقدامات اضافی"
 
 #: templates/rest_framework/admin.html:130
 #: templates/rest_framework/base.html:150
@@ -492,27 +508,27 @@ msgstr "فیلترها"
 
 #: templates/rest_framework/base.html:37
 msgid "navbar"
-msgstr ""
+msgstr "نوار ناوبری"
 
 #: templates/rest_framework/base.html:75
 msgid "content"
-msgstr ""
+msgstr "محتوا"
 
 #: templates/rest_framework/base.html:78
 msgid "request form"
-msgstr ""
+msgstr "فرم درخواست"
 
 #: templates/rest_framework/base.html:157
 msgid "main content"
-msgstr ""
+msgstr "محتوای اصلی"
 
 #: templates/rest_framework/base.html:173
 msgid "request info"
-msgstr ""
+msgstr "اطلاعات درخواست"
 
 #: templates/rest_framework/base.html:177
 msgid "response info"
-msgstr ""
+msgstr "اطلاعات پاسخ"
 
 #: templates/rest_framework/horizontal/radio.html:4
 #: templates/rest_framework/inline/radio.html:3
@@ -530,27 +546,27 @@ msgstr "آیتمی برای انتخاب وجود ندارد"
 msgid "This field must be unique."
 msgstr "این فیلد باید یکتا باشد"
 
-#: validators.py:89
+#: validators.py:98
 #, python-brace-format
 msgid "The fields {field_names} must make a unique set."
 msgstr "فیلدهای {field_names} باید یک مجموعه یکتا باشند."
 
-#: validators.py:171
+#: validators.py:190
 #, python-brace-format
 msgid "Surrogate characters are not allowed: U+{code_point:X}."
-msgstr ""
+msgstr "کاراکترهای جایگزین مجاز نیستند: U+{code_point:X}."
 
-#: validators.py:243
+#: validators.py:280
 #, python-brace-format
 msgid "This field must be unique for the \"{date_field}\" date."
 msgstr "این فیلد باید برای تاریخ \"{date_field}\" یکتا باشد."
 
-#: validators.py:258
+#: validators.py:295
 #, python-brace-format
 msgid "This field must be unique for the \"{date_field}\" month."
 msgstr "این فیلد باید برای ماه \"{date_field}\" یکتا باشد."
 
-#: validators.py:271
+#: validators.py:308
 #, python-brace-format
 msgid "This field must be unique for the \"{date_field}\" year."
 msgstr "این فیلد باید برای سال \"{date_field}\" یکتا باشد."
