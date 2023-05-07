@@ -994,9 +994,9 @@ class DecimalField(Field):
         self.min_value = min_value
 
         if self.max_value is not None and not isinstance(self.max_value, decimal.Decimal):
-            logger.warning("max_value in fields.DecimalField should be Decimal type.")
+            logger.warning("max_value in DecimalField should be Decimal type.")
         if self.min_value is not None and not isinstance(self.min_value, decimal.Decimal):
-            logger.warning("min_value in fields.DecimalField should be Decimal type.")
+            logger.warning("min_value in DecimalField should be Decimal type.")
 
         if self.max_digits is not None and self.decimal_places is not None:
             self.max_whole_digits = self.max_digits - self.decimal_places

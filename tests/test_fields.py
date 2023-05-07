@@ -1223,8 +1223,8 @@ class TestMinMaxDecimalField(FieldValues):
             min_value=10, max_value=20
         )
         assert caplog.record_tuples == [
-            ("rest_framework.fields", logging.WARNING, "max_value in fields.DecimalField should be Decimal type."),
-            ("rest_framework.fields", logging.WARNING, "min_value in fields.DecimalField should be Decimal type.")
+            ("rest_framework.fields", logging.WARNING, "max_value in DecimalField should be Decimal type."),
+            ("rest_framework.fields", logging.WARNING, "min_value in DecimalField should be Decimal type.")
         ]
 
 
