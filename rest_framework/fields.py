@@ -4,6 +4,7 @@ import datetime
 import decimal
 import functools
 import inspect
+import logging
 import re
 import uuid
 from collections.abc import Mapping
@@ -37,6 +38,8 @@ from rest_framework.utils import html, humanize_datetime, json, representation
 from rest_framework.utils.formatting import lazy_format
 from rest_framework.utils.timezone import valid_datetime
 from rest_framework.validators import ProhibitSurrogateCharactersValidator
+
+logger = logging.getLogger("rest_framework.fields")
 
 
 class empty:
@@ -989,6 +992,11 @@ class DecimalField(Field):
 
         self.max_value = max_value
         self.min_value = min_value
+
+        if self.max_value is not None and not isinstance(self.max_value, decimal.Decimal):
+            logger.warning("max_value in DecimalField should be Decimal type.")
+        if self.min_value is not None and not isinstance(self.min_value, decimal.Decimal):
+            logger.warning("min_value in DecimalField should be Decimal type.")
 
         if self.max_digits is not None and self.decimal_places is not None:
             self.max_whole_digits = self.max_digits - self.decimal_places
