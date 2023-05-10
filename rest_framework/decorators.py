@@ -10,6 +10,7 @@ import types
 
 from django.forms.utils import pretty_name
 
+from rest_framework.compat import iscoroutinefunction
 from rest_framework.views import APIView
 
 
@@ -46,8 +47,12 @@ def api_view(http_method_names=None):
         allowed_methods = set(http_method_names) | {'options'}
         WrappedAPIView.http_method_names = [method.lower() for method in allowed_methods]
 
-        def handler(self, *args, **kwargs):
-            return func(*args, **kwargs)
+        if iscoroutinefunction(func):
+            async def handler(self, *args, **kwargs):
+                return await func(*args, **kwargs)
+        else:
+            def handler(self, *args, **kwargs):
+                return func(*args, **kwargs)
 
         for method in http_method_names:
             setattr(WrappedAPIView, method.lower(), handler)

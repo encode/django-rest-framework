@@ -11,6 +11,10 @@ from django.test import override_settings, testcases
 from django.test.client import Client as DjangoClient
 from django.test.client import ClientHandler
 from django.test.client import RequestFactory as DjangoRequestFactory
+
+if django.VERSION >= (4, 1):
+    from django.test.client import AsyncRequestFactory as DjangoAsyncRequestFactory
+
 from django.utils.encoding import force_bytes
 from django.utils.http import urlencode
 
@@ -136,7 +140,7 @@ else:
         raise ImproperlyConfigured('coreapi must be installed in order to use CoreAPIClient.')
 
 
-class APIRequestFactory(DjangoRequestFactory):
+class APIRequestFactoryMixin:
     renderer_classes_list = api_settings.TEST_REQUEST_RENDERER_CLASSES
     default_format = api_settings.TEST_REQUEST_DEFAULT_FORMAT
 
@@ -238,6 +242,15 @@ class APIRequestFactory(DjangoRequestFactory):
         request = super().request(**kwargs)
         request._dont_enforce_csrf_checks = not self.enforce_csrf_checks
         return request
+
+
+class APIRequestFactory(APIRequestFactoryMixin, DjangoRequestFactory):
+    pass
+
+
+if django.VERSION >= (4, 1):
+    class APIAsyncRequestFactory(APIRequestFactoryMixin, DjangoAsyncRequestFactory):
+        pass
 
 
 class ForceAuthClientHandler(ClientHandler):

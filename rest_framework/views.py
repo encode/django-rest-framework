@@ -1,6 +1,8 @@
 """
 Provides an APIView class that is the base of all views in REST framework.
 """
+import asyncio
+
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.db import connections, models
@@ -12,6 +14,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
 from rest_framework import exceptions, status
+from rest_framework.compat import (
+    async_to_sync, iscoroutinefunction, sync_to_async
+)
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.schemas import DefaultSchema
@@ -328,13 +333,52 @@ class APIView(View):
         Check if the request should be permitted.
         Raises an appropriate exception if the request is not permitted.
         """
+        async_permissions, sync_permissions = [], []
         for permission in self.get_permissions():
-            if not permission.has_permission(request, self):
-                self.permission_denied(
-                    request,
-                    message=getattr(permission, 'message', None),
-                    code=getattr(permission, 'code', None)
-                )
+            if iscoroutinefunction(permission.has_permission):
+                async_permissions.append(permission)
+            else:
+                sync_permissions.append(permission)
+
+        async def check_async():
+            results = await asyncio.gather(
+                *(permission.has_permission(request, self) for permission in
+                  async_permissions), return_exceptions=True
+            )
+
+            for idx in range(len(async_permissions)):
+                if isinstance(results[idx], Exception):
+                    raise results[idx]
+                elif not results[idx]:
+                    self.permission_denied(
+                        request,
+                        message=getattr(async_permissions[idx], "message", None),
+                        code=getattr(async_permissions[idx], "code", None),
+                    )
+
+        def check_sync():
+            for permission in sync_permissions:
+                if not permission.has_permission(request, self):
+                    self.permission_denied(
+                        request,
+                        message=getattr(permission, 'message', None),
+                        code=getattr(permission, 'code', None)
+                    )
+
+        if getattr(self, 'view_is_async', False):
+
+            async def func():
+                if async_permissions:
+                    await check_async()
+                if sync_permissions:
+                    await sync_to_async(check_sync)()
+
+            return func()
+        else:
+            if sync_permissions:
+                check_sync()
+            if async_permissions:
+                async_to_sync(check_async)
 
     def check_object_permissions(self, request, obj):
         """
@@ -354,21 +398,79 @@ class APIView(View):
         Check if request should be throttled.
         Raises an appropriate exception if the request is throttled.
         """
-        throttle_durations = []
+        async_throttle_durations, sync_throttle_durations = [], []
+        view_is_async = getattr(self, 'view_is_async', False)
         for throttle in self.get_throttles():
-            if not throttle.allow_request(request, self):
-                throttle_durations.append(throttle.wait())
+            throttle_can_sync = getattr(throttle, "sync_capable", True)
+            throttle_can_async = getattr(throttle, "async_capable", False)
+            if not throttle_can_sync and not throttle_can_async:
+                raise RuntimeError(
+                    "Throttle %s must have at least one of "
+                    "sync_capable/async_capable set to True." % throttle.__class__.__name__
+                )
+            elif not view_is_async and throttle_can_sync:
+                throttle_is_async = False
+            elif iscoroutinefunction(throttle.allow_request):
+                throttle_is_async = True
+            else:
+                throttle_is_async = throttle_can_async
+            if throttle_is_async:
+                async_throttle_durations.append(throttle)
+            else:
+                sync_throttle_durations.append(throttle)
 
-        if throttle_durations:
-            # Filter out `None` values which may happen in case of config / rate
-            # changes, see #1438
-            durations = [
-                duration for duration in throttle_durations
-                if duration is not None
-            ]
+        async def async_throttles():
+            for throttle in async_throttle_durations:
+                if not await throttle.allow_request(request, self):
+                    yield throttle.wait()
 
-            duration = max(durations, default=None)
-            self.throttled(request, duration)
+        def sync_throttles():
+            for throttle in sync_throttle_durations:
+                if not throttle.allow_request(request, self):
+                    yield throttle.wait()
+
+        if view_is_async:
+
+            async def func():
+                throttle_durations = []
+
+                if async_throttle_durations:
+                    throttle_durations.extend([duration async for duration in async_throttles()])
+
+                if sync_throttle_durations:
+                    throttle_durations.extend(duration for duration in sync_throttles())
+
+                if throttle_durations:
+                    # Filter out `None` values which may happen in case of config / rate
+                    # changes, see #1438
+                    durations = [
+                        duration for duration in throttle_durations
+                        if duration is not None
+                    ]
+
+                    duration = max(durations, default=None)
+                    self.throttled(request, duration)
+
+            return func()
+        else:
+            throttle_durations = []
+
+            if sync_throttle_durations:
+                throttle_durations.extend(sync_throttles())
+
+            if async_throttle_durations:
+                throttle_durations.extend(async_to_sync(async_throttles)())
+
+            if throttle_durations:
+                # Filter out `None` values which may happen in case of config / rate
+                # changes, see #1438
+                durations = [
+                    duration for duration in throttle_durations
+                    if duration is not None
+                ]
+
+                duration = max(durations, default=None)
+                self.throttled(request, duration)
 
     def determine_version(self, request, *args, **kwargs):
         """
@@ -410,10 +512,20 @@ class APIView(View):
         version, scheme = self.determine_version(request, *args, **kwargs)
         request.version, request.versioning_scheme = version, scheme
 
-        # Ensure that the incoming request is permitted
-        self.perform_authentication(request)
-        self.check_permissions(request)
-        self.check_throttles(request)
+        if getattr(self, 'view_is_async', False):
+
+            async def func():
+                # Ensure that the incoming request is permitted
+                await sync_to_async(self.perform_authentication)(request)
+                await self.check_permissions(request)
+                await self.check_throttles(request)
+
+            return func()
+        else:
+            # Ensure that the incoming request is permitted
+            self.perform_authentication(request)
+            self.check_permissions(request)
+            self.check_throttles(request)
 
     def finalize_response(self, request, response, *args, **kwargs):
         """
@@ -469,7 +581,15 @@ class APIView(View):
             self.raise_uncaught_exception(exc)
 
         response.exception = True
-        return response
+
+        if getattr(self, 'view_is_async', False):
+
+            async def func():
+                return response
+
+            return func()
+        else:
+            return response
 
     def raise_uncaught_exception(self, exc):
         if settings.DEBUG:
@@ -493,23 +613,49 @@ class APIView(View):
         self.request = request
         self.headers = self.default_response_headers  # deprecate?
 
-        try:
-            self.initial(request, *args, **kwargs)
+        if getattr(self, 'view_is_async', False):
 
-            # Get the appropriate handler method
-            if request.method.lower() in self.http_method_names:
-                handler = getattr(self, request.method.lower(),
-                                  self.http_method_not_allowed)
-            else:
-                handler = self.http_method_not_allowed
+            async def func():
 
-            response = handler(request, *args, **kwargs)
+                try:
+                    await self.initial(request, *args, **kwargs)
 
-        except Exception as exc:
-            response = self.handle_exception(exc)
+                    # Get the appropriate handler method
+                    if request.method.lower() in self.http_method_names:
+                        handler = getattr(self, request.method.lower(),
+                                          self.http_method_not_allowed)
+                    else:
+                        handler = self.http_method_not_allowed
 
-        self.response = self.finalize_response(request, response, *args, **kwargs)
-        return self.response
+                    response = await handler(request, *args, **kwargs)
+
+                except Exception as exc:
+                    response = await self.handle_exception(exc)
+
+                return self.finalize_response(request, response, *args, **kwargs)
+
+            self.response = func()
+
+            return self.response
+        else:
+            try:
+                self.initial(request, *args, **kwargs)
+
+                # Get the appropriate handler method
+                if request.method.lower() in self.http_method_names:
+                    handler = getattr(self, request.method.lower(),
+                                      self.http_method_not_allowed)
+                else:
+                    handler = self.http_method_not_allowed
+
+                response = handler(request, *args, **kwargs)
+
+            except Exception as exc:
+                response = self.handle_exception(exc)
+
+            self.response = self.finalize_response(request, response, *args, **kwargs)
+
+            return self.response
 
     def options(self, request, *args, **kwargs):
         """
@@ -518,4 +664,12 @@ class APIView(View):
         if self.metadata_class is None:
             return self.http_method_not_allowed(request, *args, **kwargs)
         data = self.metadata_class().determine_metadata(request, self)
-        return Response(data, status=status.HTTP_200_OK)
+
+        if getattr(self, 'view_is_async', False):
+
+            async def func():
+                return Response(data, status=status.HTTP_200_OK)
+
+            return func()
+        else:
+            return Response(data, status=status.HTTP_200_OK)

@@ -6,6 +6,9 @@ import time
 from django.core.cache import cache as default_cache
 from django.core.exceptions import ImproperlyConfigured
 
+from rest_framework.compat import (
+    async_to_sync, iscoroutinefunction, sync_to_async
+)
 from rest_framework.settings import api_settings
 
 
@@ -64,6 +67,8 @@ class SimpleRateThrottle(BaseThrottle):
     cache_format = 'throttle_%(scope)s_%(ident)s'
     scope = None
     THROTTLE_RATES = api_settings.DEFAULT_THROTTLE_RATES
+    sync_capable = True
+    async_capable = True
 
     def __init__(self):
         if not getattr(self, 'rate', None):
@@ -113,23 +118,52 @@ class SimpleRateThrottle(BaseThrottle):
         On success calls `throttle_success`.
         On failure calls `throttle_failure`.
         """
-        if self.rate is None:
-            return True
+        if getattr(view, 'view_is_async', False):
 
-        self.key = self.get_cache_key(request, view)
-        if self.key is None:
-            return True
+            async def func():
+                if self.rate is None:
+                    return True
 
-        self.history = self.cache.get(self.key, [])
-        self.now = self.timer()
+                self.key = self.get_cache_key(request, view)
+                if self.key is None:
+                    return True
 
-        # Drop any requests from the history which have now passed the
-        # throttle duration
-        while self.history and self.history[-1] <= self.now - self.duration:
-            self.history.pop()
-        if len(self.history) >= self.num_requests:
-            return self.throttle_failure()
-        return self.throttle_success()
+                self.history = self.cache.get(self.key, [])
+                if iscoroutinefunction(self.timer):
+                    self.now = await self.timer()
+                else:
+                    self.now = await sync_to_async(self.timer)()
+
+                # Drop any requests from the history which have now passed the
+                # throttle duration
+                while self.history and self.history[-1] <= self.now - self.duration:
+                    self.history.pop()
+                if len(self.history) >= self.num_requests:
+                    return self.throttle_failure()
+                return self.throttle_success()
+
+            return func()
+        else:
+            if self.rate is None:
+                return True
+
+            self.key = self.get_cache_key(request, view)
+            if self.key is None:
+                return True
+
+            self.history = self.cache.get(self.key, [])
+            if iscoroutinefunction(self.timer):
+                self.now = async_to_sync(self.timer)()
+            else:
+                self.now = self.timer()
+
+            # Drop any requests from the history which have now passed the
+            # throttle duration
+            while self.history and self.history[-1] <= self.now - self.duration:
+                self.history.pop()
+            if len(self.history) >= self.num_requests:
+                return self.throttle_failure()
+            return self.throttle_success()
 
     def throttle_success(self):
         """
@@ -210,6 +244,8 @@ class ScopedRateThrottle(SimpleRateThrottle):
     user id of the request, and the scope of the view being accessed.
     """
     scope_attr = 'throttle_scope'
+    sync_capable = True
+    async_capable = True
 
     def __init__(self):
         # Override the usual SimpleRateThrottle, because we can't determine
@@ -220,17 +256,34 @@ class ScopedRateThrottle(SimpleRateThrottle):
         # We can only determine the scope once we're called by the view.
         self.scope = getattr(view, self.scope_attr, None)
 
-        # If a view does not have a `throttle_scope` always allow the request
-        if not self.scope:
-            return True
+        if getattr(view, 'view_is_async', False):
 
-        # Determine the allowed request rate as we normally would during
-        # the `__init__` call.
-        self.rate = self.get_rate()
-        self.num_requests, self.duration = self.parse_rate(self.rate)
+            async def func(allow_request):
+                # If a view does not have a `throttle_scope` always allow the request
+                if not self.scope:
+                    return True
 
-        # We can now proceed as normal.
-        return super().allow_request(request, view)
+                # Determine the allowed request rate as we normally would during
+                # the `__init__` call.
+                self.rate = self.get_rate()
+                self.num_requests, self.duration = self.parse_rate(self.rate)
+
+                # We can now proceed as normal.
+                return await allow_request(request, view)
+
+            return func(super().allow_request)
+        else:
+            # If a view does not have a `throttle_scope` always allow the request
+            if not self.scope:
+                return True
+
+            # Determine the allowed request rate as we normally would during
+            # the `__init__` call.
+            self.rate = self.get_rate()
+            self.num_requests, self.duration = self.parse_rate(self.rate)
+
+            # We can now proceed as normal.
+            return super().allow_request(request, view)
 
     def get_cache_key(self, request, view):
         """
