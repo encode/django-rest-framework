@@ -11,7 +11,6 @@ from django.db import models
 
 from rest_framework import exceptions, fields, relations, serializers
 from rest_framework.fields import Field
-
 from .models import (
     ForeignKeyTarget, NestedForeignKeySource, NullableForeignKeySource
 )
@@ -837,7 +836,7 @@ class TestMultipleObjectsValidation(unittest.TestCase):
     def test_exception_raised_when_data_and_instance_length_different(self):
 
         with self.assertRaises(AssertionError):
-            serializer = MyClassSerializer(
+            MyClassSerializer(
                 data=[{'value': 'set', 'id': instance.id} for instance in
                       self.objs],
                 instance=self.objs[:-1],
