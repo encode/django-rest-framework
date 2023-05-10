@@ -837,7 +837,7 @@ class TestMultipleObjectsValidation(unittest.TestCase):
     def test_exception_raised_when_data_and_instance_length_different(self):
 
         with self.assertRaises(AssertionError):
-            MyClassSerializer(
+            serializer = MyClassSerializer(
                 data=[{'value': 'set', 'id': instance.id} for instance in
                       self.objs],
                 instance=self.objs[:-1],
