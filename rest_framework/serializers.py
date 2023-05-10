@@ -612,7 +612,7 @@ class ListSerializer(BaseSerializer):
 
         if kwargs.get('instance', []) and kwargs.get('data', []):
             assert len(kwargs.get("data", [])) == len(
-                kwargs.get("instance", [])), 'Data and instance should have same length'
+            kwargs.get("instance", [])), 'Data and instance should have same length'
 
         super().__init__(*args, **kwargs)
         self.child.bind(field_name='', parent=self)
