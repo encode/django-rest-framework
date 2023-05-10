@@ -589,6 +589,11 @@ class ListSerializer(BaseSerializer):
         self.min_length = kwargs.pop('min_length', None)
         assert self.child is not None, '`child` is a required argument.'
         assert not inspect.isclass(self.child), '`child` has not been instantiated.'
+
+        if kwargs.get('instance', []) and kwargs.get('data', []):
+            assert len(kwargs.get("data", [])) == len(
+            kwargs.get("instance", [])), 'Data and instance should have same length'
+
         super().__init__(*args, **kwargs)
         self.child.bind(field_name='', parent=self)
 
@@ -663,7 +668,10 @@ class ListSerializer(BaseSerializer):
         ret = []
         errors = []
 
-        for item in data:
+        for idx, item in enumerate(data):
+            if hasattr(self, 'instance') and self.instance and \
+                    len(self.instance) > idx:
+                self.child.instance = self.instance[idx]
             try:
                 validated = self.child.run_validation(item)
             except ValidationError as exc:

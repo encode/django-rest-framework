@@ -762,3 +762,66 @@ class Test8301Regression:
 
         assert (s.data | {}).__class__ == s.data.__class__
         assert ({} | s.data).__class__ == s.data.__class__
+
+
+class MyClass(models.Model):
+    name = models.CharField(max_length=100)
+    value = models.CharField(max_length=100, blank=True)
+
+    app_label = "test"
+
+    @property
+    def is_valid(self):
+        return self.name == 'valid'
+
+
+class MyClassSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MyClass
+        fields = ('id', 'name', 'value')
+
+    def validate_value(self, value):
+        if value and not self.instance.is_valid:
+            raise serializers.ValidationError(
+                'Status cannot be set for invalid instance')
+        return value
+
+
+import unittest
+
+
+class TestMultipleObjectsValidation(unittest.TestCase):
+    def setUp(self):
+        self.objs = [
+            MyClass(name='valid'),
+            MyClass(name='invalid'),
+            MyClass(name='other'),
+        ]
+
+    def test_multiple_objects_are_validated_separately(self):
+
+        serializer = MyClassSerializer(
+            data=[{'value': 'set', 'id': instance.id} for instance in
+                  self.objs],
+            instance=self.objs,
+            many=True,
+            partial=True,
+        )
+
+        assert not serializer.is_valid()
+        assert serializer.errors == [
+            {},
+            {'value': ['Status cannot be set for invalid instance']},
+            {'value': ['Status cannot be set for invalid instance']}
+        ]
+
+    def test_exception_raised_when_data_and_instance_length_different(self):
+
+        with self.assertRaises(AssertionError):
+            serializer = MyClassSerializer(
+                data=[{'value': 'set', 'id': instance.id} for instance in
+                      self.objs],
+                instance=self.objs[:-1],
+                many=True,
+                partial=True,
+            )
