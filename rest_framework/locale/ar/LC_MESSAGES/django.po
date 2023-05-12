@@ -1,0 +1,577 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+# Andrew Ayoub <andrew.ayoub@connectads.com>, 2017
+# aymen chaieb <chaieb.aymen1992@gmail.com>, 2017
+# Bashar Al-Abdulhadi, 2016-2017
+# Eyad Toma <d.eyad.t@gmail.com>, 2015,2017
+# zak zak <zakaria.bendifallah@gmail.com>, 2020
+msgid ""
+msgstr ""
+"Project-Id-Version: Django REST framework\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-10-13 21:45+0200\n"
+"PO-Revision-Date: 2020-10-13 19:45+0000\n"
+"Last-Translator: Xavier Ordoquy <xordoquy@linovia.com>\n"
+"Language-Team: Arabic (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/ar/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ar\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+
+#: authentication.py:70
+msgid "Invalid basic header. No credentials provided."
+msgstr "رأس أساسي غير صالح, لم تقدم اي بيانات."
+
+#: authentication.py:73
+msgid "Invalid basic header. Credentials string should not contain spaces."
+msgstr "رأس أساسي غير صالح, سلسلة البيانات لا يجب أن تحتوي على أي أحرف مسافات"
+
+#: authentication.py:83
+msgid "Invalid basic header. Credentials not correctly base64 encoded."
+msgstr "رأس أساسي غير صالح, البيانات ليست مرمّزة بصحة على أساس64."
+
+#: authentication.py:101
+msgid "Invalid username/password."
+msgstr "اسم المستخدم/كلمة السر غير صحيحين."
+
+#: authentication.py:104 authentication.py:206
+msgid "User inactive or deleted."
+msgstr "المستخدم غير مفعل او تم حذفه."
+
+#: authentication.py:184
+msgid "Invalid token header. No credentials provided."
+msgstr "رمز الراْس المميّز غير صالح, لم تقدم أي بيانات."
+
+#: authentication.py:187
+msgid "Invalid token header. Token string should not contain spaces."
+msgstr "رمز الراْس المميّز غير صالح, سلسلة الرمز المميّز لا يجب أن تحتوي على أي أحرف مسافات."
+
+#: authentication.py:193
+msgid ""
+"Invalid token header. Token string should not contain invalid characters."
+msgstr "رمز الراْس المميّز غير صالح, سلسلة الرمز المميّز لا يجب أن تحتوي على أي أحرف غير صالحة."
+
+#: authentication.py:203
+msgid "Invalid token."
+msgstr "رمز غير صحيح."
+
+#: authtoken/apps.py:7
+msgid "Auth Token"
+msgstr "رمز التفويض"
+
+#: authtoken/models.py:13
+msgid "Key"
+msgstr "المفتاح"
+
+#: authtoken/models.py:16
+msgid "User"
+msgstr "المستخدم"
+
+#: authtoken/models.py:18
+msgid "Created"
+msgstr "أنشئ"
+
+#: authtoken/models.py:27 authtoken/serializers.py:19
+msgid "Token"
+msgstr "الرمز"
+
+#: authtoken/models.py:28
+msgid "Tokens"
+msgstr "الرموز"
+
+#: authtoken/serializers.py:9
+msgid "Username"
+msgstr "اسم المستخدم"
+
+#: authtoken/serializers.py:13
+msgid "Password"
+msgstr "كلمة المرور"
+
+#: authtoken/serializers.py:35
+msgid "Unable to log in with provided credentials."
+msgstr "تعذر تسجيل الدخول بالبيانات التي ادخلتها."
+
+#: authtoken/serializers.py:38
+msgid "Must include \"username\" and \"password\"."
+msgstr "يجب أن تتضمن \"اسم المستخدم\" و \"كلمة المرور\"."
+
+#: exceptions.py:102
+msgid "A server error occurred."
+msgstr "حدث خطأ في المخدم."
+
+#: exceptions.py:142
+msgid "Invalid input."
+msgstr ""
+
+#: exceptions.py:161
+msgid "Malformed request."
+msgstr "الطلب صيغ بشكل سيء."
+
+#: exceptions.py:167
+msgid "Incorrect authentication credentials."
+msgstr "بيانات الدخول غير صحيحة."
+
+#: exceptions.py:173
+msgid "Authentication credentials were not provided."
+msgstr "لم يتم تزويد بيانات الدخول."
+
+#: exceptions.py:179
+msgid "You do not have permission to perform this action."
+msgstr "ليس لديك صلاحية للقيام بهذا الإجراء."
+
+#: exceptions.py:185
+msgid "Not found."
+msgstr "غير موجود."
+
+#: exceptions.py:191
+#, python-brace-format
+msgid "Method \"{method}\" not allowed."
+msgstr "الطريقة \"{method}\" غير مسموح بها."
+
+#: exceptions.py:202
+msgid "Could not satisfy the request Accept header."
+msgstr "لم نتمكن من تلبية الرٱس Accept في الطلب."
+
+#: exceptions.py:212
+#, python-brace-format
+msgid "Unsupported media type \"{media_type}\" in request."
+msgstr "الوسيط \"{media_type}\" الموجود في الطلب غير معتمد."
+
+#: exceptions.py:223
+msgid "Request was throttled."
+msgstr "تم تقييد الطلب."
+
+#: exceptions.py:224
+#, python-brace-format
+msgid "Expected available in {wait} second."
+msgstr ""
+
+#: exceptions.py:225
+#, python-brace-format
+msgid "Expected available in {wait} seconds."
+msgstr ""
+
+#: fields.py:316 relations.py:245 relations.py:279 validators.py:90
+#: validators.py:183
+msgid "This field is required."
+msgstr "هذا الحقل مطلوب."
+
+#: fields.py:317
+msgid "This field may not be null."
+msgstr "لا يمكن لهذا الحقل ان يكون فارغاً null."
+
+#: fields.py:701
+msgid "Must be a valid boolean."
+msgstr ""
+
+#: fields.py:766
+msgid "Not a valid string."
+msgstr ""
+
+#: fields.py:767
+msgid "This field may not be blank."
+msgstr "لا يمكن لهذا الحقل ان يكون فارغاً."
+
+#: fields.py:768 fields.py:1881
+#, python-brace-format
+msgid "Ensure this field has no more than {max_length} characters."
+msgstr "تأكد ان الحقل لا يزيد عن {max_length} محرف."
+
+#: fields.py:769
+#, python-brace-format
+msgid "Ensure this field has at least {min_length} characters."
+msgstr "تأكد ان الحقل {min_length} محرف على الاقل."
+
+#: fields.py:816
+msgid "Enter a valid email address."
+msgstr "عليك ان تدخل بريد إلكتروني صالح."
+
+#: fields.py:827
+msgid "This value does not match the required pattern."
+msgstr "هذه القيمة لا تطابق النمط المطلوب."
+
+#: fields.py:838
+msgid ""
+"Enter a valid \"slug\" consisting of letters, numbers, underscores or "
+"hyphens."
+msgstr "أدخل \"slug\" صالح يحتوي على حروف، أرقام، شُرط سفلية أو واصلات."
+
+#: fields.py:839
+msgid ""
+"Enter a valid \"slug\" consisting of Unicode letters, numbers, underscores, "
+"or hyphens."
+msgstr ""
+
+#: fields.py:854
+msgid "Enter a valid URL."
+msgstr "الرجاء إدخال رابط إلكتروني صالح."
+
+#: fields.py:867
+msgid "Must be a valid UUID."
+msgstr ""
+
+#: fields.py:903
+msgid "Enter a valid IPv4 or IPv6 address."
+msgstr "أدخِل عنوان IPV4 أو IPV6 صحيح."
+
+#: fields.py:931
+msgid "A valid integer is required."
+msgstr "الرجاء إدخال رقم صحيح صالح."
+
+#: fields.py:932 fields.py:969 fields.py:1005 fields.py:1366
+#, python-brace-format
+msgid "Ensure this value is less than or equal to {max_value}."
+msgstr "تأكد ان القيمة أقل أو تساوي {max_value}."
+
+#: fields.py:933 fields.py:970 fields.py:1006 fields.py:1367
+#, python-brace-format
+msgid "Ensure this value is greater than or equal to {min_value}."
+msgstr "تأكد ان القيمة أكبر أو تساوي {min_value}."
+
+#: fields.py:934 fields.py:971 fields.py:1010
+msgid "String value too large."
+msgstr "السلسلة اطول من القيمة المسموح بها."
+
+#: fields.py:968 fields.py:1004
+msgid "A valid number is required."
+msgstr "الرجاء إدخال رقم صالح."
+
+#: fields.py:1007
+#, python-brace-format
+msgid "Ensure that there are no more than {max_digits} digits in total."
+msgstr "تأكد ان القيمة لا تحوي أكثر من {max_digits} رقم."
+
+#: fields.py:1008
+#, python-brace-format
+msgid ""
+"Ensure that there are no more than {max_decimal_places} decimal places."
+msgstr "تأكد انه لا يوجد اكثر من {max_decimal_places} منازل عشرية."
+
+#: fields.py:1009
+#, python-brace-format
+msgid ""
+"Ensure that there are no more than {max_whole_digits} digits before the "
+"decimal point."
+msgstr "تأكد انه لا يوجد اكثر من {max_whole_digits} أرقام قبل النقطة العشرية."
+
+#: fields.py:1148
+#, python-brace-format
+msgid "Datetime has wrong format. Use one of these formats instead: {format}."
+msgstr "صيغة التاريخ و الوقت غير صحيحة. عليك أن تستخدم واحدة من هذه الصيغ التالية: {format}."
+
+#: fields.py:1149
+msgid "Expected a datetime but got a date."
+msgstr "متوقع تاريخ و وقت و وجد تاريخ فقط"
+
+#: fields.py:1150
+#, python-brace-format
+msgid "Invalid datetime for the timezone \"{timezone}\"."
+msgstr ""
+
+#: fields.py:1151
+msgid "Datetime value out of range."
+msgstr ""
+
+#: fields.py:1236
+#, python-brace-format
+msgid "Date has wrong format. Use one of these formats instead: {format}."
+msgstr "صيغة التاريخ غير صحيحة. عليك أن تستخدم واحدة من هذه الصيغ التالية: {format}."
+
+#: fields.py:1237
+msgid "Expected a date but got a datetime."
+msgstr "متوقع تاريخ  فقط و وجد تاريخ ووقت"
+
+#: fields.py:1303
+#, python-brace-format
+msgid "Time has wrong format. Use one of these formats instead: {format}."
+msgstr "صيغة الوقت غير صحيحة. عليك أن تستخدم واحدة من هذه الصيغ التالية: {format}."
+
+#: fields.py:1365
+#, python-brace-format
+msgid "Duration has wrong format. Use one of these formats instead: {format}."
+msgstr "صيغة المدة غير صحيحه, يرجى إستخدام إحدى هذه الصيغ: {format}."
+
+#: fields.py:1399 fields.py:1456
+#, python-brace-format
+msgid "\"{input}\" is not a valid choice."
+msgstr "\"{input}\" ليست واحدة من الخيارات الصالحة."
+
+#: fields.py:1402
+#, python-brace-format
+msgid "More than {count} items..."
+msgstr "أكثر من {count} عنصر..."
+
+#: fields.py:1457 fields.py:1603 relations.py:485 serializers.py:570
+#, python-brace-format
+msgid "Expected a list of items but got type \"{input_type}\"."
+msgstr "المتوقع وجود قائمة عناصر لكن وجد النوع \"{input_type}\"."
+
+#: fields.py:1458
+msgid "This selection may not be empty."
+msgstr "هذا التحديد لا يجب أن يكون فارغا."
+
+#: fields.py:1495
+#, python-brace-format
+msgid "\"{input}\" is not a valid path choice."
+msgstr "{input} كإختيار مسار غير صالح."
+
+#: fields.py:1514
+msgid "No file was submitted."
+msgstr "لم يتم إرسال أي ملف."
+
+#: fields.py:1515
+msgid ""
+"The submitted data was not a file. Check the encoding type on the form."
+msgstr "المعطيات المرسولة ليست ملف. إفحص نوع الترميز في النموذج."
+
+#: fields.py:1516
+msgid "No filename could be determined."
+msgstr "ما من إسم ملف أمكن تحديده."
+
+#: fields.py:1517
+msgid "The submitted file is empty."
+msgstr "الملف الذي تم إرساله فارغ."
+
+#: fields.py:1518
+#, python-brace-format
+msgid ""
+"Ensure this filename has at most {max_length} characters (it has {length})."
+msgstr "تأكد ان اسم الملف لا يحوي أكثر من {max_length} محرف (الإسم المرسل يحوي {length} محرف)."
+
+#: fields.py:1566
+msgid ""
+"Upload a valid image. The file you uploaded was either not an image or a "
+"corrupted image."
+msgstr "الرجاء تحميل صورة صالحة. الملف الذي تم تحميله إما لم يكن صورة او انه كان صورة تالفة."
+
+#: fields.py:1604 relations.py:486 serializers.py:571
+msgid "This list may not be empty."
+msgstr "القائمة يجب أن لا تكون فارغة."
+
+#: fields.py:1605
+#, python-brace-format
+msgid "Ensure this field has at least {min_length} elements."
+msgstr ""
+
+#: fields.py:1606
+#, python-brace-format
+msgid "Ensure this field has no more than {max_length} elements."
+msgstr ""
+
+#: fields.py:1682
+#, python-brace-format
+msgid "Expected a dictionary of items but got type \"{input_type}\"."
+msgstr "المتوقع كان قاموس عناصر و لكن النوع المتحصل عليه هو \"{input_type}\"."
+
+#: fields.py:1683
+msgid "This dictionary may not be empty."
+msgstr ""
+
+#: fields.py:1755
+msgid "Value must be valid JSON."
+msgstr "القيمة يجب أن تكون JSON صالح."
+
+#: filters.py:49 templates/rest_framework/filters/search.html:2
+msgid "Search"
+msgstr "بحث"
+
+#: filters.py:50
+msgid "A search term."
+msgstr ""
+
+#: filters.py:180 templates/rest_framework/filters/ordering.html:3
+msgid "Ordering"
+msgstr "الترتيب"
+
+#: filters.py:181
+msgid "Which field to use when ordering the results."
+msgstr ""
+
+#: filters.py:287
+msgid "ascending"
+msgstr "تصاعدي"
+
+#: filters.py:288
+msgid "descending"
+msgstr "تنازلي"
+
+#: pagination.py:174
+msgid "A page number within the paginated result set."
+msgstr ""
+
+#: pagination.py:179 pagination.py:372 pagination.py:590
+msgid "Number of results to return per page."
+msgstr ""
+
+#: pagination.py:189
+msgid "Invalid page."
+msgstr "صفحة غير صحيحة."
+
+#: pagination.py:374
+msgid "The initial index from which to return the results."
+msgstr ""
+
+#: pagination.py:581
+msgid "The pagination cursor value."
+msgstr ""
+
+#: pagination.py:583
+msgid "Invalid cursor"
+msgstr "مؤشر غير صالح"
+
+#: relations.py:246
+#, python-brace-format
+msgid "Invalid pk \"{pk_value}\" - object does not exist."
+msgstr "معرف العنصر \"{pk_value}\" غير صالح -  العنصر غير موجود."
+
+#: relations.py:247
+#, python-brace-format
+msgid "Incorrect type. Expected pk value, received {data_type}."
+msgstr "نوع خاطئ. المتوقع قيمة من pk، لكن المتحصل عليه {data_type}."
+
+#: relations.py:280
+msgid "Invalid hyperlink - No URL match."
+msgstr "إرتباط تشعبي غير صالح - لا مطابقة لURL."
+
+#: relations.py:281
+msgid "Invalid hyperlink - Incorrect URL match."
+msgstr "إرتباط تشعبي غير صالح - مطابقة خاطئة لURL."
+
+#: relations.py:282
+msgid "Invalid hyperlink - Object does not exist."
+msgstr "إرتباط تشعبي غير صالح - عنصر غير موجود."
+
+#: relations.py:283
+#, python-brace-format
+msgid "Incorrect type. Expected URL string, received {data_type}."
+msgstr "نوع خاطئ. المتوقع سلسلة URL، لكن المتحصل عليه {data_type}."
+
+#: relations.py:448
+#, python-brace-format
+msgid "Object with {slug_name}={value} does not exist."
+msgstr "عنصر ب {slug_name}={value} غير موجود."
+
+#: relations.py:449
+msgid "Invalid value."
+msgstr "قيمة غير صالحة."
+
+#: schemas/utils.py:32
+msgid "unique integer value"
+msgstr ""
+
+#: schemas/utils.py:34
+msgid "UUID string"
+msgstr ""
+
+#: schemas/utils.py:36
+msgid "unique value"
+msgstr ""
+
+#: schemas/utils.py:38
+#, python-brace-format
+msgid "A {value_type} identifying this {name}."
+msgstr ""
+
+#: serializers.py:337
+#, python-brace-format
+msgid "Invalid data. Expected a dictionary, but got {datatype}."
+msgstr "معطيات غير صالحة. المتوقع هو قاموس، لكن المتحصل عليه {datatype}."
+
+#: templates/rest_framework/admin.html:116
+#: templates/rest_framework/base.html:136
+msgid "Extra Actions"
+msgstr ""
+
+#: templates/rest_framework/admin.html:130
+#: templates/rest_framework/base.html:150
+msgid "Filters"
+msgstr "مرشحات"
+
+#: templates/rest_framework/base.html:37
+msgid "navbar"
+msgstr ""
+
+#: templates/rest_framework/base.html:75
+msgid "content"
+msgstr ""
+
+#: templates/rest_framework/base.html:78
+msgid "request form"
+msgstr ""
+
+#: templates/rest_framework/base.html:157
+msgid "main content"
+msgstr ""
+
+#: templates/rest_framework/base.html:173
+msgid "request info"
+msgstr ""
+
+#: templates/rest_framework/base.html:177
+msgid "response info"
+msgstr ""
+
+#: templates/rest_framework/horizontal/radio.html:4
+#: templates/rest_framework/inline/radio.html:3
+#: templates/rest_framework/vertical/radio.html:3
+msgid "None"
+msgstr "لا شيء"
+
+#: templates/rest_framework/horizontal/select_multiple.html:4
+#: templates/rest_framework/inline/select_multiple.html:3
+#: templates/rest_framework/vertical/select_multiple.html:3
+msgid "No items to select."
+msgstr "ما من عناصر للتحديد."
+
+#: validators.py:39
+msgid "This field must be unique."
+msgstr "هذا الحقل يجب أن يكون فريد"
+
+#: validators.py:89
+#, python-brace-format
+msgid "The fields {field_names} must make a unique set."
+msgstr "الحقول {field_names} يجب أن تشكل مجموعة فريدة."
+
+#: validators.py:171
+#, python-brace-format
+msgid "Surrogate characters are not allowed: U+{code_point:X}."
+msgstr ""
+
+#: validators.py:243
+#, python-brace-format
+msgid "This field must be unique for the \"{date_field}\" date."
+msgstr "الحقل يجب ان يكون فريد للتاريخ {date_field}."
+
+#: validators.py:258
+#, python-brace-format
+msgid "This field must be unique for the \"{date_field}\" month."
+msgstr "الحقل يجب ان يكون فريد للشهر {date_field}."
+
+#: validators.py:271
+#, python-brace-format
+msgid "This field must be unique for the \"{date_field}\" year."
+msgstr "الحقل يجب ان يكون فريد للعام {date_field}."
+
+#: versioning.py:40
+msgid "Invalid version in \"Accept\" header."
+msgstr "إصدار غير صالح في الرٱس \"Accept\"."
+
+#: versioning.py:71
+msgid "Invalid version in URL path."
+msgstr "إصدار غير صالح في المسار URL."
+
+#: versioning.py:116
+msgid "Invalid version in URL path. Does not match any version namespace."
+msgstr " إصدار غير صالح في المسار URL. لا يطابق أي إصدار من مساحة الإسم."
+
+#: versioning.py:148
+msgid "Invalid version in hostname."
+msgstr "إصدار غير صالح في اسم المضيف."
+
+#: versioning.py:170
+msgid "Invalid version in query parameter."
+msgstr "إصدار غير صالح في معلمة الإستعلام."

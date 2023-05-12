@@ -1,0 +1,574 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+# Erlend Eelmets <debcf78e@opayq.com>, 2020
+# Tõnis Kärdi <tonis.kardi@gmail.com>, 2015,2019
+msgid ""
+msgstr ""
+"Project-Id-Version: Django REST framework\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-10-13 21:45+0200\n"
+"PO-Revision-Date: 2020-10-13 19:45+0000\n"
+"Last-Translator: Xavier Ordoquy <xordoquy@linovia.com>\n"
+"Language-Team: Estonian (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/et/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: et\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: authentication.py:70
+msgid "Invalid basic header. No credentials provided."
+msgstr "Sobimatu lihtpäis. Kasutajatunnus on esitamata."
+
+#: authentication.py:73
+msgid "Invalid basic header. Credentials string should not contain spaces."
+msgstr "Sobimatu lihtpäis. Kasutajatunnus ei tohi sisaldada tühikuid."
+
+#: authentication.py:83
+msgid "Invalid basic header. Credentials not correctly base64 encoded."
+msgstr "Sobimatu lihtpäis. Kasutajatunnus pole korrektselt base64-kodeeritud."
+
+#: authentication.py:101
+msgid "Invalid username/password."
+msgstr "Sobimatu kasutajatunnus/salasõna."
+
+#: authentication.py:104 authentication.py:206
+msgid "User inactive or deleted."
+msgstr "Kasutaja on inaktiivne või kustutatud."
+
+#: authentication.py:184
+msgid "Invalid token header. No credentials provided."
+msgstr "Sobimatu lubakaardi päis. Kasutajatunnus on esitamata."
+
+#: authentication.py:187
+msgid "Invalid token header. Token string should not contain spaces."
+msgstr "Sobimatu lubakaardi päis. Loa sõne ei tohi sisaldada tühikuid."
+
+#: authentication.py:193
+msgid ""
+"Invalid token header. Token string should not contain invalid characters."
+msgstr "Sobimatu lubakaardi päis. Loa sõne ei tohi sisaldada sobimatuid märke."
+
+#: authentication.py:203
+msgid "Invalid token."
+msgstr "Sobimatu lubakaart."
+
+#: authtoken/apps.py:7
+msgid "Auth Token"
+msgstr "Autentimistähis"
+
+#: authtoken/models.py:13
+msgid "Key"
+msgstr "Võti"
+
+#: authtoken/models.py:16
+msgid "User"
+msgstr "Kasutaja"
+
+#: authtoken/models.py:18
+msgid "Created"
+msgstr "Loodud"
+
+#: authtoken/models.py:27 authtoken/serializers.py:19
+msgid "Token"
+msgstr "Tähis"
+
+#: authtoken/models.py:28
+msgid "Tokens"
+msgstr "Tähised"
+
+#: authtoken/serializers.py:9
+msgid "Username"
+msgstr "Kasutajanimi"
+
+#: authtoken/serializers.py:13
+msgid "Password"
+msgstr "Salasõna"
+
+#: authtoken/serializers.py:35
+msgid "Unable to log in with provided credentials."
+msgstr "Sisselogimine antud tunnusega ebaõnnestus."
+
+#: authtoken/serializers.py:38
+msgid "Must include \"username\" and \"password\"."
+msgstr "Peab sisaldama \"kasutajatunnust\" ja \"slasõna\"."
+
+#: exceptions.py:102
+msgid "A server error occurred."
+msgstr "Viga serveril."
+
+#: exceptions.py:142
+msgid "Invalid input."
+msgstr ""
+
+#: exceptions.py:161
+msgid "Malformed request."
+msgstr "Väändunud päring."
+
+#: exceptions.py:167
+msgid "Incorrect authentication credentials."
+msgstr "Ebakorrektne autentimistunnus."
+
+#: exceptions.py:173
+msgid "Authentication credentials were not provided."
+msgstr "Autentimistunnus on esitamata."
+
+#: exceptions.py:179
+msgid "You do not have permission to perform this action."
+msgstr "Teil puuduvad piisavad õigused selle tegevuse teostamiseks."
+
+#: exceptions.py:185
+msgid "Not found."
+msgstr "Ei leidnud."
+
+#: exceptions.py:191
+#, python-brace-format
+msgid "Method \"{method}\" not allowed."
+msgstr "Meetod \"{method}\" pole lubatud."
+
+#: exceptions.py:202
+msgid "Could not satisfy the request Accept header."
+msgstr "Päringu Accept-päist ei suutnud täita."
+
+#: exceptions.py:212
+#, python-brace-format
+msgid "Unsupported media type \"{media_type}\" in request."
+msgstr "Meedia tüüpi {media_type} päringus ei toetata."
+
+#: exceptions.py:223
+msgid "Request was throttled."
+msgstr "Liiga palju päringuid."
+
+#: exceptions.py:224
+#, python-brace-format
+msgid "Expected available in {wait} second."
+msgstr ""
+
+#: exceptions.py:225
+#, python-brace-format
+msgid "Expected available in {wait} seconds."
+msgstr ""
+
+#: fields.py:316 relations.py:245 relations.py:279 validators.py:90
+#: validators.py:183
+msgid "This field is required."
+msgstr "Väli on kohustuslik."
+
+#: fields.py:317
+msgid "This field may not be null."
+msgstr "Väli ei tohi olla tühi."
+
+#: fields.py:701
+msgid "Must be a valid boolean."
+msgstr ""
+
+#: fields.py:766
+msgid "Not a valid string."
+msgstr ""
+
+#: fields.py:767
+msgid "This field may not be blank."
+msgstr "See väli ei tohi olla tühi."
+
+#: fields.py:768 fields.py:1881
+#, python-brace-format
+msgid "Ensure this field has no more than {max_length} characters."
+msgstr "Veendu, et see väli poleks pikem kui {max_length} tähemärki."
+
+#: fields.py:769
+#, python-brace-format
+msgid "Ensure this field has at least {min_length} characters."
+msgstr "Veendu, et see väli oleks vähemalt {min_length} tähemärki pikk."
+
+#: fields.py:816
+msgid "Enter a valid email address."
+msgstr "Sisestage kehtiv e-posti aadress."
+
+#: fields.py:827
+msgid "This value does not match the required pattern."
+msgstr "Väärtus ei ühti etteantud mustriga."
+
+#: fields.py:838
+msgid ""
+"Enter a valid \"slug\" consisting of letters, numbers, underscores or "
+"hyphens."
+msgstr "Sisestage kehtiv \"slug\", mis koosneks tähtedest, numbritest, ala- või sidekriipsudest."
+
+#: fields.py:839
+msgid ""
+"Enter a valid \"slug\" consisting of Unicode letters, numbers, underscores, "
+"or hyphens."
+msgstr ""
+
+#: fields.py:854
+msgid "Enter a valid URL."
+msgstr "Sisestage korrektne URL."
+
+#: fields.py:867
+msgid "Must be a valid UUID."
+msgstr ""
+
+#: fields.py:903
+msgid "Enter a valid IPv4 or IPv6 address."
+msgstr "Sisesta valiidne IPv4 või IPv6 aadress"
+
+#: fields.py:931
+msgid "A valid integer is required."
+msgstr "Sisendiks peab olema täisarv."
+
+#: fields.py:932 fields.py:969 fields.py:1005 fields.py:1366
+#, python-brace-format
+msgid "Ensure this value is less than or equal to {max_value}."
+msgstr "Veenduge, et väärtus on väiksem kui või võrdne väärtusega {max_value}. "
+
+#: fields.py:933 fields.py:970 fields.py:1006 fields.py:1367
+#, python-brace-format
+msgid "Ensure this value is greater than or equal to {min_value}."
+msgstr "Veenduge, et väärtus on suurem kui või võrdne väärtusega {min_value}."
+
+#: fields.py:934 fields.py:971 fields.py:1010
+msgid "String value too large."
+msgstr "Sõne on liiga pikk."
+
+#: fields.py:968 fields.py:1004
+msgid "A valid number is required."
+msgstr "Sisendiks peab olema arv."
+
+#: fields.py:1007
+#, python-brace-format
+msgid "Ensure that there are no more than {max_digits} digits in total."
+msgstr "Veenduge, et kokku pole rohkem kui {max_digits} numbit."
+
+#: fields.py:1008
+#, python-brace-format
+msgid ""
+"Ensure that there are no more than {max_decimal_places} decimal places."
+msgstr "Veenduge, et komakohti pole rohkem kui {max_decimal_places}. "
+
+#: fields.py:1009
+#, python-brace-format
+msgid ""
+"Ensure that there are no more than {max_whole_digits} digits before the "
+"decimal point."
+msgstr "Veenduge, et täiskohti poleks rohkem kui {max_whole_digits}."
+
+#: fields.py:1148
+#, python-brace-format
+msgid "Datetime has wrong format. Use one of these formats instead: {format}."
+msgstr "Valesti formaaditud kuupäev-kellaaeg. Kasutage mõnda neist: {format}."
+
+#: fields.py:1149
+msgid "Expected a datetime but got a date."
+msgstr "Ootasin kuupäev-kellaaeg andmetüüpi, kuid sain hoopis kuupäeva."
+
+#: fields.py:1150
+#, python-brace-format
+msgid "Invalid datetime for the timezone \"{timezone}\"."
+msgstr ""
+
+#: fields.py:1151
+msgid "Datetime value out of range."
+msgstr ""
+
+#: fields.py:1236
+#, python-brace-format
+msgid "Date has wrong format. Use one of these formats instead: {format}."
+msgstr "Valesti formaaditud kuupäev. Kasutage mõnda neist: {format}."
+
+#: fields.py:1237
+msgid "Expected a date but got a datetime."
+msgstr "Ootasin kuupäeva andmetüüpi, kuid sain hoopis kuupäev-kellaaja."
+
+#: fields.py:1303
+#, python-brace-format
+msgid "Time has wrong format. Use one of these formats instead: {format}."
+msgstr "Valesti formaaditud kellaaeg. Kasutage mõnda neist: {format}."
+
+#: fields.py:1365
+#, python-brace-format
+msgid "Duration has wrong format. Use one of these formats instead: {format}."
+msgstr "Valesti formaaditud kestvus. Kasutage mõnda neist: {format}"
+
+#: fields.py:1399 fields.py:1456
+#, python-brace-format
+msgid "\"{input}\" is not a valid choice."
+msgstr "\"{input}\" on sobimatu valik."
+
+#: fields.py:1402
+#, python-brace-format
+msgid "More than {count} items..."
+msgstr "Kirjeid on rohkem kui {count} ... "
+
+#: fields.py:1457 fields.py:1603 relations.py:485 serializers.py:570
+#, python-brace-format
+msgid "Expected a list of items but got type \"{input_type}\"."
+msgstr "Ootasin kirjete järjendit, kuid sain \"{input_type}\" - tüübi."
+
+#: fields.py:1458
+msgid "This selection may not be empty."
+msgstr "Valik ei tohi olla määramata."
+
+#: fields.py:1495
+#, python-brace-format
+msgid "\"{input}\" is not a valid path choice."
+msgstr "\"{input}\" on sobimatu valik."
+
+#: fields.py:1514
+msgid "No file was submitted."
+msgstr "Ühtegi faili ei esitatud."
+
+#: fields.py:1515
+msgid ""
+"The submitted data was not a file. Check the encoding type on the form."
+msgstr "Esitatud andmetes ei olnud faili. Kontrollige vormi kodeeringut."
+
+#: fields.py:1516
+msgid "No filename could be determined."
+msgstr "Ei suutnud tuvastada failinime."
+
+#: fields.py:1517
+msgid "The submitted file is empty."
+msgstr "Esitatud fail oli tühi."
+
+#: fields.py:1518
+#, python-brace-format
+msgid ""
+"Ensure this filename has at most {max_length} characters (it has {length})."
+msgstr "Veenduge, et failinimi oleks maksimaalselt {max_length} tähemärki pikk (praegu on {length})."
+
+#: fields.py:1566
+msgid ""
+"Upload a valid image. The file you uploaded was either not an image or a "
+"corrupted image."
+msgstr "Laadige üles kehtiv pildifail. Üles laetud fail ei olnud pilt või oli see katki."
+
+#: fields.py:1604 relations.py:486 serializers.py:571
+msgid "This list may not be empty."
+msgstr "Loetelu ei tohi olla määramata."
+
+#: fields.py:1605
+#, python-brace-format
+msgid "Ensure this field has at least {min_length} elements."
+msgstr ""
+
+#: fields.py:1606
+#, python-brace-format
+msgid "Ensure this field has no more than {max_length} elements."
+msgstr ""
+
+#: fields.py:1682
+#, python-brace-format
+msgid "Expected a dictionary of items but got type \"{input_type}\"."
+msgstr "Ootasin kirjete sõnastikku, kuid sain \"{input_type}\"."
+
+#: fields.py:1683
+msgid "This dictionary may not be empty."
+msgstr ""
+
+#: fields.py:1755
+msgid "Value must be valid JSON."
+msgstr "Väärtus peab olema valiidne JSON."
+
+#: filters.py:49 templates/rest_framework/filters/search.html:2
+msgid "Search"
+msgstr "Otsing"
+
+#: filters.py:50
+msgid "A search term."
+msgstr ""
+
+#: filters.py:180 templates/rest_framework/filters/ordering.html:3
+msgid "Ordering"
+msgstr "Järjestus"
+
+#: filters.py:181
+msgid "Which field to use when ordering the results."
+msgstr ""
+
+#: filters.py:287
+msgid "ascending"
+msgstr "kasvav"
+
+#: filters.py:288
+msgid "descending"
+msgstr "kahanev"
+
+#: pagination.py:174
+msgid "A page number within the paginated result set."
+msgstr ""
+
+#: pagination.py:179 pagination.py:372 pagination.py:590
+msgid "Number of results to return per page."
+msgstr ""
+
+#: pagination.py:189
+msgid "Invalid page."
+msgstr "Sobimatu lehekülg."
+
+#: pagination.py:374
+msgid "The initial index from which to return the results."
+msgstr ""
+
+#: pagination.py:581
+msgid "The pagination cursor value."
+msgstr ""
+
+#: pagination.py:583
+msgid "Invalid cursor"
+msgstr "Sobimatu kursor"
+
+#: relations.py:246
+#, python-brace-format
+msgid "Invalid pk \"{pk_value}\" - object does not exist."
+msgstr "Sobimatu primaarvõti \"{pk_value}\" - objekti pole olemas."
+
+#: relations.py:247
+#, python-brace-format
+msgid "Incorrect type. Expected pk value, received {data_type}."
+msgstr "Sobimatu andmetüüp. Ootasin primaarvõtit, sain {data_type}."
+
+#: relations.py:280
+msgid "Invalid hyperlink - No URL match."
+msgstr "Sobimatu hüperlink - ei leidnud URLi vastet."
+
+#: relations.py:281
+msgid "Invalid hyperlink - Incorrect URL match."
+msgstr "Sobimatu hüperlink - vale URLi vaste."
+
+#: relations.py:282
+msgid "Invalid hyperlink - Object does not exist."
+msgstr "Sobimatu hüperlink - objekti ei eksisteeri."
+
+#: relations.py:283
+#, python-brace-format
+msgid "Incorrect type. Expected URL string, received {data_type}."
+msgstr "Sobimatu andmetüüp. Ootasin URLi sõne, sain {data_type}."
+
+#: relations.py:448
+#, python-brace-format
+msgid "Object with {slug_name}={value} does not exist."
+msgstr "Objekti {slug_name}={value} ei eksisteeri."
+
+#: relations.py:449
+msgid "Invalid value."
+msgstr "Sobimatu väärtus."
+
+#: schemas/utils.py:32
+msgid "unique integer value"
+msgstr ""
+
+#: schemas/utils.py:34
+msgid "UUID string"
+msgstr ""
+
+#: schemas/utils.py:36
+msgid "unique value"
+msgstr ""
+
+#: schemas/utils.py:38
+#, python-brace-format
+msgid "A {value_type} identifying this {name}."
+msgstr ""
+
+#: serializers.py:337
+#, python-brace-format
+msgid "Invalid data. Expected a dictionary, but got {datatype}."
+msgstr "Sobimatud andmed. Ootasin sõnastikku, kuid sain {datatype}."
+
+#: templates/rest_framework/admin.html:116
+#: templates/rest_framework/base.html:136
+msgid "Extra Actions"
+msgstr ""
+
+#: templates/rest_framework/admin.html:130
+#: templates/rest_framework/base.html:150
+msgid "Filters"
+msgstr "Filtrid"
+
+#: templates/rest_framework/base.html:37
+msgid "navbar"
+msgstr ""
+
+#: templates/rest_framework/base.html:75
+msgid "content"
+msgstr ""
+
+#: templates/rest_framework/base.html:78
+msgid "request form"
+msgstr ""
+
+#: templates/rest_framework/base.html:157
+msgid "main content"
+msgstr ""
+
+#: templates/rest_framework/base.html:173
+msgid "request info"
+msgstr ""
+
+#: templates/rest_framework/base.html:177
+msgid "response info"
+msgstr ""
+
+#: templates/rest_framework/horizontal/radio.html:4
+#: templates/rest_framework/inline/radio.html:3
+#: templates/rest_framework/vertical/radio.html:3
+msgid "None"
+msgstr "Puudub"
+
+#: templates/rest_framework/horizontal/select_multiple.html:4
+#: templates/rest_framework/inline/select_multiple.html:3
+#: templates/rest_framework/vertical/select_multiple.html:3
+msgid "No items to select."
+msgstr "Pole midagi valida."
+
+#: validators.py:39
+msgid "This field must be unique."
+msgstr "Selle välja väärtus peab olema unikaalne."
+
+#: validators.py:89
+#, python-brace-format
+msgid "The fields {field_names} must make a unique set."
+msgstr "Veerud {field_names} peavad moodustama unikaalse hulga."
+
+#: validators.py:171
+#, python-brace-format
+msgid "Surrogate characters are not allowed: U+{code_point:X}."
+msgstr ""
+
+#: validators.py:243
+#, python-brace-format
+msgid "This field must be unique for the \"{date_field}\" date."
+msgstr "Selle välja väärtus peab olema unikaalne veerus \"{date_field}\" märgitud kuupäeval."
+
+#: validators.py:258
+#, python-brace-format
+msgid "This field must be unique for the \"{date_field}\" month."
+msgstr "Selle välja väärtus peab olema unikaalneveerus \"{date_field}\" märgitud kuul."
+
+#: validators.py:271
+#, python-brace-format
+msgid "This field must be unique for the \"{date_field}\" year."
+msgstr "Selle välja väärtus peab olema unikaalneveerus \"{date_field}\" märgitud aastal."
+
+#: versioning.py:40
+msgid "Invalid version in \"Accept\" header."
+msgstr "Sobimatu versioon \"Accept\" päises."
+
+#: versioning.py:71
+msgid "Invalid version in URL path."
+msgstr "Sobimatu versioon URLi rajas."
+
+#: versioning.py:116
+msgid "Invalid version in URL path. Does not match any version namespace."
+msgstr "Sobimatu versioon URLis - see ei vasta ühelegi teadaolevale."
+
+#: versioning.py:148
+msgid "Invalid version in hostname."
+msgstr "Sobimatu versioon hostinimes."
+
+#: versioning.py:170
+msgid "Invalid version in query parameter."
+msgstr "Sobimatu versioon päringu parameetris."

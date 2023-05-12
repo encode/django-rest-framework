@@ -1,0 +1,574 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+# Mads Jensen <mje@inducks.org>, 2015-2017
+# Mikkel Munch Mortensen <3xm@detfalskested.dk>, 2015
+msgid ""
+msgstr ""
+"Project-Id-Version: Django REST framework\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-10-13 21:45+0200\n"
+"PO-Revision-Date: 2020-10-13 19:45+0000\n"
+"Last-Translator: Xavier Ordoquy <xordoquy@linovia.com>\n"
+"Language-Team: Danish (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/da/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: da\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: authentication.py:70
+msgid "Invalid basic header. No credentials provided."
+msgstr "Ugyldig basic header. Ingen legitimation angivet."
+
+#: authentication.py:73
+msgid "Invalid basic header. Credentials string should not contain spaces."
+msgstr "Ugyldig basic header. Legitimationsstrenge må ikke indeholde mellemrum."
+
+#: authentication.py:83
+msgid "Invalid basic header. Credentials not correctly base64 encoded."
+msgstr "Ugyldig basic header. Legitimationen er ikke base64 encoded på korrekt vis."
+
+#: authentication.py:101
+msgid "Invalid username/password."
+msgstr "Ugyldigt brugernavn/kodeord."
+
+#: authentication.py:104 authentication.py:206
+msgid "User inactive or deleted."
+msgstr "Inaktiv eller slettet bruger."
+
+#: authentication.py:184
+msgid "Invalid token header. No credentials provided."
+msgstr "Ugyldig token header."
+
+#: authentication.py:187
+msgid "Invalid token header. Token string should not contain spaces."
+msgstr "Ugyldig token header. Token-strenge må ikke indeholde mellemrum."
+
+#: authentication.py:193
+msgid ""
+"Invalid token header. Token string should not contain invalid characters."
+msgstr "Ugyldig token header. Token streng bør ikke indeholde ugyldige karakterer."
+
+#: authentication.py:203
+msgid "Invalid token."
+msgstr "Ugyldigt token."
+
+#: authtoken/apps.py:7
+msgid "Auth Token"
+msgstr ""
+
+#: authtoken/models.py:13
+msgid "Key"
+msgstr "Nøgle"
+
+#: authtoken/models.py:16
+msgid "User"
+msgstr "Bruger"
+
+#: authtoken/models.py:18
+msgid "Created"
+msgstr "Oprettet"
+
+#: authtoken/models.py:27 authtoken/serializers.py:19
+msgid "Token"
+msgstr "Token"
+
+#: authtoken/models.py:28
+msgid "Tokens"
+msgstr "Tokens"
+
+#: authtoken/serializers.py:9
+msgid "Username"
+msgstr "Brugernavn"
+
+#: authtoken/serializers.py:13
+msgid "Password"
+msgstr "Kodeord"
+
+#: authtoken/serializers.py:35
+msgid "Unable to log in with provided credentials."
+msgstr "Kunne ikke logge ind med den angivne legitimation."
+
+#: authtoken/serializers.py:38
+msgid "Must include \"username\" and \"password\"."
+msgstr "Skal indeholde \"username\" og \"password\"."
+
+#: exceptions.py:102
+msgid "A server error occurred."
+msgstr "Der er sket en serverfejl."
+
+#: exceptions.py:142
+msgid "Invalid input."
+msgstr ""
+
+#: exceptions.py:161
+msgid "Malformed request."
+msgstr "Misdannet forespørgsel."
+
+#: exceptions.py:167
+msgid "Incorrect authentication credentials."
+msgstr "Ugyldig legitimation til autentificering."
+
+#: exceptions.py:173
+msgid "Authentication credentials were not provided."
+msgstr "Legitimation til autentificering blev ikke angivet."
+
+#: exceptions.py:179
+msgid "You do not have permission to perform this action."
+msgstr "Du har ikke lov til at udføre denne handling."
+
+#: exceptions.py:185
+msgid "Not found."
+msgstr "Ikke fundet."
+
+#: exceptions.py:191
+#, python-brace-format
+msgid "Method \"{method}\" not allowed."
+msgstr "Metoden \"{method}\" er ikke tilladt."
+
+#: exceptions.py:202
+msgid "Could not satisfy the request Accept header."
+msgstr "Kunne ikke efterkomme forespørgslens Accept header."
+
+#: exceptions.py:212
+#, python-brace-format
+msgid "Unsupported media type \"{media_type}\" in request."
+msgstr "Forespørgslens media type, \"{media_type}\", er ikke understøttet."
+
+#: exceptions.py:223
+msgid "Request was throttled."
+msgstr "Forespørgslen blev neddroslet."
+
+#: exceptions.py:224
+#, python-brace-format
+msgid "Expected available in {wait} second."
+msgstr ""
+
+#: exceptions.py:225
+#, python-brace-format
+msgid "Expected available in {wait} seconds."
+msgstr ""
+
+#: fields.py:316 relations.py:245 relations.py:279 validators.py:90
+#: validators.py:183
+msgid "This field is required."
+msgstr "Dette felt er påkrævet."
+
+#: fields.py:317
+msgid "This field may not be null."
+msgstr "Dette felt må ikke være null."
+
+#: fields.py:701
+msgid "Must be a valid boolean."
+msgstr ""
+
+#: fields.py:766
+msgid "Not a valid string."
+msgstr ""
+
+#: fields.py:767
+msgid "This field may not be blank."
+msgstr "Dette felt må ikke være tomt."
+
+#: fields.py:768 fields.py:1881
+#, python-brace-format
+msgid "Ensure this field has no more than {max_length} characters."
+msgstr "Tjek at dette felt ikke indeholder flere end {max_length} tegn."
+
+#: fields.py:769
+#, python-brace-format
+msgid "Ensure this field has at least {min_length} characters."
+msgstr "Tjek at dette felt indeholder mindst {min_length} tegn."
+
+#: fields.py:816
+msgid "Enter a valid email address."
+msgstr "Angiv en gyldig e-mailadresse."
+
+#: fields.py:827
+msgid "This value does not match the required pattern."
+msgstr "Denne værdi passer ikke med det påkrævede mønster."
+
+#: fields.py:838
+msgid ""
+"Enter a valid \"slug\" consisting of letters, numbers, underscores or "
+"hyphens."
+msgstr "Indtast en gyldig \"slug\", bestående af bogstaver, tal, bund- og bindestreger."
+
+#: fields.py:839
+msgid ""
+"Enter a valid \"slug\" consisting of Unicode letters, numbers, underscores, "
+"or hyphens."
+msgstr ""
+
+#: fields.py:854
+msgid "Enter a valid URL."
+msgstr "Indtast en gyldig URL."
+
+#: fields.py:867
+msgid "Must be a valid UUID."
+msgstr ""
+
+#: fields.py:903
+msgid "Enter a valid IPv4 or IPv6 address."
+msgstr "Indtast en gyldig IPv4 eller IPv6 adresse."
+
+#: fields.py:931
+msgid "A valid integer is required."
+msgstr "Et gyldigt heltal er påkrævet."
+
+#: fields.py:932 fields.py:969 fields.py:1005 fields.py:1366
+#, python-brace-format
+msgid "Ensure this value is less than or equal to {max_value}."
+msgstr "Tjek at værdien er mindre end eller lig med {max_value}."
+
+#: fields.py:933 fields.py:970 fields.py:1006 fields.py:1367
+#, python-brace-format
+msgid "Ensure this value is greater than or equal to {min_value}."
+msgstr "Tjek at værdien er større end eller lig med {min_value}."
+
+#: fields.py:934 fields.py:971 fields.py:1010
+msgid "String value too large."
+msgstr "Strengværdien er for stor."
+
+#: fields.py:968 fields.py:1004
+msgid "A valid number is required."
+msgstr "Et gyldigt tal er påkrævet."
+
+#: fields.py:1007
+#, python-brace-format
+msgid "Ensure that there are no more than {max_digits} digits in total."
+msgstr "Tjek at der ikke er flere end {max_digits} cifre i alt."
+
+#: fields.py:1008
+#, python-brace-format
+msgid ""
+"Ensure that there are no more than {max_decimal_places} decimal places."
+msgstr "Tjek at der ikke er flere end {max_decimal_places} cifre efter kommaet."
+
+#: fields.py:1009
+#, python-brace-format
+msgid ""
+"Ensure that there are no more than {max_whole_digits} digits before the "
+"decimal point."
+msgstr "Tjek at der ikke er flere end {max_whole_digits} cifre før kommaet."
+
+#: fields.py:1148
+#, python-brace-format
+msgid "Datetime has wrong format. Use one of these formats instead: {format}."
+msgstr "Datotid har et forkert format. Brug i stedet et af disse formater: {format}."
+
+#: fields.py:1149
+msgid "Expected a datetime but got a date."
+msgstr "Forventede en datotid, men fik en dato."
+
+#: fields.py:1150
+#, python-brace-format
+msgid "Invalid datetime for the timezone \"{timezone}\"."
+msgstr ""
+
+#: fields.py:1151
+msgid "Datetime value out of range."
+msgstr ""
+
+#: fields.py:1236
+#, python-brace-format
+msgid "Date has wrong format. Use one of these formats instead: {format}."
+msgstr "Dato har et forkert format. Brug i stedet et af disse formater: {format}."
+
+#: fields.py:1237
+msgid "Expected a date but got a datetime."
+msgstr "Forventede en dato men fik en datotid."
+
+#: fields.py:1303
+#, python-brace-format
+msgid "Time has wrong format. Use one of these formats instead: {format}."
+msgstr "Klokkeslæt har forkert format. Brug i stedet et af disse formater: {format}. "
+
+#: fields.py:1365
+#, python-brace-format
+msgid "Duration has wrong format. Use one of these formats instead: {format}."
+msgstr "Varighed har forkert format. Brug istedet et af følgende formater: {format}."
+
+#: fields.py:1399 fields.py:1456
+#, python-brace-format
+msgid "\"{input}\" is not a valid choice."
+msgstr "\"{input}\" er ikke et gyldigt valg."
+
+#: fields.py:1402
+#, python-brace-format
+msgid "More than {count} items..."
+msgstr "Flere end {count} objekter..."
+
+#: fields.py:1457 fields.py:1603 relations.py:485 serializers.py:570
+#, python-brace-format
+msgid "Expected a list of items but got type \"{input_type}\"."
+msgstr "Forventede en liste, men fik noget af typen \"{input_type}\"."
+
+#: fields.py:1458
+msgid "This selection may not be empty."
+msgstr "Dette valg kan være tomt."
+
+#: fields.py:1495
+#, python-brace-format
+msgid "\"{input}\" is not a valid path choice."
+msgstr "\"{input}\" er ikke et gyldigt valg af adresse."
+
+#: fields.py:1514
+msgid "No file was submitted."
+msgstr "Ingen medsendt fil."
+
+#: fields.py:1515
+msgid ""
+"The submitted data was not a file. Check the encoding type on the form."
+msgstr "Det medsendte data var ikke en fil. Tjek typen af indkodning på formularen."
+
+#: fields.py:1516
+msgid "No filename could be determined."
+msgstr "Filnavnet kunne ikke afgøres."
+
+#: fields.py:1517
+msgid "The submitted file is empty."
+msgstr "Den medsendte fil er tom."
+
+#: fields.py:1518
+#, python-brace-format
+msgid ""
+"Ensure this filename has at most {max_length} characters (it has {length})."
+msgstr "Sørg for at filnavnet er højst {max_length} langt (det er {length})."
+
+#: fields.py:1566
+msgid ""
+"Upload a valid image. The file you uploaded was either not an image or a "
+"corrupted image."
+msgstr "Medsend et gyldigt billede. Den medsendte fil var enten ikke et billede eller billedfilen var ødelagt."
+
+#: fields.py:1604 relations.py:486 serializers.py:571
+msgid "This list may not be empty."
+msgstr "Denne liste er muligvis ikke tom."
+
+#: fields.py:1605
+#, python-brace-format
+msgid "Ensure this field has at least {min_length} elements."
+msgstr ""
+
+#: fields.py:1606
+#, python-brace-format
+msgid "Ensure this field has no more than {max_length} elements."
+msgstr ""
+
+#: fields.py:1682
+#, python-brace-format
+msgid "Expected a dictionary of items but got type \"{input_type}\"."
+msgstr "Forventede en dictionary, men fik noget af typen \"{input_type}\"."
+
+#: fields.py:1683
+msgid "This dictionary may not be empty."
+msgstr ""
+
+#: fields.py:1755
+msgid "Value must be valid JSON."
+msgstr "Værdi skal være gyldig JSON."
+
+#: filters.py:49 templates/rest_framework/filters/search.html:2
+msgid "Search"
+msgstr "Søg"
+
+#: filters.py:50
+msgid "A search term."
+msgstr ""
+
+#: filters.py:180 templates/rest_framework/filters/ordering.html:3
+msgid "Ordering"
+msgstr "Sortering"
+
+#: filters.py:181
+msgid "Which field to use when ordering the results."
+msgstr ""
+
+#: filters.py:287
+msgid "ascending"
+msgstr "stigende"
+
+#: filters.py:288
+msgid "descending"
+msgstr "faldende"
+
+#: pagination.py:174
+msgid "A page number within the paginated result set."
+msgstr ""
+
+#: pagination.py:179 pagination.py:372 pagination.py:590
+msgid "Number of results to return per page."
+msgstr ""
+
+#: pagination.py:189
+msgid "Invalid page."
+msgstr "Ugyldig side"
+
+#: pagination.py:374
+msgid "The initial index from which to return the results."
+msgstr ""
+
+#: pagination.py:581
+msgid "The pagination cursor value."
+msgstr ""
+
+#: pagination.py:583
+msgid "Invalid cursor"
+msgstr "Ugyldig cursor"
+
+#: relations.py:246
+#, python-brace-format
+msgid "Invalid pk \"{pk_value}\" - object does not exist."
+msgstr "Ugyldig primærnøgle \"{pk_value}\" - objektet findes ikke."
+
+#: relations.py:247
+#, python-brace-format
+msgid "Incorrect type. Expected pk value, received {data_type}."
+msgstr "Ugyldig type. Forventet værdi er primærnøgle, fik {data_type}."
+
+#: relations.py:280
+msgid "Invalid hyperlink - No URL match."
+msgstr "Ugyldigt hyperlink - intet URL match."
+
+#: relations.py:281
+msgid "Invalid hyperlink - Incorrect URL match."
+msgstr "Ugyldigt hyperlink - forkert URL match."
+
+#: relations.py:282
+msgid "Invalid hyperlink - Object does not exist."
+msgstr "Ugyldigt hyperlink - objektet findes ikke."
+
+#: relations.py:283
+#, python-brace-format
+msgid "Incorrect type. Expected URL string, received {data_type}."
+msgstr "Forkert type. Forventede en URL-streng, fik {data_type}."
+
+#: relations.py:448
+#, python-brace-format
+msgid "Object with {slug_name}={value} does not exist."
+msgstr "Object med {slug_name}={value} findes ikke."
+
+#: relations.py:449
+msgid "Invalid value."
+msgstr "Ugyldig værdi."
+
+#: schemas/utils.py:32
+msgid "unique integer value"
+msgstr ""
+
+#: schemas/utils.py:34
+msgid "UUID string"
+msgstr ""
+
+#: schemas/utils.py:36
+msgid "unique value"
+msgstr ""
+
+#: schemas/utils.py:38
+#, python-brace-format
+msgid "A {value_type} identifying this {name}."
+msgstr ""
+
+#: serializers.py:337
+#, python-brace-format
+msgid "Invalid data. Expected a dictionary, but got {datatype}."
+msgstr "Ugyldig data. Forventede en dictionary, men fik {datatype}."
+
+#: templates/rest_framework/admin.html:116
+#: templates/rest_framework/base.html:136
+msgid "Extra Actions"
+msgstr ""
+
+#: templates/rest_framework/admin.html:130
+#: templates/rest_framework/base.html:150
+msgid "Filters"
+msgstr "Filtre"
+
+#: templates/rest_framework/base.html:37
+msgid "navbar"
+msgstr ""
+
+#: templates/rest_framework/base.html:75
+msgid "content"
+msgstr ""
+
+#: templates/rest_framework/base.html:78
+msgid "request form"
+msgstr ""
+
+#: templates/rest_framework/base.html:157
+msgid "main content"
+msgstr ""
+
+#: templates/rest_framework/base.html:173
+msgid "request info"
+msgstr ""
+
+#: templates/rest_framework/base.html:177
+msgid "response info"
+msgstr ""
+
+#: templates/rest_framework/horizontal/radio.html:4
+#: templates/rest_framework/inline/radio.html:3
+#: templates/rest_framework/vertical/radio.html:3
+msgid "None"
+msgstr "Ingen"
+
+#: templates/rest_framework/horizontal/select_multiple.html:4
+#: templates/rest_framework/inline/select_multiple.html:3
+#: templates/rest_framework/vertical/select_multiple.html:3
+msgid "No items to select."
+msgstr "Intet at vælge."
+
+#: validators.py:39
+msgid "This field must be unique."
+msgstr "Dette felt skal være unikt."
+
+#: validators.py:89
+#, python-brace-format
+msgid "The fields {field_names} must make a unique set."
+msgstr "Felterne {field_names} skal udgøre et unikt sæt."
+
+#: validators.py:171
+#, python-brace-format
+msgid "Surrogate characters are not allowed: U+{code_point:X}."
+msgstr ""
+
+#: validators.py:243
+#, python-brace-format
+msgid "This field must be unique for the \"{date_field}\" date."
+msgstr "Dette felt skal være unikt for \"{date_field}\"-datoen."
+
+#: validators.py:258
+#, python-brace-format
+msgid "This field must be unique for the \"{date_field}\" month."
+msgstr "Dette felt skal være unikt for \"{date_field}\"-måneden."
+
+#: validators.py:271
+#, python-brace-format
+msgid "This field must be unique for the \"{date_field}\" year."
+msgstr "Dette felt skal være unikt for \"{date_field}\"-året."
+
+#: versioning.py:40
+msgid "Invalid version in \"Accept\" header."
+msgstr "Ugyldig version i \"Accept\" headeren."
+
+#: versioning.py:71
+msgid "Invalid version in URL path."
+msgstr "Ugyldig version i URL-stien."
+
+#: versioning.py:116
+msgid "Invalid version in URL path. Does not match any version namespace."
+msgstr "Ugyldig version in URLen. Den stemmer ikke overens med nogen versionsnumre."
+
+#: versioning.py:148
+msgid "Invalid version in hostname."
+msgstr "Ugyldig version i hostname."
+
+#: versioning.py:170
+msgid "Invalid version in query parameter."
+msgstr "Ugyldig version i forespørgselsparameteren."

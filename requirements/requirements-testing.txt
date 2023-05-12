@@ -1,0 +1,7 @@
+# Pytest for running the tests.
+pytest>=6.2.0,<8.0
+pytest-cov>=4.0.0,<5.0
+pytest-django>=4.5.2,<5.0
+importlib-metadata<5.0
+# temporary pin of attrs
+attrs==22.1.0

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <title>{% if page.title %}{{ page.title }} - {% endif %}{{ config.site_name }}</title>
+  <link href="{{ 'img/favicon.ico'|url }}" rel="icon" type="image/x-icon">
+  <link rel="canonical" href="{{ page.canonical_url|url }}" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Django, API, REST{% if page %}, {{ page.title }}{% endif %}">
+  <meta name="author" content="Tom Christie">
+
+  <!-- Le styles -->
+  <link href="{{ 'css/prettify.css'|url }}" rel="stylesheet">
+  <link href="{{ 'css/bootstrap.css'|url }}" rel="stylesheet">
+  <link href="{{ 'css/bootstrap-responsive.css'|url }}" rel="stylesheet">
+  <link href="{{ 'css/default.css'|url }}" rel="stylesheet">
+
+
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-18852272-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script');
+      ga.type = 'text/javascript';
+      ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+  <style>
+  #sidebarInclude img {
+      margin-bottom: 10px;
+  }
+  #sidebarInclude a.promo {
+      color: black;
+  }
+    @media (max-width: 767px) {
+      div.promo {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body onload="prettyPrint()" class="{% if page and page.is_homepage %}index{% endif %}-page">
+
+  <div class="wrapper">
+    {% include "nav.html" %}
+
+    <div class="body-content">
+      <div class="container-fluid">
+        <!-- Search Modal -->
+        <div id="mkdocs_search_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3 id="myModalLabel">Documentation search</h3>
+          </div>
+
+          <div class="modal-body">
+            <form role="form" autocomplete="off">
+              <div class="form-group">
+                <input type="text" name="q" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+              </div>
+            </form>
+            <div id="mkdocs-search-results"></div>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="span3">
+            <div id="table-of-contents">
+              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
+                {% if page and page.is_homepage %}
+                  <li class="main">
+                    <a href="#">Django REST framework</a>
+                  </li>
+                {% endif %}
+
+                {% for toc_item in page.toc %}
+                  <li class="{% if page and not page.is_homepage %}main{% endif %}">
+                    <a href="{{ toc_item.url }}">{{ toc_item.title }}</a>
+                  </li>
+
+                  {% for toc_item in toc_item.children %}
+                    <li>
+                      <a href="{{ toc_item.url }}">{{ toc_item.title }}</a>
+                    </li>
+                  {% endfor %}
+                {% endfor %}
+
+                  <div class="promo">
+                    {% if page.toc %}<hr/>{% endif %}
+                    <div id="sidebarInclude">
+                  </div>
+              </ul>
+
+            </div>
+          </div>
+
+          <div id="main-content" class="span9">
+            {% block content %}
+              {% if page.meta.source %}
+                {% for filename in page.meta.source %}
+                  <a class="github" href="https://github.com/encode/django-rest-framework/tree/master/rest_framework/{{ filename }}">
+                    <span class="label label-info">{{ filename }}</span>
+                  </a>
+                {% endfor %}
+              {% endif %}
+
+              {{ page.content }}
+            {% endblock %}
+
+          </div> <!--/span-->
+        </div> <!--/row-->
+      </div> <!--/.fluid-container-->
+    </div> <!--/.body content-->
+    <div id="push"></div>
+  </div> <!--/.wrapper -->
+
+  <footer class="span12">
+    <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.
+    </p>
+  </footer>
+
+  <!-- Le javascript
+  ================================================== -->
+  <!-- Placed at the end of the document so the pages load faster -->
+  <script async src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
+  <script src="{{ 'js/jquery-1.8.1-min.js'|url }}"></script>
+  <script src="{{ 'js/prettify-1.0.js'|url }}"></script>
+  <script src="{{ 'js/bootstrap-2.1.1-min.js'|url }}"></script>
+  <script src="{{ 'js/theme.js'|url }}"></script>
+
+  <script>var base_url = '{{ base_url }}';</script>
+  {% for path in config.extra_javascript %}
+  <script src="{{ path|url }}" defer></script>
+  {% endfor %}
+
+  <script>
+    var shiftWindow = function() {
+      scrollBy(0, -50)
+    };
+
+    if (location.hash) shiftWindow();
+    window.addEventListener("hashchange", shiftWindow);
+
+    $('.dropdown-menu').on('click touchstart', function(event) {
+      event.stopPropagation();
+    });
+
+    // Dynamically force sidenav/dropdown to no higher than browser window
+    $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
+
+    $(function() {
+      $(window).resize(function() {
+        $('.side-nav, .dropdown-menu').css('max-height', window.innerHeight - 130);
+      });
+    });
+  </script>
+</body>
+
+</html>

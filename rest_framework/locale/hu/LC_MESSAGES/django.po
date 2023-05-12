@@ -1,0 +1,573 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+# Zoltan Szalai <defaultdict@gmail.com>, 2015,2018-2019
+msgid ""
+msgstr ""
+"Project-Id-Version: Django REST framework\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-10-13 21:45+0200\n"
+"PO-Revision-Date: 2020-10-13 19:45+0000\n"
+"Last-Translator: Xavier Ordoquy <xordoquy@linovia.com>\n"
+"Language-Team: Hungarian (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/hu/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: hu\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: authentication.py:70
+msgid "Invalid basic header. No credentials provided."
+msgstr "Érvénytelen basic fejléc. Nem voltak megadva azonosítók."
+
+#: authentication.py:73
+msgid "Invalid basic header. Credentials string should not contain spaces."
+msgstr "Érvénytelen basic fejléc. Az azonosító karakterlánc nem tartalmazhat szóközöket."
+
+#: authentication.py:83
+msgid "Invalid basic header. Credentials not correctly base64 encoded."
+msgstr "Érvénytelen basic fejléc. Az azonosítók base64 kódolása nem megfelelő."
+
+#: authentication.py:101
+msgid "Invalid username/password."
+msgstr "Érvénytelen felhasználónév/jelszó."
+
+#: authentication.py:104 authentication.py:206
+msgid "User inactive or deleted."
+msgstr "A felhasználó nincs aktiválva vagy törölve lett."
+
+#: authentication.py:184
+msgid "Invalid token header. No credentials provided."
+msgstr "Érvénytelen token fejléc. Nem voltak megadva azonosítók."
+
+#: authentication.py:187
+msgid "Invalid token header. Token string should not contain spaces."
+msgstr "Érvénytelen token fejléc. A token karakterlánc nem tartalmazhat szóközöket."
+
+#: authentication.py:193
+msgid ""
+"Invalid token header. Token string should not contain invalid characters."
+msgstr "Érvénytelen token fejléc. A token karakterlánc nem tartalmazhat érvénytelen karaktereket."
+
+#: authentication.py:203
+msgid "Invalid token."
+msgstr "Érvénytelen token."
+
+#: authtoken/apps.py:7
+msgid "Auth Token"
+msgstr "Auth token"
+
+#: authtoken/models.py:13
+msgid "Key"
+msgstr "Kulcs"
+
+#: authtoken/models.py:16
+msgid "User"
+msgstr "Felhasználó"
+
+#: authtoken/models.py:18
+msgid "Created"
+msgstr "Létrehozva"
+
+#: authtoken/models.py:27 authtoken/serializers.py:19
+msgid "Token"
+msgstr "Token"
+
+#: authtoken/models.py:28
+msgid "Tokens"
+msgstr "Tokenek"
+
+#: authtoken/serializers.py:9
+msgid "Username"
+msgstr "Felhasználónév"
+
+#: authtoken/serializers.py:13
+msgid "Password"
+msgstr "Jelszó"
+
+#: authtoken/serializers.py:35
+msgid "Unable to log in with provided credentials."
+msgstr "A megadott azonosítókkal nem lehet bejelentkezni."
+
+#: authtoken/serializers.py:38
+msgid "Must include \"username\" and \"password\"."
+msgstr "Tartalmaznia kell a \"felhasználónevet\" és a \"jelszót\"."
+
+#: exceptions.py:102
+msgid "A server error occurred."
+msgstr "Szerver oldali hiba történt."
+
+#: exceptions.py:142
+msgid "Invalid input."
+msgstr ""
+
+#: exceptions.py:161
+msgid "Malformed request."
+msgstr "Hibás kérés."
+
+#: exceptions.py:167
+msgid "Incorrect authentication credentials."
+msgstr "Hibás azonosítók."
+
+#: exceptions.py:173
+msgid "Authentication credentials were not provided."
+msgstr "Nem voltak megadva azonosítók."
+
+#: exceptions.py:179
+msgid "You do not have permission to perform this action."
+msgstr "Nincs jogosultsága a művelet végrehajtásához."
+
+#: exceptions.py:185
+msgid "Not found."
+msgstr "Nem található."
+
+#: exceptions.py:191
+#, python-brace-format
+msgid "Method \"{method}\" not allowed."
+msgstr "A \"{method}\" metódus nem megengedett."
+
+#: exceptions.py:202
+msgid "Could not satisfy the request Accept header."
+msgstr "A kérés Accept fejlécét nem lehetett teljesíteni."
+
+#: exceptions.py:212
+#, python-brace-format
+msgid "Unsupported media type \"{media_type}\" in request."
+msgstr "Nem támogatott média típus \"{media_type}\" a kérésben."
+
+#: exceptions.py:223
+msgid "Request was throttled."
+msgstr "A kérés korlátozva lett."
+
+#: exceptions.py:224
+#, python-brace-format
+msgid "Expected available in {wait} second."
+msgstr ""
+
+#: exceptions.py:225
+#, python-brace-format
+msgid "Expected available in {wait} seconds."
+msgstr ""
+
+#: fields.py:316 relations.py:245 relations.py:279 validators.py:90
+#: validators.py:183
+msgid "This field is required."
+msgstr "Ennek a mezőnek a megadása kötelező."
+
+#: fields.py:317
+msgid "This field may not be null."
+msgstr "Ez a mező nem lehet null értékű."
+
+#: fields.py:701
+msgid "Must be a valid boolean."
+msgstr ""
+
+#: fields.py:766
+msgid "Not a valid string."
+msgstr ""
+
+#: fields.py:767
+msgid "This field may not be blank."
+msgstr "Ez a mező nem lehet üres."
+
+#: fields.py:768 fields.py:1881
+#, python-brace-format
+msgid "Ensure this field has no more than {max_length} characters."
+msgstr "Bizonyosodjon meg arról, hogy ez a mező legfeljebb {max_length} karakterből áll."
+
+#: fields.py:769
+#, python-brace-format
+msgid "Ensure this field has at least {min_length} characters."
+msgstr "Bizonyosodjon meg arról, hogy ez a mező legalább {min_length} karakterből áll."
+
+#: fields.py:816
+msgid "Enter a valid email address."
+msgstr "Adjon meg egy érvényes e-mail címet!"
+
+#: fields.py:827
+msgid "This value does not match the required pattern."
+msgstr "Ez az érték nem illeszkedik a szükséges mintázatra."
+
+#: fields.py:838
+msgid ""
+"Enter a valid \"slug\" consisting of letters, numbers, underscores or "
+"hyphens."
+msgstr "Az URL barát cím csak betűket, számokat, aláhúzásokat és kötőjeleket tartalmazhat."
+
+#: fields.py:839
+msgid ""
+"Enter a valid \"slug\" consisting of Unicode letters, numbers, underscores, "
+"or hyphens."
+msgstr ""
+
+#: fields.py:854
+msgid "Enter a valid URL."
+msgstr "Adjon meg egy érvényes URL-t!"
+
+#: fields.py:867
+msgid "Must be a valid UUID."
+msgstr ""
+
+#: fields.py:903
+msgid "Enter a valid IPv4 or IPv6 address."
+msgstr "Adjon meg egy érvényes IPv4 vagy IPv6 címet!"
+
+#: fields.py:931
+msgid "A valid integer is required."
+msgstr "Egy érvényes egész szám megadása szükséges."
+
+#: fields.py:932 fields.py:969 fields.py:1005 fields.py:1366
+#, python-brace-format
+msgid "Ensure this value is less than or equal to {max_value}."
+msgstr "Bizonyosodjon meg arról, hogy ez az érték legfeljebb {max_value}."
+
+#: fields.py:933 fields.py:970 fields.py:1006 fields.py:1367
+#, python-brace-format
+msgid "Ensure this value is greater than or equal to {min_value}."
+msgstr "Bizonyosodjon meg arról, hogy ez az érték legalább {min_value}."
+
+#: fields.py:934 fields.py:971 fields.py:1010
+msgid "String value too large."
+msgstr "A karakterlánc túl hosszú."
+
+#: fields.py:968 fields.py:1004
+msgid "A valid number is required."
+msgstr "Egy érvényes szám megadása szükséges."
+
+#: fields.py:1007
+#, python-brace-format
+msgid "Ensure that there are no more than {max_digits} digits in total."
+msgstr "Bizonyosodjon meg arról, hogy a számjegyek száma összesen legfeljebb {max_digits}."
+
+#: fields.py:1008
+#, python-brace-format
+msgid ""
+"Ensure that there are no more than {max_decimal_places} decimal places."
+msgstr "Bizonyosodjon meg arról, hogy a tizedes tört törtrészében levő számjegyek száma összesen legfeljebb {max_decimal_places}."
+
+#: fields.py:1009
+#, python-brace-format
+msgid ""
+"Ensure that there are no more than {max_whole_digits} digits before the "
+"decimal point."
+msgstr "Bizonyosodjon meg arról, hogy a tizedes tört egész részében levő számjegyek száma összesen legfeljebb {max_whole_digits}."
+
+#: fields.py:1148
+#, python-brace-format
+msgid "Datetime has wrong format. Use one of these formats instead: {format}."
+msgstr "A dátum formátuma hibás. Használja ezek valamelyikét helyette: {format}."
+
+#: fields.py:1149
+msgid "Expected a datetime but got a date."
+msgstr "Időt is tartalmazó dátum helyett egy időt nem tartalmazó dátum lett elküldve."
+
+#: fields.py:1150
+#, python-brace-format
+msgid "Invalid datetime for the timezone \"{timezone}\"."
+msgstr ""
+
+#: fields.py:1151
+msgid "Datetime value out of range."
+msgstr ""
+
+#: fields.py:1236
+#, python-brace-format
+msgid "Date has wrong format. Use one of these formats instead: {format}."
+msgstr "A dátum formátuma hibás. Használja ezek valamelyikét helyette: {format}."
+
+#: fields.py:1237
+msgid "Expected a date but got a datetime."
+msgstr "Időt nem tartalmazó dátum helyett egy időt is tartalmazó dátum lett elküldve."
+
+#: fields.py:1303
+#, python-brace-format
+msgid "Time has wrong format. Use one of these formats instead: {format}."
+msgstr "Az idő formátuma hibás. Használja ezek valamelyikét helyette: {format}."
+
+#: fields.py:1365
+#, python-brace-format
+msgid "Duration has wrong format. Use one of these formats instead: {format}."
+msgstr "Az időtartam formátuma hibás. Használja ezek valamelyikét helyette: {format}."
+
+#: fields.py:1399 fields.py:1456
+#, python-brace-format
+msgid "\"{input}\" is not a valid choice."
+msgstr "Érvénytelen választási lehetőség: \"{input}\""
+
+#: fields.py:1402
+#, python-brace-format
+msgid "More than {count} items..."
+msgstr "Több, mint {count} elem  ..."
+
+#: fields.py:1457 fields.py:1603 relations.py:485 serializers.py:570
+#, python-brace-format
+msgid "Expected a list of items but got type \"{input_type}\"."
+msgstr "Elemek listája helyett \"{input_type}\" lett elküldve."
+
+#: fields.py:1458
+msgid "This selection may not be empty."
+msgstr "Választania kell egy elemet."
+
+#: fields.py:1495
+#, python-brace-format
+msgid "\"{input}\" is not a valid path choice."
+msgstr "Érvénytelen választási lehetőség: \"{input}\""
+
+#: fields.py:1514
+msgid "No file was submitted."
+msgstr "Semmilyen fájl sem került feltöltésre."
+
+#: fields.py:1515
+msgid ""
+"The submitted data was not a file. Check the encoding type on the form."
+msgstr "Az elküldött adat nem egy fájl volt. Ellenőrizze a kódolás típusát az űrlapon!"
+
+#: fields.py:1516
+msgid "No filename could be determined."
+msgstr "A fájlnév nem megállapítható."
+
+#: fields.py:1517
+msgid "The submitted file is empty."
+msgstr "A küldött fájl üres."
+
+#: fields.py:1518
+#, python-brace-format
+msgid ""
+"Ensure this filename has at most {max_length} characters (it has {length})."
+msgstr "Bizonyosodjon meg arról, hogy a fájlnév legfeljebb {max_length} karakterből áll (jelenlegi hossza: {length})."
+
+#: fields.py:1566
+msgid ""
+"Upload a valid image. The file you uploaded was either not an image or a "
+"corrupted image."
+msgstr "Töltsön fel egy érvényes képfájlt! A feltöltött fájl nem kép volt, vagy megsérült."
+
+#: fields.py:1604 relations.py:486 serializers.py:571
+msgid "This list may not be empty."
+msgstr "Nem lehet üres a lista."
+
+#: fields.py:1605
+#, python-brace-format
+msgid "Ensure this field has at least {min_length} elements."
+msgstr ""
+
+#: fields.py:1606
+#, python-brace-format
+msgid "Ensure this field has no more than {max_length} elements."
+msgstr ""
+
+#: fields.py:1682
+#, python-brace-format
+msgid "Expected a dictionary of items but got type \"{input_type}\"."
+msgstr "Dictionary elemek helyett \"{input_type}\" lett megadva."
+
+#: fields.py:1683
+msgid "This dictionary may not be empty."
+msgstr ""
+
+#: fields.py:1755
+msgid "Value must be valid JSON."
+msgstr "Az értéknek érvényes JSON-nek lennie."
+
+#: filters.py:49 templates/rest_framework/filters/search.html:2
+msgid "Search"
+msgstr "Keresés"
+
+#: filters.py:50
+msgid "A search term."
+msgstr ""
+
+#: filters.py:180 templates/rest_framework/filters/ordering.html:3
+msgid "Ordering"
+msgstr "Rendezés"
+
+#: filters.py:181
+msgid "Which field to use when ordering the results."
+msgstr ""
+
+#: filters.py:287
+msgid "ascending"
+msgstr "növekvő"
+
+#: filters.py:288
+msgid "descending"
+msgstr "csökkenő"
+
+#: pagination.py:174
+msgid "A page number within the paginated result set."
+msgstr ""
+
+#: pagination.py:179 pagination.py:372 pagination.py:590
+msgid "Number of results to return per page."
+msgstr ""
+
+#: pagination.py:189
+msgid "Invalid page."
+msgstr "Érvénytelen oldal."
+
+#: pagination.py:374
+msgid "The initial index from which to return the results."
+msgstr ""
+
+#: pagination.py:581
+msgid "The pagination cursor value."
+msgstr ""
+
+#: pagination.py:583
+msgid "Invalid cursor"
+msgstr "Érvénytelen kurzor"
+
+#: relations.py:246
+#, python-brace-format
+msgid "Invalid pk \"{pk_value}\" - object does not exist."
+msgstr "Érvénytelen pk \"{pk_value}\" - az objektum nem létezik."
+
+#: relations.py:247
+#, python-brace-format
+msgid "Incorrect type. Expected pk value, received {data_type}."
+msgstr "Helytelen típus. pk érték helyett {data_type} lett elküldve."
+
+#: relations.py:280
+msgid "Invalid hyperlink - No URL match."
+msgstr "Érvénytelen link - Nem illeszkedő URL."
+
+#: relations.py:281
+msgid "Invalid hyperlink - Incorrect URL match."
+msgstr "Érvénytelen link. - Eltérő URL illeszkedés."
+
+#: relations.py:282
+msgid "Invalid hyperlink - Object does not exist."
+msgstr "Érvénytelen link - Az objektum nem létezik."
+
+#: relations.py:283
+#, python-brace-format
+msgid "Incorrect type. Expected URL string, received {data_type}."
+msgstr "Helytelen típus. URL karakterlánc helyett {data_type} lett elküldve."
+
+#: relations.py:448
+#, python-brace-format
+msgid "Object with {slug_name}={value} does not exist."
+msgstr "Nem létezik olyan objektum, amelynél {slug_name}={value}."
+
+#: relations.py:449
+msgid "Invalid value."
+msgstr "Érvénytelen érték."
+
+#: schemas/utils.py:32
+msgid "unique integer value"
+msgstr ""
+
+#: schemas/utils.py:34
+msgid "UUID string"
+msgstr ""
+
+#: schemas/utils.py:36
+msgid "unique value"
+msgstr ""
+
+#: schemas/utils.py:38
+#, python-brace-format
+msgid "A {value_type} identifying this {name}."
+msgstr ""
+
+#: serializers.py:337
+#, python-brace-format
+msgid "Invalid data. Expected a dictionary, but got {datatype}."
+msgstr "Érvénytelen adat. Egy dictionary helyett {datatype} lett elküldve."
+
+#: templates/rest_framework/admin.html:116
+#: templates/rest_framework/base.html:136
+msgid "Extra Actions"
+msgstr ""
+
+#: templates/rest_framework/admin.html:130
+#: templates/rest_framework/base.html:150
+msgid "Filters"
+msgstr "Szűrők"
+
+#: templates/rest_framework/base.html:37
+msgid "navbar"
+msgstr ""
+
+#: templates/rest_framework/base.html:75
+msgid "content"
+msgstr ""
+
+#: templates/rest_framework/base.html:78
+msgid "request form"
+msgstr ""
+
+#: templates/rest_framework/base.html:157
+msgid "main content"
+msgstr ""
+
+#: templates/rest_framework/base.html:173
+msgid "request info"
+msgstr ""
+
+#: templates/rest_framework/base.html:177
+msgid "response info"
+msgstr ""
+
+#: templates/rest_framework/horizontal/radio.html:4
+#: templates/rest_framework/inline/radio.html:3
+#: templates/rest_framework/vertical/radio.html:3
+msgid "None"
+msgstr "Semmi"
+
+#: templates/rest_framework/horizontal/select_multiple.html:4
+#: templates/rest_framework/inline/select_multiple.html:3
+#: templates/rest_framework/vertical/select_multiple.html:3
+msgid "No items to select."
+msgstr "Nincsenek kiválasztható elemek."
+
+#: validators.py:39
+msgid "This field must be unique."
+msgstr "Ennek a mezőnek egyedinek kell lennie."
+
+#: validators.py:89
+#, python-brace-format
+msgid "The fields {field_names} must make a unique set."
+msgstr "A {field_names} mezőnevek nem tartalmazhatnak duplikátumot."
+
+#: validators.py:171
+#, python-brace-format
+msgid "Surrogate characters are not allowed: U+{code_point:X}."
+msgstr ""
+
+#: validators.py:243
+#, python-brace-format
+msgid "This field must be unique for the \"{date_field}\" date."
+msgstr "A mezőnek egyedinek kell lennie a \"{date_field}\" dátumra."
+
+#: validators.py:258
+#, python-brace-format
+msgid "This field must be unique for the \"{date_field}\" month."
+msgstr "A mezőnek egyedinek kell lennie a \"{date_field}\" hónapra."
+
+#: validators.py:271
+#, python-brace-format
+msgid "This field must be unique for the \"{date_field}\" year."
+msgstr "A mezőnek egyedinek kell lennie a \"{date_field}\" évre."
+
+#: versioning.py:40
+msgid "Invalid version in \"Accept\" header."
+msgstr "Érvénytelen verzió az \"Accept\" fejlécben."
+
+#: versioning.py:71
+msgid "Invalid version in URL path."
+msgstr "Érvénytelen verzió az URL elérési útban."
+
+#: versioning.py:116
+msgid "Invalid version in URL path. Does not match any version namespace."
+msgstr "Érvénytelen verzió az URL elérési útban. Nem illeszkedik egyetlen verzió névtérre sem."
+
+#: versioning.py:148
+msgid "Invalid version in hostname."
+msgstr "Érvénytelen verzió a hosztnévben."
+
+#: versioning.py:170
+msgid "Invalid version in query parameter."
+msgstr "Érvénytelen verzió a lekérdezési paraméterben."

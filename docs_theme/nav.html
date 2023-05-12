@@ -1,0 +1,46 @@
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="repo-link btn btn-primary btn-small" href="https://github.com/encode/django-rest-framework/tree/master">GitHub</a>
+          <a class="repo-link btn btn-inverse btn-small {% if not page.next_page %}disabled{% endif %}" rel="next" {% if page.next_page %}href="{{ page.next_page.url|url }}"{% endif %}>
+            Next <i class="icon-arrow-right icon-white"></i>
+          </a>
+          <a class="repo-link btn btn-inverse btn-small {% if not page.previous_page %}disabled{% endif %}" rel="prev" {% if page.previous_page %}href="{{ page.previous_page.url|url }}"{% endif %}>
+            <i class="icon-arrow-left icon-white"></i> Previous
+          </a>
+          <a id="search_modal_show" class="repo-link btn btn-inverse btn-small" href="#mkdocs_search_modal" data-toggle="modal" data-target="#mkdocs_search_modal"><i class="icon-search icon-white"></i> Search</a>
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="https://www.django-rest-framework.org/">Django REST framework</a>
+          <div class="nav-collapse collapse">
+            {% if nav|length>1 %}
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+              {% for nav_item in nav %} {% if nav_item.children %}
+              <li class="dropdown{% if nav_item.active %} active{% endif %}">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ nav_item.title }} <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  {% for nav_item in nav_item.children %}
+                  <li {% if nav_item.active %}class="active" {% endif %}>
+                    <a href="{{ nav_item.url|url }}">{{ nav_item.title }}</a>
+                  </li>
+                  {% endfor %}
+                </ul>
+              </li>
+              {% else %}
+              <li {% if nav_item.active %}class="active" {% endif %}>
+                <a href="{{ nav_item.url|url }}">{{ nav_item.title }}</a>
+              </li>
+              {% endif %} {% endfor %}
+
+            </ul>
+            {% endif %}
+          </div>
+          <!--/.nav-collapse -->
+
+        </div>
+      </div>
+    </div>

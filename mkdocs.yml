@@ -1,0 +1,86 @@
+site_name: Django REST framework
+site_url: https://www.django-rest-framework.org/
+site_description: Django REST framework - Web APIs for Django
+
+repo_url: https://github.com/encode/django-rest-framework
+
+theme:
+    name: mkdocs
+    custom_dir: docs_theme
+
+markdown_extensions:
+ - toc:
+    anchorlink: True
+
+nav:
+ - Home: 'index.md'
+ - Tutorial:
+    - 'Quickstart': 'tutorial/quickstart.md'
+    - '1 - Serialization': 'tutorial/1-serialization.md'
+    - '2 - Requests and responses': 'tutorial/2-requests-and-responses.md'
+    - '3 - Class based views': 'tutorial/3-class-based-views.md'
+    - '4 - Authentication and permissions': 'tutorial/4-authentication-and-permissions.md'
+    - '5 - Relationships and hyperlinked APIs': 'tutorial/5-relationships-and-hyperlinked-apis.md'
+    - '6 - Viewsets and routers': 'tutorial/6-viewsets-and-routers.md'
+ - API Guide:
+    - 'Requests': 'api-guide/requests.md'
+    - 'Responses': 'api-guide/responses.md'
+    - 'Views': 'api-guide/views.md'
+    - 'Generic views': 'api-guide/generic-views.md'
+    - 'Viewsets': 'api-guide/viewsets.md'
+    - 'Routers': 'api-guide/routers.md'
+    - 'Parsers': 'api-guide/parsers.md'
+    - 'Renderers': 'api-guide/renderers.md'
+    - 'Serializers': 'api-guide/serializers.md'
+    - 'Serializer fields': 'api-guide/fields.md'
+    - 'Serializer relations': 'api-guide/relations.md'
+    - 'Validators': 'api-guide/validators.md'
+    - 'Authentication': 'api-guide/authentication.md'
+    - 'Permissions': 'api-guide/permissions.md'
+    - 'Caching': 'api-guide/caching.md'
+    - 'Throttling': 'api-guide/throttling.md'
+    - 'Filtering': 'api-guide/filtering.md'
+    - 'Pagination': 'api-guide/pagination.md'
+    - 'Versioning': 'api-guide/versioning.md'
+    - 'Content negotiation': 'api-guide/content-negotiation.md'
+    - 'Metadata': 'api-guide/metadata.md'
+    - 'Schemas': 'api-guide/schemas.md'
+    - 'Format suffixes': 'api-guide/format-suffixes.md'
+    - 'Returning URLs': 'api-guide/reverse.md'
+    - 'Exceptions': 'api-guide/exceptions.md'
+    - 'Status codes': 'api-guide/status-codes.md'
+    - 'Testing': 'api-guide/testing.md'
+    - 'Settings': 'api-guide/settings.md'
+ - Topics:
+     - 'Documenting your API': 'topics/documenting-your-api.md'
+     - 'Internationalization': 'topics/internationalization.md'
+     - 'AJAX, CSRF & CORS': 'topics/ajax-csrf-cors.md'
+     - 'HTML & Forms': 'topics/html-and-forms.md'
+     - 'Browser Enhancements': 'topics/browser-enhancements.md'
+     - 'The Browsable API': 'topics/browsable-api.md'
+     - 'REST, Hypermedia & HATEOAS': 'topics/rest-hypermedia-hateoas.md'
+ - Community:
+     - 'Tutorials and Resources': 'community/tutorials-and-resources.md'
+     - 'Third Party Packages': 'community/third-party-packages.md'
+     - 'Contributing to REST framework': 'community/contributing.md'
+     - 'Project management': 'community/project-management.md'
+     - 'Release Notes': 'community/release-notes.md'
+     - '3.14 Announcement': 'community/3.14-announcement.md'
+     - '3.13 Announcement': 'community/3.13-announcement.md'
+     - '3.12 Announcement': 'community/3.12-announcement.md'
+     - '3.11 Announcement': 'community/3.11-announcement.md'
+     - '3.10 Announcement': 'community/3.10-announcement.md'
+     - '3.9 Announcement': 'community/3.9-announcement.md'
+     - '3.8 Announcement': 'community/3.8-announcement.md'
+     - '3.7 Announcement': 'community/3.7-announcement.md'
+     - '3.6 Announcement': 'community/3.6-announcement.md'
+     - '3.5 Announcement': 'community/3.5-announcement.md'
+     - '3.4 Announcement': 'community/3.4-announcement.md'
+     - '3.3 Announcement': 'community/3.3-announcement.md'
+     - '3.2 Announcement': 'community/3.2-announcement.md'
+     - '3.1 Announcement': 'community/3.1-announcement.md'
+     - '3.0 Announcement': 'community/3.0-announcement.md'
+     - 'Kickstarter Announcement': 'community/kickstarter-announcement.md'
+     - 'Mozilla Grant': 'community/mozilla-grant.md'
+     - 'Funding': 'community/funding.md'
+     - 'Jobs': 'community/jobs.md'
