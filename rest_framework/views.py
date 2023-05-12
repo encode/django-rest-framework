@@ -430,11 +430,11 @@ class APIView(View):
 
         # Ensure that the incoming request is permitted
         self.perform_authentication(request)
+        # only authentication before, other task ran after mutation
+        self.initialize_middleware_classes(request)
         self.check_permissions(request)
         self.check_throttles(request)
 
-        # authentication and other task ran before final mutation
-        self.initialize_middleware_classes(request)
 
     def finalize_response(self, request, response, *args, **kwargs):
         """
