@@ -27,19 +27,19 @@ def get_view_name(view):
     This function is the default for the `VIEW_NAME_FUNCTION` setting.
     """
     # Name may be set by some Views, such as a ViewSet.
-    name = getattr(view, "name", None)
+    name = getattr(view, 'name', None)
     if name is not None:
         return name
 
     name = view.__class__.__name__
-    name = formatting.remove_trailing_string(name, "View")
-    name = formatting.remove_trailing_string(name, "ViewSet")
+    name = formatting.remove_trailing_string(name, 'View')
+    name = formatting.remove_trailing_string(name, 'ViewSet')
     name = formatting.camelcase_to_spaces(name)
 
     # Suffix may be set by some Views, such as a ViewSet.
-    suffix = getattr(view, "suffix", None)
+    suffix = getattr(view, 'suffix', None)
     if suffix:
-        name += " " + suffix
+        name += ' ' + suffix
 
     return name
 
@@ -52,9 +52,9 @@ def get_view_description(view, html=False):
     This function is the default for the `VIEW_DESCRIPTION_FUNCTION` setting.
     """
     # Description may be set by some Views, such as a ViewSet.
-    description = getattr(view, "description", None)
+    description = getattr(view, 'description', None)
     if description is None:
-        description = view.__class__.__doc__ or ""
+        description = view.__class__.__doc__ or ''
 
     description = formatting.dedent(smart_str(description))
     if html:
@@ -64,7 +64,7 @@ def get_view_description(view, html=False):
 
 def set_rollback():
     for db in connections.all():
-        if db.settings_dict["ATOMIC_REQUESTS"] and db.in_atomic_block:
+        if db.settings_dict['ATOMIC_REQUESTS'] and db.in_atomic_block:
             db.set_rollback(True)
 
 
@@ -85,15 +85,15 @@ def exception_handler(exc, context):
 
     if isinstance(exc, exceptions.APIException):
         headers = {}
-        if getattr(exc, "auth_header", None):
-            headers["WWW-Authenticate"] = exc.auth_header
-        if getattr(exc, "wait", None):
-            headers["Retry-After"] = "%d" % exc.wait
+        if getattr(exc, 'auth_header', None):
+            headers['WWW-Authenticate'] = exc.auth_header
+        if getattr(exc, 'wait', None):
+            headers['Retry-After'] = '%d' % exc.wait
 
         if isinstance(exc.detail, (list, dict)):
             data = exc.detail
         else:
-            data = {"detail": exc.detail}
+            data = {'detail': exc.detail}
 
         set_rollback()
         return Response(data, status=exc.status_code, headers=headers)
@@ -102,8 +102,12 @@ def exception_handler(exc, context):
 
 
 class APIView(View):
+
     # The following policies may be set at either globally, or per-view.
+<<<<<<< HEAD
     middleware_classes = api_settings.DEFAULT_MIDDLEWARE_CLASSES
+=======
+>>>>>>> parent of 700cbf19 (Add middleware classes  support that run after drf mutate request)
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
     parser_classes = api_settings.DEFAULT_PARSER_CLASSES
     authentication_classes = api_settings.DEFAULT_AUTHENTICATION_CLASSES
@@ -126,15 +130,13 @@ class APIView(View):
         This allows us to discover information about the view when we do URL
         reverse lookups.  Used for breadcrumb generation.
         """
-        if isinstance(getattr(cls, "queryset", None), models.query.QuerySet):
-
+        if isinstance(getattr(cls, 'queryset', None), models.query.QuerySet):
             def force_evaluation():
                 raise RuntimeError(
-                    "Do not evaluate the `.queryset` attribute directly, "
-                    "as the result will be cached and reused between requests. "
-                    "Use `.all()` or call `.get_queryset()` instead."
+                    'Do not evaluate the `.queryset` attribute directly, '
+                    'as the result will be cached and reused between requests. '
+                    'Use `.all()` or call `.get_queryset()` instead.'
                 )
-
             cls.queryset._fetch_all = force_evaluation
 
         view = super().as_view(**initkwargs)
@@ -155,10 +157,10 @@ class APIView(View):
     @property
     def default_response_headers(self):
         headers = {
-            "Allow": ", ".join(self.allowed_methods),
+            'Allow': ', '.join(self.allowed_methods),
         }
         if len(self.renderer_classes) > 1:
-            headers["Vary"] = "Accept"
+            headers['Vary'] = 'Accept'
         return headers
 
     def http_method_not_allowed(self, request, *args, **kwargs):
@@ -199,9 +201,9 @@ class APIView(View):
         # Note: Additionally `request` and `encoding` will also be added
         #       to the context by the Request object.
         return {
-            "view": self,
-            "args": getattr(self, "args", ()),
-            "kwargs": getattr(self, "kwargs", {}),
+            'view': self,
+            'args': getattr(self, 'args', ()),
+            'kwargs': getattr(self, 'kwargs', {})
         }
 
     def get_renderer_context(self):
@@ -212,10 +214,10 @@ class APIView(View):
         # Note: Additionally 'response' will also be added to the context,
         #       by the Response object.
         return {
-            "view": self,
-            "args": getattr(self, "args", ()),
-            "kwargs": getattr(self, "kwargs", {}),
-            "request": getattr(self, "request", None),
+            'view': self,
+            'args': getattr(self, 'args', ()),
+            'kwargs': getattr(self, 'kwargs', {}),
+            'request': getattr(self, 'request', None)
         }
 
     def get_exception_handler_context(self):
@@ -224,10 +226,10 @@ class APIView(View):
         as the `context` argument.
         """
         return {
-            "view": self,
-            "args": getattr(self, "args", ()),
-            "kwargs": getattr(self, "kwargs", {}),
-            "request": getattr(self, "request", None),
+            'view': self,
+            'args': getattr(self, 'args', ()),
+            'kwargs': getattr(self, 'kwargs', {}),
+            'request': getattr(self, 'request', None)
         }
 
     def get_view_name(self):
@@ -289,7 +291,7 @@ class APIView(View):
         """
         Instantiate and return the content negotiation class to use.
         """
-        if not getattr(self, "_negotiator", None):
+        if not getattr(self, '_negotiator', None):
             self._negotiator = self.content_negotiation_class()
         return self._negotiator
 
@@ -334,8 +336,8 @@ class APIView(View):
             if not permission.has_permission(request, self):
                 self.permission_denied(
                     request,
-                    message=getattr(permission, "message", None),
-                    code=getattr(permission, "code", None),
+                    message=getattr(permission, 'message', None),
+                    code=getattr(permission, 'code', None)
                 )
 
     def check_object_permissions(self, request, obj):
@@ -347,8 +349,8 @@ class APIView(View):
             if not permission.has_object_permission(request, self, obj):
                 self.permission_denied(
                     request,
-                    message=getattr(permission, "message", None),
-                    code=getattr(permission, "code", None),
+                    message=getattr(permission, 'message', None),
+                    code=getattr(permission, 'code', None)
                 )
 
     def check_throttles(self, request):
@@ -365,7 +367,8 @@ class APIView(View):
             # Filter out `None` values which may happen in case of config / rate
             # changes, see #1438
             durations = [
-                duration for duration in throttle_durations if duration is not None
+                duration for duration in throttle_durations
+                if duration is not None
             ]
 
             duration = max(durations, default=None)
@@ -383,23 +386,6 @@ class APIView(View):
 
     # Dispatch methods
 
-    def get_middleware_classes(self):
-        """
-        get list of middleware class instance
-        """
-
-        return [middleware() for middleware in self.middleware_classes]
-
-    def initialize_middleware_classes(self, request):
-        """
-        Run custom middleware classes before prior to calling the method handler
-        """
-
-        for middleware in self.get_middleware_classes():
-            middleware(request)
-
-        return request  # Return mutated request
-
     def initialize_request(self, request, *args, **kwargs):
         """
         Returns the initial request object.
@@ -411,7 +397,7 @@ class APIView(View):
             parsers=self.get_parsers(),
             authenticators=self.get_authenticators(),
             negotiator=self.get_content_negotiator(),
-            parser_context=parser_context,
+            parser_context=parser_context
         )
 
     def initial(self, request, *args, **kwargs):
@@ -433,21 +419,19 @@ class APIView(View):
         self.check_permissions(request)
         self.check_throttles(request)
 
-        # authentication and other task ran before final mutation
-        self.initialize_middleware_classes(request)
-
     def finalize_response(self, request, response, *args, **kwargs):
         """
         Returns the final response object.
         """
         # Make the error obvious if a proper response is not returned
         assert isinstance(response, HttpResponseBase), (
-            "Expected a `Response`, `HttpResponse` or `HttpStreamingResponse` "
-            "to be returned from the view, but received a `%s`" % type(response)
+            'Expected a `Response`, `HttpResponse` or `HttpStreamingResponse` '
+            'to be returned from the view, but received a `%s`'
+            % type(response)
         )
 
         if isinstance(response, Response):
-            if not getattr(request, "accepted_renderer", None):
+            if not getattr(request, 'accepted_renderer', None):
                 neg = self.perform_content_negotiation(request, force=True)
                 request.accepted_renderer, request.accepted_media_type = neg
 
@@ -456,7 +440,7 @@ class APIView(View):
             response.renderer_context = self.get_renderer_context()
 
         # Add new vary headers to the response instead of overwriting.
-        vary_headers = self.headers.pop("Vary", None)
+        vary_headers = self.headers.pop('Vary', None)
         if vary_headers is not None:
             patch_vary_headers(response, cc_delim_re.split(vary_headers))
 
@@ -470,9 +454,8 @@ class APIView(View):
         Handle any exception that occurs, by returning an appropriate response,
         or re-raising the error.
         """
-        if isinstance(
-            exc, (exceptions.NotAuthenticated, exceptions.AuthenticationFailed)
-        ):
+        if isinstance(exc, (exceptions.NotAuthenticated,
+                            exceptions.AuthenticationFailed)):
             # WWW-Authenticate header for 401 responses, else coerce to 403
             auth_header = self.get_authenticate_header(self.request)
 
@@ -495,8 +478,8 @@ class APIView(View):
     def raise_uncaught_exception(self, exc):
         if settings.DEBUG:
             request = self.request
-            renderer_format = getattr(request.accepted_renderer, "format")
-            use_plaintext_traceback = renderer_format not in ("html", "api", "admin")
+            renderer_format = getattr(request.accepted_renderer, 'format')
+            use_plaintext_traceback = renderer_format not in ('html', 'api', 'admin')
             request.force_plaintext_errors(use_plaintext_traceback)
         raise exc
 
@@ -519,9 +502,8 @@ class APIView(View):
 
             # Get the appropriate handler method
             if request.method.lower() in self.http_method_names:
-                handler = getattr(
-                    self, request.method.lower(), self.http_method_not_allowed
-                )
+                handler = getattr(self, request.method.lower(),
+                                  self.http_method_not_allowed)
             else:
                 handler = self.http_method_not_allowed
 
