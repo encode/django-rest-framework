@@ -103,7 +103,7 @@ def exception_handler(exc, context):
 
 class APIView(View):
     # The following policies may be set at either globally, or per-view.
-    middleware_classes = api_settings.MIDDLEWARE_CLASSES
+    middleware_classes = api_settings.DEFAULT_MIDDLEWARE_CLASSES
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
     parser_classes = api_settings.DEFAULT_PARSER_CLASSES
     authentication_classes = api_settings.DEFAULT_AUTHENTICATION_CLASSES

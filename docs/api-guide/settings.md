@@ -41,7 +41,7 @@ The `api_settings` object will check for any user-defined settings, and otherwis
 
 *The following settings control the basic API policies, and are applied to every `APIView` class-based view, or `@api_view` function based view.*
 
-#### MIDDLEWARE_CLASSES
+#### DEFAULT_MIDDLEWARE_CLASSES
 
 A list or tuple of middleware classes, that is run prior to calling the method handler.
 

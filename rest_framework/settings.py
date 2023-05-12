@@ -29,7 +29,7 @@ from rest_framework import ISO_8601
 
 DEFAULTS = {
     # custom middleware class to run prior to calling the method handler
-    "MIDDLEWARE_CLASSES": [],
+    "DEFAULT_MIDDLEWARE_CLASSES": [],
     # Base API policies
     "DEFAULT_RENDERER_CLASSES": [
         "rest_framework.renderers.JSONRenderer",
