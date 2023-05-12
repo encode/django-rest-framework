@@ -435,7 +435,6 @@ class APIView(View):
         self.check_permissions(request)
         self.check_throttles(request)
 
-
     def finalize_response(self, request, response, *args, **kwargs):
         """
         Returns the final response object.
