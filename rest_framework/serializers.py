@@ -28,7 +28,7 @@ from django.utils.translation import gettext_lazy as _
 
 from rest_framework.compat import postgres_fields
 from rest_framework.exceptions import ErrorDetail, ValidationError
-from rest_framework.fields import get_error_detail, set_value
+from rest_framework.fields import get_error_detail
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, model_meta, representation
 from rest_framework.utils.field_mapping import (
@@ -346,6 +346,26 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
         'invalid': _('Invalid data. Expected a dictionary, but got {datatype}.')
     }
 
+    def set_value(self, dictionary, keys, value):
+        """
+        Similar to Python's built in `dictionary[key] = value`,
+        but takes a list of nested keys instead of a single key.
+
+        set_value({'a': 1}, [], {'b': 2}) -> {'a': 1, 'b': 2}
+        set_value({'a': 1}, ['x'], 2) -> {'a': 1, 'x': 2}
+        set_value({'a': 1}, ['x', 'y'], 2) -> {'a': 1, 'x': {'y': 2}}
+        """
+        if not keys:
+            dictionary.update(value)
+            return
+
+        for key in keys[:-1]:
+            if key not in dictionary:
+                dictionary[key] = {}
+            dictionary = dictionary[key]
+
+        dictionary[keys[-1]] = value
+
     @cached_property
     def fields(self):
         """
@@ -492,7 +512,7 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
             except SkipField:
                 pass
             else:
-                set_value(ret, field.source_attrs, validated_value)
+                self.set_value(ret, field.source_attrs, validated_value)
 
         if errors:
             raise ValidationError(errors)
