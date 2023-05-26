@@ -166,9 +166,6 @@ class PageNumberPagination(BasePagination):
     http://api.example.org/accounts/?page=4
     http://api.example.org/accounts/?page=4&page_size=100
     """
-    # The default page size.
-    # Defaults to `None`, meaning pagination is disabled.
-    page_size = api_settings.PAGE_SIZE
 
     django_paginator_class = DjangoPaginator
 
@@ -190,6 +187,13 @@ class PageNumberPagination(BasePagination):
     template = 'rest_framework/pagination/numbers.html'
 
     invalid_page_message = _('Invalid page.')
+
+    @property
+    def page_size(self):
+        # The default page size.
+        # Defaults to `None`, meaning pagination is disabled.
+        # Property so that PAGE_SIZE can be overriden by @override_settings
+        return api_settings.PAGE_SIZE
 
     def paginate_queryset(self, queryset, request, view=None):
         """
