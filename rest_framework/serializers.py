@@ -610,9 +610,11 @@ class ListSerializer(BaseSerializer):
         assert self.child is not None, '`child` is a required argument.'
         assert not inspect.isclass(self.child), '`child` has not been instantiated.'
 
-        if kwargs.get('instance', []) and kwargs.get('data', []):
-            assert len(kwargs.get("data", [])) == len(
-                kwargs.get("instance", [])), 'Data and instance should have same length'
+        # instance, data = kwargs.get('instance', []), kwargs.get('data', [])  # if you prefer one line assignment support
+        instance = kwargs.get('instance', [])
+        data = kwargs.get('data', [])
+        if instance and data:
+            assert len(data) == len(instance), 'Data and instance should have same length'
 
         super().__init__(*args, **kwargs)
         self.child.bind(field_name='', parent=self)
