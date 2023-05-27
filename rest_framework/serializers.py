@@ -689,8 +689,11 @@ class ListSerializer(BaseSerializer):
         errors = []
 
         for idx, item in enumerate(data):
-            if hasattr(self, 'instance') and self.instance and \
-                    len(self.instance) > idx:
+            if (
+                hasattr(self, 'instance')
+                and self.instance
+                and len(self.instance) > idx
+            ):
                 self.child.instance = self.instance[idx]
             try:
                 validated = self.child.run_validation(item)
