@@ -610,7 +610,6 @@ class ListSerializer(BaseSerializer):
         assert self.child is not None, '`child` is a required argument.'
         assert not inspect.isclass(self.child), '`child` has not been instantiated.'
 
-        # instance, data = kwargs.get('instance', []), kwargs.get('data', [])  # if you prefer one line assignment support
         instance = kwargs.get('instance', [])
         data = kwargs.get('data', [])
         if instance and data:
