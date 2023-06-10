@@ -1,6 +1,8 @@
 """
 Provides an APIView class that is the base of all views in REST framework.
 """
+from functools import cached_property
+
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.db import connections, models
@@ -277,6 +279,10 @@ class APIView(View):
         """
         return [permission() for permission in self.permission_classes]
 
+    @cached_property
+    def cached_permissions(self):
+        return self.get_permissions()
+
     def get_throttles(self):
         """
         Instantiates and returns the list of throttles that this view uses.
@@ -328,8 +334,8 @@ class APIView(View):
         Check if the request should be permitted.
         Raises an appropriate exception if the request is not permitted.
         """
-        for permission in self.get_permissions():
-            if not permission.has_permission(request, self):
+        for permission in self.cached_permissions:
+            if not permission.has_permission_value(request, self):
                 self.permission_denied(
                     request,
                     message=getattr(permission, 'message', None),
@@ -341,8 +347,8 @@ class APIView(View):
         Check if the request should be permitted for a given object.
         Raises an appropriate exception if the request is not permitted.
         """
-        for permission in self.get_permissions():
-            if not permission.has_object_permission(request, self, obj):
+        for permission in self.cached_permissions:
+            if not permission.has_object_permission_value(request, self, obj):
                 self.permission_denied(
                     request,
                     message=getattr(permission, 'message', None),
