@@ -1,7 +1,6 @@
 """
 Provides an APIView class that is the base of all views in REST framework.
 """
-from functools import cached_property
 
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
@@ -10,6 +9,7 @@ from django.http import Http404
 from django.http.response import HttpResponseBase
 from django.utils.cache import cc_delim_re, patch_vary_headers
 from django.utils.encoding import smart_str
+from django.utils.functional import cached_property
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
