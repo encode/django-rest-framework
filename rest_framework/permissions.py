@@ -1,11 +1,23 @@
 """
 Provides a set of pluggable permission policies.
 """
+from functools import lru_cache
+
 from django.http import Http404
 
 from rest_framework import exceptions
 
 SAFE_METHODS = ('GET', 'HEAD', 'OPTIONS')
+
+
+class PermissionCacheMixin:
+    @lru_cache
+    def has_permission_value(self, request, view):
+        return self.has_permission(request, view)
+
+    @lru_cache
+    def has_object_permission_value(self, request, view, obj):
+        return self.has_object_permission(request, view, obj)
 
 
 class OperationHolderMixin:
@@ -55,61 +67,61 @@ class OperandHolder(OperationHolderMixin):
         )
 
 
-class AND:
+class AND(PermissionCacheMixin):
     def __init__(self, op1, op2):
         self.op1 = op1
         self.op2 = op2
 
     def has_permission(self, request, view):
         return (
-            self.op1.has_permission(request, view) and
-            self.op2.has_permission(request, view)
+            self.op1.has_permission_value(request, view) and
+            self.op2.has_permission_value(request, view)
         )
 
     def has_object_permission(self, request, view, obj):
         return (
-            self.op1.has_object_permission(request, view, obj) and
-            self.op2.has_object_permission(request, view, obj)
+            self.op1.has_object_permission_value(request, view, obj) and
+            self.op2.has_object_permission_value(request, view, obj)
         )
 
 
-class OR:
+class OR(PermissionCacheMixin):
     def __init__(self, op1, op2):
         self.op1 = op1
         self.op2 = op2
 
     def has_permission(self, request, view):
         return (
-            self.op1.has_permission(request, view) or
-            self.op2.has_permission(request, view)
+            self.op1.has_permission_value(request, view) or
+            self.op2.has_permission_value(request, view)
         )
 
     def has_object_permission(self, request, view, obj):
         return (
-            self.op1.has_permission(request, view)
-            and self.op1.has_object_permission(request, view, obj)
+            self.op1.has_permission_value(request, view)
+            and self.op1.has_object_permission_value(request, view, obj)
         ) or (
-            self.op2.has_permission(request, view)
-            and self.op2.has_object_permission(request, view, obj)
+            self.op2.has_permission_value(request, view)
+            and self.op2.has_object_permission_value(request, view, obj)
         )
 
 
-class NOT:
+class NOT(PermissionCacheMixin):
     def __init__(self, op1):
         self.op1 = op1
 
     def has_permission(self, request, view):
-        return not self.op1.has_permission(request, view)
+        return not self.op1.has_permission_value(request, view)
 
     def has_object_permission(self, request, view, obj):
-        return not self.op1.has_object_permission(request, view, obj)
+        return not self.op1.has_object_permission_value(request, view, obj)
 
 
 class BasePermissionMetaclass(OperationHolderMixin, type):
     pass
 
 
-class BasePermission(metaclass=BasePermissionMetaclass):
+class BasePermission(PermissionCacheMixin, metaclass=BasePermissionMetaclass):
     """
     A base class from which all permission classes should inherit.
     """
