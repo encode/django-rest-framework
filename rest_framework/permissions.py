@@ -11,11 +11,11 @@ SAFE_METHODS = ('GET', 'HEAD', 'OPTIONS')
 
 
 class PermissionCacheMixin:
-    @lru_cache
+    @lru_cache()
     def has_permission_value(self, request, view):
         return self.has_permission(request, view)
 
-    @lru_cache
+    @lru_cache()
     def has_object_permission_value(self, request, view, obj):
         return self.has_object_permission(request, view, obj)
 
