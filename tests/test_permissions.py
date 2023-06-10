@@ -735,3 +735,31 @@ class PermissionsCompositionTests(TestCase):
         composed_perm = (IsAuthenticatedUserOwner | permissions.IsAdminUser)
         hasperm = composed_perm().has_object_permission(request, None, None)
         assert hasperm is False
+
+
+class PermissionsCacheTests(TestCase):
+
+    class IsAuthenticatedUserOwnerWithCounter(permissions.IsAuthenticated):
+
+        def __init__(self):
+            self.call_counter = 0
+
+        def has_permission(self, request, view):
+            self.call_counter += 1
+            return True
+
+    def test_composed_perm_permissions(self):
+        request = factory.get('/1', format='json')
+        request.user = AnonymousUser()
+
+        composed_perm = (self.IsAuthenticatedUserOwnerWithCounter | permissions.IsAdminUser)
+        composed_perm_instance = composed_perm()
+        # in OR composed permissions has_object_permission will call has_permission too.
+        # we must ensure that this method (has_permission) is called once
+        has_permission_value = composed_perm_instance.has_permission(request, None)
+        has_object_permission_value = composed_perm_instance.has_object_permission(request, None, None)
+
+        self.assertTrue(has_permission_value)
+        self.assertTrue(has_object_permission_value)
+
+        self.assertEqual(composed_perm_instance.op1.call_counter, 1)
