@@ -5,7 +5,7 @@ from urllib import parse
 from django.db import models
 from django.utils.encoding import force_str
 
-from rest_framework import exceptions, serializers
+from rest_framework import RemovedInDRF317Warning, exceptions, serializers
 from rest_framework.compat import coreapi, coreschema, uritemplate
 from rest_framework.settings import api_settings
 
@@ -118,6 +118,8 @@ class SchemaGenerator(BaseSchemaGenerator):
 
     def __init__(self, title=None, url=None, description=None, patterns=None, urlconf=None, version=None):
         assert coreapi, '`coreapi` must be installed for schema support.'
+        if coreapi is not None:
+            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.17', RemovedInDRF317Warning)
         assert coreschema, '`coreschema` must be installed for schema support.'
 
         super().__init__(title, url, description, patterns, urlconf)

@@ -7,10 +7,18 @@ from django.test import TestCase, override_settings
 from django.urls import include, path
 
 from rest_framework import (
-    filters, generics, pagination, permissions, serializers
+    RemovedInDRF317Warning, filters, generics, pagination, permissions,
+    serializers
 )
 from rest_framework.compat import coreapi, coreschema
 from rest_framework.decorators import action, api_view, schema
+from rest_framework.filters import (
+    BaseFilterBackend, OrderingFilter, SearchFilter
+)
+from rest_framework.pagination import (
+    BasePagination, CursorPagination, LimitOffsetPagination,
+    PageNumberPagination
+)
 from rest_framework.request import Request
 from rest_framework.routers import DefaultRouter, SimpleRouter
 from rest_framework.schemas import (
@@ -1433,3 +1441,38 @@ def test_schema_handles_exception():
     response.render()
     assert response.status_code == 403
     assert b"You do not have permission to perform this action." in response.content
+
+
+class CoreapiDeprecationTestCase(TestCase):
+    def assert_deprecation_warning(self, obj):
+        with pytest.warns(RemovedInDRF317Warning) as warning_list:
+            obj.get_schema_fields({})
+            assert len(warning_list) == 1
+            assert str(warning_list[0].message) == "CoreAPI compatibility is deprecated and will be removed in DRF 3.17"
+
+    def test_filter_backend_deprecation_warning(self):
+        filter_backends = [
+            SearchFilter(),
+            BaseFilterBackend(),
+            OrderingFilter(),
+        ]
+
+        for obj in filter_backends:
+            self.assert_deprecation_warning(obj)
+
+    def test_pagination_deprecation_warning(self):
+        pagination_classes = [
+            BasePagination(),
+            PageNumberPagination(),
+            LimitOffsetPagination(),
+            CursorPagination(),
+        ]
+
+        for obj in pagination_classes:
+            self.assert_deprecation_warning(obj)
+
+    def test_schema_generator_deprecation_warning(self):
+        with pytest.warns(RemovedInDRF317Warning) as warning_list:
+            SchemaGenerator()
+            assert len(warning_list) == 1
+            assert str(warning_list[0].message) == "CoreAPI compatibility is deprecated and will be removed in DRF 3.17"
