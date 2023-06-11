@@ -173,9 +173,15 @@ class TestRouterGeneratedSchema(TestCase):
                         url='/example/',
                         action='get',
                         fields=[
-                            coreapi.Field('page', required=False, location='query', schema=coreschema.Integer(title='Page', description='A page number within the paginated result set.')),
-                            coreapi.Field('page_size', required=False, location='query', schema=coreschema.Integer(title='Page size', description='Number of results to return per page.')),
-                            coreapi.Field('ordering', required=False, location='query', schema=coreschema.String(title='Ordering', description='Which field to use when ordering the results.'))
+                            coreapi.Field('page', required=False, location='query',
+                                          schema=coreschema.Integer(title='Page',
+                                                                    description='A page number within the paginated result set.')),
+                            coreapi.Field('page_size', required=False, location='query',
+                                          schema=coreschema.Integer(title='Page size',
+                                                                    description='Number of results to return per page.')),
+                            coreapi.Field('ordering', required=False, location='query',
+                                          schema=coreschema.String(title='Ordering',
+                                                                   description='Which field to use when ordering the results.'))
                         ]
                     ),
                     'custom_list_action': coreapi.Link(
@@ -201,7 +207,9 @@ class TestRouterGeneratedSchema(TestCase):
                         action='get',
                         fields=[
                             coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
-                            coreapi.Field('ordering', required=False, location='query', schema=coreschema.String(title='Ordering', description='Which field to use when ordering the results.'))
+                            coreapi.Field('ordering', required=False, location='query',
+                                          schema=coreschema.String(title='Ordering',
+                                                                   description='Which field to use when ordering the results.'))
                         ]
                     )
                 }
@@ -223,9 +231,15 @@ class TestRouterGeneratedSchema(TestCase):
                         url='/example/',
                         action='get',
                         fields=[
-                            coreapi.Field('page', required=False, location='query', schema=coreschema.Integer(title='Page', description='A page number within the paginated result set.')),
-                            coreapi.Field('page_size', required=False, location='query', schema=coreschema.Integer(title='Page size', description='Number of results to return per page.')),
-                            coreapi.Field('ordering', required=False, location='query', schema=coreschema.String(title='Ordering', description='Which field to use when ordering the results.'))
+                            coreapi.Field('page', required=False, location='query',
+                                          schema=coreschema.Integer(title='Page',
+                                                                    description='A page number within the paginated result set.')),
+                            coreapi.Field('page_size', required=False, location='query',
+                                          schema=coreschema.Integer(title='Page size',
+                                                                    description='Number of results to return per page.')),
+                            coreapi.Field('ordering', required=False, location='query',
+                                          schema=coreschema.String(title='Ordering',
+                                                                   description='Which field to use when ordering the results.'))
                         ]
                     ),
                     'create': coreapi.Link(
@@ -233,7 +247,8 @@ class TestRouterGeneratedSchema(TestCase):
                         action='post',
                         encoding='application/json',
                         fields=[
-                            coreapi.Field('a', required=True, location='form', schema=coreschema.String(title='A', description='A field description')),
+                            coreapi.Field('a', required=True, location='form',
+                                          schema=coreschema.String(title='A', description='A field description')),
                             coreapi.Field('b', required=False, location='form', schema=coreschema.String(title='B'))
                         ]
                     ),
@@ -242,7 +257,9 @@ class TestRouterGeneratedSchema(TestCase):
                         action='get',
                         fields=[
                             coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
-                            coreapi.Field('ordering', required=False, location='query', schema=coreschema.String(title='Ordering', description='Which field to use when ordering the results.'))
+                            coreapi.Field('ordering', required=False, location='query',
+                                          schema=coreschema.String(title='Ordering',
+                                                                   description='Which field to use when ordering the results.'))
                         ]
                     ),
                     'custom_action': coreapi.Link(
@@ -273,8 +290,10 @@ class TestRouterGeneratedSchema(TestCase):
                         description='A custom action using both list field and list serializer in the serializer.',
                         fields=[
                             coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
-                            coreapi.Field('a', required=True, location='form', schema=coreschema.Array(title='A', items=coreschema.Integer())),
-                            coreapi.Field('b', required=True, location='form', schema=coreschema.Array(title='B', items=coreschema.String())),
+                            coreapi.Field('a', required=True, location='form',
+                                          schema=coreschema.Array(title='A', items=coreschema.Integer())),
+                            coreapi.Field('b', required=True, location='form',
+                                          schema=coreschema.Array(title='B', items=coreschema.String())),
                         ]
                     ),
                     'custom_list_action': coreapi.Link(
@@ -310,7 +329,8 @@ class TestRouterGeneratedSchema(TestCase):
                             description='A description of the post method on the custom action.',
                             encoding='application/json',
                             fields=[
-                                coreapi.Field('a', required=True, location='form', schema=coreschema.String(title='A', description='A field description')),
+                                coreapi.Field('a', required=True, location='form',
+                                              schema=coreschema.String(title='A', description='A field description')),
                                 coreapi.Field('b', required=False, location='form', schema=coreschema.String(title='B'))
                             ]
                         ),
@@ -320,7 +340,8 @@ class TestRouterGeneratedSchema(TestCase):
                             description='A description of the put method on the custom action from mapping.',
                             encoding='application/json',
                             fields=[
-                                coreapi.Field('a', required=True, location='form', schema=coreschema.String(title='A', description='A field description')),
+                                coreapi.Field('a', required=True, location='form',
+                                              schema=coreschema.String(title='A', description='A field description')),
                                 coreapi.Field('b', required=False, location='form', schema=coreschema.String(title='B'))
                             ]
                         ),
@@ -331,9 +352,12 @@ class TestRouterGeneratedSchema(TestCase):
                         encoding='application/json',
                         fields=[
                             coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
-                            coreapi.Field('a', required=True, location='form', schema=coreschema.String(title='A', description=('A field description'))),
+                            coreapi.Field('a', required=True, location='form',
+                                          schema=coreschema.String(title='A', description=('A field description'))),
                             coreapi.Field('b', required=False, location='form', schema=coreschema.String(title='B')),
-                            coreapi.Field('ordering', required=False, location='query', schema=coreschema.String(title='Ordering', description='Which field to use when ordering the results.'))
+                            coreapi.Field('ordering', required=False, location='query',
+                                          schema=coreschema.String(title='Ordering',
+                                                                   description='Which field to use when ordering the results.'))
                         ]
                     ),
                     'partial_update': coreapi.Link(
@@ -342,9 +366,12 @@ class TestRouterGeneratedSchema(TestCase):
                         encoding='application/json',
                         fields=[
                             coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
-                            coreapi.Field('a', required=False, location='form', schema=coreschema.String(title='A', description='A field description')),
+                            coreapi.Field('a', required=False, location='form',
+                                          schema=coreschema.String(title='A', description='A field description')),
                             coreapi.Field('b', required=False, location='form', schema=coreschema.String(title='B')),
-                            coreapi.Field('ordering', required=False, location='query', schema=coreschema.String(title='Ordering', description='Which field to use when ordering the results.'))
+                            coreapi.Field('ordering', required=False, location='query',
+                                          schema=coreschema.String(title='Ordering',
+                                                                   description='Which field to use when ordering the results.'))
                         ]
                     ),
                     'delete': coreapi.Link(
@@ -352,7 +379,9 @@ class TestRouterGeneratedSchema(TestCase):
                         action='delete',
                         fields=[
                             coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
-                            coreapi.Field('ordering', required=False, location='query', schema=coreschema.String(title='Ordering', description='Which field to use when ordering the results.'))
+                            coreapi.Field('ordering', required=False, location='query',
+                                          schema=coreschema.String(title='Ordering',
+                                                                   description='Which field to use when ordering the results.'))
                         ]
                     )
                 }
@@ -597,9 +626,15 @@ class TestSchemaGeneratorWithMethodLimitedViewSets(TestCase):
                         url='/example1/',
                         action='get',
                         fields=[
-                            coreapi.Field('page', required=False, location='query', schema=coreschema.Integer(title='Page', description='A page number within the paginated result set.')),
-                            coreapi.Field('page_size', required=False, location='query', schema=coreschema.Integer(title='Page size', description='Number of results to return per page.')),
-                            coreapi.Field('ordering', required=False, location='query', schema=coreschema.String(title='Ordering', description='Which field to use when ordering the results.'))
+                            coreapi.Field('page', required=False, location='query',
+                                          schema=coreschema.Integer(title='Page',
+                                                                    description='A page number within the paginated result set.')),
+                            coreapi.Field('page_size', required=False, location='query',
+                                          schema=coreschema.Integer(title='Page size',
+                                                                    description='Number of results to return per page.')),
+                            coreapi.Field('ordering', required=False, location='query',
+                                          schema=coreschema.String(title='Ordering',
+                                                                   description='Which field to use when ordering the results.'))
                         ]
                     ),
                     'custom_list_action': coreapi.Link(
@@ -625,7 +660,9 @@ class TestSchemaGeneratorWithMethodLimitedViewSets(TestCase):
                         action='get',
                         fields=[
                             coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
-                            coreapi.Field('ordering', required=False, location='query', schema=coreschema.String(title='Ordering', description='Which field to use when ordering the results.'))
+                            coreapi.Field('ordering', required=False, location='query',
+                                          schema=coreschema.String(title='Ordering',
+                                                                   description='Which field to use when ordering the results.'))
                         ]
                     )
                 }
@@ -706,8 +743,10 @@ class TestSchemaGeneratorWithForeignKey(TestCase):
                         action='post',
                         encoding='application/json',
                         fields=[
-                            coreapi.Field('name', required=True, location='form', schema=coreschema.String(title='Name')),
-                            coreapi.Field('target', required=True, location='form', schema=coreschema.Integer(description='Target', title='Target')),
+                            coreapi.Field('name', required=True, location='form',
+                                          schema=coreschema.String(title='Name')),
+                            coreapi.Field('target', required=True, location='form',
+                                          schema=coreschema.Integer(description='Target', title='Target')),
                         ]
                     )
                 }
@@ -752,8 +791,10 @@ class TestSchemaGeneratorWithManyToMany(TestCase):
                         action='post',
                         encoding='application/json',
                         fields=[
-                            coreapi.Field('name', required=True, location='form', schema=coreschema.String(title='Name')),
-                            coreapi.Field('targets', required=True, location='form', schema=coreschema.Array(title='Targets', items=coreschema.Integer())),
+                            coreapi.Field('name', required=True, location='form',
+                                          schema=coreschema.String(title='Name')),
+                            coreapi.Field('targets', required=True, location='form',
+                                          schema=coreschema.Array(title='Targets', items=coreschema.Integer())),
                         ]
                     )
                 }
@@ -769,6 +810,7 @@ class TestSchemaGeneratorActionKeysViewSets(TestCase):
         """
         Ensure that action name is preserved when action map contains "head".
         """
+
         class CustomViewSet(GenericViewSet):
             serializer_class = EmptySerializer
 
@@ -856,7 +898,8 @@ class TestAutoSchema(TestCase):
         assert isinstance(view.schema, CustomViewInspector)
 
     def test_set_custom_inspector_class_via_settings(self):
-        with override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'tests.schemas.test_coreapi.CustomViewInspector'}):
+        with override_settings(
+                REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'tests.schemas.test_coreapi.CustomViewInspector'}):
             view = APIView()
             assert isinstance(view.schema, CustomViewInspector)
 
@@ -963,7 +1006,6 @@ class TestAutoSchema(TestCase):
 
     @pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
     def test_view_with_manual_schema(self):
-
         path = '/example'
         method = 'get'
         base_url = None
@@ -1198,6 +1240,7 @@ class TestURLNamingCollisions(TestCase):
     """
     Ref: https://github.com/encode/django-rest-framework/issues/4704
     """
+
     def test_manually_routing_nested_routes(self):
         @api_view(["GET"])
         def simple_fbv(request):
@@ -1444,6 +1487,11 @@ def test_schema_handles_exception():
 
 
 class CoreapiDeprecationTestCase(TestCase):
+    def __init__(self, *args, **kwargs):
+        if not coreapi:
+            pytest.skip("coreapi is not installed")
+        super().__init__(*args, **kwargs)
+
     def assert_deprecation_warning(self, obj):
         with pytest.warns(RemovedInDRF317Warning) as warning_list:
             obj.get_schema_fields({})
