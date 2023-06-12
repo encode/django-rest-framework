@@ -9,6 +9,7 @@ REST framework also provides an HTML renderer that renders the browsable API.
 
 import base64
 import contextlib
+import datetime
 from urllib import parse
 
 from django import forms
@@ -1062,6 +1063,7 @@ class OpenAPIRenderer(BaseRenderer):
             def ignore_aliases(self, data):
                 return True
         Dumper.add_representer(SafeString, Dumper.represent_str)
+        Dumper.add_representer(datetime.timedelta, encoders.CustomScalar.represent_timedelta)
         return yaml.dump(data, default_flow_style=False, sort_keys=False, Dumper=Dumper).encode('utf-8')
 
 
