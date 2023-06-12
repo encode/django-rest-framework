@@ -664,22 +664,27 @@ class BooleanField(Field):
     default_empty_html = False
     initial = False
     TRUE_VALUES = {
-        't', 'T',
-        'y', 'Y', 'yes', 'Yes', 'YES',
-        'true', 'True', 'TRUE',
-        'on', 'On', 'ON',
-        '1', 1,
-        True
+        't',
+        'y',
+        'yes',
+        'true',
+        'on',
+        '1',
+        1,
+        True,
     }
     FALSE_VALUES = {
-        'f', 'F',
-        'n', 'N', 'no', 'No', 'NO',
-        'false', 'False', 'FALSE',
-        'off', 'Off', 'OFF',
-        '0', 0, 0.0,
-        False
+        'f',
+        'n',
+        'no',
+        'false',
+        'off',
+        '0',
+        0,
+        0.0,
+        False,
     }
-    NULL_VALUES = {'null', 'Null', 'NULL', '', None}
+    NULL_VALUES = {'null', '', None}
 
     def __init__(self, **kwargs):
         if kwargs.get('allow_null', False):
@@ -687,22 +692,28 @@ class BooleanField(Field):
             self.initial = None
         super().__init__(**kwargs)
 
+    @staticmethod
+    def _lower_if_str(value):
+        if isinstance(value, str):
+            return value.lower()
+        return value
+
     def to_internal_value(self, data):
         with contextlib.suppress(TypeError):
-            if data in self.TRUE_VALUES:
+            if self._lower_if_str(data) in self.TRUE_VALUES:
                 return True
-            elif data in self.FALSE_VALUES:
+            elif self._lower_if_str(data) in self.FALSE_VALUES:
                 return False
-            elif data in self.NULL_VALUES and self.allow_null:
+            elif self._lower_if_str(data) in self.NULL_VALUES and self.allow_null:
                 return None
-        self.fail('invalid', input=data)
+        self.fail("invalid", input=data)
 
     def to_representation(self, value):
-        if value in self.TRUE_VALUES:
+        if self._lower_if_str(value) in self.TRUE_VALUES:
             return True
-        elif value in self.FALSE_VALUES:
+        elif self._lower_if_str(value) in self.FALSE_VALUES:
             return False
-        if value in self.NULL_VALUES and self.allow_null:
+        if self._lower_if_str(value) in self.NULL_VALUES and self.allow_null:
             return None
         return bool(value)
 
