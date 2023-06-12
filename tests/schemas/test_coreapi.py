@@ -1445,7 +1445,7 @@ def test_schema_handles_exception():
 
 @pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
 def test_coreapi_deprecation():
-    with pytest.warns(RemovedInDRF315Warning):
+    with pytest.warns(RemovedInDRF317Warning):
         SchemaGenerator()
 
     with pytest.warns(RemovedInDRF315Warning):
