@@ -1454,7 +1454,7 @@ def test_coreapi_deprecation():
     with pytest.warns(RemovedInDRF317Warning):
         ManualSchema({})
 
-    with pytest.warns(RemovedInDRF315Warning):
+    with pytest.warns(RemovedInDRF317Warning):
         deprecated_filter = OrderingFilter()
         deprecated_filter.get_schema_fields({})
 
