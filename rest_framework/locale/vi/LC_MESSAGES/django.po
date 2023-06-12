@@ -5,13 +5,14 @@
 # Translators:
 # Nguyen Tuan Anh <bboyadao@gmail.com>, 2019
 # Xavier Ordoquy <xordoquy@linovia.com>, 2020
+# Le Duc Toan <lddtoan@outlook.com>, 2023
 msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-13 21:45+0200\n"
-"PO-Revision-Date: 2020-10-13 20:02+0000\n"
-"Last-Translator: Xavier Ordoquy <xordoquy@linovia.com>\n"
+"PO-Revision-Date: 2023-06-12 14:02+0700\n"
+"Last-Translator: Le Duc Toan <lddtoan@outlook.com>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/vi/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -22,14 +23,19 @@ msgstr ""
 #: authentication.py:70
 msgid "Invalid basic header. No credentials provided."
 msgstr ""
+"Basic header không hợp lệ. Không có thông tin đăng nhập nào được cung cấp."
 
 #: authentication.py:73
 msgid "Invalid basic header. Credentials string should not contain spaces."
 msgstr ""
+"Basic header không hợp lệ. Chuỗi thông tin đăng nhâp không được bao gồm các "
+"dấu cách."
 
 #: authentication.py:83
 msgid "Invalid basic header. Credentials not correctly base64 encoded."
 msgstr ""
+"Basic header không hợp lệ. Thông tin đăng nhập không được mã hóa đúng theo "
+"chuẩn base64."
 
 #: authentication.py:101
 msgid "Invalid username/password."
@@ -42,23 +48,27 @@ msgstr "Người dùng không còn hoạt động, hoặc đã bị xoá."
 #: authentication.py:184
 msgid "Invalid token header. No credentials provided."
 msgstr ""
+"Token header không hợp lệ. Không có thông tin đăng nhập nào được cung cấp."
 
 #: authentication.py:187
 msgid "Invalid token header. Token string should not contain spaces."
 msgstr ""
+"Token header không hợp lệ. Chuỗi token không được bao gồm các dấu cách."
 
 #: authentication.py:193
 msgid ""
 "Invalid token header. Token string should not contain invalid characters."
 msgstr ""
+"Token header không hợp lệ. Chuỗi token không được bao gồm các ký tự không "
+"hợp lệ."
 
 #: authentication.py:203
 msgid "Invalid token."
-msgstr ""
+msgstr "Token không hợp lệ."
 
 #: authtoken/apps.py:7
 msgid "Auth Token"
-msgstr ""
+msgstr "Token xác thực"
 
 #: authtoken/models.py:13
 msgid "Key"
@@ -78,7 +88,7 @@ msgstr ""
 
 #: authtoken/models.py:28
 msgid "Tokens"
-msgstr ""
+msgstr "Các token"
 
 #: authtoken/serializers.py:9
 msgid "Username"
@@ -98,23 +108,23 @@ msgstr "Bắt buộc phải có “tên người dùng” và “mật khẩu”
 
 #: exceptions.py:102
 msgid "A server error occurred."
-msgstr ""
+msgstr "Xảy ra lỗi trên máy chủ."
 
 #: exceptions.py:142
 msgid "Invalid input."
-msgstr ""
+msgstr "Đầu vào không hợp lệ."
 
 #: exceptions.py:161
 msgid "Malformed request."
-msgstr ""
+msgstr "Yêu cầu không đúng định dạng."
 
 #: exceptions.py:167
 msgid "Incorrect authentication credentials."
-msgstr ""
+msgstr "Thông tin xác thực không chính xác."
 
 #: exceptions.py:173
 msgid "Authentication credentials were not provided."
-msgstr ""
+msgstr "Thông tin xác thực không được cung cấp."
 
 #: exceptions.py:179
 msgid "You do not have permission to perform this action."
@@ -136,38 +146,38 @@ msgstr ""
 #: exceptions.py:212
 #, python-brace-format
 msgid "Unsupported media type \"{media_type}\" in request."
-msgstr ""
+msgstr "Loại dữ liệu đa phương tiện \"{media_type}\" không được hỗ trợ."
 
 #: exceptions.py:223
 msgid "Request was throttled."
-msgstr ""
+msgstr "Yêu cầu đã bị giới hạn."
 
 #: exceptions.py:224
 #, python-brace-format
 msgid "Expected available in {wait} second."
-msgstr ""
+msgstr "Dự kiến khả dụng trong {wait} giây."
 
 #: exceptions.py:225
 #, python-brace-format
 msgid "Expected available in {wait} seconds."
-msgstr ""
+msgstr "Dự kiến khả dụng trong {wait} giây."
 
 #: fields.py:316 relations.py:245 relations.py:279 validators.py:90
 #: validators.py:183
 msgid "This field is required."
-msgstr ""
+msgstr "Trường này là bắt buộc."
 
 #: fields.py:317
 msgid "This field may not be null."
-msgstr ""
+msgstr "Trường này không được bằng null."
 
 #: fields.py:701
 msgid "Must be a valid boolean."
-msgstr ""
+msgstr "Phải là giá trị boolean hợp lệ."
 
 #: fields.py:766
 msgid "Not a valid string."
-msgstr ""
+msgstr "Không phải một chuỗi hợp lệ."
 
 #: fields.py:767
 msgid "This field may not be blank."
@@ -176,12 +186,12 @@ msgstr "Trường này không được bỏ trống."
 #: fields.py:768 fields.py:1881
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} characters."
-msgstr ""
+msgstr "Đảm bảo trường này không có nhiều hợp {max_length} ký tự."
 
 #: fields.py:769
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} characters."
-msgstr ""
+msgstr "Đảm bảo trường này có ít nhất {min_length} ký tự."
 
 #: fields.py:816
 msgid "Enter a valid email address."
@@ -189,64 +199,69 @@ msgstr "Nhập một địa chỉ email hợp lệ."
 
 #: fields.py:827
 msgid "This value does not match the required pattern."
-msgstr ""
+msgstr "Giá trị này không khớp với mẫu được yêu cầu."
 
 #: fields.py:838
 msgid ""
 "Enter a valid \"slug\" consisting of letters, numbers, underscores or "
 "hyphens."
 msgstr ""
+"Nhập một \"slug\" hợp lệ bao gồm các chữ cái, số, dấu gạch dưới hoặc dấu "
+"gạch nối."
 
 #: fields.py:839
 msgid ""
 "Enter a valid \"slug\" consisting of Unicode letters, numbers, underscores, "
 "or hyphens."
 msgstr ""
+"Nhập một \"slug\" hợp lệ bao gồm các chữ cái Unicode, số, dấu gạch dưới "
+"hoặc dấu gạch nối."
 
 #: fields.py:854
 msgid "Enter a valid URL."
-msgstr ""
+msgstr "Nhập một địa chỉ URL hợp lệ."
 
 #: fields.py:867
 msgid "Must be a valid UUID."
-msgstr ""
+msgstr "Phải là một UUID hợp lệ."
 
 #: fields.py:903
 msgid "Enter a valid IPv4 or IPv6 address."
-msgstr ""
+msgstr "Nhập một địa chỉ IPv4 hoặc IPv6 hợp lệ."
 
 #: fields.py:931
 msgid "A valid integer is required."
-msgstr ""
+msgstr "Yêu cầu một số nguyên hợp lệ."
 
 #: fields.py:932 fields.py:969 fields.py:1005 fields.py:1366
 #, python-brace-format
 msgid "Ensure this value is less than or equal to {max_value}."
-msgstr ""
+msgstr "Đảm bảo giá trị này nhỏ hơn hoặc bằng {max_value}."
 
 #: fields.py:933 fields.py:970 fields.py:1006 fields.py:1367
 #, python-brace-format
 msgid "Ensure this value is greater than or equal to {min_value}."
-msgstr ""
+msgstr "Đảm bảo giá trị này lớn hơn hoặc bằng {min_value}."
 
 #: fields.py:934 fields.py:971 fields.py:1010
 msgid "String value too large."
-msgstr ""
+msgstr "Chuỗi quá lớn."
 
 #: fields.py:968 fields.py:1004
 msgid "A valid number is required."
-msgstr ""
+msgstr "Yêu cầu một số hợp lệ."
 
 #: fields.py:1007
 #, python-brace-format
 msgid "Ensure that there are no more than {max_digits} digits in total."
-msgstr ""
+msgstr "Đảm bảo không có nhiều hơn {max_digits} chữ số."
 
 #: fields.py:1008
 #, python-brace-format
 msgid ""
 "Ensure that there are no more than {max_decimal_places} decimal places."
 msgstr ""
+"Đảm bảo không có nhiều hơn {max_decimal_places} chữ số sau dấu thập phân."
 
 #: fields.py:1009
 #, python-brace-format
@@ -254,96 +269,110 @@ msgid ""
 "Ensure that there are no more than {max_whole_digits} digits before the "
 "decimal point."
 msgstr ""
+"Đảm bảo không có nhiều hơn {max_whole_digits} chữ số trước dấu thập phân."
 
 #: fields.py:1148
 #, python-brace-format
 msgid "Datetime has wrong format. Use one of these formats instead: {format}."
 msgstr ""
+"Ngày và giờ sai định dạng. Dùng một trong những định dạng sau để thay thế: "
+"{format}."
 
 #: fields.py:1149
 msgid "Expected a datetime but got a date."
-msgstr ""
+msgstr "Mong muốn kiểu dữ liệu là datetime nhưng nhận được date."
 
 #: fields.py:1150
 #, python-brace-format
 msgid "Invalid datetime for the timezone \"{timezone}\"."
-msgstr ""
+msgstr "Giá trị ngày và giờ không hợp lệ cho múi giờ \"{timezone}\"."
 
 #: fields.py:1151
 msgid "Datetime value out of range."
-msgstr ""
+msgstr "Giá trị ngày và giờ nằm ngoài khoảng hợp lệ."
 
 #: fields.py:1236
 #, python-brace-format
 msgid "Date has wrong format. Use one of these formats instead: {format}."
-msgstr "Ngày sai định dạng. Dùng một trong những định dạng sau để thay thế: {format}."
+msgstr ""
+"Ngày sai định dạng. Dùng một trong những định dạng sau để thay thế: "
+"{format}."
 
 #: fields.py:1237
 msgid "Expected a date but got a datetime."
-msgstr ""
+msgstr "Mong muốn kiểu dữ liệu là date nhưng nhận được datetime."
 
 #: fields.py:1303
 #, python-brace-format
 msgid "Time has wrong format. Use one of these formats instead: {format}."
 msgstr ""
+"Thời gian sai định dạng. Dùng một trong những định dạng sau để thay thế: "
+"{format}."
 
 #: fields.py:1365
 #, python-brace-format
 msgid "Duration has wrong format. Use one of these formats instead: {format}."
 msgstr ""
+"Khoảng thời gian sai định dạng. Dùng một trong những định dạng sau để thay "
+"thế: {format}."
 
 #: fields.py:1399 fields.py:1456
 #, python-brace-format
 msgid "\"{input}\" is not a valid choice."
-msgstr ""
+msgstr "\"{input}\" không phải một lựa chọn hợp lệ."
 
 #: fields.py:1402
 #, python-brace-format
 msgid "More than {count} items..."
-msgstr ""
+msgstr "Nhiều hơn {count} phần tử..."
 
 #: fields.py:1457 fields.py:1603 relations.py:485 serializers.py:570
 #, python-brace-format
 msgid "Expected a list of items but got type \"{input_type}\"."
-msgstr ""
+msgstr "Mong muốn kiểu dữ liệu là list nhưng nhận được \"{input_type}\"."
 
 #: fields.py:1458
 msgid "This selection may not be empty."
-msgstr ""
+msgstr "Lựa chọn này không được rỗng."
 
 #: fields.py:1495
 #, python-brace-format
 msgid "\"{input}\" is not a valid path choice."
-msgstr ""
+msgstr "\"{input}\" không phải một lựa chọn đường dẫn hợp lệ."
 
 #: fields.py:1514
 msgid "No file was submitted."
-msgstr ""
+msgstr "Không có tệp tin nào được gửi."
 
 #: fields.py:1515
 msgid ""
 "The submitted data was not a file. Check the encoding type on the form."
 msgstr ""
+"Dữ liệu đã gửi không phải một tệp tin. Kiểm tra loại mã hóa ở trên form."
 
 #: fields.py:1516
 msgid "No filename could be determined."
-msgstr ""
+msgstr "Không thể xác định tên tệp tin."
 
 #: fields.py:1517
 msgid "The submitted file is empty."
-msgstr ""
+msgstr "Tệp tin đã gửi rỗng."
 
 #: fields.py:1518
 #, python-brace-format
 msgid ""
 "Ensure this filename has at most {max_length} characters (it has {length})."
 msgstr ""
+"Đảm bảo tên tệp tin có nhiều nhất {max_length} ký tự (chiều dài hiện tại "
+"{length})."
 
 #: fields.py:1566
 msgid ""
 "Upload a valid image. The file you uploaded was either not an image or a "
 "corrupted image."
 msgstr ""
+"Tải lên ảnh hợp lệ. Tệp tin đã tải lên không phải ảnh hoặc là một tệp tin "
+"ảnh bị hỏng."
 
 #: fields.py:1604 relations.py:486 serializers.py:571
 msgid "This list may not be empty."
@@ -352,21 +381,22 @@ msgstr " Danh sách này không thể để trống."
 #: fields.py:1605
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} elements."
-msgstr ""
+msgstr "Đảm bảo trường này có ít nhất {min_length} phần tử."
 
 #: fields.py:1606
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} elements."
-msgstr ""
+msgstr "Đảm bảo trường này có nhiều nhất {max_length} phần tử."
 
 #: fields.py:1682
 #, python-brace-format
 msgid "Expected a dictionary of items but got type \"{input_type}\"."
 msgstr ""
+"Mong muốn kiểu dữ liệu là dictionary nhưng nhận được \"{input_type}\"."
 
 #: fields.py:1683
 msgid "This dictionary may not be empty."
-msgstr ""
+msgstr "Từ điển không được rỗng."
 
 #: fields.py:1755
 msgid "Value must be valid JSON."
@@ -378,7 +408,7 @@ msgstr "Tìm kiếm"
 
 #: filters.py:50
 msgid "A search term."
-msgstr ""
+msgstr "Cụm từ tìm kiếm."
 
 #: filters.py:180 templates/rest_framework/filters/ordering.html:3
 msgid "Ordering"
@@ -386,137 +416,140 @@ msgstr "Sắp xếp"
 
 #: filters.py:181
 msgid "Which field to use when ordering the results."
-msgstr ""
+msgstr "Trường nào được sử dụng khi sắp xếp kết quả."
 
 #: filters.py:287
 msgid "ascending"
-msgstr ""
+msgstr "tăng dần"
 
 #: filters.py:288
 msgid "descending"
-msgstr ""
+msgstr "giảm dần"
 
 #: pagination.py:174
 msgid "A page number within the paginated result set."
-msgstr ""
+msgstr "Số thứ tự của trang trong tập kết quả đã được phân trang."
 
 #: pagination.py:179 pagination.py:372 pagination.py:590
 msgid "Number of results to return per page."
-msgstr ""
+msgstr "Số lượng kết quả trả về ở mỗi trang."
 
 #: pagination.py:189
 msgid "Invalid page."
-msgstr ""
+msgstr "Trang không hợp lệ."
 
 #: pagination.py:374
 msgid "The initial index from which to return the results."
-msgstr ""
+msgstr "Chỉ mục ban đầu để trả về kết quả."
 
 #: pagination.py:581
 msgid "The pagination cursor value."
-msgstr ""
+msgstr "Giá trị của con trỏ phân trang."
 
 #: pagination.py:583
 msgid "Invalid cursor"
-msgstr ""
+msgstr "Con trỏ không hợp lệ."
 
 #: relations.py:246
 #, python-brace-format
 msgid "Invalid pk \"{pk_value}\" - object does not exist."
-msgstr ""
+msgstr "Giá trị pk không hợp lệ \"{pk_value}\" - đối tượng không tồn tại."
 
 #: relations.py:247
 #, python-brace-format
 msgid "Incorrect type. Expected pk value, received {data_type}."
 msgstr ""
+"Kiểu dữ liệu không đúng. Mong muốn giá trị pk nhưng nhận được {data_type}."
 
 #: relations.py:280
 msgid "Invalid hyperlink - No URL match."
-msgstr ""
+msgstr "Đường liên kết không hợp lệ - Không có URL nào trùng."
 
 #: relations.py:281
 msgid "Invalid hyperlink - Incorrect URL match."
-msgstr ""
+msgstr "Đường liên kết không hợp lệ - URL không đúng định dạng."
 
 #: relations.py:282
 msgid "Invalid hyperlink - Object does not exist."
-msgstr ""
+msgstr "Đường liên kết không hợp lệ - Đối tượng không tồn tại."
 
 #: relations.py:283
 #, python-brace-format
 msgid "Incorrect type. Expected URL string, received {data_type}."
 msgstr ""
+"Kiểu dữ liệu không đúng. Mong muốn chuỗi URL nhưng nhận được {data_type}."
 
 #: relations.py:448
 #, python-brace-format
 msgid "Object with {slug_name}={value} does not exist."
-msgstr ""
+msgstr "Đối tượng {slug_name}={value} không tồn tại."
 
 #: relations.py:449
 msgid "Invalid value."
-msgstr ""
+msgstr "Giá trị không hợp lệ."
 
 #: schemas/utils.py:32
 msgid "unique integer value"
-msgstr ""
+msgstr "giá trị số nguyên duy nhất"
 
 #: schemas/utils.py:34
 msgid "UUID string"
-msgstr ""
+msgstr "chuỗi UUID"
 
 #: schemas/utils.py:36
 msgid "unique value"
-msgstr ""
+msgstr "giá trị duy nhất"
 
 #: schemas/utils.py:38
 #, python-brace-format
 msgid "A {value_type} identifying this {name}."
-msgstr ""
+msgstr "Một {value_type} xác định {name} này."
 
 #: serializers.py:337
 #, python-brace-format
 msgid "Invalid data. Expected a dictionary, but got {datatype}."
 msgstr ""
+"Dữ liệu không hợp lệ. Mong muốn một dictionary nhưng nhận được {datatype}."
 
 #: templates/rest_framework/admin.html:116
 #: templates/rest_framework/base.html:136
 msgid "Extra Actions"
-msgstr ""
+msgstr "Các hành động bổ sung"
 
 #: templates/rest_framework/admin.html:130
 #: templates/rest_framework/base.html:150
 msgid "Filters"
-msgstr ""
+msgstr "Bộ lọc"
 
 #: templates/rest_framework/base.html:37
 msgid "navbar"
-msgstr ""
+msgstr "thanh điều hướng"
 
 #: templates/rest_framework/base.html:75
 msgid "content"
-msgstr ""
+msgstr "nội dung"
 
 #: templates/rest_framework/base.html:78
 msgid "request form"
-msgstr ""
+msgstr "form yêu cầu"
 
 #: templates/rest_framework/base.html:157
 msgid "main content"
-msgstr ""
+msgstr "nội dung chính"
 
 #: templates/rest_framework/base.html:173
 msgid "request info"
-msgstr ""
+msgstr "thông tin yêu cầu"
 
 #: templates/rest_framework/base.html:177
 msgid "response info"
-msgstr ""
+msgstr "thông tin phản hồi"
 
 #: templates/rest_framework/horizontal/radio.html:4
 #: templates/rest_framework/inline/radio.html:3
 #: templates/rest_framework/vertical/radio.html:3
 msgid "None"
-msgstr ""
+msgstr "Không"
 
 #: templates/rest_framework/horizontal/select_multiple.html:4
 #: templates/rest_framework/inline/select_multiple.html:3
@@ -526,49 +559,50 @@ msgstr "Không có gì để chọn."
 
 #: validators.py:39
 msgid "This field must be unique."
-msgstr ""
+msgstr "Trường này phải duy nhất."
 
 #: validators.py:89
 #, python-brace-format
 msgid "The fields {field_names} must make a unique set."
-msgstr ""
+msgstr "Các trường {field_names} phải là một tập duy nhất."
 
 #: validators.py:171
 #, python-brace-format
 msgid "Surrogate characters are not allowed: U+{code_point:X}."
-msgstr ""
+msgstr "Không cho phép các ký tự thay thế: U+{code_point:X}."
 
 #: validators.py:243
 #, python-brace-format
 msgid "This field must be unique for the \"{date_field}\" date."
-msgstr ""
+msgstr "Trường này phải là duy nhất cho ngày \"{date_field}\"."
 
 #: validators.py:258
 #, python-brace-format
 msgid "This field must be unique for the \"{date_field}\" month."
-msgstr ""
+msgstr "Trường này phải là duy nhất cho tháng \"{date_field}\"."
 
 #: validators.py:271
 #, python-brace-format
 msgid "This field must be unique for the \"{date_field}\" year."
-msgstr ""
+msgstr "Trường này phải là duy nhất cho năm \"{date_field}\"."
 
 #: versioning.py:40
 msgid "Invalid version in \"Accept\" header."
-msgstr ""
+msgstr "Phiên bản \"Accept\" header không hợp lệ."
 
 #: versioning.py:71
 msgid "Invalid version in URL path."
-msgstr ""
+msgstr "Phiên bản không hợp lệ trong đường dẫn URL."
 
 #: versioning.py:116
 msgid "Invalid version in URL path. Does not match any version namespace."
 msgstr ""
+"Phiên bản không hợp lệ đường dẫn URL. Không trùng với bất cứ tên miền."
 
 #: versioning.py:148
 msgid "Invalid version in hostname."
-msgstr ""
+msgstr "Phiên bản không hợp lệ trong tên máy chủ."
 
 #: versioning.py:170
 msgid "Invalid version in query parameter."
-msgstr ""
+msgstr "Phiên bản không hợp lệ trong các tham số truy vấn."
