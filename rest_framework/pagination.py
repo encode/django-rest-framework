@@ -16,7 +16,7 @@ from django.template import loader
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
 
-from rest_framework import RemovedInDRF315Warning
+from rest_framework import RemovedInDRF317Warning
 from rest_framework.compat import coreapi, coreschema
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
