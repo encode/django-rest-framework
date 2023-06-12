@@ -1466,7 +1466,7 @@ def test_coreapi_deprecation():
         deprecated_filter = SearchFilter()
         deprecated_filter.get_schema_fields({})
 
-    with pytest.warns(RemovedInDRF315Warning):
+    with pytest.warns(RemovedInDRF317Warning):
         paginator = BasePagination()
         paginator.get_schema_fields({})
 
