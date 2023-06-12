@@ -622,5 +622,5 @@ class ManualSchema(ViewInspector):
 def is_enabled():
     """Is CoreAPI Mode enabled?"""
     if coreapi is not None:
-        warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.15', RemovedInDRF315Warning)
+        warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.17', RemovedInDRF317Warning)
     return issubclass(api_settings.DEFAULT_SCHEMA_CLASS, AutoSchema)
