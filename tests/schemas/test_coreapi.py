@@ -7,7 +7,7 @@ from django.test import TestCase, override_settings
 from django.urls import include, path
 
 from rest_framework import (
-    RemovedInDRF315Warning, filters, generics, pagination, permissions,
+    RemovedInDRF317Warning, filters, generics, pagination, permissions,
     serializers
 )
 from rest_framework.compat import coreapi, coreschema
