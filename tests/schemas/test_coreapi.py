@@ -1470,7 +1470,7 @@ def test_coreapi_deprecation():
         paginator = BasePagination()
         paginator.get_schema_fields({})
 
-    with pytest.warns(RemovedInDRF315Warning):
+    with pytest.warns(RemovedInDRF317Warning):
         paginator = PageNumberPagination()
         paginator.get_schema_fields({})
 
