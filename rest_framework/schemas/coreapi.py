@@ -5,7 +5,7 @@ from urllib import parse
 from django.db import models
 from django.utils.encoding import force_str
 
-from rest_framework import RemovedInDRF315Warning, exceptions, serializers
+from rest_framework import RemovedInDRF317Warning, exceptions, serializers
 from rest_framework.compat import coreapi, coreschema, uritemplate
 from rest_framework.settings import api_settings
 
