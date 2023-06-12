@@ -506,6 +506,9 @@ class BrowsableAPIRenderer(BaseRenderer):
             return self.render_form_for_serializer(serializer)
 
     def render_form_for_serializer(self, serializer):
+        if isinstance(serializer, serializers.ListSerializer):
+            return None
+
         if hasattr(serializer, 'initial_data'):
             serializer.is_valid()
 
@@ -555,10 +558,13 @@ class BrowsableAPIRenderer(BaseRenderer):
                 context['indent'] = 4
 
                 # strip HiddenField from output
+                is_list_serializer = isinstance(serializer, serializers.ListSerializer)
+                serializer = serializer.child if is_list_serializer else serializer
                 data = serializer.data.copy()
                 for name, field in serializer.fields.items():
                     if isinstance(field, serializers.HiddenField):
                         data.pop(name, None)
+                data = [data] if is_list_serializer else data
                 content = renderer.render(data, accepted, context)
                 # Renders returns bytes, but CharField expects a str.
                 content = content.decode()
