@@ -1474,7 +1474,7 @@ def test_coreapi_deprecation():
         paginator = PageNumberPagination()
         paginator.get_schema_fields({})
 
-    with pytest.warns(RemovedInDRF315Warning):
+    with pytest.warns(RemovedInDRF317Warning):
         paginator = LimitOffsetPagination()
         paginator.get_schema_fields({})
 
