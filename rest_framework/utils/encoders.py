@@ -65,3 +65,14 @@ class JSONEncoder(json.JSONEncoder):
         elif hasattr(obj, '__iter__'):
             return tuple(item for item in obj)
         return super().default(obj)
+
+
+class CustomScalar:
+    """
+    CustomScalar that knows how to encode timedelta that renderer
+    can understand.
+    """
+    @classmethod
+    def represent_timedelta(cls, dumper, data):
+        value = str(data.total_seconds())
+        return dumper.represent_scalar('tag:yaml.org,2002:str', value)
