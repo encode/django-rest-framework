@@ -1482,5 +1482,5 @@ def test_coreapi_deprecation():
         paginator = CursorPagination()
         paginator.get_schema_fields({})
 
-    with pytest.warns(RemovedInDRF315Warning):
+    with pytest.warns(RemovedInDRF317Warning):
         is_enabled()
