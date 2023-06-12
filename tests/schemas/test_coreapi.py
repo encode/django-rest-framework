@@ -1451,7 +1451,7 @@ def test_coreapi_deprecation():
     with pytest.warns(RemovedInDRF317Warning):
         AutoSchema()
 
-    with pytest.warns(RemovedInDRF315Warning):
+    with pytest.warns(RemovedInDRF317Warning):
         ManualSchema({})
 
     with pytest.warns(RemovedInDRF315Warning):
