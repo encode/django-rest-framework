@@ -31,3 +31,7 @@ if django.VERSION < (3, 2):
 
 class RemovedInDRF315Warning(DeprecationWarning):
     pass
+
+
+class RemovedInDRF317Warning(PendingDeprecationWarning):
+    pass
