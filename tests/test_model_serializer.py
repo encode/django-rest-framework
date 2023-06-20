@@ -315,7 +315,8 @@ class TestRegularFieldMappings(TestCase):
                 model = RegularFieldsModel
                 fields = ('auto_field', 'invalid')
 
-        expected = 'Field name `invalid` is not valid for model `RegularFieldsModel`.'
+        expected = 'Field name `invalid` is not valid for model `RegularFieldsModel` ' \
+                   'in `tests.test_model_serializer.TestSerializer`.'
         with self.assertRaisesMessage(ImproperlyConfigured, expected):
             TestSerializer().fields
 
