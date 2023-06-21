@@ -1,11 +1,11 @@
 import warnings
-from collections import Counter, OrderedDict
+from collections import Counter
 from urllib import parse
 
 from django.db import models
 from django.utils.encoding import force_str
 
-from rest_framework import exceptions, serializers
+from rest_framework import RemovedInDRF317Warning, exceptions, serializers
 from rest_framework.compat import coreapi, coreschema, uritemplate
 from rest_framework.settings import api_settings
 
@@ -54,7 +54,7 @@ to customise schema structure.
 """
 
 
-class LinkNode(OrderedDict):
+class LinkNode(dict):
     def __init__(self):
         self.links = []
         self.methods_counter = Counter()
@@ -118,6 +118,8 @@ class SchemaGenerator(BaseSchemaGenerator):
 
     def __init__(self, title=None, url=None, description=None, patterns=None, urlconf=None, version=None):
         assert coreapi, '`coreapi` must be installed for schema support.'
+        if coreapi is not None:
+            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.17', RemovedInDRF317Warning)
         assert coreschema, '`coreschema` must be installed for schema support.'
 
         super().__init__(title, url, description, patterns, urlconf)
@@ -268,11 +270,11 @@ def field_to_schema(field):
         )
     elif isinstance(field, serializers.Serializer):
         return coreschema.Object(
-            properties=OrderedDict([
-                (key, field_to_schema(value))
+            properties={
+                key: field_to_schema(value)
                 for key, value
                 in field.fields.items()
-            ]),
+            },
             title=title,
             description=description
         )
@@ -351,6 +353,9 @@ class AutoSchema(ViewInspector):
             will be added to auto-generated fields, overwriting on `Field.name`
         """
         super().__init__()
+        if coreapi is not None:
+            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.17', RemovedInDRF317Warning)
+
         if manual_fields is None:
             manual_fields = []
         self._manual_fields = manual_fields
@@ -549,7 +554,7 @@ class AutoSchema(ViewInspector):
         if not update_with:
             return fields
 
-        by_name = OrderedDict((f.name, f) for f in fields)
+        by_name = {f.name: f for f in fields}
         for f in update_with:
             by_name[f.name] = f
         fields = list(by_name.values())
@@ -592,6 +597,9 @@ class ManualSchema(ViewInspector):
         * `description`: String description for view. Optional.
         """
         super().__init__()
+        if coreapi is not None:
+            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.17', RemovedInDRF317Warning)
+
         assert all(isinstance(f, coreapi.Field) for f in fields), "`fields` must be a list of coreapi.Field instances"
         self._fields = fields
         self._description = description
@@ -613,4 +621,6 @@ class ManualSchema(ViewInspector):
 
 def is_enabled():
     """Is CoreAPI Mode enabled?"""
+    if coreapi is not None:
+        warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.17', RemovedInDRF317Warning)
     return issubclass(api_settings.DEFAULT_SCHEMA_CLASS, AutoSchema)

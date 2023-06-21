@@ -7,16 +7,24 @@ from django.test import TestCase, override_settings
 from django.urls import include, path
 
 from rest_framework import (
-    filters, generics, pagination, permissions, serializers
+    RemovedInDRF317Warning, filters, generics, pagination, permissions,
+    serializers
 )
 from rest_framework.compat import coreapi, coreschema
 from rest_framework.decorators import action, api_view, schema
+from rest_framework.filters import (
+    BaseFilterBackend, OrderingFilter, SearchFilter
+)
+from rest_framework.pagination import (
+    BasePagination, CursorPagination, LimitOffsetPagination,
+    PageNumberPagination
+)
 from rest_framework.request import Request
 from rest_framework.routers import DefaultRouter, SimpleRouter
 from rest_framework.schemas import (
     AutoSchema, ManualSchema, SchemaGenerator, get_schema_view
 )
-from rest_framework.schemas.coreapi import field_to_schema
+from rest_framework.schemas.coreapi import field_to_schema, is_enabled
 from rest_framework.schemas.generators import EndpointEnumerator
 from rest_framework.schemas.utils import is_list_view
 from rest_framework.test import APIClient, APIRequestFactory
@@ -1433,3 +1441,46 @@ def test_schema_handles_exception():
     response.render()
     assert response.status_code == 403
     assert b"You do not have permission to perform this action." in response.content
+
+
+@pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
+def test_coreapi_deprecation():
+    with pytest.warns(RemovedInDRF317Warning):
+        SchemaGenerator()
+
+    with pytest.warns(RemovedInDRF317Warning):
+        AutoSchema()
+
+    with pytest.warns(RemovedInDRF317Warning):
+        ManualSchema({})
+
+    with pytest.warns(RemovedInDRF317Warning):
+        deprecated_filter = OrderingFilter()
+        deprecated_filter.get_schema_fields({})
+
+    with pytest.warns(RemovedInDRF317Warning):
+        deprecated_filter = BaseFilterBackend()
+        deprecated_filter.get_schema_fields({})
+
+    with pytest.warns(RemovedInDRF317Warning):
+        deprecated_filter = SearchFilter()
+        deprecated_filter.get_schema_fields({})
+
+    with pytest.warns(RemovedInDRF317Warning):
+        paginator = BasePagination()
+        paginator.get_schema_fields({})
+
+    with pytest.warns(RemovedInDRF317Warning):
+        paginator = PageNumberPagination()
+        paginator.get_schema_fields({})
+
+    with pytest.warns(RemovedInDRF317Warning):
+        paginator = LimitOffsetPagination()
+        paginator.get_schema_fields({})
+
+    with pytest.warns(RemovedInDRF317Warning):
+        paginator = CursorPagination()
+        paginator.get_schema_fields({})
+
+    with pytest.warns(RemovedInDRF317Warning):
+        is_enabled()

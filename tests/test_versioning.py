@@ -152,6 +152,8 @@ class TestURLReversing(URLPatternsTestCase, APITestCase):
         path('v1/', include((included, 'v1'), namespace='v1')),
         path('another/', dummy_view, name='another'),
         re_path(r'^(?P<version>[v1|v2]+)/another/$', dummy_view, name='another'),
+        re_path(r'^(?P<foo>.+)/unversioned/$', dummy_view, name='unversioned'),
+
     ]
 
     def test_reverse_unversioned(self):
@@ -197,6 +199,14 @@ class TestURLReversing(URLPatternsTestCase, APITestCase):
         request = factory.get('/endpoint/')
         response = view(request)
         assert response.data == {'url': 'http://testserver/another/'}
+
+        # Test fallback when kwargs is not None
+        request = factory.get('/v1/endpoint/')
+        request.versioning_scheme = scheme()
+        request.version = 'v1'
+
+        reversed_url = reverse('unversioned', request=request, kwargs={'foo': 'bar'})
+        assert reversed_url == 'http://testserver/bar/unversioned/'
 
     def test_reverse_namespace_versioning(self):
         class FakeResolverMatch(ResolverMatch):
@@ -262,7 +272,7 @@ class TestInvalidVersion:
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
-class TestAllowedAndDefaultVersion:
+class TestAcceptHeaderAllowedAndDefaultVersion:
     def test_missing_without_default(self):
         scheme = versioning.AcceptHeaderVersioning
         view = AllowedVersionsView.as_view(versioning_class=scheme)
@@ -303,6 +313,97 @@ class TestAllowedAndDefaultVersion:
         view = AllowedWithNoneAndDefaultVersionsView.as_view(versioning_class=scheme)
 
         request = factory.get('/endpoint/', HTTP_ACCEPT='application/json')
+        response = view(request)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == {'version': 'v2'}
+
+
+class TestNamespaceAllowedAndDefaultVersion:
+    def test_no_namespace_without_default(self):
+        class FakeResolverMatch:
+            namespace = None
+
+        scheme = versioning.NamespaceVersioning
+        view = AllowedVersionsView.as_view(versioning_class=scheme)
+
+        request = factory.get('/endpoint/')
+        request.resolver_match = FakeResolverMatch
+        response = view(request)
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_no_namespace_with_default(self):
+        class FakeResolverMatch:
+            namespace = None
+
+        scheme = versioning.NamespaceVersioning
+        view = AllowedAndDefaultVersionsView.as_view(versioning_class=scheme)
+
+        request = factory.get('/endpoint/')
+        request.resolver_match = FakeResolverMatch
+        response = view(request)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == {'version': 'v2'}
+
+    def test_no_match_without_default(self):
+        class FakeResolverMatch:
+            namespace = 'no_match'
+
+        scheme = versioning.NamespaceVersioning
+        view = AllowedVersionsView.as_view(versioning_class=scheme)
+
+        request = factory.get('/endpoint/')
+        request.resolver_match = FakeResolverMatch
+        response = view(request)
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_no_match_with_default(self):
+        class FakeResolverMatch:
+            namespace = 'no_match'
+
+        scheme = versioning.NamespaceVersioning
+        view = AllowedAndDefaultVersionsView.as_view(versioning_class=scheme)
+
+        request = factory.get('/endpoint/')
+        request.resolver_match = FakeResolverMatch
+        response = view(request)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == {'version': 'v2'}
+
+    def test_with_default(self):
+        class FakeResolverMatch:
+            namespace = 'v1'
+
+        scheme = versioning.NamespaceVersioning
+        view = AllowedAndDefaultVersionsView.as_view(versioning_class=scheme)
+
+        request = factory.get('/endpoint/')
+        request.resolver_match = FakeResolverMatch
+        response = view(request)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == {'version': 'v1'}
+
+    def test_no_match_without_default_but_none_allowed(self):
+        class FakeResolverMatch:
+            namespace = 'no_match'
+
+        scheme = versioning.NamespaceVersioning
+        view = AllowedWithNoneVersionsView.as_view(versioning_class=scheme)
+
+        request = factory.get('/endpoint/')
+        request.resolver_match = FakeResolverMatch
+        response = view(request)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == {'version': None}
+
+    def test_no_match_with_default_and_none_allowed(self):
+        class FakeResolverMatch:
+            namespace = 'no_match'
+
+        scheme = versioning.NamespaceVersioning
+        view = AllowedWithNoneAndDefaultVersionsView.as_view(versioning_class=scheme)
+
+        request = factory.get('/endpoint/')
+        request.resolver_match = FakeResolverMatch
         response = view(request)
         assert response.status_code == status.HTTP_200_OK
         assert response.data == {'version': 'v2'}

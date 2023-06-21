@@ -15,7 +15,7 @@ import contextlib
 import copy
 import inspect
 import traceback
-from collections import OrderedDict, defaultdict
+from collections import defaultdict
 from collections.abc import Mapping
 
 from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured
@@ -315,7 +315,7 @@ class SerializerMetaclass(type):
             for name, f in base._declared_fields.items() if name not in known
         ]
 
-        return OrderedDict(base_fields + fields)
+        return dict(base_fields + fields)
 
     def __new__(cls, name, bases, attrs):
         attrs['_declared_fields'] = cls._get_declared_fields(bases, attrs)
@@ -352,6 +352,26 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
     default_error_messages = {
         'invalid': _('Invalid data. Expected a dictionary, but got {datatype}.')
     }
+
+    def set_value(self, dictionary, keys, value):
+        """
+        Similar to Python's built in `dictionary[key] = value`,
+        but takes a list of nested keys instead of a single key.
+
+        set_value({'a': 1}, [], {'b': 2}) -> {'a': 1, 'b': 2}
+        set_value({'a': 1}, ['x'], 2) -> {'a': 1, 'x': 2}
+        set_value({'a': 1}, ['x', 'y'], 2) -> {'a': 1, 'x': {'y': 2}}
+        """
+        if not keys:
+            dictionary.update(value)
+            return
+
+        for key in keys[:-1]:
+            if key not in dictionary:
+                dictionary[key] = {}
+            dictionary = dictionary[key]
+
+        dictionary[keys[-1]] = value
 
     @cached_property
     def fields(self):
@@ -400,20 +420,20 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
         if hasattr(self, 'initial_data'):
             # initial_data may not be a valid type
             if not isinstance(self.initial_data, Mapping):
-                return OrderedDict()
+                return {}
 
-            return OrderedDict([
-                (field_name, field.get_value(self.initial_data))
+            return {
+                field_name: field.get_value(self.initial_data)
                 for field_name, field in self.fields.items()
                 if (field.get_value(self.initial_data) is not empty) and
                 not field.read_only
-            ])
+            }
 
-        return OrderedDict([
-            (field.field_name, field.get_initial())
+        return {
+            field.field_name: field.get_initial()
             for field in self.fields.values()
             if not field.read_only
-        ])
+        }
 
     def get_value(self, dictionary):
         # We override the default field access in order to support
@@ -448,7 +468,7 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
             if (field.read_only) and (field.default != empty) and (field.source != '*') and ('.' not in field.source)
         ]
 
-        defaults = OrderedDict()
+        defaults = {}
         for field in fields:
             try:
                 default = field.get_default()
@@ -481,8 +501,8 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
                 api_settings.NON_FIELD_ERRORS_KEY: [message]
             }, code='invalid')
 
-        ret = OrderedDict()
-        errors = OrderedDict()
+        ret = {}
+        errors = {}
         fields = self._writable_fields
 
         for field in fields:
@@ -499,7 +519,7 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
             except SkipField:
                 pass
             else:
-                set_value(ret, field.source_attrs, validated_value)
+                self.set_value(ret, field.source_attrs, validated_value)
 
         if errors:
             raise ValidationError(errors)
@@ -510,7 +530,7 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
         """
         Object instance -> Dict of primitive datatypes.
         """
-        ret = OrderedDict()
+        ret = {}
         fields = self._readable_fields
 
         for field in fields:
@@ -596,6 +616,12 @@ class ListSerializer(BaseSerializer):
         self.min_length = kwargs.pop('min_length', None)
         assert self.child is not None, '`child` is a required argument.'
         assert not inspect.isclass(self.child), '`child` has not been instantiated.'
+
+        instance = kwargs.get('instance', [])
+        data = kwargs.get('data', [])
+        if instance and data:
+            assert len(data) == len(instance), 'Data and instance should have same length'
+
         super().__init__(*args, **kwargs)
         self.child.bind(field_name='', parent=self)
 
@@ -670,7 +696,13 @@ class ListSerializer(BaseSerializer):
         ret = []
         errors = []
 
-        for item in data:
+        for idx, item in enumerate(data):
+            if (
+                hasattr(self, 'instance')
+                and self.instance
+                and len(self.instance) > idx
+            ):
+                self.child.instance = self.instance[idx]
             try:
                 validated = self.child.run_validation(item)
             except ValidationError as exc:
@@ -1068,7 +1100,7 @@ class ModelSerializer(Serializer):
         )
 
         # Determine the fields that should be included on the serializer.
-        fields = OrderedDict()
+        fields = {}
 
         for field_name in field_names:
             # If the field is explicitly declared on the class then use that.
@@ -1553,16 +1585,16 @@ class ModelSerializer(Serializer):
         # which may map onto a model field. Any dotted field name lookups
         # cannot map to a field, and must be a traversal, so we're not
         # including those.
-        field_sources = OrderedDict(
-            (field.field_name, field.source) for field in self._writable_fields
+        field_sources = {
+            field.field_name: field.source for field in self._writable_fields
             if (field.source != '*') and ('.' not in field.source)
-        )
+        }
 
         # Special Case: Add read_only fields with defaults.
-        field_sources.update(OrderedDict(
-            (field.field_name, field.source) for field in self.fields.values()
+        field_sources.update({
+            field.field_name: field.source for field in self.fields.values()
             if (field.read_only) and (field.default != empty) and (field.source != '*') and ('.' not in field.source)
-        ))
+        })
 
         # Invert so we can find the serializer field names that correspond to
         # the model field names in the unique_together sets. This also allows

@@ -157,6 +157,7 @@ Date: 28th September 2020
 * Fix `PrimaryKeyRelatedField` and `HyperlinkedRelatedField` when source field is actually a property. [#7142]
 * `Token.generate_key` is now a class method. [#7502]
 * `@action` warns if method is wrapped in a decorator that does not preserve information using `@functools.wraps`. [#7098]
+* Deprecate `serializers.NullBooleanField` in favour of `serializers.BooleanField` with `allow_null=True` [#7122]
 
 ---
 

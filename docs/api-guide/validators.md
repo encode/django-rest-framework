@@ -53,7 +53,7 @@ If we open up the Django shell using `manage.py shell` we can now
 
 The interesting bit here is the `reference` field. We can see that the uniqueness constraint is being explicitly enforced by a validator on the serializer field.
 
-Because of this more explicit style REST framework includes a few validator classes that are not available in core Django. These classes are detailed below.
+Because of this more explicit style REST framework includes a few validator classes that are not available in core Django. These classes are detailed below.  REST framework validators, like their Django counterparts, implement the `__eq__` method, allowing you to compare instances for equality.
 
 ---
 
@@ -295,13 +295,14 @@ To write a class-based validator, use the `__call__` method. Class-based validat
 
 In some advanced cases you might want a validator to be passed the serializer
 field it is being used with as additional context. You can do so by setting
-a `requires_context = True` attribute on the validator. The `__call__` method
+a `requires_context = True` attribute on the validator class. The `__call__` method
 will then be called with the `serializer_field`
 or `serializer` as an additional argument.
 
-    requires_context = True
+    class MultipleOf:
+        requires_context = True
 
-    def __call__(self, value, serializer_field):
-        ...
+        def __call__(self, value, serializer_field):
+            ...
 
 [cite]: https://docs.djangoproject.com/en/stable/ref/validators/

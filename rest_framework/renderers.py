@@ -9,7 +9,7 @@ REST framework also provides an HTML renderer that renders the browsable API.
 
 import base64
 import contextlib
-from collections import OrderedDict
+import datetime
 from urllib import parse
 
 from django import forms
@@ -507,6 +507,9 @@ class BrowsableAPIRenderer(BaseRenderer):
             return self.render_form_for_serializer(serializer)
 
     def render_form_for_serializer(self, serializer):
+        if isinstance(serializer, serializers.ListSerializer):
+            return None
+
         if hasattr(serializer, 'initial_data'):
             serializer.is_valid()
 
@@ -556,10 +559,13 @@ class BrowsableAPIRenderer(BaseRenderer):
                 context['indent'] = 4
 
                 # strip HiddenField from output
+                is_list_serializer = isinstance(serializer, serializers.ListSerializer)
+                serializer = serializer.child if is_list_serializer else serializer
                 data = serializer.data.copy()
                 for name, field in serializer.fields.items():
                     if isinstance(field, serializers.HiddenField):
                         data.pop(name, None)
+                data = [data] if is_list_serializer else data
                 content = renderer.render(data, accepted, context)
                 # Renders returns bytes, but CharField expects a str.
                 content = content.decode()
@@ -653,7 +659,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         raw_data_patch_form = self.get_raw_data_form(data, view, 'PATCH', request)
         raw_data_put_or_patch_form = raw_data_put_form or raw_data_patch_form
 
-        response_headers = OrderedDict(sorted(response.items()))
+        response_headers = dict(sorted(response.items()))
         renderer_content_type = ''
         if renderer:
             renderer_content_type = '%s' % renderer.media_type
@@ -1057,6 +1063,7 @@ class OpenAPIRenderer(BaseRenderer):
             def ignore_aliases(self, data):
                 return True
         Dumper.add_representer(SafeString, Dumper.represent_str)
+        Dumper.add_representer(datetime.timedelta, encoders.CustomScalar.represent_timedelta)
         return yaml.dump(data, default_flow_style=False, sort_keys=False, Dumper=Dumper).encode('utf-8')
 
 

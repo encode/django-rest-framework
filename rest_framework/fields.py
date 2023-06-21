@@ -4,9 +4,9 @@ import datetime
 import decimal
 import functools
 import inspect
+import logging
 import re
 import uuid
-from collections import OrderedDict
 from collections.abc import Mapping
 
 from django.conf import settings
@@ -17,6 +17,7 @@ from django.core.validators import (
     MinValueValidator, ProhibitNullCharactersValidator, RegexValidator,
     URLValidator, ip_address_validators
 )
+from django.db.models import IntegerChoices, TextChoices
 from django.forms import FilePathField as DjangoFilePathField
 from django.forms import ImageField as DjangoImageField
 from django.utils import timezone
@@ -28,14 +29,21 @@ from django.utils.encoding import is_protected_type, smart_str
 from django.utils.formats import localize_input, sanitize_separators
 from django.utils.ipv6 import clean_ipv6_address
 from django.utils.translation import gettext_lazy as _
-from pytz.exceptions import InvalidTimeError
+
+try:
+    import pytz
+except ImportError:
+    pytz = None
 
 from rest_framework import ISO_8601
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, humanize_datetime, json, representation
 from rest_framework.utils.formatting import lazy_format
+from rest_framework.utils.timezone import valid_datetime
 from rest_framework.validators import ProhibitSurrogateCharactersValidator
+
+logger = logging.getLogger("rest_framework.fields")
 
 
 class empty:
@@ -109,27 +117,6 @@ def get_attribute(instance, attrs):
     return instance
 
 
-def set_value(dictionary, keys, value):
-    """
-    Similar to Python's built in `dictionary[key] = value`,
-    but takes a list of nested keys instead of a single key.
-
-    set_value({'a': 1}, [], {'b': 2}) -> {'a': 1, 'b': 2}
-    set_value({'a': 1}, ['x'], 2) -> {'a': 1, 'x': 2}
-    set_value({'a': 1}, ['x', 'y'], 2) -> {'a': 1, 'x': {'y': 2}}
-    """
-    if not keys:
-        dictionary.update(value)
-        return
-
-    for key in keys[:-1]:
-        if key not in dictionary:
-            dictionary[key] = {}
-        dictionary = dictionary[key]
-
-    dictionary[keys[-1]] = value
-
-
 def to_choices_dict(choices):
     """
     Convert choices into key/value dicts.
@@ -142,7 +129,7 @@ def to_choices_dict(choices):
     # choices = [1, 2, 3]
     # choices = [(1, 'First'), (2, 'Second'), (3, 'Third')]
     # choices = [('Category', ((1, 'First'), (2, 'Second'))), (3, 'Third')]
-    ret = OrderedDict()
+    ret = {}
     for choice in choices:
         if not isinstance(choice, (list, tuple)):
             # single choice
@@ -165,7 +152,7 @@ def flatten_choices_dict(choices):
     flatten_choices_dict({1: '1st', 2: '2nd'}) -> {1: '1st', 2: '2nd'}
     flatten_choices_dict({'Group': {1: '1st', 2: '2nd'}}) -> {1: '1st', 2: '2nd'}
     """
-    ret = OrderedDict()
+    ret = {}
     for key, value in choices.items():
         if isinstance(value, dict):
             # grouped choices (category, sub choices)
@@ -677,22 +664,27 @@ class BooleanField(Field):
     default_empty_html = False
     initial = False
     TRUE_VALUES = {
-        't', 'T',
-        'y', 'Y', 'yes', 'Yes', 'YES',
-        'true', 'True', 'TRUE',
-        'on', 'On', 'ON',
-        '1', 1,
-        True
+        't',
+        'y',
+        'yes',
+        'true',
+        'on',
+        '1',
+        1,
+        True,
     }
     FALSE_VALUES = {
-        'f', 'F',
-        'n', 'N', 'no', 'No', 'NO',
-        'false', 'False', 'FALSE',
-        'off', 'Off', 'OFF',
-        '0', 0, 0.0,
-        False
+        'f',
+        'n',
+        'no',
+        'false',
+        'off',
+        '0',
+        0,
+        0.0,
+        False,
     }
-    NULL_VALUES = {'null', 'Null', 'NULL', '', None}
+    NULL_VALUES = {'null', '', None}
 
     def __init__(self, **kwargs):
         if kwargs.get('allow_null', False):
@@ -700,22 +692,28 @@ class BooleanField(Field):
             self.initial = None
         super().__init__(**kwargs)
 
+    @staticmethod
+    def _lower_if_str(value):
+        if isinstance(value, str):
+            return value.lower()
+        return value
+
     def to_internal_value(self, data):
         with contextlib.suppress(TypeError):
-            if data in self.TRUE_VALUES:
+            if self._lower_if_str(data) in self.TRUE_VALUES:
                 return True
-            elif data in self.FALSE_VALUES:
+            elif self._lower_if_str(data) in self.FALSE_VALUES:
                 return False
-            elif data in self.NULL_VALUES and self.allow_null:
+            elif self._lower_if_str(data) in self.NULL_VALUES and self.allow_null:
                 return None
-        self.fail('invalid', input=data)
+        self.fail("invalid", input=data)
 
     def to_representation(self, value):
-        if value in self.TRUE_VALUES:
+        if self._lower_if_str(value) in self.TRUE_VALUES:
             return True
-        elif value in self.FALSE_VALUES:
+        elif self._lower_if_str(value) in self.FALSE_VALUES:
             return False
-        if value in self.NULL_VALUES and self.allow_null:
+        if self._lower_if_str(value) in self.NULL_VALUES and self.allow_null:
             return None
         return bool(value)
 
@@ -989,6 +987,11 @@ class DecimalField(Field):
         self.max_value = max_value
         self.min_value = min_value
 
+        if self.max_value is not None and not isinstance(self.max_value, decimal.Decimal):
+            logger.warning("max_value in DecimalField should be Decimal type.")
+        if self.min_value is not None and not isinstance(self.min_value, decimal.Decimal):
+            logger.warning("min_value in DecimalField should be Decimal type.")
+
         if self.max_digits is not None and self.decimal_places is not None:
             self.max_whole_digits = self.max_digits - self.decimal_places
         else:
@@ -1154,9 +1157,16 @@ class DateTimeField(Field):
                 except OverflowError:
                     self.fail('overflow')
             try:
-                return timezone.make_aware(value, field_timezone)
-            except InvalidTimeError:
-                self.fail('make_aware', timezone=field_timezone)
+                dt = timezone.make_aware(value, field_timezone)
+                # When the resulting datetime is a ZoneInfo instance, it won't necessarily
+                # throw given an invalid datetime, so we need to specifically check.
+                if not valid_datetime(dt):
+                    self.fail('make_aware', timezone=field_timezone)
+                return dt
+            except Exception as e:
+                if pytz and isinstance(e, pytz.exceptions.InvalidTimeError):
+                    self.fail('make_aware', timezone=field_timezone)
+                raise e
         elif (field_timezone is None) and timezone.is_aware(value):
             return timezone.make_naive(value, datetime.timezone.utc)
         return value
@@ -1392,6 +1402,10 @@ class ChoiceField(Field):
         if data == '' and self.allow_blank:
             return ''
 
+        if isinstance(data, (IntegerChoices, TextChoices)) and str(data) != \
+                str(data.value):
+            data = data.value
+
         try:
             return self.choice_strings_to_values[str(data)]
         except KeyError:
@@ -1400,6 +1414,11 @@ class ChoiceField(Field):
     def to_representation(self, value):
         if value in ('', None):
             return value
+
+        if isinstance(value, (IntegerChoices, TextChoices)) and str(value) != \
+                str(value.value):
+            value = value.value
+
         return self.choice_strings_to_values.get(str(value), value)
 
     def iter_options(self):
@@ -1423,7 +1442,8 @@ class ChoiceField(Field):
         # Allows us to deal with eg. integer choices while supporting either
         # integer or string input, but still get the correct datatype out.
         self.choice_strings_to_values = {
-            str(key): key for key in self.choices
+            str(key.value) if isinstance(key, (IntegerChoices, TextChoices))
+            and str(key) != str(key.value) else str(key): key for key in self.choices
         }
 
     choices = property(_get_choices, _set_choices)
@@ -1643,7 +1663,7 @@ class ListField(Field):
 
     def run_child_validation(self, data):
         result = []
-        errors = OrderedDict()
+        errors = {}
 
         for idx, item in enumerate(data):
             try:
@@ -1707,7 +1727,7 @@ class DictField(Field):
 
     def run_child_validation(self, data):
         result = {}
-        errors = OrderedDict()
+        errors = {}
 
         for key, value in data.items():
             key = str(key)

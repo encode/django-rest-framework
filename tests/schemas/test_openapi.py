@@ -1162,6 +1162,31 @@ class TestGenerator(TestCase):
         assert b'"openapi": "' in ret
         assert b'"default": "0.0"' in ret
 
+    def test_schema_rendering_to_yaml(self):
+        patterns = [
+            path('example/', views.ExampleGenericAPIView.as_view()),
+        ]
+        generator = SchemaGenerator(patterns=patterns)
+
+        request = create_request('/')
+        schema = generator.get_schema(request=request)
+        ret = OpenAPIRenderer().render(schema)
+        assert b"openapi: " in ret
+        assert b"default: '0.0'" in ret
+
+    def test_schema_rendering_timedelta_to_yaml_with_validator(self):
+
+        patterns = [
+            path('example/', views.ExampleValidatedAPIView.as_view()),
+        ]
+        generator = SchemaGenerator(patterns=patterns)
+
+        request = create_request('/')
+        schema = generator.get_schema(request=request)
+        ret = OpenAPIRenderer().render(schema)
+        assert b"openapi: " in ret
+        assert b"duration:\n          type: string\n          minimum: \'10.0\'\n" in ret
+
     def test_schema_with_no_paths(self):
         patterns = []
         generator = SchemaGenerator(patterns=patterns)

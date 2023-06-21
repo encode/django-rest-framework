@@ -13,7 +13,7 @@ __title__ = 'Django REST framework'
 __version__ = '3.14.0'
 __author__ = 'Tom Christie'
 __license__ = 'BSD 3-Clause'
-__copyright__ = 'Copyright 2011-2019 Encode OSS Ltd'
+__copyright__ = 'Copyright 2011-2023 Encode OSS Ltd'
 
 # Version synonym
 VERSION = __version__
@@ -30,4 +30,8 @@ if django.VERSION < (3, 2):
 
 
 class RemovedInDRF315Warning(DeprecationWarning):
+    pass
+
+
+class RemovedInDRF317Warning(PendingDeprecationWarning):
     pass

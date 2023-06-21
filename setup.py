@@ -37,7 +37,8 @@ an older version of Django REST Framework:
 
 
 def read(f):
-    return open(f, 'r', encoding='utf-8').read()
+    with open(f, 'r', encoding='utf-8') as file:
+        return file.read()
 
 
 def get_version(package):
@@ -82,7 +83,7 @@ setup(
     author_email='tom@tomchristie.com',  # SEE NOTE BELOW (*)
     packages=find_packages(exclude=['tests*']),
     include_package_data=True,
-    install_requires=["django>=3.0", "pytz"],
+    install_requires=["django>=3.0", 'backports.zoneinfo;python_version<"3.9"'],
     python_requires=">=3.6",
     zip_safe=False,
     classifiers=[
