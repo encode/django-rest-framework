@@ -11,6 +11,7 @@ from django.test.utils import override_settings
 
 from rest_framework import filters, generics, serializers
 from rest_framework.compat import coreschema
+from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIRequestFactory
 
 factory = APIRequestFactory()
@@ -50,7 +51,8 @@ class SearchFilterSerializer(serializers.ModelSerializer):
 
 
 class SearchFilterTests(TestCase):
-    def setUp(self):
+    @classmethod
+    def setUpTestData(cls):
         # Sequence of title/text is:
         #
         # z   abc
@@ -65,6 +67,9 @@ class SearchFilterTests(TestCase):
                 chr(idx + ord('c'))
             )
             SearchFilterModel(title=title, text=text).save()
+
+        SearchFilterModel(title='A title', text='The long text').save()
+        SearchFilterModel(title='The title', text='The "text').save()
 
     def test_search(self):
         class SearchListView(generics.ListAPIView):
@@ -177,6 +182,7 @@ class SearchFilterTests(TestCase):
 
         request = factory.get('/', {'search': r'^\w{3}$', 'title_only': 'true'})
         response = view(request)
+        print(response.data)
         assert response.data == [
             {'id': 3, 'title': 'zzz', 'text': 'cde'}
         ]
@@ -186,9 +192,21 @@ class SearchFilterTests(TestCase):
         request = factory.get('/?search=\0as%00d\x00f')
         request = view.initialize_request(request)
 
-        terms = filters.SearchFilter().get_search_terms(request)
+        with self.assertRaises(ValidationError):
+            filters.SearchFilter().get_search_terms(request)
 
-        assert terms == ['asdf']
+    def test_search_field_with_custom_lookup(self):
+        class SearchListView(generics.ListAPIView):
+            queryset = SearchFilterModel.objects.all()
+            serializer_class = SearchFilterSerializer
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('text__iendswith',)
+        view = SearchListView.as_view()
+        request = factory.get('/', {'search': 'c'})
+        response = view(request)
+        assert response.data == [
+            {'id': 1, 'title': 'z', 'text': 'abc'},
+        ]
 
     def test_search_field_with_additional_transforms(self):
         from django.test.utils import register_lookup
@@ -242,6 +260,32 @@ class SearchFilterTests(TestCase):
         )
         assert search_query in rendered_search_field
 
+    def test_search_field_with_escapes(self):
+        class SearchListView(generics.ListAPIView):
+            queryset = SearchFilterModel.objects.all()
+            serializer_class = SearchFilterSerializer
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('title', 'text',)
+        view = SearchListView.as_view()
+        request = factory.get('/', {'search': '"\\\"text"'})
+        response = view(request)
+        assert response.data == [
+            {'id': 12, 'title': 'The title', 'text': 'The "text'},
+        ]
+
+    def test_search_field_with_quotes(self):
+        class SearchListView(generics.ListAPIView):
+            queryset = SearchFilterModel.objects.all()
+            serializer_class = SearchFilterSerializer
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('title', 'text',)
+        view = SearchListView.as_view()
+        request = factory.get('/', {'search': '"long text"'})
+        response = view(request)
+        assert response.data == [
+            {'id': 11, 'title': 'A title', 'text': 'The long text'},
+        ]
+
 
 class AttributeModel(models.Model):
     label = models.CharField(max_length=32)
@@ -283,6 +327,13 @@ class SearchFilterFkTests(TestCase):
                 SearchFilterModelFk._meta,
                 ["%sattribute__label" % prefix, "%stitle" % prefix]
             )
+
+    def test_custom_lookup_to_related_model(self):
+        # In this test case the attribute of the fk model comes first in the
+        # list of search fields.
+        filter_ = filters.SearchFilter()
+        assert 'attribute__label__icontains' == filter_.construct_search('attribute__label', SearchFilterModelFk._meta)
+        assert 'attribute__label__iendswith' == filter_.construct_search('attribute__label__iendswith', SearchFilterModelFk._meta)
 
 
 class SearchFilterModelM2M(models.Model):
@@ -385,7 +436,7 @@ class SearchFilterToManyTests(TestCase):
             search_fields = ('=name', 'entry__headline', '=entry__pub_date__year')
 
         view = SearchListView.as_view()
-        request = factory.get('/', {'search': 'Lennon,1979'})
+        request = factory.get('/', {'search': 'Lennon 1979'})
         response = view(request)
         assert len(response.data) == 1
 
