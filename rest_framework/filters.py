@@ -14,7 +14,7 @@ from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import RemovedInDRF317Warning
-from rest_framework.compat import coreapi, coreschema, distinct
+from rest_framework.compat import coreapi, coreschema
 from rest_framework.settings import api_settings
 
 
@@ -127,12 +127,13 @@ class SearchFilter(BaseFilterBackend):
             conditions.append(reduce(operator.or_, queries))
         queryset = queryset.filter(reduce(operator.and_, conditions))
 
+        # Remove duplicates from results, if necessary
         if self.must_call_distinct(queryset, search_fields):
-            # Filtering against a many-to-many field requires us to
-            # call queryset.distinct() in order to avoid duplicate items
-            # in the resulting queryset.
-            # We try to avoid this if possible, for performance reasons.
-            queryset = distinct(queryset, base)
+            # inspired by django.contrib.admin
+            # this is more accurate than .distinct form M2M relationship
+            # also is cross-database
+            queryset = queryset.filter(pk=models.OuterRef('pk'))
+            queryset = base.filter(models.Exists(queryset))
         return queryset
 
     def to_html(self, request, queryset, view):
