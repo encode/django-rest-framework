@@ -182,7 +182,6 @@ class SearchFilterTests(TestCase):
 
         request = factory.get('/', {'search': r'^\w{3}$', 'title_only': 'true'})
         response = view(request)
-        print(response.data)
         assert response.data == [
             {'id': 3, 'title': 'zzz', 'text': 'cde'}
         ]
