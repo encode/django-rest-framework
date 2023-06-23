@@ -20,6 +20,21 @@ from rest_framework.fields import CharField
 from rest_framework.settings import api_settings
 
 
+def search_smart_split(search_terms):
+    """generator that first splits string by spaces, leaving quoted phrases togheter,
+    then it splits non-quoted phrases by commas.
+    """
+    for term in smart_split(search_terms):
+        # trim commas to avoid bad matching for quoted phrases
+        term = term.strip(',')
+        if term.startswith(('"', "'")) and term[0] == term[-1]:
+            # quoted phrases are kept togheter without any other split
+            yield unescape_string_literal(term)
+        else:
+            # non-quoted tokens are split by comma, keeping only non-empty ones
+            yield from (sub_term.strip() for sub_term in term.split(',') if sub_term)
+
+
 class BaseFilterBackend:
     """
     A base class from which all filter backend classes should inherit.
@@ -144,9 +159,7 @@ class SearchFilter(BaseFilterBackend):
 
         base = queryset
         conditions = []
-        for term in smart_split(search_terms):
-            if term.startswith(('"', "'")) and term[0] == term[-1]:
-                term = unescape_string_literal(term)
+        for term in search_smart_split(search_terms):
             queries = [
                 models.Q(**{orm_lookup: term})
                 for orm_lookup in orm_lookups

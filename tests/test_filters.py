@@ -6,7 +6,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.db.models import CharField, Transform
 from django.db.models.functions import Concat, Upper
-from django.test import TestCase
+from django.test import SimpleTestCase, TestCase
 from django.test.utils import override_settings
 
 from rest_framework import filters, generics, serializers
@@ -15,6 +15,25 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIRequestFactory
 
 factory = APIRequestFactory()
+
+
+class SearchSplitTests(SimpleTestCase):
+
+    def test_keep_quoted_togheter_regardless_of_commas(self):
+        assert ['hello, world'] == list(filters.search_smart_split('"hello, world"'))
+
+    def test_strips_commas_around_quoted(self):
+        assert ['hello, world'] == list(filters.search_smart_split(',,"hello, world"'))
+        assert ['hello, world'] == list(filters.search_smart_split(',,"hello, world",,'))
+        assert ['hello, world'] == list(filters.search_smart_split('"hello, world",,'))
+
+    def test_splits_by_comma(self):
+        assert ['hello', 'world'] == list(filters.search_smart_split(',,hello, world'))
+        assert ['hello', 'world'] == list(filters.search_smart_split(',,hello, world,,'))
+        assert ['hello', 'world'] == list(filters.search_smart_split('hello, world,,'))
+
+    def test_splits_quotes_followed_by_comma_and_sentence(self):
+        assert ['"hello', 'world"', 'found'] == list(filters.search_smart_split('"hello, world",found'))
 
 
 class BaseFilterTests(TestCase):
@@ -435,7 +454,7 @@ class SearchFilterToManyTests(TestCase):
             search_fields = ('=name', 'entry__headline', '=entry__pub_date__year')
 
         view = SearchListView.as_view()
-        request = factory.get('/', {'search': 'Lennon 1979'})
+        request = factory.get('/', {'search': 'Lennon,1979'})
         response = view(request)
         assert len(response.data) == 1
 
