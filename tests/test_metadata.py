@@ -184,6 +184,135 @@ class TestMetadata:
         assert response.status_code == status.HTTP_200_OK
         assert response.data == expected
 
+    def test_actions_with_default(self):
+        """
+        On generic views OPTIONS should return an 'actions' key with metadata
+        on the fields with default that may be supplied to PUT and POST requests.
+        """
+        class NestedField(serializers.Serializer):
+            a = serializers.IntegerField(default=2)
+            b = serializers.IntegerField()
+
+        class ExampleSerializer(serializers.Serializer):
+            choice_field = serializers.ChoiceField(['red', 'green', 'blue'], default='red')
+            integer_field = serializers.IntegerField(
+                min_value=1, max_value=1000, default=1
+            )
+            char_field = serializers.CharField(
+                min_length=3, max_length=40, default="example"
+            )
+            list_field = serializers.ListField(
+                child=serializers.ListField(
+                    child=serializers.IntegerField(default=1)
+                )
+            )
+            nested_field = NestedField()
+            uuid_field = serializers.UUIDField(label="UUID field")
+
+        class ExampleView(views.APIView):
+            """Example view."""
+            def post(self, request):
+                pass
+
+            def get_serializer(self):
+                return ExampleSerializer()
+
+        view = ExampleView.as_view()
+        response = view(request=request)
+        expected = {
+            'name': 'Example',
+            'description': 'Example view.',
+            'renders': [
+                'application/json',
+                'text/html'
+            ],
+            'parses': [
+                'application/json',
+                'application/x-www-form-urlencoded',
+                'multipart/form-data'
+            ],
+            'actions': {
+                'POST': {
+                    'choice_field': {
+                        'type': 'choice',
+                        'required': False,
+                        'read_only': False,
+                        'label': 'Choice field',
+                        "choices": [
+                            {'value': 'red', 'display_name': 'red'},
+                            {'value': 'green', 'display_name': 'green'},
+                            {'value': 'blue', 'display_name': 'blue'}
+                        ],
+                        'default': 'red'
+                    },
+                    'integer_field': {
+                        'type': 'integer',
+                        'required': False,
+                        'read_only': False,
+                        'label': 'Integer field',
+                        'min_value': 1,
+                        'max_value': 1000,
+                        'default': 1
+                    },
+                    'char_field': {
+                        'type': 'string',
+                        'required': False,
+                        'read_only': False,
+                        'label': 'Char field',
+                        'min_length': 3,
+                        'max_length': 40,
+                        'default': 'example'
+                    },
+                    'list_field': {
+                        'type': 'list',
+                        'required': True,
+                        'read_only': False,
+                        'label': 'List field',
+                        'child': {
+                            'type': 'list',
+                            'required': True,
+                            'read_only': False,
+                            'child': {
+                                'type': 'integer',
+                                'required': False,
+                                'read_only': False,
+                                'default': 1
+                            }
+                        }
+                    },
+                    'nested_field': {
+                        'type': 'nested object',
+                        'required': True,
+                        'read_only': False,
+                        'label': 'Nested field',
+                        'children': {
+                            'a': {
+                                'type': 'integer',
+                                'required': False,
+                                'read_only': False,
+                                'label': 'A',
+                                'default': 2
+                            },
+                            'b': {
+                                'type': 'integer',
+                                'required': True,
+                                'read_only': False,
+                                'label': 'B'
+                            }
+                        }
+                    },
+                    'uuid_field': {
+                        'type': 'string',
+                        'required': True,
+                        'read_only': False,
+                        'label': 'UUID field'
+                    }
+                }
+            }
+        }
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == expected
+
     def test_global_permissions(self):
         """
         If a user does not have global permissions on an action, then any
