@@ -139,11 +139,9 @@ class SearchFilter(BaseFilterBackend):
         if not getattr(view, 'search_fields', None):
             return ''
 
-        term = self.get_search_terms(request)
-        term = term[0] if term else ''
         context = {
             'param': self.search_param,
-            'term': term
+            'term': request.query_params.get(self.search_param, ''),
         }
         template = loader.get_template(self.template)
         return template.render(context)

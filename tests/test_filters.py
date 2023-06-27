@@ -225,6 +225,23 @@ class SearchFilterTests(TestCase):
                 {'id': 2, 'title': 'zz', 'text': 'bcd'},
             ]
 
+    def test_search_field_with_multiple_words(self):
+        class SearchListView(generics.ListAPIView):
+            queryset = SearchFilterModel.objects.all()
+            serializer_class = SearchFilterSerializer
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('title', 'text')
+
+        search_query = 'foo bar,baz'
+        view = SearchListView()
+        request = factory.get('/', {'search': search_query})
+        request = view.initialize_request(request)
+
+        rendered_search_field = filters.SearchFilter().to_html(
+            request=request, queryset=view.queryset, view=view
+        )
+        assert search_query in rendered_search_field
+
 
 class AttributeModel(models.Model):
     label = models.CharField(max_length=32)
