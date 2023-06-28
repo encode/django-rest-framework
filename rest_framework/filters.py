@@ -207,10 +207,11 @@ class OrderingFilter(BaseFilterBackend):
         return self.get_default_ordering(view)
 
     def convert_to_origin_filed_name(self, request, queryset, view, ordering):
-        valid_fields = self.get_valid_fields(queryset, view, {'request': request})
+        valid_fields = getattr(view, 'ordering_fields', self.ordering_fields)
         if valid_fields is None or valid_fields == '__all__':
             return ordering
-        valid_fields = dict(valid_fields)
+
+        valid_fields = dict(self.get_valid_fields(queryset, view, {'request': request}))
         converted_fields = []
         for field in ordering:
             if field.startswith('-'):
