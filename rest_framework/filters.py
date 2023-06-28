@@ -208,6 +208,8 @@ class OrderingFilter(BaseFilterBackend):
 
     def convert_to_origin_filed_name(self, request, queryset, view, ordering):
         valid_fields = dict(self.get_valid_fields(queryset, view, {'request': request}))
+        if valid_fields is None or valid_fields == '__all__':
+            return ordering
         converted_fields = []
         for field in ordering:
             if field.startswith('-'):
