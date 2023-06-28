@@ -4,13 +4,14 @@ returned by list views.
 """
 import operator
 import warnings
+from functools import reduce
+
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.db.models.constants import LOOKUP_SEP
 from django.template import loader
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
-from functools import reduce
 
 from rest_framework import RemovedInDRF317Warning
 from rest_framework.compat import coreapi, coreschema, distinct
