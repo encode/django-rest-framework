@@ -4,14 +4,13 @@ returned by list views.
 """
 import operator
 import warnings
-from functools import reduce
-
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.db.models.constants import LOOKUP_SEP
 from django.template import loader
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
+from functools import reduce
 
 from rest_framework import RemovedInDRF317Warning
 from rest_framework.compat import coreapi, coreschema, distinct
@@ -198,12 +197,24 @@ class OrderingFilter(BaseFilterBackend):
         params = request.query_params.get(self.ordering_param)
         if params:
             fields = [param.strip() for param in params.split(',')]
-            ordering = self.remove_invalid_fields(queryset, fields, view, request)
+            valid_filed_names = self.remove_invalid_fields(queryset, fields, view, request)
+            ordering = self.convert_to_origin_filed_name(request, queryset, view, valid_filed_names)
             if ordering:
                 return ordering
 
         # No ordering was included, or all the ordering fields were invalid
         return self.get_default_ordering(view)
+
+    def convert_to_origin_filed_name(self, request, queryset, view, ordering):
+        valid_fields = dict(self.get_valid_fields(queryset, view, {'request': request}))
+        converted_fields = []
+        for field in ordering:
+            if field.startswith('-'):
+                converted_fields.append('-' + valid_fields[field[1:]])
+            else:
+                converted_fields.append(valid_fields[field])
+
+        return converted_fields
 
     def get_default_ordering(self, view):
         ordering = getattr(view, 'ordering', None)
