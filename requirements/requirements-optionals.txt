@@ -7,4 +7,4 @@ inflection==0.5.1
 markdown==3.3
 psycopg2-binary>=2.9.5,<2.10
 pygments==2.12
-pyyaml>=5.3.1,<5.4
+pyyaml>=6.0,<6.1
