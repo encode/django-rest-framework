@@ -742,6 +742,7 @@ class PermissionsCacheTests(TestCase):
     class IsAuthenticatedUserOwnerWithCounter(permissions.IsAuthenticated):
 
         def __init__(self):
+            super().__init__()
             self.call_counter = 0
 
         def has_permission(self, request, view):
