@@ -1,8 +1,6 @@
 """
 Provides a set of pluggable permission policies.
 """
-from functools import lru_cache
-
 from django.http import Http404
 
 from rest_framework import exceptions
@@ -11,13 +9,20 @@ SAFE_METHODS = ('GET', 'HEAD', 'OPTIONS')
 
 
 class PermissionCacheMixin:
-    @lru_cache()
-    def has_permission_value(self, request, view):
-        return self.has_permission(request, view)
+    def __init__(self):
+        self._cache = {}
 
-    @lru_cache()
+    def has_permission_value(self, request, view):
+        key = (request, view)
+        if key not in self._cache:
+            self._cache[key] = self.has_permission(request, view)
+        return self._cache[key]
+
     def has_object_permission_value(self, request, view, obj):
-        return self.has_object_permission(request, view, obj)
+        key = (request, view, obj)
+        if key not in self._cache:
+            self._cache[key] = self.has_object_permission(request, view, obj)
+        return self._cache[key]
 
 
 class OperationHolderMixin:
@@ -69,6 +74,7 @@ class OperandHolder(OperationHolderMixin):
 
 class AND(PermissionCacheMixin):
     def __init__(self, op1, op2):
+        super().__init__()
         self.op1 = op1
         self.op2 = op2
 
@@ -87,6 +93,7 @@ class AND(PermissionCacheMixin):
 
 class OR(PermissionCacheMixin):
     def __init__(self, op1, op2):
+        super().__init__()
         self.op1 = op1
         self.op2 = op2
 
@@ -108,6 +115,7 @@ class OR(PermissionCacheMixin):
 
 class NOT(PermissionCacheMixin):
     def __init__(self, op1):
+        super().__init__()
         self.op1 = op1
 
     def has_permission(self, request, view):
