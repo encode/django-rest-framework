@@ -158,13 +158,13 @@ class SearchFilter(BaseFilterBackend):
         ]
 
         base = queryset
-        conditions = []
-        for term in search_smart_split(search_terms):
-            queries = [
-                models.Q(**{orm_lookup: term})
-                for orm_lookup in orm_lookups
-            ]
-            conditions.append(reduce(operator.or_, queries))
+        # generator which for each term builds the corresponding search
+        conditions = (
+            reduce(
+                operator.or_,
+                (models.Q(**{orm_lookup: term}) for orm_lookup in orm_lookups)
+            ) for term in search_smart_split(search_terms)
+        )
         queryset = queryset.filter(reduce(operator.and_, conditions))
 
         # Remove duplicates from results, if necessary
