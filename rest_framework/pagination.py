@@ -239,6 +239,7 @@ class PageNumberPagination(BasePagination):
     def get_paginated_response_schema(self, schema):
         return {
             'type': 'object',
+            'required': ['count', 'results'],
             'properties': {
                 'count': {
                     'type': 'integer',
@@ -411,6 +412,7 @@ class LimitOffsetPagination(BasePagination):
     def get_paginated_response_schema(self, schema):
         return {
             'type': 'object',
+            'required': ['count', 'results'],
             'properties': {
                 'count': {
                     'type': 'integer',
@@ -906,6 +908,7 @@ class CursorPagination(BasePagination):
     def get_paginated_response_schema(self, schema):
         return {
             'type': 'object',
+            'required': ['results'],
             'properties': {
                 'next': {
                     'type': 'string',
