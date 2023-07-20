@@ -6,5 +6,5 @@ django-guardian>=2.4.0,<2.5
 inflection==0.5.1
 markdown==3.3
 psycopg2-binary>=2.9.5,<2.10
-pygments==2.12
+pygments==2.15.0
 pyyaml>=5.3.1,<5.4
