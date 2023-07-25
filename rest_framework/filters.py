@@ -6,16 +6,33 @@ import operator
 import warnings
 from functools import reduce
 
-from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured
 from django.db import models
 from django.db.models.constants import LOOKUP_SEP
 from django.template import loader
 from django.utils.encoding import force_str
+from django.utils.text import smart_split, unescape_string_literal
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import RemovedInDRF317Warning
-from rest_framework.compat import coreapi, coreschema, distinct
+from rest_framework.compat import coreapi, coreschema
+from rest_framework.fields import CharField
 from rest_framework.settings import api_settings
+
+
+def search_smart_split(search_terms):
+    """generator that first splits string by spaces, leaving quoted phrases togheter,
+    then it splits non-quoted phrases by commas.
+    """
+    for term in smart_split(search_terms):
+        # trim commas to avoid bad matching for quoted phrases
+        term = term.strip(',')
+        if term.startswith(('"', "'")) and term[0] == term[-1]:
+            # quoted phrases are kept togheter without any other split
+            yield unescape_string_literal(term)
+        else:
+            # non-quoted tokens are split by comma, keeping only non-empty ones
+            yield from (sub_term.strip() for sub_term in term.split(',') if sub_term)
 
 
 class BaseFilterBackend:
@@ -64,18 +81,41 @@ class SearchFilter(BaseFilterBackend):
     def get_search_terms(self, request):
         """
         Search terms are set by a ?search=... query parameter,
-        and may be comma and/or whitespace delimited.
+        and may be whitespace delimited.
         """
-        params = request.query_params.get(self.search_param, '')
-        params = params.replace('\x00', '')  # strip null characters
-        params = params.replace(',', ' ')
-        return params.split()
+        value = request.query_params.get(self.search_param, '')
+        field = CharField(trim_whitespace=False, allow_blank=True)
+        return field.run_validation(value)
 
-    def construct_search(self, field_name):
+    def construct_search(self, field_name, queryset):
         lookup = self.lookup_prefixes.get(field_name[0])
         if lookup:
             field_name = field_name[1:]
         else:
+            # Use field_name if it includes a lookup.
+            opts = queryset.model._meta
+            lookup_fields = field_name.split(LOOKUP_SEP)
+            # Go through the fields, following all relations.
+            prev_field = None
+            for path_part in lookup_fields:
+                if path_part == "pk":
+                    path_part = opts.pk.name
+                try:
+                    field = opts.get_field(path_part)
+                except FieldDoesNotExist:
+                    # Use valid query lookups.
+                    if prev_field and prev_field.get_lookup(path_part):
+                        return field_name
+                else:
+                    prev_field = field
+                    if hasattr(field, "path_infos"):
+                        # Update opts to follow the relation.
+                        opts = field.path_infos[-1].to_opts
+                    # django < 4.1
+                    elif hasattr(field, 'get_path_info'):
+                        # Update opts to follow the relation.
+                        opts = field.get_path_info()[-1].to_opts
+            # Otherwise, use the field with icontains.
             lookup = 'icontains'
         return LOOKUP_SEP.join([field_name, lookup])
 
@@ -113,26 +153,27 @@ class SearchFilter(BaseFilterBackend):
             return queryset
 
         orm_lookups = [
-            self.construct_search(str(search_field))
+            self.construct_search(str(search_field), queryset)
             for search_field in search_fields
         ]
 
         base = queryset
-        conditions = []
-        for search_term in search_terms:
-            queries = [
-                models.Q(**{orm_lookup: search_term})
-                for orm_lookup in orm_lookups
-            ]
-            conditions.append(reduce(operator.or_, queries))
+        # generator which for each term builds the corresponding search
+        conditions = (
+            reduce(
+                operator.or_,
+                (models.Q(**{orm_lookup: term}) for orm_lookup in orm_lookups)
+            ) for term in search_smart_split(search_terms)
+        )
         queryset = queryset.filter(reduce(operator.and_, conditions))
 
+        # Remove duplicates from results, if necessary
         if self.must_call_distinct(queryset, search_fields):
-            # Filtering against a many-to-many field requires us to
-            # call queryset.distinct() in order to avoid duplicate items
-            # in the resulting queryset.
-            # We try to avoid this if possible, for performance reasons.
-            queryset = distinct(queryset, base)
+            # inspired by django.contrib.admin
+            # this is more accurate than .distinct form M2M relationship
+            # also is cross-database
+            queryset = queryset.filter(pk=models.OuterRef('pk'))
+            queryset = base.filter(models.Exists(queryset))
         return queryset
 
     def to_html(self, request, queryset, view):

@@ -3,7 +3,6 @@ The `compat` module provides support for backwards compatibility with older
 versions of Django/Python, and compatibility wrappers around optional packages.
 """
 import django
-from django.conf import settings
 from django.views.generic import View
 
 
@@ -12,13 +11,6 @@ def unicode_http_header(value):
     if isinstance(value, bytes):
         return value.decode('iso-8859-1')
     return value
-
-
-def distinct(queryset, base):
-    if settings.DATABASES[queryset.db]["ENGINE"] == "django.db.backends.oracle":
-        # distinct analogue for Oracle users
-        return base.filter(pk__in=set(queryset.values_list('pk', flat=True)))
-    return queryset.distinct()
 
 
 # django.contrib.postgres requires psycopg2

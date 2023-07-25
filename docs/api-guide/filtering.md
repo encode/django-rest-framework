@@ -213,19 +213,23 @@ This will allow the client to filter the items in the list by making queries suc
 You can also perform a related lookup on a ForeignKey or ManyToManyField with the lookup API double-underscore notation:
 
     search_fields = ['username', 'email', 'profile__profession']
-    
+
 For [JSONField][JSONField] and [HStoreField][HStoreField] fields you can filter based on nested values within the data structure using the same double-underscore notation:
 
     search_fields = ['data__breed', 'data__owner__other_pets__0__name']
 
-By default, searches will use case-insensitive partial matches.  The search parameter may contain multiple search terms, which should be whitespace and/or comma separated.  If multiple search terms are used then objects will be returned in the list only if all the provided terms are matched.
+By default, searches will use case-insensitive partial matches. The search parameter may contain multiple search terms, which should be whitespace and/or comma separated. If multiple search terms are used then objects will be returned in the list only if all the provided terms are matched. Searches may contain _quoted phrases_ with spaces, each phrase is considered as a single search term.
 
-The search behavior may be restricted by prepending various characters to the `search_fields`.
 
-* '^' Starts-with search.
-* '=' Exact matches.
-* '@' Full-text search.  (Currently only supported Django's [PostgreSQL backend][postgres-search].)
-* '$' Regex search.
+The search behavior may be specified by prefixing field names in `search_fields` with one of the following characters (which is equivalent to adding `__<lookup>` to the field):
+
+| Prefix | Lookup        |                    |
+| ------ | --------------| ------------------ |
+| `^`    | `istartswith` | Starts-with search.|
+| `=`    | `iexact`      | Exact matches.     |
+| `$`    | `iregex`      | Regex search.      |
+| `@`    | `search`      | Full-text search (Currently only supported Django's [PostgreSQL backend][postgres-search]). |
+| None   | `icontains`   | Contains search (Default).  |
 
 For example:
 
