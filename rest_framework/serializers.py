@@ -1372,8 +1372,8 @@ class ModelSerializer(Serializer):
         Raise an error on any unknown fields.
         """
         raise ImproperlyConfigured(
-            'Field name `%s` is not valid for model `%s`.' %
-            (field_name, model_class.__name__)
+            'Field name `%s` is not valid for model `%s` in `%s.%s`.' %
+            (field_name, model_class.__name__, self.__class__.__module__, self.__class__.__name__)
         )
 
     def include_extra_kwargs(self, kwargs, extra_kwargs):
