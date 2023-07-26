@@ -153,6 +153,61 @@ class TestListSerializerContainingNestedSerializer:
         assert serializer.is_valid()
         assert serializer.validated_data == expected_output
 
+    def test_update_allow_custom_child_validation(self):
+        """
+        Update a list of objects thanks custom run_child_validation implementation.
+        """
+
+        class TestUpdateSerializer(serializers.Serializer):
+            integer = serializers.IntegerField()
+            boolean = serializers.BooleanField()
+
+            def update(self, instance, validated_data):
+                instance._data.update(validated_data)
+                return instance
+
+            def validate(self, data):
+                # self.instance is set to current BasicObject instance
+                assert isinstance(self.instance, BasicObject)
+                # self.initial_data is current dictionary
+                assert isinstance(self.initial_data, dict)
+                assert self.initial_data["pk"] == self.instance.pk
+                return super().validate(data)
+
+        class ListUpdateSerializer(serializers.ListSerializer):
+            child = TestUpdateSerializer()
+
+            def run_child_validation(self, data):
+                # find related instance in self.instance list
+                child_instance = next(o for o in self.instance if o.pk == data["pk"])
+                # set instance and initial_data for child serializer
+                self.child.instance = child_instance
+                self.child.initial_data = data
+                return super().run_child_validation(data)
+
+            def update(self, instance, validated_data):
+                return [
+                    self.child.update(instance, attrs)
+                    for instance, attrs in zip(self.instance, validated_data)
+                ]
+
+        instance = [
+            BasicObject(pk=1, integer=11, private_field="a"),
+            BasicObject(pk=2, integer=22, private_field="b"),
+        ]
+        input_data = [
+            {"pk": 1, "integer": "123", "boolean": "true"},
+            {"pk": 2, "integer": "456", "boolean": "false"},
+        ]
+        expected_output = [
+            BasicObject(pk=1, integer=123, boolean=True, private_field="a"),
+            BasicObject(pk=2, integer=456, boolean=False, private_field="b"),
+        ]
+        serializer = ListUpdateSerializer(instance, data=input_data)
+        assert serializer.is_valid()
+        updated_instances = serializer.save()
+        assert updated_instances == expected_output
+
 
 class TestNestedListSerializer:
     """
@@ -481,7 +536,7 @@ class TestSerializerPartialUsage:
         assert serializer.validated_data == {}
         assert serializer.errors == {}
 
-    def test_udate_as_field_allow_empty_true(self):
+    def test_update_as_field_allow_empty_true(self):
         class ListSerializer(serializers.Serializer):
             update_field = serializers.IntegerField()
             store_field = serializers.IntegerField()
