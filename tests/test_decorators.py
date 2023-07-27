@@ -1,3 +1,5 @@
+import sys
+
 import pytest
 from django.test import TestCase
 
@@ -186,6 +188,20 @@ class ActionDecoratorTestCase(TestCase):
                 raise NotImplementedError
 
         assert str(excinfo.value) == "@action() missing required argument: 'detail'"
+
+    @pytest.mark.skipif(sys.version_info < (3, 11), reason="HTTPMethod was added in Python 3.11")
+    def test_method_mapping_http_method(self):
+        from http import HTTPMethod
+
+        method_names = [getattr(HTTPMethod, name.upper()) for name in APIView.http_method_names]
+
+        @action(detail=False, methods=method_names)
+        def test_action():
+            raise NotImplementedError
+
+        expected_mapping = {name: test_action.__name__ for name in APIView.http_method_names}
+
+        assert test_action.mapping == expected_mapping
 
     def test_method_mapping_http_methods(self):
         # All HTTP methods should be mappable
