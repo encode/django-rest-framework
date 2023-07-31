@@ -110,8 +110,8 @@ notes_router.register(r'notes', NoteViewSet)
 notes_path_router = SimpleRouter(use_regex_path=False)
 notes_path_router.register('notes', NoteViewSet)
 
-notes_without_patch_path_router = SimpleRouter(use_regex_path=False)
-notes_without_patch_path_router.register('notes', NotesWithoutPatchViewSet)
+notes_only_put = SimpleRouter(use_regex_path=False)
+notes_only_put.register('notes', NotesWithoutPatchViewSet)
 
 notes_path_default_router = DefaultRouter(use_regex_path=False)
 notes_path_default_router.register('notes', NoteViewSet)
@@ -505,8 +505,8 @@ class TestUrlPath(URLPatternsTestCase, TestCase):
     urlpatterns = [
         path('path/', include(url_path_router.urls)),
         path('default/', include(notes_path_default_router.urls)),
+        path('methods/', include(notes_only_put.urls)),
         path('example/', include(notes_path_router.urls)),
-        path('methods/', include(notes_without_patch_path_router.urls)),
     ]
 
     def setUp(self):
