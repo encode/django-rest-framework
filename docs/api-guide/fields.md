@@ -68,7 +68,7 @@ When serializing the instance, default will be used if the object attribute or d
 
 Note that setting a `default` value implies that the field is not required. Including both the `default` and `required` keyword arguments is invalid and will raise an error.
 
-Notes Regarding default value propagation from model to serializer:
+Notes regarding default value propagation from model to serializer:
 
 all the default values of model will be pass as default to serializer and to the options method.
 
