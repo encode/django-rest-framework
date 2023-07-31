@@ -42,6 +42,10 @@ class NoteViewSet(viewsets.ModelViewSet):
     lookup_field = 'uuid'
 
 
+class NotesWithoutPatchViewSet(NoteViewSet):
+    partial_update = None
+
+
 class KWargedNoteViewSet(viewsets.ModelViewSet):
     queryset = RouterTestModel.objects.all()
     serializer_class = NoteSerializer
@@ -105,6 +109,9 @@ notes_router.register(r'notes', NoteViewSet)
 
 notes_path_router = SimpleRouter(use_regex_path=False)
 notes_path_router.register('notes', NoteViewSet)
+
+notes_without_patch_path_router = SimpleRouter(use_regex_path=False)
+notes_without_patch_path_router.register('notes', NotesWithoutPatchViewSet)
 
 notes_path_default_router = DefaultRouter(use_regex_path=False)
 notes_path_default_router.register('notes', NoteViewSet)
@@ -499,6 +506,7 @@ class TestUrlPath(URLPatternsTestCase, TestCase):
         path('path/', include(url_path_router.urls)),
         path('default/', include(notes_path_default_router.urls)),
         path('example/', include(notes_path_router.urls)),
+        path('methods/', include(notes_without_patch_path_router.urls)),
     ]
 
     def setUp(self):
@@ -542,6 +550,14 @@ class TestUrlPath(URLPatternsTestCase, TestCase):
         response = self.client.patch('/example/notes/123/', data=updated_note)
         assert response.status_code == 200
         assert response.data == {"url": "http://testserver/example/notes/123/", "uuid": "123", "text": "foo bar example"}
+
+    def test_disabled_partial_update(self):
+        updated_note = {
+            'text': 'foo bar example'
+        }
+
+        response = self.client.patch('/methods/notes/123/', data=updated_note)
+        assert response.status_code == 405
 
     def test_delete(self):
         response = self.client.delete('/example/notes/123/')
