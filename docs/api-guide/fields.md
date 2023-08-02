@@ -75,7 +75,7 @@ all the default values of model will be pass as default to serializer and to the
 if the default is callable then it is propagated in serializer which is evaluated at each time but
 not in options method.
 
-if the value for given field is not given then default value will be present in serializer also avaliable in serializer's methods.Specified validation on given field will be evaluted on default value as that field will be present in serializer.
+If the value for given field is not given then default value will be present in the serializer and available in serializer's methods. Specified validation on given field will be evaluated on default value as that field will be present in the serializer.
 
 ### `allow_null`
 
