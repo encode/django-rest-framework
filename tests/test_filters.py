@@ -6,14 +6,34 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.db.models import CharField, Transform
 from django.db.models.functions import Concat, Upper
-from django.test import TestCase
+from django.test import SimpleTestCase, TestCase
 from django.test.utils import override_settings
 
 from rest_framework import filters, generics, serializers
 from rest_framework.compat import coreschema
+from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIRequestFactory
 
 factory = APIRequestFactory()
+
+
+class SearchSplitTests(SimpleTestCase):
+
+    def test_keep_quoted_togheter_regardless_of_commas(self):
+        assert ['hello, world'] == list(filters.search_smart_split('"hello, world"'))
+
+    def test_strips_commas_around_quoted(self):
+        assert ['hello, world'] == list(filters.search_smart_split(',,"hello, world"'))
+        assert ['hello, world'] == list(filters.search_smart_split(',,"hello, world",,'))
+        assert ['hello, world'] == list(filters.search_smart_split('"hello, world",,'))
+
+    def test_splits_by_comma(self):
+        assert ['hello', 'world'] == list(filters.search_smart_split(',,hello, world'))
+        assert ['hello', 'world'] == list(filters.search_smart_split(',,hello, world,,'))
+        assert ['hello', 'world'] == list(filters.search_smart_split('hello, world,,'))
+
+    def test_splits_quotes_followed_by_comma_and_sentence(self):
+        assert ['"hello', 'world"', 'found'] == list(filters.search_smart_split('"hello, world",found'))
 
 
 class BaseFilterTests(TestCase):
@@ -50,7 +70,8 @@ class SearchFilterSerializer(serializers.ModelSerializer):
 
 
 class SearchFilterTests(TestCase):
-    def setUp(self):
+    @classmethod
+    def setUpTestData(cls):
         # Sequence of title/text is:
         #
         # z   abc
@@ -65,6 +86,9 @@ class SearchFilterTests(TestCase):
                 chr(idx + ord('c'))
             )
             SearchFilterModel(title=title, text=text).save()
+
+        SearchFilterModel(title='A title', text='The long text').save()
+        SearchFilterModel(title='The title', text='The "text').save()
 
     def test_search(self):
         class SearchListView(generics.ListAPIView):
@@ -186,9 +210,21 @@ class SearchFilterTests(TestCase):
         request = factory.get('/?search=\0as%00d\x00f')
         request = view.initialize_request(request)
 
-        terms = filters.SearchFilter().get_search_terms(request)
+        with self.assertRaises(ValidationError):
+            filters.SearchFilter().get_search_terms(request)
 
-        assert terms == ['asdf']
+    def test_search_field_with_custom_lookup(self):
+        class SearchListView(generics.ListAPIView):
+            queryset = SearchFilterModel.objects.all()
+            serializer_class = SearchFilterSerializer
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('text__iendswith',)
+        view = SearchListView.as_view()
+        request = factory.get('/', {'search': 'c'})
+        response = view(request)
+        assert response.data == [
+            {'id': 1, 'title': 'z', 'text': 'abc'},
+        ]
 
     def test_search_field_with_additional_transforms(self):
         from django.test.utils import register_lookup
@@ -224,6 +260,49 @@ class SearchFilterTests(TestCase):
                 {'id': 1, 'title': 'z', 'text': 'abc'},
                 {'id': 2, 'title': 'zz', 'text': 'bcd'},
             ]
+
+    def test_search_field_with_multiple_words(self):
+        class SearchListView(generics.ListAPIView):
+            queryset = SearchFilterModel.objects.all()
+            serializer_class = SearchFilterSerializer
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('title', 'text')
+
+        search_query = 'foo bar,baz'
+        view = SearchListView()
+        request = factory.get('/', {'search': search_query})
+        request = view.initialize_request(request)
+
+        rendered_search_field = filters.SearchFilter().to_html(
+            request=request, queryset=view.queryset, view=view
+        )
+        assert search_query in rendered_search_field
+
+    def test_search_field_with_escapes(self):
+        class SearchListView(generics.ListAPIView):
+            queryset = SearchFilterModel.objects.all()
+            serializer_class = SearchFilterSerializer
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('title', 'text',)
+        view = SearchListView.as_view()
+        request = factory.get('/', {'search': '"\\\"text"'})
+        response = view(request)
+        assert response.data == [
+            {'id': 12, 'title': 'The title', 'text': 'The "text'},
+        ]
+
+    def test_search_field_with_quotes(self):
+        class SearchListView(generics.ListAPIView):
+            queryset = SearchFilterModel.objects.all()
+            serializer_class = SearchFilterSerializer
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('title', 'text',)
+        view = SearchListView.as_view()
+        request = factory.get('/', {'search': '"long text"'})
+        response = view(request)
+        assert response.data == [
+            {'id': 11, 'title': 'A title', 'text': 'The long text'},
+        ]
 
 
 class AttributeModel(models.Model):
@@ -266,6 +345,13 @@ class SearchFilterFkTests(TestCase):
                 SearchFilterModelFk._meta,
                 ["%sattribute__label" % prefix, "%stitle" % prefix]
             )
+
+    def test_custom_lookup_to_related_model(self):
+        # In this test case the attribute of the fk model comes first in the
+        # list of search fields.
+        filter_ = filters.SearchFilter()
+        assert 'attribute__label__icontains' == filter_.construct_search('attribute__label', SearchFilterModelFk._meta)
+        assert 'attribute__label__iendswith' == filter_.construct_search('attribute__label__iendswith', SearchFilterModelFk._meta)
 
 
 class SearchFilterModelM2M(models.Model):

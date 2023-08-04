@@ -653,6 +653,17 @@ class ListSerializer(BaseSerializer):
 
         return value
 
+    def run_child_validation(self, data):
+        """
+        Run validation on child serializer.
+        You may need to override this method to support multiple updates. For example:
+
+        self.child.instance = self.instance.get(pk=data['id'])
+        self.child.initial_data = data
+        return super().run_child_validation(data)
+        """
+        return self.child.run_validation(data)
+
     def to_internal_value(self, data):
         """
         List of dicts of native values <- List of dicts of primitive datatypes.
@@ -697,7 +708,7 @@ class ListSerializer(BaseSerializer):
             ):
                 self.child.instance = self.instance[idx]
             try:
-                validated = self.child.run_validation(item)
+                validated = self.run_child_validation(item)
             except ValidationError as exc:
                 errors.append(exc.detail)
             else:
@@ -1372,8 +1383,8 @@ class ModelSerializer(Serializer):
         Raise an error on any unknown fields.
         """
         raise ImproperlyConfigured(
-            'Field name `%s` is not valid for model `%s`.' %
-            (field_name, model_class.__name__)
+            'Field name `%s` is not valid for model `%s` in `%s.%s`.' %
+            (field_name, model_class.__name__, self.__class__.__module__, self.__class__.__name__)
         )
 
     def include_extra_kwargs(self, kwargs, extra_kwargs):

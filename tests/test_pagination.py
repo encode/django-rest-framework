@@ -274,6 +274,7 @@ class TestPageNumberPagination:
 
         assert self.pagination.get_paginated_response_schema(unpaginated_schema) == {
             'type': 'object',
+            'required': ['count', 'results'],
             'properties': {
                 'count': {
                     'type': 'integer',
@@ -585,6 +586,7 @@ class TestLimitOffset:
 
         assert self.pagination.get_paginated_response_schema(unpaginated_schema) == {
             'type': 'object',
+            'required': ['count', 'results'],
             'properties': {
                 'count': {
                     'type': 'integer',
@@ -937,6 +939,7 @@ class CursorPaginationTestsMixin:
 
         assert self.pagination.get_paginated_response_schema(unpaginated_schema) == {
             'type': 'object',
+            'required': ['results'],
             'properties': {
                 'next': {
                     'type': 'string',
