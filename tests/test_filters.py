@@ -848,6 +848,30 @@ class OrderingFilterTests(TestCase):
         with self.assertRaises(ImproperlyConfigured):
             view(request)
 
+    def test_ordering_with_verbose_name(self):
+        for index, obj in enumerate(OrderingFilterModel.objects.all()):
+            OrderingFilterRelatedModel.objects.create(
+                related_object=obj,
+                index=index
+            )
+
+        class OrderingListView(generics.ListAPIView):
+            queryset = OrderingFilterModel.objects.all()
+            serializer_class = OrderingFilterSerializer
+            filter_backends = (filters.OrderingFilter,)
+            ordering = ('title',)
+            ordering_fields = (
+                ('relateds__index', '-index'),
+            )
+
+        view = OrderingListView.as_view()
+        request = factory.get('/', {'ordering': 'index'})
+        response = view(request)
+        assert response.data == [
+            {'id': 3, 'title': 'xwv', 'text': 'cde'},
+            {'id': 2, 'title': 'yxw', 'text': 'bcd'},
+            {'id': 1, 'title': 'zyx', 'text': 'abc'},
+        ]
 
 class SensitiveOrderingFilterModel(models.Model):
     username = models.CharField(max_length=20)
