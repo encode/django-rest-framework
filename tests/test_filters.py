@@ -873,6 +873,7 @@ class OrderingFilterTests(TestCase):
             {'id': 1, 'title': 'zyx', 'text': 'abc'},
         ]
 
+
 class SensitiveOrderingFilterModel(models.Model):
     username = models.CharField(max_length=20)
     password = models.CharField(max_length=100)
