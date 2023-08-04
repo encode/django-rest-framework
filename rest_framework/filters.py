@@ -300,7 +300,7 @@ class OrderingFilter(BaseFilterBackend):
                 (field.name, field.verbose_name) for field in queryset.model._meta.fields
             ]
             valid_fields += [
-                (key, key.title().split('__'))
+                (key, key)
                 for key in queryset.query.annotations
             ]
         else:
@@ -315,13 +315,19 @@ class OrderingFilter(BaseFilterBackend):
         valid_fields = {item[1]: item[0] for item in self.get_valid_fields(queryset, view, {'request': request})}
 
         def term_valid(term):
+            negative = ""
             if term.startswith("-"):
+                negative = "-"
                 term = term[1:]
-            return valid_fields.get(term) is not None
+
+            if valid_fields.get(term):
+                return negative + valid_fields.get(term)
+
+            elif term in valid_fields.values():
+                return negative + term
 
         return [
-            valid_fields.get(term) if not term.startswith("-") else '-' + valid_fields.get(term[1:])
-            for term in fields if term_valid(term)
+            term_valid(term) for term in fields if term_valid(term)
         ]
 
     def filter_queryset(self, request, queryset, view):
