@@ -70,7 +70,7 @@ Note that setting a `default` value implies that the field is not required. Incl
 
 Notes regarding default value propagation from model to serializer:
 
-all the default values of model will pass as default to the serializer and to the options method.
+All the default values from model will pass as default to the serializer and the options method.
 
 if the default is callable then it is propagated in serializer which is evaluated at each time but
 not in options method.
