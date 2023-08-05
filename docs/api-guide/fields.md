@@ -72,7 +72,7 @@ Notes regarding default value propagation from model to serializer:
 
 All the default values from model will pass as default to the serializer and the options method.
 
-if the default is callable then it is propagated in serializer which is evaluated at each time but
+If the default is callable then it will be propagated in serializer which is evaluated at each time but
 not in options method.
 
 If the value for given field is not given then default value will be present in the serializer and available in serializer's methods. Specified validation on given field will be evaluated on default value as that field will be present in the serializer.
