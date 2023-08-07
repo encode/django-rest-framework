@@ -68,6 +68,14 @@ When serializing the instance, default will be used if the object attribute or d
 
 Note that setting a `default` value implies that the field is not required. Including both the `default` and `required` keyword arguments is invalid and will raise an error.
 
+Notes regarding default value propagation from model to serializer:
+
+All the default values from model will pass as default to the serializer and the options method.
+
+If the default is callable then it will be propagated to & evaluated every time in the serializer but not in options method.
+
+If the value for given field is not given then default value will be present in the serializer and available in serializer's methods. Specified validation on given field will be evaluated on default value as that field will be present in the serializer.
+
 ### `allow_null`
 
 Normally an error will be raised if `None` is passed to a serializer field. Set this keyword argument to `True` if `None` should be considered a valid value.
