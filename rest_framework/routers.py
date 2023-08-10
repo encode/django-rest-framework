@@ -144,7 +144,7 @@ class SimpleRouter(BaseRouter):
             self._url_conf = re_path
         else:
             self._base_pattern = '<{lookup_value}:{lookup_prefix}{lookup_url_kwarg}>'
-            self._default_value_pattern = 'path'
+            self._default_value_pattern = 'str'
             self._url_conf = path
             # remove regex characters from routes
             _routes = []
