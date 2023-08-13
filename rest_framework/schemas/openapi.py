@@ -525,7 +525,7 @@ class AutoSchema(ViewInspector):
             if isinstance(field, serializers.HiddenField):
                 continue
 
-            if field.required:
+            if field.required and not serializer.partial:
                 required.append(self.get_field_name(field))
 
             schema = self.map_field(field)
