@@ -558,6 +558,12 @@ The `HiddenField` class is usually only needed if you have some validation that 
 
 For further examples on `HiddenField` see the [validators](validators.md) documentation.
 
+---
+
+**Note:** `HiddenField()` does not appear in `partial=True` serializer (when making `PATCH` request). This behavior might change in future, follow updates on [github discussion](https://github.com/encode/django-rest-framework/discussions/8259). 
+
+---
+
 ## ModelField
 
 A generic field that can be tied to any arbitrary model field. The `ModelField` class delegates the task of serialization/deserialization to its associated model field.  This field can be used to create serializer fields for custom model fields, without having to create a new custom serializer field.
