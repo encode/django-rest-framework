@@ -178,6 +178,13 @@ The `action` decorator will route `GET` requests by default, but may also accept
         def unset_password(self, request, pk=None):
            ...
 
+Argument `methods` also supports HTTP methods defined as [HTTPMethod](https://docs.python.org/3/library/http.html#http.HTTPMethod). Example below is identical to the one above: 
+
+        from http import HTTPMethod
+
+        @action(detail=True, methods=[HTTPMethod.POST, HTTPMethod.DELETE])
+        def unset_password(self, request, pk=None):
+           ...
 
 The decorator allows you to override any viewset-level configuration such as `permission_classes`, `serializer_class`, `filter_backends`...:
 
