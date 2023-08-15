@@ -56,3 +56,27 @@ jobs:
     - name: Upload coverage
       run: |
         codecov -e TOXENV,DJANGO
+
+  test-docs:
+    name: Test documentation links
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v3
+
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: pip install -r requirements/requirements-documentation.txt
+    
+    # Start mkdocs server and wait for it to be ready
+    - run: mkdocs serve &
+    - run: WAIT_TIME=0 && until nc -vzw 2 localhost 8000 || [ $WAIT_TIME -eq 5 ]; do sleep $(( WAIT_TIME++ )); done
+    - run: if [ $WAIT_TIME == 5 ]; then echo cannot start mkdocs server on http://localhost:8000; exit 1; fi
+    
+    - name: Check links
+      continue-on-error: true
+      run: pylinkvalidate.py -P http://localhost:8000/
+  
+    - run: echo "Done"
