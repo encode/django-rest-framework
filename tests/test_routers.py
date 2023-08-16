@@ -99,6 +99,13 @@ class UrlPathViewSet(viewsets.ViewSet):
         kwarg = self.kwargs.get('kwarg', '')
         return Response({'pk': pk, 'kwarg': kwarg})
 
+    @action(detail=True, url_path='detail/<int:kwarg>/detail/<int:param>')
+    def url_path_detail_multiple_params(self, request, *args, **kwargs):
+        pk = self.kwargs.get('pk', '')
+        kwarg = self.kwargs.get('kwarg', '')
+        param = self.kwargs.get('param', '')
+        return Response({'pk': pk, 'kwarg': kwarg, 'param': param})
+
 
 notes_router = SimpleRouter()
 notes_router.register(r'notes', NoteViewSet)
@@ -560,6 +567,18 @@ class TestUrlPath(URLPatternsTestCase, TestCase):
         response = self.client.get('/path/{}/detail/{}/'.format(pk, kwarg))
         assert response.status_code == 200
         assert json.loads(response.content.decode()) == {'pk': pk, 'kwarg': kwarg}
+
+    def test_detail_extra_other_action(self):
+        # this to assure that ambiguous patterns are interpreted correctly
+        # using the `path` converters this URL is recognized to match the pattern
+        # of `UrlPathViewSet.url_path_detail` when it should match
+        # `UrlPathViewSet.url_path_detail_multiple_params`
+        pk = '1'
+        kwarg = 1234
+        param = 2
+        response = self.client.get('/path/1/detail/1234/detail/2/')
+        assert response.status_code == 200
+        assert json.loads(response.content.decode()) == {'pk': pk, 'kwarg': kwarg, 'param': param}
 
     def test_defaultrouter_root(self):
         response = self.client.get('/default/')
