@@ -123,6 +123,16 @@ Response status codes beginning with the digit "5" indicate cases in which the s
     HTTP_510_NOT_EXTENDED
     HTTP_511_NETWORK_AUTHENTICATION_REQUIRED
 
+## Aggregated responses by code
+
+REST framework offers response codes grouped together by their category.
+
+    INFORMATIONAL   # 1xx
+    SUCCESS         # 2xx
+    REDIRECT        # 3xx
+    CLIENT_ERROR    # 4xx
+    SERVER_ERROR    # 5xx
+
 ## Helper functions
 
 The following helper functions are available for identifying the category of the response code.
