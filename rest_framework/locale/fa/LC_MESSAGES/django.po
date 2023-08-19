@@ -96,7 +96,7 @@ msgstr "با اطلاعات ارسال شده نمیتوان وارد شد."
 
 #: authtoken/serializers.py:38
 msgid "Must include \"username\" and \"password\"."
-msgstr "باید شامل نام‌کاربری و رمز‌عبود باشد."
+msgstr "باید شامل نام‌کاربری و رمز‌عبور باشد."
 
 #: exceptions.py:102
 msgid "A server error occurred."
@@ -187,7 +187,7 @@ msgstr "مطمعن شوید طول این مقدار حداقل {min_length} ا�
 
 #: fields.py:816
 msgid "Enter a valid email address."
-msgstr "پست الکترونیکی صحبح وارد کنید."
+msgstr "پست الکترونیکی صحیح وارد کنید."
 
 #: fields.py:827
 msgid "This value does not match the required pattern."
