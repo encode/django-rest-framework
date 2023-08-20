@@ -95,14 +95,13 @@ class SimpleRateThrottle(BaseThrottle):
             msg = "No default throttle rate set for '%s' scope" % self.scope
             raise ImproperlyConfigured(msg)
 
-    def parse_rate(self,rate):
+    def parse_rate(self, rate):
         """
         Given the request rate string, return a two tuple of:
         <allowed number of requests>, <period of time in seconds>
         """
         if rate is None:
             return (None, None)
-        
         num, period = rate.split('/')
         quantity, unit = parse_quantity_and_unit(period).values()
         num_requests = int(num)

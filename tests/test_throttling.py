@@ -470,10 +470,8 @@ class SimpleRateThrottleTests(TestCase):
     def test_parse_quantity_and_unit_parses_correctly(self):
         result = parse_quantity_and_unit("5min")
         assert result == {'quantity': 5, 'unit': 'min'}
-        
         result = parse_quantity_and_unit("h")
         assert result == {'quantity': 1, 'unit': 'h'}
-        
         result = parse_quantity_and_unit("123s")
         assert result == {'quantity': 123, 'unit': 's'}
 
