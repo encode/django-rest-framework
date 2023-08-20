@@ -94,6 +94,24 @@ class SimpleRateThrottle(BaseThrottle):
             msg = "No default throttle rate set for '%s' scope" % self.scope
             raise ImproperlyConfigured(msg)
 
+    def parse_quantity_and_unit(self, quantity_unit_string):
+        """
+        Parse a combined quantity and unit string and return a tuple with parsed values.
+
+        Returns:
+            tuple: A tuple containing the parsed values (quantity, unit).
+        """
+        i = 0
+        while i < len(quantity_unit_string) and quantity_unit_string[i].isnumeric():
+            i += 1
+
+        if i == 0:
+            return (1, quantity_unit_string)
+        else:
+            quantity = int(quantity_unit_string[:i])
+            unit = quantity_unit_string[i:]
+            return (quantity, unit)
+
     def parse_rate(self, rate):
         """
         Given the request rate string, return a two tuple of:
@@ -102,9 +120,11 @@ class SimpleRateThrottle(BaseThrottle):
         if rate is None:
             return (None, None)
         num, period = rate.split('/')
+        quantity, unit = self.parse_quantity_and_unit(period)
         num_requests = int(num)
-        duration = {'s': 1, 'm': 60, 'h': 3600, 'd': 86400}[period[0]]
-        return (num_requests, duration)
+        duration = {'s': 1, 'm': 60, 'h': 3600, 'd': 86400}[unit[0]]
+        total_duration = duration * int(quantity)
+        return (num_requests, total_duration)
 
     def allow_request(self, request, view):
         """
