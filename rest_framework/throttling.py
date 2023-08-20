@@ -102,10 +102,10 @@ class SimpleRateThrottle(BaseThrottle):
         """
         if rate is None:
             return (None, None)
+        
         num, period = rate.split('/')
         quantity, unit = parse_quantity_and_unit(period).values()
         num_requests = int(num)
-        
         duration = {'s': 1, 'm': 60, 'h': 3600, 'd': 86400}[unit[0]]
         total_duration = duration * int(quantity)
         return (num_requests, total_duration)
