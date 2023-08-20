@@ -5,6 +5,7 @@ import time
 
 from django.core.cache import cache as default_cache
 from django.core.exceptions import ImproperlyConfigured
+from utils.throttling_duration_parser import parse_quantity_and_unit
 
 from rest_framework.settings import api_settings
 
@@ -94,7 +95,7 @@ class SimpleRateThrottle(BaseThrottle):
             msg = "No default throttle rate set for '%s' scope" % self.scope
             raise ImproperlyConfigured(msg)
 
-    def parse_rate(self, rate):
+    def parse_rate(self,rate):
         """
         Given the request rate string, return a two tuple of:
         <allowed number of requests>, <period of time in seconds>
@@ -102,9 +103,12 @@ class SimpleRateThrottle(BaseThrottle):
         if rate is None:
             return (None, None)
         num, period = rate.split('/')
+        quantity, unit = parse_quantity_and_unit(period).values()
         num_requests = int(num)
-        duration = {'s': 1, 'm': 60, 'h': 3600, 'd': 86400}[period[0]]
-        return (num_requests, duration)
+        
+        duration = {'s': 1, 'm': 60, 'h': 3600, 'd': 86400}[unit[0]]
+        total_duration = duration * int(quantity)
+        return (num_requests, total_duration)
 
     def allow_request(self, request, view):
         """
