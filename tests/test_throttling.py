@@ -18,6 +18,7 @@ from rest_framework.throttling import (
     UserRateThrottle
 )
 from rest_framework.views import APIView
+from utils.throttling_duration_parser import parse_quantity_and_unit
 
 
 class User3SecRateThrottle(UserRateThrottle):
@@ -465,6 +466,16 @@ class SimpleRateThrottleTests(TestCase):
     def test_parse_rate_returns_tuple_with_none_if_rate_not_provided(self):
         rate = SimpleRateThrottle().parse_rate(None)
         assert rate == (None, None)
+    
+    def test_parse_quantity_and_unit_parses_correctly(self):
+        result = parse_quantity_and_unit("5min")
+        assert result == {'quantity': 5, 'unit': 'min'}
+        
+        result = parse_quantity_and_unit("h")
+        assert result == {'quantity': 1, 'unit': 'h'}
+        
+        result = parse_quantity_and_unit("123s")
+        assert result == {'quantity': 123, 'unit': 's'}
 
     def test_allow_request_returns_true_if_rate_is_none(self):
         assert SimpleRateThrottle().allow_request(request={}, view={}) is True
