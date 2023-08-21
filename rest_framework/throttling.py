@@ -5,9 +5,10 @@ import time
 
 from django.core.cache import cache as default_cache
 from django.core.exceptions import ImproperlyConfigured
-from rest_framework.utils.throttling_duration_parser import parse_quantity_and_unit
-
 from rest_framework.settings import api_settings
+from rest_framework.utils.throttling_duration_parser import (
+    parse_quantity_and_unit
+)
 
 
 class BaseThrottle:
