@@ -468,7 +468,7 @@ class SimpleRateThrottleTests(TestCase):
     def test_parse_rate_returns_tuple_with_none_if_rate_not_provided(self):
         rate = SimpleRateThrottle().parse_rate(None)
         assert rate == (None, None)
-    
+
     def test_parse_quantity_and_unit_parses_correctly(self):
         result = parse_quantity_and_unit("5min")
         assert result == (5, 'min')
