@@ -471,11 +471,11 @@ class SimpleRateThrottleTests(TestCase):
     
     def test_parse_quantity_and_unit_parses_correctly(self):
         result = parse_quantity_and_unit("5min")
-        assert result == {'quantity': 5, 'unit': 'min'}
+        assert result == (5, 'min')
         result = parse_quantity_and_unit("h")
-        assert result == {'quantity': 1, 'unit': 'h'}
+        assert result == (1, 'h')
         result = parse_quantity_and_unit("123s")
-        assert result == {'quantity': 123, 'unit': 's'}
+        assert result == (123, 's')
 
     def test_allow_request_returns_true_if_rate_is_none(self):
         assert SimpleRateThrottle().allow_request(request={}, view={}) is True
