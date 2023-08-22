@@ -196,6 +196,41 @@ For example, given the following views...
 User requests to either `ContactListView` or `ContactDetailView` would be restricted to a total of 1000 requests per-day.  User requests to `UploadView` would be restricted to 20 requests per day.
 
 ---
+## Customizing Throttling Time
+
+You can now set custom and flexible time periods for the throttling classes. This enhancement allows you to specify a time unit for throttling, giving you more control over how the rate limits are applied.
+
+To set custom and flexible time periods for throttling, you can use the throttle_duration parameter. The throttle_duration parameter accepts a string that combines a numeric quantity and a time unit, similar to the style used in other Django settings. For example, you can set a throttling duration of "10s" for 10 seconds or "5m" for 5 minutes.
+
+## Examples
+
+1. Custom Time Period for User Throttling
+
+To limit the rate of requests for authenticated users to 5 requests every 15 minutes, you can use the throttle_duration parameter as follows:
+
+REST_FRAMEWORK = {
+    'DEFAULT_THROTTLE_RATES': {
+        'user': '5/15m',  # Allow 5 requests every 15 minutes for each user
+    }
+}
+
+2. Scoped Throttling with Custom Time
+
+You can also apply custom throttling rates to specific views using the ScopedRateThrottle class. For example, to limit requests to the "write" scope to 3 requests every 30 seconds:
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.ScopedRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'user': '10/minute',          # Default rate for all users
+        'write': '3/30s',             # Allow 3 requests every 30 seconds for "write" scope
+        'custom_scope': '20/1h',      # Allow 20 requests every 1 hour for a custom scope
+    }
+}
+
+With these enhancements, you can have more granular control over how you limit the rate of incoming requests to your API views in Django REST framework.
 
 # Custom throttles
 
