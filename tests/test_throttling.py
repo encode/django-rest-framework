@@ -15,10 +15,7 @@ from rest_framework.settings import api_settings
 from rest_framework.test import APIRequestFactory, force_authenticate
 from rest_framework.throttling import (
     AnonRateThrottle, BaseThrottle, ScopedRateThrottle, SimpleRateThrottle,
-    UserRateThrottle
-)
-from rest_framework.utils.throttling_duration_parser import (
-    parse_quantity_and_unit
+    UserRateThrottle, parse_quantity_and_unit
 )
 from rest_framework.views import APIView
 
