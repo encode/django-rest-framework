@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # Ali Mahdiyar <alimahdiyar77@gmail.com>, 2020
 # Aryan Baghi <ar.baghi.ce@gmail.com>, 2020
@@ -12,14 +12,16 @@ msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-13 21:45+0200\n"
-"PO-Revision-Date: 2020-10-13 19:59+0000\n"
+"PO-Revision-Date: 2023-08-23 09:33+0330\n"
 "Last-Translator: Xavier Ordoquy <xordoquy@linovia.com>\n"
-"Language-Team: Persian (Iran) (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/fa_IR/)\n"
+"Language-Team: Persian (Iran) (http://www.transifex.com/django-rest-framework-1/"
+"django-rest-framework/language/fa_IR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: fa_IR\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Poedit 2.3\n"
 
 #: authentication.py:70
 msgid "Invalid basic header. No credentials provided."
@@ -43,20 +45,19 @@ msgstr "کاربر غیر فعال یا حذف شده است."
 
 #: authentication.py:184
 msgid "Invalid token header. No credentials provided."
-msgstr "توکن هدر نامعتبر است. اطلاعات هویتی ارائه نشده است. "
+msgstr "توکن هدر نامعتبر است. اطلاعات هویتی ارائه نشده است."
 
 #: authentication.py:187
 msgid "Invalid token header. Token string should not contain spaces."
 msgstr "توکن هدر نامعتبر است. توکن نباید شامل فضای خالی باشد."
 
 #: authentication.py:193
-msgid ""
-"Invalid token header. Token string should not contain invalid characters."
+msgid "Invalid token header. Token string should not contain invalid characters."
 msgstr "توکن هدر نامعتبر است. توکن شامل کاراکتر‌های نامعتبر است."
 
 #: authentication.py:203
 msgid "Invalid token."
-msgstr "توکن هدر نامعتبر است. "
+msgstr "توکن هدر نامعتبر است."
 
 #: authtoken/apps.py:7
 msgid "Auth Token"
@@ -104,7 +105,7 @@ msgstr "خطای سمت سرور رخ داده است."
 
 #: exceptions.py:142
 msgid "Invalid input."
-msgstr ""
+msgstr "ورودی نامعتبر است."
 
 #: exceptions.py:161
 msgid "Malformed request."
@@ -147,29 +148,28 @@ msgstr "تعداد درخواست‌های شما محدود شده است."
 #: exceptions.py:224
 #, python-brace-format
 msgid "Expected available in {wait} second."
-msgstr ""
+msgstr "انتظار می رود در {wait} ثانیه در دسترس باشد."
 
 #: exceptions.py:225
 #, python-brace-format
 msgid "Expected available in {wait} seconds."
-msgstr ""
+msgstr "انتظار می رود در {wait} ثانیه در دسترس باشد."
 
-#: fields.py:316 relations.py:245 relations.py:279 validators.py:90
-#: validators.py:183
+#: fields.py:316 relations.py:245 relations.py:279 validators.py:90 validators.py:183
 msgid "This field is required."
 msgstr "این مقدار لازم است."
 
 #: fields.py:317
 msgid "This field may not be null."
-msgstr "این مقدار نباید توهی باشد."
+msgstr "این مقدار نباید تهی باشد."
 
 #: fields.py:701
 msgid "Must be a valid boolean."
-msgstr ""
+msgstr " مقدار بولی باید معتبر باشد."
 
 #: fields.py:766
 msgid "Not a valid string."
-msgstr ""
+msgstr "مقدار رشته باید معتبر باشد."
 
 #: fields.py:767
 msgid "This field may not be blank."
@@ -194,24 +194,22 @@ msgid "This value does not match the required pattern."
 msgstr "مقدار وارد شده با الگو مطابقت ندارد."
 
 #: fields.py:838
-msgid ""
-"Enter a valid \"slug\" consisting of letters, numbers, underscores or "
-"hyphens."
-msgstr "یک \"slug\" معتبر شامل حروف، اعداد، آندرلاین یا خط فاصله وارد کنید"
+msgid "Enter a valid \"slug\" consisting of letters, numbers, underscores or hyphens."
+msgstr "یک \"slug\" معتبر شامل حروف، اعداد، آندرلاین یا خط فاصله وارد کنید."
 
 #: fields.py:839
 msgid ""
-"Enter a valid \"slug\" consisting of Unicode letters, numbers, underscores, "
-"or hyphens."
-msgstr ""
+"Enter a valid \"slug\" consisting of Unicode letters, numbers, underscores, or "
+"hyphens."
+msgstr "یک \"slug\" معتبر شامل حروف یونیکد، اعداد، آندرلاین یا خط فاصله وارد کنید."
 
 #: fields.py:854
 msgid "Enter a valid URL."
-msgstr "یک URL معتبر وارد کنید"
+msgstr "یک URL معتبر وارد کنید."
 
 #: fields.py:867
 msgid "Must be a valid UUID."
-msgstr ""
+msgstr "مقدار UUID باید معتبر باشد."
 
 #: fields.py:903
 msgid "Enter a valid IPv4 or IPv6 address."
@@ -246,15 +244,14 @@ msgstr "بیشتر از {max_digits} رقم نباید وجود داشته با�
 
 #: fields.py:1008
 #, python-brace-format
-msgid ""
-"Ensure that there are no more than {max_decimal_places} decimal places."
-msgstr "بیشتر از {max_decimal_places} ممیز اعشار نباید وجود داشته باشد"
+msgid "Ensure that there are no more than {max_decimal_places} decimal places."
+msgstr "بیشتر از {max_decimal_places} ممیز اعشار نباید وجود داشته باشد."
 
 #: fields.py:1009
 #, python-brace-format
 msgid ""
-"Ensure that there are no more than {max_whole_digits} digits before the "
-"decimal point."
+"Ensure that there are no more than {max_whole_digits} digits before the decimal "
+"point."
 msgstr "بیشتر از {max_whole_digits} رقم نباید قبل از ممیز اعشار باشد."
 
 #: fields.py:1148
@@ -269,11 +266,11 @@ msgstr "باید datetime باشد اما date دریافت شد."
 #: fields.py:1150
 #, python-brace-format
 msgid "Invalid datetime for the timezone \"{timezone}\"."
-msgstr ""
+msgstr "datetime برای منطقه زمانی {timezone} معتبر نیست."
 
 #: fields.py:1151
 msgid "Datetime value out of range."
-msgstr ""
+msgstr "Datetime  خارج از محدوده است."
 
 #: fields.py:1236
 #, python-brace-format
@@ -323,8 +320,7 @@ msgid "No file was submitted."
 msgstr "فایلی ارسال نشده است."
 
 #: fields.py:1515
-msgid ""
-"The submitted data was not a file. Check the encoding type on the form."
+msgid "The submitted data was not a file. Check the encoding type on the form."
 msgstr "دیتای ارسال شده فایل نیست. encoding type فرم را چک کنید."
 
 #: fields.py:1516
@@ -337,24 +333,23 @@ msgstr "فایل ارسال شده خالی است."
 
 #: fields.py:1518
 #, python-brace-format
-msgid ""
-"Ensure this filename has at most {max_length} characters (it has {length})."
+msgid "Ensure this filename has at most {max_length} characters (it has {length})."
 msgstr "نام این فایل باید حداکثر {max_length} کاراکتر باشد ({length} کاراکتر دارد)."
 
 #: fields.py:1566
 msgid ""
-"Upload a valid image. The file you uploaded was either not an image or a "
-"corrupted image."
-msgstr "یک عکس معتبر آپلود کنید. فایلی که ارسال کردید عکس یا عکس خراب شده نیست"
+"Upload a valid image. The file you uploaded was either not an image or a corrupted "
+"image."
+msgstr "یک عکس معتبر بارگذاری کنید. فایلی که بارگذاری کردید خراب شده یا عکس نیست."
 
 #: fields.py:1604 relations.py:486 serializers.py:571
 msgid "This list may not be empty."
-msgstr "این لیست نمی تواند خالی باشد"
+msgstr "این لیست نمی تواند خالی باشد."
 
 #: fields.py:1605
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} elements."
-msgstr ""
+msgstr "از داشتن حداقل {min_length} مقدار برای این فیلد اطمینان حاصل کنید."
 
 #: fields.py:1606
 #, python-brace-format
@@ -368,7 +363,7 @@ msgstr "باید دیکشنری از آیتم ها ارسال می شد، اما
 
 #: fields.py:1683
 msgid "This dictionary may not be empty."
-msgstr ""
+msgstr "این dictionary نباید خالی باشد."
 
 #: fields.py:1755
 msgid "Value must be valid JSON."
@@ -380,15 +375,15 @@ msgstr "جستجو"
 
 #: filters.py:50
 msgid "A search term."
-msgstr ""
+msgstr "کلمه جستجو"
 
 #: filters.py:180 templates/rest_framework/filters/ordering.html:3
 msgid "Ordering"
-msgstr "ترتیب"
+msgstr "ترتیب دهی"
 
 #: filters.py:181
 msgid "Which field to use when ordering the results."
-msgstr ""
+msgstr "کدام فیلد برای ترتیب دهی نتایج استفاده شود."
 
 #: filters.py:287
 msgid "ascending"
@@ -400,15 +395,15 @@ msgstr "نزولی"
 
 #: pagination.py:174
 msgid "A page number within the paginated result set."
-msgstr ""
+msgstr "شماره صفحه در بین صفحه بندی نتایج."
 
 #: pagination.py:179 pagination.py:372 pagination.py:590
 msgid "Number of results to return per page."
-msgstr ""
+msgstr "تعداد نتایج در هر صفحه"
 
 #: pagination.py:189
 msgid "Invalid page."
-msgstr "صفحه نامعتبر"
+msgstr "صفحه نامعتبر است."
 
 #: pagination.py:374
 msgid "The initial index from which to return the results."
@@ -434,11 +429,11 @@ msgstr "تایپ نامعتبر. باید pk ارسال می شد اما {data_t
 
 #: relations.py:280
 msgid "Invalid hyperlink - No URL match."
-msgstr "هایپرلینک نامعتبر - URL مطابق وجود ندارد"
+msgstr "هایپرلینک نامعتبر - URL مطابق وجود ندارد."
 
 #: relations.py:281
 msgid "Invalid hyperlink - Incorrect URL match."
-msgstr "هایپرلینک نامعتبر - خطا در تطابق URL"
+msgstr "هایپرلینک نامعتبر - خطا در تطابق URL."
 
 #: relations.py:282
 msgid "Invalid hyperlink - Object does not exist."
@@ -460,15 +455,15 @@ msgstr "مقدار نامعتبر."
 
 #: schemas/utils.py:32
 msgid "unique integer value"
-msgstr ""
+msgstr "مقدار integer یکتا"
 
 #: schemas/utils.py:34
 msgid "UUID string"
-msgstr ""
+msgstr "رشته UUID"
 
 #: schemas/utils.py:36
 msgid "unique value"
-msgstr ""
+msgstr "مقدار یکتا"
 
 #: schemas/utils.py:38
 #, python-brace-format
@@ -480,39 +475,37 @@ msgstr ""
 msgid "Invalid data. Expected a dictionary, but got {datatype}."
 msgstr "داده نامعتبر. باید دیکشنری ارسال می شد، اما {datatype} ارسال شده است."
 
-#: templates/rest_framework/admin.html:116
-#: templates/rest_framework/base.html:136
+#: templates/rest_framework/admin.html:116 templates/rest_framework/base.html:136
 msgid "Extra Actions"
-msgstr ""
+msgstr "اقدام اضافی"
 
-#: templates/rest_framework/admin.html:130
-#: templates/rest_framework/base.html:150
+#: templates/rest_framework/admin.html:130 templates/rest_framework/base.html:150
 msgid "Filters"
 msgstr "فیلترها"
 
 #: templates/rest_framework/base.html:37
 msgid "navbar"
-msgstr ""
+msgstr "نوار ناوبار"
 
 #: templates/rest_framework/base.html:75
 msgid "content"
-msgstr ""
+msgstr "محتوا"
 
 #: templates/rest_framework/base.html:78
 msgid "request form"
-msgstr ""
+msgstr "فرم درخواست"
 
 #: templates/rest_framework/base.html:157
 msgid "main content"
-msgstr ""
+msgstr "محتوای اصلی"
 
 #: templates/rest_framework/base.html:173
 msgid "request info"
-msgstr ""
+msgstr "اطلاعات درخواست"
 
 #: templates/rest_framework/base.html:177
 msgid "response info"
-msgstr ""
+msgstr "اطلاعات پاسخ"
 
 #: templates/rest_framework/horizontal/radio.html:4
 #: templates/rest_framework/inline/radio.html:3
@@ -524,11 +517,11 @@ msgstr "None"
 #: templates/rest_framework/inline/select_multiple.html:3
 #: templates/rest_framework/vertical/select_multiple.html:3
 msgid "No items to select."
-msgstr "آیتمی برای انتخاب وجود ندارد"
+msgstr "آیتمی برای انتخاب وجود ندارد."
 
 #: validators.py:39
 msgid "This field must be unique."
-msgstr "این فیلد باید یکتا باشد"
+msgstr "این فیلد باید یکتا باشد."
 
 #: validators.py:89
 #, python-brace-format
@@ -538,7 +531,7 @@ msgstr "فیلدهای {field_names} باید یک مجموعه یکتا باش�
 #: validators.py:171
 #, python-brace-format
 msgid "Surrogate characters are not allowed: U+{code_point:X}."
-msgstr ""
+msgstr "عوض شدن کاراکترها مجاز نیست: ‌ََU+{code_point:X}."
 
 #: validators.py:243
 #, python-brace-format
@@ -569,7 +562,7 @@ msgstr "ورژن نامعتبر در مسیر URL. با هیچ نام گذاری
 
 #: versioning.py:148
 msgid "Invalid version in hostname."
-msgstr "نسخه نامعتبر در نام هاست"
+msgstr "نسخه نامعتبر در نام هاست."
 
 #: versioning.py:170
 msgid "Invalid version in query parameter."
