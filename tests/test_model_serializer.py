@@ -726,6 +726,27 @@ class TestRelationalFieldMappings(TestCase):
         """)
         self.assertEqual(repr(TestSerializer()), expected)
 
+    def test_source_with_attributes(self):
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = RelationalModel
+                fields = ('foreign_key_name', 'one_to_one_name')
+                extra_kwargs = {
+                    'foreign_key_name': {
+                        'source': 'foreign_key.name',
+                    },
+                    'one_to_one_name': {
+                        'source': 'one_to_one.name',
+                    }
+                }
+
+        expected = dedent("""
+            TestSerializer():
+                foreign_key_name = CharField(max_length=100, source='foreign_key.name')
+                one_to_one_name = CharField(max_length=100, source='one_to_one.name')
+        """)
+        self.assertEqual(repr(TestSerializer()), expected)
+
 
 class DisplayValueTargetModel(models.Model):
     name = models.CharField(max_length=100)
