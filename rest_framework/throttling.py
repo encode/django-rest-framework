@@ -56,6 +56,8 @@ class SimpleRateThrottle(BaseThrottle):
     class.  The attribute is a string of the form 'number_of_requests/period'.
 
     Period should be one of: ('s', 'sec', 'm', 'min', 'h', 'hour', 'd', 'day')
+    You may prefix period with a number. For example '1/30s' would be one 
+    request every 30 seconds.
 
     Previous request information used for throttling is stored in the cache.
     """
@@ -103,7 +105,10 @@ class SimpleRateThrottle(BaseThrottle):
             return (None, None)
         num, period = rate.split('/')
         num_requests = int(num)
-        duration = {'s': 1, 'm': 60, 'h': 3600, 'd': 86400}[period[0]]
+        denominator_num = period[:-1]
+        denominator_num = int(denominator) if len(denominator_num)>0 else 1
+        duration = {'s': 1, 'm': 60, 'h': 3600, 'd': 86400}[period[-1]]
+        duration *= denominator_num
         return (num_requests, duration)
 
     def allow_request(self, request, view):
