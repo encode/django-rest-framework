@@ -65,6 +65,27 @@ For more specific CSS tweaks than simply overriding the default bootstrap theme 
 
 ---
 
+### Third party packages for customization
+
+You can use a third party package for customization, rather than doing it by yourself. Here is 2 packages for customizing the API:
+
+* [rest-framework-redesign][rest-framework-redesign] - A package for customizing the API using Bootstrap 5. Modern and sleek design, it comes with the support for dark mode.
+* [rest-framework-material][rest-framework-material] - Material design for Django REST Framework.
+
+---
+
+![Django REST Framework Redesign][rfr]
+
+*Screenshot of the rest-framework-redesign*
+
+---
+
+![Django REST Framework Material][rfm]
+
+*Screenshot of the rest-framework-material*
+
+---
+
 ### Blocks
 
 All of the blocks available in the browsable API base template that can be used in your `api.html`.
@@ -162,3 +183,7 @@ There are [a variety of packages for autocomplete widgets][autocomplete-packages
 [bcomponentsnav]: https://getbootstrap.com/2.3.2/components.html#navbar
 [autocomplete-packages]: https://www.djangopackages.com/grids/g/auto-complete/
 [django-autocomplete-light]: https://github.com/yourlabs/django-autocomplete-light
+[rest-framework-redesign]: https://github.com/youzarsiph/rest-framework-redesign
+[rest-framework-material]: https://github.com/youzarsiph/rest-framework-material
+[rfr]: ../img/rfr.png
+[rfm]: ../img/rfm.png
