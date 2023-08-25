@@ -106,7 +106,7 @@ class SimpleRateThrottle(BaseThrottle):
         num, period = rate.split('/')
         num_requests = int(num)
         denominator_num = period[:-1]
-        denominator_num = int(denominator) if len(denominator_num)>0 else 1
+        denominator_num = int(denominator_num) if len(denominator_num)>0 else 1
         duration = {'s': 1, 'm': 60, 'h': 3600, 'd': 86400}[period[-1]]
         duration *= denominator_num
         return (num_requests, duration)
