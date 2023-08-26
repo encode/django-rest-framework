@@ -108,7 +108,7 @@ class SimpleRateThrottle(BaseThrottle):
             return (None, None)
         num, period = rate.split('/')
         num_requests = int(num)
-        
+
         denominator = period[:-1]
         m = re.search(self._RATE_DENOMINATOR_REGEX, denominator)
         dg = m.groups()
