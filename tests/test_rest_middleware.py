@@ -66,6 +66,6 @@ class MultipleMiddlewareClassesTests(TestCase):
 
 @override_settings(ROOT_URLCONF=__name__)
 class NoMiddlewareClassesTests(TestCase):
-    def test_bar_middleware_process_request(self):
+    def test_no_middleware_classes(self):
         response = APIClient().get('/none/')
         assert response.status_code == status.HTTP_200_OK
