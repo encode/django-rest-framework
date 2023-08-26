@@ -106,6 +106,7 @@ class APIView(View):
     # The following policies may be set at either globally, or per-view.
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
     parser_classes = api_settings.DEFAULT_PARSER_CLASSES
+    middleware_classes = api_settings.DEFAULT_MIDDLEWARE_CLASSES
     authentication_classes = api_settings.DEFAULT_AUTHENTICATION_CLASSES
     throttle_classes = api_settings.DEFAULT_THROTTLE_CLASSES
     permission_classes = api_settings.DEFAULT_PERMISSION_CLASSES
@@ -264,6 +265,12 @@ class APIView(View):
         Instantiates and returns the list of parsers that this view can use.
         """
         return [parser() for parser in self.parser_classes]
+
+    def get_middlewares(self):
+        """
+        Instantiates and returns the list of middlewares that this view can use.
+        """
+        return [middleware() for middleware in self.middleware_classes]
 
     def get_authenticators(self):
         """
@@ -479,6 +486,24 @@ class APIView(View):
             request.force_plaintext_errors(use_plaintext_traceback)
         raise exc
 
+    def process_request(self, request):
+        """
+        Pre-process the request by the middleware instances.
+        """
+        middlewares = getattr(self, "middlewares", self.get_middlewares())
+        for middleware in middlewares:
+            if hasattr(middleware, "process_request"):
+                middleware.process_request(request)
+
+    def process_response(self, response):
+        """
+        Pre-process the response by the middleware instances.
+        """
+        middlewares = getattr(self, "middlewares", self.get_middlewares())
+        for middleware in reversed(middlewares):
+            if hasattr(middleware, "process_response"):
+                middleware.process_response(response)
+
     # Note: Views are made CSRF exempt from within `as_view` as to prevent
     # accidental removal of this exemption in cases where `dispatch` needs to
     # be overridden.
@@ -492,8 +517,10 @@ class APIView(View):
         request = self.initialize_request(request, *args, **kwargs)
         self.request = request
         self.headers = self.default_response_headers  # deprecate?
+        self.middlewares = self.get_middlewares()
 
         try:
+            self.process_request(request)
             self.initial(request, *args, **kwargs)
 
             # Get the appropriate handler method
@@ -504,6 +531,7 @@ class APIView(View):
                 handler = self.http_method_not_allowed
 
             response = handler(request, *args, **kwargs)
+            self.process_response(response)
 
         except Exception as exc:
             response = self.handle_exception(exc)

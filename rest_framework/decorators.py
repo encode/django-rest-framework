@@ -61,6 +61,9 @@ def api_view(http_method_names=None):
         WrappedAPIView.parser_classes = getattr(func, 'parser_classes',
                                                 APIView.parser_classes)
 
+        WrappedAPIView.middleware_classes = getattr(func, 'middleware_classes',
+                                                    APIView.middleware_classes)
+
         WrappedAPIView.authentication_classes = getattr(func, 'authentication_classes',
                                                         APIView.authentication_classes)
 
