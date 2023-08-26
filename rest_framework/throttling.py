@@ -1,8 +1,8 @@
 """
 Provides various throttling policies.
 """
-import time
 import re
+import time
 
 from django.core.cache import cache as default_cache
 from django.core.exceptions import ImproperlyConfigured
@@ -113,7 +113,7 @@ class SimpleRateThrottle(BaseThrottle):
         m = re.search(self._RATE_DENOMINATOR_REGEX, denominator)
         dg = m.groups()
 
-        dn= int(m[0]) if len(m[0])>0 else 1
+        dn= int(m[0]) if len(m[0]) > 0 else 1
         du = m[1][0]
 
         duration = {'s': 1, 'm': 60, 'h': 3600, 'd': 86400}[du]
