@@ -68,7 +68,7 @@ class SimpleRateThrottle(BaseThrottle):
     cache_format = 'throttle_%(scope)s_%(ident)s'
     scope = None
     THROTTLE_RATES = api_settings.DEFAULT_THROTTLE_RATES
-    _RATE_DENOMINATOR_REGEX= re.compile("^(\d*)(\D+)$")
+    _RATE_DENOMINATOR_REGEX = re.compile(r"^(\d*)(\D+)$")
 
     def __init__(self):
         if not getattr(self, 'rate', None):
@@ -113,8 +113,8 @@ class SimpleRateThrottle(BaseThrottle):
         m = re.search(self._RATE_DENOMINATOR_REGEX, denominator)
         dg = m.groups()
 
-        dn= int(m[0]) if len(m[0]) > 0 else 1
-        du = m[1][0]
+        dn= int(dg[0]) if len(dg[0]) > 0 else 1
+        du = dg[1][0]
 
         duration = {'s': 1, 'm': 60, 'h': 3600, 'd': 86400}[du]
         duration *= dn
