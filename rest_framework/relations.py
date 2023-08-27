@@ -92,6 +92,7 @@ class RelatedField(Field):
     queryset = None
     html_cutoff = None
     html_cutoff_text = None
+    custom_many_related_field = None
 
     def __init__(self, **kwargs):
         self.queryset = kwargs.pop('queryset', self.queryset)
@@ -137,16 +138,19 @@ class RelatedField(Field):
         and child classes in order to try to cover the general case. If you're
         overriding this method you'll probably want something much simpler, eg:
 
-        @classmethod
-        def many_init(cls, *args, **kwargs):
-            kwargs['child'] = cls()
-            return CustomManyRelatedField(*args, **kwargs)
+        ex:
+
+        class SafePrimaryKeyRelatedField(PrimaryKeyRelatedField):
+            custom_many_related_field = CustomManyRelatedField
+
+        will override ManyRelatedField with CustomManyRelatedField
         """
+        many_related_field_cls = cls.custom_many_related_field or ManyRelatedField
         list_kwargs = {'child_relation': cls(*args, **kwargs)}
         for key in kwargs:
             if key in MANY_RELATION_KWARGS:
                 list_kwargs[key] = kwargs[key]
-        return ManyRelatedField(**list_kwargs)
+        return many_related_field_cls(**list_kwargs)
 
     def run_validation(self, data=empty):
         # We force empty strings to None values for relational fields.
