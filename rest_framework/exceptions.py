@@ -203,11 +203,13 @@ class NotFound(APIException):
     default_detail = _('Not found.')
     default_code = 'not_found'
 
+
 class Conflict(APIException):
     status_code = status.HTTP_409_CONFLICT
     default_detail = _('Conflict request.')
     default_code = 'conflict_error'
-    
+
+
 class MethodNotAllowed(APIException):
     status_code = status.HTTP_405_METHOD_NOT_ALLOWED
     default_detail = _('Method "{method}" not allowed.')
