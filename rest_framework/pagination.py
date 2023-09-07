@@ -386,7 +386,7 @@ class LimitOffsetPagination(BasePagination):
     max_limit = None
     template = 'rest_framework/pagination/numbers.html'
 
-    def paginate_queryset(self, queryset, request, view=None):
+    def paginate_queryset_as_qs(self, queryset, request, view=None):
         self.request = request
         self.limit = self.get_limit(request)
         if self.limit is None:
@@ -399,7 +399,10 @@ class LimitOffsetPagination(BasePagination):
 
         if self.count == 0 or self.offset > self.count:
             return []
-        return list(queryset[self.offset:self.offset + self.limit])
+        return queryset[self.offset:self.offset + self.limit]
+
+    def paginate_queryset(self, queryset, request, view=None):
+        return list(paginate_queryset_as_qs(queryset, request, view))
 
     def get_paginated_response(self, data):
         return Response({
