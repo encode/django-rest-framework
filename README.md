@@ -66,6 +66,10 @@ Install using `pip`...
 
     pip install djangorestframework
 
+...or clone the project from GitHub.
+
+    git clone https://github.com/encode/django-rest-framework
+
 Add `'rest_framework'` to your `INSTALLED_APPS` setting.
 ```python
 INSTALLED_APPS = [
