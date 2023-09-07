@@ -402,7 +402,7 @@ class LimitOffsetPagination(BasePagination):
         return queryset[self.offset:self.offset + self.limit]
 
     def paginate_queryset(self, queryset, request, view=None):
-        return list(paginate_queryset_as_qs(queryset, request, view))
+        return list(self.paginate_queryset_as_qs(queryset, request, view))
 
     def get_paginated_response(self, data):
         return Response({
