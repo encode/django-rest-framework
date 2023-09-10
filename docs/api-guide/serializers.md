@@ -382,7 +382,7 @@ For example, suppose we wanted to ensure that `User` instances and `Profile` ins
 This manager class now more nicely encapsulates that user instances and profile instances are always created at the same time. Our `.create()` method on the serializer class can now be re-written to use the new manager method.
 
     def create(self, validated_data):
-        return User.objects.create(
+        return UserManager.objects.create(
             username=validated_data['username'],
             email=validated_data['email'],
             is_premium_member=validated_data['profile']['is_premium_member'],
