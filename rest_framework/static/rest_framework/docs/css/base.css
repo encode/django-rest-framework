@@ -1,21 +1,21 @@
 h1 {
-    font-size: 45px;
+  font-size: 45px;
 }
 
 .intro-code {
-    margin-top: 20px;
+  margin-top: 20px;
 }
 
 pre.highlight code * {
-  white-space: nowrap;    /* this sets all children inside to nowrap */
+  white-space: nowrap; /* this sets all children inside to nowrap */
 }
 
 pre.highlight {
-  overflow-x: auto;       /* this sets the scrolling in x */
+  overflow-x: auto; /* this sets the scrolling in x */
 }
 
 pre.highlight code {
-  white-space: pre;       /* forces <code> to respect <pre> formatting */
+  white-space: pre; /* forces <code> to respect <pre> formatting */
 }
 
 .main-container {
@@ -42,16 +42,16 @@ pre.highlight code {
 }
 
 .sidebar .brand {
-    background-color: #23282e;
-    display: block;
-    text-align: center;
-    padding: 25px 0;
-    margin-top: 0;
-    margin-bottom: 0;
+  background-color: #23282e;
+  display: block;
+  text-align: center;
+  padding: 25px 0;
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 .sidebar .brand a {
-    color: #FFF;
+  color: #FFF;
 }
 
 .sidebar .brand a:hover,
@@ -123,7 +123,6 @@ pre.highlight code {
   background-color: #020203;
 }
 
-
 .sidebar .menu-list ul .sub-menu li a,
 .sidebar .menu-list li .sub-menu li a {
   display: block;
@@ -179,9 +178,9 @@ body {
 }
 
 .coredocs-section-title {
-    margin-top: 20px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid lightgrey;
+  margin-top: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid lightgrey;
 }
 
 .coredocs-link-title a,
@@ -201,20 +200,19 @@ body {
 }
 
 .coredocs-section-title:last-child {
-    margin-top: 0;
+  margin-top: 0;
 }
-
 
 /* @group Language Switcher */
 
 .sidebar .menu-list.menu-list-bottom {
-    margin-bottom: 0;
-    position: fixed;
-    width: inherit;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    border-top: 1px solid #23282e;
+  margin-bottom: 0;
+  position: fixed;
+  width: inherit;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-top: 1px solid #23282e;
 }
 
 .sidebar .menu-list-bottom li span {
@@ -225,19 +223,18 @@ body {
 
 /* @end Language Switcher */
 
-
 /* @group Docs Content */
 
 .docs-content .meta .label {
-    vertical-align: middle;
-    font-size: 14px;
-    font-weight: normal;
+  vertical-align: middle;
+  font-size: 14px;
+  font-weight: normal;
 }
 
 .docs-content .meta code {
-    vertical-align: middle;
-    padding: .2em .6em .3em;
-    font-size: 14px;
+  vertical-align: middle;
+  padding: .2em .6em .3em;
+  font-size: 14px;
 }
 
 .docs-content .btn {
@@ -251,54 +248,54 @@ body {
 /* @end Docs Content */
 
 
+
 @media (max-width: 767px) {
   .main-container {
-    padding-left: 15px;
-    padding-right: 15px;
+      padding-left: 15px;
+      padding-right: 15px;
   }
 
   .sidebar {
-    position: relative;
-    width: 100%;
-    margin-bottom: 10px;
-    overflow: visible;
+      position: relative;
+      width: 100%;
+      margin-bottom: 10px;
+      overflow: visible;
   }
 
   .sidebar .toggle-btn {
-    display: block;
-    cursor: pointer;
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    z-index: 10 !important;
-    padding: 3px;
-    width: 40px;
-    text-align: center;
+      display: block;
+      cursor: pointer;
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      z-index: 10 !important;
+      padding: 3px;
+      width: 40px;
+      text-align: center;
   }
 
   .sidebar .menu-list.menu-list-bottom {
-    position: static;
+      position: static;
   }
 
   .sidebar .brand {
-    margin-top: 0;
-    margin-bottom: 0;
-
-    text-align: left !important;
-    font-size: 22px;
-    padding: 0;
-    padding-left: 20px;
-    line-height: 50px !important;
+      margin-top: 0;
+      margin-bottom: 0;
+      text-align: left !important;
+      font-size: 22px;
+      padding: 0;
+      padding-left: 20px;
+      line-height: 50px !important;
   }
 }
 
 @media (min-width: 767px) {
   .sidebar .menu-list .menu-content {
-    display: block;
+      display: block;
   }
   #main {
-    width:calc(100% - 225px);
-    float: right;
+      width: calc(100% - 225px);
+      float: right;
   }
 }
 
@@ -323,15 +320,15 @@ body {
 }
 
 .api-modal .modal-body .meta .label {
-    vertical-align: middle;
-    font-size: 14px;
-    font-weight: normal;
+  vertical-align: middle;
+  font-size: 14px;
+  font-weight: normal;
 }
 
 .api-modal .modal-body .meta code {
-    vertical-align: middle;
-    padding: .2em .6em .3em;
-    font-size: 14px;
+  vertical-align: middle;
+  padding: .2em .6em .3em;
+  font-size: 14px;
 }
 
 .api-modal .modal-content .toggle-view {
@@ -345,15 +342,15 @@ body {
 }
 
 .highlight {
-    background-color: #f7f7f9
+  background-color: #f7f7f9;
 }
 
 .checkbox label.control-label {
-    font-weight: bold
+  font-weight: bold;
 }
 
 @media (min-width: 768px) {
-    .navbar-nav.navbar-right:last-child {
-        margin-right: 0 !important;
-    }
+  .navbar-nav.navbar-right:last-child {
+      margin-right: 0 !important;
+  }
 }
