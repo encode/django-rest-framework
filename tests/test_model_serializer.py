@@ -12,6 +12,7 @@ import re
 import tempfile
 
 import pytest
+from django.contrib.auth.models import User
 from django.core.exceptions import ImproperlyConfigured
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.validators import (
@@ -727,25 +728,40 @@ class TestRelationalFieldMappings(TestCase):
         self.assertEqual(repr(TestSerializer()), expected)
 
     def test_source_with_attributes(self):
-        class TestSerializer(serializers.ModelSerializer):
+        class UserProfile(models.Model):
+            age = models.IntegerField()
+            birthdate = models.DateField()
+            user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+        class UserProfileSerializer(serializers.ModelSerializer):
             class Meta:
-                model = RelationalModel
-                fields = ('foreign_key_name', 'one_to_one_name')
+                model = UserProfile
+                fields = ('username', 'email', 'first_name', 'last_name', 'age', 'birthdate')
                 extra_kwargs = {
-                    'foreign_key_name': {
-                        'source': 'foreign_key.name',
+                    'username': {
+                        'source': 'user.username',
                     },
-                    'one_to_one_name': {
-                        'source': 'one_to_one.name',
+                    'email': {
+                        'source': 'user.email',
+                    },
+                    'first_name': {
+                        'source': 'user.first_name',
+                    },
+                    'last_name': {
+                        'source': 'user.last_name',
                     }
                 }
 
         expected = dedent("""
-            TestSerializer():
-                foreign_key_name = CharField(max_length=100, source='foreign_key.name')
-                one_to_one_name = CharField(max_length=100, source='one_to_one.name')
+            UserProfileSerializer():
+                username = CharField(help_text='Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.', max_length=150, source='user.username', validators=[<django.contrib.auth.validators.UnicodeUsernameValidator object>, <UniqueValidator(queryset=User.objects.all())>])
+                email = EmailField(allow_blank=True, label='Email address', max_length=254, required=False, source='user.email')
+                first_name = CharField(allow_blank=True, max_length=150, required=False, source='user.first_name')
+                last_name = CharField(allow_blank=True, max_length=150, required=False, source='user.last_name')
+                age = IntegerField()
+                birthdate = DateField()
         """)
-        self.assertEqual(repr(TestSerializer()), expected)
+        self.assertEqual(repr(UserProfileSerializer()), expected)
 
 
 class DisplayValueTargetModel(models.Model):
