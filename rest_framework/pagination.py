@@ -172,6 +172,10 @@ class PageNumberPagination(BasePagination):
     # The default page size.
     # Defaults to `None`, meaning pagination is disabled.
     page_size = api_settings.PAGE_SIZE
+    # The maximum page size.
+    # Defaults to `None`, meaning page size is unlimited.
+    # It's recommended that you would set a limit to avoid api abuse.
+    page_size = api_settings.MAX_PAGE_SIZE
 
     django_paginator_class = DjangoPaginator
 
@@ -382,7 +386,7 @@ class LimitOffsetPagination(BasePagination):
     limit_query_description = _('Number of results to return per page.')
     offset_query_param = 'offset'
     offset_query_description = _('The initial index from which to return the results.')
-    max_limit = None
+    max_limit = api_settings.MAX_PAGE_SIZE
     template = 'rest_framework/pagination/numbers.html'
 
     def paginate_queryset(self, queryset, request, view=None):
