@@ -172,10 +172,6 @@ class PageNumberPagination(BasePagination):
     # The default page size.
     # Defaults to `None`, meaning pagination is disabled.
     page_size = api_settings.PAGE_SIZE
-    # The maximum page size.
-    # Defaults to `None`, meaning page size is unlimited.
-    # It's recommended that you would set a limit to avoid api abuse.
-    page_size = api_settings.MAX_PAGE_SIZE
 
     django_paginator_class = DjangoPaginator
 
@@ -190,7 +186,9 @@ class PageNumberPagination(BasePagination):
 
     # Set to an integer to limit the maximum page size the client may request.
     # Only relevant if 'page_size_query_param' has also been set.
-    max_page_size = None
+    # Defaults to `None`, meaning page size is unlimited.
+    # It's recommended that you would set a limit to avoid api abuse.
+    max_page_size = api_settings.MAX_PAGE_SIZE
 
     last_page_strings = ('last',)
 
@@ -604,7 +602,7 @@ class CursorPagination(BasePagination):
 
     # Set to an integer to limit the maximum page size the client may request.
     # Only relevant if 'page_size_query_param' has also been set.
-    max_page_size = None
+    max_page_size = api_settings.MAX_PAGE_SIZE
 
     # The offset in the cursor is used in situations where we have a
     # nearly-unique index. (Eg millisecond precision creation timestamps)
