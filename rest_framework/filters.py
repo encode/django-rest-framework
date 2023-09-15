@@ -233,16 +233,52 @@ class OrderingFilter(BaseFilterBackend):
         The `ordering` query parameter can be overridden by setting
         the `ordering_param` value on the OrderingFilter or by
         specifying an `ORDERING_PARAM` value in the API settings.
+
+        Always add "pk" as last parameter for ordering.
+
+        For example, we have following QS
+        | pk | name |
+        |----|------|
+        |  1 | Bob  |
+        |  2 | Dan  |
+        |  3 | Bob  |
+        |  4 | Joe  |
+
+        And we want to order it by name and take 2nd element.
+        We can get following results:
+        `qs.order_by('name')`
+        | pk | name |
+        |----|------|
+        |  1 | Bob  |
+        |  3 | Bob  |  <- pk 3 is 2nd element
+        |  2 | Dan  |
+        |  4 | Joe  |
+
+        Or we can get:
+        | pk | name |
+        |----|------|
+        |  3 | Bob  |
+        |  1 | Bob  |  <- pk 1 is 2nd element
+        |  2 | Dan  |
+        |  4 | Joe  |
+
+        As you see, QS is correctly ordered, but order is not consistent, and
+        pagination is also inconsistent since we are using fields which doesn't
+        have unique restriction. So we always add "pk" as last ordering param.
+
         """
         params = request.query_params.get(self.ordering_param)
         if params:
             fields = [param.strip() for param in params.split(',')]
             ordering = self.remove_invalid_fields(queryset, fields, view, request)
             if ordering:
-                return ordering
+                return ordering + ["pk"]
 
         # No ordering was included, or all the ordering fields were invalid
-        return self.get_default_ordering(view)
+        default_ordering = self.get_default_ordering(view)
+        if not default_ordering:
+            return default_ordering
+        return default_ordering + ("pk",)
 
     def get_default_ordering(self, view):
         ordering = getattr(view, 'ordering', None)

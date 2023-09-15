@@ -624,15 +624,15 @@ class CursorPaginationTestsMixin:
 
         request = Request(factory.get('/', {'ordering': 'username'}))
         ordering = self.pagination.get_ordering(request, [], MockView())
-        assert ordering == ('username',)
+        assert ordering == ('username', 'pk')
 
         request = Request(factory.get('/', {'ordering': '-username'}))
         ordering = self.pagination.get_ordering(request, [], MockView())
-        assert ordering == ('-username',)
+        assert ordering == ('-username', 'pk')
 
         request = Request(factory.get('/', {'ordering': 'invalid'}))
         ordering = self.pagination.get_ordering(request, [], MockView())
-        assert ordering == ('created',)
+        assert ordering == ('created', 'pk')
 
     def test_use_with_ordering_filter_without_ordering_default_value(self):
         class MockView:
@@ -646,7 +646,7 @@ class CursorPaginationTestsMixin:
 
         request = Request(factory.get('/', {'ordering': 'username'}))
         ordering = self.pagination.get_ordering(request, [], MockView())
-        assert ordering == ('username',)
+        assert ordering == ('username', "pk")
 
         request = Request(factory.get('/', {'ordering': 'invalid'}))
         ordering = self.pagination.get_ordering(request, [], MockView())
