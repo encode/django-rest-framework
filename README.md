@@ -1,4 +1,4 @@
-# [Django REST framework][docs]
+# [Django REST framework][docs] for beginner
 
 [![build-status-image]][build-status]
 [![coverage-status-image]][codecov]
