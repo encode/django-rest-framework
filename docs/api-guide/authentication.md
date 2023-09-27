@@ -454,7 +454,7 @@ More information can be found in the [Documentation](https://django-rest-durin.r
 [basicauth]: https://tools.ietf.org/html/rfc2617
 [permission]: permissions.md
 [throttling]: throttling.md
-[csrf-ajax]: https://docs.djangoproject.com/en/stable/ref/csrf/#ajax
+[csrf-ajax]: https://docs.djangoproject.com/en/stable/howto/csrf/#using-csrf-protection-with-ajax
 [mod_wsgi_official]: https://modwsgi.readthedocs.io/en/develop/configuration-directives/WSGIPassAuthorization.html
 [django-oauth-toolkit-getting-started]: https://django-oauth-toolkit.readthedocs.io/en/latest/rest-framework/getting_started.html
 [django-rest-framework-oauth]: https://jpadilla.github.io/django-rest-framework-oauth/
