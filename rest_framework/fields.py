@@ -46,7 +46,19 @@ from rest_framework.validators import ProhibitSurrogateCharactersValidator
 logger = logging.getLogger("rest_framework.fields")
 
 
-class empty:
+class EmptyType(type):
+    """
+    Metaclass for overriding the boolean representation of a class.
+
+    When a class uses this metaclass, its type (the class itself, not its instances)
+    will evaluate to `False` in boolean contexts.
+    """
+
+    def __bool__(self):
+        return False
+
+
+class empty(metaclass=EmptyType):
     """
     This class is used to represent no data being provided for a given input
     or output value.
