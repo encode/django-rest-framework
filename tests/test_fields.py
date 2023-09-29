@@ -40,6 +40,11 @@ utc = datetime.timezone.utc
 # ---------------------------
 
 
+class TestEmptyType:
+    def test_bool_method(self):
+        assert not bool(empty)
+
+
 class TestIsSimpleCallable:
 
     def test_method(self):
