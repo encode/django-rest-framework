@@ -1909,3 +1909,25 @@ class ModelField(Field):
         if is_protected_type(value):
             return value
         return self.model_field.value_to_string(obj)
+
+
+class SerializerMethodWithParamsField(SerializerMethodField):
+    """
+    A read-only field allows you to pass optional parameters to a method in a SerializerMethodField.
+    For example:
+
+    class ExampleSerializer(Serializer):
+        extra_info = SerializerMethodWithParamsField(method_name='foo', bar='bar', ...)
+
+        def foo(self, obj, **kwargs):
+            bar = kwargs.get('bar', None)
+            return ...  # Calculate some data to return.
+    """
+
+    def __init__(self, method_name=None, **kwargs):
+        super().__init__(method_name, help_text=kwargs.pop('help_text', ''))
+        self._func_kwargs = kwargs
+
+    def to_representation(self, value):
+        method = getattr(self.parent, self.method_name)
+        return method(value, **self._func_kwargs)

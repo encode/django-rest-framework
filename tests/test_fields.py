@@ -2713,3 +2713,22 @@ class TestValidationErrorCode:
                 ),
             ]
         }
+
+
+# Tests for SerializerMethodWithParamsField.
+# --------------------------------
+
+class TestSerializerMethodWithParamsField:
+    def test_serializer_method_field(self):
+        class ExampleSerializer(serializers.Serializer):
+            example_field_1 = serializers.SerializerMethodWithParamsField(method_name='foo', bar='bar_1')
+            example_field_2 = serializers.SerializerMethodWithParamsField(method_name='foo', bar='bar_2')
+
+            def foo(self, obj, **kwargs):
+                return 'ran foo(%d) with attr %s' % (obj['example_field'], kwargs.get('bar'))
+
+        serializer = ExampleSerializer({'example_field': 123})
+        assert serializer.data == {
+            'example_field_1': 'ran foo(123) with attr bar_1',
+            'example_field_2': 'ran foo(123) with attr bar_2',
+        }
