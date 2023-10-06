@@ -4,7 +4,6 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "djangorestframework"
-version = "3.14.0"
 authors = [{name = "Tom Christie", email = "tom@tomchristie.com"}]
 license = {text = "BSD"}
 description = "Web APIs for Django, made easy."
@@ -38,6 +37,10 @@ dependencies = [
     "django>=3.0",
     'backports.zoneinfo;python_version<"3.9"',
 ]
+dynamic = ["version"]
+
+[tool.setuptools.dynamic]
+version = {attr = "rest_framework.__version__"}
 
 [project.readme]
 file = "README.md"
