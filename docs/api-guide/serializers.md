@@ -580,6 +580,22 @@ This option is a dictionary, mapping field names to a dictionary of keyword argu
 
 Please keep in mind that, if the field has already been explicitly declared on the serializer class, then the `extra_kwargs` option will be ignored.
 
+It is also possible to create new serializer fields from any related model fields using the `extra_kwargs` option. For example:
+
+    class UserProfile(models.Model):
+        birthdate = models.DateField()
+        user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    class UserProfileSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = UserProfile
+            fields = ['date_of_birth', 'first_name', 'last_name']
+            extra_kwargs = {
+                'date_of_birth': {'source': 'birthdate'},
+                'first_name': {'source': 'user.first_name'},
+                'last_name': {'source': 'user.last_name'}
+            }
+
 ## Relational fields
 
 When serializing model instances, there are a number of different ways you might choose to represent relationships.  The default representation for `ModelSerializer` is to use the primary keys of the related instances.
