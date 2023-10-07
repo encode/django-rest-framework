@@ -63,10 +63,6 @@ addopts = "--tb=short --strict-markers -ra"
 testspath = "tests"
 filterwarnings = ["ignore:CoreAPI compatibility is deprecated*:rest_framework.RemovedInDRF317Warning"]
 
-[tool.flake8]
-ignore = "E501,W503,W504"
-banned-modules = "json = use from rest_framework.utils import json!"
-
 [tool.isort]
 skip = [".tox"]
 atomic = true
