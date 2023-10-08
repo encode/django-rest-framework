@@ -163,6 +163,12 @@ The string that should used for any versioning parameters, such as in the media 
 
 Default: `'version'`
 
+#### DEFAULT_VERSIONING_CLASS
+
+The default versioning scheme to use.
+
+Default: `None`
+
 ---
 
 ## Authentication settings
