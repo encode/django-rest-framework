@@ -306,7 +306,11 @@ Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.
   class NullableCharField(serializers.CharField):
       def __init__(self, *args, **kwargs):
           super().__init__(*args, **kwargs)
-          self.validators = [v for v in self.validators if not isinstance(v, ProhibitNullCharactersValidator)]
+          self.validators = [
+              v
+              for v in self.validators
+              if not isinstance(v, ProhibitNullCharactersValidator)
+          ]
   ```
 * Add `OpenAPIRenderer` and `generate_schema` management command. [#6229][gh6229]
 * Add OpenAPIRenderer by default, and add schema docs. [#6233][gh6233]

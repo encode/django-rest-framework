@@ -18,3 +18,10 @@ repos:
   - id: flake8
     additional_dependencies:
     - flake8-tidy-imports
+- repo: https://github.com/adamchainz/blacken-docs
+  rev: 1.13.0
+  hooks:
+  - id: blacken-docs
+    exclude: ^(?!docs).*$
+    additional_dependencies:
+    - black==23.1.0
