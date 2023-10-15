@@ -15,6 +15,18 @@ If you include fully-qualified URLs in your resource output, they will be 'urliz
 
 By default, the API will return the format specified by the headers, which in the case of the browser is HTML.  The format can be specified using `?format=` in the request, so you can look at the raw JSON response in a browser by adding `?format=json` to the URL.  There are helpful extensions for viewing JSON in [Firefox][ffjsonview] and [Chrome][chromejsonview].
 
+## Authentication
+
+To quickly add authentication to the browesable api, add a routes named `"login"` and `"logout"` under the namespace `"rest_framework"`. DRF provides default routes for this which you can add to your urlconf:
+
+```python
+urlpatterns = [
+    // ...
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+]
+```
+
+
 ## Customizing
 
 The browsable API is built with [Twitter's Bootstrap][bootstrap] (v 3.4.1), making it easy to customize the look-and-feel.
