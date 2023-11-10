@@ -136,7 +136,7 @@ class TestUniquenessValidation(TestCase):
         # assert serializer.errors == [
         #     {'username': ['uniqueness model with this username already exists.']},
         #     {'username': ['uniqueness model with this username already exists.']},
-        # ]
+        # ] # 
 
 
 # Tests for `UniqueTogetherValidator`
