@@ -82,7 +82,7 @@ try:
         )
         md_filter_add_syntax_highlight(md)
         return md.convert(text)
-except ImportError:
+except (ImportError, AttributeError):
     apply_markdown = None
     markdown = None
 
