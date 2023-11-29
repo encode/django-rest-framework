@@ -239,10 +239,6 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/api-clients/">API Clients</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../topics/internationalization/">Internationalization</a>
                   </li>
                   
@@ -666,7 +662,7 @@ Set to false if this field is not required to be present during deserialization.
 <p>Setting this to <code>False</code> also allows the object attribute or dictionary key to be omitted from output when serializing the instance. If the key is not present it will simply not be included in the output representation.</p>
 <p>Defaults to <code>True</code>. If you're using <a href="https://www.django-rest-framework.org/api-guide/serializers/#modelserializer">Model Serializer</a> default value will be <code>False</code> if you have specified <code>blank=True</code> or <code>default</code> or <code>null=True</code> at your field in your <code>Model</code>.</p>
 <h3 id="default"><a class="toclink" href="#default"><code>default</code></a></h3>
-<p>If set, this gives the default value that will be used for the field if no input value is supplied. If not set the default behaviour is to not populate the attribute at all.</p>
+<p>If set, this gives the default value that will be used for the field if no input value is supplied. If not set the default behavior is to not populate the attribute at all.</p>
 <p>The <code>default</code> is not applied during partial update operations. In the partial update case only fields that are provided in the incoming data will have a validated value returned.</p>
 <p>May be set to a function or other callable, in which case the value will be evaluated each time it is used. When called, it will receive no arguments. If the callable has a <code>requires_context = True</code> attribute, then the serializer field will be passed as an argument.</p>
 <p>For example:</p>
@@ -682,17 +678,21 @@ Set to false if this field is not required to be present during deserialization.
 </code></pre>
 <p>When serializing the instance, default will be used if the object attribute or dictionary key is not present in the instance.</p>
 <p>Note that setting a <code>default</code> value implies that the field is not required. Including both the <code>default</code> and <code>required</code> keyword arguments is invalid and will raise an error.</p>
+<p>Notes regarding default value propagation from model to serializer:</p>
+<p>All the default values from model will pass as default to the serializer and the options method.</p>
+<p>If the default is callable then it will be propagated to &amp; evaluated every time in the serializer but not in options method.</p>
+<p>If the value for given field is not given then default value will be present in the serializer and available in serializer's methods. Specified validation on given field will be evaluated on default value as that field will be present in the serializer.</p>
 <h3 id="allow_null"><a class="toclink" href="#allow_null"><code>allow_null</code></a></h3>
 <p>Normally an error will be raised if <code>None</code> is passed to a serializer field. Set this keyword argument to <code>True</code> if <code>None</code> should be considered a valid value.</p>
 <p>Note that, without an explicit <code>default</code>, setting this argument to <code>True</code> will imply a <code>default</code> value of <code>null</code> for serialization output, but does not imply a default for input deserialization.</p>
 <p>Defaults to <code>False</code></p>
 <h3 id="source"><a class="toclink" href="#source"><code>source</code></a></h3>
-<p>The name of the attribute that will be used to populate the field.  May be a method that only takes a <code>self</code> argument, such as <code>URLField(source='get_absolute_url')</code>, or may use dotted notation to traverse attributes, such as <code>EmailField(source='user.email')</code>. </p>
+<p>The name of the attribute that will be used to populate the field.  May be a method that only takes a <code>self</code> argument, such as <code>URLField(source='get_absolute_url')</code>, or may use dotted notation to traverse attributes, such as <code>EmailField(source='user.email')</code>.</p>
 <p>When serializing fields with dotted notation, it may be necessary to provide a <code>default</code> value if any object is not present or is empty during attribute traversal. Beware of possible n+1 problems when using source attribute if you are accessing a relational orm model. For example:</p>
 <pre><code>class CommentSerializer(serializers.Serializer):
     email = serializers.EmailField(source="user.email")
 </code></pre>
-<p>would require user object to be fetched from database when it is not prefetched. If that is not wanted, be sure to be using <code>prefetch_related</code> and <code>select_related</code> methods appropriately. For more information about the methods refer to <a href="https://docs.djangoproject.com/en/3.1/ref/models/querysets/#django.db.models.query.QuerySet.select_related">django documentation</a>.</p>
+<p>This case would require user object to be fetched from database when it is not prefetched. If that is not wanted, be sure to be using <code>prefetch_related</code> and <code>select_related</code> methods appropriately. For more information about the methods refer to <a href="https://docs.djangoproject.com/en/3.1/ref/models/querysets/#django.db.models.query.QuerySet.select_related">django documentation</a>.</p>
 <p>The value <code>source='*'</code> has a special meaning, and is used to indicate that the entire object should be passed through to the field.  This can be useful for creating nested representations, or for fields which require access to the complete object in order to determine the output representation.</p>
 <p>Defaults to the name of the field.</p>
 <h3 id="validators"><a class="toclink" href="#validators"><code>validators</code></a></h3>
@@ -736,7 +736,7 @@ Prior to Django 2.1 <code>models.BooleanField</code> fields were always <code>bl
 since Django 2.1 default <code>serializers.BooleanField</code> instances will be generated
 without the <code>required</code> kwarg (i.e. equivalent to <code>required=True</code>) whereas with
 previous versions of Django, default <code>BooleanField</code> instances will be generated
-with a <code>required=False</code> option.  If you want to control this behaviour manually,
+with a <code>required=False</code> option.  If you want to control this behavior manually,
 explicitly declare the <code>BooleanField</code> on the serializer class, or use the
 <code>extra_kwargs</code> option to set the <code>required</code> flag.</p>
 <p>Corresponds to <code>django.db.models.fields.BooleanField</code>.</p>
@@ -803,7 +803,7 @@ explicitly declare the <code>BooleanField</code> on the serializer class, or use
 <p>Corresponds to <code>django.forms.fields.IPAddressField</code> and <code>django.forms.fields.GenericIPAddressField</code>.</p>
 <p><strong>Signature</strong>: <code>IPAddressField(protocol='both', unpack_ipv4=False, **options)</code></p>
 <ul>
-<li><code>protocol</code> Limits valid inputs to the specified protocol. Accepted values are 'both' (default), 'IPv4' or 'IPv6'. Matching is case insensitive.</li>
+<li><code>protocol</code> Limits valid inputs to the specified protocol. Accepted values are 'both' (default), 'IPv4' or 'IPv6'. Matching is case-insensitive.</li>
 <li><code>unpack_ipv4</code> Unpacks IPv4 mapped addresses like ::ffff:192.0.2.1. If this option is enabled that address would be unpacked to 192.0.2.1. Default is disabled. Can only be used when protocol is set to 'both'.</li>
 </ul>
 <hr />
@@ -835,7 +835,8 @@ explicitly declare the <code>BooleanField</code> on the serializer class, or use
 <li><code>max_value</code> Validate that the number provided is no greater than this value.</li>
 <li><code>min_value</code> Validate that the number provided is no less than this value.</li>
 <li><code>localize</code> Set to <code>True</code> to enable localization of input and output based on the current locale. This will also force <code>coerce_to_string</code> to <code>True</code>. Defaults to <code>False</code>. Note that data formatting is enabled if you have set <code>USE_L10N=True</code> in your settings file.</li>
-<li><code>rounding</code> Sets the rounding mode used when quantising to the configured precision. Valid values are <a href="https://docs.python.org/3/library/decimal.html#rounding-modes"><code>decimal</code> module rounding modes</a>. Defaults to <code>None</code>.</li>
+<li><code>rounding</code> Sets the rounding mode used when quantizing to the configured precision. Valid values are <a href="https://docs.python.org/3/library/decimal.html#rounding-modes"><code>decimal</code> module rounding modes</a>. Defaults to <code>None</code>.</li>
+<li><code>normalize_output</code> Will normalize the decimal value when serialized. This will strip all trailing zeroes and change the value's precision to the minimum required precision to be able to represent the value without loosing data. Defaults to <code>False</code>.</li>
 </ul>
 <h4 id="example-usage"><a class="toclink" href="#example-usage">Example usage</a></h4>
 <p>To validate numbers up to 999 with a resolution of 2 decimal places, you would use:</p>
@@ -853,11 +854,11 @@ explicitly declare the <code>BooleanField</code> on the serializer class, or use
 <ul>
 <li><code>format</code> - A string representing the output format. If not specified, this defaults to the same value as the <code>DATETIME_FORMAT</code> settings key, which will be <code>'iso-8601'</code> unless set. Setting to a format string indicates that <code>to_representation</code> return values should be coerced to string output. Format strings are described below. Setting this value to <code>None</code> indicates that Python <code>datetime</code> objects should be returned by <code>to_representation</code>. In this case the datetime encoding will be determined by the renderer.</li>
 <li><code>input_formats</code> - A list of strings representing the input formats which may be used to parse the date.  If not specified, the <code>DATETIME_INPUT_FORMATS</code> setting will be used, which defaults to <code>['iso-8601']</code>.</li>
-<li><code>default_timezone</code> - A <code>tzinfo</code> subclass (<code>zoneinfo</code> or <code>pytz</code>) prepresenting the timezone. If not specified and the <code>USE_TZ</code> setting is enabled, this defaults to the <a href="https://docs.djangoproject.com/en/stable/topics/i18n/timezones/#default-time-zone-and-current-time-zone">current timezone</a>. If <code>USE_TZ</code> is disabled, then datetime objects will be naive.</li>
+<li><code>default_timezone</code> - A <code>tzinfo</code> subclass (<code>zoneinfo</code> or <code>pytz</code>) representing the timezone. If not specified and the <code>USE_TZ</code> setting is enabled, this defaults to the <a href="https://docs.djangoproject.com/en/stable/topics/i18n/timezones/#default-time-zone-and-current-time-zone">current timezone</a>. If <code>USE_TZ</code> is disabled, then datetime objects will be naive.</li>
 </ul>
 <h4 id="datetimefield-format-strings"><a class="toclink" href="#datetimefield-format-strings"><code>DateTimeField</code> format strings.</a></h4>
 <p>Format strings may either be <a href="https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior">Python strftime formats</a> which explicitly specify the format, or the special string <code>'iso-8601'</code>, which indicates that <a href="https://www.w3.org/TR/NOTE-datetime">ISO 8601</a> style datetimes should be used. (eg <code>'2013-01-29T12:34:56.000000Z'</code>)</p>
-<p>When a value of <code>None</code> is used for the format <code>datetime</code> objects will be returned by <code>to_representation</code> and the final output representation will determined by the renderer class.</p>
+<p>When a value of <code>None</code> is used for the format <code>datetime</code> objects will be returned by <code>to_representation</code> and the final output representation will be determined by the renderer class.</p>
 <h4 id="auto_now-and-auto_now_add-model-fields"><a class="toclink" href="#auto_now-and-auto_now_add-model-fields"><code>auto_now</code> and <code>auto_now_add</code> model fields.</a></h4>
 <p>When using <code>ModelSerializer</code> or <code>HyperlinkedModelSerializer</code>, note that any model fields with <code>auto_now=True</code> or <code>auto_now_add=True</code> will use serializer fields that are <code>read_only=True</code> by default.</p>
 <p>If you want to override this behavior, you'll need to declare the <code>DateTimeField</code> explicitly on the serializer.  For example:</p>
@@ -1014,6 +1015,9 @@ Django's regular <a href="https://docs.djangoproject.com/en/stable/ref/settings/
 </code></pre>
 <p>The <code>HiddenField</code> class is usually only needed if you have some validation that needs to run based on some pre-provided field values, but you do not want to expose all of those fields to the end user.</p>
 <p>For further examples on <code>HiddenField</code> see the <a href="../validators/">validators</a> documentation.</p>
+<hr />
+<p><strong>Note:</strong> <code>HiddenField()</code> does not appear in <code>partial=True</code> serializer (when making <code>PATCH</code> request). This behavior might change in future, follow updates on <a href="https://github.com/encode/django-rest-framework/discussions/8259">github discussion</a>. </p>
+<hr />
 <h2 id="modelfield"><a class="toclink" href="#modelfield">ModelField</a></h2>
 <p>A generic field that can be tied to any arbitrary model field. The <code>ModelField</code> class delegates the task of serialization/deserialization to its associated model field.  This field can be used to create serializer fields for custom model fields, without having to create a new custom serializer field.</p>
 <p>This field is used by <code>ModelSerializer</code> to correspond to custom model field classes.</p>
@@ -1211,7 +1215,7 @@ class DataPointSerializer(serializers.ModelSerializer):
 <p>Here the mapping between the target and source attribute pairs (<code>x</code> and
 <code>x_coordinate</code>, <code>y</code> and <code>y_coordinate</code>) is handled in the <code>IntegerField</code>
 declarations. It's our <code>NestedCoordinateSerializer</code> that takes <code>source='*'</code>.</p>
-<p>Our new <code>DataPointSerializer</code> exhibits the same behaviour as the custom field
+<p>Our new <code>DataPointSerializer</code> exhibits the same behavior as the custom field
 approach.</p>
 <p>Serializing:</p>
 <pre><code>&gt;&gt;&gt; out_serializer = DataPointSerializer(instance)
@@ -1256,7 +1260,7 @@ or overly complex.</p>
 <h2 id="djangorestframework-recursive"><a class="toclink" href="#djangorestframework-recursive">djangorestframework-recursive</a></h2>
 <p>the <a href="https://github.com/heywbj/django-rest-framework-recursive">djangorestframework-recursive</a> package provides a <code>RecursiveField</code> for serializing and deserializing recursive structures</p>
 <h2 id="django-rest-framework-gis"><a class="toclink" href="#django-rest-framework-gis">django-rest-framework-gis</a></h2>
-<p>The <a href="https://github.com/djangonauts/django-rest-framework-gis">django-rest-framework-gis</a> package provides geographic addons for django rest framework like a  <code>GeometryField</code> field and a GeoJSON serializer.</p>
+<p>The <a href="https://github.com/djangonauts/django-rest-framework-gis">django-rest-framework-gis</a> package provides geographic addons for django rest framework like a <code>GeometryField</code> field and a GeoJSON serializer.</p>
 <h2 id="django-rest-framework-hstore"><a class="toclink" href="#django-rest-framework-hstore">django-rest-framework-hstore</a></h2>
 <p>The <a href="https://github.com/djangonauts/django-rest-framework-hstore">django-rest-framework-hstore</a> package provides an <code>HStoreField</code> to support <a href="https://github.com/djangonauts/django-hstore">django-hstore</a> <code>DictionaryField</code> model field.</p>
             

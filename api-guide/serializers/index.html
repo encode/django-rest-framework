@@ -239,10 +239,6 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/api-clients/">API Clients</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../topics/internationalization/">Internationalization</a>
                   </li>
                   
@@ -839,7 +835,7 @@ class EventSerializer(serializers.Serializer):
         raise serializers.ValidationError('Not a multiple of ten')
 
 class GameRecord(serializers.Serializer):
-    score = IntegerField(validators=[multiple_of_ten])
+    score = serializers.IntegerField(validators=[multiple_of_ten])
     ...
 </code></pre>
 <p>Serializer classes can also include reusable validators that are applied to the complete set of field data. These validators are included by declaring them on an inner <code>Meta</code> class, like so:</p>
@@ -1120,38 +1116,38 @@ AccountSerializer():
 <h2 id="customizing-field-mappings"><a class="toclink" href="#customizing-field-mappings">Customizing field mappings</a></h2>
 <p>The ModelSerializer class also exposes an API that you can override in order to alter how serializer fields are automatically determined when instantiating the serializer.</p>
 <p>Normally if a <code>ModelSerializer</code> does not generate the fields you need by default then you should either add them to the class explicitly, or simply use a regular <code>Serializer</code> class instead. However in some cases you may want to create a new base class that defines how the serializer fields are created for any given model.</p>
-<h3 id="serializer_field_mapping"><a class="toclink" href="#serializer_field_mapping"><code>.serializer_field_mapping</code></a></h3>
+<h3 id="serializer_field_mapping"><a class="toclink" href="#serializer_field_mapping"><code>serializer_field_mapping</code></a></h3>
 <p>A mapping of Django model fields to REST framework serializer fields. You can override this mapping to alter the default serializer fields that should be used for each model field.</p>
-<h3 id="serializer_related_field"><a class="toclink" href="#serializer_related_field"><code>.serializer_related_field</code></a></h3>
+<h3 id="serializer_related_field"><a class="toclink" href="#serializer_related_field"><code>serializer_related_field</code></a></h3>
 <p>This property should be the serializer field class, that is used for relational fields by default.</p>
 <p>For <code>ModelSerializer</code> this defaults to <code>serializers.PrimaryKeyRelatedField</code>.</p>
 <p>For <code>HyperlinkedModelSerializer</code> this defaults to <code>serializers.HyperlinkedRelatedField</code>.</p>
-<h3 id="serializer_url_field"><a class="toclink" href="#serializer_url_field"><code>.serializer_url_field</code></a></h3>
+<h3 id="serializer_url_field"><a class="toclink" href="#serializer_url_field"><code>serializer_url_field</code></a></h3>
 <p>The serializer field class that should be used for any <code>url</code> field on the serializer.</p>
 <p>Defaults to <code>serializers.HyperlinkedIdentityField</code></p>
-<h3 id="serializer_choice_field"><a class="toclink" href="#serializer_choice_field"><code>.serializer_choice_field</code></a></h3>
+<h3 id="serializer_choice_field"><a class="toclink" href="#serializer_choice_field"><code>serializer_choice_field</code></a></h3>
 <p>The serializer field class that should be used for any choice fields on the serializer.</p>
 <p>Defaults to <code>serializers.ChoiceField</code></p>
 <h3 id="the-field_class-and-field_kwargs-api"><a class="toclink" href="#the-field_class-and-field_kwargs-api">The field_class and field_kwargs API</a></h3>
 <p>The following methods are called to determine the class and keyword arguments for each field that should be automatically included on the serializer. Each of these methods should return a two tuple of <code>(field_class, field_kwargs)</code>.</p>
-<h3 id="build_standard_fieldself-field_name-model_field"><a class="toclink" href="#build_standard_fieldself-field_name-model_field"><code>.build_standard_field(self, field_name, model_field)</code></a></h3>
+<h3 id="build_standard_fieldself-field_name-model_field"><a class="toclink" href="#build_standard_fieldself-field_name-model_field"><code>build_standard_field(self, field_name, model_field)</code></a></h3>
 <p>Called to generate a serializer field that maps to a standard model field.</p>
 <p>The default implementation returns a serializer class based on the <code>serializer_field_mapping</code> attribute.</p>
-<h3 id="build_relational_fieldself-field_name-relation_info"><a class="toclink" href="#build_relational_fieldself-field_name-relation_info"><code>.build_relational_field(self, field_name, relation_info)</code></a></h3>
+<h3 id="build_relational_fieldself-field_name-relation_info"><a class="toclink" href="#build_relational_fieldself-field_name-relation_info"><code>build_relational_field(self, field_name, relation_info)</code></a></h3>
 <p>Called to generate a serializer field that maps to a relational model field.</p>
 <p>The default implementation returns a serializer class based on the <code>serializer_related_field</code> attribute.</p>
 <p>The <code>relation_info</code> argument is a named tuple, that contains <code>model_field</code>, <code>related_model</code>, <code>to_many</code> and <code>has_through_model</code> properties.</p>
-<h3 id="build_nested_fieldself-field_name-relation_info-nested_depth"><a class="toclink" href="#build_nested_fieldself-field_name-relation_info-nested_depth"><code>.build_nested_field(self, field_name, relation_info, nested_depth)</code></a></h3>
+<h3 id="build_nested_fieldself-field_name-relation_info-nested_depth"><a class="toclink" href="#build_nested_fieldself-field_name-relation_info-nested_depth"><code>build_nested_field(self, field_name, relation_info, nested_depth)</code></a></h3>
 <p>Called to generate a serializer field that maps to a relational model field, when the <code>depth</code> option has been set.</p>
 <p>The default implementation dynamically creates a nested serializer class based on either <code>ModelSerializer</code> or <code>HyperlinkedModelSerializer</code>.</p>
 <p>The <code>nested_depth</code> will be the value of the <code>depth</code> option, minus one.</p>
 <p>The <code>relation_info</code> argument is a named tuple, that contains <code>model_field</code>, <code>related_model</code>, <code>to_many</code> and <code>has_through_model</code> properties.</p>
-<h3 id="build_property_fieldself-field_name-model_class"><a class="toclink" href="#build_property_fieldself-field_name-model_class"><code>.build_property_field(self, field_name, model_class)</code></a></h3>
+<h3 id="build_property_fieldself-field_name-model_class"><a class="toclink" href="#build_property_fieldself-field_name-model_class"><code>build_property_field(self, field_name, model_class)</code></a></h3>
 <p>Called to generate a serializer field that maps to a property or zero-argument method on the model class.</p>
 <p>The default implementation returns a <code>ReadOnlyField</code> class.</p>
-<h3 id="build_url_fieldself-field_name-model_class"><a class="toclink" href="#build_url_fieldself-field_name-model_class"><code>.build_url_field(self, field_name, model_class)</code></a></h3>
+<h3 id="build_url_fieldself-field_name-model_class"><a class="toclink" href="#build_url_fieldself-field_name-model_class"><code>build_url_field(self, field_name, model_class)</code></a></h3>
 <p>Called to generate a serializer field for the serializer's own <code>url</code> field. The default implementation returns a <code>HyperlinkedIdentityField</code> class.</p>
-<h3 id="build_unknown_fieldself-field_name-model_class"><a class="toclink" href="#build_unknown_fieldself-field_name-model_class"><code>.build_unknown_field(self, field_name, model_class)</code></a></h3>
+<h3 id="build_unknown_fieldself-field_name-model_class"><a class="toclink" href="#build_unknown_fieldself-field_name-model_class"><code>build_unknown_field(self, field_name, model_class)</code></a></h3>
 <p>Called when the field name did not map to any model field or model property.
 The default implementation raises an error, although subclasses may customize this behavior.</p>
 <hr />
@@ -1222,9 +1218,9 @@ in the serializer context.</p>
 <h3 id="allow_empty"><a class="toclink" href="#allow_empty"><code>allow_empty</code></a></h3>
 <p>This is <code>True</code> by default, but can be set to <code>False</code> if you want to disallow empty lists as valid input.</p>
 <h3 id="max_length"><a class="toclink" href="#max_length"><code>max_length</code></a></h3>
-<p>This is <code>None</code> by default, but can be set to a positive integer if you want to validates that the list contains no more than this number of elements.</p>
+<p>This is <code>None</code> by default, but can be set to a positive integer if you want to validate that the list contains no more than this number of elements.</p>
 <h3 id="min_length"><a class="toclink" href="#min_length"><code>min_length</code></a></h3>
-<p>This is <code>None</code> by default, but can be set to a positive integer if you want to validates that the list contains no fewer than this number of elements.</p>
+<p>This is <code>None</code> by default, but can be set to a positive integer if you want to validate that the list contains no fewer than this number of elements.</p>
 <h3 id="customizing-listserializer-behavior"><a class="toclink" href="#customizing-listserializer-behavior">Customizing <code>ListSerializer</code> behavior</a></h3>
 <p>There <em>are</em> a few use cases when you might want to customize the <code>ListSerializer</code> behavior. For example:</p>
 <ul>
@@ -1444,7 +1440,7 @@ def all_high_scores(request):
 <li>Improving serialization performance for a frequently accessed API endpoint that returns lots of data.</li>
 </ul>
 <p>The signatures for these methods are as follows:</p>
-<h4 id="to_representationself-instance"><a class="toclink" href="#to_representationself-instance"><code>.to_representation(self, instance)</code></a></h4>
+<h4 id="to_representationself-instance"><a class="toclink" href="#to_representationself-instance"><code>to_representation(self, instance)</code></a></h4>
 <p>Takes the object instance that requires serialization, and should return a primitive representation. Typically this means returning a structure of built-in Python datatypes. The exact types that can be handled will depend on the render classes you have configured for your API.</p>
 <p>May be overridden in order to modify the representation style. For example:</p>
 <pre><code>def to_representation(self, instance):
@@ -1453,7 +1449,7 @@ def all_high_scores(request):
     ret['username'] = ret['username'].lower()
     return ret
 </code></pre>
-<h4 id="to_internal_valueself-data"><a class="toclink" href="#to_internal_valueself-data"><code>.to_internal_value(self, data)</code></a></h4>
+<h4 id="to_internal_valueself-data"><a class="toclink" href="#to_internal_valueself-data"><code>to_internal_value(self, data)</code></a></h4>
 <p>Takes the unvalidated incoming data as input and should return the validated data that will be made available as <code>serializer.validated_data</code>. The return value will also be passed to the <code>.create()</code> or <code>.update()</code> methods if <code>.save()</code> is called on the serializer class.</p>
 <p>If any of the validation fails, then the method should raise a <code>serializers.ValidationError(errors)</code>. The <code>errors</code> argument should be a dictionary mapping field names (or <code>settings.NON_FIELD_ERRORS_KEY</code>) to a list of error messages. If you don't need to alter deserialization behavior and instead want to provide object-level validation, it's recommended that you instead override the <a href="#object-level-validation"><code>.validate()</code></a> method.</p>
 <p>The <code>data</code> argument passed to this method will normally be the value of <code>request.data</code>, so the datatype it provides will depend on the parser classes you have configured for your API.</p>
@@ -1562,7 +1558,7 @@ blacklisted and child serializers can be optionally expanded.</p>
 <h2 id="drf-writable-nested"><a class="toclink" href="#drf-writable-nested">DRF Writable Nested</a></h2>
 <p>The <a href="https://github.com/beda-software/drf-writable-nested">drf-writable-nested</a> package provides writable nested model serializer which allows to create/update models with nested related data.</p>
 <h2 id="drf-encrypt-content"><a class="toclink" href="#drf-encrypt-content">DRF Encrypt Content</a></h2>
-<p>The <a href="https://github.com/oguzhancelikarslan/drf-encrypt-content">drf-encrypt-content</a> package helps you encrypt your data, serialized through ModelSerializer. It also contains some helper functions. Which helps you to encrypt your data. </p>
+<p>The <a href="https://github.com/oguzhancelikarslan/drf-encrypt-content">drf-encrypt-content</a> package helps you encrypt your data, serialized through ModelSerializer. It also contains some helper functions. Which helps you to encrypt your data.</p>
             
 
           </div> <!--/span-->

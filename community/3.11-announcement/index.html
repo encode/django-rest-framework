@@ -239,10 +239,6 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/api-clients/">API Clients</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../topics/internationalization/">Internationalization</a>
                   </li>
                   
@@ -484,10 +480,11 @@ include:</p>
 <p>In this example view operation descriptions for the <code>get</code> and <code>post</code> methods will
 be extracted from the class docstring:</p>
 <pre><code class="language-python">class DocStringExampleListView(APIView):
-&quot;&quot;&quot;
-get: A description of my GET operation.
-post: A description of my POST operation.
-&quot;&quot;&quot;
+    &quot;&quot;&quot;
+    get: A description of my GET operation.
+    post: A description of my POST operation.
+    &quot;&quot;&quot;
+
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get(self, request, *args, **kwargs):

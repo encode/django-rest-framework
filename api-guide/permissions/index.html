@@ -239,10 +239,6 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/api-clients/">API Clients</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../topics/internationalization/">Internationalization</a>
                   </li>
                   
@@ -506,6 +502,10 @@
                     </li>
                   
                     <li>
+                      <a href="#rest-framework-roles">Rest Framework Roles</a>
+                    </li>
+                  
+                    <li>
                       <a href="#django-rest-framework-api-key">Django REST Framework API Key</a>
                     </li>
                   
@@ -657,16 +657,17 @@ class ExampleView(APIView):
 <p>The <code>IsAdminUser</code> permission class will deny permission to any user, unless <code>user.is_staff</code> is <code>True</code> in which case permission will be allowed.</p>
 <p>This permission is suitable if you want your API to only be accessible to a subset of trusted administrators.</p>
 <h2 id="isauthenticatedorreadonly"><a class="toclink" href="#isauthenticatedorreadonly">IsAuthenticatedOrReadOnly</a></h2>
-<p>The <code>IsAuthenticatedOrReadOnly</code> will allow authenticated users to perform any request.  Requests for unauthorised users will only be permitted if the request method is one of the "safe" methods; <code>GET</code>, <code>HEAD</code> or <code>OPTIONS</code>.</p>
+<p>The <code>IsAuthenticatedOrReadOnly</code> will allow authenticated users to perform any request.  Requests for unauthenticated users will only be permitted if the request method is one of the "safe" methods; <code>GET</code>, <code>HEAD</code> or <code>OPTIONS</code>.</p>
 <p>This permission is suitable if you want to your API to allow read permissions to anonymous users, and only allow write permissions to authenticated users.</p>
 <h2 id="djangomodelpermissions"><a class="toclink" href="#djangomodelpermissions">DjangoModelPermissions</a></h2>
 <p>This permission class ties into Django's standard <code>django.contrib.auth</code> <a href="https://docs.djangoproject.com/en/stable/topics/auth/customizing/#custom-permissions">model permissions</a>.  This permission must only be applied to views that have a <code>.queryset</code> property or <code>get_queryset()</code> method. Authorization will only be granted if the user <em>is authenticated</em> and has the <em>relevant model permissions</em> assigned. The appropriate model is determined by checking <code>get_queryset().model</code> or <code>queryset.model</code>.</p>
 <ul>
+<li><code>GET</code> requests require the user to have the <code>view</code> or <code>change</code> permission on the model</li>
 <li><code>POST</code> requests require the user to have the <code>add</code> permission on the model.</li>
 <li><code>PUT</code> and <code>PATCH</code> requests require the user to have the <code>change</code> permission on the model.</li>
 <li><code>DELETE</code> requests require the user to have the <code>delete</code> permission on the model.</li>
 </ul>
-<p>The default behaviour can also be overridden to support custom model permissions.  For example, you might want to include a <code>view</code> model permission for <code>GET</code> requests.</p>
+<p>The default behaviour can also be overridden to support custom model permissions.</p>
 <p>To use custom model permissions, override <code>DjangoModelPermissions</code> and set the <code>.perms_map</code> property.  Refer to the source code for details.</p>
 <h2 id="djangomodelpermissionsoranonreadonly"><a class="toclink" href="#djangomodelpermissionsoranonreadonly">DjangoModelPermissionsOrAnonReadOnly</a></h2>
 <p>Similar to <code>DjangoModelPermissions</code>, but also allows unauthenticated users to have read-only access to the API.</p>
@@ -681,7 +682,7 @@ class ExampleView(APIView):
 <p>Note that <code>DjangoObjectPermissions</code> <strong>does not</strong> require the <code>django-guardian</code> package, and should support other object-level backends equally well.</p>
 <p>As with <code>DjangoModelPermissions</code> you can use custom model permissions by overriding <code>DjangoObjectPermissions</code> and setting the <code>.perms_map</code> property.  Refer to the source code for details.</p>
 <hr />
-<p><strong>Note</strong>: If you need object level <code>view</code> permissions for <code>GET</code>, <code>HEAD</code> and <code>OPTIONS</code> requests and are using django-guardian for your object-level permissions backend, you'll want to consider using the <code>DjangoObjectPermissionsFilter</code> class provided by the <a href="https://github.com/rpkilby/django-rest-framework-guardian"><code>djangorestframework-guardian</code> package</a>. It ensures that list endpoints only return results including objects for which the user has appropriate view permissions.</p>
+<p><strong>Note</strong>: If you need object level <code>view</code> permissions for <code>GET</code>, <code>HEAD</code> and <code>OPTIONS</code> requests and are using django-guardian for your object-level permissions backend, you'll want to consider using the <code>DjangoObjectPermissionsFilter</code> class provided by the <a href="https://github.com/johnthagen/django-rest-framework-guardian2"><code>djangorestframework-guardian2</code> package</a>. It ensures that list endpoints only return results including objects for which the user has appropriate view permissions.</p>
 <hr />
 <h1 id="custom-permissions"><a class="toclink" href="#custom-permissions">Custom permissions</a></h1>
 <p>To implement a custom permission, override <code>BasePermission</code> and implement either, or both, of the following methods:</p>
@@ -823,6 +824,8 @@ class BlocklistPermission(permissions.BasePermission):
 <p>The <a href="https://github.com/FJNR-inc/dry-rest-permissions">DRY Rest Permissions</a> package provides the ability to define different permissions for individual default and custom actions. This package is made for apps with permissions that are derived from relationships defined in the app's data model. It also supports permission checks being returned to a client app through the API's serializer. Additionally it supports adding permissions to the default and custom list actions to restrict the data they retrieve per user.</p>
 <h2 id="django-rest-framework-roles"><a class="toclink" href="#django-rest-framework-roles">Django Rest Framework Roles</a></h2>
 <p>The <a href="https://github.com/computer-lab/django-rest-framework-roles">Django Rest Framework Roles</a> package makes it easier to parameterize your API over multiple types of users.</p>
+<h2 id="rest-framework-roles"><a class="toclink" href="#rest-framework-roles">Rest Framework Roles</a></h2>
+<p>The <a href="https://github.com/Pithikos/rest-framework-roles">Rest Framework Roles</a> makes it super easy to protect views based on roles. Most importantly allows you to decouple accessibility logic from models and views in a clean human-readable way.</p>
 <h2 id="django-rest-framework-api-key"><a class="toclink" href="#django-rest-framework-api-key">Django REST Framework API Key</a></h2>
 <p>The <a href="https://florimondmanca.github.io/djangorestframework-api-key/">Django REST Framework API Key</a> package provides permissions classes, models and helpers to add API key authorization to your API. It can be used to authorize internal or third-party backends and services (i.e. <em>machines</em>) which do not have a user account. API keys are stored securely using Django's password hashing infrastructure, and they can be viewed, edited and revoked at anytime in the Django admin.</p>
 <h2 id="django-rest-framework-role-filters"><a class="toclink" href="#django-rest-framework-role-filters">Django Rest Framework Role Filters</a></h2>

@@ -239,10 +239,6 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/api-clients/">API Clients</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../topics/internationalization/">Internationalization</a>
                   </li>
                   
@@ -520,7 +516,7 @@
 <p>With <code>ModelForm</code> the validation is performed partially on the form, and partially on the model instance. With REST framework the validation is performed entirely on the serializer class. This is advantageous for the following reasons:</p>
 <ul>
 <li>It introduces a proper separation of concerns, making your code behavior more obvious.</li>
-<li>It is easy to switch between using shortcut <code>ModelSerializer</code> classes and using  explicit <code>Serializer</code> classes. Any validation behavior being used for <code>ModelSerializer</code> is simple to replicate.</li>
+<li>It is easy to switch between using shortcut <code>ModelSerializer</code> classes and using explicit <code>Serializer</code> classes. Any validation behavior being used for <code>ModelSerializer</code> is simple to replicate.</li>
 <li>Printing the <code>repr</code> of a serializer instance will show you exactly what validation rules it applies. There's no extra hidden validation behavior being called on the model instance.</li>
 </ul>
 <p>When you're using <code>ModelSerializer</code> all of this is handled automatically for you. If you want to drop down to using <code>Serializer</code> classes instead, then you need to define the validation rules explicitly.</p>
@@ -547,7 +543,7 @@ CustomerReportSerializer():
     description = CharField(style={'type': 'textarea'})
 </code></pre>
 <p>The interesting bit here is the <code>reference</code> field. We can see that the uniqueness constraint is being explicitly enforced by a validator on the serializer field.</p>
-<p>Because of this more explicit style REST framework includes a few validator classes that are not available in core Django. These classes are detailed below.</p>
+<p>Because of this more explicit style REST framework includes a few validator classes that are not available in core Django. These classes are detailed below.  REST framework validators, like their Django counterparts, implement the <code>__eq__</code> method, allowing you to compare instances for equality.</p>
 <hr />
 <h2 id="uniquevalidator"><a class="toclink" href="#uniquevalidator">UniqueValidator</a></h2>
 <p>This validator can be used to enforce the <code>unique=True</code> constraint on model fields.
@@ -634,6 +630,9 @@ class ExampleSerializer(serializers.Serializer):
 <hr />
 <p><strong>Note</strong>: The <code>UniqueFor&lt;Range&gt;Validator</code> classes impose an implicit constraint that the fields they are applied to are always treated as required. Fields with <code>default</code> values are an exception to this as they always supply a value even when omitted from user input.</p>
 <hr />
+<hr />
+<p><strong>Note:</strong> <code>HiddenField()</code> does not appear in <code>partial=True</code> serializer (when making <code>PATCH</code> request). This behavior might change in future, follow updates on <a href="https://github.com/encode/django-rest-framework/discussions/8259">github discussion</a>. </p>
+<hr />
 <h1 id="advanced-field-defaults"><a class="toclink" href="#advanced-field-defaults">Advanced field defaults</a></h1>
 <p>Validators that are applied across multiple fields in the serializer can sometimes require a field input that should not be provided by the API client, but that <em>is</em> available as input to the validator.</p>
 <p>Two patterns that you may want to use for this sort of validation include:</p>
@@ -665,7 +664,7 @@ by specifying an empty list for the serializer <code>Meta.validators</code> attr
 <h2 id="optional-fields"><a class="toclink" href="#optional-fields">Optional fields</a></h2>
 <p>By default "unique together" validation enforces that all fields be
 <code>required=True</code>. In some cases, you might want to explicit apply
-<code>required=False</code> to one of the fields, in which case the desired behaviour
+<code>required=False</code> to one of the fields, in which case the desired behavior
 of the validation is ambiguous.</p>
 <p>In this case you will typically need to exclude the validator from the
 serializer class, and instead write any validation logic explicitly, either
@@ -732,13 +731,14 @@ to your <code>Serializer</code> subclass. This is documented in the
 <h4 id="accessing-the-context"><a class="toclink" href="#accessing-the-context">Accessing the context</a></h4>
 <p>In some advanced cases you might want a validator to be passed the serializer
 field it is being used with as additional context. You can do so by setting
-a <code>requires_context = True</code> attribute on the validator. The <code>__call__</code> method
+a <code>requires_context = True</code> attribute on the validator class. The <code>__call__</code> method
 will then be called with the <code>serializer_field</code>
 or <code>serializer</code> as an additional argument.</p>
-<pre><code>requires_context = True
+<pre><code>class MultipleOf:
+    requires_context = True
 
-def __call__(self, value, serializer_field):
-    ...
+    def __call__(self, value, serializer_field):
+        ...
 </code></pre>
             
 

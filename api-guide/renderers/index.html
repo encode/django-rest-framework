@@ -239,10 +239,6 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/api-clients/">API Clients</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../topics/internationalization/">Internationalization</a>
                   </li>
                   
@@ -496,7 +492,7 @@
 
                   
                     <li>
-                      <a href="#varying-behaviour-by-media-type">Varying behaviour by media type</a>
+                      <a href="#varying-behavior-by-media-type">Varying behavior by media type</a>
                     </li>
                   
                     <li>
@@ -652,7 +648,7 @@ def user_count_view(request, format=None):
 Unlike other renderers, the data passed to the <code>Response</code> does not need to be serialized.  Also, unlike other renderers, you may want to include a <code>template_name</code> argument when creating the <code>Response</code>.</p>
 <p>The TemplateHTMLRenderer will create a <code>RequestContext</code>, using the <code>response.data</code> as the context dict, and determine a template name to use to render the context.</p>
 <hr />
-<p><strong>Note:</strong> When used with a view that makes use of a serializer the <code>Response</code> sent for rendering may not be a dictionary and will need to be wrapped in a dict before returning to allow the TemplateHTMLRenderer to render it. For example:</p>
+<p><strong>Note:</strong> When used with a view that makes use of a serializer the <code>Response</code> sent for rendering may not be a dictionary and will need to be wrapped in a dict before returning to allow the <code>TemplateHTMLRenderer</code> to render it. For example:</p>
 <pre><code>response.data = {'results': response.data}
 </code></pre>
 <hr />
@@ -803,7 +799,7 @@ class PlainTextRenderer(renderers.BaseRenderer):
 <li>Specify multiple types of HTML representation for API clients to use.</li>
 <li>Underspecify a renderer's media type, such as using <code>media_type = 'image/*'</code>, and use the <code>Accept</code> header to vary the encoding of the response.</li>
 </ul>
-<h2 id="varying-behaviour-by-media-type"><a class="toclink" href="#varying-behaviour-by-media-type">Varying behaviour by media type</a></h2>
+<h2 id="varying-behavior-by-media-type"><a class="toclink" href="#varying-behavior-by-media-type">Varying behavior by media type</a></h2>
 <p>In some cases you might want your view to use different serialization styles depending on the accepted media type.  If you need to do this you can access <code>request.accepted_renderer</code> to determine the negotiated renderer that will be used for the response.</p>
 <p>For example:</p>
 <pre><code>@api_view(['GET'])

@@ -239,10 +239,6 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/api-clients/">API Clients</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../topics/internationalization/">Internationalization</a>
                   </li>
                   
@@ -430,7 +426,7 @@
                     </li>
                   
                     <li>
-                      <a href="#trade-offs-between-views-vs-viewsets">Trade-offs between views vs viewsets</a>
+                      <a href="#trade-offs-between-views-vs-viewsets">Trade-offs between views vs ViewSets</a>
                     </li>
                   
                 
@@ -454,8 +450,9 @@
 <p>A <code>ViewSet</code> class is only bound to a set of method handlers at the last moment, when it is instantiated into a set of views, typically by using a <code>Router</code> class which handles the complexities of defining the URL conf for you.</p>
 <h2 id="refactoring-to-use-viewsets"><a class="toclink" href="#refactoring-to-use-viewsets">Refactoring to use ViewSets</a></h2>
 <p>Let's take our current set of views, and refactor them into view sets.</p>
-<p>First of all let's refactor our <code>UserList</code> and <code>UserDetail</code> views into a single <code>UserViewSet</code>.  We can remove the two views, and replace them with a single class:</p>
+<p>First of all let's refactor our <code>UserList</code> and <code>UserDetail</code> classes into a single <code>UserViewSet</code> class.  We can remove the two view classes, and replace them with a single ViewSet class:</p>
 <pre><code>from rest_framework import viewsets
+
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
     """
@@ -466,13 +463,15 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 </code></pre>
 <p>Here we've used the <code>ReadOnlyModelViewSet</code> class to automatically provide the default 'read-only' operations.  We're still setting the <code>queryset</code> and <code>serializer_class</code> attributes exactly as we did when we were using regular views, but we no longer need to provide the same information to two separate classes.</p>
 <p>Next we're going to replace the <code>SnippetList</code>, <code>SnippetDetail</code> and <code>SnippetHighlight</code> view classes.  We can remove the three views, and again replace them with a single class.</p>
-<pre><code>from rest_framework.decorators import action
+<pre><code>from rest_framework import permissions
+from rest_framework import renderers
+from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework import permissions
+
 
 class SnippetViewSet(viewsets.ModelViewSet):
     """
-    This viewset automatically provides `list`, `create`, `retrieve`,
+    This ViewSet automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
 
     Additionally we also provide an extra `highlight` action.
@@ -498,8 +497,9 @@ class SnippetViewSet(viewsets.ModelViewSet):
 <p>The handler methods only get bound to the actions when we define the URLConf.
 To see what's going on under the hood let's first explicitly create a set of views from our ViewSets.</p>
 <p>In the <code>snippets/urls.py</code> file we bind our <code>ViewSet</code> classes into a set of concrete views.</p>
-<pre><code>from snippets.views import SnippetViewSet, UserViewSet, api_root
-from rest_framework import renderers
+<pre><code>from rest_framework import renderers
+
+from snippets.views import api_root, SnippetViewSet, UserViewSet
 
 snippet_list = SnippetViewSet.as_view({
     'get': 'list',
@@ -521,7 +521,7 @@ user_detail = UserViewSet.as_view({
     'get': 'retrieve'
 })
 </code></pre>
-<p>Notice how we're creating multiple views from each <code>ViewSet</code> class, by binding the http methods to the required action for each view.</p>
+<p>Notice how we're creating multiple views from each <code>ViewSet</code> class, by binding the HTTP methods to the required action for each view.</p>
 <p>Now that we've bound our resources into concrete views, we can register the views with the URL conf as usual.</p>
 <pre><code>urlpatterns = format_suffix_patterns([
     path('', api_root),
@@ -537,23 +537,24 @@ user_detail = UserViewSet.as_view({
 <p>Here's our re-wired <code>snippets/urls.py</code> file.</p>
 <pre><code>from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+
 from snippets import views
 
-# Create a router and register our viewsets with it.
+# Create a router and register our ViewSets with it.
 router = DefaultRouter()
-router.register(r'snippets', views.SnippetViewSet,basename="snippet")
-router.register(r'users', views.UserViewSet,basename="user")
+router.register(r'snippets', views.SnippetViewSet, basename='snippet')
+router.register(r'users', views.UserViewSet, basename='user')
 
 # The API URLs are now determined automatically by the router.
 urlpatterns = [
     path('', include(router.urls)),
 ]
 </code></pre>
-<p>Registering the viewsets with the router is similar to providing a urlpattern.  We include two arguments - the URL prefix for the views, and the viewset itself.</p>
-<p>The <code>DefaultRouter</code> class we're using also automatically creates the API root view for us, so we can now delete the <code>api_root</code> method from our <code>views</code> module.</p>
-<h2 id="trade-offs-between-views-vs-viewsets"><a class="toclink" href="#trade-offs-between-views-vs-viewsets">Trade-offs between views vs viewsets</a></h2>
-<p>Using viewsets can be a really useful abstraction.  It helps ensure that URL conventions will be consistent across your API, minimizes the amount of code you need to write, and allows you to concentrate on the interactions and representations your API provides rather than the specifics of the URL conf.</p>
-<p>That doesn't mean it's always the right approach to take.  There's a similar set of trade-offs to consider as when using class-based views instead of function based views.  Using viewsets is less explicit than building your views individually.</p>
+<p>Registering the ViewSets with the router is similar to providing a urlpattern.  We include two arguments - the URL prefix for the views, and the view set itself.</p>
+<p>The <code>DefaultRouter</code> class we're using also automatically creates the API root view for us, so we can now delete the <code>api_root</code> function from our <code>views</code> module.</p>
+<h2 id="trade-offs-between-views-vs-viewsets"><a class="toclink" href="#trade-offs-between-views-vs-viewsets">Trade-offs between views vs ViewSets</a></h2>
+<p>Using ViewSets can be a really useful abstraction.  It helps ensure that URL conventions will be consistent across your API, minimizes the amount of code you need to write, and allows you to concentrate on the interactions and representations your API provides rather than the specifics of the URL conf.</p>
+<p>That doesn't mean it's always the right approach to take. There's a similar set of trade-offs to consider as when using class-based views instead of function-based views. Using ViewSets is less explicit than building your API views individually.</p>
             
 
           </div> <!--/span-->

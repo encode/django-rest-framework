@@ -54,7 +54,7 @@
       <div class="navbar-inner">
         <div class="container-fluid">
           <a class="repo-link btn btn-primary btn-small" href="https://github.com/encode/django-rest-framework/tree/master">GitHub</a>
-          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../api-clients/">
+          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../internationalization/">
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
           <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../../api-guide/settings/">
@@ -239,10 +239,6 @@
                   </li>
                   
                   <li >
-                    <a href="../api-clients/">API Clients</a>
-                  </li>
-                  
-                  <li >
                     <a href="../internationalization/">Internationalization</a>
                   </li>
                   
@@ -418,11 +414,11 @@
 
                   
                     <li>
-                      <a href="#generating-documentation-from-openapi-schemas">Generating documentation from OpenAPI schemas</a>
+                      <a href="#third-party-packages-for-openapi-support">Third party packages for OpenAPI support</a>
                     </li>
                   
                     <li>
-                      <a href="#third-party-packages">Third party packages</a>
+                      <a href="#built-in-openapi-schema-generation-deprecated">Built-in OpenAPI schema generation (deprecated)</a>
                     </li>
                   
                     <li>
@@ -453,10 +449,30 @@
 <p>A REST API should spend almost all of its descriptive effort in defining the media type(s) used for representing resources and driving application state.</p>
 <p>&mdash; Roy Fielding, <a href="https://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven">REST APIs must be hypertext driven</a></p>
 </blockquote>
-<p>REST framework provides built-in support for generating OpenAPI schemas, which
-can be used with tools that allow you to build API documentation.</p>
-<p>There are also a number of great third-party documentation packages available.</p>
-<h2 id="generating-documentation-from-openapi-schemas"><a class="toclink" href="#generating-documentation-from-openapi-schemas">Generating documentation from OpenAPI schemas</a></h2>
+<p>REST framework provides a range of different choices for documenting your API. The following
+is a non-exhaustive list of the most popular ones.</p>
+<h2 id="third-party-packages-for-openapi-support"><a class="toclink" href="#third-party-packages-for-openapi-support">Third party packages for OpenAPI support</a></h2>
+<h3 id="drf-spectacular"><a class="toclink" href="#drf-spectacular">drf-spectacular</a></h3>
+<p><a href="https://github.com/tfranzel/drf-spectacular/">drf-spectacular</a> is an <a href="https://openapis.org/">OpenAPI 3</a> schema generation library with explicit
+focus on extensibility, customizability and client generation. It is the recommended way for
+generating and presenting OpenAPI schemas.</p>
+<p>The library aims to extract as much schema information as possible, while providing decorators and extensions for easy
+customization. There is explicit support for <a href="https://swagger.io/">swagger-codegen</a>, <a href="https://swagger.io/tools/swagger-ui/">SwaggerUI</a> and <a href="https://github.com/Rebilly/ReDoc">Redoc</a>,
+i18n, versioning, authentication, polymorphism (dynamic requests and responses), query/path/header parameters,
+documentation and more. Several popular plugins for DRF are supported out-of-the-box as well.</p>
+<h3 id="drf-yasg"><a class="toclink" href="#drf-yasg">drf-yasg</a></h3>
+<p><a href="https://github.com/axnsan12/drf-yasg/">drf-yasg</a> is a <a href="https://swagger.io/">Swagger / OpenAPI 2</a> generation tool implemented without using the schema generation provided
+by Django Rest Framework.</p>
+<p>It aims to implement as much of the <a href="https://openapis.org/">OpenAPI 2</a> specification as possible - nested schemas, named models,
+response bodies, enum/pattern/min/max validators, form parameters, etc. - and to generate documents usable with code
+generation tools like <code>swagger-codegen</code>.</p>
+<p>This also translates into a very useful interactive documentation viewer in the form of <code>swagger-ui</code>:</p>
+<p><img alt="Screenshot - drf-yasg" src="../../img/drf-yasg.png" /></p>
+<hr />
+<h2 id="built-in-openapi-schema-generation-deprecated"><a class="toclink" href="#built-in-openapi-schema-generation-deprecated">Built-in OpenAPI schema generation (deprecated)</a></h2>
+<p><strong>Deprecation notice: REST framework's built-in support for generating OpenAPI schemas is
+deprecated in favor of 3rd party packages that can provide this functionality instead.
+As replacement, we recommend using the <a href="#drf-spectacular">drf-spectacular</a> package.</strong></p>
 <p>There are a number of packages available that allow you to generate HTML
 documentation pages from OpenAPI schemas.</p>
 <p>Two popular options are <a href="https://swagger.io/tools/swagger-ui/">Swagger UI</a> and <a href="https://github.com/Rebilly/ReDoc">ReDoc</a>.</p>
@@ -503,10 +519,14 @@ urlpatterns = [
     # ...
     # Route TemplateView to serve Swagger UI template.
     #   * Provide `extra_context` with view name of `SchemaView`.
-    path('swagger-ui/', TemplateView.as_view(
-        template_name='swagger-ui.html',
-        extra_context={'schema_url':'openapi-schema'}
-    ), name='swagger-ui'),
+    path(
+        &quot;swagger-ui/&quot;,
+        TemplateView.as_view(
+            template_name=&quot;swagger-ui.html&quot;,
+            extra_context={&quot;schema_url&quot;: &quot;openapi-schema&quot;},
+        ),
+        name=&quot;swagger-ui&quot;,
+    ),
 ]
 </code></pre>
 <p>See the <a href="https://swagger.io/tools/swagger-ui/">Swagger UI documentation</a> for advanced usage.</p>
@@ -544,31 +564,16 @@ urlpatterns = [
     # ...
     # Route TemplateView to serve the ReDoc template.
     #   * Provide `extra_context` with view name of `SchemaView`.
-    path('redoc/', TemplateView.as_view(
-        template_name='redoc.html',
-        extra_context={'schema_url':'openapi-schema'}
-    ), name='redoc'),
+    path(
+        &quot;redoc/&quot;,
+        TemplateView.as_view(
+            template_name=&quot;redoc.html&quot;, extra_context={&quot;schema_url&quot;: &quot;openapi-schema&quot;}
+        ),
+        name=&quot;redoc&quot;,
+    ),
 ]
 </code></pre>
 <p>See the <a href="https://github.com/Rebilly/ReDoc">ReDoc documentation</a> for advanced usage.</p>
-<h2 id="third-party-packages"><a class="toclink" href="#third-party-packages">Third party packages</a></h2>
-<p>There are a number of mature third-party packages for providing API documentation.</p>
-<h4 id="drf-yasg-yet-another-swagger-generator"><a class="toclink" href="#drf-yasg-yet-another-swagger-generator">drf-yasg - Yet Another Swagger Generator</a></h4>
-<p><a href="https://github.com/axnsan12/drf-yasg/">drf-yasg</a> is a <a href="https://swagger.io/">Swagger</a> generation tool implemented without using the schema generation provided
-by Django Rest Framework.</p>
-<p>It aims to implement as much of the <a href="https://openapis.org/">OpenAPI</a> specification as possible - nested schemas, named models,
-response bodies, enum/pattern/min/max validators, form parameters, etc. - and to generate documents usable with code
-generation tools like <code>swagger-codegen</code>.</p>
-<p>This also translates into a very useful interactive documentation viewer in the form of <code>swagger-ui</code>:</p>
-<p><img alt="Screenshot - drf-yasg" src="../../img/drf-yasg.png" /></p>
-<h4 id="drf-spectacular-sane-and-flexible-openapi-30-schema-generation-for-django-rest-framework"><a class="toclink" href="#drf-spectacular-sane-and-flexible-openapi-30-schema-generation-for-django-rest-framework">drf-spectacular - Sane and flexible OpenAPI 3.0 schema generation for Django REST framework</a></h4>
-<p><a href="https://github.com/tfranzel/drf-spectacular/">drf-spectacular</a> is a <a href="https://openapis.org/">OpenAPI 3</a> schema generation tool with explicit focus on extensibility,
-customizability and client generation. Usage patterns are very similar to <a href="https://github.com/axnsan12/drf-yasg/">drf-yasg</a>.</p>
-<p>It aims to extract as much schema information as possible, while providing decorators and extensions for easy
-customization. There is explicit support for <a href="https://swagger.io/">swagger-codegen</a>, <a href="https://swagger.io/tools/swagger-ui/">SwaggerUI</a> and <a href="https://github.com/Rebilly/ReDoc">Redoc</a>,
-i18n, versioning, authentication, polymorphism (dynamic requests and responses), query/path/header parameters,
-documentation and more. Several popular plugins for DRF are supported out-of-the-box as well.</p>
-<hr />
 <h2 id="self-describing-apis"><a class="toclink" href="#self-describing-apis">Self describing APIs</a></h2>
 <p>The browsable API that REST framework provides makes it possible for your API to be entirely self describing.  The documentation for each API endpoint can be provided simply by visiting the URL in your browser.</p>
 <p><img alt="Screenshot - Self describing API" src="../../img/self-describing.png" /></p>

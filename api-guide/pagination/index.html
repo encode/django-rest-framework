@@ -239,10 +239,6 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/api-clients/">API Clients</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../topics/internationalization/">Internationalization</a>
                   </li>
                   
@@ -455,10 +451,6 @@
                   
                     <li>
                       <a href="#using-your-custom-pagination-class">Using your custom pagination class</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#pagination-schemas">Pagination &amp; schemas</a>
                     </li>
                   
                 
@@ -681,7 +673,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 </ul>
 <p>Note that the <code>paginate_queryset</code> method may set state on the pagination instance, that may later be used by the <code>get_paginated_response</code> method.</p>
 <h2 id="example"><a class="toclink" href="#example">Example</a></h2>
-<p>Suppose we want to replace the default pagination output style with a modified format that  includes the next and previous links under in a nested 'links' key. We could specify a custom pagination class like so:</p>
+<p>Suppose we want to replace the default pagination output style with a modified format that includes the next and previous links under in a nested 'links' key. We could specify a custom pagination class like so:</p>
 <pre><code>class CustomPagination(pagination.PageNumberPagination):
     def get_paginated_response(self, data):
         return Response({
@@ -693,7 +685,7 @@ class StandardResultsSetPagination(PageNumberPagination):
             'results': data
         })
 </code></pre>
-<p>We'd then need to setup the custom class in our configuration:</p>
+<p>We'd then need to set up the custom class in our configuration:</p>
 <pre><code>REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'my_project.apps.core.pagination.CustomPagination',
     'PAGE_SIZE': 100
@@ -709,12 +701,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 </code></pre>
 <p>API responses for list endpoints will now include a <code>Link</code> header, instead of including the pagination links as part of the body of the response, for example:</p>
 <p><img alt="Link Header" src="../../img/link-header-pagination.png" /></p>
-<p><em>A custom pagination style, using the 'Link' header'</em></p>
-<h2 id="pagination-schemas"><a class="toclink" href="#pagination-schemas">Pagination &amp; schemas</a></h2>
-<p>You can also make the pagination controls available to the schema autogeneration
-that REST framework provides, by implementing a <code>get_schema_fields()</code> method. This method should have the following signature:</p>
-<p><code>get_schema_fields(self, view)</code></p>
-<p>The method should return a list of <code>coreapi.Field</code> instances.</p>
+<p><em>A custom pagination style, using the 'Link' header</em></p>
 <hr />
 <h1 id="html-pagination-controls"><a class="toclink" href="#html-pagination-controls">HTML pagination controls</a></h1>
 <p>By default using the pagination classes will cause HTML pagination controls to be displayed in the browsable API. There are two built-in display styles. The <code>PageNumberPagination</code> and <code>LimitOffsetPagination</code> classes display a list of page numbers with previous and next controls. The <code>CursorPagination</code> class displays a simpler style that only displays a previous and next control.</p>

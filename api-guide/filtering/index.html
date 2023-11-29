@@ -239,10 +239,6 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/api-clients/">API Clients</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../topics/internationalization/">Internationalization</a>
                   </li>
                   
@@ -479,10 +475,6 @@
                       <a href="#customizing-the-interface">Customizing the interface</a>
                     </li>
                   
-                    <li>
-                      <a href="#filtering-schemas">Filtering &amp; schemas</a>
-                    </li>
-                  
                 
                   <li class="main">
                     <a href="#third-party-packages">Third party packages</a>
@@ -692,14 +684,44 @@ class UserListView(generics.ListAPIView):
 <p>For <a href="https://docs.djangoproject.com/en/3.0/ref/contrib/postgres/fields/#jsonfield">JSONField</a> and <a href="https://docs.djangoproject.com/en/3.0/ref/contrib/postgres/fields/#hstorefield">HStoreField</a> fields you can filter based on nested values within the data structure using the same double-underscore notation:</p>
 <pre><code>search_fields = ['data__breed', 'data__owner__other_pets__0__name']
 </code></pre>
-<p>By default, searches will use case-insensitive partial matches.  The search parameter may contain multiple search terms, which should be whitespace and/or comma separated.  If multiple search terms are used then objects will be returned in the list only if all the provided terms are matched.</p>
-<p>The search behavior may be restricted by prepending various characters to the <code>search_fields</code>.</p>
-<ul>
-<li>'^' Starts-with search.</li>
-<li>'=' Exact matches.</li>
-<li>'@' Full-text search.  (Currently only supported Django's <a href="https://docs.djangoproject.com/en/stable/ref/contrib/postgres/search/">PostgreSQL backend</a>.)</li>
-<li>'$' Regex search.</li>
-</ul>
+<p>By default, searches will use case-insensitive partial matches. The search parameter may contain multiple search terms, which should be whitespace and/or comma separated. If multiple search terms are used then objects will be returned in the list only if all the provided terms are matched. Searches may contain <em>quoted phrases</em> with spaces, each phrase is considered as a single search term.</p>
+<p>The search behavior may be specified by prefixing field names in <code>search_fields</code> with one of the following characters (which is equivalent to adding <code>__&lt;lookup&gt;</code> to the field):</p>
+<table>
+<thead>
+<tr>
+<th>Prefix</th>
+<th>Lookup</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>^</code></td>
+<td><code>istartswith</code></td>
+<td>Starts-with search.</td>
+</tr>
+<tr>
+<td><code>=</code></td>
+<td><code>iexact</code></td>
+<td>Exact matches.</td>
+</tr>
+<tr>
+<td><code>$</code></td>
+<td><code>iregex</code></td>
+<td>Regex search.</td>
+</tr>
+<tr>
+<td><code>@</code></td>
+<td><code>search</code></td>
+<td>Full-text search (Currently only supported Django's <a href="https://docs.djangoproject.com/en/stable/ref/contrib/postgres/search/">PostgreSQL backend</a>).</td>
+</tr>
+<tr>
+<td>None</td>
+<td><code>icontains</code></td>
+<td>Contains search (Default).</td>
+</tr>
+</tbody>
+</table>
 <p>For example:</p>
 <pre><code>search_fields = ['=username', '=email']
 </code></pre>
@@ -718,7 +740,7 @@ class CustomSearchFilter(filters.SearchFilter):
 <h2 id="orderingfilter"><a class="toclink" href="#orderingfilter">OrderingFilter</a></h2>
 <p>The <code>OrderingFilter</code> class supports simple query parameter controlled ordering of results.</p>
 <p><img alt="Ordering Filter" src="../../img/ordering-filter.png" /></p>
-<p>By default, the query parameter is named <code>'ordering'</code>, but this may by overridden with the <code>ORDERING_PARAM</code> setting.</p>
+<p>By default, the query parameter is named <code>'ordering'</code>, but this may be overridden with the <code>ORDERING_PARAM</code> setting.</p>
 <p>For example, to order users by username:</p>
 <pre><code>http://example.com/api/users?ordering=username
 </code></pre>
@@ -729,7 +751,7 @@ class CustomSearchFilter(filters.SearchFilter):
 <pre><code>http://example.com/api/users?ordering=account,username
 </code></pre>
 <h3 id="specifying-which-fields-may-be-ordered-against"><a class="toclink" href="#specifying-which-fields-may-be-ordered-against">Specifying which fields may be ordered against</a></h3>
-<p>It's recommended that you explicitly specify which fields the API should allowing in the ordering filter.  You can do this by setting an <code>ordering_fields</code> attribute on the view, like so:</p>
+<p>It's recommended that you explicitly specify which fields the API should allow in the ordering filter.  You can do this by setting an <code>ordering_fields</code> attribute on the view, like so:</p>
 <pre><code>class UserListView(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -775,11 +797,6 @@ class CustomSearchFilter(filters.SearchFilter):
 <p>Generic filters may also present an interface in the browsable API. To do so you should implement a <code>to_html()</code> method which returns a rendered HTML representation of the filter. This method should have the following signature:</p>
 <p><code>to_html(self, request, queryset, view)</code></p>
 <p>The method should return a rendered HTML string.</p>
-<h2 id="filtering-schemas"><a class="toclink" href="#filtering-schemas">Filtering &amp; schemas</a></h2>
-<p>You can also make the filter controls available to the schema autogeneration
-that REST framework provides, by implementing a <code>get_schema_fields()</code> method. This method should have the following signature:</p>
-<p><code>get_schema_fields(self, view)</code></p>
-<p>The method should return a list of <code>coreapi.Field</code> instances.</p>
 <h1 id="third-party-packages"><a class="toclink" href="#third-party-packages">Third party packages</a></h1>
 <p>The following third party packages provide additional filter implementations.</p>
 <h2 id="django-rest-framework-filters-package"><a class="toclink" href="#django-rest-framework-filters-package">Django REST framework filters package</a></h2>

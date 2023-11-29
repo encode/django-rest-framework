@@ -239,10 +239,6 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/api-clients/">API Clients</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../topics/internationalization/">Internationalization</a>
                   </li>
                   
@@ -487,34 +483,36 @@ cd ..
 &lt;some path&gt;/tutorial
 $ find .
 .
-./manage.py
 ./tutorial
+./tutorial/asgi.py
 ./tutorial/__init__.py
 ./tutorial/quickstart
-./tutorial/quickstart/__init__.py
-./tutorial/quickstart/admin.py
-./tutorial/quickstart/apps.py
 ./tutorial/quickstart/migrations
 ./tutorial/quickstart/migrations/__init__.py
 ./tutorial/quickstart/models.py
+./tutorial/quickstart/__init__.py
+./tutorial/quickstart/apps.py
+./tutorial/quickstart/admin.py
 ./tutorial/quickstart/tests.py
 ./tutorial/quickstart/views.py
-./tutorial/asgi.py
 ./tutorial/settings.py
 ./tutorial/urls.py
 ./tutorial/wsgi.py
+./env
+./env/...
+./manage.py
 </code></pre>
 <p>It may look unusual that the application has been created within the project directory. Using the project's namespace avoids name clashes with external modules (a topic that goes outside the scope of the quickstart).</p>
 <p>Now sync your database for the first time:</p>
 <pre><code>python manage.py migrate
 </code></pre>
-<p>We'll also create an initial user named <code>admin</code> with a password of <code>password123</code>. We'll authenticate as that user later in our example.</p>
-<pre><code>python manage.py createsuperuser --email admin@example.com --username admin
+<p>We'll also create an initial user named <code>admin</code> with a password. We'll authenticate as that user later in our example.</p>
+<pre><code>python manage.py createsuperuser --username admin --email admin@example.com
 </code></pre>
 <p>Once you've set up a database and the initial user is created and ready to go, open up the app's directory and we'll get coding...</p>
 <h2 id="serializers"><a class="toclink" href="#serializers">Serializers</a></h2>
 <p>First up we're going to define some serializers. Let's create a new module named <code>tutorial/quickstart/serializers.py</code> that we'll use for our data representations.</p>
-<pre><code>from django.contrib.auth.models import User, Group
+<pre><code>from django.contrib.auth.models import Group, User
 from rest_framework import serializers
 
 
@@ -532,10 +530,10 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 <p>Notice that we're using hyperlinked relations in this case with <code>HyperlinkedModelSerializer</code>.  You can also use primary key and various other relationships, but hyperlinking is good RESTful design.</p>
 <h2 id="views"><a class="toclink" href="#views">Views</a></h2>
 <p>Right, we'd better write some views then.  Open <code>tutorial/quickstart/views.py</code> and get typing.</p>
-<pre><code>from django.contrib.auth.models import User, Group
-from rest_framework import viewsets
-from rest_framework import permissions
-from tutorial.quickstart.serializers import UserSerializer, GroupSerializer
+<pre><code>from django.contrib.auth.models import Group, User
+from rest_framework import permissions, viewsets
+
+from tutorial.quickstart.serializers import GroupSerializer, UserSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -561,6 +559,7 @@ class GroupViewSet(viewsets.ModelViewSet):
 <p>Okay, now let's wire up the API URLs.  On to <code>tutorial/urls.py</code>...</p>
 <pre><code>from django.urls import include, path
 from rest_framework import routers
+
 from tutorial.quickstart import views
 
 router = routers.DefaultRouter()
@@ -573,6 +572,8 @@ urlpatterns = [
     path('', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]
+
+urlpatterns += router.urls
 </code></pre>
 <p>Because we're using viewsets instead of views, we can automatically generate the URL conf for our API, by simply registering the viewsets with a router class.</p>
 <p>Again, if we need more control over the API URLs we can simply drop down to using regular class-based views, and writing the URL conf explicitly.</p>
@@ -598,9 +599,29 @@ urlpatterns = [
 <pre><code>python manage.py runserver
 </code></pre>
 <p>We can now access our API, both from the command-line, using tools like <code>curl</code>...</p>
-<pre><code>bash: curl -H 'Accept: application/json; indent=4' -u admin:password123 http://127.0.0.1:8000/users/
+<pre><code>bash: curl -u admin -H 'Accept: application/json; indent=4' http://127.0.0.1:8000/users/
+Enter host password for user 'admin':
 {
-    "count": 2,
+    "count": 1,
+    "next": null,
+    "previous": null,
+    "results": [
+        {
+            "url": "http://127.0.0.1:8000/users/1/",
+            "username": "admin",
+            "email": "admin@example.com",
+            "groups": []
+        }
+    ]
+}
+</code></pre>
+<p>Or using the <a href="https://httpie.io/docs#installation">httpie</a>, command line tool...</p>
+<pre><code>bash: http -a admin http://127.0.0.1:8000/users/
+http: password for admin@127.0.0.1:8000:: 
+$HTTP/1.1 200 OK
+...
+{
+    "count": 1,
     "next": null,
     "previous": null,
     "results": [
@@ -609,26 +630,7 @@ urlpatterns = [
             "groups": [],
             "url": "http://127.0.0.1:8000/users/1/",
             "username": "admin"
-        },
-    ]
-}
-</code></pre>
-<p>Or using the <a href="https://httpie.io/docs#installation">httpie</a>, command line tool...</p>
-<pre><code>bash: http -a admin:password123 http://127.0.0.1:8000/users/
-
-HTTP/1.1 200 OK
-...
-{
-    "count": 2,
-    "next": null,
-    "previous": null,
-    "results": [
-        {
-            "email": "admin@example.com",
-            "groups": [],
-            "url": "http://localhost:8000/users/1/",
-            "username": "paul"
-        },
+        }
     ]
 }
 </code></pre>

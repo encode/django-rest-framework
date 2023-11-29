@@ -239,10 +239,6 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/api-clients/">API Clients</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../topics/internationalization/">Internationalization</a>
                   </li>
                   
@@ -643,6 +639,7 @@
 <li>Fix <code>PrimaryKeyRelatedField</code> and <code>HyperlinkedRelatedField</code> when source field is actually a property. [#7142]</li>
 <li><code>Token.generate_key</code> is now a class method. [#7502]</li>
 <li><code>@action</code> warns if method is wrapped in a decorator that does not preserve information using <code>@functools.wraps</code>. [#7098]</li>
+<li>Deprecate <code>serializers.NullBooleanField</code> in favour of <code>serializers.BooleanField</code> with <code>allow_null=True</code> [#7122]</li>
 </ul>
 <hr />
 <h2 id="311x-series"><a class="toclink" href="#311x-series">3.11.x series</a></h2>
@@ -772,7 +769,11 @@ Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.</
   class NullableCharField(serializers.CharField):
       def __init__(self, *args, **kwargs):
           super().__init__(*args, **kwargs)
-          self.validators = [v for v in self.validators if not isinstance(v, ProhibitNullCharactersValidator)]</code></li>
+          self.validators = [
+              v
+              for v in self.validators
+              if not isinstance(v, ProhibitNullCharactersValidator)
+          ]</code></li>
 <li>Add <code>OpenAPIRenderer</code> and <code>generate_schema</code> management command. <a href="https://github.com/encode/django-rest-framework/issues/6229">#6229</a></li>
 <li>Add OpenAPIRenderer by default, and add schema docs. <a href="https://github.com/encode/django-rest-framework/issues/6233">#6233</a></li>
 <li>Allow permissions to be composed <a href="https://github.com/encode/django-rest-framework/issues/5753">#5753</a></li>

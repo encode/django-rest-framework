@@ -239,10 +239,6 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/api-clients/">API Clients</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../topics/internationalization/">Internationalization</a>
                   </li>
                   
@@ -745,7 +741,7 @@ class Track(models.Model):
 <li><code>allow_null</code> - If set to <code>True</code>, the field will accept values of <code>None</code> or the empty string for nullable relationships. Defaults to <code>False</code>.</li>
 </ul>
 <h2 id="hyperlinkedidentityfield"><a class="toclink" href="#hyperlinkedidentityfield">HyperlinkedIdentityField</a></h2>
-<p>This field can be applied as an identity relationship, such as the <code>'url'</code> field on  a HyperlinkedModelSerializer.  It can also be used for an attribute on the object.  For example, the following serializer:</p>
+<p>This field can be applied as an identity relationship, such as the <code>'url'</code> field on a HyperlinkedModelSerializer.  It can also be used for an attribute on the object.  For example, the following serializer:</p>
 <pre><code>class AlbumSerializer(serializers.HyperlinkedModelSerializer):
     track_listing = serializers.HyperlinkedIdentityField(view_name='track-list')
 
@@ -772,7 +768,7 @@ class Track(models.Model):
 <h1 id="nested-relationships"><a class="toclink" href="#nested-relationships">Nested relationships</a></h1>
 <p>As opposed to previously discussed <em>references</em> to another entity, the referred entity can instead also be embedded or <em>nested</em>
 in the representation of the object that refers to it.
-Such nested relationships can be expressed by using serializers as fields. </p>
+Such nested relationships can be expressed by using serializers as fields.</p>
 <p>If the field is used to represent a to-many relationship, you should add the <code>many=True</code> flag to the serializer field.</p>
 <h2 id="example"><a class="toclink" href="#example">Example</a></h2>
 <p>For example, the following serializer:</p>

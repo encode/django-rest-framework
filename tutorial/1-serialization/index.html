@@ -239,10 +239,6 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/api-clients/">API Clients</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../topics/internationalization/">Internationalization</a>
                   </li>
                   
@@ -618,7 +614,7 @@ serializer.data
 # [OrderedDict([('id', 1), ('title', ''), ('code', 'foo = "bar"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('id', 2), ('title', ''), ('code', 'print("hello, world")\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('id', 3), ('title', ''), ('code', 'print("hello, world")'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])]
 </code></pre>
 <h2 id="using-modelserializers"><a class="toclink" href="#using-modelserializers">Using ModelSerializers</a></h2>
-<p>Our <code>SnippetSerializer</code> class is replicating a lot of information that's also contained in the <code>Snippet</code> model.  It would be nice if we could keep our code a bit  more concise.</p>
+<p>Our <code>SnippetSerializer</code> class is replicating a lot of information that's also contained in the <code>Snippet</code> model.  It would be nice if we could keep our code a bit more concise.</p>
 <p>In the same way that Django provides both <code>Form</code> classes and <code>ModelForm</code> classes, REST framework includes both <code>Serializer</code> classes, and <code>ModelSerializer</code> classes.</p>
 <p>Let's look at refactoring our serializer using the <code>ModelSerializer</code> class.
 Open the file <code>snippets/serializers.py</code> again, and replace the <code>SnippetSerializer</code> class with the following.</p>
@@ -729,7 +725,7 @@ urlpatterns = [
 Validating models...
 
 0 errors found
-Django version 4.0,1 using settings 'tutorial.settings'
+Django version 4.0, using settings 'tutorial.settings'
 Starting Development server at http://127.0.0.1:8000/
 Quit the server with CONTROL-C.
 </code></pre>

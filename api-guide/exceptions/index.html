@@ -239,10 +239,6 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/api-clients/">API Clients</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../topics/internationalization/">Internationalization</a>
                   </li>
                   
@@ -595,7 +591,7 @@ def custom_exception_handler(exc, context):
 <h2 id="apiexception"><a class="toclink" href="#apiexception">APIException</a></h2>
 <p><strong>Signature:</strong> <code>APIException()</code></p>
 <p>The <strong>base class</strong> for all exceptions raised inside an <code>APIView</code> class or <code>@api_view</code>.</p>
-<p>To provide a custom exception, subclass <code>APIException</code> and set the <code>.status_code</code>, <code>.default_detail</code>, and <code>default_code</code> attributes on the class.</p>
+<p>To provide a custom exception, subclass <code>APIException</code> and set the <code>.status_code</code>, <code>.default_detail</code>, and <code>.default_code</code> attributes on the class.</p>
 <p>For example, if your API relies on a third party service that may sometimes be unreachable, you might want to implement an exception for the "503 Service Unavailable" HTTP response code.  You could do this like so:</p>
 <pre><code>from rest_framework.exceptions import APIException
 
@@ -649,7 +645,7 @@ dictionary of items:</p>
 <p>By default this exception results in a response with the HTTP status code "403 Forbidden".</p>
 <h2 id="notfound"><a class="toclink" href="#notfound">NotFound</a></h2>
 <p><strong>Signature:</strong> <code>NotFound(detail=None, code=None)</code></p>
-<p>Raised when a resource does not exists at the given URL. This exception is equivalent to the standard <code>Http404</code> Django exception.</p>
+<p>Raised when a resource does not exist at the given URL. This exception is equivalent to the standard <code>Http404</code> Django exception.</p>
 <p>By default this exception results in a response with the HTTP status code "404 Not Found".</p>
 <h2 id="methodnotallowed"><a class="toclink" href="#methodnotallowed">MethodNotAllowed</a></h2>
 <p><strong>Signature:</strong> <code>MethodNotAllowed(method, detail=None, code=None)</code></p>
@@ -668,10 +664,9 @@ dictionary of items:</p>
 <p>Raised when an incoming request fails the throttling checks.</p>
 <p>By default this exception results in a response with the HTTP status code "429 Too Many Requests".</p>
 <h2 id="validationerror"><a class="toclink" href="#validationerror">ValidationError</a></h2>
-<p><strong>Signature:</strong> <code>ValidationError(detail, code=None)</code></p>
+<p><strong>Signature:</strong> <code>ValidationError(detail=None, code=None)</code></p>
 <p>The <code>ValidationError</code> exception is slightly different from the other <code>APIException</code> classes:</p>
 <ul>
-<li>The <code>detail</code> argument is mandatory, not optional.</li>
 <li>The <code>detail</code> argument may be a list or dictionary of error details, and may also be a nested data structure. By using a dictionary, you can specify field-level errors while performing object-level validation in the <code>validate()</code> method of a serializer. For example. <code>raise serializers.ValidationError({'name': 'Please enter a valid name.'})</code></li>
 <li>By convention you should import the serializers module and use a fully qualified <code>ValidationError</code> style, in order to differentiate it from Django's built-in validation error. For example. <code>raise serializers.ValidationError('This field must be an integer value.')</code></li>
 </ul>

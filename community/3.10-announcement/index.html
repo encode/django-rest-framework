@@ -239,10 +239,6 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/api-clients/">API Clients</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../topics/internationalization/">Internationalization</a>
                   </li>
                   
@@ -486,8 +482,8 @@
 update your REST framework settings to include <code>DEFAULT_SCHEMA_CLASS</code> explicitly.</p>
 <p><strong>settings.py</strong>:</p>
 <pre><code class="language-python">REST_FRAMEWORK = {
-  ...
-  'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
+    ...: ...,
+    &quot;DEFAULT_SCHEMA_CLASS&quot;: &quot;rest_framework.schemas.coreapi.AutoSchema&quot;,
 }
 </code></pre>
 <p>You'll still be able to keep using CoreAPI schemas, API docs, and client for the
@@ -495,7 +491,7 @@ foreseeable future. We'll aim to ensure that the CoreAPI schema generator remain
 available as a third party package, even once it has eventually been removed
 from REST framework, scheduled for version 3.12.</p>
 <p>We have removed the old documentation for the CoreAPI based schema generation.
-You may view the <a href="https://github.com/encode/django-rest-framework/blob/master/docs/coreapi/index.md">Legacy CoreAPI documentation here</a>.</p>
+You may view the <a href="https://github.com/encode/django-rest-framework/blob/3.14.0/docs/coreapi/index.md">Legacy CoreAPI documentation here</a>.</p>
 <hr />
 <h2 id="openapi-quickstart"><a class="toclink" href="#openapi-quickstart">OpenAPI Quickstart</a></h2>
 <p>You can generate a static OpenAPI schema, using the <code>generateschema</code> management
@@ -510,10 +506,11 @@ urlpatterns = [
     # Use the `get_schema_view()` helper to add a `SchemaView` to project URLs.
     #   * `title` and `description` parameters are passed to `SchemaGenerator`.
     #   * Provide view name for use with `reverse()`.
-    path('openapi', get_schema_view(
-        title=&quot;Your Project&quot;,
-        description=&quot;API for all things …&quot;
-    ), name='openapi-schema'),
+    path(
+        &quot;openapi&quot;,
+        get_schema_view(title=&quot;Your Project&quot;, description=&quot;API for all things …&quot;),
+        name=&quot;openapi-schema&quot;,
+    ),
     # ...
 ]
 </code></pre>

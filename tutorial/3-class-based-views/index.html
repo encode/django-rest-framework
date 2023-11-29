@@ -239,10 +239,6 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/api-clients/">API Clients</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../topics/internationalization/">Internationalization</a>
                   </li>
                   
@@ -516,8 +512,8 @@ urlpatterns = format_suffix_patterns(urlpatterns)
 </code></pre>
 <p>Okay, we're done.  If you run the development server everything should be working just as before.</p>
 <h2 id="using-mixins"><a class="toclink" href="#using-mixins">Using mixins</a></h2>
-<p>One of the big wins of using class-based views is that it allows us to easily compose reusable bits of behaviour.</p>
-<p>The create/retrieve/update/delete operations that we've been using so far are going to be pretty similar for any model-backed API views we create.  Those bits of common behaviour are implemented in REST framework's mixin classes.</p>
+<p>One of the big wins of using class-based views is that it allows us to easily compose reusable bits of behavior.</p>
+<p>The create/retrieve/update/delete operations that we've been using so far are going to be pretty similar for any model-backed API views we create.  Those bits of common behavior are implemented in REST framework's mixin classes.</p>
 <p>Let's take a look at how we can compose the views by using the mixin classes.  Here's our <code>views.py</code> module again.</p>
 <pre><code>from snippets.models import Snippet
 from snippets.serializers import SnippetSerializer

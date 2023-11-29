@@ -239,10 +239,6 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/api-clients/">API Clients</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../topics/internationalization/">Internationalization</a>
                   </li>
                   
@@ -519,15 +515,12 @@ from rest_framework.renderers import JSONOpenAPIRenderer
 from django.urls import path
 
 schema_view = get_schema_view(
-    title='Server Monitoring API',
-    url='https://www.example.org/api/',
-    renderer_classes=[JSONOpenAPIRenderer]
+    title=&quot;Server Monitoring API&quot;,
+    url=&quot;https://www.example.org/api/&quot;,
+    renderer_classes=[JSONOpenAPIRenderer],
 )
 
-urlpatterns = [
-    path('schema.json', schema_view),
-    ...
-]
+urlpatterns = [path(&quot;schema.json&quot;, schema_view), ...]
 </code></pre>
 <p>And here's how you can use the <code>generateschema</code> management command:</p>
 <pre><code class="language-shell">$ python manage.py generateschema --format openapi &gt; schema.yml

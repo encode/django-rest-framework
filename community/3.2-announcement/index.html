@@ -239,10 +239,6 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/api-clients/">API Clients</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../topics/internationalization/">Internationalization</a>
                   </li>
                   
@@ -498,7 +494,7 @@
 <p>There are a couple of bug fixes that are worth calling out as they introduce differing behavior.</p>
 <p>These are a little subtle and probably won't affect most users, but are worth understanding before upgrading your project.</p>
 <h3 id="manytomany-fields-and-blanktrue"><a class="toclink" href="#manytomany-fields-and-blanktrue">ManyToMany fields and blank=True</a></h3>
-<p>We've now added an <code>allow_empty</code> argument, which can be used with <code>ListSerializer</code>, or with  <code>many=True</code> relationships. This is <code>True</code> by default, but can be set to <code>False</code> if you want to disallow empty lists as valid input.</p>
+<p>We've now added an <code>allow_empty</code> argument, which can be used with <code>ListSerializer</code>, or with <code>many=True</code> relationships. This is <code>True</code> by default, but can be set to <code>False</code> if you want to disallow empty lists as valid input.</p>
 <p>As a follow-up to this we are now able to properly mirror the behavior of Django's <code>ModelForm</code> with respect to how many-to-many fields are validated.</p>
 <p>Previously a many-to-many field on a model would map to a serializer field that would allow either empty or non-empty list inputs. Now, a many-to-many field will map to a serializer field that requires at least one input, unless the model field has <code>blank=True</code> set.</p>
 <p>Here's what the mapping looks like in practice:</p>

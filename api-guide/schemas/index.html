@@ -239,10 +239,6 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/api-clients/">API Clients</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../topics/internationalization/">Internationalization</a>
                   </li>
                   
@@ -459,6 +455,18 @@
 <p>A machine-readable [schema] describes what resources are available via the API, what their URLs are, how they are represented and what operations they support.</p>
 <p>&mdash; Heroku, <a href="https://blog.heroku.com/archives/2014/1/8/json_schema_for_heroku_platform_api">JSON Schema for the Heroku Platform API</a></p>
 </blockquote>
+<hr />
+<p><strong>Deprecation notice:</strong></p>
+<p>REST framework's built-in support for generating OpenAPI schemas is
+<strong>deprecated</strong> in favor of 3rd party packages that can provide this
+functionality instead. The built-in support will be moved into a separate
+package and then subsequently retired over the next releases.</p>
+<p>As a full-fledged replacement, we recommend the <a href="https://drf-spectacular.readthedocs.io/en/latest/readme.html">drf-spectacular</a> package.
+It has extensive support for generating OpenAPI 3 schemas from
+REST framework APIs, with both automatic and customisable options available.
+For further information please refer to
+<a href="../../topics/documenting-your-api/#drf-spectacular">Documenting your API</a>.</p>
+<hr />
 <p>API schemas are a useful tool that allow for a range of use cases, including
 generating reference documentation, or driving dynamic client libraries that
 can interact with your API.</p>
@@ -511,11 +519,13 @@ urlpatterns = [
     # Use the `get_schema_view()` helper to add a `SchemaView` to project URLs.
     #   * `title` and `description` parameters are passed to `SchemaGenerator`.
     #   * Provide view name for use with `reverse()`.
-    path('openapi', get_schema_view(
-        title=&quot;Your Project&quot;,
-        description=&quot;API for all things …&quot;,
-        version=&quot;1.0.0&quot;
-    ), name='openapi-schema'),
+    path(
+        &quot;openapi&quot;,
+        get_schema_view(
+            title=&quot;Your Project&quot;, description=&quot;API for all things …&quot;, version=&quot;1.0.0&quot;
+        ),
+        name=&quot;openapi-schema&quot;,
+    ),
     # ...
 ]
 </code></pre>
@@ -557,6 +567,9 @@ schema_view = get_schema_view(
     patterns=schema_url_patterns,
 )
 </code></pre>
+<ul>
+<li><code>public</code>: May be used to specify if schema should bypass views permissions. Default to False</li>
+</ul>
 </li>
 <li>
 <p><code>generator_class</code>: May be used to specify a <code>SchemaGenerator</code> subclass to be
@@ -650,11 +663,13 @@ be tempted to do something like this:</p>
     &quot;&quot;&quot;
     AutoSchema subclass using schema_extra_info on the view.
     &quot;&quot;&quot;
+
     ...
+
 
 class CustomView(APIView):
     schema = CustomSchema()
-    schema_extra_info = ... some extra info ...
+    schema_extra_info = ...  # some extra info
 </code></pre>
 <p>Here, the <code>AutoSchema</code> subclass goes looking for <code>schema_extra_info</code> on the
 view. This is <em>OK</em> (it doesn't actually hurt) but it means you'll end up with
@@ -665,10 +680,13 @@ out into the view:</p>
     &quot;&quot;&quot;
     AutoSchema subclass that knows how to use extra_info.
     &quot;&quot;&quot;
+
     ...
 
+
 class CustomSchema(BaseSchema):
-    extra_info = ... some extra info ...
+    extra_info = ...  # some extra info
+
 
 class CustomView(APIView):
     schema = CustomSchema()
@@ -685,18 +703,17 @@ option as an <code>__init__()</code> kwarg to your base <code>AutoSchema</code> 
         self.extra_info = kwargs.pop(&quot;extra_info&quot;)
         super().__init__(**kwargs)
 
+
 class CustomView(APIView):
-    schema = CustomSchema(
-        extra_info=... some extra info ...
-    )
+    schema = CustomSchema(extra_info=...)  # some extra info
 </code></pre>
 <p>This saves you having to create a custom subclass per-view for a commonly used option.</p>
-<p>Not all <code>AutoSchema</code> methods expose related  <code>__init__()</code> kwargs, but those for
+<p>Not all <code>AutoSchema</code> methods expose related <code>__init__()</code> kwargs, but those for
 the more commonly needed options do.</p>
 <h3 id="autoschema-methods"><a class="toclink" href="#autoschema-methods"><code>AutoSchema</code> methods</a></h3>
 <h4 id="get_components"><a class="toclink" href="#get_components"><code>get_components()</code></a></h4>
 <p>Generates the OpenAPI components that describe request and response bodies,
-deriving  their properties from the serializer.</p>
+deriving their properties from the serializer.</p>
 <p>Returns a dictionary mapping the component name to the generated
 representation. By default this has just a single pair but you may override
 <code>get_components()</code> to return multiple pairs if your view uses multiple

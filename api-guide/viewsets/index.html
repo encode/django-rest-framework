@@ -239,10 +239,6 @@
                   </li>
                   
                   <li >
-                    <a href="../../topics/api-clients/">API Clients</a>
-                  </li>
-                  
-                  <li >
                     <a href="../../topics/internationalization/">Internationalization</a>
                   </li>
                   
@@ -587,7 +583,7 @@ urlpatterns = router.urls
 <li><code>name</code> - the display name for the viewset. This argument is mutually exclusive to <code>suffix</code>.</li>
 <li><code>description</code> - the display description for the individual view of a viewset.</li>
 </ul>
-<p>You may inspect these attributes to adjust behaviour based on the current action. For example, you could restrict permissions to everything except the <code>list</code> action similar to this:</p>
+<p>You may inspect these attributes to adjust behavior based on the current action. For example, you could restrict permissions to everything except the <code>list</code> action similar to this:</p>
 <pre><code>def get_permissions(self):
     """
     Instantiates and returns the list of permissions that this view requires.
@@ -643,6 +639,13 @@ class UserViewSet(viewsets.ModelViewSet):
     def unset_password(self, request, pk=None):
        ...
 </code></pre>
+<p>Argument <code>methods</code> also supports HTTP methods defined as <a href="https://docs.python.org/3/library/http.html#http.HTTPMethod">HTTPMethod</a>. Example below is identical to the one above: </p>
+<pre><code>    from http import HTTPMethod
+
+    @action(detail=True, methods=[HTTPMethod.POST, HTTPMethod.DELETE])
+    def unset_password(self, request, pk=None):
+       ...
+</code></pre>
 <p>The decorator allows you to override any viewset-level configuration such as <code>permission_classes</code>, <code>serializer_class</code>, <code>filter_backends</code>...:</p>
 <pre><code>    @action(detail=True, methods=['post'], permission_classes=[IsAdminOrIsSelf])
     def set_password(self, request, pk=None):
@@ -652,25 +655,26 @@ class UserViewSet(viewsets.ModelViewSet):
 <p>To view all extra actions, call the <code>.get_extra_actions()</code> method.</p>
 <h3 id="routing-additional-http-methods-for-extra-actions"><a class="toclink" href="#routing-additional-http-methods-for-extra-actions">Routing additional HTTP methods for extra actions</a></h3>
 <p>Extra actions can map additional HTTP methods to separate <code>ViewSet</code> methods. For example, the above password set/unset methods could be consolidated into a single route. Note that additional mappings do not accept arguments.</p>
-<pre><code class="language-python">    @action(detail=True, methods=['put'], name='Change Password')
-    def password(self, request, pk=None):
-        &quot;&quot;&quot;Update the user's password.&quot;&quot;&quot;
-        ...
+<pre><code class="language-python">@action(detail=True, methods=[&quot;put&quot;], name=&quot;Change Password&quot;)
+def password(self, request, pk=None):
+    &quot;&quot;&quot;Update the user's password.&quot;&quot;&quot;
+    ...
 
-    @password.mapping.delete
-    def delete_password(self, request, pk=None):
-        &quot;&quot;&quot;Delete the user's password.&quot;&quot;&quot;
-        ...
+
+@password.mapping.delete
+def delete_password(self, request, pk=None):
+    &quot;&quot;&quot;Delete the user's password.&quot;&quot;&quot;
+    ...
 </code></pre>
 <h2 id="reversing-action-urls"><a class="toclink" href="#reversing-action-urls">Reversing action URLs</a></h2>
 <p>If you need to get the URL of an action, use the <code>.reverse_action()</code> method. This is a convenience wrapper for <code>reverse()</code>, automatically passing the view's <code>request</code> object and prepending the <code>url_name</code> with the <code>.basename</code> attribute.</p>
 <p>Note that the <code>basename</code> is provided by the router during <code>ViewSet</code> registration. If you are not using a router, then you must provide the <code>basename</code> argument to the <code>.as_view()</code> method.</p>
 <p>Using the example from the previous section:</p>
-<pre><code class="language-python">&gt;&gt;&gt; view.reverse_action('set-password', args=['1'])
+<pre><code class="language-pycon">&gt;&gt;&gt; view.reverse_action(&quot;set-password&quot;, args=[&quot;1&quot;])
 'http://localhost:8000/api/users/1/set_password'
 </code></pre>
 <p>Alternatively, you can use the <code>url_name</code> attribute set by the <code>@action</code> decorator.</p>
-<pre><code class="language-python">&gt;&gt;&gt; view.reverse_action(view.set_password.url_name, args=['1'])
+<pre><code class="language-pycon">&gt;&gt;&gt; view.reverse_action(view.set_password.url_name, args=['1'])
 'http://localhost:8000/api/users/1/set_password'
 </code></pre>
 <p>The <code>url_name</code> argument for <code>.reverse_action()</code> should match the same argument to the <code>@action</code> decorator. Additionally, this method can be used to reverse the default actions, such as <code>list</code> and <code>create</code>.</p>
@@ -684,7 +688,7 @@ class UserViewSet(viewsets.ModelViewSet):
 <p>In order to use a <code>GenericViewSet</code> class you'll override the class and either mixin the required mixin classes, or define the action implementations explicitly.</p>
 <h2 id="modelviewset"><a class="toclink" href="#modelviewset">ModelViewSet</a></h2>
 <p>The <code>ModelViewSet</code> class inherits from <code>GenericAPIView</code> and includes implementations for various actions, by mixing in the behavior of the various mixin classes.</p>
-<p>The actions provided by the <code>ModelViewSet</code> class are <code>.list()</code>, <code>.retrieve()</code>,  <code>.create()</code>, <code>.update()</code>, <code>.partial_update()</code>, and <code>.destroy()</code>.</p>
+<p>The actions provided by the <code>ModelViewSet</code> class are <code>.list()</code>, <code>.retrieve()</code>, <code>.create()</code>, <code>.update()</code>, <code>.partial_update()</code>, and <code>.destroy()</code>.</p>
 <h4 id="example_1"><a class="toclink" href="#example_1">Example</a></h4>
 <p>Because <code>ModelViewSet</code> extends <code>GenericAPIView</code>, you'll normally need to provide at least the <code>queryset</code> and <code>serializer_class</code> attributes.  For example:</p>
 <pre><code>class AccountViewSet(viewsets.ModelViewSet):
