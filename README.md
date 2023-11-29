@@ -27,8 +27,9 @@ The initial aim is to provide a single full-time position on REST framework.
 [![][posthog-img]][posthog-url]
 [![][cryptapi-img]][cryptapi-url]
 [![][fezto-img]][fezto-url]
+[![][svix-img]][svix-url]
 
-Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Sentry][sentry-url], [Stream][stream-url], [Spacinov][spacinov-url], [Retool][retool-url], [bit.io][bitio-url], [PostHog][posthog-url], [CryptAPI][cryptapi-url], and [FEZTO][fezto-url].
+Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Sentry][sentry-url], [Stream][stream-url], [Spacinov][spacinov-url], [Retool][retool-url], [bit.io][bitio-url], [PostHog][posthog-url], [CryptAPI][cryptapi-url], [FEZTO][fezto-url], and [Svix][svix-url].
 
 ---
 
@@ -200,6 +201,7 @@ Please see the [security policy][security-policy].
 [posthog-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/posthog-readme.png
 [cryptapi-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/cryptapi-readme.png
 [fezto-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/fezto-readme.png
+[svix-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/svix-readme.png
 
 [sentry-url]: https://getsentry.com/welcome/
 [stream-url]: https://getstream.io/?utm_source=DjangoRESTFramework&utm_medium=Webpage_Logo_Ad&utm_content=Developer&utm_campaign=DjangoRESTFramework_Jan2022_HomePage
@@ -209,6 +211,7 @@ Please see the [security policy][security-policy].
 [posthog-url]: https://posthog.com?utm_source=drf&utm_medium=sponsorship&utm_campaign=open-source-sponsorship
 [cryptapi-url]: https://cryptapi.io
 [fezto-url]: https://www.fezto.xyz/?utm_source=DjangoRESTFramework
+[svix-url]: https://www.svix.com/?utm_source=django-REST&utm_medium=sponsorship
 
 [oauth1-section]: https://www.django-rest-framework.org/api-guide/authentication/#django-rest-framework-oauth
 [oauth2-section]: https://www.django-rest-framework.org/api-guide/authentication/#django-oauth-toolkit
