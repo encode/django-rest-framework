@@ -262,8 +262,12 @@ class CreateOnlyDefault:
 
 class CurrentUserDefault:
     requires_context = True
+    def __init__(self, nullIfNotAuthed = False):
+        self.nullIfNotAuthed = nullIfNotAuthed
 
     def __call__(self, serializer_field):
+        if self.nullIfNotAuthed and not serializer_field.context['request'].user.is_authenticated:
+            return None
         return serializer_field.context['request'].user
 
     def __repr__(self):
