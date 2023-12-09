@@ -104,6 +104,15 @@ class GenericAPIView(views.APIView):
 
         return obj
 
+    def get_ordering(self, request, queryset):
+        """
+        Returns the default ordering defined on the view.
+
+        You may want to override this if you wish the default ordering to be dependent
+        on the request.
+        """
+        return getattr(self, "ordering", None)
+
     def get_serializer(self, *args, **kwargs):
         """
         Return the serializer instance that should be used for validating and

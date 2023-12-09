@@ -609,6 +609,13 @@ class TestLimitOffset:
         }
 
 
+class GenericOrderedMockView:
+    filter_backends = (filters.OrderingFilter,)
+
+    def get_ordering(self, *args, **kwargs):
+        return getattr(self, 'ordering', None)
+
+
 class CursorPaginationTestsMixin:
 
     def test_invalid_cursor(self):
@@ -617,8 +624,7 @@ class CursorPaginationTestsMixin:
             self.pagination.paginate_queryset(self.queryset, request)
 
     def test_use_with_ordering_filter(self):
-        class MockView:
-            filter_backends = (filters.OrderingFilter,)
+        class MockView(GenericOrderedMockView):
             ordering_fields = ['username', 'created']
             ordering = 'created'
 
@@ -635,8 +641,7 @@ class CursorPaginationTestsMixin:
         assert ordering == ('created',)
 
     def test_use_with_ordering_filter_without_ordering_default_value(self):
-        class MockView:
-            filter_backends = (filters.OrderingFilter,)
+        class MockView(GenericOrderedMockView):
             ordering_fields = ['username', 'created']
 
         request = Request(factory.get('/'))
