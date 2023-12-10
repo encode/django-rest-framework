@@ -9,6 +9,7 @@ import re
 import uuid
 from collections.abc import Mapping
 from enum import Enum
+from sys import version_info
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -866,7 +867,9 @@ class IPAddressField(CharField):
         self.protocol = protocol.lower()
         self.unpack_ipv4 = (self.protocol == 'both')
         super().__init__(**kwargs)
-        validators, error_message = ip_address_validators(protocol, self.unpack_ipv4)
+        validators = ip_address_validators(protocol, self.unpack_ipv4)
+        if version_info < (3, 12):  # encode/django-rest-framework#9180
+            validators = validators[0]  # Used to return a tuple: validators, error_message
         self.validators.extend(validators)
 
     def to_internal_value(self, data):
