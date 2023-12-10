@@ -5,7 +5,7 @@ Django has always lived up to it's tagline, The web framework for perfectionists
 DRF has been facilitating this even more with it's amazing serializers, viewsets, filters, validators, routers and so on...
 
 ---
-### Here are a few grapples with django we're aiming to address
+### Here are a few challenges with django we're aiming to address
 
 - One issue with django is that since it's designed as an all-encompassing web framework, designed before the advent of microservices, it comes with a lot of bloat that's not needed
 for api services. 
