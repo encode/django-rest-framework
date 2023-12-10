@@ -20,11 +20,12 @@ jobs:
         - '3.9'
         - '3.10'
         - '3.11'
+        - '3.12'
 
     steps:
     - uses: actions/checkout@v4
 
-    - uses: actions/setup-python@v4
+    - uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
         cache: 'pip'
@@ -49,7 +50,7 @@ jobs:
       run: tox --py current
 
     - name: Run extra tox targets
-      if: ${{ matrix.python-version == '3.9' }}
+      if: ${{ matrix.python-version == '3.x' }}
       run: |
         tox -e base,dist,docs
 
@@ -61,11 +62,11 @@ jobs:
     name: Test documentation links
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
-    - uses: actions/setup-python@v4
+    - uses: actions/setup-python@v5
       with:
-        python-version: '3.9'
+        python-version: '3.x'
 
     - name: Install dependencies
       run: pip install -r requirements/requirements-documentation.txt
