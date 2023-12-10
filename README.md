@@ -46,4 +46,4 @@ Install using `pip`...  **TBD**
 
 # Contribution
 
-*Any and every contribution is welcome ☻*
+*Any and every contribution is welcome 😊*
