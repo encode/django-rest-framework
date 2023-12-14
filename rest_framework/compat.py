@@ -169,14 +169,14 @@ else:
         }
 
 
-if django.VERSION >= (5, 0):
-    # Django 5.0+: use the stock ip_address_validators function
-    # Note: Before Django 5.0, ip_address_validators returns a tuple containing
+if django.VERSION >= (5, 1):
+    # Django 5.1+: use the stock ip_address_validators function
+    # Note: Before Django 5.1, ip_address_validators returns a tuple containing
     #       1) the list of validators and 2) the error message. Starting from
-    #       Django 5.0 ip_address_validators only returns the list of validators
+    #       Django 5.1 ip_address_validators only returns the list of validators
     from django.core.validators import ip_address_validators
 else:
-    # Django <= 5.0: create a compatibility shim for ip_address_validators
+    # Django <= 5.1: create a compatibility shim for ip_address_validators
     from django.core.validators import \
         ip_address_validators as _ip_address_validators
 
