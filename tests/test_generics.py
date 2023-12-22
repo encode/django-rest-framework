@@ -6,8 +6,9 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.test import TestCase
 
-from rest_framework import generics, renderers, serializers, status
+from rest_framework import generics, mixins, renderers, serializers, status
 from rest_framework.exceptions import ErrorDetail
+from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.test import APIRequestFactory
 from tests.models import (
@@ -61,6 +62,22 @@ class RootView(generics.ListCreateAPIView):
 class InstanceView(generics.RetrieveUpdateDestroyAPIView):
     queryset = BasicModel.objects.exclude(text='filtered out')
     serializer_class = BasicSerializer
+
+
+class PatchOnlyInstanceView(mixins.PartialUpdateModelMixin, GenericAPIView):
+    queryset = BasicModel.objects.exclude(text='filtered out')
+    serializer_class = BasicSerializer
+
+    def patch(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
+
+
+class PutOnlyInstanceView(mixins.FullUpdateModelMixin, GenericAPIView):
+    queryset = BasicModel.objects.exclude(text='filtered out')
+    serializer_class = BasicSerializer
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
 
 
 class FKInstanceView(generics.RetrieveUpdateDestroyAPIView):
@@ -188,6 +205,8 @@ class TestInstanceView(TestCase):
         ]
         self.view = InstanceView.as_view()
         self.slug_based_view = SlugBasedInstanceView.as_view()
+        self.patch_only_view = PatchOnlyInstanceView.as_view()
+        self.put_only_view = PutOnlyInstanceView.as_view()
 
     def test_get_instance_view(self):
         """
@@ -214,28 +233,30 @@ class TestInstanceView(TestCase):
         """
         PUT requests to RetrieveUpdateDestroyAPIView should update an object.
         """
-        data = {'text': 'foobar'}
-        request = factory.put('/1', data, format='json')
-        with self.assertNumQueries(EXPECTED_QUERIES_FOR_PUT):
-            response = self.view(request, pk='1').render()
-        assert response.status_code == status.HTTP_200_OK
-        assert dict(response.data) == {'id': 1, 'text': 'foobar'}
-        updated = self.objects.get(id=1)
-        assert updated.text == 'foobar'
+        for view in (self.view, self.put_only_view):
+            data = {'text': 'foobar'}
+            request = factory.put('/1', data, format='json')
+            with self.assertNumQueries(EXPECTED_QUERIES_FOR_PUT):
+                response = view(request, pk='1').render()
+            assert response.status_code == status.HTTP_200_OK
+            assert dict(response.data) == {'id': 1, 'text': 'foobar'}
+            updated = self.objects.get(id=1)
+            assert updated.text == 'foobar'
 
     def test_patch_instance_view(self):
         """
         PATCH requests to RetrieveUpdateDestroyAPIView should update an object.
         """
-        data = {'text': 'foobar'}
-        request = factory.patch('/1', data, format='json')
+        for view in (self.view, self.patch_only_view):
+            data = {'text': 'foobar'}
+            request = factory.patch('/1', data, format='json')
 
-        with self.assertNumQueries(EXPECTED_QUERIES_FOR_PUT):
-            response = self.view(request, pk=1).render()
-        assert response.status_code == status.HTTP_200_OK
-        assert response.data == {'id': 1, 'text': 'foobar'}
-        updated = self.objects.get(id=1)
-        assert updated.text == 'foobar'
+            with self.assertNumQueries(EXPECTED_QUERIES_FOR_PUT):
+                response = view(request, pk=1).render()
+            assert response.status_code == status.HTTP_200_OK
+            assert response.data == {'id': 1, 'text': 'foobar'}
+            updated = self.objects.get(id=1)
+            assert updated.text == 'foobar'
 
     def test_delete_instance_view(self):
         """

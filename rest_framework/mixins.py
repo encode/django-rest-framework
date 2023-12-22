@@ -58,11 +58,8 @@ class RetrieveModelMixin:
         return Response(serializer.data)
 
 
-class UpdateModelMixin:
-    """
-    Update a model instance.
-    """
-    def update(self, request, *args, **kwargs):
+class BaseUpdateModelMixin:
+    def get_update_response(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
@@ -82,6 +79,29 @@ class UpdateModelMixin:
     def perform_update(self, serializer):
         serializer.save()
 
+
+class FullUpdateModelMixin(BaseUpdateModelMixin):
+    """
+    Update a model instance. Only allowing 'PUT' method.
+    """
+    def update(self, request, *args, **kwargs):
+        return self.get_update_response(request, *args, **kwargs)
+
+
+class PartialUpdateModelMixin(BaseUpdateModelMixin):
+    """
+    Update a model instance. Only allowing 'PATCH' method.
+    """
+
+    def partial_update(self, request, *args, **kwargs):
+        kwargs['partial'] = True
+        return self.get_update_response(request, *args, **kwargs)
+
+
+class UpdateModelMixin(FullUpdateModelMixin, PartialUpdateModelMixin):
+    """
+    Update a model instance. Allowing both 'PATCH' and 'PUT' methods.
+    """
     def partial_update(self, request, *args, **kwargs):
         kwargs['partial'] = True
         return self.update(request, *args, **kwargs)
