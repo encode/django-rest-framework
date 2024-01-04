@@ -105,7 +105,6 @@ Date: ...
 * Add support for Python 3.11 [[#8752](https://github.com/encode/django-rest-framework/pull/8752)]
 * Make request consistently available in pagination classes [[#8764](https://github.com/encode/django-rest-framework/pull/9764)]
 * Possibility to remove trailing zeros on DecimalFields representation [[#6514](https://github.com/encode/django-rest-framework/pull/6514)]
-* Fixes typo [[#8719](https://github.com/encode/django-rest-framework/pull/8719)]
 * Add a method for getting serializer field name (OpenAPI) [[#7493](https://github.com/encode/django-rest-framework/pull/7493)]
 * Add `__eq__` method for `OperandHolder` class [[#8710](https://github.com/encode/django-rest-framework/pull/8710)]
 * Update schemas.md [[#8707](https://github.com/encode/django-rest-framework/pull/8707)]
