@@ -75,7 +75,6 @@ Date: ...
 * Add username search field for TokenAdmin (#8927) [[#8934](https://github.com/encode/django-rest-framework/pull/8934)]
 * Handle Nested Relation in SlugRelatedField when many=False [[#8922](https://github.com/encode/django-rest-framework/pull/8922)]
 * Bump version of jQuery to 3.6.4 & updated ref links [[#8909](https://github.com/encode/django-rest-framework/pull/8909)]
-* Minor documentation improvements and fixes [[#8903](https://github.com/encode/django-rest-framework/pull/8903)]
 * Support UniqueConstraint [[#7438](https://github.com/encode/django-rest-framework/pull/7438)]
 * Test django 4.2b1 [[#8892](https://github.com/encode/django-rest-framework/pull/8892)]
 * Docs: add missing renderer import in tutorial 6 [[#8885](https://github.com/encode/django-rest-framework/pull/8885)]
