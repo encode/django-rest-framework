@@ -43,7 +43,6 @@ Date: ...
 * Added jQuery 3.7.1 support & dropped previous version [[#9094](https://github.com/encode/django-rest-framework/pull/9094)]
 * Use str as default path converter [[#9066](https://github.com/encode/django-rest-framework/pull/9066)]
 * Document support for http.HTTPMethod in the @action decorator added in Python 3.11 [[#9067](https://github.com/encode/django-rest-framework/pull/9067)]
-* Add note for HiddenField behavior [[#9055](https://github.com/encode/django-rest-framework/pull/9055)]
 * Add docs validation to release process [[#6967](https://github.com/encode/django-rest-framework/pull/6967)]
 * Update exceptions.md [[#9071](https://github.com/encode/django-rest-framework/pull/9071)]
 * Partial serializer should not have required fields [[#7563](https://github.com/encode/django-rest-framework/pull/7563)]
