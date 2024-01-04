@@ -89,7 +89,6 @@ Date: ...
 * Handle Django's ValidationErrors in ListField [[#6423](https://github.com/encode/django-rest-framework/pull/6423)]
 * Remove a bit of inline CSS. Add CSP nonce where it might be required and is available [[#8783](https://github.com/encode/django-rest-framework/pull/8783)]
 * Use autocomplete widget for user selection in Token admin [[#8534](https://github.com/encode/django-rest-framework/pull/8534)]
-* Fix bug in validators documentation [[#8779](https://github.com/encode/django-rest-framework/pull/8779)]
 * Make browsable API compatbile with strong CSP [[#8784](https://github.com/encode/django-rest-framework/pull/8784)]
 * Avoid inline script execution for injecting CSRF token [[#7016](https://github.com/encode/django-rest-framework/pull/7016)]
 * Remove Core API mentions from docs  [[#8017](https://github.com/encode/django-rest-framework/pull/8017)]
