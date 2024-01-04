@@ -76,7 +76,6 @@ Date: ...
 * Handle Nested Relation in SlugRelatedField when many=False [[#8922](https://github.com/encode/django-rest-framework/pull/8922)]
 * Bump version of jQuery to 3.6.4 & updated ref links [[#8909](https://github.com/encode/django-rest-framework/pull/8909)]
 * Support UniqueConstraint [[#7438](https://github.com/encode/django-rest-framework/pull/7438)]
-* Docs: add missing renderer import in tutorial 6 [[#8885](https://github.com/encode/django-rest-framework/pull/8885)]
 * Allow Request, Response, Field, and GenericAPIView to be subscriptable. This allows the classes to be made generic for type checking. [[#8825](https://github.com/encode/django-rest-framework/pull/8825)]
 * Upgrade isort version in pre-commit [[#8882](https://github.com/encode/django-rest-framework/pull/8882)]
 * Docs: fix code example [[#8880](https://github.com/encode/django-rest-framework/pull/8880)]
