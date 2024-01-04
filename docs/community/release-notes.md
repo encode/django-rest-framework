@@ -105,7 +105,6 @@ Date: ...
 * Add support for Python 3.11 [[#8752](https://github.com/encode/django-rest-framework/pull/8752)]
 * Make request consistently available in pagination classes [[#8764](https://github.com/encode/django-rest-framework/pull/9764)]
 * Possibility to remove trailing zeros on DecimalFields representation [[#6514](https://github.com/encode/django-rest-framework/pull/6514)]
-* Remove extraneous word "Both" [[#8740](https://github.com/encode/django-rest-framework/pull/8740)]
 * Update jobs.md [[#8737](https://github.com/encode/django-rest-framework/pull/8737)]
 * Update quickstart.md [[#8575](https://github.com/encode/django-rest-framework/pull/8575)]
 * Improve style, fix some typos [[#8405](https://github.com/encode/django-rest-framework/pull/8405)]
