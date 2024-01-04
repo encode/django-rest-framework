@@ -74,7 +74,6 @@ Date: ...
 * Use ZoneInfo as primary source of timezone data [[#8924](https://github.com/encode/django-rest-framework/pull/8924)]
 * Add username search field for TokenAdmin (#8927) [[#8934](https://github.com/encode/django-rest-framework/pull/8934)]
 * Handle Nested Relation in SlugRelatedField when many=False [[#8922](https://github.com/encode/django-rest-framework/pull/8922)]
-* Docs: Fix authentication / authorization mixup [[#8930](https://github.com/encode/django-rest-framework/pull/8930)]
 * Use consistent spelling for "authorization" [[#8929](https://github.com/encode/django-rest-framework/pull/8929)]
 * Test django 4.2 stable release [[#8932](https://github.com/encode/django-rest-framework/pull/8932)]
 * Update requirements-packaging.txt [[#8921](https://github.com/encode/django-rest-framework/pull/8921)]
