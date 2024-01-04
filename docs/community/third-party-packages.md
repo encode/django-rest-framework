@@ -152,6 +152,11 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [drf-standardized-errors][drf-standardized-errors] - DRF exception handler to standardize error responses for all API endpoints.
 * [drf-api-action][drf-api-action] - uses the power of DRF also as a library functions
 
+### Customization
+
+* [rest-framework-redesign][rest-framework-redesign] - A package for customizing the API using Bootstrap 5.
+* [rest-framework-material][rest-framework-material] - Material design for Django REST Framework API.
+
 [cite]: http://www.software-ecosystems.com/Software_Ecosystems/Ecosystems.html
 [cookiecutter]: https://github.com/jpadilla/cookiecutter-django-rest-framework
 [new-repo]: https://github.com/new
@@ -243,3 +248,5 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [django-requestlogs]: https://github.com/Raekkeri/django-requestlogs
 [drf-standardized-errors]: https://github.com/ghazi-git/drf-standardized-errors
 [drf-api-action]: https://github.com/Ori-Roza/drf-api-action
+[rest-framework-redesign]: https://github.com/youzarsiph/rest-framework-redesign
+[rest-framework-material]: https://github.com/youzarsiph/rest-framework-material
