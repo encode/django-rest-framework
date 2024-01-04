@@ -82,7 +82,6 @@ Date: ...
 * Add SimplePathRouter [[#6789](https://github.com/encode/django-rest-framework/pull/6789)]
 * Re-prefetch related objects after updating [[#8043](https://github.com/encode/django-rest-framework/pull/8043)]
 * Fix FilePathField required argument [[#8805](https://github.com/encode/django-rest-framework/pull/8805)]
-* attrs==22.1.0 [[#8828](https://github.com/encode/django-rest-framework/pull/8828)]
 * Fix transifex-client version in packaging requirements. [[#8827](https://github.com/encode/django-rest-framework/pull/8827)]
 * Raise ImproperlyConfigured exception if `basename` is not unique  [[#8438](https://github.com/encode/django-rest-framework/pull/8438)]
 * Use PrimaryKeyRelatedField pkfield in openapi [[#8315](https://github.com/encode/django-rest-framework/pull/8315)]
