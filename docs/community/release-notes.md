@@ -78,7 +78,6 @@ Date: ...
 * Support UniqueConstraint [[#7438](https://github.com/encode/django-rest-framework/pull/7438)]
 * Allow Request, Response, Field, and GenericAPIView to be subscriptable. This allows the classes to be made generic for type checking. [[#8825](https://github.com/encode/django-rest-framework/pull/8825)]
 * Feat: Add some changes to ValidationError to support django style validation errors [[#8863](https://github.com/encode/django-rest-framework/pull/8863)]
-* Inherit from faked classes in tests to satisfy mypy [[#8859](https://github.com/encode/django-rest-framework/pull/8859)]
 * Initial django 4.2a1 testing [[#8846](https://github.com/encode/django-rest-framework/pull/8846)]
 * Fix Respect `can_read_model` permission in DjangoModelPermissions [[#8009](https://github.com/encode/django-rest-framework/pull/8009)]
 * Add SimplePathRouter [[#6789](https://github.com/encode/django-rest-framework/pull/6789)]
