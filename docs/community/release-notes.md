@@ -41,7 +41,6 @@ You can determine your currently installed version using `pip show`:
 Date: ...
 
 * Added jQuery 3.7.1 support & dropped previous version [[#9094](https://github.com/encode/django-rest-framework/pull/9094)]
-* Fix documentation link test [[#9076](https://github.com/encode/django-rest-framework/pull/9076)]
 * Use str as default path converter [[#9066](https://github.com/encode/django-rest-framework/pull/9066)]
 * Update third-party-packages.md [[#9026](https://github.com/encode/django-rest-framework/pull/9026)]
 * Document support for http.HTTPMethod in the @action decorator added in Python 3.11 [[#9067](https://github.com/encode/django-rest-framework/pull/9067)]
