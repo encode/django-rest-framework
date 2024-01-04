@@ -98,7 +98,6 @@ Date: ...
 * Fix OpenAPI operation name plural appropriately [[#8017](https://github.com/encode/django-rest-framework/pull/8017)]
 * Represent SafeString as plain string on schema rendering [[#8429](https://github.com/encode/django-rest-framework/pull/8429)]
 * Fix #8771 - Checking for authentication even if `_ignore_model_permissions = True` [[#8772](https://github.com/encode/django-rest-framework/pull/8772)]
-* Update 6-viewsets-and-routers.md [[#8590](https://github.com/encode/django-rest-framework/pull/8590)]
 * Added pagination settings test case [[#8326](https://github.com/encode/django-rest-framework/pull/8326)]
 * Fix 404 when page query parameter is empty string [[#8578](https://github.com/encode/django-rest-framework/pull/8578)]
 * Fixes instance check in ListSerializer.to_representation [[#8726](https://github.com/encode/django-rest-framework/pull/8726)] [[#8727](https://github.com/encode/django-rest-framework/pull/8727)]
