@@ -108,7 +108,6 @@ Date: ...
 * Add a method for getting serializer field name (OpenAPI) [[#7493](https://github.com/encode/django-rest-framework/pull/7493)]
 * Add `__eq__` method for `OperandHolder` class [[#8710](https://github.com/encode/django-rest-framework/pull/8710)]
 * Avoid importing `django.test` package when not testing  [[#8699](https://github.com/encode/django-rest-framework/pull/8699)]
-* Docs: use `asterisk` for unordered list [[#8697](https://github.com/encode/django-rest-framework/pull/8697)]
 * Docs: Convert all tabs into spaces [[#8692](https://github.com/encode/django-rest-framework/pull/8692)]
 * Preserve exception messages for wrapped Django exceptions [[#8051](https://github.com/encode/django-rest-framework/pull/8051)]
 * Added examples to schema of CursorPagination [[#8687] (https://github.com/encode/django-rest-framework/pull/8687)] [[#8686](https://github.com/encode/django-rest-framework/pull/8686)]
