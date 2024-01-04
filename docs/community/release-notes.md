@@ -81,7 +81,6 @@ Date: ...
 * Fix Respect `can_read_model` permission in DjangoModelPermissions [[#8009](https://github.com/encode/django-rest-framework/pull/8009)]
 * Add SimplePathRouter [[#6789](https://github.com/encode/django-rest-framework/pull/6789)]
 * Re-prefetch related objects after updating [[#8043](https://github.com/encode/django-rest-framework/pull/8043)]
-* Update documentation regarding arguments of ValidationError [[#8807](https://github.com/encode/django-rest-framework/pull/8807)]
 * Fix FilePathField required argument [[#8805](https://github.com/encode/django-rest-framework/pull/8805)]
 * Update docs to maintained `djangorestframework-guardian2` [[#8817](https://github.com/encode/django-rest-framework/pull/8817)]
 * Revert "Fix bug in validators documentation (#8779)" [[#8811](https://github.com/encode/django-rest-framework/pull/8811)]
