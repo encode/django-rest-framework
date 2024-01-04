@@ -63,7 +63,6 @@ Date: ...
 * Fix validation for ListSerializer [[#8979](https://github.com/encode/django-rest-framework/pull/8979)]
 * Make set_value a method within `Serializer` [[#8001](https://github.com/encode/django-rest-framework/pull/8001)]
 * Fix URLPathVersioning reverse fallback [[#7247](https://github.com/encode/django-rest-framework/pull/7247)]
-* Remove django 2.2 from docs index [[#8982](https://github.com/encode/django-rest-framework/pull/8982)]
 * Warn about Decimal type in min_value and max_value arguments of DecimalField [[#8972](https://github.com/encode/django-rest-framework/pull/8972)]
 * Fix mapping for choice values [[#8968](https://github.com/encode/django-rest-framework/pull/8968)]
 * Refactor read function to use context manager for file handling [[#8967](https://github.com/encode/django-rest-framework/pull/8967)]
