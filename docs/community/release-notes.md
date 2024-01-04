@@ -103,7 +103,6 @@ Date: ...
 * FloatField will crash if the input is a number that is too big [[#8725](https://github.com/encode/django-rest-framework/pull/8725)]
 * Add missing DurationField to SimpleMetada label_lookup [[#8702](https://github.com/encode/django-rest-framework/pull/8702)]
 * Add support for Python 3.11 [[#8752](https://github.com/encode/django-rest-framework/pull/8752)]
-* pytest versions update [[#8745](https://github.com/encode/django-rest-framework/pull/8745)]
 * Add 3rd party entry for rest-framework-roles [[#8755](https://github.com/encode/django-rest-framework/pull/8755)]
 * Added http 102, 103, 421, and 425 status codes in documentation [[#8763](https://github.com/encode/django-rest-framework/pull/8763)]
 * Make request consistently available in pagination classes [[#8764](https://github.com/encode/django-rest-framework/pull/9764)]
