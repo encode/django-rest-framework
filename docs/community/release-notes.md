@@ -60,7 +60,6 @@ Date: ...
 * Fixes `BrowsableAPIRenderer` for usage with `ListSerializer`. [[#7530](https://github.com/encode/django-rest-framework/pull/7530)]
 * Change semantic of `OR` of two permission classes [[#7522](https://github.com/encode/django-rest-framework/pull/7522)]
 * Remove dependency on `pytz` [[#8984](https://github.com/encode/django-rest-framework/pull/8984)]
-* Add NullBooleanField deprecation to docs [[#8999](https://github.com/encode/django-rest-framework/pull/8999)]
 * Fix example of `requires_context` attribute [[#8952](https://github.com/encode/django-rest-framework/pull/8952)]
 * Fix validation for ListSerializer [[#8979](https://github.com/encode/django-rest-framework/pull/8979)]
 * Make set_value a method within `Serializer` [[#8001](https://github.com/encode/django-rest-framework/pull/8001)]
