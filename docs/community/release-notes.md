@@ -102,7 +102,6 @@ Date: ...
 * Fixes instance check in ListSerializer.to_representation [[#8726](https://github.com/encode/django-rest-framework/pull/8726)] [[#8727](https://github.com/encode/django-rest-framework/pull/8727)]
 * FloatField will crash if the input is a number that is too big [[#8725](https://github.com/encode/django-rest-framework/pull/8725)]
 * Add missing DurationField to SimpleMetada label_lookup [[#8702](https://github.com/encode/django-rest-framework/pull/8702)]
-* converted assertion to pytest style in test status [[#8662](https://github.com/encode/django-rest-framework/pull/8662)]
 * Fix #8751 - Add support to Python 3.11 [[#8752](https://github.com/encode/django-rest-framework/pull/875)]
 * update minimum version to psycopg2-binary>=2.9.5 [[#8767](https://github.com/encode/django-rest-framework/pull/8767)]
 * pytest versions update [[#8745](https://github.com/encode/django-rest-framework/pull/8745)]
