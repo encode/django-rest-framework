@@ -38,7 +38,7 @@ You can determine your currently installed version using `pip show`:
 
 ### 3.15.0
 
-Date: 14th September 2023
+Date: ...
 
 * Added jQuery 3.7.1 support & dropped previous version [[#9094](https://github.com/encode/django-rest-framework/pull/9094)]
 * Update CONTRIBUTING.md [[#9095](https://github.com/encode/django-rest-framework/pull/9095)]
