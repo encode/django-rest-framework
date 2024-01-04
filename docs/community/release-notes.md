@@ -91,7 +91,6 @@ Date: ...
 * Use autocomplete widget for user selection in Token admin [[#8534](https://github.com/encode/django-rest-framework/pull/8534)]
 * Make browsable API compatbile with strong CSP [[#8784](https://github.com/encode/django-rest-framework/pull/8784)]
 * Avoid inline script execution for injecting CSRF token [[#7016](https://github.com/encode/django-rest-framework/pull/7016)]
-* Remove Core API mentions from docs  [[#8017](https://github.com/encode/django-rest-framework/pull/8017)]
 * Mitigate global dependency on inflection #8017 [[#8017](https://github.com/encode/django-rest-framework/pull/8017)] [[#8781](https://github.com/encode/django-rest-framework/pull/8781)]
 * Register Django urls  [[#8778](https://github.com/encode/django-rest-framework/pull/8778)]
 * Implemented Verbose Name Translation for TokenProxy [[#8713](https://github.com/encode/django-rest-framework/pull/8713)]
