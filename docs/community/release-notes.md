@@ -112,7 +112,6 @@ Date: ...
 * Include `examples` and `format` to OpenAPI schema of CursorPagination [[#8687] (https://github.com/encode/django-rest-framework/pull/8687)] [[#8686](https://github.com/encode/django-rest-framework/pull/8686)]
 * Fix infinite recursion with deepcopy on Request [[#8684](https://github.com/encode/django-rest-framework/pull/8684)]
 * Refactor: Replace try/except with contextlib.suppress() [[#8676](https://github.com/encode/django-rest-framework/pull/8676)]
-* Update requirements-testing.txt [[#8680](https://github.com/encode/django-rest-framework/pull/8680)]
 * Minor fix to SerializeMethodField docstring [[#8629](https://github.com/encode/django-rest-framework/pull/8629)]
 * Minor refactor: Unnecessary use of list() function [[#8672](https://github.com/encode/django-rest-framework/pull/8672)]
 * Update documentation on dependency installation [[#8566](https://github.com/encode/django-rest-framework/pull/8566)]
