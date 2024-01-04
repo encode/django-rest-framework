@@ -77,7 +77,6 @@ Date: ...
 * Bump version of jQuery to 3.6.4 & updated ref links [[#8909](https://github.com/encode/django-rest-framework/pull/8909)]
 * Support UniqueConstraint [[#7438](https://github.com/encode/django-rest-framework/pull/7438)]
 * Allow Request, Response, Field, and GenericAPIView to be subscriptable. This allows the classes to be made generic for type checking. [[#8825](https://github.com/encode/django-rest-framework/pull/8825)]
-* Upgrade isort version in pre-commit [[#8882](https://github.com/encode/django-rest-framework/pull/8882)]
 * Docs: fix code example [[#8880](https://github.com/encode/django-rest-framework/pull/8880)]
 * Feat: Add some changes to ValidationError to support django style vadation errors [[#8863](https://github.com/encode/django-rest-framework/pull/8863)]
 * Inherit from faked classes in tests to satisfy mypy [[#8859](https://github.com/encode/django-rest-framework/pull/8859)]
