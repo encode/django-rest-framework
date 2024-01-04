@@ -114,7 +114,6 @@ Date: ...
 * Refactor: Replace try/except with contextlib.suppress() [[#8676](https://github.com/encode/django-rest-framework/pull/8676)]
 * Minor fix to SerializeMethodField docstring [[#8629](https://github.com/encode/django-rest-framework/pull/8629)]
 * Minor refactor: Unnecessary use of list() function [[#8672](https://github.com/encode/django-rest-framework/pull/8672)]
-* Update documentation on dependency installation [[#8566](https://github.com/encode/django-rest-framework/pull/8566)]
 * Unnecessary list comprehension [[#8670](https://github.com/encode/django-rest-framework/pull/8670)]
 * Use correct class to indicate present deprecation [[#8665](https://github.com/encode/django-rest-framework/pull/8665)]
 
