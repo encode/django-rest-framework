@@ -84,7 +84,6 @@ Date: ...
 * Fix FilePathField required argument [[#8805](https://github.com/encode/django-rest-framework/pull/8805)]
 * Raise ImproperlyConfigured exception if `basename` is not unique  [[#8438](https://github.com/encode/django-rest-framework/pull/8438)]
 * Use PrimaryKeyRelatedField pkfield in openapi [[#8315](https://github.com/encode/django-rest-framework/pull/8315)]
-* Upgrade to tox 4 [[#8795](https://github.com/encode/django-rest-framework/pull/8795)]
 * replace partition with split in BasicAuthentication [[#8790](https://github.com/encode/django-rest-framework/pull/8790)]
 * Fix BooleanField's allow_null behavior [[#8614](https://github.com/encode/django-rest-framework/pull/8614)]
 * Handle Django's ValidationErrors in ListField [[#6423](https://github.com/encode/django-rest-framework/pull/6423)]
