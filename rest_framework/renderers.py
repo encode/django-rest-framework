@@ -170,9 +170,11 @@ class TemplateHTMLRenderer(BaseRenderer):
 
     def get_template_context(self, data, renderer_context):
         response = renderer_context['response']
-        if response.exception:
-            data['status_code'] = response.status_code
-        return data
+        if isinstance(data, dict):
+            details = list(data['detail'])
+        else:
+            details = data
+        return {'details': details, 'status_code': response.status_code}
 
     def get_template_names(self, response, view):
         if response.template_name:
