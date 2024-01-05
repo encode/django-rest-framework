@@ -35,7 +35,7 @@ class MockQueryset:
         return list(self.items)
 
     def filter(self, **lookup):
-        return MockQueryset(
+        return MockQueryset([
             item
             for item in self.items
             if all([
@@ -44,7 +44,13 @@ class MockQueryset:
                 else attrgetter(key.replace('__', '.'))(item) == value
                 for key, value in lookup.items()
             ])
-        )
+        ])
+
+    def annotate(self, **kwargs):
+        for key, value in kwargs.items():
+            for item in self.items:
+                setattr(item, key, attrgetter(value.name.replace('__', '.'))(item))
+        return self
 
 
 class BadType:

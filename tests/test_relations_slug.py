@@ -174,6 +174,12 @@ class SlugForeignKeyTests(TestCase):
         ]
         assert serializer.data == expected
 
+    def test_reverse_foreign_key_create_grouped_queries(self):
+        data = {'id': 3, 'name': 'target-3', 'sources': ['source-1', 'source-3']}
+        serializer = ForeignKeyTargetSerializer(data=data)
+        with self.assertNumQueries(1):
+            assert serializer.is_valid()
+
     def test_foreign_key_update_with_invalid_null(self):
         data = {'id': 1, 'name': 'source-1', 'target': None}
         instance = ForeignKeySource.objects.get(pk=1)
