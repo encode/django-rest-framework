@@ -312,7 +312,9 @@ class OrderingFilter(BaseFilterBackend):
         return valid_fields
 
     def remove_invalid_fields(self, queryset, fields, view, request):
-        valid_fields = [item[0] for item in self.get_valid_fields(queryset, view, {'request': request})]
+        valid_fields = [
+            item[0] for item in self.get_valid_fields(queryset, view, {'request': request, "view": view})
+        ]
 
         def term_valid(term):
             if term.startswith("-"):
