@@ -16,7 +16,7 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.validators import (
     EmailValidator, MaxLengthValidator, MaxValueValidator, MinLengthValidator,
     MinValueValidator, ProhibitNullCharactersValidator, RegexValidator,
-    URLValidator, ip_address_validators
+    URLValidator
 )
 from django.forms import FilePathField as DjangoFilePathField
 from django.forms import ImageField as DjangoImageField
@@ -36,6 +36,7 @@ except ImportError:
     pytz = None
 
 from rest_framework import ISO_8601
+from rest_framework.compat import ip_address_validators
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, humanize_datetime, json, representation
@@ -866,7 +867,7 @@ class IPAddressField(CharField):
         self.protocol = protocol.lower()
         self.unpack_ipv4 = (self.protocol == 'both')
         super().__init__(**kwargs)
-        validators, error_message = ip_address_validators(protocol, self.unpack_ipv4)
+        validators = ip_address_validators(protocol, self.unpack_ipv4)
         self.validators.extend(validators)
 
     def to_internal_value(self, data):
