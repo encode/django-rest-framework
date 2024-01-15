@@ -848,6 +848,28 @@ class OrderingFilterTests(TestCase):
         with self.assertRaises(ImproperlyConfigured):
             view(request)
 
+    def test_context_has_view_in_serializer(self):
+        class ExampleSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = OrderingFilterModel
+                fields = ('id', 'title', 'text')
+
+            def get_field_names(self, declared_fields, info):
+                view_is_instance = isinstance(self.context['view'], OrderingListView)
+                fields = super().get_field_names(declared_fields, info)
+                return [x for x in fields if x not in ['title']] if view_is_instance else fields
+
+        class OrderingListView(generics.ListAPIView):
+            queryset = OrderingFilterModel.objects.all()
+            filter_backends = (filters.OrderingFilter,)
+            serializer_class = ExampleSerializer
+
+        view = OrderingListView.as_view()
+        request = factory.get('/', {'ordering': 'id'})
+        response = view(request)
+        assert not {'title'}.issubset(set(response.data[0].keys()))
+        assert {'id', 'text'}.issubset(set(response.data[0].keys()))
+
 
 class SensitiveOrderingFilterModel(models.Model):
     username = models.CharField(max_length=20)
