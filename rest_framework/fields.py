@@ -16,7 +16,7 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.validators import (
     EmailValidator, MaxLengthValidator, MaxValueValidator, MinLengthValidator,
     MinValueValidator, ProhibitNullCharactersValidator, RegexValidator,
-    URLValidator
+    URLValidator, FileExtensionValidator
 )
 from django.forms import FilePathField as DjangoFilePathField
 from django.forms import ImageField as DjangoImageField
@@ -1516,9 +1516,17 @@ class FileField(Field):
     def __init__(self, **kwargs):
         self.max_length = kwargs.pop('max_length', None)
         self.allow_empty_file = kwargs.pop('allow_empty_file', False)
+        allowed_extensions = kwargs.pop('allowed_extensions', None)
+        assert allowed_extensions is None or isinstance(allowed_extensions, (list, tuple)), (
+            'Invalid value for allowed_extensions. It must be either None or a list/tuple, but %s provided.'
+            % (allowed_extensions.__name__ if inspect.isclass(allowed_extensions) else allowed_extensions.__class__.__name__)
+        )
         if 'use_url' in kwargs:
             self.use_url = kwargs.pop('use_url')
         super().__init__(**kwargs)
+        if allowed_extensions is not None:
+            self.validators.append(
+                FileExtensionValidator(allowed_extensions))
 
     def to_internal_value(self, data):
         try:
