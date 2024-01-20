@@ -8,6 +8,7 @@ The wrapped request then offers a richer API, in particular :
     - full support of PUT method, including support for file uploads
     - form overloading of HTTP method, content type and content
 """
+import contextvars
 import io
 import sys
 from contextlib import contextmanager
@@ -148,6 +149,8 @@ class Request:
         - authenticators(list/tuple). The authenticators used to try
           authenticating the request's user.
     """
+
+    _context_instance = contextvars.ContextVar('request')
 
     def __init__(self, request, parsers=None, authenticators=None,
                  negotiator=None, parser_context=None):
@@ -458,3 +461,11 @@ class Request:
         # Hack to allow our exception handler to force choice of
         # plaintext or html error responses.
         self._request.is_ajax = lambda: value
+
+    @classmethod
+    def get_current(cls, default=None):
+        return cls._context_instance.get(default)
+
+    @classmethod
+    def set_current(cls, value):
+        return cls._context_instance.set(value)
