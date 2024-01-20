@@ -640,10 +640,6 @@ class Test5087Regression:
 
 
 class TestTyping(TestCase):
-    @pytest.mark.skipif(
-        sys.version_info < (3, 7),
-        reason="subscriptable classes requires Python 3.7 or higher",
-    )
     def test_field_is_subscriptable(self):
         assert serializers.Field is serializers.Field["foo"]
 

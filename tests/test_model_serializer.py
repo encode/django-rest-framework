@@ -8,7 +8,6 @@ an appropriate set of serializer fields for each case.
 import datetime
 import decimal
 import json  # noqa
-import sys
 import tempfile
 
 import django
@@ -398,10 +397,6 @@ class TestDurationFieldMapping(TestCase):
                 fields = '__all__'
 
         expected = dedent("""
-            TestSerializer():
-                id = IntegerField(label='ID', read_only=True)
-                duration_field = DurationField(max_value=datetime.timedelta(3), min_value=datetime.timedelta(1))
-        """) if sys.version_info < (3, 7) else dedent("""
             TestSerializer():
                 id = IntegerField(label='ID', read_only=True)
                 duration_field = DurationField(max_value=datetime.timedelta(days=3), min_value=datetime.timedelta(days=1))

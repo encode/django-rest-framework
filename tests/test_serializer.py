@@ -206,10 +206,6 @@ class TestSerializer:
                 exceptions.ErrorDetail(string='Raised error', code='invalid')
             ]}
 
-    @pytest.mark.skipif(
-        sys.version_info < (3, 7),
-        reason="subscriptable classes requires Python 3.7 or higher",
-    )
     def test_serializer_is_subscriptable(self):
         assert serializers.Serializer is serializers.Serializer["foo"]
 
