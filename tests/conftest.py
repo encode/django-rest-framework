@@ -87,10 +87,7 @@ def pytest_configure(config):
         import rest_framework
         settings.STATIC_ROOT = os.path.join(os.path.dirname(rest_framework.__file__), 'static-root')
         backend = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
-        if django.VERSION < (4, 2):
-            settings.STATICFILES_STORAGE = backend
-        else:
-            settings.STORAGES['staticfiles']['BACKEND'] = backend
+        settings.STORAGES['staticfiles']['BACKEND'] = backend
 
     django.setup()
 

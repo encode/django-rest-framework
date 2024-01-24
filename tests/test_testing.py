@@ -2,7 +2,6 @@ import itertools
 from io import BytesIO
 from unittest.mock import patch
 
-import django
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
@@ -20,7 +19,7 @@ from rest_framework.test import (
 
 @api_view(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'])
 def view(request):
-    data = {'auth': request.META.get('HTTP_AUTHORIZATION', b'')}
+    data = {'auth': request.headers.get('authorization', b'')}
     if request.user:
         data['user'] = request.user.username
     if request.auth:
@@ -316,7 +315,7 @@ class TestAPIRequestFactory(TestCase):
             data=None,
             content_type='application/json',
         )
-        assert request.META['CONTENT_TYPE'] == 'application/json'
+        assert request.headers['content-type'] == 'application/json'
 
 
 def check_urlpatterns(cls):
@@ -334,18 +333,10 @@ class TestUrlPatternTestCase(URLPatternsTestCase):
         super().setUpClass()
         assert urlpatterns is cls.urlpatterns
 
-        if django.VERSION > (4, 0):
-            cls.addClassCleanup(
-                check_urlpatterns,
-                cls
-            )
-
-    if django.VERSION < (4, 0):
-        @classmethod
-        def tearDownClass(cls):
-            assert urlpatterns is cls.urlpatterns
-            super().tearDownClass()
-            assert urlpatterns is not cls.urlpatterns
+        cls.addClassCleanup(
+            check_urlpatterns,
+            cls
+        )
 
     def test_urlpatterns(self):
         assert self.client.get('/').status_code == 200

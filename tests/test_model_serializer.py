@@ -11,7 +11,6 @@ import json  # noqa
 import sys
 import tempfile
 
-import django
 import pytest
 from django.core.exceptions import ImproperlyConfigured
 from django.core.serializers.json import DjangoJSONEncoder
@@ -454,8 +453,6 @@ class TestPosgresFieldsMapping(TestCase):
                 fields = ['array_field', 'array_field_with_blank']
 
         validators = ""
-        if django.VERSION < (4, 1):
-            validators = ", validators=[<django.core.validators.MaxLengthValidator object>]"
         expected = dedent("""
             TestSerializer():
                 array_field = ListField(allow_empty=False, child=CharField(label='Array field'%s))

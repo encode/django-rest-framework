@@ -174,7 +174,7 @@ class RendererEndToEndTests(TestCase):
 
     def test_default_renderer_serializes_content_on_accept_any(self):
         """If the Accept header is set to */* the default renderer should serialize the response."""
-        resp = self.client.get('/', HTTP_ACCEPT='*/*')
+        resp = self.client.get('/', headers={"accept": '*/*'})
         self.assertEqual(resp['Content-Type'], RendererA.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, RENDERER_A_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
@@ -182,7 +182,7 @@ class RendererEndToEndTests(TestCase):
     def test_specified_renderer_serializes_content_default_case(self):
         """If the Accept header is set the specified renderer should serialize the response.
         (In this case we check that works for the default renderer)"""
-        resp = self.client.get('/', HTTP_ACCEPT=RendererA.media_type)
+        resp = self.client.get('/', headers={"accept": RendererA.media_type})
         self.assertEqual(resp['Content-Type'], RendererA.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, RENDERER_A_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
@@ -190,14 +190,14 @@ class RendererEndToEndTests(TestCase):
     def test_specified_renderer_serializes_content_non_default_case(self):
         """If the Accept header is set the specified renderer should serialize the response.
         (In this case we check that works for a non-default renderer)"""
-        resp = self.client.get('/', HTTP_ACCEPT=RendererB.media_type)
+        resp = self.client.get('/', headers={"accept": RendererB.media_type})
         self.assertEqual(resp['Content-Type'], RendererB.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
 
     def test_unsatisfiable_accept_header_on_request_returns_406_status(self):
         """If the Accept header is unsatisfiable we should return a 406 Not Acceptable response."""
-        resp = self.client.get('/', HTTP_ACCEPT='foo/bar')
+        resp = self.client.get('/', headers={"accept": 'foo/bar'})
         self.assertEqual(resp.status_code, status.HTTP_406_NOT_ACCEPTABLE)
 
     def test_specified_renderer_serializes_content_on_format_query(self):
@@ -228,14 +228,14 @@ class RendererEndToEndTests(TestCase):
             RendererB.format
         )
         resp = self.client.get('/' + param,
-                               HTTP_ACCEPT=RendererB.media_type)
+                               headers={"accept": RendererB.media_type})
         self.assertEqual(resp['Content-Type'], RendererB.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
 
     def test_parse_error_renderers_browsable_api(self):
         """Invalid data should still render the browsable API correctly."""
-        resp = self.client.post('/parseerror', data='foobar', content_type='application/json', HTTP_ACCEPT='text/html')
+        resp = self.client.post('/parseerror', data='foobar', content_type='application/json', headers={"accept": 'text/html'})
         self.assertEqual(resp['Content-Type'], 'text/html; charset=utf-8')
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -714,13 +714,13 @@ class BrowsableAPIRendererTests(URLPatternsTestCase):
         assert result is None
 
     def test_extra_actions_dropdown(self):
-        resp = self.client.get('/api/examples/', HTTP_ACCEPT='text/html')
+        resp = self.client.get('/api/examples/', headers={"accept": 'text/html'})
         assert 'id="extra-actions-menu"' in resp.content.decode()
         assert '/api/examples/list_action/' in resp.content.decode()
         assert '>Extra list action<' in resp.content.decode()
 
     def test_extra_actions_dropdown_not_authed(self):
-        resp = self.client.get('/api/unauth-examples/', HTTP_ACCEPT='text/html')
+        resp = self.client.get('/api/unauth-examples/', headers={"accept": 'text/html'})
         assert 'id="extra-actions-menu"' not in resp.content.decode()
         assert '/api/examples/list_action/' not in resp.content.decode()
         assert '>Extra list action<' not in resp.content.decode()

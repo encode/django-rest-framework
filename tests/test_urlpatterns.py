@@ -1,7 +1,7 @@
 from collections import namedtuple
 
 from django.test import TestCase
-from django.urls import Resolver404, URLResolver, include, path, re_path
+from django.urls import Resolver404, URLResolver, include, path
 from django.urls.resolvers import RegexPattern
 
 from rest_framework.test import APIRequestFactory
@@ -93,7 +93,7 @@ class FormatSuffixTests(TestCase):
     def test_format_suffix_django2_args(self):
         urlpatterns = [
             path('convtest/<int:pk>', dummy_view),
-            re_path(r'^retest/(?P<pk>[0-9]+)$', dummy_view),
+            path('retest/<int:pk>', dummy_view),
         ]
         test_paths = [
             URLTestPath('/convtest/42', (), {'pk': 42}),
@@ -145,10 +145,10 @@ class FormatSuffixTests(TestCase):
     def test_included_urls_mixed(self):
         nested_patterns = [
             path('path/<int:child>', dummy_view),
-            re_path(r'^re_path/(?P<child>[0-9]+)$', dummy_view)
+            path('re_path/<int:child>', dummy_view)
         ]
         urlpatterns = [
-            re_path(r'^pre_path/(?P<parent>[0-9]+)/', include(nested_patterns), {'foo': 'bar'}),
+            path('pre_path/<int:parent>/', include(nested_patterns), {'foo': 'bar'}),
             path('ppath/<int:parent>/', include(nested_patterns), {'foo': 'bar'}),
         ]
         test_paths = [
@@ -185,7 +185,7 @@ class FormatSuffixTests(TestCase):
 
     def test_allowed_formats_re_path(self):
         urlpatterns = [
-            re_path(r'^test$', dummy_view),
+            path('test', dummy_view),
         ]
         self._test_allowed_formats(urlpatterns)
 

@@ -1,6 +1,5 @@
 import base64
 
-import django
 import pytest
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -236,15 +235,12 @@ class SessionAuthTests(TestCase):
         Regression test for #6088
         """
         # Remove this shim when dropping support for Django 3.0.
-        if django.VERSION < (3, 1):
-            from django.middleware.csrf import _get_new_csrf_token
-        else:
-            from django.middleware.csrf import (
-                _get_new_csrf_string, _mask_cipher_secret
-            )
+        from django.middleware.csrf import (
+            _get_new_csrf_string, _mask_cipher_secret
+        )
 
-            def _get_new_csrf_token():
-                return _mask_cipher_secret(_get_new_csrf_string())
+        def _get_new_csrf_token():
+            return _mask_cipher_secret(_get_new_csrf_string())
 
         self.csrf_client.login(username=self.username, password=self.password)
 
