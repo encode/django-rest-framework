@@ -1,7 +1,9 @@
 import datetime
+import re
 from unittest.mock import MagicMock, patch
 
 import pytest
+from django import VERSION as django_version
 from django.db import DataError, models
 from django.test import TestCase
 
@@ -112,11 +114,15 @@ class TestUniquenessValidation(TestCase):
     def test_doesnt_pollute_model(self):
         instance = AnotherUniquenessModel.objects.create(code='100')
         serializer = AnotherUniquenessSerializer(instance)
-        assert AnotherUniquenessModel._meta.get_field('code').validators == []
+        assert all(
+            ["Unique" not in repr(v) for v in AnotherUniquenessModel._meta.get_field('code').validators]
+        )
 
         # Accessing data shouldn't effect validators on the model
         serializer.data
-        assert AnotherUniquenessModel._meta.get_field('code').validators == []
+        assert all(
+            ["Unique" not in repr(v) for v in AnotherUniquenessModel._meta.get_field('code').validators]
+        )
 
     def test_related_model_is_unique(self):
         data = {'username': 'Existing', 'email': 'new-email@example.com'}
@@ -193,15 +199,15 @@ class TestUniquenessTogetherValidation(TestCase):
 
     def test_repr(self):
         serializer = UniquenessTogetherSerializer()
-        expected = dedent("""
-            UniquenessTogetherSerializer():
-                id = IntegerField(label='ID', read_only=True)
-                race_name = CharField(max_length=100, required=True)
-                position = IntegerField(required=True)
+        expected = dedent(r"""
+            UniquenessTogetherSerializer\(\):
+                id = IntegerField\(label='ID', read_only=True\)
+                race_name = CharField\(max_length=100, required=True\)
+                position = IntegerField\(.*required=True\)
                 class Meta:
-                    validators = [<UniqueTogetherValidator(queryset=UniquenessTogetherModel.objects.all(), fields=('race_name', 'position'))>]
+                    validators = \[<UniqueTogetherValidator\(queryset=UniquenessTogetherModel.objects.all\(\), fields=\('race_name', 'position'\)\)>\]
         """)
-        assert repr(serializer) == expected
+        assert re.search(expected, repr(serializer)) is not None
 
     def test_is_not_unique_together(self):
         """
@@ -282,13 +288,13 @@ class TestUniquenessTogetherValidation(TestCase):
                 read_only_fields = ('race_name',)
 
         serializer = ReadOnlyFieldSerializer()
-        expected = dedent("""
-            ReadOnlyFieldSerializer():
-                id = IntegerField(label='ID', read_only=True)
-                race_name = CharField(read_only=True)
-                position = IntegerField(required=True)
+        expected = dedent(r"""
+            ReadOnlyFieldSerializer\(\):
+                id = IntegerField\(label='ID', read_only=True\)
+                race_name = CharField\(read_only=True\)
+                position = IntegerField\(.*required=True\)
         """)
-        assert repr(serializer) == expected
+        assert re.search(expected, repr(serializer)) is not None
 
     def test_read_only_fields_with_default(self):
         """
@@ -366,14 +372,14 @@ class TestUniquenessTogetherValidation(TestCase):
                 fields = ['name', 'position']
 
         serializer = TestSerializer()
-        expected = dedent("""
-            TestSerializer():
-                name = CharField(source='race_name')
-                position = IntegerField()
+        expected = dedent(r"""
+            TestSerializer\(\):
+                name = CharField\(source='race_name'\)
+                position = IntegerField\(.*\)
                 class Meta:
-                    validators = [<UniqueTogetherValidator(queryset=UniquenessTogetherModel.objects.all(), fields=('name', 'position'))>]
+                    validators = \[<UniqueTogetherValidator\(queryset=UniquenessTogetherModel.objects.all\(\), fields=\('name', 'position'\)\)>\]
         """)
-        assert repr(serializer) == expected
+        assert re.search(expected, repr(serializer)) is not None
 
     def test_default_validator_with_multiple_fields_with_same_source(self):
         class TestSerializer(serializers.ModelSerializer):
@@ -411,13 +417,13 @@ class TestUniquenessTogetherValidation(TestCase):
                 validators = []
 
         serializer = NoValidatorsSerializer()
-        expected = dedent("""
-            NoValidatorsSerializer():
-                id = IntegerField(label='ID', read_only=True)
-                race_name = CharField(max_length=100)
-                position = IntegerField()
+        expected = dedent(r"""
+            NoValidatorsSerializer\(\):
+                id = IntegerField\(label='ID', read_only=True.*\)
+                race_name = CharField\(max_length=100\)
+                position = IntegerField\(.*\)
         """)
-        assert repr(serializer) == expected
+        assert re.search(expected, repr(serializer)) is not None
 
     def test_ignore_validation_for_null_fields(self):
         # None values that are on fields which are part of the uniqueness
@@ -540,16 +546,16 @@ class TestUniqueConstraintValidation(TestCase):
         # the order of validators isn't deterministic so delete
         # fancy_conditions field that has two of them
         del serializer.fields['fancy_conditions']
-        expected = dedent("""
-            UniqueConstraintSerializer():
-                id = IntegerField(label='ID', read_only=True)
-                race_name = CharField(max_length=100, required=True)
-                position = IntegerField(required=True)
-                global_id = IntegerField(validators=[<UniqueValidator(queryset=UniqueConstraintModel.objects.all())>])
+        expected = dedent(r"""
+            UniqueConstraintSerializer\(\):
+                id = IntegerField\(label='ID', read_only=True\)
+                race_name = CharField\(max_length=100, required=True\)
+                position = IntegerField\(.*required=True\)
+                global_id = IntegerField\(.*validators=\[<UniqueValidator\(queryset=UniqueConstraintModel.objects.all\(\)\)>\]\)
                 class Meta:
-                    validators = [<UniqueTogetherValidator(queryset=<QuerySet [<UniqueConstraintModel: UniqueConstraintModel object (1)>, <UniqueConstraintModel: UniqueConstraintModel object (2)>]>, fields=('race_name', 'position'))>]
+                    validators = \[<UniqueTogetherValidator\(queryset=<QuerySet \[<UniqueConstraintModel: UniqueConstraintModel object \(1\)>, <UniqueConstraintModel: UniqueConstraintModel object \(2\)>\]>, fields=\('race_name', 'position'\)\)>\]
         """)
-        assert repr(serializer) == expected
+        assert re.search(expected, repr(serializer)) is not None
 
     def test_unique_together_field(self):
         """
@@ -569,15 +575,18 @@ class TestUniqueConstraintValidation(TestCase):
         UniqueConstraint with single field must be transformed into
         field's UniqueValidator
         """
+        # Django 5 includes Max and Min values validators for IntergerField
+        extra_validators_qty = 2 if django_version[0] >= 5 else 0
+        #
         serializer = UniqueConstraintSerializer()
         assert len(serializer.validators) == 1
         validators = serializer.fields['global_id'].validators
-        assert len(validators) == 1
+        assert len(validators) == 1 + extra_validators_qty
         assert validators[0].queryset == UniqueConstraintModel.objects
 
         validators = serializer.fields['fancy_conditions'].validators
-        assert len(validators) == 2
-        ids_in_qs = {frozenset(v.queryset.values_list(flat=True)) for v in validators}
+        assert len(validators) == 2 + extra_validators_qty
+        ids_in_qs = {frozenset(v.queryset.values_list(flat=True)) for v in validators if hasattr(v, "queryset")}
         assert ids_in_qs == {frozenset([1]), frozenset([3])}
 
 

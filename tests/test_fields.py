@@ -1538,7 +1538,8 @@ class TestNoOutputFormatDateTimeField(FieldValues):
     field = serializers.DateTimeField(format=None)
 
 
-class TestNaiveDateTimeField(FieldValues):
+@override_settings(TIME_ZONE='UTC', USE_TZ=False)
+class TestNaiveDateTimeField(FieldValues, TestCase):
     """
     Valid and invalid values for `DateTimeField` with naive datetimes.
     """
