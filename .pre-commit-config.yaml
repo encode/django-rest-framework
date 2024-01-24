@@ -25,3 +25,8 @@ repos:
     exclude: ^(?!docs).*$
     additional_dependencies:
     - black==23.1.0
+- repo: https://github.com/codespell-project/codespell
+  # Configuration for codespell is in .codespellrc
+  rev: v2.2.6
+  hooks:
+  - id: codespell
