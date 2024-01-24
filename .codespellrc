@@ -1,6 +1,7 @@
 # Ref: https://github.com/codespell-project/codespell#using-a-config-file
 [codespell]
-skip = .git,*.svg,*.css,*.min.*,.codespellrc
+skip = .git,*.svg,*.css,*.min.*,*-min.js,.codespellrc,locale,static,kickstarter-announcement.md
 check-hidden = true
-# ignore-regex = 
-# ignore-words-list =
+# skip lines with  ú  as they might contain non-english words
+ignore-regex = \bMalcom Tredinnick\b|^.{500,}$|.*ú.*
+ignore-words-list = fo,crate
