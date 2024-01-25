@@ -173,11 +173,9 @@ If you want the date field to be entirely hidden from the user, then use `Hidden
 # Advanced field defaults
 
 Validators that are applied across multiple fields in the serializer can sometimes require a field input that should not be provided by the API client, but that *is* available as input to the validator.
+For this purposes use `HiddenField`. This field will be present in `validated_data` but *will not* be used in the serializer output representation.
 
-Two patterns that you may want to use for this sort of validation include:
-
-* Using `HiddenField`. This field will be present in `validated_data` but *will not* be used in the serializer output representation.
-* Using a standard field with `read_only=True`, but that also includes a `default=…` argument. This field *will* be used in the serializer output representation, but cannot be set directly by the user.
+**Note:** Using a `read_only=True` field is excluded from writable fields so it won't use a `default=…` argument. Look [3.8 announcement](https://www.django-rest-framework.org/community/3.8-announcement/#altered-the-behaviour-of-read_only-plus-default-on-field).
 
 REST framework includes a couple of defaults that may be useful in this context.
 
@@ -189,7 +187,7 @@ A default class that can be used to represent the current user. In order to use 
         default=serializers.CurrentUserDefault()
     )
 
-#### CreateOnlyDefault
+#### CreateOnlyDefault
 
 A default class that can be used to *only set a default argument during create operations*. During updates the field is omitted.
 
