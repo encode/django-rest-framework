@@ -84,7 +84,7 @@ When an unauthenticated request is denied permission there are two different err
 * [HTTP 401 Unauthorized][http401]
 * [HTTP 403 Permission Denied][http403]
 
-HTTP 401 responses must always include a `WWW-Authenticate` header, that instructs the client how to authenticate.  HTTP 403 responses do not include the `WWW-Authenticate` header.
+HTTP 401 responses must always include a `WWW-Authenticate` header, that instructs the client how to authenticate.  The `www_authenticate_behavior` setting controls how the header is generated: if set to `'first'` (the default), then only the text for the first scheme in the list will be used; if set to `'all'`, then a comma-separated list of the text for all the schemes will be used (see [MDN WWW-Authenticate](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/WWW-Authenticate) for more details).  HTTP 403 responses do not include the `WWW-Authenticate` header.
 
 The kind of response that will be used depends on the authentication scheme.  Although multiple authentication schemes may be in use, only one scheme may be used to determine the type of response.  **The first authentication class set on the view is used when determining the type of response**.
 
