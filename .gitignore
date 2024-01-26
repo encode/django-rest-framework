@@ -2,7 +2,6 @@
 *.db
 *~
 .*
-!.codespellrc
 *.py.bak
 
 
