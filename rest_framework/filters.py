@@ -21,14 +21,14 @@ from rest_framework.settings import api_settings
 
 
 def search_smart_split(search_terms):
-    """generator that first splits string by spaces, leaving quoted phrases togheter,
+    """generator that first splits string by spaces, leaving quoted phrases together,
     then it splits non-quoted phrases by commas.
     """
     for term in smart_split(search_terms):
         # trim commas to avoid bad matching for quoted phrases
         term = term.strip(',')
         if term.startswith(('"', "'")) and term[0] == term[-1]:
-            # quoted phrases are kept togheter without any other split
+            # quoted phrases are kept together without any other split
             yield unescape_string_literal(term)
         else:
             # non-quoted tokens are split by comma, keeping only non-empty ones
