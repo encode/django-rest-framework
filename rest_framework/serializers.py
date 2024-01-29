@@ -151,8 +151,7 @@ class BaseSerializer(Field):
             value = kwargs.pop(key, None)
             if value is not None:
                 list_kwargs[key] = value
-        child_serializer = cls(*args, **kwargs)
-        list_kwargs['child'] = child_serializer
+        list_kwargs['child'] = cls(*args, **kwargs)
         list_kwargs.update({
             key: value for key, value in kwargs.items()
             if key in LIST_SERIALIZER_KWARGS
