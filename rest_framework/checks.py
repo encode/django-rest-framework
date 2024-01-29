@@ -1,4 +1,4 @@
-from django.core.checks import Tags, Error, Warning, register
+from django.core.checks import Error, Tags, Warning, register
 
 
 @register(Tags.compatibility)
