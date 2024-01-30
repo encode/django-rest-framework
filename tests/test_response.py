@@ -132,7 +132,7 @@ urlpatterns = [
 ]
 
 
-# TODO: Clean tests bellow - remove duplicates with above, better unit testing, ...
+# TODO: Clean tests below - remove duplicates with above, better unit testing, ...
 @override_settings(ROOT_URLCONF='tests.test_response')
 class RendererIntegrationTests(TestCase):
     """

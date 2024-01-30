@@ -8,7 +8,7 @@ from django.test import TestCase
 from django.test.utils import override_settings
 from django.urls import path
 
-from rest_framework.compat import uritemplate, yaml
+from rest_framework.compat import coreapi, uritemplate, yaml
 from rest_framework.management.commands import generateschema
 from rest_framework.utils import formatting, json
 from rest_framework.views import APIView
@@ -91,6 +91,7 @@ class GenerateSchemaTests(TestCase):
             os.remove(path)
 
     @pytest.mark.skipif(yaml is None, reason='PyYAML is required.')
+    @pytest.mark.skipif(coreapi is None, reason='coreapi is required.')
     @override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema'})
     def test_coreapi_renders_default_schema_with_custom_title_url_and_description(self):
         expected_out = """info:
@@ -113,6 +114,7 @@ class GenerateSchemaTests(TestCase):
 
         self.assertIn(formatting.dedent(expected_out), self.out.getvalue())
 
+    @pytest.mark.skipif(coreapi is None, reason='coreapi is required.')
     @override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema'})
     def test_coreapi_renders_openapi_json_schema(self):
         expected_out = {
@@ -142,6 +144,7 @@ class GenerateSchemaTests(TestCase):
 
         self.assertDictEqual(out_json, expected_out)
 
+    @pytest.mark.skipif(coreapi is None, reason='coreapi is required.')
     @override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema'})
     def test_renders_corejson_schema(self):
         expected_out = """{"_type":"document","":{"list":{"_type":"link","url":"/","action":"get"}}}"""

@@ -47,7 +47,7 @@ Date: 22nd September 2022
 * Stop calling `set_context` on Validators. [[#8589](https://github.com/encode/django-rest-framework/pull/8589)]
 * Return `NotImplemented` from `ErrorDetails.__ne__`. [[#8538](https://github.com/encode/django-rest-framework/pull/8538)]
 * Don't evaluate `DateTimeField.default_timezone` when a custom timezone is set. [[#8531](https://github.com/encode/django-rest-framework/pull/8531)]
-* Make relative URLs clickable in Browseable API. [[#8464](https://github.com/encode/django-rest-framework/pull/8464)]
+* Make relative URLs clickable in Browsable API. [[#8464](https://github.com/encode/django-rest-framework/pull/8464)]
 * Support `ManyRelatedField` falling back to the default value when the attribute specified by dot notation doesn't exist. Matches `ManyRelatedField.get_attribute` to `Field.get_attribute`. [[#7574](https://github.com/encode/django-rest-framework/pull/7574)]
 * Make `schemas.openapi.get_reference` public. [[#7515](https://github.com/encode/django-rest-framework/pull/7515)]
 * Make `ReturnDict` support `dict` union operators on Python 3.9 and later. [[#8302](https://github.com/encode/django-rest-framework/pull/8302)]
@@ -65,7 +65,7 @@ Date: 15th December 2021
 
 Date: 13th December 2021
 
-* Django 4.0 compatability. [#8178]
+* Django 4.0 compatibility. [#8178]
 * Add `max_length` and `min_length` options to `ListSerializer`. [#8165]
 * Add `get_request_serializer` and `get_response_serializer` hooks to `AutoSchema`. [#7424]
 * Fix OpenAPI representation of null-able read only fields. [#8116]
@@ -954,7 +954,7 @@ See the [release announcement][3.6-release].
 * Prevent raising exception when limit is 0. ([#4098][gh4098])
 * TokenAuthentication: Allow custom keyword in the header. ([#4097][gh4097])
 * Handle incorrectly padded HTTP basic auth header. ([#4090][gh4090])
-* LimitOffset pagination crashes Browseable API when limit=0. ([#4079][gh4079])
+* LimitOffset pagination crashes Browsable API when limit=0. ([#4079][gh4079])
 * Fixed DecimalField arbitrary precision support. ([#4075][gh4075])
 * Added support for custom CSRF cookie names. ([#4049][gh4049])
 * Fix regression introduced by #4035. ([#4041][gh4041])
