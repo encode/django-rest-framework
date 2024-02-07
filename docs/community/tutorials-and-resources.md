@@ -19,6 +19,10 @@ There are a wide range of resources available for learning and using Django REST
   </a>
 </div>
 
+## Courses
+
+* [Developing RESTful APIs with Django REST Framework][developing-restful-apis-with-django-rest-framework]
+
 ## Tutorials
 
 * [Beginner's Guide to the Django REST Framework][beginners-guide-to-the-django-rest-framework]
@@ -130,3 +134,4 @@ Want your Django REST Framework talk/tutorial/article to be added to our website
 [pycon-us-2017]: https://www.youtube.com/watch?v=Rk6MHZdust4
 [django-rest-react-valentinog]: https://www.valentinog.com/blog/tutorial-api-django-rest-react/
 [doordash-implementing-rest-apis]: https://doordash.engineering/2013/10/07/implementing-rest-apis-with-embedded-privacy/
+[developing-restful-apis-with-django-rest-framework]: https://testdriven.io/courses/django-rest-framework/

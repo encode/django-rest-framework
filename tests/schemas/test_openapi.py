@@ -1347,7 +1347,7 @@ class TestGenerator(TestCase):
 
             assert len(w) == 1
             assert issubclass(w[-1].category, UserWarning)
-            assert 'has been overriden with a different value.' in str(w[-1].message)
+            assert 'has been overridden with a different value.' in str(w[-1].message)
 
         assert 'components' in schema
         assert 'schemas' in schema['components']

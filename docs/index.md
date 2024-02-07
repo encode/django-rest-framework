@@ -48,7 +48,7 @@ Django REST framework is a powerful and flexible toolkit for building Web APIs.
 
 Some reasons you might want to use REST framework:
 
-* The [Web browsable API][sandbox] is a huge usability win for your developers.
+* The Web browsable API is a huge usability win for your developers.
 * [Authentication policies][authentication] including packages for [OAuth1a][oauth1-section] and [OAuth2][oauth2-section].
 * [Serialization][serializers] that supports both [ORM][modelserializer-section] and [non-ORM][serializer-section] data sources.
 * Customizable all the way down - just use [regular function-based views][functionview-section] if you don't need the [more][generic-views] [powerful][viewsets] [features][routers].
@@ -74,10 +74,11 @@ continued development by **[signing up for a paid plan][funding]**.
     <li><a href="https://posthog.com?utm_source=DRF&utm_medium=sponsor&utm_campaign=DRF_sponsorship" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/135996800-d49fe024-32d9-441a-98d9-4c7596287a67.png)">PostHog</a></li>
     <li><a href="https://cryptapi.io" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/cryptapi.png)">CryptAPI</a></li>
     <li><a href="https://www.fezto.xyz/?utm_source=DjangoRESTFramework" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/fezto.png)">FEZTO</a></li>
+    <li><a href="https://www.svix.com/?utm_source=django-REST&utm_medium=sponsorship" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/svix.png)">Svix</a></li>
 </ul>
 <div style="clear: both; padding-bottom: 20px;"></div>
 
-*Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Sentry](https://getsentry.com/welcome/), [Stream](https://getstream.io/?utm_source=DjangoRESTFramework&utm_medium=Webpage_Logo_Ad&utm_content=Developer&utm_campaign=DjangoRESTFramework_Jan2022_HomePage), [Spacinov](https://www.spacinov.com/), [Retool](https://retool.com/?utm_source=djangorest&utm_medium=sponsorship), [bit.io](https://bit.io/jobs?utm_source=DRF&utm_medium=sponsor&utm_campaign=DRF_sponsorship), [PostHog](https://posthog.com?utm_source=DRF&utm_medium=sponsor&utm_campaign=DRF_sponsorship), [CryptAPI](https://cryptapi.io), and [FEZTO](https://www.fezto.xyz/?utm_source=DjangoRESTFramework).*
+*Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Sentry](https://getsentry.com/welcome/), [Stream](https://getstream.io/?utm_source=DjangoRESTFramework&utm_medium=Webpage_Logo_Ad&utm_content=Developer&utm_campaign=DjangoRESTFramework_Jan2022_HomePage), [Spacinov](https://www.spacinov.com/), [Retool](https://retool.com/?utm_source=djangorest&utm_medium=sponsorship), [bit.io](https://bit.io/jobs?utm_source=DRF&utm_medium=sponsor&utm_campaign=DRF_sponsorship), [PostHog](https://posthog.com?utm_source=DRF&utm_medium=sponsor&utm_campaign=DRF_sponsorship), [CryptAPI](https://cryptapi.io), [FEZTO](https://www.fezto.xyz/?utm_source=DjangoRESTFramework), and [Svix](https://www.svix.com/?utm_source=django-REST&utm_medium=sponsorship).*
 
 ---
 
@@ -86,7 +87,7 @@ continued development by **[signing up for a paid plan][funding]**.
 REST framework requires the following:
 
 * Python (3.6, 3.7, 3.8, 3.9, 3.10, 3.11)
-* Django (3.0, 3.1, 3.2, 4.0, 4.1)
+* Django (3.0, 3.1, 3.2, 4.0, 4.1, 4.2)
 
 We **highly recommend** and only officially support the latest patch release of
 each Python and Django series.
