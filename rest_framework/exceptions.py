@@ -141,7 +141,7 @@ class APIException(Exception):
 # raise serializers.ValidationError('Value was invalid')
 
 class ValidationError(APIException):
-    status_code = status.HTTP_400_BAD_REQUEST
+    status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
     default_detail = _('Invalid input.')
     default_code = 'invalid'
     default_params = {}
