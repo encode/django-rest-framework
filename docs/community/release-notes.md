@@ -946,7 +946,7 @@ See the [release announcement][3.6-release].
 * description.py codes and tests removal. ([#4153][gh4153])
 * Wrap guardian.VERSION in tuple. ([#4149][gh4149])
 * Refine validator for fields with <source=> kwargs. ([#4146][gh4146])
-* Fix None values representation in childs of ListField, DictField. ([#4118][gh4118])
+* Fix None values representation in children of ListField, DictField. ([#4118][gh4118])
 * Resolve TimeField representation for midnight value. ([#4107][gh4107])
 * Set proper status code in AdminRenderer for the redirection after POST/DELETE requests. ([#4106][gh4106])
 * TimeField render returns None instead of 00:00:00. ([#4105][gh4105])
