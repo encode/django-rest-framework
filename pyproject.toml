@@ -33,7 +33,7 @@ classifiers = [
     "Programming Language :: Python :: 3 :: Only",
     "Topic :: Internet :: WWW/HTTP",
 ]
-requires-python = ">=3.7"
+requires-python = ">=3.6"
 dependencies = [
     "django>=3.0",
     'backports.zoneinfo;python_version<"3.9"',
