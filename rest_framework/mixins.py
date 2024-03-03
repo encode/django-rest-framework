@@ -15,6 +15,7 @@ class CreateModelMixin:
     """
     Create a model instance.
     """
+
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -32,10 +33,33 @@ class CreateModelMixin:
             return {}
 
 
+class BulkCreateModelMixin:
+    """
+    Bulk create model instances.
+    """
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data, many=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_bulk_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def perform_bulk_create(self, serializer):
+        serializer.save()
+
+    def get_success_headers(self, data):
+        try:
+            return {'Location': str(data[api_settings.URL_FIELD_NAME])}
+        except (TypeError, KeyError):
+            return {}
+
+
 class ListModelMixin:
     """
     List a queryset.
     """
+
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
 
@@ -52,6 +76,7 @@ class RetrieveModelMixin:
     """
     Retrieve a model instance.
     """
+
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
@@ -62,6 +87,7 @@ class UpdateModelMixin:
     """
     Update a model instance.
     """
+
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
@@ -91,6 +117,7 @@ class DestroyModelMixin:
     """
     Destroy a model instance.
     """
+
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         self.perform_destroy(instance)
