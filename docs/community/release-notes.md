@@ -40,6 +40,8 @@ You can determine your currently installed version using `pip show`:
 
 Date: ...
 
+* Django 5.0 and Python 3.12 support [[#9157] (https://github.com/encode/django-rest-framework/pull/9157)]
+* Use POST method instead of GET to perform logout in browsable API [[9208] (https://github.com/encode/django-rest-framework/pull/9208)]
 * Added jQuery 3.7.1 support & dropped previous version [[#9094](https://github.com/encode/django-rest-framework/pull/9094)]
 * Use str as default path converter [[#9066](https://github.com/encode/django-rest-framework/pull/9066)]
 * Document support for http.HTTPMethod in the @action decorator added in Python 3.11 [[#9067](https://github.com/encode/django-rest-framework/pull/9067)]
