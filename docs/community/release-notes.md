@@ -50,7 +50,7 @@ Date: ...
 * Propagate 'default' from model field to serializer field. [[#9030](https://github.com/encode/django-rest-framework/pull/9030)]
 * Allow to override child.run_validation call in ListSerializer [[#8035](https://github.com/encode/django-rest-framework/pull/8035)]
 * Align SearchFilter behaviour to django.contrib.admin search [[#9017](https://github.com/encode/django-rest-framework/pull/9017)]
-* Class name added to unkown field error [[#9019](https://github.com/encode/django-rest-framework/pull/9019)]
+* Class name added to unknown field error [[#9019](https://github.com/encode/django-rest-framework/pull/9019)]
 * Fix: Pagination response schemas. [[#9049](https://github.com/encode/django-rest-framework/pull/9049)]
 * Fix choices in ChoiceField to support IntEnum [[#8955](https://github.com/encode/django-rest-framework/pull/8955)]
 * Fix `SearchFilter` rendering search field with invalid value [[#9023](https://github.com/encode/django-rest-framework/pull/9023)]
