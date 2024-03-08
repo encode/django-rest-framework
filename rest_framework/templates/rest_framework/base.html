@@ -9,6 +9,7 @@
 
       {% block meta %}
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- Added viewport meta tag for responsiveness -->
         <meta name="robots" content="NONE,NOARCHIVE" />
       {% endblock %}
 
@@ -22,7 +23,10 @@
 
         <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/prettify.css" %}"/>
         <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/default.css" %}"/>
-        {% if code_style %}<style>{{ code_style }}</style>{% endif %}
+        {% if code_style %}
+          <style>
+          </style>
+        {% endif %}
       {% endblock %}
 
     {% endblock %}
