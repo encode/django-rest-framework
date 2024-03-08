@@ -27,8 +27,8 @@ def smart_repr(value):
     if isinstance(value, models.Manager):
         return manager_repr(value)
 
-    if isinstance(value, Promise) and value._delegate_text:
-        value = force_str(value)
+    if isinstance(value, Promise):
+        value = force_str(value, strings_only=True)
 
     value = repr(value)
 
