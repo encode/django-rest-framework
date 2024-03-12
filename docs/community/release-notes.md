@@ -38,7 +38,7 @@ You can determine your currently installed version using `pip show`:
 
 ### 3.15.0
 
-Date: ...
+Date: 15th March 2024
 
 * Django 5.0 and Python 3.12 support [[#9157] (https://github.com/encode/django-rest-framework/pull/9157)]
 * Use POST method instead of GET to perform logout in browsable API [[9208] (https://github.com/encode/django-rest-framework/pull/9208)]
