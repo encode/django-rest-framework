@@ -62,7 +62,6 @@ Date: 15th March 2024
 * Fixes `BrowsableAPIRenderer` for usage with `ListSerializer`. [[#7530](https://github.com/encode/django-rest-framework/pull/7530)]
 * Change semantic of `OR` of two permission classes [[#7522](https://github.com/encode/django-rest-framework/pull/7522)]
 * Remove dependency on `pytz` [[#8984](https://github.com/encode/django-rest-framework/pull/8984)]
-* Fix validation for ListSerializer [[#8979](https://github.com/encode/django-rest-framework/pull/8979)]
 * Make set_value a method within `Serializer` [[#8001](https://github.com/encode/django-rest-framework/pull/8001)]
 * Fix URLPathVersioning reverse fallback [[#7247](https://github.com/encode/django-rest-framework/pull/7247)]
 * Warn about Decimal type in min_value and max_value arguments of DecimalField [[#8972](https://github.com/encode/django-rest-framework/pull/8972)]
