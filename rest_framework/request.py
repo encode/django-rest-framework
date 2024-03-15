@@ -87,7 +87,7 @@ class Empty:
 
 
 def _hasattr(obj, name):
-    return not getattr(obj, name) is Empty
+    return getattr(obj, name) is not Empty
 
 
 def clone_request(request, method):
