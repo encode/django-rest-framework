@@ -115,13 +115,13 @@ class TestUniquenessValidation(TestCase):
         instance = AnotherUniquenessModel.objects.create(code='100')
         serializer = AnotherUniquenessSerializer(instance)
         assert all(
-            ["Unique" not in repr(v) for v in AnotherUniquenessModel._meta.get_field('code').validators]
+            "Unique" not in repr(v) for v in AnotherUniquenessModel._meta.get_field('code').validators
         )
 
         # Accessing data shouldn't effect validators on the model
         serializer.data
         assert all(
-            ["Unique" not in repr(v) for v in AnotherUniquenessModel._meta.get_field('code').validators]
+            "Unique" not in repr(v) for v in AnotherUniquenessModel._meta.get_field('code').validators
         )
 
     def test_related_model_is_unique(self):

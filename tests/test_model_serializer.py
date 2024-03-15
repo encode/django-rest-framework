@@ -232,9 +232,7 @@ class TestRegularFieldMappings(TestCase):
                 model = NullableBooleanChoicesModel
                 fields = ['field']
 
-        serializer = NullableBooleanChoicesSerializer(data=dict(
-            field=None,
-        ))
+        serializer = NullableBooleanChoicesSerializer(data={'field': None})
         self.assertTrue(serializer.is_valid())
         self.assertEqual(serializer.errors, {})
 

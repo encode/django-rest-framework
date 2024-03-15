@@ -27,10 +27,8 @@ class MockQueryset:
 
     def get(self, **lookup):
         for item in self.items:
-            if all([
-                attrgetter(key.replace('__', '.'))(item) == value
-                for key, value in lookup.items()
-            ]):
+            if all(attrgetter(key.replace('__', '.'))(item) == value
+                    for key, value in lookup.items()):
                 return item
         raise ObjectDoesNotExist()
 

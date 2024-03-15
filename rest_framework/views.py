@@ -354,10 +354,10 @@ class APIView(View):
         Check if request should be throttled.
         Raises an appropriate exception if the request is throttled.
         """
-        throttle_durations = []
-        for throttle in self.get_throttles():
-            if not throttle.allow_request(request, self):
-                throttle_durations.append(throttle.wait())
+        throttle_durations = [
+            throttle.wait() for throttle in self.get_throttles()
+            if not throttle.allow_request(request, self)
+        ]
 
         if throttle_durations:
             # Filter out `None` values which may happen in case of config / rate

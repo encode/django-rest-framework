@@ -262,7 +262,7 @@ class TestOperationIntrospection(TestCase):
 
         components = inspector.get_components(path, method)
         assert components['Item']['required'] == ['text']
-        assert sorted(list(components['Item']['properties'].keys())) == ['read_only', 'text']
+        assert sorted(components['Item']['properties'].keys()) == ['read_only', 'text']
 
     def test_invalid_serializer_class_name(self):
         path = '/'
@@ -366,7 +366,7 @@ class TestOperationIntrospection(TestCase):
 
         components = inspector.get_components(path, method)
         assert sorted(components['Item']['required']) == ['text', 'write_only']
-        assert sorted(list(components['Item']['properties'].keys())) == ['text', 'write_only']
+        assert sorted(components['Item']['properties'].keys()) == ['text', 'write_only']
         assert 'description' in responses['201']
 
     def test_response_body_nested_serializer(self):
@@ -398,7 +398,7 @@ class TestOperationIntrospection(TestCase):
 
         schema = components['Item']
         assert sorted(schema['required']) == ['nested', 'text']
-        assert sorted(list(schema['properties'].keys())) == ['nested', 'text']
+        assert sorted(schema['properties'].keys()) == ['nested', 'text']
         assert schema['properties']['nested']['type'] == 'object'
         assert list(schema['properties']['nested']['properties'].keys()) == ['number']
         assert schema['properties']['nested']['required'] == ['number']

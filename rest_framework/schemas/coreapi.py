@@ -380,7 +380,7 @@ class AutoSchema(ViewInspector):
         manual_fields = self.get_manual_fields(path, method)
         fields = self.update_fields(fields, manual_fields)
 
-        if fields and any([field.location in ('form', 'body') for field in fields]):
+        if fields and any(field.location in ('form', 'body') for field in fields):
             encoding = self.get_encoding(path, method)
         else:
             encoding = None
