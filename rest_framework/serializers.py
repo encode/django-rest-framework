@@ -76,6 +76,7 @@ LIST_SERIALIZER_KWARGS = (
     'instance', 'data', 'partial', 'context', 'allow_null',
     'max_length', 'min_length'
 )
+LIST_SERIALIZER_KWARGS_REMOVE = ('allow_empty', 'min_length', 'max_length')
 
 ALL_FIELDS = '__all__'
 
@@ -145,19 +146,12 @@ class BaseSerializer(Field):
             kwargs['child'] = cls()
             return CustomListSerializer(*args, **kwargs)
         """
-        allow_empty = kwargs.pop('allow_empty', None)
-        max_length = kwargs.pop('max_length', None)
-        min_length = kwargs.pop('min_length', None)
-        child_serializer = cls(*args, **kwargs)
-        list_kwargs = {
-            'child': child_serializer,
-        }
-        if allow_empty is not None:
-            list_kwargs['allow_empty'] = allow_empty
-        if max_length is not None:
-            list_kwargs['max_length'] = max_length
-        if min_length is not None:
-            list_kwargs['min_length'] = min_length
+        list_kwargs = {}
+        for key in LIST_SERIALIZER_KWARGS_REMOVE:
+            value = kwargs.pop(key, None)
+            if value is not None:
+                list_kwargs[key] = value
+        list_kwargs['child'] = cls(*args, **kwargs)
         list_kwargs.update({
             key: value for key, value in kwargs.items()
             if key in LIST_SERIALIZER_KWARGS
@@ -609,12 +603,6 @@ class ListSerializer(BaseSerializer):
         self.min_length = kwargs.pop('min_length', None)
         assert self.child is not None, '`child` is a required argument.'
         assert not inspect.isclass(self.child), '`child` has not been instantiated.'
-
-        instance = kwargs.get('instance', [])
-        data = kwargs.get('data', [])
-        if instance and data:
-            assert len(data) == len(instance), 'Data and instance should have same length'
-
         super().__init__(*args, **kwargs)
         self.child.bind(field_name='', parent=self)
 
@@ -700,13 +688,7 @@ class ListSerializer(BaseSerializer):
         ret = []
         errors = []
 
-        for idx, item in enumerate(data):
-            if (
-                hasattr(self, 'instance')
-                and self.instance
-                and len(self.instance) > idx
-            ):
-                self.child.instance = self.instance[idx]
+        for item in data:
             try:
                 validated = self.run_child_validation(item)
             except ValidationError as exc:
