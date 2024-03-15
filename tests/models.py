@@ -131,10 +131,9 @@ class OneToOnePKSource(RESTFrameworkModel):
 class CustomManagerModel(RESTFrameworkModel):
     class CustomManager:
         def __new__(cls, *args, **kwargs):
-            cls = BaseManager.from_queryset(
+            return BaseManager.from_queryset(
                 QuerySet
             )
-            return cls
 
     objects = CustomManager()()
     # `CustomManager()` will return a `BaseManager` class.

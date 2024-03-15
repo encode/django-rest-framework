@@ -25,14 +25,12 @@ from . import views
 
 def create_request(path):
     factory = RequestFactory()
-    request = Request(factory.get(path))
-    return request
+    return Request(factory.get(path))
 
 
 def create_view(view_cls, method, request):
     generator = SchemaGenerator()
-    view = generator.create_view(view_cls.as_view(), method, request)
-    return view
+    return generator.create_view(view_cls.as_view(), method, request)
 
 
 class TestBasics(TestCase):

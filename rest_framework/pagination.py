@@ -558,7 +558,7 @@ class LimitOffsetPagination(BasePagination):
         ]
 
     def get_schema_operation_parameters(self, view):
-        parameters = [
+        return [
             {
                 'name': self.limit_query_param,
                 'required': False,
@@ -578,7 +578,6 @@ class LimitOffsetPagination(BasePagination):
                 },
             },
         ]
-        return parameters
 
 
 class CursorPagination(BasePagination):

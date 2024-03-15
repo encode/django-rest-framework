@@ -188,6 +188,7 @@ class APIView(View):
         authenticators = self.get_authenticators()
         if authenticators:
             return authenticators[0].authenticate_header(request)
+        return None
 
     def get_parser_context(self, http_request):
         """
@@ -252,6 +253,7 @@ class APIView(View):
         """
         if self.settings.FORMAT_SUFFIX_KWARG:
             return kwargs.get(self.settings.FORMAT_SUFFIX_KWARG)
+        return None
 
     def get_renderers(self):
         """

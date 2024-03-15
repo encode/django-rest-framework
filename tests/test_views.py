@@ -32,6 +32,7 @@ def basic_view(request):
         return {'method': 'PUT', 'data': request.data}
     elif request.method == 'PATCH':
         return {'method': 'PATCH', 'data': request.data}
+    return None
 
 
 class ErrorView(APIView):

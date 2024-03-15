@@ -29,5 +29,4 @@ class BasicModelWithUsersViewSet(ModelViewSet):
     renderer_classes = (renderers.BrowsableAPIRenderer, renderers.JSONRenderer)
 
     def get_queryset(self):
-        qs = super().get_queryset().filter(users=self.request.user)
-        return qs
+        return super().get_queryset().filter(users=self.request.user)

@@ -708,6 +708,7 @@ class BooleanField(Field):
             elif self._lower_if_str(data) in self.NULL_VALUES and self.allow_null:
                 return None
         self.fail("invalid", input=data)
+        return None
 
     def to_representation(self, value):
         if self._lower_if_str(value) in self.TRUE_VALUES:
@@ -1196,6 +1197,7 @@ class DateTimeField(Field):
 
         humanized_format = humanize_datetime.datetime_formats(input_formats)
         self.fail('invalid', format=humanized_format)
+        return None
 
     def to_representation(self, value):
         if not value:
@@ -1258,6 +1260,7 @@ class DateField(Field):
 
         humanized_format = humanize_datetime.date_formats(input_formats)
         self.fail('invalid', format=humanized_format)
+        return None
 
     def to_representation(self, value):
         if not value:
@@ -1321,6 +1324,7 @@ class TimeField(Field):
 
         humanized_format = humanize_datetime.time_formats(input_formats)
         self.fail('invalid', format=humanized_format)
+        return None
 
     def to_representation(self, value):
         if value in (None, ''):
@@ -1376,6 +1380,7 @@ class DurationField(Field):
         if parsed is not None:
             return parsed
         self.fail('invalid', format='[DD] [HH:[MM:]]ss[.uuuuuu]')
+        return None
 
     def to_representation(self, value):
         return duration_string(value)

@@ -36,8 +36,7 @@ class JSONEncoder(json.JSONEncoder):
         elif isinstance(obj, datetime.time):
             if timezone and timezone.is_aware(obj):
                 raise ValueError("JSON can't represent timezone-aware times.")
-            representation = obj.isoformat()
-            return representation
+            return obj.isoformat()
         elif isinstance(obj, datetime.timedelta):
             return str(obj.total_seconds())
         elif isinstance(obj, decimal.Decimal):

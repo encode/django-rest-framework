@@ -44,7 +44,7 @@ class BaseThrottle:
         Optionally, return a recommended number of seconds to wait before
         the next request.
         """
-        return None
+        return
 
 
 class SimpleRateThrottle(BaseThrottle):

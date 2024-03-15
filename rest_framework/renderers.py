@@ -197,8 +197,7 @@ class TemplateHTMLRenderer(BaseRenderer):
         except Exception:
             # Fall back to using eg '404 Not Found'
             body = '%d %s' % (response.status_code, response.status_text.title())
-            template = engines['django'].from_string(body)
-            return template
+            return engines['django'].from_string(body)
 
 
 # Note, subclass TemplateHTMLRenderer simply for the exception behavior
@@ -424,7 +423,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         Returns True if a form should be shown for this method.
         """
         if method not in view.allowed_methods:
-            return  # Not a valid method
+            return None  # Not a valid method
 
         try:
             view.check_permissions(request)
@@ -473,7 +472,7 @@ class BrowsableAPIRenderer(BaseRenderer):
 
         with override_method(view, request, method) as request:
             if not self.show_form_for_method(view, method, request, instance):
-                return
+                return None
 
             if method in ('DELETE', 'OPTIONS'):
                 return True  # Don't actually need to return a form
@@ -485,7 +484,7 @@ class BrowsableAPIRenderer(BaseRenderer):
                 (not has_serializer and not has_serializer_class) or
                 not any(is_form_media_type(parser.media_type) for parser in view.parser_classes)
             ):
-                return
+                return None
 
             if existing_serializer is not None:
                 with contextlib.suppress(TypeError):
@@ -538,7 +537,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         with override_method(view, request, method) as request:
             # Check permissions
             if not self.show_form_for_method(view, method, request, instance):
-                return
+                return None
 
             # If possible, serialize the initial content for the generic form
             default_parser = view.parser_classes[0]
@@ -615,7 +614,7 @@ class BrowsableAPIRenderer(BaseRenderer):
 
     def get_filter_form(self, data, view, request):
         if not hasattr(view, 'get_queryset') or not hasattr(view, 'filter_backends'):
-            return
+            return None
 
         # Infer if this is a list view or not.
         paginator = getattr(view, 'paginator', None)
@@ -625,9 +624,9 @@ class BrowsableAPIRenderer(BaseRenderer):
             try:
                 paginator.get_results(data)
             except (TypeError, KeyError):
-                return
+                return None
         elif not isinstance(data, list):
-            return
+            return None
 
         queryset = view.get_queryset()
         elements = []
@@ -638,7 +637,7 @@ class BrowsableAPIRenderer(BaseRenderer):
                     elements.append(html)
 
         if not elements:
-            return
+            return None
 
         template = loader.get_template(self.filter_template)
         context = {'elements': elements}
@@ -833,7 +832,7 @@ class AdminRenderer(BrowsableAPIRenderer):
         """
         if not hasattr(view, 'reverse_action') or \
            not hasattr(view, 'lookup_field'):
-            return
+            return None
 
         lookup_field = view.lookup_field
         lookup_url_kwarg = getattr(view, 'lookup_url_kwarg', None) or lookup_field
@@ -842,7 +841,7 @@ class AdminRenderer(BrowsableAPIRenderer):
             kwargs = {lookup_url_kwarg: result[lookup_field]}
             return view.reverse_action('detail', kwargs=kwargs)
         except (KeyError, NoReverseMatch):
-            return
+            return None
 
 
 class DocumentationRenderer(BaseRenderer):
