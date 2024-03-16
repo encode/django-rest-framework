@@ -290,6 +290,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../community/3.15-announcement/">3.15 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../community/3.14-announcement/">3.14 Announcement</a>
                   </li>
                   
@@ -549,7 +553,7 @@ class GroupViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows groups to be viewed or edited.
     """
-    queryset = Group.objects.all()
+    queryset = Group.objects.all().order_by('name')
     serializer_class = GroupSerializer
     permission_classes = [permissions.IsAuthenticated]
 </code></pre>
@@ -572,8 +576,6 @@ urlpatterns = [
     path('', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]
-
-urlpatterns += router.urls
 </code></pre>
 <p>Because we're using viewsets instead of views, we can automatically generate the URL conf for our API, by simply registering the viewsets with a router class.</p>
 <p>Again, if we need more control over the API URLs we can simply drop down to using regular class-based views, and writing the URL conf explicitly.</p>

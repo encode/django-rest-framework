@@ -290,6 +290,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../community/3.15-announcement/">3.15 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../community/3.14-announcement/">3.14 Announcement</a>
                   </li>
                   
@@ -634,12 +638,9 @@ class ExampleSerializer(serializers.Serializer):
 <p><strong>Note:</strong> <code>HiddenField()</code> does not appear in <code>partial=True</code> serializer (when making <code>PATCH</code> request). This behavior might change in future, follow updates on <a href="https://github.com/encode/django-rest-framework/discussions/8259">github discussion</a>. </p>
 <hr />
 <h1 id="advanced-field-defaults"><a class="toclink" href="#advanced-field-defaults">Advanced field defaults</a></h1>
-<p>Validators that are applied across multiple fields in the serializer can sometimes require a field input that should not be provided by the API client, but that <em>is</em> available as input to the validator.</p>
-<p>Two patterns that you may want to use for this sort of validation include:</p>
-<ul>
-<li>Using <code>HiddenField</code>. This field will be present in <code>validated_data</code> but <em>will not</em> be used in the serializer output representation.</li>
-<li>Using a standard field with <code>read_only=True</code>, but that also includes a <code>default=…</code> argument. This field <em>will</em> be used in the serializer output representation, but cannot be set directly by the user.</li>
-</ul>
+<p>Validators that are applied across multiple fields in the serializer can sometimes require a field input that should not be provided by the API client, but that <em>is</em> available as input to the validator.
+For this purposes use <code>HiddenField</code>. This field will be present in <code>validated_data</code> but <em>will not</em> be used in the serializer output representation.</p>
+<p><strong>Note:</strong> Using a <code>read_only=True</code> field is excluded from writable fields so it won't use a <code>default=…</code> argument. Look <a href="https://www.django-rest-framework.org/community/3.8-announcement/#altered-the-behaviour-of-read_only-plus-default-on-field">3.8 announcement</a>.</p>
 <p>REST framework includes a couple of defaults that may be useful in this context.</p>
 <h4 id="currentuserdefault"><a class="toclink" href="#currentuserdefault">CurrentUserDefault</a></h4>
 <p>A default class that can be used to represent the current user. In order to use this, the 'request' must have been provided as part of the context dictionary when instantiating the serializer.</p>

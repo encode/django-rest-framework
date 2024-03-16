@@ -290,6 +290,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../community/3.15-announcement/">3.15 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../community/3.14-announcement/">3.14 Announcement</a>
                   </li>
                   
@@ -422,6 +426,10 @@
                     </li>
                   
                     <li>
+                      <a href="#authentication">Authentication</a>
+                    </li>
+                  
+                    <li>
                       <a href="#customizing">Customizing</a>
                     </li>
                   
@@ -450,6 +458,13 @@
 <p>If you include fully-qualified URLs in your resource output, they will be 'urlized' and made clickable for easy browsing by humans.  The <code>rest_framework</code> package includes a <a href="../../api-guide/reverse/"><code>reverse</code></a> helper for this purpose.</p>
 <h2 id="formats"><a class="toclink" href="#formats">Formats</a></h2>
 <p>By default, the API will return the format specified by the headers, which in the case of the browser is HTML.  The format can be specified using <code>?format=</code> in the request, so you can look at the raw JSON response in a browser by adding <code>?format=json</code> to the URL.  There are helpful extensions for viewing JSON in <a href="https://addons.mozilla.org/en-US/firefox/addon/jsonview/">Firefox</a> and <a href="https://chrome.google.com/webstore/detail/chklaanhfefbnpoihckbnefhakgolnmc">Chrome</a>.</p>
+<h2 id="authentication"><a class="toclink" href="#authentication">Authentication</a></h2>
+<p>To quickly add authentication to the browesable api, add a routes named <code>"login"</code> and <code>"logout"</code> under the namespace <code>"rest_framework"</code>. DRF provides default routes for this which you can add to your urlconf:</p>
+<pre><code class="language-python">urlpatterns = [
+    # ...
+    url(r&quot;^api-auth/&quot;, include(&quot;rest_framework.urls&quot;, namespace=&quot;rest_framework&quot;))
+]
+</code></pre>
 <h2 id="customizing"><a class="toclink" href="#customizing">Customizing</a></h2>
 <p>The browsable API is built with <a href="https://getbootstrap.com/">Twitter's Bootstrap</a> (v 3.4.1), making it easy to customize the look-and-feel.</p>
 <p>To customize the default style, create a template called <code>rest_framework/api.html</code> that extends from <code>rest_framework/base.html</code>.  For example:</p>
@@ -482,6 +497,19 @@
 <hr />
 <p><img alt="Slate theme" src="../../img/slate.png" /></p>
 <p><em>Screenshot of the bootswatch 'Slate' theme</em></p>
+<hr />
+<h3 id="third-party-packages-for-customization"><a class="toclink" href="#third-party-packages-for-customization">Third party packages for customization</a></h3>
+<p>You can use a third party package for customization, rather than doing it by yourself. Here is 2 packages for customizing the API:</p>
+<ul>
+<li><a href="https://github.com/youzarsiph/rest-framework-redesign">rest-framework-redesign</a> - A package for customizing the API using Bootstrap 5. Modern and sleek design, it comes with the support for dark mode.</li>
+<li><a href="https://github.com/youzarsiph/rest-framework-material">rest-framework-material</a> - Material design for Django REST Framework.</li>
+</ul>
+<hr />
+<p><img alt="Django REST Framework Redesign" src="../../img/rfr.png" /></p>
+<p><em>Screenshot of the rest-framework-redesign</em></p>
+<hr />
+<p><img alt="Django REST Framework Material" src="../../img/rfm.png" /></p>
+<p><em>Screenshot of the rest-framework-material</em></p>
 <hr />
 <h3 id="blocks"><a class="toclink" href="#blocks">Blocks</a></h3>
 <p>All of the blocks available in the browsable API base template that can be used in your <code>api.html</code>.</p>

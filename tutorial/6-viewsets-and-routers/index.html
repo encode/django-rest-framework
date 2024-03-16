@@ -290,6 +290,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../community/3.15-announcement/">3.15 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../community/3.14-announcement/">3.14 Announcement</a>
                   </li>
                   
@@ -450,7 +454,7 @@
 <p>A <code>ViewSet</code> class is only bound to a set of method handlers at the last moment, when it is instantiated into a set of views, typically by using a <code>Router</code> class which handles the complexities of defining the URL conf for you.</p>
 <h2 id="refactoring-to-use-viewsets"><a class="toclink" href="#refactoring-to-use-viewsets">Refactoring to use ViewSets</a></h2>
 <p>Let's take our current set of views, and refactor them into view sets.</p>
-<p>First of all let's refactor our <code>UserList</code> and <code>UserDetail</code> classes into a single <code>UserViewSet</code> class.  We can remove the two view classes, and replace them with a single ViewSet class:</p>
+<p>First of all let's refactor our <code>UserList</code> and <code>UserDetail</code> classes into a single <code>UserViewSet</code> class. In the <code>snippets/views.py</code> file, we can remove the two view classes and replace them with a single ViewSet class:</p>
 <pre><code>from rest_framework import viewsets
 
 

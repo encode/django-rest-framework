@@ -37,7 +37,11 @@ function displayResults (results) {
       search_results.insertAdjacentHTML('beforeend', html);
     }
   } else {
-    search_results.insertAdjacentHTML('beforeend', "<p>No results found</p>");
+    var noResultsText = search_results.getAttribute('data-no-results-text');
+    if (!noResultsText) {
+      noResultsText = "No results found";
+    }
+    search_results.insertAdjacentHTML('beforeend', '<p>' + noResultsText + '</p>');
   }
 }
 

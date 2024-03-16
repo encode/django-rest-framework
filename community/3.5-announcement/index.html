@@ -290,6 +290,10 @@
                   </li>
                   
                   <li >
+                    <a href="../3.15-announcement/">3.15 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../3.14-announcement/">3.14 Announcement</a>
                   </li>
                   
@@ -523,14 +527,10 @@ you to <a href="../api-guide/schemas/#schemas-as-documentation">use the schema d
 from rest_framework_swagger.renderers import OpenAPIRenderer, SwaggerUIRenderer
 
 schema_view = get_schema_view(
-    title='Example API',
-    renderer_classes=[OpenAPIRenderer, SwaggerUIRenderer]
+    title=&quot;Example API&quot;, renderer_classes=[OpenAPIRenderer, SwaggerUIRenderer]
 )
 
-urlpatterns = [
-    path('swagger/', schema_view),
-    ...
-]
+urlpatterns = [path(&quot;swagger/&quot;, schema_view), ...]
 </code></pre>
 <p>There have been a large number of fixes to the schema generation. These should
 resolve issues for anyone using the latest version of the <code>django-rest-swagger</code>

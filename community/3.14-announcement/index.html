@@ -57,7 +57,7 @@
           <a class="repo-link btn btn-inverse btn-small " rel="next" href="../3.13-announcement/">
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
-          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../release-notes/">
+          <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../3.15-announcement/">
             <i class="icon-arrow-left icon-white"></i> Previous
           </a>
           <a id="search_modal_show" class="repo-link btn btn-inverse btn-small" href="#mkdocs_search_modal" data-toggle="modal" data-target="#mkdocs_search_modal"><i class="icon-search icon-white"></i> Search</a>
@@ -289,6 +289,10 @@
                     <a href="../release-notes/">Release Notes</a>
                   </li>
                   
+                  <li >
+                    <a href="../3.15-announcement/">3.15 Announcement</a>
+                  </li>
+                  
                   <li class="active" >
                     <a href="./">3.14 Announcement</a>
                   </li>
@@ -418,7 +422,7 @@
                     </li>
                   
                     <li>
-                      <a href="#raise_exceptions-argument-for-is_valid-is-now-keyword-only">raise_exceptions argument for is_valid is now keyword-only.</a>
+                      <a href="#raise_exception-argument-for-is_valid-is-now-keyword-only">raise_exception argument for is_valid is now keyword-only.</a>
                     </li>
                   
                     <li>
@@ -483,9 +487,9 @@
 <li>Python 3.6+</li>
 <li>Django 4.1, 4.0, 3.2, 3.1, 3.0</li>
 </ul>
-<h2 id="raise_exceptions-argument-for-is_valid-is-now-keyword-only"><a class="toclink" href="#raise_exceptions-argument-for-is_valid-is-now-keyword-only"><code>raise_exceptions</code> argument for <code>is_valid</code> is now keyword-only.</a></h2>
+<h2 id="raise_exception-argument-for-is_valid-is-now-keyword-only"><a class="toclink" href="#raise_exception-argument-for-is_valid-is-now-keyword-only"><code>raise_exception</code> argument for <code>is_valid</code> is now keyword-only.</a></h2>
 <p>Calling <code>serializer_instance.is_valid(True)</code> is no longer acceptable syntax.
-If you'd like to use the <code>raise_exceptions</code> argument, you must use it as a
+If you'd like to use the <code>raise_exception</code> argument, you must use it as a
 keyword argument.</p>
 <p>See Pull Request <a href="https://github.com/encode/django-rest-framework/pull/7952">#7952</a> for more details.</p>
 <h2 id="manyrelatedfield-supports-returning-the-default-when-the-source-attribute-doesnt-exist"><a class="toclink" href="#manyrelatedfield-supports-returning-the-default-when-the-source-attribute-doesnt-exist"><code>ManyRelatedField</code> supports returning the default when the source attribute doesn't exist.</a></h2>

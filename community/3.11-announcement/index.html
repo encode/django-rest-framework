@@ -290,6 +290,10 @@
                   </li>
                   
                   <li >
+                    <a href="../3.15-announcement/">3.15 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../3.14-announcement/">3.14 Announcement</a>
                   </li>
                   
@@ -499,7 +503,7 @@ be extracted from the class docstring:</p>
 <li>Uniqueness validators need to be able to determine the name of the field to which they are applied, in order to run an appropriate database query.</li>
 <li>The <code>CurrentUserDefault</code> needs to be able to determine the context with which the serializer was instantiated, in order to return the current user instance.</li>
 </ul>
-<p>Previous our approach to this was that implementations could include a <code>set_context</code> method, which would be called prior to validation. However this approach had issues with potential race conditions. We have now move this approach into a pending deprecation state. It will continue to function, but will be escalated to a deprecated state in 3.12, and removed entirely in 3.13.</p>
+<p>Our previous approach to this was that implementations could include a <code>set_context</code> method, which would be called prior to validation. However this approach had issues with potential race conditions. We have now move this approach into a pending deprecation state. It will continue to function, but will be escalated to a deprecated state in 3.12, and removed entirely in 3.13.</p>
 <p>Instead, validators or defaults which require the serializer context, should include a <code>requires_context = True</code> attribute on the class.</p>
 <p>The <code>__call__</code> method should then include an additional <code>serializer_field</code> argument.</p>
 <p>Validator implementations will look like this:</p>

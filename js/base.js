@@ -30,7 +30,7 @@ $(document).ready(function() {
         $search_modal.modal();
     }
 
-    // make sure search input gets autofocus everytime modal opens.
+    // make sure search input gets autofocus every time modal opens.
     $search_modal.on('shown.bs.modal', function() {
         $search_modal.find('#mkdocs-search-query').focus();
     });
