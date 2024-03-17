@@ -154,7 +154,7 @@ For example, multiple user throttle rates could be implemented by using the foll
             'example.throttles.SustainedRateThrottle'
         ],
         'DEFAULT_THROTTLE_RATES': {
-            'burst': '60/min',
+            'burst': '60/30-min',
             'sustained': '1000/day'
         }
     }

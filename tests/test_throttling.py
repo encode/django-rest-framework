@@ -25,6 +25,11 @@ class User3SecRateThrottle(UserRateThrottle):
     scope = 'seconds'
 
 
+class User1RequestIn2SecRateThrottle(UserRateThrottle):
+    rate = '1/2-sec'
+    scope = 'seconds'
+
+
 class User3MinRateThrottle(UserRateThrottle):
     rate = '3/min'
     scope = 'minutes'
@@ -52,6 +57,13 @@ class MockView_DoubleThrottling(APIView):
 
 class MockView(APIView):
     throttle_classes = (User3SecRateThrottle,)
+
+    def get(self, request):
+        return Response('foo')
+
+
+class MockView_1RequestIn2SecondThrottling(APIView):
+    throttle_classes = (User1RequestIn2SecRateThrottle,)
 
     def get(self, request):
         return Response('foo')
@@ -167,18 +179,15 @@ class ThrottlingTests(TestCase):
         assert response.status_code == 429
         assert int(response['retry-after']) == 60
 
-        previous_rate = User3SecRateThrottle.rate
-        try:
-            User3SecRateThrottle.rate = '1/sec'
-
-            for dummy in range(24):
-                response = MockView_DoubleThrottling.as_view()(request)
-
-            assert response.status_code == 429
-            assert int(response['retry-after']) == 60
-        finally:
-            # reset
-            User3SecRateThrottle.rate = previous_rate
+    def test_request_throttling_with_amount_of_period(self):
+        self.set_throttle_timer(MockView_1RequestIn2SecondThrottling, 0)
+        request = self.factory.get('/')
+        # At this point our client made two requests, second was throttled for a
+        # two seconds.
+        for _ in range(2):
+            response = MockView_1RequestIn2SecondThrottling.as_view()(request)
+        assert response.status_code == 429
+        assert int(response['retry-after']) == 2
 
     def ensure_response_header_contains_proper_throttle_field(self, view, expected_headers):
         """
