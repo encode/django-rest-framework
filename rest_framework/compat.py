@@ -46,6 +46,15 @@ try:
 except ImportError:
     yaml = None
 
+# inflection is optional
+try:
+    from inflection import pluralize
+except ImportError:
+    def pluralize(text):
+        if not text.endswith('s'):
+            text += "s"
+        return text
+
 
 # requests is optional
 try:
