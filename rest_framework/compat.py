@@ -48,12 +48,9 @@ except ImportError:
 
 # inflection is optional
 try:
-    from inflection import pluralize
+    import inflection
 except ImportError:
-    def pluralize(text):
-        if not text.endswith('s'):
-            text += "s"
-        return text
+    inflection = None
 
 
 # requests is optional
