@@ -142,7 +142,8 @@ class RelatedField(Field):
             kwargs['child'] = cls()
             return CustomManyRelatedField(*args, **kwargs)
         """
-        list_kwargs = {'child_relation': cls(*args, **kwargs)}
+        html_empty_value = kwargs.pop('html_empty_value', None)
+        list_kwargs = {'child_relation': cls(*args, **kwargs), 'html_empty_value': html_empty_value}
         for key in kwargs:
             if key in MANY_RELATION_KWARGS:
                 list_kwargs[key] = kwargs[key]
@@ -492,6 +493,7 @@ class ManyRelatedField(Field):
     def __init__(self, child_relation=None, *args, **kwargs):
         self.child_relation = child_relation
         self.allow_empty = kwargs.pop('allow_empty', True)
+        self.html_empty_value = kwargs.pop('html_empty_value', None)
 
         cutoff_from_settings = api_settings.HTML_SELECT_CUTOFF
         if cutoff_from_settings is not None:
@@ -514,7 +516,10 @@ class ManyRelatedField(Field):
             if self.field_name not in dictionary:
                 if getattr(self.root, 'partial', False):
                     return empty
-            return dictionary.getlist(self.field_name)
+            data = dictionary.getlist(self.field_name)
+            if self.html_empty_value is not None:
+                data = [item for item in data if item != self.html_empty_value]
+            return data
 
         return dictionary.get(self.field_name, empty)
 
