@@ -45,7 +45,16 @@ The default throttling policy may be set globally, using the `DEFAULT_THROTTLE_C
         }
     }
 
-The rate descriptions used in `DEFAULT_THROTTLE_RATES` may include `second`, `minute`, `hour` or `day` as the throttle period.
+The rate descriptions used in `DEFAULT_THROTTLE_RATES` may include `second`, `minute`, `hour` or `day` as the throttle period,
+and period also can has amount. For example.
+    
+    ...
+    'DEFAULT_THROTTLE_RATES': {
+            'anon': '100/3-day',
+            'user': '2000/2-day'
+        }
+    ...
+
 
 You can also set the throttling policy on a per-view or per-viewset basis,
 using the `APIView` class-based views.
