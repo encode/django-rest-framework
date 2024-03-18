@@ -46,6 +46,12 @@ try:
 except ImportError:
     yaml = None
 
+# inflection is optional
+try:
+    import inflection
+except ImportError:
+    inflection = None
+
 
 # requests is optional
 try:
