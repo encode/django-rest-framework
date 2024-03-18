@@ -179,6 +179,19 @@ class ThrottlingTests(TestCase):
         assert response.status_code == 429
         assert int(response['retry-after']) == 60
 
+        previous_rate = User3SecRateThrottle.rate
+        try:
+            User3SecRateThrottle.rate = '1/sec'
+
+            for dummy in range(24):
+                response = MockView_DoubleThrottling.as_view()(request)
+
+            assert response.status_code == 429
+            assert int(response['retry-after']) == 60
+        finally:
+            # reset
+            User3SecRateThrottle.rate = previous_rate
+
     def test_request_throttling_with_amount_of_period(self):
         self.set_throttle_timer(MockView_1RequestIn2SecondThrottling, 0)
         request = self.factory.get('/')
