@@ -28,7 +28,6 @@ class TokenAdmin(admin.ModelAdmin):
     search_help_text = _('Username')
     ordering = ('-created',)
     actions = None  # Actions not compatible with mapped IDs.
-    autocomplete_fields = ("user",)
 
     def get_changelist(self, request, **kwargs):
         return TokenChangeList
