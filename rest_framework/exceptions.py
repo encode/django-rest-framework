@@ -15,11 +15,6 @@ from rest_framework import status
 from rest_framework.utils.serializer_helpers import ReturnDict, ReturnList
 
 
-class SafeReplacerDict(dict):
-    def __missing__(self, key):
-        return key
-
-
 def _get_error_details(data, default_code=None):
     """
     Descend into a nested data structure, forcing any
