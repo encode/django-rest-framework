@@ -164,6 +164,7 @@ class TestValidationErrorWithDjangoStyle(TestCase):
             params={'value3': '44'}
         )
         assert isinstance(error.detail, list)
+        import pdb; pdb.set_trace()
         assert len(error.detail) == 3
         assert str(error.detail[0]) == 'Invalid value: 42'
         assert str(error.detail[1]) == 'Invalid value: 43'
@@ -197,7 +198,7 @@ class TestValidationErrorWithDjangoStyle(TestCase):
         assert str(error.detail[2]) == 'Invalid value: 44'
         assert str(error.detail[3]) == 'Invalid value: 45'
 
-    def test_validation_error_without_params(self):
+    def test_validation_error_without_params_string_templating(self):
         """Ensure that substitutable errors can be emitted without params."""
 
         # mimic the logic in fields.Field.run_validators by saving the exception
@@ -206,7 +207,24 @@ class TestValidationErrorWithDjangoStyle(TestCase):
         # the string has a substitutable substring ...
         errors = []
         try:
-            raise ValidationError('%(user)s')
+            raise ValidationError(detail='%(user)s')
+        except ValidationError as exc:
+            errors.extend(exc.detail)
+
+        # ensure it raises the correct exception type as an input to a new ValidationError
+        with pytest.raises(ValidationError):
+            raise ValidationError(errors)
+
+    def test_validation_error_without_params_date_formatters(self):
+        """Ensure that substitutable errors can be emitted without params."""
+
+        # mimic the logic in fields.Field.run_validators by saving the exception
+        # detail into a list which will then be the detail for a new ValidationError.
+        # this should not throw a KeyError or a TypeError even though
+        # the string has a substitutable substring ...
+        errors = []
+        try:
+            raise ValidationError(detail='Expects format %Y-%m-%d %H:%M:%S')
         except ValidationError as exc:
             errors.extend(exc.detail)
 
