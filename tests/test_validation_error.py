@@ -215,7 +215,7 @@ class TestValidationErrorWithDjangoStyle(TestCase):
             raise ValidationError(errors)
 
     def test_validation_error_without_params_date_formatters(self):
-        """Ensure that substitutable errors can be emitted without params."""
+        """Ensure that substitutable errors can be emitted with invalid template placeholders."""
 
         # mimic the logic in fields.Field.run_validators by saving the exception
         # detail into a list which will then be the detail for a new ValidationError.
