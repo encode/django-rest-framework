@@ -164,7 +164,6 @@ class TestValidationErrorWithDjangoStyle(TestCase):
             params={'value3': '44'}
         )
         assert isinstance(error.detail, list)
-        import pdb; pdb.set_trace()
         assert len(error.detail) == 3
         assert str(error.detail[0]) == 'Invalid value: 42'
         assert str(error.detail[1]) == 'Invalid value: 43'

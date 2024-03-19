@@ -149,7 +149,7 @@ class ValidationError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = _('Invalid input.')
     default_code = 'invalid'
-    default_params = SafeReplacerDict()
+    default_params = {}
 
     def __init__(self, detail=None, code=None, params=None):
         if detail is None:
@@ -162,7 +162,7 @@ class ValidationError(APIException):
         # For validation failures, we may collect many errors together,
         # so the details should always be coerced to a list if not already.
         if isinstance(detail, str):
-            detail = [detail % params]
+            detail = [self.template_detail(detail, params)]
         elif isinstance(detail, ValidationError):
             detail = detail.detail
         elif isinstance(detail, (list, tuple)):
@@ -171,12 +171,21 @@ class ValidationError(APIException):
                 if isinstance(detail_item, ValidationError):
                     final_detail += detail_item.detail
                 else:
-                    final_detail += [detail_item % params if isinstance(detail_item, str) else detail_item]
+                    final_detail += [self.template_detail(detail_item, params) if isinstance(detail_item, str) else detail_item]
             detail = final_detail
         elif not isinstance(detail, dict) and not isinstance(detail, list):
             detail = [detail]
 
         self.detail = _get_error_details(detail, code)
+
+    def template_detail(self, detail, params):
+        """Handle error messages with templates and placeholders."""
+        try:
+            return detail % params
+        except KeyError:
+            return detail
+        except ValueError:
+            return detail
 
 
 class ParseError(APIException):
