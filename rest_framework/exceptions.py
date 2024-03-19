@@ -177,9 +177,7 @@ class ValidationError(APIException):
         """Handle error messages with templates and placeholders."""
         try:
             return detail % params
-        except KeyError:
-            return detail
-        except ValueError:
+        except (KeyError, ValueError, TypeError, IndexError, AttributeError):
             return detail
 
 

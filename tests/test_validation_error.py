@@ -214,6 +214,22 @@ class TestValidationErrorWithDjangoStyle(TestCase):
         with pytest.raises(ValidationError):
             raise ValidationError(errors)
 
+    def test_validation_error_without_params_digit(self):
+        """Ensure that substitutable errors can be emitted with a digit placeholder."""
+
+        # mimic the logic in fields.Field.run_validators by saving the exception
+        # detail into a list which will then be the detail for a new ValidationError.
+        # this should not throw a TypeError on the date format placeholders ...
+        errors = []
+        try:
+            raise ValidationError(detail='%d')
+        except ValidationError as exc:
+            errors.extend(exc.detail)
+
+        # ensure it raises the correct exception type as an input to a new ValidationError
+        with pytest.raises(ValidationError):
+            raise ValidationError(errors)
+
     def test_validation_error_without_params_date_formatters(self):
         """Ensure that substitutable errors can be emitted with invalid template placeholders."""
 
@@ -223,6 +239,46 @@ class TestValidationErrorWithDjangoStyle(TestCase):
         errors = []
         try:
             raise ValidationError(detail='Expects format %Y-%m-%d %H:%M:%S')
+        except ValidationError as exc:
+            errors.extend(exc.detail)
+
+        # ensure it raises the correct exception type as an input to a new ValidationError
+        with pytest.raises(ValidationError):
+            raise ValidationError(errors)
+
+    def test_validation_error_with_param_that_has_attribute_error(self):
+        """Ensure that substitutable errors can be emitted with a bad string repr."""
+
+        class FooBar:
+            def __str__(self):
+                raise AttributeError("i was poorly coded")
+
+        # mimic the logic in fields.Field.run_validators by saving the exception
+        # detail into a list which will then be the detail for a new ValidationError.
+        # this should not throw a ValueError on the date format placeholders ...
+        errors = []
+        try:
+            raise ValidationError(detail='%s', params=FooBar())
+        except ValidationError as exc:
+            errors.extend(exc.detail)
+
+        # ensure it raises the correct exception type as an input to a new ValidationError
+        with pytest.raises(ValidationError):
+            raise ValidationError(errors)
+
+    def test_validation_error_with_param_that_has_index_error(self):
+        """Ensure that substitutable errors can be emitted with a bad string repr."""
+
+        class FooBar:
+            def __str__(self):
+                raise IndexError("i was poorly coded")
+
+        # mimic the logic in fields.Field.run_validators by saving the exception
+        # detail into a list which will then be the detail for a new ValidationError.
+        # this should not throw a ValueError on the date format placeholders ...
+        errors = []
+        try:
+            raise ValidationError(detail='%s', params=FooBar())
         except ValidationError as exc:
             errors.extend(exc.detail)
 
