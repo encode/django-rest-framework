@@ -1,3 +1,4 @@
+import pytest
 from django.test import TestCase
 
 from rest_framework import serializers, status
@@ -195,3 +196,20 @@ class TestValidationErrorWithDjangoStyle(TestCase):
         assert str(error.detail[1]) == 'Invalid value: 43'
         assert str(error.detail[2]) == 'Invalid value: 44'
         assert str(error.detail[3]) == 'Invalid value: 45'
+
+    def test_validation_error_without_params(self):
+        """Ensure that substitutable errors can be emitted without params."""
+
+        # mimic the logic in fields.Field.run_validators by saving the exception
+        # detail into a list which will then be the detail for a new ValidationError.
+        # this should not throw a KeyError or a TypeError even though
+        # the string has a substitutable substring ...
+        errors = []
+        try:
+            raise ValidationError('%(user)s')
+        except ValidationError as exc:
+            errors.extend(exc.detail)
+
+        # ensure it raises the correct exception type as an input to a new ValidationError
+        with pytest.raises(ValidationError):
+            raise ValidationError(errors)

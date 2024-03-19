@@ -15,6 +15,11 @@ from rest_framework import status
 from rest_framework.utils.serializer_helpers import ReturnDict, ReturnList
 
 
+class SafeReplacerDict(dict):
+    def __missing__(self, key):
+        return key
+
+
 def _get_error_details(data, default_code=None):
     """
     Descend into a nested data structure, forcing any
@@ -144,7 +149,7 @@ class ValidationError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = _('Invalid input.')
     default_code = 'invalid'
-    default_params = {}
+    default_params = SafeReplacerDict()
 
     def __init__(self, detail=None, code=None, params=None):
         if detail is None:
@@ -157,6 +162,7 @@ class ValidationError(APIException):
         # For validation failures, we may collect many errors together,
         # so the details should always be coerced to a list if not already.
         if isinstance(detail, str):
+            #import pdb; pdb.set_trace()
             detail = [detail % params]
         elif isinstance(detail, ValidationError):
             detail = detail.detail
@@ -166,6 +172,7 @@ class ValidationError(APIException):
                 if isinstance(detail_item, ValidationError):
                     final_detail += detail_item.detail
                 else:
+                    #import pdb; pdb.set_trace()
                     final_detail += [detail_item % params if isinstance(detail_item, str) else detail_item]
             detail = final_detail
         elif not isinstance(detail, dict) and not isinstance(detail, list):
