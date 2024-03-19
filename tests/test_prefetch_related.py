@@ -35,6 +35,13 @@ class UserUpdateWithoutPrefetchRelated(generics.UpdateAPIView):
     serializer_class = UserSerializer
 
 
+class UserRetrieveWithoutQuerySet(generics.RetrieveUpdateAPIView):
+    serializer_class = UserSerializer
+
+    def get_object(self):
+        return User.objects.get(pk=self.kwargs['pk'])
+
+
 class TestPrefetchRelatedUpdates(TestCase):
     def setUp(self):
         self.user = User.objects.create(username='tom', email='tom@example.com')
@@ -90,3 +97,11 @@ class TestPrefetchRelatedUpdates(TestCase):
         )
         with self.assertNumQueries(16):
             UserUpdateWithoutPrefetchRelated.as_view()(request, pk=self.user.pk)
+
+    def test_can_update_without_queryset(self):
+        request = factory.patch('/', {'username': 'new'})
+        response = UserRetrieveWithoutQuerySet.as_view()(request, pk=self.user.pk)
+        assert response.data['id'] == self.user.id
+        assert response.data['username'] == 'new'
+        self.user.refresh_from_db()
+        assert self.user.username == 'new'

@@ -69,13 +69,14 @@ class UpdateModelMixin:
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
 
-        queryset = self.filter_queryset(self.get_queryset())
-        if queryset._prefetch_related_lookups:
+        if hasattr(instance, '_prefetched_objects_cache'):
             # If 'prefetch_related' has been applied to a queryset, we need to
-            # forcibly invalidate the prefetch cache on the instance,
-            # and then re-prefetch related objects
+            # forcibly invalidate the prefetch cache on the instance
             instance._prefetched_objects_cache = {}
-            prefetch_related_objects([instance], *queryset._prefetch_related_lookups)
+            queryset = self.filter_queryset(self.get_queryset())
+            if getattr(queryset, '_prefetch_related_lookups', None):
+                # And then re-prefetch related objects
+                prefetch_related_objects([instance], *queryset._prefetch_related_lookups)
 
         return Response(serializer.data)
 
