@@ -219,8 +219,7 @@ class TestValidationErrorWithDjangoStyle(TestCase):
 
         # mimic the logic in fields.Field.run_validators by saving the exception
         # detail into a list which will then be the detail for a new ValidationError.
-        # this should not throw a KeyError or a TypeError even though
-        # the string has a substitutable substring ...
+        # this should not throw a ValueError on the date format placeholders ...
         errors = []
         try:
             raise ValidationError(detail='Expects format %Y-%m-%d %H:%M:%S')
