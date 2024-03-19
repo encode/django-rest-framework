@@ -162,7 +162,6 @@ class ValidationError(APIException):
         # For validation failures, we may collect many errors together,
         # so the details should always be coerced to a list if not already.
         if isinstance(detail, str):
-            #import pdb; pdb.set_trace()
             detail = [detail % params]
         elif isinstance(detail, ValidationError):
             detail = detail.detail
@@ -172,7 +171,6 @@ class ValidationError(APIException):
                 if isinstance(detail_item, ValidationError):
                     final_detail += detail_item.detail
                 else:
-                    #import pdb; pdb.set_trace()
                     final_detail += [detail_item % params if isinstance(detail_item, str) else detail_item]
             detail = final_detail
         elif not isinstance(detail, dict) and not isinstance(detail, list):
