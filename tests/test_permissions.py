@@ -32,6 +32,10 @@ class RootView(generics.ListCreateAPIView):
     permission_classes = [permissions.DjangoModelPermissions]
 
 
+class AnonReadOnlyRootView(RootView):
+    permission_classes = [permissions.DjangoModelPermissionsOrAnonReadOnly]
+
+
 class InstanceView(generics.RetrieveUpdateDestroyAPIView):
     queryset = BasicModel.objects.all()
     serializer_class = BasicSerializer
@@ -65,6 +69,7 @@ instance_view = InstanceView.as_view()
 get_queryset_list_view = GetQuerySetListView.as_view()
 empty_list_view = EmptyListView.as_view()
 ignored_get_queryset_list_view = IgnoredGetQuerySetListView.as_view()
+anon_read_only_root_view = AnonReadOnlyRootView.as_view()
 
 
 def basic_auth_header(username, password):
@@ -284,6 +289,39 @@ class ModelPermissionsIntegrationTests(TestCase):
         request = factory.get('/', HTTP_AUTHORIZATION=self.permitted_credentials)
         with self.assertRaisesMessage(AssertionError, 'View.get_queryset() returned None'):
             view(request)
+
+    def test_allow_anonymous_safe_access_to_anon_read_only_view(self):
+        request = factory.get('/', HTTP_AUTHORIZATION='')
+        response = anon_read_only_root_view(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_deny_anonymous_unsafe_access_to_anon_read_only_view(self):
+        request = factory.post('/', {'text': 'foobar'}, format='json',
+                               HTTP_AUTHORIZATION='')
+        response = anon_read_only_root_view(request)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_allow_permitted_safe_access_to_anon_read_only_view(self):
+        request = factory.get('/', HTTP_AUTHORIZATION=self.permitted_credentials)
+        response = anon_read_only_root_view(request)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_allow_permitted_unsafe_access_to_anon_read_only_view(self):
+        request = factory.post('/', {'text': 'foobar'}, format='json',
+                               HTTP_AUTHORIZATION=self.permitted_credentials)
+        response = anon_read_only_root_view(request)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_deny_disallowed_safe_access_to_anon_read_only_view(self):
+        request = factory.post('/', HTTP_AUTHORIZATION=self.disallowed_credentials)
+        response = anon_read_only_root_view(request)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_deny_disallowed_unsafe_to_anon_read_only_view(self):
+        request = factory.post('/', {'text': 'foobar'}, format='json',
+                               HTTP_AUTHORIZATION=self.disallowed_credentials)
+        response = anon_read_only_root_view(request)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
 
 class BasicPermModel(models.Model):
