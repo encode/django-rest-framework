@@ -255,6 +255,12 @@ class DjangoModelPermissionsOrAnonReadOnly(DjangoModelPermissions):
     """
     authenticated_users_only = False
 
+    def has_permission(self, request, view):
+        if request.user and request.user.is_authenticated:
+            return bool(super().has_permission(request, view))
+
+        return bool(request.method in SAFE_METHODS)
+
 
 class DjangoObjectPermissions(DjangoModelPermissions):
     """
