@@ -14,7 +14,7 @@ from django.utils.encoding import force_str
 from rest_framework import (
     RemovedInDRF315Warning, exceptions, renderers, serializers
 )
-from rest_framework.compat import uritemplate
+from rest_framework.compat import inflection, uritemplate
 from rest_framework.fields import _UnvalidatedField, empty
 from rest_framework.settings import api_settings
 
@@ -247,9 +247,8 @@ class AutoSchema(ViewInspector):
                 name = name[:-len(action)]
 
         if action == 'list':
-            from inflection import pluralize
-
-            name = pluralize(name)
+            assert inflection, '`inflection` must be installed for OpenAPI schema support.'
+            name = inflection.pluralize(name)
 
         return name
 
