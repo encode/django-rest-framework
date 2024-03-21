@@ -268,7 +268,7 @@ class DjangoObjectPermissions(DjangoModelPermissions):
     provide a `.queryset` attribute.
     """
     perms_map = {
-        'GET': [],
+        'GET': ['%(app_label)s.view_%(model_name)s'],
         'OPTIONS': [],
         'HEAD': [],
         'POST': ['%(app_label)s.add_%(model_name)s'],
