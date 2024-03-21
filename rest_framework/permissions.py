@@ -186,9 +186,9 @@ class DjangoModelPermissions(BasePermission):
     # Override this if you need to also provide 'view' permissions,
     # or if you want to provide custom permission codes.
     perms_map = {
-        'GET': ['%(app_label)s.view_%(model_name)s'],
+        'GET': [],
         'OPTIONS': [],
-        'HEAD': ['%(app_label)s.view_%(model_name)s'],
+        'HEAD': [],
         'POST': ['%(app_label)s.add_%(model_name)s'],
         'PUT': ['%(app_label)s.change_%(model_name)s'],
         'PATCH': ['%(app_label)s.change_%(model_name)s'],
@@ -239,13 +239,8 @@ class DjangoModelPermissions(BasePermission):
 
         queryset = self._queryset(view)
         perms = self.get_required_permissions(request.method, queryset.model)
-        change_perm = self.get_required_permissions('PUT', queryset.model)
 
-        user = request.user
-        if request.method == 'GET':
-            return user.has_perms(perms) or user.has_perms(change_perm)
-
-        return user.has_perms(perms)
+        return request.user.has_perms(perms)
 
 
 class DjangoModelPermissionsOrAnonReadOnly(DjangoModelPermissions):
