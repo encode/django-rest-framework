@@ -21,9 +21,7 @@ from rest_framework.settings import api_settings
 
 
 def search_smart_split(search_terms):
-    """generator that first splits string by spaces, leaving quoted phrases together,
-    then it splits non-quoted phrases by commas.
-    """
+    """Returns sanitized search terms as a list."""
     split_terms = []
     for term in smart_split(search_terms):
         # trim commas to avoid bad matching for quoted phrases
