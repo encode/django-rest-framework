@@ -495,11 +495,12 @@ can interact with your API.</p>
 <p>The following sections explain more.</p>
 <h2 id="generating-an-openapi-schema"><a class="toclink" href="#generating-an-openapi-schema">Generating an OpenAPI Schema</a></h2>
 <h3 id="install-dependencies"><a class="toclink" href="#install-dependencies">Install dependencies</a></h3>
-<pre><code>pip install pyyaml uritemplate
+<pre><code>pip install pyyaml uritemplate inflection
 </code></pre>
 <ul>
 <li><code>pyyaml</code> is used to generate schema into YAML-based OpenAPI format.</li>
 <li><code>uritemplate</code> is used internally to get parameters in path.</li>
+<li><code>inflection</code> is used to pluralize operations more appropriately in the list endpoints.</li>
 </ul>
 <h3 id="generating-a-static-schema-with-the-generateschema-management-command"><a class="toclink" href="#generating-a-static-schema-with-the-generateschema-management-command">Generating a static schema with the <code>generateschema</code> management command</a></h3>
 <p>If your schema is static, you can use the <code>generateschema</code> management command:</p>

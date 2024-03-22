@@ -666,12 +666,11 @@ class ExampleView(APIView):
 <h2 id="djangomodelpermissions"><a class="toclink" href="#djangomodelpermissions">DjangoModelPermissions</a></h2>
 <p>This permission class ties into Django's standard <code>django.contrib.auth</code> <a href="https://docs.djangoproject.com/en/stable/topics/auth/customizing/#custom-permissions">model permissions</a>.  This permission must only be applied to views that have a <code>.queryset</code> property or <code>get_queryset()</code> method. Authorization will only be granted if the user <em>is authenticated</em> and has the <em>relevant model permissions</em> assigned. The appropriate model is determined by checking <code>get_queryset().model</code> or <code>queryset.model</code>.</p>
 <ul>
-<li><code>GET</code> requests require the user to have the <code>view</code> or <code>change</code> permission on the model</li>
 <li><code>POST</code> requests require the user to have the <code>add</code> permission on the model.</li>
 <li><code>PUT</code> and <code>PATCH</code> requests require the user to have the <code>change</code> permission on the model.</li>
 <li><code>DELETE</code> requests require the user to have the <code>delete</code> permission on the model.</li>
 </ul>
-<p>The default behaviour can also be overridden to support custom model permissions.</p>
+<p>The default behavior can also be overridden to support custom model permissions.  For example, you might want to include a <code>view</code> model permission for <code>GET</code> requests.</p>
 <p>To use custom model permissions, override <code>DjangoModelPermissions</code> and set the <code>.perms_map</code> property.  Refer to the source code for details.</p>
 <h2 id="djangomodelpermissionsoranonreadonly"><a class="toclink" href="#djangomodelpermissionsoranonreadonly">DjangoModelPermissionsOrAnonReadOnly</a></h2>
 <p>Similar to <code>DjangoModelPermissions</code>, but also allows unauthenticated users to have read-only access to the API.</p>

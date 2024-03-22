@@ -537,11 +537,17 @@
 </code></pre>
 <hr />
 <h2 id="315x-series"><a class="toclink" href="#315x-series">3.15.x series</a></h2>
+<h3 id="3151"><a class="toclink" href="#3151">3.15.1</a></h3>
+<p>Date: 22nd March 2024</p>
+<ul>
+<li>Fix <code>SearchFilter</code> handling of quoted and comma separated strings, when <code>.get_search_terms</code> is being called into by a custom class. See [<a href="https://github.com/encode/django-rest-framework/issues/9338">#9338</a>]</li>
+<li>Revert number of 3.15.0 issues which included unintended side-effects. See [<a href="https://github.com/encode/django-rest-framework/issues/9331">#9331</a>]</li>
+</ul>
 <h3 id="3150"><a class="toclink" href="#3150">3.15.0</a></h3>
 <p>Date: 15th March 2024</p>
 <ul>
-<li>Django 5.0 and Python 3.12 support [[#9157] (https://github.com/encode/django-rest-framework/pull/9157)]</li>
-<li>Use POST method instead of GET to perform logout in browsable API [[9208] (https://github.com/encode/django-rest-framework/pull/9208)]</li>
+<li>Django 5.0 and Python 3.12 support [<a href="https://github.com/encode/django-rest-framework/pull/9157">#9157</a>]</li>
+<li>Use POST method instead of GET to perform logout in browsable API [<a href="https://github.com/encode/django-rest-framework/pull/9208">9208</a>]</li>
 <li>Added jQuery 3.7.1 support &amp; dropped previous version [<a href="https://github.com/encode/django-rest-framework/pull/9094">#9094</a>]</li>
 <li>Use str as default path converter [<a href="https://github.com/encode/django-rest-framework/pull/9066">#9066</a>]</li>
 <li>Document support for http.HTTPMethod in the @action decorator added in Python 3.11 [<a href="https://github.com/encode/django-rest-framework/pull/9067">#9067</a>]</li>
@@ -592,7 +598,7 @@
 <li>Use autocomplete widget for user selection in Token admin [<a href="https://github.com/encode/django-rest-framework/pull/8534">#8534</a>]</li>
 <li>Make browsable API compatible with strong CSP [<a href="https://github.com/encode/django-rest-framework/pull/8784">#8784</a>]</li>
 <li>Avoid inline script execution for injecting CSRF token [<a href="https://github.com/encode/django-rest-framework/pull/7016">#7016</a>]</li>
-<li>Mitigate global dependency on inflection #8017 [<a href="https://github.com/encode/django-rest-framework/pull/8017">#8017</a>] [<a href="https://github.com/encode/django-rest-framework/pull/8781">#8781</a>]</li>
+<li>Mitigate global dependency on inflection [<a href="https://github.com/encode/django-rest-framework/pull/8017">#8017</a>] [<a href="https://github.com/encode/django-rest-framework/pull/8781">#8781</a>]</li>
 <li>Register Django urls  [<a href="https://github.com/encode/django-rest-framework/pull/8778">#8778</a>]</li>
 <li>Implemented Verbose Name Translation for TokenProxy [<a href="https://github.com/encode/django-rest-framework/pull/8713">#8713</a>]</li>
 <li>Properly handle OverflowError in DurationField deserialization [<a href="https://github.com/encode/django-rest-framework/pull/8042">#8042</a>]</li>
@@ -610,7 +616,7 @@
 <li>Add <code>__eq__</code> method for <code>OperandHolder</code> class [<a href="https://github.com/encode/django-rest-framework/pull/8710">#8710</a>]</li>
 <li>Avoid importing <code>django.test</code> package when not testing  [<a href="https://github.com/encode/django-rest-framework/pull/8699">#8699</a>]</li>
 <li>Preserve exception messages for wrapped Django exceptions [<a href="https://github.com/encode/django-rest-framework/pull/8051">#8051</a>]</li>
-<li>Include <code>examples</code> and <code>format</code> to OpenAPI schema of CursorPagination [[#8687] (https://github.com/encode/django-rest-framework/pull/8687)] [<a href="https://github.com/encode/django-rest-framework/pull/8686">#8686</a>]</li>
+<li>Include <code>examples</code> and <code>format</code> to OpenAPI schema of CursorPagination [<a href="https://github.com/encode/django-rest-framework/pull/8687">#8687</a>] [<a href="https://github.com/encode/django-rest-framework/pull/8686">#8686</a>]</li>
 <li>Fix infinite recursion with deepcopy on Request [<a href="https://github.com/encode/django-rest-framework/pull/8684">#8684</a>]</li>
 <li>Refactor: Replace try/except with contextlib.suppress() [<a href="https://github.com/encode/django-rest-framework/pull/8676">#8676</a>]</li>
 <li>Minor fix to SerializeMethodField docstring [<a href="https://github.com/encode/django-rest-framework/pull/8629">#8629</a>]</li>
