@@ -36,6 +36,13 @@ You can determine your currently installed version using `pip show`:
 
 ## 3.15.x series
 
+### 3.15.1
+
+Date: 22nd March 2024
+
+* Fix `SearchFilter` handling of quoted and comma separated strings, when `.get_search_terms` is being called into by a custom class. See [[#9338](https://github.com/encode/django-rest-framework/issues/9338)]
+* Revert number of 3.15.0 issues which included unintended side-effects. See [[#9331](https://github.com/encode/django-rest-framework/issues/9331)]
+
 ### 3.15.0
 
 Date: 15th March 2024
