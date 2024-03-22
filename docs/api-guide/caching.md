@@ -59,6 +59,31 @@ class PostView(APIView):
         return Response(content)
 ```
 
+
+## Using cache with @api_view decorator
+
+When using @api_view decorator, the Django-provided method-based cache decorators such as [`cache_page`][page],
+[`vary_on_cookie`][cookie] and [`vary_on_headers`][headers] can be called directly.
+
+```python
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_cookie
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
+
+@cache_page(60 * 15)
+@vary_on_cookie
+@api_view(['GET'])
+def get_user_list(request):
+    content = {
+        'user_feed': request.user.get_user_feed()
+    }
+    return Response(content)
+```
+
+
 **NOTE:** The [`cache_page`][page] decorator only caches the
 `GET` and `HEAD` responses with status 200.
 
