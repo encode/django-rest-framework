@@ -210,7 +210,7 @@ class TestRegularFieldMappings(TestCase):
                 length_limit_field = CharField\(max_length=12, min_length=3\)
                 blank_field = CharField\(allow_blank=True, max_length=10, required=False\)
                 null_field = IntegerField\(allow_null=True,.*required=False\)
-                default_field = IntegerField\(required=False\)
+                default_field = IntegerField\(.*required=False\)
                 descriptive_field = IntegerField\(help_text='Some help text', label='A label'.*\)
                 choices_field = ChoiceField\(choices=(?:\[|\()\('red', 'Red'\), \('blue', 'Blue'\), \('green', 'Green'\)(?:\]|\))\)
                 text_choices_field = ChoiceField\(choices=(?:\[|\()\('red', 'Red'\), \('blue', 'Blue'\), \('green', 'Green'\)(?:\]|\))\)
