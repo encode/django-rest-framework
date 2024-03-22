@@ -24,15 +24,19 @@ def search_smart_split(search_terms):
     """generator that first splits string by spaces, leaving quoted phrases together,
     then it splits non-quoted phrases by commas.
     """
+    split_terms = []
     for term in smart_split(search_terms):
         # trim commas to avoid bad matching for quoted phrases
         term = term.strip(',')
         if term.startswith(('"', "'")) and term[0] == term[-1]:
             # quoted phrases are kept together without any other split
-            yield unescape_string_literal(term)
+            split_terms.append(unescape_string_literal(term))
         else:
             # non-quoted tokens are split by comma, keeping only non-empty ones
-            yield from (sub_term.strip() for sub_term in term.split(',') if sub_term)
+            for sub_term in term.split(','):
+                if sub_term:
+                    split_terms.append(sub_term.strip())
+    return split_terms
 
 
 class BaseFilterBackend:
@@ -85,7 +89,8 @@ class SearchFilter(BaseFilterBackend):
         """
         value = request.query_params.get(self.search_param, '')
         field = CharField(trim_whitespace=False, allow_blank=True)
-        return field.run_validation(value)
+        cleaned_value = field.run_validation(value)
+        return search_smart_split(cleaned_value)
 
     def construct_search(self, field_name, queryset):
         lookup = self.lookup_prefixes.get(field_name[0])
@@ -163,7 +168,7 @@ class SearchFilter(BaseFilterBackend):
             reduce(
                 operator.or_,
                 (models.Q(**{orm_lookup: term}) for orm_lookup in orm_lookups)
-            ) for term in search_smart_split(search_terms)
+            ) for term in search_terms
         )
         queryset = queryset.filter(reduce(operator.and_, conditions))
 
