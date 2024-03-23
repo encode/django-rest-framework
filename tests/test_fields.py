@@ -9,6 +9,7 @@ from enum import auto
 from unittest.mock import patch
 
 import pytest
+from django import VERSION as DJANGO_VERSION
 
 try:
     import pytz
@@ -672,6 +673,7 @@ class FieldValues:
             assert self.field.run_validation(input_value) == expected_output, \
                 'input value: {}'.format(repr(input_value))
 
+    @pytest.mark.xfail(pytz and DJANGO_VERSION >= (5, 0), reason="Django v5 drops support for pytz")
     def test_invalid_inputs(self, *args):
         """
         Ensure that invalid values raise the expected validation error.

@@ -75,11 +75,9 @@ from rest_framework.response import Response
 
 @cache_page(60 * 15)
 @vary_on_cookie
-@api_view(['GET'])
+@api_view(["GET"])
 def get_user_list(request):
-    content = {
-        'user_feed': request.user.get_user_feed()
-    }
+    content = {"user_feed": request.user.get_user_feed()}
     return Response(content)
 ```
 
