@@ -187,7 +187,9 @@ class PageNumberPagination(BasePagination):
 
     # Set to an integer to limit the maximum page size the client may request.
     # Only relevant if 'page_size_query_param' has also been set.
-    max_page_size = None
+    # Defaults to `None`, meaning page size is unlimited.
+    # It's recommended that you would set a limit to avoid api abuse.
+    max_page_size = api_settings.MAX_PAGE_SIZE
 
     last_page_strings = ('last',)
 
@@ -383,7 +385,7 @@ class LimitOffsetPagination(BasePagination):
     limit_query_description = _('Number of results to return per page.')
     offset_query_param = 'offset'
     offset_query_description = _('The initial index from which to return the results.')
-    max_limit = None
+    max_limit = api_settings.MAX_PAGE_SIZE
     template = 'rest_framework/pagination/numbers.html'
 
     def paginate_queryset(self, queryset, request, view=None):
@@ -601,7 +603,7 @@ class CursorPagination(BasePagination):
 
     # Set to an integer to limit the maximum page size the client may request.
     # Only relevant if 'page_size_query_param' has also been set.
-    max_page_size = None
+    max_page_size = api_settings.MAX_PAGE_SIZE
 
     # The offset in the cursor is used in situations where we have a
     # nearly-unique index. (Eg millisecond precision creation timestamps)
