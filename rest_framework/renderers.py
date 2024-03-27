@@ -170,6 +170,8 @@ class TemplateHTMLRenderer(BaseRenderer):
 
     def get_template_context(self, data, renderer_context):
         response = renderer_context['response']
+        if isinstance(data, list):
+            return {'details': data, 'status_code': response.status_code}
         if response.exception:
             data['status_code'] = response.status_code
         return data
