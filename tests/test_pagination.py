@@ -47,6 +47,8 @@ class TestPaginationIntegration:
             'results': [12, 14, 16, 18, 20],
             'previous': 'http://testserver/',
             'next': 'http://testserver/?page=3',
+            'last': 'http://testserver/?page=10',
+            'first': None,
             'count': 50
         }
 
@@ -61,6 +63,8 @@ class TestPaginationIntegration:
             'results': [2, 4, 6, 8, 10, 12, 14, 16, 18, 20],
             'previous': None,
             'next': 'http://testserver/?page=2&page_size=10',
+            'last': 'http://testserver/?page=5&page_size=10',
+            'first': None,
             'count': 50
         }
 
@@ -79,6 +83,8 @@ class TestPaginationIntegration:
             ],
             'previous': None,
             'next': 'http://testserver/?page=2&page_size=1000',
+            'last': 'http://testserver/?page=3&page_size=1000',
+            'first': None,
             'count': 50
         }
 
@@ -93,6 +99,8 @@ class TestPaginationIntegration:
             'results': [2, 4, 6, 8, 10],
             'previous': None,
             'next': 'http://testserver/?page=2&page_size=0',
+            'last': 'http://testserver/?page=10&page_size=0',
+            'first': None,
             'count': 50
         }
 
@@ -102,6 +110,8 @@ class TestPaginationIntegration:
         assert response.status_code == status.HTTP_200_OK
         assert response.data == {
             'results': [12, 14, 16, 18, 20],
+            'last': 'http://testserver/?filter=even&page=10',
+            'first': None,
             'previous': 'http://testserver/?filter=even',
             'next': 'http://testserver/?filter=even&page=3',
             'count': 50
@@ -114,7 +124,9 @@ class TestPaginationIntegration:
         assert response.data == {
             'results': [12, 14, 16, 18, 20],
             'previous': 'http://testserver/?filter=',
+            'last': 'http://testserver/?filter=&page=10',
             'next': 'http://testserver/?filter=&page=3',
+            'first': None,
             'count': 50
         }
 
@@ -191,6 +203,8 @@ class TestPageNumberPagination:
             'results': [1, 2, 3, 4, 5],
             'previous': None,
             'next': 'http://testserver/?page=2',
+            'last': 'http://testserver/?page=20',
+            'first': None,
             'count': 100
         }
         assert context == {
@@ -217,6 +231,8 @@ class TestPageNumberPagination:
             'results': [6, 7, 8, 9, 10],
             'previous': 'http://testserver/',
             'next': 'http://testserver/?page=3',
+            'last': 'http://testserver/?page=20',
+            'first': None,
             'count': 100
         }
         assert context == {
@@ -240,6 +256,8 @@ class TestPageNumberPagination:
         assert content == {
             'results': [96, 97, 98, 99, 100],
             'previous': 'http://testserver/?page=19',
+            'first': 'http://testserver/?page=1',
+            'last': None,
             'next': None,
             'count': 100
         }
@@ -337,6 +355,8 @@ class TestPageNumberPaginationOverride:
             'results': [1, ],
             'previous': None,
             'next': None,
+            'last': None,
+            'first': None,
             'count': 1
         }
         assert context == {
