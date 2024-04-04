@@ -8,7 +8,7 @@ The tutorial is fairly in-depth, so you should probably get a cookie and a cup o
 
 ---
 
-**Note**: The code for this tutorial is available in the [encode/rest-framework-tutorial][repo] repository on GitHub.  The completed implementation is also online as a sandbox version for testing, [available here][sandbox].
+**Note**: The code for this tutorial is available in the [encode/rest-framework-tutorial][repo] repository on GitHub. Feel free to clone the repository and see the code in action.
 
 ---
 
@@ -307,7 +307,7 @@ Quit out of the shell...
     Validating models...
 
     0 errors found
-    Django version 4.0, using settings 'tutorial.settings'
+    Django version 5.0, using settings 'tutorial.settings'
     Starting Development server at http://127.0.0.1:8000/
     Quit the server with CONTROL-C.
 
@@ -371,7 +371,6 @@ We'll see how we can start to improve things in [part 2 of the tutorial][tut-2].
 
 [quickstart]: quickstart.md
 [repo]: https://github.com/encode/rest-framework-tutorial
-[sandbox]: https://restframework.herokuapp.com/
 [venv]: https://docs.python.org/3/library/venv.html
 [tut-2]: 2-requests-and-responses.md
 [httpie]: https://github.com/httpie/httpie#installation
