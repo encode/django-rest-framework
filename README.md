@@ -45,8 +45,6 @@ Some reasons you might want to use REST framework:
 * Customizable all the way down - just use [regular function-based views][functionview-section] if you don't need the [more][generic-views] [powerful][viewsets] [features][routers].
 * [Extensive documentation][docs], and [great community support][group].
 
-There is a live example API for testing purposes, [available here][sandbox].
-
 **Below**: *Screenshot from the browsable API*
 
 ![Screenshot][image]
@@ -188,7 +186,6 @@ Please see the [security policy][security-policy].
 [pypi]: https://pypi.org/project/djangorestframework/
 [twitter]: https://twitter.com/starletdreaming
 [group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
-[sandbox]: https://restframework.herokuapp.com/
 
 [funding]: https://fund.django-rest-framework.org/topics/funding/
 [sponsors]: https://fund.django-rest-framework.org/topics/funding/#our-sponsors
