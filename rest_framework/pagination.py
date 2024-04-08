@@ -822,8 +822,8 @@ class CursorPagination(BasePagination):
 
         if ordering_filters:
             # If a filter exists on the view that implements `get_ordering`
-            # then we defer to that filter to determine the ordering.
-            filter_cls = ordering_filters[0]
+            # then we defer to the last such filter to determine the ordering.
+            filter_cls = ordering_filters[-1]
             filter_instance = filter_cls()
             ordering_from_filter = filter_instance.get_ordering(request, queryset, view)
             if ordering_from_filter:
