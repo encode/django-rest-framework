@@ -247,7 +247,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [serializer-section]: api-guide/serializers#serializers
 [modelserializer-section]: api-guide/serializers#modelserializer
 [functionview-section]: api-guide/views#function-based-views
-[sandbox]: https://restframework.herokuapp.com/
 [sponsors]: https://fund.django-rest-framework.org/topics/funding/#our-sponsors
 
 [quickstart]: tutorial/quickstart.md
