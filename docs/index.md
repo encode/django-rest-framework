@@ -184,7 +184,7 @@ Can't wait to get started? The [quickstart guide][quickstart] is the fastest way
 ## Development
 
 See the [Contribution guidelines][contributing] for information on how to clone
-the repository, run the test suite and contribute changes back to REST
+the repository, run the test suite and help maintain the code base of REST
 Framework.
 
 ## Support
