@@ -95,8 +95,8 @@ each Python and Django series.
 The following packages are optional:
 
 * [PyYAML][pyyaml], [uritemplate][uriteemplate] (5.1+, 3.0.0+) - Schema generation support.
-* [Markdown][markdown] (3.0.0+) - Markdown support for the browsable API.
-* [Pygments][pygments] (2.4.0+) - Add syntax highlighting to Markdown processing.
+* [Markdown][markdown] (3.3.0+) - Markdown support for the browsable API.
+* [Pygments][pygments] (2.7.0+) - Add syntax highlighting to Markdown processing.
 * [django-filter][django-filter] (1.0.1+) - Filtering support.
 * [django-guardian][django-guardian] (1.1.1+) - Object level permissions support.
 
