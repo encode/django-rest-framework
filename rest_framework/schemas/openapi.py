@@ -12,7 +12,7 @@ from django.db import models
 from django.utils.encoding import force_str
 
 from rest_framework import (
-    RemovedInDRF315Warning, exceptions, renderers, serializers
+    RemovedInDRF316Warning, exceptions, renderers, serializers
 )
 from rest_framework.compat import inflection, uritemplate
 from rest_framework.fields import _UnvalidatedField, empty
@@ -725,7 +725,7 @@ class AutoSchema(ViewInspector):
     def _get_reference(self, serializer):
         warnings.warn(
             "Method `_get_reference()` has been renamed to `get_reference()`. "
-            "The old name will be removed in DRF v3.15.",
-            RemovedInDRF315Warning, stacklevel=2
+            "The old name will be removed in DRF v3.16.",
+            RemovedInDRF316Warning, stacklevel=2
         )
         return self.get_reference(serializer)
