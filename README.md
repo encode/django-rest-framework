@@ -53,8 +53,8 @@ Some reasons you might want to use REST framework:
 
 # Requirements
 
-* Python 3.6+
-* Django 5.0, 4.2, 4.1, 4.0, 3.2, 3.1, 3.0
+* Python 3.8+
+* Django 5.0, 4.2
 
 We **highly recommend** and only officially support the latest patch release of
 each Python and Django series.

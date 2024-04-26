@@ -14,8 +14,6 @@ jobs:
     strategy:
       matrix:
         python-version:
-        - '3.6'
-        - '3.7'
         - '3.8'
         - '3.9'
         - '3.10'
@@ -37,17 +35,8 @@ jobs:
     - name: Install dependencies
       run: python -m pip install --upgrade codecov tox
 
-    - name: Install tox-py
-      if: ${{ matrix.python-version == '3.6' }}
-      run: python -m pip install --upgrade tox-py
-
     - name: Run tox targets for ${{ matrix.python-version }}
-      if: ${{ matrix.python-version != '3.6' }}
       run: tox run -f py$(echo ${{ matrix.python-version }} | tr -d .)
-
-    - name: Run tox targets for ${{ matrix.python-version }}
-      if: ${{ matrix.python-version == '3.6' }}
-      run: tox --py current
 
     - name: Run extra tox targets
       if: ${{ matrix.python-version == '3.9' }}
