@@ -152,7 +152,7 @@ If `@tomchristie` ceases to participate in the project then `@j4mie` has respons
 
 The following issues still need to be addressed:
 
-* Ensure `@jamie` has back-up access to the `django-rest-framework.org` domain setup and admin.
+* Ensure `@j4mie` has back-up access to the `django-rest-framework.org` domain setup and admin.
 * Document ownership of the [mailing list][mailing-list] and IRC channel.
 * Document ownership and management of the security mailing list.
 
