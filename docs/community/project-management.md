@@ -13,55 +13,13 @@ The aim is to ensure that the project has a high
 
 ## Maintenance team
 
-We have a quarterly maintenance cycle where new members may join the maintenance team. We currently cap the size of the team at 5 members, and may encourage folks to step out of the team for a cycle to allow new members to participate.
+[Participating actively in the REST framework project](contributing.md) **does not require being part of the maintenance team**. Almost every important part of issue triage and project improvement can be actively worked on regardless of your collaborator status on the repository.
 
-#### Current team
+#### Composition
 
-The [maintenance team for Q4 2015](https://github.com/encode/django-rest-framework/issues/2190):
+The composition of the maintenance team is handled by [@tomchristie](https://github.com/encode/). Team members will be added as collaborators to the repository.
 
-* [@tomchristie](https://github.com/encode/)
-* [@xordoquy](https://github.com/xordoquy/) (Release manager.)
-* [@carltongibson](https://github.com/carltongibson/)
-* [@kevin-brown](https://github.com/kevin-brown/)
-* [@jpadilla](https://github.com/jpadilla/)
-
-#### Maintenance cycles
-
-Each maintenance cycle is initiated by an issue being opened with the `Process` label.
-
-* To be considered for a maintainer role simply comment against the issue.
-* Existing members must explicitly opt-in to the next cycle by check-marking their name.
-* The final decision on the incoming team will be made by `@tomchristie`.
-
-Members of the maintenance team will be added as collaborators to the repository.
-
-The following template should be used for the description of the issue, and serves as the formal process for selecting the team.
-
-    This issue is for determining the maintenance team for the *** period.
-
-    Please see the [Project management](https://www.django-rest-framework.org/topics/project-management/) section of our documentation for more details.
-
-    ---
-
-    #### Renewing existing members.
-
-    The following people are the current maintenance team. Please checkmark your name if you wish to continue to have write permission on the repository for the *** period.
-
-    - [ ] @***
-    - [ ] @***
-    - [ ] @***
-    - [ ] @***
-    - [ ] @***
-
-    ---
-
-    #### New members.
-
-    If you wish to be considered for this or a future date, please comment against this or subsequent issues.
-
-    To modify this process for future maintenance cycles make a pull request to the [project management](https://www.django-rest-framework.org/topics/project-management/) documentation.
-
-#### Responsibilities of team members
+#### Responsibilities
 
 Team members have the following responsibilities.
 
@@ -78,16 +36,12 @@ Further notes for maintainers:
 * Each issue/pull request should have exactly one label once triaged.
 * Search for un-triaged issues with [is:open no:label][un-triaged].
 
-It should be noted that participating actively in the REST framework project clearly **does not require being part of the maintenance team**. Almost every import part of issue triage and project improvement can be actively worked on regardless of your collaborator status on the repository.
-
 ---
 
 ## Release process
 
-The release manager is selected on every quarterly maintenance cycle.
-
-* The manager should be selected by `@tomchristie`.
-* The manager will then have the maintainer role added to PyPI package.
+* The release manager is selected by `@tomchristie`.
+* The release manager will then have the maintainer role added to PyPI package.
 * The previous manager will then have the maintainer role removed from the PyPI package.
 
 Our PyPI releases will be handled by either the current release manager, or by `@tomchristie`. Every release should have an open issue tagged with the `Release` label and marked against the appropriate milestone.
