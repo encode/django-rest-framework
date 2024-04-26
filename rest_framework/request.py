@@ -16,9 +16,9 @@ from django.conf import settings
 from django.http import HttpRequest, QueryDict
 from django.http.request import RawPostDataException
 from django.utils.datastructures import MultiValueDict
+from django.utils.http import parse_header_parameters
 
 from rest_framework import exceptions
-from rest_framework.compat import parse_header_parameters
 from rest_framework.settings import api_settings
 
 

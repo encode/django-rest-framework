@@ -2,7 +2,6 @@ import itertools
 from io import BytesIO
 from unittest.mock import patch
 
-import django
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
@@ -334,18 +333,10 @@ class TestUrlPatternTestCase(URLPatternsTestCase):
         super().setUpClass()
         assert urlpatterns is cls.urlpatterns
 
-        if django.VERSION > (4, 0):
-            cls.addClassCleanup(
-                check_urlpatterns,
-                cls
-            )
-
-    if django.VERSION < (4, 0):
-        @classmethod
-        def tearDownClass(cls):
-            assert urlpatterns is cls.urlpatterns
-            super().tearDownClass()
-            assert urlpatterns is not cls.urlpatterns
+        cls.addClassCleanup(
+            check_urlpatterns,
+            cls
+        )
 
     def test_urlpatterns(self):
         assert self.client.get('/').status_code == 200
