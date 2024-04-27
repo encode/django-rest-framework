@@ -4,6 +4,7 @@ import os
 import re
 import sys
 import uuid
+import warnings
 from decimal import ROUND_DOWN, ROUND_UP, Decimal
 from enum import auto
 from unittest.mock import patch
@@ -1254,15 +1255,19 @@ class TestMinMaxDecimalField(FieldValues):
     )
 
     def test_warning_when_not_decimal_types(self, caplog):
-        import logging
-        serializers.DecimalField(
-            max_digits=3, decimal_places=1,
-            min_value=10, max_value=20
-        )
-        assert caplog.record_tuples == [
-            ("rest_framework.fields", logging.WARNING, "max_value in DecimalField should be Decimal type."),
-            ("rest_framework.fields", logging.WARNING, "min_value in DecimalField should be Decimal type.")
-        ]
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter('always')
+
+            serializers.DecimalField(
+                max_digits=3, decimal_places=1,
+                min_value=10, max_value=20
+            )
+
+            assert len(w) == 2
+            assert all(issubclass(i.category, UserWarning) for i in w)
+
+            assert 'max_value should be a Decimal instance' in str(w[0].message)
+            assert 'min_value should be a Decimal instance' in str(w[1].message)
 
 
 class TestAllowEmptyStrDecimalFieldWithValidators(FieldValues):
