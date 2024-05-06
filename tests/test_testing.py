@@ -318,10 +318,6 @@ class TestAPIRequestFactory(TestCase):
         assert request.META['CONTENT_TYPE'] == 'application/json'
 
 
-def check_urlpatterns(cls):
-    assert urlpatterns is not cls.urlpatterns
-
-
 class TestUrlPatternTestCase(URLPatternsTestCase):
     urlpatterns = [
         path('', view),
@@ -333,10 +329,11 @@ class TestUrlPatternTestCase(URLPatternsTestCase):
         super().setUpClass()
         assert urlpatterns is cls.urlpatterns
 
-        cls.addClassCleanup(
-            check_urlpatterns,
-            cls
-        )
+    @classmethod
+    def doClassCleanups(cls):
+        assert urlpatterns is cls.urlpatterns
+        super().doClassCleanups()
+        assert urlpatterns is not cls.urlpatterns
 
     def test_urlpatterns(self):
         assert self.client.get('/').status_code == 200
