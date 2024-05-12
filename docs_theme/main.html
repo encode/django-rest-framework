@@ -12,10 +12,12 @@
   <meta name="author" content="Tom Christie">
 
   <!-- Le styles -->
-  <link href="{{ 'css/prettify.css'|url }}" rel="stylesheet">
+  <!-- <link href="{{ 'css/prettify.css'|url }}" rel="stylesheet">
   <link href="{{ 'css/bootstrap.css'|url }}" rel="stylesheet">
   <link href="{{ 'css/bootstrap-responsive.css'|url }}" rel="stylesheet">
-  <link href="{{ 'css/default.css'|url }}" rel="stylesheet">
+  <link href="{{ 'css/default.css'|url }}" rel="stylesheet"> -->
+  
+  <link rel="stylesheet" href="{{ 'css/bootstrap5.css'|url }}">
 
 
   <script type="text/javascript">
@@ -134,13 +136,16 @@
   <!-- Le javascript
   ================================================== -->
   <!-- Placed at the end of the document so the pages load faster -->
-  <script async src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
+  <!-- <script async src="https://fund.django-rest-framework.org/sidebar_include.js"></script>
   <script src="{{ 'js/jquery-1.8.1-min.js'|url }}"></script>
   <script src="{{ 'js/prettify-1.0.js'|url }}"></script>
   <script src="{{ 'js/bootstrap-2.1.1-min.js'|url }}"></script>
-  <script src="{{ 'js/theme.js'|url }}"></script>
+  <script src="{{ 'js/theme.js'|url }}"></script> -->
 
   <script>var base_url = '{{ base_url }}';</script>
+
+  <script src="{{ 'js/bootstrap5.bundle.js'|url }}"></script>
+
   {% for path in config.extra_javascript %}
   <script src="{{ path|url }}" defer></script>
   {% endfor %}
