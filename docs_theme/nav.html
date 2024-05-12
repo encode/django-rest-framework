@@ -1,46 +1,176 @@
-    <div class="navbar navbar-inverse navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container-fluid">
-          <a class="repo-link btn btn-primary btn-small" href="https://github.com/encode/django-rest-framework/tree/master">GitHub</a>
-          <a class="repo-link btn btn-inverse btn-small {% if not page.next_page %}disabled{% endif %}" rel="next" {% if page.next_page %}href="{{ page.next_page.url|url }}"{% endif %}>
-            Next <i class="icon-arrow-right icon-white"></i>
-          </a>
-          <a class="repo-link btn btn-inverse btn-small {% if not page.previous_page %}disabled{% endif %}" rel="prev" {% if page.previous_page %}href="{{ page.previous_page.url|url }}"{% endif %}>
-            <i class="icon-arrow-left icon-white"></i> Previous
-          </a>
-          <a id="search_modal_show" class="repo-link btn btn-inverse btn-small" href="#mkdocs_search_modal" data-toggle="modal" data-target="#mkdocs_search_modal"><i class="icon-search icon-white"></i> Search</a>
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-          <a class="brand" href="https://www.django-rest-framework.org/">Django REST framework</a>
-          <div class="nav-collapse collapse">
-            {% if nav|length>1 %}
-            <!-- Main navigation -->
-            <ul class="nav navbar-nav">
-              {% for nav_item in nav %} {% if nav_item.children %}
-              <li class="dropdown{% if nav_item.active %} active{% endif %}">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ nav_item.title }} <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  {% for nav_item in nav_item.children %}
-                  <li {% if nav_item.active %}class="active" {% endif %}>
-                    <a href="{{ nav_item.url|url }}">{{ nav_item.title }}</a>
-                  </li>
-                  {% endfor %}
-                </ul>
-              </li>
-              {% else %}
+<!-- <div class="navbar navbar-inverse navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container-fluid">
+      <a
+        class="repo-link btn btn-primary btn-small"
+        href="https://github.com/encode/django-rest-framework/tree/master"
+        >GitHub</a
+      >
+      <a
+        class="repo-link btn btn-inverse btn-small {% if not page.next_page %}disabled{% endif %}"
+        rel="next"
+        {%
+        if
+        page.next_page
+        %}href="{{ page.next_page.url|url }}"
+        {%
+        endif
+        %}
+      >
+        Next <i class="icon-arrow-right icon-white"></i>
+      </a>
+      <a
+        class="repo-link btn btn-inverse btn-small {% if not page.previous_page %}disabled{% endif %}"
+        rel="prev"
+        {%
+        if
+        page.previous_page
+        %}href="{{ page.previous_page.url|url }}"
+        {%
+        endif
+        %}
+      >
+        <i class="icon-arrow-left icon-white"></i> Previous
+      </a>
+      <a
+        id="search_modal_show"
+        class="repo-link btn btn-inverse btn-small"
+        href="#mkdocs_search_modal"
+        data-toggle="modal"
+        data-target="#mkdocs_search_modal"
+        ><i class="icon-search icon-white"></i> Search</a
+      >
+      <a
+        class="btn btn-navbar"
+        data-toggle="collapse"
+        data-target=".nav-collapse"
+      >
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </a>
+
+      <a class="brand" href="https://www.django-rest-framework.org/"
+        >Django REST framework</a
+      >
+
+      <div class="nav-collapse collapse">
+        {% if nav|length>1 %}
+        <ul class="nav navbar-nav">
+          {% for nav_item in nav %} {% if nav_item.children %}
+          <li class="dropdown{% if nav_item.active %} active{% endif %}">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown"
+              >{{ nav_item.title }} <b class="caret"></b
+            ></a>
+            <ul class="dropdown-menu">
+              {% for nav_item in nav_item.children %}
               <li {% if nav_item.active %}class="active" {% endif %}>
                 <a href="{{ nav_item.url|url }}">{{ nav_item.title }}</a>
               </li>
-              {% endif %} {% endfor %}
-
+              {% endfor %}
             </ul>
-            {% endif %}
-          </div>
-          <!--/.nav-collapse -->
-
-        </div>
+          </li>
+          {% else %}
+          <li {% if nav_item.active %}class="active" {% endif %}>
+            <a href="{{ nav_item.url|url }}">{{ nav_item.title }}</a>
+          </li>
+          {% endif %} {% endfor %}
+        </ul>
+        {% endif %}
       </div>
     </div>
+  </div>
+</div> -->
+
+<!-- New Navbar -->
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="https://www.django-rest-framework.org/"
+      >Django REST framework</a
+    >
+
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Main navigation -->
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      {% if nav|length>1 %}
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        {% for nav_item in nav %} {% if nav_item.children %}
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle"
+            href="#"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            {{ nav_item.title }}
+          </a>
+          <ul class="dropdown-menu">
+            {% for nav_item in nav_item.children %}
+            <li>
+              <!-- prettier-ignore -->
+              <a {% if nav_item.active %} class="dropdown-item active" {% else %} class="dropdown-item" {% endif %}
+              
+              href="#">{{ nav_item.title }}</a>
+            </li>
+            {% endfor %}
+          </ul>
+        </li>
+
+        {% else %}
+        <li class="nav-item">
+          <!-- prettier-ignore -->
+          <a {% if nav_item.active %} class="nav-link active" {% else %} class="nav-link" {% endif %}
+          aria-current="page" href="{{ nav_item.url|url }}">{{ nav_item.title }}</a>
+        </li>
+        {% endif %} {% endfor %}
+      </ul>
+      {% endif %}
+
+      <form class="d-flex mx-auto" role="search">
+        <input
+          class="form-control me-2"
+          type="search"
+          placeholder="Search"
+          aria-label="Search"
+        />
+        <button class="btn btn-outline-success" type="submit">Search</button>
+      </form>
+
+      <div class="d-flex gap-2">
+        <!-- prettier-ignore -->
+        <a 
+        {% if page.previous_page %}href="{{ page.previous_page.url|url }}"{% endif %}
+        {% if not page.previous_page %}disabled{% endif %}
+        class="btn btn-sm btn-secondary"
+      >Previous</a>
+
+        <!-- prettier-ignore -->
+        <a
+        {% if page.next_page %}href="{{ page.next_page.url|url }}"{% endif %}
+        {% if not page.next_page %}disabled{% endif %}
+        class="btn btn-sm btn-secondary"
+      >Next</a>
+
+        <!-- prettier-ignore -->
+        <a
+        class="btn btn-primary btn-sm"
+        href="https://github.com/encode/django-rest-framework/tree/master"
+        >Github</a
+      >
+      </div>
+    </div>
+  </div>
+</nav>
