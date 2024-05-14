@@ -38,8 +38,7 @@
             <li>
               <!-- prettier-ignore -->
               <a {% if nav_item.active %} class="dropdown-item active" {% else %} class="dropdown-item" {% endif %}
-              
-              href="#">{{ nav_item.title }}</a>
+              href="{{ nav_item.url|url }}">{{ nav_item.title }}</a>
             </li>
             {% endfor %}
           </ul>
