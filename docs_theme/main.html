@@ -63,62 +63,9 @@
       {% include "nav.html" %}
 
       <div class="body-content">
-        <div class="container-fluid">
-          <div
-            class="modal fade"
-            id="mkdocs_search_modal"
-            tabindex="-1"
-            aria-labelledby="searchModal"
-            aria-hidden="true"
-          >
-            <div
-              class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
-            >
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h3 class="modal-title fs-5" id="search_modal_label">
-                    Documentation Search
-                  </h3>
-                  <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Close"
-                  ></button>
-                </div>
-
-                <div class="modal-body">
-                  <form role="form" autocomplete="off">
-                    <div class="form-group">
-                      <input
-                        type="text"
-                        name="q"
-                        class="form-control"
-                        placeholder="Search..."
-                        id="mkdocs-search-query"
-                      />
-                    </div>
-                  </form>
-
-                  <div id="mkdocs-search-results" class="mt-3"></div>
-                </div>
-
-                <div class="modal-footer">
-                  <button
-                    type="button"
-                    class="btn btn-secondary"
-                    data-bs-dismiss="modal"
-                  >
-                    Close
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- Modal End -->
-
-          <div class="row-fluid">
-            <div class="span3">
+        <div class="container">
+          <div class="row">
+            <div class="col-3">
               <div id="table-of-contents">
                 <!-- <ul class="nav nav-list side-nav well sidebar-nav-fixed">
                 {% if page and page.is_homepage %}
@@ -147,7 +94,7 @@
               </div>
             </div>
 
-            <div id="main-content" class="span9">
+            <div id="main-content" class="col-9">
               {% block content %} {% if page.meta.source %} {% for filename in
               page.meta.source %}
               <a
@@ -221,5 +168,56 @@
         });
       });
     </script>
+
+    <div
+      class="modal fade"
+      id="mkdocs_search_modal"
+      tabindex="-1"
+      aria-labelledby="searchModal"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 class="modal-title fs-5" id="search_modal_label">
+              Documentation Search
+            </h3>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+
+          <div class="modal-body">
+            <form role="form" autocomplete="off">
+              <div class="form-group">
+                <input
+                  type="text"
+                  name="q"
+                  class="form-control"
+                  placeholder="Search..."
+                  id="mkdocs-search-query"
+                />
+              </div>
+            </form>
+
+            <div id="mkdocs-search-results" class="mt-3"></div>
+          </div>
+
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Modal End -->
   </body>
 </html>
