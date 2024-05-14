@@ -139,17 +139,16 @@
       </ul>
       {% endif %}
 
-      <form class="d-flex mx-auto" role="search">
-        <input
-          class="form-control me-2"
-          type="search"
-          placeholder="Search"
-          aria-label="Search"
-        />
-        <button class="btn btn-outline-success" type="submit">Search</button>
-      </form>
-
       <div class="d-flex gap-2">
+        <a
+          id="search_modal_btn"
+          class="btn btn-sm btn-secondary"
+          href="#search_modal"
+          data-bs-toggle="modal"
+          data-bs-target="#search_modal"
+        >
+          Search
+        </a>
         <!-- prettier-ignore -->
         <a 
         {% if page.previous_page %}href="{{ page.previous_page.url|url }}"{% endif %}
