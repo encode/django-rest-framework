@@ -67,30 +67,35 @@
           <div class="row">
             <div class="col-3">
               <div id="table-of-contents">
-                <!-- <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-                {% if page and page.is_homepage %}
-                  <li class="main">
-                    <a href="#">Django REST framework</a>
-                  </li>
-                {% endif %}
-
-                {% for toc_item in page.toc %}
-                  <li class="{% if page and not page.is_homepage %}main{% endif %}">
-                    <a href="{{ toc_item.url }}">{{ toc_item.title }}</a>
-                  </li>
+                <ul class="nav flex-column">
+                  {% if page and page.is_homepage %}
+                  <a
+                    href="#"
+                    class="nav-link {% if page and page.is_homepage %} fw-bold {% endif %}"
+                    >Django REST framework</a
+                  >
+                  {% endif %} {% for toc_item in page.toc %}
+                  <a
+                    href="{{ toc_item.url }}"
+                    class="nav-link {% if page and not page.is_homepage %}main{% endif %}"
+                    >{{ toc_item.title }}</a
+                  >
 
                   {% for toc_item in toc_item.children %}
-                    <li>
-                      <a href="{{ toc_item.url }}">{{ toc_item.title }}</a>
-                    </li>
-                  {% endfor %}
-                {% endfor %}
+                  <li>
+                    <a class="nav-link" href="{{ toc_item.url }}"
+                      >{{ toc_item.title }}</a
+                    >
+                  </li>
+                  {% endfor %} {% endfor %}
 
                   <div class="promo">
-                    {% if page.toc %}<hr/>{% endif %}
-                    <div id="sidebarInclude">
+                    {% if page.toc %}
+                    <hr />
+                    {% endif %}
                   </div>
-              </ul> -->
+                  <div id="sidebarInclude"></div>
+                </ul>
               </div>
             </div>
 
