@@ -140,15 +140,16 @@
       {% endif %}
 
       <div class="d-flex gap-2">
-        <a
-          id="search_modal_btn"
+        <button
+          type="button"
+          id="search_modal_show"
           class="btn btn-sm btn-secondary"
-          href="#search_modal"
+          href="#mkdocs_search_modal"
           data-bs-toggle="modal"
-          data-bs-target="#search_modal"
+          data-bs-target="#mkdocs_search_modal"
         >
           Search
-        </a>
+        </button>
         <!-- prettier-ignore -->
         <a 
         {% if page.previous_page %}href="{{ page.previous_page.url|url }}"{% endif %}
