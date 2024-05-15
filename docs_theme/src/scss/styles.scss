@@ -1,3 +1,26 @@
+// Bootstrap Variables
+
+// Navbar
+// $navbar-brand-font-size: $font-size-lg !default;
+$navbar-padding-y: 0;
+// $nav-link-height:                   $font-size-base * $line-height-base + $nav-link-padding-y * 2 !default;
+// $navbar-light-color:                rgba(var(--#{$prefix}emphasis-color-rgb), .65) !default;
+// $navbar-light-hover-color:          rgba(var(--#{$prefix}emphasis-color-rgb), .8) !default;
+// $navbar-light-active-color:         rgba(var(--#{$prefix}emphasis-color-rgb), 1) !default;
+// $navbar-dark-color:                 rgba($white, .55) !default;
+// $navbar-dark-hover-color:           rgba($white, .75) !default;
+// $navbar-dark-active-color:          $white !default;
+
+// Dropdowns
+// $dropdown-padding-x:                0 !default;
+// $dropdown-padding-y:                .5rem !default;
+// $dropdown-spacer:                   .125rem !default;
+// $dropdown-link-color:               var(--#{$prefix}body-color) !default;
+// $dropdown-link-hover-color:         $dropdown-link-color !default;
+// $dropdown-link-hover-bg:            var(--#{$prefix}tertiary-bg) !default;
+$dropdown-font-size: 0.9rem;
+$dropdown-color: #a30000;
+
 // Configuration
 @import "../../node_modules/bootstrap/scss/functions";
 @import "../../node_modules/bootstrap/scss/variables";
@@ -44,3 +67,9 @@
 
 // Utilities
 @import "../../node_modules/bootstrap/scss/utilities/api";
+
+// Custom Classes
+.body-content {
+  padding-top: 120px;
+  padding-bottom: 70px;
+}

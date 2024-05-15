@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "webpack build",
-    "build:production": "webpack build --mode=production"
+    "build:production": "webpack build --mode=production",
+    "build:watch": "webpack build --watch"
   },
   "author": "",
   "license": "ISC",
