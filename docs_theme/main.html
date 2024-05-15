@@ -21,7 +21,7 @@
   <link href="{{ 'css/bootstrap-responsive.css'|url }}" rel="stylesheet">
   <link href="{{ 'css/default.css'|url }}" rel="stylesheet"> -->
 
-    <link rel="stylesheet" href="{{ 'css/bootstrap5.css'|url }}" />
+    <link rel="stylesheet" href="{{ 'dist/main.css'|url }}" />
 
     <script type="text/javascript">
       var _gaq = _gaq || [];
@@ -192,7 +192,7 @@
       var base_url = "{{ base_url }}";
     </script>
 
-    <script src="{{ 'js/bootstrap5.bundle.js'|url }}"></script>
+    <script src="{{ 'dist/main.js'|url }}"></script>
 
     {% for path in config.extra_javascript %}
     <script src="{{ path|url }}" defer></script>
