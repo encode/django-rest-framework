@@ -1,25 +1,19 @@
 // Bootstrap Variables
 
-// Navbar
-// $navbar-brand-font-size: $font-size-lg !default;
-$navbar-padding-y: 0;
-// $nav-link-height:                   $font-size-base * $line-height-base + $nav-link-padding-y * 2 !default;
-// $navbar-light-color:                rgba(var(--#{$prefix}emphasis-color-rgb), .65) !default;
-// $navbar-light-hover-color:          rgba(var(--#{$prefix}emphasis-color-rgb), .8) !default;
-// $navbar-light-active-color:         rgba(var(--#{$prefix}emphasis-color-rgb), 1) !default;
-// $navbar-dark-color:                 rgba($white, .55) !default;
-// $navbar-dark-hover-color:           rgba($white, .75) !default;
-// $navbar-dark-active-color:          $white !default;
+// General Styles
+$font-family-base: "Helvetica Neue", Helvetica, Arial, sans-serif;
+$font-size-base: 1rem * 0.875;
+$color-contrast-dark: #333;
 
-// Dropdowns
-// $dropdown-padding-x:                0 !default;
-// $dropdown-padding-y:                .5rem !default;
-// $dropdown-spacer:                   .125rem !default;
-// $dropdown-link-color:               var(--#{$prefix}body-color) !default;
-// $dropdown-link-hover-color:         $dropdown-link-color !default;
-// $dropdown-link-hover-bg:            var(--#{$prefix}tertiary-bg) !default;
-$dropdown-font-size: 0.9rem;
-$dropdown-color: #a30000;
+// Navbar Styles
+$navbar-padding-y: 0;
+$navbar-nav-link-padding-x: 1rem;
+
+$dropdown-link-color: #a30000;
+$nav-link-color: #a30000;
+$nav-link-hover-color: #a30000;
+
+$code-color: #d14;
 
 // Configuration
 @import "../../node_modules/bootstrap/scss/functions";
@@ -69,7 +63,42 @@ $dropdown-color: #a30000;
 @import "../../node_modules/bootstrap/scss/utilities/api";
 
 // Custom Classes
+a {
+  color: #a30000;
+  text-decoration: none;
+}
+
+pre.prettyprint {
+  margin-bottom: 20px;
+}
+
+body hr {
+  border-top: 1px dotted #a30000;
+}
+
+.navbar {
+  border-top: 5px solid #a30000;
+}
+
+code {
+  background-color: #f7f7f9;
+  border: 1px solid #e1e1e8;
+  padding: 2px 4px;
+}
+
 .body-content {
   padding-top: 120px;
   padding-bottom: 70px;
 }
+
+.badges {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+}
+
+.toclink {
+  color: #333;
+}
+
+// Code Blocks
