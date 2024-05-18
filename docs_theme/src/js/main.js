@@ -13,4 +13,11 @@ import "../../node_modules/bootstrap/js/dist/tooltip";
 
 import "../scss/styles.scss";
 
+function setupPrettify() {
+  const codeBlocks = document.querySelectorAll("pre code");
+  codeBlocks.forEach((block) => {
+    block.parentElement.classList.add("prettyprint", "well");
+  });
+}
+
 setupPrettify();
