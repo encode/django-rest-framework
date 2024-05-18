@@ -5,6 +5,66 @@
       >Django REST framework</a
     >
 
+    <div class="d-flex gap-2 order-lg-5">
+      <button
+        type="button"
+        id="search_modal_show"
+        class="btn btn-sm btn-secondary d-flex gap-1"
+        href="#mkdocs_search_modal"
+        data-bs-toggle="modal"
+        data-bs-target="#mkdocs_search_modal"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          fill="currentColor"
+          class="bi bi-search"
+          viewBox="0 0 16 16"
+        >
+          <path
+            d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"
+          />
+        </svg>
+
+        <span class="d-none d-md-block">Search</span>
+      </button>
+      <!-- prettier-ignore -->
+      <a 
+        {% if page.previous_page %}href="{{ page.previous_page.url|url }}"{% endif %}
+        {% if not page.previous_page %}disabled{% endif %}
+        class="btn btn-sm btn-secondary d-flex gap-1"
+      >
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+      </svg>
+
+      <span class="d-none d-md-block">Previous</span>
+    </a>
+
+      <!-- prettier-ignore -->
+      <a
+        {% if page.next_page %}href="{{ page.next_page.url|url }}"{% endif %}
+        {% if not page.next_page %}disabled{% endif %}
+        class="btn btn-sm btn-secondary d-flex gap-1"
+      >
+      <span class="d-none d-md-block">Next</span>
+
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"/>
+      </svg>
+    </a>
+
+      <!-- prettier-ignore -->
+      <a
+        class="btn btn-primary btn-sm"
+        href="https://github.com/encode/django-rest-framework/tree/master"
+        >
+        <span>Github</span>
+        </a
+      >
+    </div>
+
     <button
       class="navbar-toggler"
       type="button"
@@ -53,39 +113,6 @@
         {% endif %} {% endfor %}
       </ul>
       {% endif %}
-
-      <div class="d-flex gap-2">
-        <button
-          type="button"
-          id="search_modal_show"
-          class="btn btn-sm btn-secondary"
-          href="#mkdocs_search_modal"
-          data-bs-toggle="modal"
-          data-bs-target="#mkdocs_search_modal"
-        >
-          Search
-        </button>
-        <!-- prettier-ignore -->
-        <a 
-        {% if page.previous_page %}href="{{ page.previous_page.url|url }}"{% endif %}
-        {% if not page.previous_page %}disabled{% endif %}
-        class="btn btn-sm btn-secondary"
-      >Previous</a>
-
-        <!-- prettier-ignore -->
-        <a
-        {% if page.next_page %}href="{{ page.next_page.url|url }}"{% endif %}
-        {% if not page.next_page %}disabled{% endif %}
-        class="btn btn-sm btn-secondary"
-      >Next</a>
-
-        <!-- prettier-ignore -->
-        <a
-        class="btn btn-primary btn-sm"
-        href="https://github.com/encode/django-rest-framework/tree/master"
-        >Github</a
-      >
-      </div>
     </div>
   </div>
 </nav>
