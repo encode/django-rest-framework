@@ -198,33 +198,5 @@
     {% for path in config.extra_javascript %}
     <script src="{{ path|url }}" defer></script>
     {% endfor %}
-
-    <script>
-      var shiftWindow = function () {
-        scrollBy(0, -50);
-      };
-
-      if (location.hash) shiftWindow();
-      window.addEventListener("hashchange", shiftWindow);
-
-      $(".dropdown-menu").on("click touchstart", function (event) {
-        event.stopPropagation();
-      });
-
-      // Dynamically force sidenav/dropdown to no higher than browser window
-      $(".side-nav, .dropdown-menu").css(
-        "max-height",
-        window.innerHeight - 130
-      );
-
-      $(function () {
-        $(window).resize(function () {
-          $(".side-nav, .dropdown-menu").css(
-            "max-height",
-            window.innerHeight - 130
-          );
-        });
-      });
-    </script>
   </body>
 </html>

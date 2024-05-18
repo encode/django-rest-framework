@@ -14,7 +14,8 @@ watch:
 markdown_extensions:
  - admonition
  - toc:
-    anchorlink: True
+    # anchorlink: True
+    permalink: True
 
 nav:
  - Home: 'index.md'

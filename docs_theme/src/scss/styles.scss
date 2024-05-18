@@ -105,7 +105,7 @@ pre code {
 }
 
 .body-content {
-  padding-top: 120px;
+  padding-top: 70px;
   padding-bottom: 70px;
 }
 
@@ -113,6 +113,7 @@ pre code {
   display: flex;
   align-items: center;
   justify-content: end;
+  gap: 8px;
 }
 
 .toclink {
@@ -153,7 +154,7 @@ pre code {
 }
 
 .prettyprint {
-  padding: 8px;
+  padding: 20px;
   background-color: #f7f7f9;
   border: 1px solid #e1e1e8;
 }
