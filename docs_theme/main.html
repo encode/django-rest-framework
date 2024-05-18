@@ -65,7 +65,7 @@
       <div class="body-content">
         <div class="container">
           <div class="row">
-            <div class="col-3">
+            <div class="col-12 col-md-3">
               <div id="table-of-contents">
                 <ul class="nav flex-column">
                   {% if page and page.is_homepage %}
@@ -99,7 +99,7 @@
               </div>
             </div>
 
-            <div id="main-content" class="col-9">
+            <div id="main-content" class="col-12 col-md-9">
               {% block content %} {% if page.meta.source %} {% for filename in
               page.meta.source %}
               <a
