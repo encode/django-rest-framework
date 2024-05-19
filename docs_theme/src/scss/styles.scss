@@ -147,6 +147,46 @@ img {
 .prettyprint.linenums {
   box-shadow: inset 40px 0 0 #fbfbfc, inset 41px 0 0 #ececf0;
 }
+[data-bs-theme="dark"] {
+  .com {
+    color: #9ea0a0;
+  }
+
+  .lit {
+    color: #4d90fe;
+  }
+
+  .pun,
+  .opn,
+  .clo {
+    color: #9ea0a0;
+  }
+
+  .fun {
+    color: #fe6160;
+  }
+
+  .str,
+  .atv {
+    color: #fea832;
+  }
+
+  .kwd,
+  .prettyprint .tag {
+    color: #4d69a8;
+  }
+
+  .typ,
+  .atn,
+  .dec,
+  .var {
+    color: #38a1a1;
+  }
+
+  .pln {
+    color: #c8c8cc;
+  }
+}
 
 /* Specify class=linenums on a pre to get line numbering */
 ol.linenums {
