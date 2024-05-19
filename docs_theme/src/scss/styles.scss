@@ -3,15 +3,10 @@
 // General Styles
 $font-family-base: "Helvetica Neue", Helvetica, Arial, sans-serif;
 $font-size-base: 1rem * 0.875;
-$color-contrast-dark: #333;
 
 // Navbar Styles
-$navbar-padding-y: 0;
+$navbar-padding-y: 0.5rem;
 $navbar-nav-link-padding-x: 1rem;
-
-$dropdown-link-color: #a30000;
-$nav-link-color: #a30000;
-$nav-link-hover-color: #a30000;
 
 $code-color: #d14;
 
@@ -64,12 +59,10 @@ $code-color: #d14;
 
 // Custom Classes
 a {
-  color: #a30000;
   text-decoration: none;
 
   &:hover,
   &:active {
-    color: #c20000;
     text-decoration: underline;
   }
 }
@@ -78,22 +71,13 @@ pre.prettyprint {
   margin-bottom: 20px;
 }
 
-body hr {
-  border-top: 1px dotted #a30000;
-}
-
-.navbar {
-  border-top: 5px solid #a30000;
-}
-
 code {
-  background-color: #f7f7f9;
-  border: 1px solid #e1e1e8;
-  padding: 2px 4px;
+  @extend .rounded;
 }
 
 pre {
-  background-color: #f7f7f9;
+  @extend .bg-body-tertiary;
+  @extend .rounded;
 }
 
 pre code {
@@ -159,8 +143,6 @@ img {
 
 .prettyprint {
   padding: 20px;
-  background-color: #f7f7f9;
-  border: 1px solid #e1e1e8;
 }
 .prettyprint.linenums {
   box-shadow: inset 40px 0 0 #fbfbfc, inset 41px 0 0 #ececf0;
@@ -179,8 +161,6 @@ ol.linenums li {
 
 #table-of-contents {
   @extend .rounded;
-  background-color: #f5f5f5;
-  border: 1px solid #e3e3e3;
   padding: 0.5rem;
   margin-bottom: 1rem;
 }
