@@ -209,3 +209,12 @@ ol.linenums li {
 .headerlink {
   display: none;
 }
+
+.promo {
+  @extend .d-none;
+  @extend .d-md-block;
+}
+
+[data-bs-theme="dark"] [src="img/logo.png"] {
+  filter: invert(1) brightness(1.5) contrast(1.2);
+}
