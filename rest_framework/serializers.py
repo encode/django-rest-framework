@@ -1111,7 +1111,22 @@ class ModelSerializer(Serializer):
 
             # Create the serializer field.
             fields[field_name] = field_class(**field_kwargs)
-
+        property_fields = getattr(self.Meta, 'property_fields',None)
+        if property_fields:
+            if property_fields == '__all__':
+                for attr_name in dir(model):
+                    attr = getattr(model,attr_name)
+                    if isinstance(attr,property):
+                        fields[attr_name] = ReadOnlyField()
+            elif isinstance(property_fields,list) or isinstance(property_fields,tuple):
+                for attr_name in property_fields:
+                    attr = getattr(model,attr_name,None)
+                    if not attr:
+                        raise ValueError(f"{attr_name}  this field doesn't exist in {model} model property")
+                    if isinstance(attr,property):
+                        fields[attr_name] = ReadOnlyField()
+            else:
+                raise ValueError("Please select the appropriate value for property_fields in the serializer. Use __all__ to include all property fields, or provide a tuple or list to manually specify the property fields you want to include.")
         # Add in any hidden fields.
         fields.update(hidden_fields)
 
