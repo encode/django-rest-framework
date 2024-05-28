@@ -215,6 +215,10 @@ ol.linenums li {
   @extend .d-md-block;
 }
 
+[data-bs-theme="dark"] .promo li a {
+  color: white !important;
+}
+
 [data-bs-theme="dark"] [src="img/logo.png"] {
   filter: invert(1) brightness(1.5) contrast(1.2);
 }
