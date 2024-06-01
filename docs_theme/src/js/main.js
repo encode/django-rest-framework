@@ -11,7 +11,7 @@ import "../../node_modules/bootstrap/js/dist//modal";
 // import "../../node_modules/bootstrap/js/dist/toast";
 // import "../../node_modules/bootstrap/js/dist/tooltip";
 
-import "../scss/styles.scss";
+import "../scss/main.scss";
 
 function setupPrettify() {
   const codeBlocks = document.querySelectorAll("pre code");
