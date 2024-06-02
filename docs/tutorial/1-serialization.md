@@ -150,7 +150,7 @@ At this point we've translated the model instance into Python native datatypes. 
 
     content = JSONRenderer().render(serializer.data)
     content
-    # b'{"id": 2, "title": "", "code": "print(\\"hello, world\\")\\n", "linenos": false, "language": "python", "style": "friendly"}'
+    # b'{"id":2,"title":"","code":"print(\\"hello, world\\")\\n","linenos":false,"language":"python","style":"friendly"}'
 
 Deserialization is similar.  First we parse a stream into Python native datatypes...
 
@@ -165,7 +165,7 @@ Deserialization is similar.  First we parse a stream into Python native datatype
     serializer.is_valid()
     # True
     serializer.validated_data
-    # OrderedDict([('title', ''), ('code', 'print("hello, world")\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])
+    # {'title': '', 'code': 'print("hello, world")', 'linenos': False, 'language': 'python', 'style': 'friendly'}
     serializer.save()
     # <Snippet: Snippet object>
 
@@ -175,7 +175,7 @@ We can also serialize querysets instead of model instances.  To do so we simply 
 
     serializer = SnippetSerializer(Snippet.objects.all(), many=True)
     serializer.data
-    # [OrderedDict([('id', 1), ('title', ''), ('code', 'foo = "bar"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('id', 2), ('title', ''), ('code', 'print("hello, world")\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('id', 3), ('title', ''), ('code', 'print("hello, world")'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])]
+    # [{'id': 1, 'title': '', 'code': 'foo = "bar"\n', 'linenos': False, 'language': 'python', 'style': 'friendly'}, {'id': 2, 'title': '', 'code': 'print("hello, world")\n', 'linenos': False, 'language': 'python', 'style': 'friendly'}, {'id': 3, 'title': '', 'code': 'print("hello, world")', 'linenos': False, 'language': 'python', 'style': 'friendly'}]
 
 ## Using ModelSerializers
 
@@ -321,42 +321,50 @@ You can install httpie using pip:
 
 Finally, we can get a list of all of the snippets:
 
-    http http://127.0.0.1:8000/snippets/
+    http http://127.0.0.1:8000/snippets/ --unsorted
 
     HTTP/1.1 200 OK
     ...
     [
-      {
-        "id": 1,
-        "title": "",
-        "code": "foo = \"bar\"\n",
-        "linenos": false,
-        "language": "python",
-        "style": "friendly"
-      },
-      {
+        {
+            "id": 1,
+            "title": "",
+            "code": "foo = \"bar\"\n",
+            "linenos": false,
+            "language": "python",
+            "style": "friendly"
+        },
+        {
+            "id": 2,
+            "title": "",
+            "code": "print(\"hello, world\")\n",
+            "linenos": false,
+            "language": "python",
+            "style": "friendly"
+        },
+        {
+            "id": 3,
+            "title": "",
+            "code": "print(\"hello, world\")",
+            "linenos": false,
+            "language": "python",
+            "style": "friendly"
+        }
+    ]
+
+Or we can get a particular snippet by referencing its id:
+
+    http http://127.0.0.1:8000/snippets/2/ --unsorted
+
+    HTTP/1.1 200 OK
+    ...
+    {
         "id": 2,
         "title": "",
         "code": "print(\"hello, world\")\n",
         "linenos": false,
         "language": "python",
         "style": "friendly"
-      }
-    ]
-
-Or we can get a particular snippet by referencing its id:
-
-    http http://127.0.0.1:8000/snippets/2/
-
-    HTTP/1.1 200 OK
-    ...
-    {
-      "id": 2,
-      "title": "",
-      "code": "print(\"hello, world\")\n",
-      "linenos": false,
-      "language": "python",
-      "style": "friendly"
     }
 
 Similarly, you can have the same json displayed by visiting these URLs in a web browser.
