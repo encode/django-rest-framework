@@ -8,9 +8,9 @@ from django.shortcuts import redirect
 from django.test import TestCase, override_settings
 from django.urls import path
 
-from rest_framework import fields, serializers
+from rest_framework import fields, parsers, serializers
 from rest_framework.authtoken.models import Token
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, parser_classes
 from rest_framework.response import Response
 from rest_framework.test import (
     APIClient, APIRequestFactory, URLPatternsTestCase, force_authenticate
@@ -51,6 +51,12 @@ class BasicSerializer(serializers.Serializer):
 
 
 @api_view(['POST'])
+@parser_classes((parsers.JSONParser,))
+def post_json_view(request):
+    return Response(request.data)
+
+
+@api_view(['POST'])
 def post_view(request):
     serializer = BasicSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
@@ -62,7 +68,8 @@ urlpatterns = [
     path('session-view/', session_view),
     path('redirect-view/', redirect_view),
     path('redirect-view/<int:code>/', redirect_307_308_view),
-    path('post-view/', post_view)
+    path('post-json-view/', post_json_view),
+    path('post-view/', post_view),
 ]
 
 
@@ -235,6 +242,17 @@ class TestAPITestClient(TestCase):
         )
         assert response.status_code == 200
         assert response.data == {"flag": True}
+
+    def test_post_encodes_data_based_on_json_content_type(self):
+        data = {'data': True}
+        response = self.client.post(
+            '/post-json-view/',
+            data=data,
+            content_type='application/json'
+        )
+
+        assert response.status_code == 200
+        assert response.data == data
 
 
 class TestAPIRequestFactory(TestCase):
