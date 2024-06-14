@@ -322,5 +322,5 @@ def break_long_headers(header):
     when possible (are comma separated)
     """
     if len(header) > 160 and ',' in header:
-        header = mark_safe('<br> ' + ', <br>'.join(header.split(',')))
+        header = mark_safe('<br> ' + ', <br>'.join(escape(header).split(',')))
     return header
