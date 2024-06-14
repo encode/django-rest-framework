@@ -1296,7 +1296,6 @@ class BookSerializer(serializers.Serializer):
     class Meta:
         list_serializer_class = BookListSerializer
 </code></pre>
-<p>It is possible that a third party package may be included alongside the 3.1 release that provides some automatic support for multiple update operations, similar to the <code>allow_add_remove</code> behavior that was present in REST framework 2.</p>
 <h4 id="customizing-listserializer-initialization"><a class="toclink" href="#customizing-listserializer-initialization">Customizing ListSerializer initialization</a></h4>
 <p>When a serializer with <code>many=True</code> is instantiated, we need to determine which arguments and keyword arguments should be passed to the <code>.__init__()</code> method for both the child <code>Serializer</code> class, and for the parent <code>ListSerializer</code> class.</p>
 <p>The default implementation is to pass all arguments to both classes, except for <code>validators</code>, and any custom keyword arguments, both of which are assumed to be intended for the child serializer class.</p>

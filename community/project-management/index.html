@@ -462,50 +462,10 @@
 <a href="https://en.wikipedia.org/wiki/Bus_factor">"bus factor"</a>, and can continue to remain well supported for the foreseeable future. Suggestions for improvements to our process are welcome.</p>
 <hr />
 <h2 id="maintenance-team"><a class="toclink" href="#maintenance-team">Maintenance team</a></h2>
-<p>We have a quarterly maintenance cycle where new members may join the maintenance team. We currently cap the size of the team at 5 members, and may encourage folks to step out of the team for a cycle to allow new members to participate.</p>
-<h4 id="current-team"><a class="toclink" href="#current-team">Current team</a></h4>
-<p>The <a href="https://github.com/encode/django-rest-framework/issues/2190">maintenance team for Q4 2015</a>:</p>
-<ul>
-<li><a href="https://github.com/encode/">@tomchristie</a></li>
-<li><a href="https://github.com/xordoquy/">@xordoquy</a> (Release manager.)</li>
-<li><a href="https://github.com/carltongibson/">@carltongibson</a></li>
-<li><a href="https://github.com/kevin-brown/">@kevin-brown</a></li>
-<li><a href="https://github.com/jpadilla/">@jpadilla</a></li>
-</ul>
-<h4 id="maintenance-cycles"><a class="toclink" href="#maintenance-cycles">Maintenance cycles</a></h4>
-<p>Each maintenance cycle is initiated by an issue being opened with the <code>Process</code> label.</p>
-<ul>
-<li>To be considered for a maintainer role simply comment against the issue.</li>
-<li>Existing members must explicitly opt-in to the next cycle by check-marking their name.</li>
-<li>The final decision on the incoming team will be made by <code>@tomchristie</code>.</li>
-</ul>
-<p>Members of the maintenance team will be added as collaborators to the repository.</p>
-<p>The following template should be used for the description of the issue, and serves as the formal process for selecting the team.</p>
-<pre><code>This issue is for determining the maintenance team for the *** period.
-
-Please see the [Project management](https://www.django-rest-framework.org/topics/project-management/) section of our documentation for more details.
-
----
-
-#### Renewing existing members.
-
-The following people are the current maintenance team. Please checkmark your name if you wish to continue to have write permission on the repository for the *** period.
-
-- [ ] @***
-- [ ] @***
-- [ ] @***
-- [ ] @***
-- [ ] @***
-
----
-
-#### New members.
-
-If you wish to be considered for this or a future date, please comment against this or subsequent issues.
-
-To modify this process for future maintenance cycles make a pull request to the [project management](https://www.django-rest-framework.org/topics/project-management/) documentation.
-</code></pre>
-<h4 id="responsibilities-of-team-members"><a class="toclink" href="#responsibilities-of-team-members">Responsibilities of team members</a></h4>
+<p><a href="../contributing/">Participating actively in the REST framework project</a> <strong>does not require being part of the maintenance team</strong>. Almost every important part of issue triage and project improvement can be actively worked on regardless of your collaborator status on the repository.</p>
+<h4 id="composition"><a class="toclink" href="#composition">Composition</a></h4>
+<p>The composition of the maintenance team is handled by <a href="https://github.com/encode/">@tomchristie</a>. Team members will be added as collaborators to the repository.</p>
+<h4 id="responsibilities"><a class="toclink" href="#responsibilities">Responsibilities</a></h4>
 <p>Team members have the following responsibilities.</p>
 <ul>
 <li>Close invalid or resolved tickets.</li>
@@ -521,13 +481,11 @@ To modify this process for future maintenance cycles make a pull request to the 
 <li>Each issue/pull request should have exactly one label once triaged.</li>
 <li>Search for un-triaged issues with <a href="https://github.com/encode/django-rest-framework/issues?q=is%3Aopen+no%3Alabel">is:open no:label</a>.</li>
 </ul>
-<p>It should be noted that participating actively in the REST framework project clearly <strong>does not require being part of the maintenance team</strong>. Almost every import part of issue triage and project improvement can be actively worked on regardless of your collaborator status on the repository.</p>
 <hr />
 <h2 id="release-process"><a class="toclink" href="#release-process">Release process</a></h2>
-<p>The release manager is selected on every quarterly maintenance cycle.</p>
 <ul>
-<li>The manager should be selected by <code>@tomchristie</code>.</li>
-<li>The manager will then have the maintainer role added to PyPI package.</li>
+<li>The release manager is selected by <code>@tomchristie</code>.</li>
+<li>The release manager will then have the maintainer role added to PyPI package.</li>
 <li>The previous manager will then have the maintainer role removed from the PyPI package.</li>
 </ul>
 <p>Our PyPI releases will be handled by either the current release manager, or by <code>@tomchristie</code>. Every release should have an open issue tagged with the <code>Release</code> label and marked against the appropriate milestone.</p>
@@ -615,8 +573,7 @@ django-admin compilemessages
 <h4 id="outstanding-management-ownership-issues"><a class="toclink" href="#outstanding-management-ownership-issues">Outstanding management &amp; ownership issues</a></h4>
 <p>The following issues still need to be addressed:</p>
 <ul>
-<li>Ensure <code>@jamie</code> has back-up access to the <code>django-rest-framework.org</code> domain setup and admin.</li>
-<li>Document ownership of the <a href="https://restframework.herokuapp.com/">live example</a> API.</li>
+<li>Ensure <code>@j4mie</code> has back-up access to the <code>django-rest-framework.org</code> domain setup and admin.</li>
 <li>Document ownership of the <a href="https://groups.google.com/forum/#!forum/django-rest-framework">mailing list</a> and IRC channel.</li>
 <li>Document ownership and management of the security mailing list.</li>
 </ul>
