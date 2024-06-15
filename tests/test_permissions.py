@@ -716,3 +716,59 @@ class PermissionsCompositionTests(TestCase):
         composed_perm = (IsAuthenticatedUserOwner | permissions.IsAdminUser)
         hasperm = composed_perm().has_object_permission(request, None, None)
         assert hasperm is False
+
+    def test_operand_holder_is_hashable(self):
+        assert hash((permissions.IsAuthenticated & permissions.IsAdminUser))
+
+    def test_operand_holder_hash_same_for_same_operands_and_operator(self):
+        first_operand_holder = (
+            permissions.IsAuthenticated & permissions.IsAdminUser
+        )
+        second_operand_holder = (
+            permissions.IsAuthenticated & permissions.IsAdminUser
+        )
+
+        assert hash(first_operand_holder) == hash(second_operand_holder)
+
+    def test_operand_holder_hash_differs_for_different_operands(self):
+        first_operand_holder = (
+            permissions.IsAuthenticated & permissions.IsAdminUser
+        )
+        second_operand_holder = (
+            permissions.AllowAny & permissions.IsAdminUser
+        )
+        third_operand_holder = (
+            permissions.IsAuthenticated & permissions.AllowAny
+        )
+
+        assert hash(first_operand_holder) != hash(second_operand_holder)
+        assert hash(first_operand_holder) != hash(third_operand_holder)
+        assert hash(second_operand_holder) != hash(third_operand_holder)
+
+    def test_operand_holder_hash_differs_for_different_operators(self):
+        first_operand_holder = (
+            permissions.IsAuthenticated & permissions.IsAdminUser
+        )
+        second_operand_holder = (
+            permissions.IsAuthenticated | permissions.IsAdminUser
+        )
+
+        assert hash(first_operand_holder) != hash(second_operand_holder)
+
+    def test_filtering_permissions(self):
+        unfiltered_permissions = [
+            permissions.IsAuthenticated & permissions.IsAdminUser,
+            permissions.IsAuthenticated & permissions.IsAdminUser,
+            permissions.AllowAny,
+        ]
+        expected_permissions = [
+            permissions.IsAuthenticated & permissions.IsAdminUser,
+            permissions.AllowAny,
+        ]
+
+        filtered_permissions = [
+            perm for perm
+            in dict.fromkeys(unfiltered_permissions)
+        ]
+
+        assert filtered_permissions == expected_permissions
