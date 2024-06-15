@@ -53,8 +53,8 @@ Some reasons you might want to use REST framework:
 
 # Requirements
 
-* Python 3.6+
-* Django 5.0, 4.2, 4.1, 4.0, 3.2, 3.1, 3.0
+* Python 3.8+
+* Django 5.0, 4.2
 
 We **highly recommend** and only officially support the latest patch release of
 each Python and Django series.
@@ -172,8 +172,6 @@ Full documentation for the project is available at [https://www.django-rest-fram
 
 For questions and support, use the [REST framework discussion group][group], or `#restframework` on libera.chat IRC.
 
-You may also want to [follow the author on Twitter][twitter].
-
 # Security
 
 Please see the [security policy][security-policy].
@@ -184,7 +182,6 @@ Please see the [security policy][security-policy].
 [codecov]: https://codecov.io/github/encode/django-rest-framework?branch=master
 [pypi-version]: https://img.shields.io/pypi/v/djangorestframework.svg
 [pypi]: https://pypi.org/project/djangorestframework/
-[twitter]: https://twitter.com/starletdreaming
 [group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
 
 [funding]: https://fund.django-rest-framework.org/topics/funding/

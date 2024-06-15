@@ -7,10 +7,8 @@ ______ _____ _____ _____    __
 \_| \_\____/\____/  \_/   |_| |_|  \__,_|_| |_| |_|\___| \_/\_/ \___/|_|  |_|\_|
 """
 
-import django
-
 __title__ = 'Django REST framework'
-__version__ = '3.15.1'
+__version__ = '3.15.2'
 __author__ = 'Tom Christie'
 __license__ = 'BSD 3-Clause'
 __copyright__ = 'Copyright 2011-2023 Encode OSS Ltd'
@@ -25,11 +23,7 @@ HTTP_HEADER_ENCODING = 'iso-8859-1'
 ISO_8601 = 'iso-8601'
 
 
-if django.VERSION < (3, 2):
-    default_app_config = 'rest_framework.apps.RestFrameworkConfig'
-
-
-class RemovedInDRF315Warning(DeprecationWarning):
+class RemovedInDRF316Warning(DeprecationWarning):
     pass
 
 

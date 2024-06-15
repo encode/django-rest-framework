@@ -2,11 +2,13 @@
 
 ## Versioning
 
-Minor version numbers (0.0.x) are used for changes that are API compatible.  You should be able to upgrade between minor point releases without any other code changes.
+- **Minor** version numbers (0.0.x) are used for changes that are API compatible.  You should be able to upgrade between minor point releases without any other code changes.
 
-Medium version numbers (0.x.0) may include API changes, in line with the [deprecation policy][deprecation-policy].  You should read the release notes carefully before upgrading between medium point releases.
+- **Medium** version numbers (0.x.0) may include API changes, in line with the [deprecation policy][deprecation-policy].  You should read the release notes carefully before upgrading between medium point releases.
 
-Major version numbers (x.0.0) are reserved for substantial project milestones.
+- **Major** version numbers (x.0.0) are reserved for substantial project milestones.
+
+As REST Framework is considered feature-complete, most releases are expected to be minor releases.
 
 ## Deprecation policy
 
@@ -35,6 +37,15 @@ You can determine your currently installed version using `pip show`:
 ---
 
 ## 3.15.x series
+
+### 3.15.2
+
+**Date**: 14th June 2024
+
+* Fix potential XSS vulnerability in browsable API. [#9435](https://github.com/encode/django-rest-framework/pull/9157)
+* Revert "Ensure CursorPagination respects nulls in the ordering field". [#9381](https://github.com/encode/django-rest-framework/pull/9381)
+* Use warnings rather than logging a warning for DecimalField. [#9367](https://github.com/encode/django-rest-framework/pull/9367)
+* Remove unused code. [#9393](https://github.com/encode/django-rest-framework/pull/9393)
 
 ### 3.15.1
 

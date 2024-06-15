@@ -3,7 +3,6 @@
 import io
 from importlib import import_module
 
-import django
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.handlers.wsgi import WSGIHandler
@@ -394,19 +393,7 @@ class URLPatternsTestCase(testcases.SimpleTestCase):
 
         cls._override.enable()
 
-        if django.VERSION > (4, 0):
-            cls.addClassCleanup(cls._override.disable)
-            cls.addClassCleanup(cleanup_url_patterns, cls)
+        cls.addClassCleanup(cls._override.disable)
+        cls.addClassCleanup(cleanup_url_patterns, cls)
 
         super().setUpClass()
-
-    if django.VERSION < (4, 0):
-        @classmethod
-        def tearDownClass(cls):
-            super().tearDownClass()
-            cls._override.disable()
-
-            if hasattr(cls, '_module_urlpatterns'):
-                cls._module.urlpatterns = cls._module_urlpatterns
-            else:
-                del cls._module.urlpatterns

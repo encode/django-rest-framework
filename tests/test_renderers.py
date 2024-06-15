@@ -910,7 +910,7 @@ class TestDocumentationRenderer(TestCase):
             'link': coreapi.Link(url='/data/', action='get', fields=[]),
         }
         html = template.render(context)
-        assert 'testcases list' in html
+        assert 'testcases<span class="w"> </span>list' in html
 
 
 @pytest.mark.skipif(not coreapi, reason='coreapi is not installed')

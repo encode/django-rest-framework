@@ -114,10 +114,6 @@ class SearchFilter(BaseFilterBackend):
                     if hasattr(field, "path_infos"):
                         # Update opts to follow the relation.
                         opts = field.path_infos[-1].to_opts
-                    # django < 4.1
-                    elif hasattr(field, 'get_path_info'):
-                        # Update opts to follow the relation.
-                        opts = field.get_path_info()[-1].to_opts
             # Otherwise, use the field with icontains.
             lookup = 'icontains'
         return LOOKUP_SEP.join([field_name, lookup])
