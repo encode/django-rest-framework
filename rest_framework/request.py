@@ -423,13 +423,6 @@ class Request:
             return self.__getattribute__(attr)
 
     @property
-    def DATA(self):
-        raise NotImplementedError(
-            '`request.DATA` has been deprecated in favor of `request.data` '
-            'since version 3.0, and has been fully removed as of version 3.2.'
-        )
-
-    @property
     def POST(self):
         # Ensure that request.POST uses our request parsing.
         if not _hasattr(self, '_data'):
@@ -446,13 +439,6 @@ class Request:
         if not _hasattr(self, '_files'):
             self._load_data_and_files()
         return self._files
-
-    @property
-    def QUERY_PARAMS(self):
-        raise NotImplementedError(
-            '`request.QUERY_PARAMS` has been deprecated in favor of `request.query_params` '
-            'since version 3.0, and has been fully removed as of version 3.2.'
-        )
 
     def force_plaintext_errors(self, value):
         # Hack to allow our exception handler to force choice of
