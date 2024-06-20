@@ -42,7 +42,7 @@ You can determine your currently installed version using `pip show`:
 
 **Date**: 14th June 2024
 
-* Fix potential XSS vulnerability in browsable API. [#9435](https://github.com/encode/django-rest-framework/pull/9157)
+* Fix potential XSS vulnerability in browsable API. [#9435](https://github.com/encode/django-rest-framework/pull/9435)
 * Revert "Ensure CursorPagination respects nulls in the ordering field". [#9381](https://github.com/encode/django-rest-framework/pull/9381)
 * Use warnings rather than logging a warning for DecimalField. [#9367](https://github.com/encode/django-rest-framework/pull/9367)
 * Remove unused code. [#9393](https://github.com/encode/django-rest-framework/pull/9393)
