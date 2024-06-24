@@ -46,6 +46,10 @@ Check out a grid detailing all the packages and ecosystem around Django REST Fra
 
 To submit new content, [open an issue][drf-create-issue] or [create a pull request][drf-create-pr].
 
+## Async Support
+
+*  [adrf](https://github.com/em1208/adrf) - Async support, provides async Views, ViewSets, and Serializers.
+
 ### Authentication
 
 * [djangorestframework-digestauth][djangorestframework-digestauth] - Provides Digest Access Authentication support.
