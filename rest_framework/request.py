@@ -356,7 +356,7 @@ class Request:
 
         try:
             parsed = parser.parse(stream, media_type, self.parser_context)
-        except Exception:
+        except Exception as exc:
             # If we get an exception during parsing, fill in empty data and
             # re-raise.  Ensures we don't simply repeat the error when
             # attempting to render the browsable renderer response, or when
@@ -364,6 +364,9 @@ class Request:
             self._data = QueryDict('', encoding=self._request._encoding)
             self._files = MultiValueDict()
             self._full_data = self._data
+            if isinstance(exc, AttributeError):
+                raise exceptions.ParseError(str(exc))
+
             raise
 
         # Parser classes may return the raw data, or a

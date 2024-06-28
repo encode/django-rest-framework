@@ -18,6 +18,7 @@ from django.urls import path
 
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
+from rest_framework.exceptions import ParseError
 from rest_framework.parsers import BaseParser, FormParser, MultiPartParser
 from rest_framework.request import Request, WrappedAttributeError
 from rest_framework.response import Response
@@ -50,6 +51,13 @@ class PlainTextParser(BaseParser):
         `files` will always be `None`.
         """
         return stream.read()
+
+
+class BrokenParser(BaseParser):
+    media_type = 'text/plain'
+
+    def parse(self, stream, media_type=None, parser_context=None):
+        raise AttributeError
 
 
 class TestContentParsing(TestCase):
@@ -125,6 +133,17 @@ class TestContentParsing(TestCase):
         request = Request(factory.put('/', content, content_type=content_type))
         request.parsers = (PlainTextParser(), )
         assert request.data == content
+
+    def test_request_data_with_broken_parser(self):
+        """
+        Ensure request.data raise ParseError if anything went wrong during parsing
+        """
+        content = b'qwerty'
+        content_type = 'text/plain'
+        request = Request(factory.post('/', content, content_type=content_type))
+        request.parsers = (BrokenParser(), )
+        with self.assertRaises(ParseError):
+            request.data
 
 
 class MockView(APIView):
