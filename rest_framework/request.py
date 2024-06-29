@@ -78,6 +78,17 @@ def wrap_attributeerrors():
         raise exc.with_traceback(info[2])
 
 
+def safe_property(func):
+    """Property decorator to ensure AttributeErrors raised in properties are properly handled"""
+
+    @property
+    def new_func(self):
+        with wrap_attributeerrors():
+            return func(self)
+
+    return new_func
+
+
 class Empty:
     """
     Placeholder for unset attributes.
@@ -193,12 +204,12 @@ class Request:
     def _default_negotiator(self):
         return api_settings.DEFAULT_CONTENT_NEGOTIATION_CLASS()
 
-    @property
+    @safe_property
     def content_type(self):
         meta = self._request.META
         return meta.get('CONTENT_TYPE', meta.get('HTTP_CONTENT_TYPE', ''))
 
-    @property
+    @safe_property
     def stream(self):
         """
         Returns an object that may be used to stream the request content.
@@ -207,28 +218,27 @@ class Request:
             self._load_stream()
         return self._stream
 
-    @property
+    @safe_property
     def query_params(self):
         """
         More semantically correct name for request.GET.
         """
         return self._request.GET
 
-    @property
+    @safe_property
     def data(self):
         if not _hasattr(self, '_full_data'):
             self._load_data_and_files()
         return self._full_data
 
-    @property
+    @safe_property
     def user(self):
         """
         Returns the user associated with the current request, as authenticated
         by the authentication classes provided to the request.
         """
         if not hasattr(self, '_user'):
-            with wrap_attributeerrors():
-                self._authenticate()
+            self._authenticate()
         return self._user
 
     @user.setter
@@ -244,15 +254,14 @@ class Request:
         self._user = value
         self._request.user = value
 
-    @property
+    @safe_property
     def auth(self):
         """
         Returns any non-user authentication information associated with the
         request, such as an authentication token.
         """
         if not hasattr(self, '_auth'):
-            with wrap_attributeerrors():
-                self._authenticate()
+            self._authenticate()
         return self._auth
 
     @auth.setter
@@ -264,15 +273,14 @@ class Request:
         self._auth = value
         self._request.auth = value
 
-    @property
+    @safe_property
     def successful_authenticator(self):
         """
         Return the instance of the authentication instance class that was used
         to authenticate the request, or `None`.
         """
         if not hasattr(self, '_authenticator'):
-            with wrap_attributeerrors():
-                self._authenticate()
+            self._authenticate()
         return self._authenticator
 
     def _load_data_and_files(self):
@@ -420,9 +428,9 @@ class Request:
             _request = self.__getattribute__("_request")
             return getattr(_request, attr)
         except AttributeError:
-            return self.__getattribute__(attr)
+            raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{attr}'")
 
-    @property
+    @safe_property
     def POST(self):
         # Ensure that request.POST uses our request parsing.
         if not _hasattr(self, '_data'):
@@ -431,7 +439,7 @@ class Request:
             return self._data
         return QueryDict('', encoding=self._request._encoding)
 
-    @property
+    @safe_property
     def FILES(self):
         # Leave this one alone for backwards compat with Django's request.FILES
         # Different from the other two cases, which are not valid property
