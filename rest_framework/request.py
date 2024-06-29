@@ -217,7 +217,8 @@ class Request:
     @property
     def data(self):
         if not _hasattr(self, '_full_data'):
-            self._load_data_and_files()
+            with wrap_attributeerrors():
+                self._load_data_and_files()
         return self._full_data
 
     @property
@@ -420,13 +421,14 @@ class Request:
             _request = self.__getattribute__("_request")
             return getattr(_request, attr)
         except AttributeError:
-            return self.__getattribute__(attr)
+            raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{attr}'")
 
     @property
     def POST(self):
         # Ensure that request.POST uses our request parsing.
         if not _hasattr(self, '_data'):
-            self._load_data_and_files()
+            with wrap_attributeerrors():
+                self._load_data_and_files()
         if is_form_media_type(self.content_type):
             return self._data
         return QueryDict('', encoding=self._request._encoding)
@@ -437,7 +439,8 @@ class Request:
         # Different from the other two cases, which are not valid property
         # names on the WSGIRequest class.
         if not _hasattr(self, '_files'):
-            self._load_data_and_files()
+            with wrap_attributeerrors():
+                self._load_data_and_files()
         return self._files
 
     def force_plaintext_errors(self, value):
