@@ -79,7 +79,9 @@ def wrap_attributeerrors():
 
 
 def safe_property(func):
-    """Property decorator to ensure AttributeErrors raised in properties are properly handled"""
+    """
+    Property decorator to ensure AttributeErrors raised in properties aren't lost
+    """
 
     @property
     def new_func(self):
