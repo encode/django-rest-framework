@@ -347,6 +347,22 @@ class TestHttpRequest(TestCase):
         assert request.content_type.startswith('multipart/form-data')
         assert response.data == {'a': ['b']}
 
+    def test_parser_attribute_error(self):
+        """Ensure attribute errors raised when parsing are properly re-raised"""
+        expected_message = "Internal error"
+
+        class BrokenParser:
+            media_type = "application/json"
+
+            def parse(self, *args, **kwargs):
+                raise AttributeError(expected_message)
+
+        http_request = factory.post('/', data={}, format="json")
+        request = Request(http_request, parsers=[BrokenParser()])
+
+        with self.assertRaisesMessage(WrappedAttributeError, expected_message):
+            request.data
+
 
 class TestDeepcopy(TestCase):
 
