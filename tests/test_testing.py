@@ -262,6 +262,26 @@ class TestAPIRequestFactory(TestCase):
         assert response.status_code == 403
         assert response.data == expected
 
+    def test_transform_factory_django_request_to_drf_request(self):
+        from rest_framework.views import APIView
+
+        factory = APIRequestFactory()
+
+        class DummyView(APIView):
+            ...
+
+        request = factory.get('/', {'demo': 'test'})
+        DRF_request = DummyView().initialize_request(request)
+        assert DRF_request.query_params == {'demo': ['test']}
+        assert not hasattr(DRF_request, 'accepted_media_type')
+
+        DummyView().initial(DRF_request)
+        assert DRF_request.accepted_media_type == 'application/json'
+
+        request = factory.post('/', {'example': 'test'})
+        DRF_request = DummyView().initialize_request(request)
+        assert DRF_request.data.get('example') == 'test'
+
     def test_invalid_format(self):
         """
         Attempting to use a format that is not configured will raise an
