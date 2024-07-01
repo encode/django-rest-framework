@@ -4,7 +4,7 @@ from operator import attrgetter
 from urllib import parse
 
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
-from django.db.models import Manager
+from django.db.models import F, Manager
 from django.db.models.query import QuerySet
 from django.urls import NoReverseMatch, Resolver404, get_script_prefix, resolve
 from django.utils.encoding import smart_str, uri_to_iri
@@ -249,18 +249,25 @@ class PrimaryKeyRelatedField(RelatedField):
     def use_pk_only_optimization(self):
         return True
 
-    def to_internal_value(self, data):
+    def to_many_internal_value(self, data):
         if self.pk_field is not None:
-            data = self.pk_field.to_internal_value(data)
+            data = [self.pk_field.to_internal_value(item) for item in data]
         queryset = self.get_queryset()
         try:
-            if isinstance(data, bool):
-                raise TypeError
-            return queryset.get(pk=data)
-        except ObjectDoesNotExist:
-            self.fail('does_not_exist', pk_value=data)
+            for item in data:
+                if isinstance(item, bool):
+                    raise TypeError
+            result = queryset.filter(pk__in=data).all()
+            pks = [item.pk for item in result]
+            for item in data:
+                if item not in pks:
+                    self.fail('does_not_exist', pk_value=item)
+            return result
         except (TypeError, ValueError):
-            self.fail('incorrect_type', data_type=type(data).__name__)
+            self.fail('incorrect_type', data_type=type(data[0]).__name__)
+
+    def to_internal_value(self, data):
+        return self.to_many_internal_value([data])[0]
 
     def to_representation(self, value):
         if self.pk_field is not None:
@@ -451,14 +458,25 @@ class SlugRelatedField(RelatedField):
         self.slug_field = slug_field
         super().__init__(**kwargs)
 
-    def to_internal_value(self, data):
+    def to_many_internal_value(self, data):
         queryset = self.get_queryset()
         try:
-            return queryset.get(**{self.slug_field: data})
-        except ObjectDoesNotExist:
-            self.fail('does_not_exist', slug_name=self.slug_field, value=smart_str(data))
+            result = (
+                queryset
+                .filter(**{self.slug_field + "__in": data})
+                .annotate(_slug_field_value=F(self.slug_field))
+                .all()
+            )
+            slugs = [item._slug_field_value for item in result]
+            for item in data:
+                if item not in slugs:
+                    self.fail('does_not_exist', slug_name=self.slug_field, value=smart_str(item))
+            return result
         except (TypeError, ValueError):
             self.fail('invalid')
+
+    def to_internal_value(self, data):
+        return self.to_many_internal_value([data])[0]
 
     def to_representation(self, obj):
         slug = self.slug_field
@@ -523,6 +541,9 @@ class ManyRelatedField(Field):
             self.fail('not_a_list', input_type=type(data).__name__)
         if not self.allow_empty and len(data) == 0:
             self.fail('empty')
+
+        if hasattr(self.child_relation, "to_many_internal_value"):
+            return self.child_relation.to_many_internal_value(data)
 
         return [
             self.child_relation.to_internal_value(item)

@@ -26,13 +26,31 @@ class MockQueryset:
         return self.items[val]
 
     def get(self, **lookup):
-        for item in self.items:
-            if all([
-                attrgetter(key.replace('__', '.'))(item) == value
-                for key, value in lookup.items()
-            ]):
-                return item
+        result = self.filter(**lookup).all()
+        if len(result) > 0:
+            return result[0]
         raise ObjectDoesNotExist()
+
+    def all(self):
+        return list(self.items)
+
+    def filter(self, **lookup):
+        return MockQueryset([
+            item
+            for item in self.items
+            if all([
+                attrgetter(key.replace("__in", "").replace('__', '.'))(item) in value
+                if key.endswith("__in")
+                else attrgetter(key.replace('__', '.'))(item) == value
+                for key, value in lookup.items()
+            ])
+        ])
+
+    def annotate(self, **kwargs):
+        for key, value in kwargs.items():
+            for item in self.items:
+                setattr(item, key, attrgetter(value.name.replace('__', '.'))(item))
+        return self
 
 
 class BadType:
