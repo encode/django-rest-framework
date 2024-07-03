@@ -53,6 +53,7 @@ class BasicSerializer(serializers.Serializer):
 @api_view(['POST'])
 def post_view(request):
     serializer = BasicSerializer(data=request.data)
+    serializer.allow_null = ('allow_null' in request.query_params)
     serializer.is_valid(raise_exception=True)
     return Response(serializer.validated_data)
 
@@ -227,7 +228,26 @@ class TestAPITestClient(TestCase):
             path='/view/', data={'valid': 123, 'invalid': {'a': 123}}
         )
 
-    def test_empty_post_uses_default_boolean_value(self):
+    def test_missing_post_payload_causes_400(self):
+        response = self.client.post(
+            '/post-view/',
+            data=None,
+            content_type='application/json'
+        )
+        assert response.status_code == 400
+        assert response.data['non_field_errors'] == ['No data provided']
+
+    def test_missing_post_payload_allow_null_causes_200(self):
+        response = self.client.post(
+            '/post-view/?allow_null=1',
+            data=None,
+            content_type='application/json'
+        )
+        assert response.status_code == 200
+        assert response.data is None
+
+    @override_settings(REST_FRAMEWORK={'DEFAULT_MISSING_DATA': {}})
+    def test_missing_post_payload_coerced_dict_uses_default_boolean_value(self):
         response = self.client.post(
             '/post-view/',
             data=None,
