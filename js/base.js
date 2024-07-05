@@ -13,152 +13,157 @@ function applyTopPadding() {
     // Update various absolute positions to match where the main container
     // starts. This is necessary for handling multi-line nav headers, since
     // that pushes the main container down.
-    var container = document.querySelector('body > .container');
-    var offset = container.offsetTop;
-
-    document.documentElement.style.scrollPaddingTop = offset + 'px';
-    document.querySelectorAll('.bs-sidebar.affix').forEach(function(sidebar) {
-        sidebar.style.top = offset + 'px';
-    });
+    var offset = $('body > .container').offset();
+    $('html').css('scroll-padding-top', offset.top + 'px');
+    $('.bs-sidebar.affix').css('top', offset.top + 'px');
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    var search_term = getSearchTerm();
-    var search_modal = new bootstrap.Modal(document.getElementById('mkdocs_search_modal'));
-    var keyboard_modal = new bootstrap.Modal(document.getElementById('mkdocs_keyboard_modal'));
+$(document).ready(function() {
+
+    applyTopPadding();
+
+    var search_term = getSearchTerm(),
+        $search_modal = $('#mkdocs_search_modal'),
+        $keyboard_modal = $('#mkdocs_keyboard_modal');
 
     if (search_term) {
-        search_modal.show();
+        $search_modal.modal();
     }
 
     // make sure search input gets autofocus every time modal opens.
-    document.getElementById('mkdocs_search_modal').addEventListener('shown.bs.modal', function() {
-        document.getElementById('mkdocs-search-query').focus();
+    $search_modal.on('shown.bs.modal', function() {
+        $search_modal.find('#mkdocs-search-query').focus();
     });
 
     // Close search modal when result is selected
     // The links get added later so listen to parent
-    document.getElementById('mkdocs-search-results').addEventListener('click', function(e) {
-        if (e.target.tagName === 'A') {
-            search_modal.hide();
+    $('#mkdocs-search-results').click(function(e) {
+        if ($(e.target).is('a')) {
+            $search_modal.modal('hide');
         }
     });
 
     // Populate keyboard modal with proper Keys
-    document.querySelector('.help.shortcut kbd').innerHTML = keyCodes[shortcuts.help];
-    document.querySelector('.prev.shortcut kbd').innerHTML = keyCodes[shortcuts.previous];
-    document.querySelector('.next.shortcut kbd').innerHTML = keyCodes[shortcuts.next];
-    document.querySelector('.search.shortcut kbd').innerHTML = keyCodes[shortcuts.search];
+    $keyboard_modal.find('.help.shortcut kbd')[0].innerHTML = keyCodes[shortcuts.help];
+    $keyboard_modal.find('.prev.shortcut kbd')[0].innerHTML = keyCodes[shortcuts.previous];
+    $keyboard_modal.find('.next.shortcut kbd')[0].innerHTML = keyCodes[shortcuts.next];
+    $keyboard_modal.find('.search.shortcut kbd')[0].innerHTML = keyCodes[shortcuts.search];
 
     // Keyboard navigation
     document.addEventListener("keydown", function(e) {
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return true;
-      var key = e.which || e.keyCode || window.event && window.event.keyCode;
-      var page;
-      switch (key) {
-          case shortcuts.next:
-              page = document.querySelector('.navbar a[rel="next"]:first').getAttribute('href');
-              break;
-          case shortcuts.previous:
-              page = document.querySelector('.navbar a[rel="prev"]:first').getAttribute('href');
-              break;
-          case shortcuts.search:
-              e.preventDefault();
-              keyboard_modal.hide();
-              search_modal.show();
-              document.getElementById('mkdocs-search-query').focus();
-              break;
-          case shortcuts.help:
-              search_modal.hide();
-              keyboard_modal.show();
-              break;
-          default: break;
-      }
-      if (page) {
-          keyboard_modal.hide();
-          window.location.href = page;
-      }
+        if ($(e.target).is(':input')) return true;
+        var key = e.which || e.keyCode || window.event && window.event.keyCode;
+        var page;
+        switch (key) {
+            case shortcuts.next:
+                page = $('.navbar a[rel="next"]:first').prop('href');
+                break;
+            case shortcuts.previous:
+                page = $('.navbar a[rel="prev"]:first').prop('href');
+                break;
+            case shortcuts.search:
+                e.preventDefault();
+                $keyboard_modal.modal('hide');
+                $search_modal.modal('show');
+                $search_modal.find('#mkdocs-search-query').focus();
+                break;
+            case shortcuts.help:
+                $search_modal.modal('hide');
+                $keyboard_modal.modal('show');
+                break;
+            default: break;
+        }
+        if (page) {
+            $keyboard_modal.modal('hide');
+            window.location.href = page;
+        }
     });
 
-    document.querySelectorAll('table').forEach(function(table) {
-      table.classList.add('table', 'table-striped', 'table-hover');
+    $('table').addClass('table table-striped table-hover');
+
+    // Improve the scrollspy behaviour when users click on a TOC item.
+    $(".bs-sidenav a").on("click", function() {
+        var clicked = this;
+        setTimeout(function() {
+            var active = $('.nav li.active a');
+            active = active[active.length - 1];
+            if (clicked !== active) {
+                $(active).parent().removeClass("active");
+                $(clicked).parent().addClass("active");
+            }
+        }, 50);
     });
 
     function showInnerDropdown(item) {
-      var popup = item.nextElementSibling;
-      popup.classList.add('show');
-      item.classList.add('open');
+        var popup = $(item).next('.dropdown-menu');
+        popup.addClass('show');
+        $(item).addClass('open');
 
-      // First, close any sibling dropdowns.
-      var container = item.parentElement.parentElement;
-      container.querySelectorAll('> .dropdown-submenu > a').forEach(function(el) {
-          if (el !== item) {
-              hideInnerDropdown(el);
-          }
-      });
+        // First, close any sibling dropdowns.
+        var container = $(item).parent().parent();
+        container.find('> .dropdown-submenu > a').each(function(i, el) {
+            if (el !== item) {
+                hideInnerDropdown(el);
+            }
+        });
 
-      var popupMargin = 10;
-      var maxBottom = window.innerHeight - popupMargin;
-      var bounds = item.getBoundingClientRect();
+        var popupMargin = 10;
+        var maxBottom = $(window).height() - popupMargin;
+        var bounds = item.getBoundingClientRect();
 
-      popup.style.left = bounds.right + 'px';
-      if (bounds.top + popup.clientHeight > maxBottom &&
-          bounds.top > window.innerHeight / 2) {
-          popup.style.top = (bounds.bottom - popup.clientHeight) + 'px';
-          popup.style.maxHeight = (bounds.bottom - popupMargin) + 'px';
-      } else {
-          popup.style.top = bounds.top + 'px';
-          popup.style.maxHeight = (maxBottom - bounds.top) + 'px';
-      }
+        popup.css('left', bounds.right + 'px');
+        if (bounds.top + popup.height() > maxBottom &&
+            bounds.top > $(window).height() / 2) {
+            popup.css({
+                'top': (bounds.bottom - popup.height()) + 'px',
+                'max-height': (bounds.bottom - popupMargin) + 'px',
+            });
+        } else {
+            popup.css({
+                'top': bounds.top + 'px',
+                'max-height': (maxBottom - bounds.top) + 'px',
+            });
+        }
     }
 
     function hideInnerDropdown(item) {
-        var popup = item.nextElementSibling;
-        popup.classList.remove('show');
-        item.classList.remove('open');
+        var popup = $(item).next('.dropdown-menu');
+        popup.removeClass('show');
+        $(item).removeClass('open');
 
-        popup.scrollTop = 0;
-        popup.querySelector('.dropdown-menu').scrollTop = 0;
-        popup.querySelector('.dropdown-submenu > a').classList.remove('open');
+        popup.scrollTop(0);
+        popup.find('.dropdown-menu').scrollTop(0).removeClass('show');
+        popup.find('.dropdown-submenu > a').removeClass('open');
     }
 
-    document.querySelectorAll('.dropdown-submenu > a').forEach(function(item) {
-        item.addEventListener('click', function(e) {
-            if (item.nextElementSibling.classList.contains('show')) {
-                hideInnerDropdown(item);
-            } else {
-                showInnerDropdown(item);
-            }
+    $('.dropdown-submenu > a').on('click', function(e) {
+        if ($(this).next('.dropdown-menu').hasClass('show')) {
+            hideInnerDropdown(this);
+        } else {
+            showInnerDropdown(this);
+        }
 
-            e.stopPropagation();
-            e.preventDefault();
-        });
+        e.stopPropagation();
+        e.preventDefault();
     });
 
-    document.querySelectorAll('.dropdown-menu').forEach(function(menu) {
-        menu.parentElement.addEventListener('hide.bs.dropdown', function() {
-            menu.scrollTop = 0;
-            menu.querySelector('.dropdown-submenu > a').classList.remove('open');
-            menu.querySelectorAll('.dropdown-menu .dropdown-menu').forEach(function(submenu) {
-                submenu.classList.remove('show');
-            });
-        });
+    $('.dropdown-menu').parent().on('hide.bs.dropdown', function(e) {
+        $(this).find('.dropdown-menu').scrollTop(0);
+        $(this).find('.dropdown-submenu > a').removeClass('open');
+        $(this).find('.dropdown-menu .dropdown-menu').removeClass('show');
     });
-
-    applyTopPadding();
 });
 
-window.addEventListener('resize', applyTopPadding);
+$(window).on('resize', applyTopPadding);
 
-var scrollSpy = new bootstrap.ScrollSpy(document.body, {
-    target: '.bs-sidebar'
+$('body').scrollspy({
+    target: '.bs-sidebar',
+    offset: 100
 });
 
 /* Prevent disabled links from causing a page reload */
-document.querySelectorAll("li.disabled a").forEach(function(item) {
-    item.addEventListener("click", function(event) {
-        event.preventDefault();
-    });
+$("li.disabled a").click(function() {
+    event.preventDefault();
 });
 
 // See https://www.cambiaresearch.com/articles/15/javascript-char-codes-key-codes
