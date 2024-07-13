@@ -2,11 +2,13 @@
 
 ## Versioning
 
-Minor version numbers (0.0.x) are used for changes that are API compatible.  You should be able to upgrade between minor point releases without any other code changes.
+- **Minor** version numbers (0.0.x) are used for changes that are API compatible.  You should be able to upgrade between minor point releases without any other code changes.
 
-Medium version numbers (0.x.0) may include API changes, in line with the [deprecation policy][deprecation-policy].  You should read the release notes carefully before upgrading between medium point releases.
+- **Medium** version numbers (0.x.0) may include API changes, in line with the [deprecation policy][deprecation-policy].  You should read the release notes carefully before upgrading between medium point releases.
 
-Major version numbers (x.0.0) are reserved for substantial project milestones.
+- **Major** version numbers (x.0.0) are reserved for substantial project milestones.
+
+As REST Framework is considered feature-complete, most releases are expected to be minor releases.
 
 ## Deprecation policy
 
@@ -36,12 +38,29 @@ You can determine your currently installed version using `pip show`:
 
 ## 3.15.x series
 
+### 3.15.2
+
+**Date**: 14th June 2024
+
+* Fix potential XSS vulnerability in browsable API. [#9435](https://github.com/encode/django-rest-framework/pull/9435)
+* Revert "Ensure CursorPagination respects nulls in the ordering field". [#9381](https://github.com/encode/django-rest-framework/pull/9381)
+* Use warnings rather than logging a warning for DecimalField. [#9367](https://github.com/encode/django-rest-framework/pull/9367)
+* Remove unused code. [#9393](https://github.com/encode/django-rest-framework/pull/9393)
+* Django < 4.2 and Python < 3.8 no longer supported. [#9393](https://github.com/encode/django-rest-framework/pull/9393)
+
+### 3.15.1
+
+Date: 22nd March 2024
+
+* Fix `SearchFilter` handling of quoted and comma separated strings, when `.get_search_terms` is being called into by a custom class. See [[#9338](https://github.com/encode/django-rest-framework/issues/9338)]
+* Revert number of 3.15.0 issues which included unintended side-effects. See [[#9331](https://github.com/encode/django-rest-framework/issues/9331)]
+
 ### 3.15.0
 
 Date: 15th March 2024
 
-* Django 5.0 and Python 3.12 support [[#9157] (https://github.com/encode/django-rest-framework/pull/9157)]
-* Use POST method instead of GET to perform logout in browsable API [[9208] (https://github.com/encode/django-rest-framework/pull/9208)]
+* Django 5.0 and Python 3.12 support [[#9157](https://github.com/encode/django-rest-framework/pull/9157)]
+* Use POST method instead of GET to perform logout in browsable API [[9208](https://github.com/encode/django-rest-framework/pull/9208)]
 * Added jQuery 3.7.1 support & dropped previous version [[#9094](https://github.com/encode/django-rest-framework/pull/9094)]
 * Use str as default path converter [[#9066](https://github.com/encode/django-rest-framework/pull/9066)]
 * Document support for http.HTTPMethod in the @action decorator added in Python 3.11 [[#9067](https://github.com/encode/django-rest-framework/pull/9067)]
@@ -92,7 +111,7 @@ Date: 15th March 2024
 * Use autocomplete widget for user selection in Token admin [[#8534](https://github.com/encode/django-rest-framework/pull/8534)]
 * Make browsable API compatible with strong CSP [[#8784](https://github.com/encode/django-rest-framework/pull/8784)]
 * Avoid inline script execution for injecting CSRF token [[#7016](https://github.com/encode/django-rest-framework/pull/7016)]
-* Mitigate global dependency on inflection #8017 [[#8017](https://github.com/encode/django-rest-framework/pull/8017)] [[#8781](https://github.com/encode/django-rest-framework/pull/8781)]
+* Mitigate global dependency on inflection [[#8017](https://github.com/encode/django-rest-framework/pull/8017)] [[#8781](https://github.com/encode/django-rest-framework/pull/8781)]
 * Register Django urls  [[#8778](https://github.com/encode/django-rest-framework/pull/8778)]
 * Implemented Verbose Name Translation for TokenProxy [[#8713](https://github.com/encode/django-rest-framework/pull/8713)]
 * Properly handle OverflowError in DurationField deserialization [[#8042](https://github.com/encode/django-rest-framework/pull/8042)]
@@ -110,7 +129,7 @@ Date: 15th March 2024
 * Add `__eq__` method for `OperandHolder` class [[#8710](https://github.com/encode/django-rest-framework/pull/8710)]
 * Avoid importing `django.test` package when not testing  [[#8699](https://github.com/encode/django-rest-framework/pull/8699)]
 * Preserve exception messages for wrapped Django exceptions [[#8051](https://github.com/encode/django-rest-framework/pull/8051)]
-* Include `examples` and `format` to OpenAPI schema of CursorPagination [[#8687] (https://github.com/encode/django-rest-framework/pull/8687)] [[#8686](https://github.com/encode/django-rest-framework/pull/8686)]
+* Include `examples` and `format` to OpenAPI schema of CursorPagination [[#8687](https://github.com/encode/django-rest-framework/pull/8687)] [[#8686](https://github.com/encode/django-rest-framework/pull/8686)]
 * Fix infinite recursion with deepcopy on Request [[#8684](https://github.com/encode/django-rest-framework/pull/8684)]
 * Refactor: Replace try/except with contextlib.suppress() [[#8676](https://github.com/encode/django-rest-framework/pull/8676)]
 * Minor fix to SerializeMethodField docstring [[#8629](https://github.com/encode/django-rest-framework/pull/8629)]

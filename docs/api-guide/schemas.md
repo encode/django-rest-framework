@@ -56,10 +56,11 @@ The following sections explain more.
 
 ### Install dependencies
 
-    pip install pyyaml uritemplate
+    pip install pyyaml uritemplate inflection
 
 * `pyyaml` is used to generate schema into YAML-based OpenAPI format.
 * `uritemplate` is used internally to get parameters in path.
+* `inflection` is used to pluralize operations more appropriately in the list endpoints.
 
 ### Generating a static schema with the `generateschema` management command
 

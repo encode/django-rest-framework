@@ -12,7 +12,6 @@ import re
 import sys
 import tempfile
 
-import django
 import pytest
 from django.core.exceptions import ImproperlyConfigured
 from django.core.serializers.json import DjangoJSONEncoder
@@ -174,7 +173,7 @@ class TestRegularFieldMappings(TestCase):
             TestSerializer\(\):
                 auto_field = IntegerField\(read_only=True\)
                 big_integer_field = IntegerField\(.*\)
-                boolean_field = BooleanField\(default=False, required=False\)
+                boolean_field = BooleanField\(required=False\)
                 char_field = CharField\(max_length=100\)
                 comma_separated_integer_field = CharField\(max_length=100, validators=\[<django.core.validators.RegexValidator object>\]\)
                 date_field = DateField\(\)
@@ -183,7 +182,7 @@ class TestRegularFieldMappings(TestCase):
                 email_field = EmailField\(max_length=100\)
                 float_field = FloatField\(\)
                 integer_field = IntegerField\(.*\)
-                null_boolean_field = BooleanField\(allow_null=True, default=False, required=False\)
+                null_boolean_field = BooleanField\(allow_null=True, required=False\)
                 positive_integer_field = IntegerField\(.*\)
                 positive_small_integer_field = IntegerField\(.*\)
                 slug_field = SlugField\(allow_unicode=False, max_length=100\)
@@ -210,7 +209,7 @@ class TestRegularFieldMappings(TestCase):
                 length_limit_field = CharField\(max_length=12, min_length=3\)
                 blank_field = CharField\(allow_blank=True, max_length=10, required=False\)
                 null_field = IntegerField\(allow_null=True,.*required=False\)
-                default_field = IntegerField\(default=0,.*required=False\)
+                default_field = IntegerField\(.*required=False\)
                 descriptive_field = IntegerField\(help_text='Some help text', label='A label'.*\)
                 choices_field = ChoiceField\(choices=(?:\[|\()\('red', 'Red'\), \('blue', 'Blue'\), \('green', 'Green'\)(?:\]|\))\)
                 text_choices_field = ChoiceField\(choices=(?:\[|\()\('red', 'Red'\), \('blue', 'Blue'\), \('green', 'Green'\)(?:\]|\))\)
@@ -453,14 +452,11 @@ class TestPosgresFieldsMapping(TestCase):
                 model = ArrayFieldModel
                 fields = ['array_field', 'array_field_with_blank']
 
-        validators = ""
-        if django.VERSION < (4, 1):
-            validators = ", validators=[<django.core.validators.MaxLengthValidator object>]"
         expected = dedent("""
             TestSerializer():
-                array_field = ListField(allow_empty=False, child=CharField(label='Array field'%s))
-                array_field_with_blank = ListField(child=CharField(label='Array field with blank'%s), required=False)
-        """ % (validators, validators))
+                array_field = ListField(allow_empty=False, child=CharField(label='Array field'))
+                array_field_with_blank = ListField(child=CharField(label='Array field with blank'), required=False)
+        """)
         self.assertEqual(repr(TestSerializer()), expected)
 
     @pytest.mark.skipif(hasattr(models, 'JSONField'), reason='has models.JSONField')
