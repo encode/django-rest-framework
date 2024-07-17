@@ -126,6 +126,25 @@ class TestContentParsing(TestCase):
         request.parsers = (PlainTextParser(), )
         assert request.data == content
 
+    def test_calling_data_fails_when_attribute_error_is_raised(self):
+        """
+        Ensure attribute errors raised when parsing are properly re-raised.
+        """
+        expected_message = "Internal error"
+
+        class BrokenParser:
+            media_type = "application/json"
+
+            def parse(self, *args, **kwargs):
+                raise AttributeError(expected_message)
+
+        http_request = factory.post('/', data={}, format="json")
+        request = Request(http_request)
+        request.parsers = (BrokenParser,)
+
+        with self.assertRaisesMessage(WrappedAttributeError, expected_message):
+            request.data
+
 
 class MockView(APIView):
     authentication_classes = (SessionAuthentication,)
