@@ -275,9 +275,16 @@ class PageNumberPagination(BasePagination):
     def get_next_link(self):
         if not self.page.has_next():
             return None
-        url = self.request.build_absolute_uri()
+        
+        current_protocol = self.request.scheme
+        current_host = self.request.get_host()
+        current_path = self.request.path
         page_number = self.page.next_page_number()
-        return replace_query_param(url, self.page_query_param, page_number)
+        param = self.page_query_param
+
+        url = f'{current_protocol}://{current_host}{current_path}?{param}={page_number}'
+        
+        return url
 
     def get_previous_link(self):
         if not self.page.has_previous():
