@@ -39,6 +39,8 @@ There are a wide range of resources available for learning and using Django REST
 * [Check Credentials Using Django REST Framework][check-credentials-using-django-rest-framework]
 * [Creating a Production Ready API with Python and Django REST Framework – Part 1][creating-a-production-ready-api-with-python-and-drf-part1]
 * [Creating a Production Ready API with Python and Django REST Framework – Part 2][creating-a-production-ready-api-with-python-and-drf-part2]
+* [Creating a Production Ready API with Python and Django REST Framework – Part 3][creating-a-production-ready-api-with-python-and-drf-part3]
+* [Creating a Production Ready API with Python and Django REST Framework – Part 4][creating-a-production-ready-api-with-python-and-drf-part4]
 * [Django REST Framework Tutorial - Build a Blog API][django-rest-framework-tutorial-build-a-blog]
 * [Django REST Framework & React Tutorial - Build a Todo List API][django-rest-framework-react-tutorial-build-a-todo-list]
 * [Tutorial: Django REST with React (Django 2.0)][django-rest-react-valentinog]
