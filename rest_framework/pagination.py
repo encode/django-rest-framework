@@ -230,8 +230,10 @@ class PageNumberPagination(BasePagination):
     def get_paginated_response(self, data):
         return Response({
             'count': self.page.paginator.count,
+            'last': self.get_last_link(),
             'next': self.get_next_link(),
             'previous': self.get_previous_link(),
+            'first': self.get_first_link(),
             'results': data,
         })
 
@@ -272,6 +274,17 @@ class PageNumberPagination(BasePagination):
                 )
         return self.page_size
 
+    def get_last_link(self):
+        if not self.page.has_next():
+            return None
+        next_page_number = self.page.next_page_number()
+        last_page_number = self.page.paginator.num_pages
+        # if next and last are the same it does not need to build the last url
+        if next_page_number == last_page_number:
+            return None
+        url = self.request.build_absolute_uri()
+        return replace_query_param(url, self.page_query_param, last_page_number)
+
     def get_next_link(self):
         if not self.page.has_next():
             return None
@@ -287,6 +300,13 @@ class PageNumberPagination(BasePagination):
         if page_number == 1:
             return remove_query_param(url, self.page_query_param)
         return replace_query_param(url, self.page_query_param, page_number)
+
+    def get_first_link(self):
+        # if the current number is greater than 2, then it makes sense to build the first url
+        if self.page.number <= 2:
+            return None
+        url = self.request.build_absolute_uri()
+        return replace_query_param(url, self.page_query_param, 1)
 
     def get_html_context(self):
         base_url = self.request.build_absolute_uri()
