@@ -469,6 +469,28 @@ class TestUniquenessTogetherValidation(TestCase):
             assert serializer.is_valid()
             assert not mock.called
 
+    @patch("rest_framework.validators.qs_exists")
+    def test_unique_together_with_source(self, mock_qs_exists):
+        class UniqueTogetherWithSourceSerializer(serializers.ModelSerializer):
+            name = serializers.CharField(source="race_name")
+            pos = serializers.IntegerField(source="position")
+
+            class Meta:
+                model = UniquenessTogetherModel
+                fields = ["name", "pos"]
+
+        data = {"name": "Paris Marathon", "pos": 1}
+        instance = UniquenessTogetherModel.objects.create(
+            race_name="Paris Marathon", position=1
+        )
+        serializer = UniqueTogetherWithSourceSerializer(data=data)
+        assert not serializer.is_valid()
+        assert mock_qs_exists.called
+        mock_qs_exists.reset_mock()
+        serializer = UniqueTogetherWithSourceSerializer(data=data, instance=instance)
+        assert serializer.is_valid()
+        assert not mock_qs_exists.called
+
     def test_filter_queryset_do_not_skip_existing_attribute(self):
         """
         filter_queryset should add value from existing instance attribute
