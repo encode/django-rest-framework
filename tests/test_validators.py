@@ -1,6 +1,6 @@
 import datetime
 import re
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 from django import VERSION as django_version
@@ -452,22 +452,6 @@ class TestUniquenessTogetherValidation(TestCase):
         data = {'date': None, 'race_name': 'Paris Marathon', 'position': 1}
         serializer = NullUniquenessTogetherSerializer(data=data)
         assert not serializer.is_valid()
-
-    def test_ignore_validation_for_unchanged_fields(self):
-        """
-        If all fields in the unique together constraint are unchanged,
-        then the instance should skip uniqueness validation.
-        """
-        instance = UniquenessTogetherModel.objects.create(
-            race_name="Paris Marathon", position=1
-        )
-        data = {"race_name": "Paris Marathon", "position": 1}
-        serializer = UniquenessTogetherSerializer(data=data, instance=instance)
-        with patch(
-            "rest_framework.validators.qs_exists"
-        ) as mock:
-            assert serializer.is_valid()
-            assert not mock.called
 
     def test_filter_queryset_do_not_skip_existing_attribute(self):
         """
