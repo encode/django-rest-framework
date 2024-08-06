@@ -1,5 +1,6 @@
 import re
 from collections.abc import MutableMapping
+from datetime import datetime
 
 import pytest
 from django.core.cache import cache
@@ -486,6 +487,23 @@ class TestHiddenFieldHTMLFormRenderer(TestCase):
         field = serializer['published']
         rendered = renderer.render_field(field, {})
         assert rendered == ''
+
+
+class TestDateTimeFieldHTMLFormRender(TestCase):
+    def test_datetime_field_rendering(self):
+        class TestSerializer(serializers.Serializer):
+            appointment = serializers.DateTimeField()
+
+        appointment = datetime(2024, 12, 24, 00, 55, 30, 345678)
+        serializer = TestSerializer(data={"appointment": appointment})
+        serializer.is_valid()
+        renderer = HTMLFormRenderer()
+        field = serializer['appointment']
+        rendered = renderer.render_field(field, {})
+        self.assertInHTML(
+            '<input name="appointment" class="form-control" type="datetime-local" value="2024-12-24T00:55:30">',
+            rendered
+        )
 
 
 class TestHTMLFormRenderer(TestCase):
