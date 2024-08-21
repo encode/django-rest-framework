@@ -143,6 +143,17 @@ Default: `ordering`
 
 ---
 
+## Serializer settings
+
+#### MODEL_SERIALIZER_FIELD_MAPPING
+
+Extra field mapping used to extend or override mapping of django db fields to serializer fields which is used by 
+ModelSerializer to set up fields for serializer.
+
+Default: `{}`
+
+---
+
 ## Versioning settings
 
 #### DEFAULT_VERSION

@@ -894,48 +894,8 @@ class ModelSerializer(Serializer):
     * A set of default validators are automatically populated.
     * Default `.create()` and `.update()` implementations are provided.
 
-    The process of automatically determining a set of serializer fields
-    based on the model fields is reasonably complex, but you almost certainly
-    don't need to dig into the implementation.
-
-    If the `ModelSerializer` class *doesn't* generate the set of fields that
-    you need you should either declare the extra/differing fields explicitly on
-    the serializer class, or simply use a `Serializer` class.
     """
-    serializer_field_mapping = {
-        models.AutoField: IntegerField,
-        models.BigIntegerField: IntegerField,
-        models.BooleanField: BooleanField,
-        models.CharField: CharField,
-        models.CommaSeparatedIntegerField: CharField,
-        models.DateField: DateField,
-        models.DateTimeField: DateTimeField,
-        models.DecimalField: DecimalField,
-        models.DurationField: DurationField,
-        models.EmailField: EmailField,
-        models.Field: ModelField,
-        models.FileField: FileField,
-        models.FloatField: FloatField,
-        models.ImageField: ImageField,
-        models.IntegerField: IntegerField,
-        models.NullBooleanField: BooleanField,
-        models.PositiveIntegerField: IntegerField,
-        models.PositiveSmallIntegerField: IntegerField,
-        models.SlugField: SlugField,
-        models.SmallIntegerField: IntegerField,
-        models.TextField: CharField,
-        models.TimeField: TimeField,
-        models.URLField: URLField,
-        models.UUIDField: UUIDField,
-        models.GenericIPAddressField: IPAddressField,
-        models.FilePathField: FilePathField,
-    }
-    if hasattr(models, 'JSONField'):
-        serializer_field_mapping[models.JSONField] = JSONField
-    if postgres_fields:
-        serializer_field_mapping[postgres_fields.HStoreField] = HStoreField
-        serializer_field_mapping[postgres_fields.ArrayField] = ListField
-        serializer_field_mapping[postgres_fields.JSONField] = JSONField
+
     serializer_related_field = PrimaryKeyRelatedField
     serializer_related_to_field = SlugRelatedField
     serializer_url_field = HyperlinkedIdentityField
@@ -949,6 +909,61 @@ class ModelSerializer(Serializer):
     # views, to correctly handle the 'Location' response header for
     # "HTTP 201 Created" responses.
     url_field_name = None
+
+    @property
+    def serializer_field_mapping(self):
+        """Get mapping of django model field to serializer field.
+
+        The process of automatically determining a set of serializer fields
+        based on the model fields is reasonably complex, but you almost certainly
+        don't need to dig into the implementation.
+
+        If the `ModelSerializer` class *doesn't* generate the set of fields that
+        you need you should either extend serializer_field_mapping with
+        the extra/differing fields explicitly, or simply use a `Serializer`
+        class.
+
+        """
+        serializer_field_mapping = {
+            models.AutoField: IntegerField,
+            models.BigIntegerField: IntegerField,
+            models.BooleanField: BooleanField,
+            models.CharField: CharField,
+            models.CommaSeparatedIntegerField: CharField,
+            models.DateField: DateField,
+            models.DateTimeField: DateTimeField,
+            models.DecimalField: DecimalField,
+            models.DurationField: DurationField,
+            models.EmailField: EmailField,
+            models.Field: ModelField,
+            models.FileField: FileField,
+            models.FloatField: FloatField,
+            models.ImageField: ImageField,
+            models.IntegerField: IntegerField,
+            models.NullBooleanField: BooleanField,
+            models.PositiveIntegerField: IntegerField,
+            models.PositiveSmallIntegerField: IntegerField,
+            models.SlugField: SlugField,
+            models.SmallIntegerField: IntegerField,
+            models.TextField: CharField,
+            models.TimeField: TimeField,
+            models.URLField: URLField,
+            models.UUIDField: UUIDField,
+            models.GenericIPAddressField: IPAddressField,
+            models.FilePathField: FilePathField,
+        }
+        if hasattr(models, 'JSONField'):
+            serializer_field_mapping[models.JSONField] = JSONField
+        if postgres_fields:
+            serializer_field_mapping[postgres_fields.HStoreField] = HStoreField
+            serializer_field_mapping[postgres_fields.ArrayField] = ListField
+            serializer_field_mapping[postgres_fields.JSONField] = JSONField
+        for (
+            model_field,
+            serializer_field,
+        ) in api_settings.MODEL_SERIALIZER_FIELD_MAPPING.items():
+            serializer_field_mapping[model_field] = serializer_field
+        return serializer_field_mapping
 
     # Default `create` and `update` behavior...
     def create(self, validated_data):

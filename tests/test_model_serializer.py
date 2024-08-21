@@ -21,7 +21,7 @@ from django.core.validators import (
 from django.db import models
 from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from rest_framework import serializers
 from rest_framework.compat import postgres_fields
@@ -41,6 +41,12 @@ class CustomField(models.Field):
     A custom model field simply for testing purposes.
     """
     pass
+
+
+class CustomCharFieldField(serializers.CharField):
+    """
+    A custom serializer field simply for testing purposes.
+    """
 
 
 class OneFieldModel(models.Model):
@@ -194,6 +200,32 @@ class TestRegularFieldMappings(TestCase):
                 custom_field = ModelField\(model_field=<tests.test_model_serializer.CustomField: custom_field>\)
                 file_path_field = FilePathField\(path=%r\)
         """ % tempfile.gettempdir())
+        print(expected)
+        assert re.search(expected, repr(TestSerializer())) is not None
+
+    @override_settings(
+        REST_FRAMEWORK={
+            'MODEL_SERIALIZER_FIELD_MAPPING': {
+                'django.db.models.CharField': 'tests.test_model_serializer.CustomCharFieldField',
+            }
+        },
+    )
+    def test_custom_fields(self):
+        """
+        If MODEL_SERIALIZER_FIELD_MAPPING is set than model fields should map
+        to their equivalent serializer fields.
+        """
+        class TestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = RegularFieldsModel
+                fields = (
+                    "char_field",
+                )
+
+        expected = dedent(r"""
+            TestSerializer\(\):
+                char_field = CustomCharFieldField\(max_length=100\)
+        """)
         assert re.search(expected, repr(TestSerializer())) is not None
 
     def test_field_options(self):

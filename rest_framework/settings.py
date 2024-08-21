@@ -126,6 +126,9 @@ DEFAULTS = {
         'retrieve': 'read',
         'destroy': 'delete'
     },
+
+    # Serializers
+    'MODEL_SERIALIZER_FIELD_MAPPING': {}
 }
 
 
@@ -147,7 +150,8 @@ IMPORT_STRINGS = [
     'UNAUTHENTICATED_USER',
     'UNAUTHENTICATED_TOKEN',
     'VIEW_NAME_FUNCTION',
-    'VIEW_DESCRIPTION_FUNCTION'
+    'VIEW_DESCRIPTION_FUNCTION',
+    'MODEL_SERIALIZER_FIELD_MAPPING',
 ]
 
 
@@ -168,6 +172,16 @@ def perform_import(val, setting_name):
         return import_from_string(val, setting_name)
     elif isinstance(val, (list, tuple)):
         return [import_from_string(item, setting_name) for item in val]
+    elif isinstance(val, (dict)):
+        return {
+            import_from_string(
+                key,
+                setting_name,
+            ): import_from_string(
+                value,
+                setting_name,
+            ) for key, value in val.items()
+        }
     return val
 
 
