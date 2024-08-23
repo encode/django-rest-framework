@@ -244,19 +244,19 @@
       {% endif %}
 
       {% block script %}
-        <script type="application/json" id="drf_csrf">
+        <script type="application/json" id="drf_csrf" nonce="{{ request.csp_nonce }}">
           {
             "csrfHeaderName": "{{ csrf_header_name|default:'X-CSRFToken' }}",
             "csrfToken": "{{ csrf_token }}"
           }
         </script>
-        <script src="{% static "rest_framework/js/jquery-3.7.1.min.js" %}"></script>
-        <script src="{% static "rest_framework/js/ajax-form.js" %}"></script>
-        <script src="{% static "rest_framework/js/csrf.js" %}"></script>
-        <script src="{% static "rest_framework/js/bootstrap.min.js" %}"></script>
-        <script src="{% static "rest_framework/js/prettify-min.js" %}"></script>
-        <script src="{% static "rest_framework/js/default.js" %}"></script>
-        <script src="{% static "rest_framework/js/load-ajax-form.js" %}"></script>
+        <script src="{% static "rest_framework/js/jquery-3.7.1.min.js" %}" nonce="{{ request.csp_nonce }}"></script>
+        <script src="{% static "rest_framework/js/ajax-form.js" %}" nonce="{{ request.csp_nonce }}"></script>
+        <script src="{% static "rest_framework/js/csrf.js" %}" nonce="{{ request.csp_nonce }}"></script>
+        <script src="{% static "rest_framework/js/bootstrap.min.js" %}" nonce="{{ request.csp_nonce }}"></script>
+        <script src="{% static "rest_framework/js/prettify-min.js" %}" nonce="{{ request.csp_nonce }}"></script>
+        <script src="{% static "rest_framework/js/default.js" %}" nonce="{{ request.csp_nonce }}"></script>
+        <script src="{% static "rest_framework/js/load-ajax-form.js" %}" nonce="{{ request.csp_nonce }}"></script>
       {% endblock %}
     </body>
   {% endblock %}
