@@ -20,7 +20,7 @@ By default, the API will return the format specified by the headers, which in th
 To quickly add authentication to the browesable api, add a routes named `"login"` and `"logout"` under the namespace `"rest_framework"`. DRF provides default routes for this which you can add to your urlconf:
 
 ```python
-from django.urls import include, re_path
+from django.urls import include, path
 
 urlpatterns = [
     # ...
