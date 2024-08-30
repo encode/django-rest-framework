@@ -11,6 +11,8 @@ import "../../node_modules/bootstrap/js/dist//modal";
 // import "../../node_modules/bootstrap/js/dist/toast";
 // import "../../node_modules/bootstrap/js/dist/tooltip";
 
+import "./prettify-1.0.js";
+
 import "../scss/main.scss";
 
 function setupPrettify() {
