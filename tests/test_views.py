@@ -83,10 +83,6 @@ class ClassBasedViewIntegrationTests(TestCase):
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert sanitise_json_error(response.data) == expected
 
-    @unittest.skipUnless(DJANGO_VERSION >= (5, 1), 'Only for Django 5.1+')
-    def test_django_51_login_required_disabled(self):
-        assert self.view.login_required is False
-
 
 class FunctionBasedViewIntegrationTests(TestCase):
     def setUp(self):
@@ -100,10 +96,6 @@ class FunctionBasedViewIntegrationTests(TestCase):
         }
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert sanitise_json_error(response.data) == expected
-
-    @unittest.skipUnless(DJANGO_VERSION >= (5, 1), 'Only for Django 5.1+')
-    def test_django_51_login_required_disabled(self):
-        assert self.view.login_required is False
 
 
 class TestCustomExceptionHandler(TestCase):
@@ -146,3 +138,13 @@ class TestCustomSettings(TestCase):
         response = self.view(request)
         assert response.status_code == 400
         assert response.data == {'error': 'SyntaxError'}
+
+
+@unittest.skipUnless(DJANGO_VERSION >= (5, 1), 'Only for Django 5.1+')
+class TestLoginRequiredMiddlewareCompat(TestCase):
+    def test_class_based_view_opted_out(self):
+        class_based_view = BasicView.as_view()
+        assert class_based_view.login_required is False
+
+    def test_function_based_view_opted_out(self):
+        assert basic_view.login_required is False
