@@ -8,7 +8,6 @@ methods on viewsets that should be included by routers.
 """
 import types
 
-from django import VERSION as DJANGO_VERSION
 from django.forms.utils import pretty_name
 
 from rest_framework.views import APIView
@@ -73,11 +72,6 @@ def api_view(http_method_names=None):
 
         WrappedAPIView.schema = getattr(func, 'schema',
                                         APIView.schema)
-
-        # Exempt all DRF views from Django's LoginRequiredMiddleware. Users should set
-        # DEFAULT_PERMISSION_CLASSES to 'rest_framework.permissions.IsAuthenticated' instead
-        if DJANGO_VERSION >= (5, 1):
-            func.login_required = False
 
         return WrappedAPIView.as_view()
 
