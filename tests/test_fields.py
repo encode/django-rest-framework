@@ -1266,8 +1266,8 @@ class TestMinMaxDecimalField(FieldValues):
             assert len(w) == 2
             assert all(issubclass(i.category, UserWarning) for i in w)
 
-            assert 'max_value should be a Decimal instance' in str(w[0].message)
-            assert 'min_value should be a Decimal instance' in str(w[1].message)
+            assert 'max_value should be an integer or Decimal instance' in str(w[0].message)
+            assert 'min_value should be an integer or Decimal instance' in str(w[1].message)
 
 
 class TestAllowEmptyStrDecimalFieldWithValidators(FieldValues):
