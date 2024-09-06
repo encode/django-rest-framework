@@ -1251,7 +1251,7 @@ class TestMinMaxDecimalField(FieldValues):
     outputs = {}
     field = serializers.DecimalField(
         max_digits=3, decimal_places=1,
-        min_value=10, max_value=20
+        min_value=10.0, max_value=20.0
     )
 
     def test_warning_when_not_decimal_types(self, caplog):
@@ -1260,7 +1260,7 @@ class TestMinMaxDecimalField(FieldValues):
 
             serializers.DecimalField(
                 max_digits=3, decimal_places=1,
-                min_value=10, max_value=20
+                min_value=10.0, max_value=20.0
             )
 
             assert len(w) == 2
@@ -1291,14 +1291,12 @@ class TestAllowEmptyStrDecimalFieldWithValidators(FieldValues):
     outputs = {
         None: '',
     }
-    field = serializers.DecimalField(
-        max_digits=3, decimal_places=1, allow_null=True, min_value=Decimal(0), max_value=Decimal(10)
-    )
+    field = serializers.DecimalField(max_digits=3, decimal_places=1, allow_null=True, min_value=0, max_value=10)
 
 
 class TestNoMaxDigitsDecimalField(FieldValues):
     field = serializers.DecimalField(
-        max_value=Decimal(100), min_value=Decimal(0),
+        max_value=100, min_value=0,
         decimal_places=2, max_digits=None
     )
     valid_inputs = {
