@@ -986,10 +986,10 @@ class DecimalField(Field):
         self.max_value = max_value
         self.min_value = min_value
 
-        if self.max_value is not None and not isinstance(self.max_value, decimal.Decimal):
-            warnings.warn("max_value should be a Decimal instance.")
-        if self.min_value is not None and not isinstance(self.min_value, decimal.Decimal):
-            warnings.warn("min_value should be a Decimal instance.")
+        if self.max_value is not None and not isinstance(self.max_value, (int, decimal.Decimal)):
+            warnings.warn("max_value should be an integer or Decimal instance.")
+        if self.min_value is not None and not isinstance(self.min_value, (int, decimal.Decimal)):
+            warnings.warn("min_value should be an integer or Decimal instance.")
 
         if self.max_digits is not None and self.decimal_places is not None:
             self.max_whole_digits = self.max_digits - self.decimal_places
