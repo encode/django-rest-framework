@@ -1,5 +1,7 @@
 import copy
+import unittest
 
+from django import VERSION as DJANGO_VERSION
 from django.test import TestCase
 
 from rest_framework import status
@@ -136,3 +138,13 @@ class TestCustomSettings(TestCase):
         response = self.view(request)
         assert response.status_code == 400
         assert response.data == {'error': 'SyntaxError'}
+
+
+@unittest.skipUnless(DJANGO_VERSION >= (5, 1), 'Only for Django 5.1+')
+class TestLoginRequiredMiddlewareCompat(TestCase):
+    def test_class_based_view_opted_out(self):
+        class_based_view = BasicView.as_view()
+        assert class_based_view.login_required is False
+
+    def test_function_based_view_opted_out(self):
+        assert basic_view.login_required is False

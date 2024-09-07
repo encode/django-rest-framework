@@ -91,6 +91,7 @@ setup(
         'Framework :: Django',
         'Framework :: Django :: 4.2',
         'Framework :: Django :: 5.0',
+        'Framework :: Django :: 5.1',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',

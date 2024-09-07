@@ -1,6 +1,8 @@
+import unittest
 from functools import wraps
 
 import pytest
+from django import VERSION as DJANGO_VERSION
 from django.db import models
 from django.test import TestCase, override_settings
 from django.urls import include, path
@@ -195,6 +197,11 @@ class InitializeViewSetsTestCase(TestCase):
         head = view(factory.head('/'))
         assert get.view.action == 'list_action'
         assert head.view.action == 'list_action'
+
+    @unittest.skipUnless(DJANGO_VERSION >= (5, 1), 'Only for Django 5.1+')
+    def test_login_required_middleware_compat(self):
+        view = ActionViewSet.as_view(actions={'get': 'list'})
+        assert view.login_required is False
 
 
 class GetExtraActionsTests(TestCase):

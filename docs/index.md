@@ -87,7 +87,7 @@ continued development by **[signing up for a paid plan][funding]**.
 
 REST framework requires the following:
 
-* Django (4.2, 5.0)
+* Django (4.2, 5.0, 5.1)
 * Python (3.8, 3.9, 3.10, 3.11, 3.12)
 
 We **highly recommend** and only officially support the latest patch release of
