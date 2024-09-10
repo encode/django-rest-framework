@@ -23,9 +23,5 @@ HTTP_HEADER_ENCODING = 'iso-8859-1'
 ISO_8601 = 'iso-8601'
 
 
-class RemovedInDRF316Warning(DeprecationWarning):
-    pass
-
-
 class RemovedInDRF317Warning(PendingDeprecationWarning):
     pass
