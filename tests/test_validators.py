@@ -434,6 +434,14 @@ class TestUniquenessTogetherValidation(TestCase):
         serializer = NullUniquenessTogetherSerializer(data=data)
         assert serializer.is_valid()
 
+    def test_ignore_validation_for_missing_nullable_fields(self):
+        data = {
+            'date': datetime.date(2000, 1, 1),
+            'race_name': 'Paris Marathon',
+        }
+        serializer = NullUniquenessTogetherSerializer(data=data)
+        assert serializer.is_valid(), serializer.errors
+
     def test_do_not_ignore_validation_for_null_fields(self):
         # None values that are not on fields part of the uniqueness constraint
         # do not cause the instance to skip validation.
