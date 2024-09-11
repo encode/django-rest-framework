@@ -1400,3 +1400,32 @@ class Issue6751Test(TestCase):
         serializer.save()
 
         self.assertEqual(instance.char_field, 'value changed by signal')
+
+
+class Tag(models.Model):
+    name = models.CharField(max_length=100)
+
+
+class UniqueConstraintModel(models.Model):
+    title = models.CharField(max_length=100)
+    age = models.IntegerField(null=True)
+    tag = models.ForeignKey(Tag, on_delete=models.CASCADE, related_name='instances', null=True)
+
+    class Meta:
+        constraints = [
+            # Unique constraint on 2 nullable fields
+            models.UniqueConstraint(name='unique_constraint', fields=('age', 'tag'))
+        ]
+
+
+class TestUniqueConstraintWithNullableFields(TestCase):
+    def test_nullable_unique_constraint_fields_are_not_required(self):
+        class UniqueConstraintSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = UniqueConstraintModel
+                fields = '__all__'
+
+        serializer = UniqueConstraintSerializer(data={'title': 'Bob'})
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        result = serializer.save()
+        self.assertIsInstance(result, UniqueConstraintModel)
