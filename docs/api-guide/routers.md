@@ -142,6 +142,24 @@ The above example would now generate the following URL pattern:
 * URL path: `^users/{pk}/change-password/$`
 * URL name: `'user-change_password'`
 
+### Using Django `path()` with routers
+
+By default, the URLs created by routers use regular expressions. This behavior can be modified by setting the `use_regex_path` argument to `False` when instantiating the router, in this case [path converters][path-converters-topic-reference] are used. For example:
+
+    router = SimpleRouter(use_regex_path=False)
+
+The router will match lookup values containing any characters except slashes and period characters.  For a more restrictive (or lenient) lookup pattern, set the `lookup_value_regex` attribute on the viewset or `lookup_value_converter` if using path converters.  For example, you can limit the lookup to valid UUIDs:
+
+    class MyModelViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+        lookup_field = 'my_model_id'
+        lookup_value_regex = '[0-9a-f]{32}'
+
+    class MyPathModelViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+        lookup_field = 'my_model_uuid'
+        lookup_value_converter = 'uuid'
+
+Note that path converters will be used on all URLs registered in the router, including viewset actions.
+
 # API Guide
 
 ## SimpleRouter
@@ -160,29 +178,12 @@ This router includes routes for the standard set of `list`, `create`, `retrieve`
     <tr><td>{prefix}/{lookup}/{url_path}/</td><td>GET, or as specified by `methods` argument</td><td>`@action(detail=True)` decorated method</td><td>{basename}-{url_name}</td></tr>
 </table>
 
-By default the URLs created by `SimpleRouter` are appended with a trailing slash.
+By default, the URLs created by `SimpleRouter` are appended with a trailing slash.
 This behavior can be modified by setting the `trailing_slash` argument to `False` when instantiating the router.  For example:
 
     router = SimpleRouter(trailing_slash=False)
 
 Trailing slashes are conventional in Django, but are not used by default in some other frameworks such as Rails.  Which style you choose to use is largely a matter of preference, although some javascript frameworks may expect a particular routing style.
-
-By default the URLs created by `SimpleRouter` use regular expressions. This behavior can be modified by setting the `use_regex_path` argument to `False` when instantiating the router, in this case [path converters][path-converters-topic-reference] are used. For example:
-
-    router = SimpleRouter(use_regex_path=False)
-
-**Note**: `use_regex_path=False` only works with Django 2.x or above, since this feature was introduced in 2.0.0. See [release note][simplified-routing-release-note]
-
-
-The router will match lookup values containing any characters except slashes and period characters.  For a more restrictive (or lenient) lookup pattern, set the `lookup_value_regex` attribute on the viewset or `lookup_value_converter` if using path converters.  For example, you can limit the lookup to valid UUIDs:
-
-    class MyModelViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-        lookup_field = 'my_model_id'
-        lookup_value_regex = '[0-9a-f]{32}'
-
-    class MyPathModelViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-        lookup_field = 'my_model_uuid'
-        lookup_value_converter = 'uuid'
 
 ## DefaultRouter
 
@@ -351,5 +352,4 @@ The [`DRF-extensions` package][drf-extensions] provides [routers][drf-extensions
 [drf-extensions-customizable-endpoint-names]: https://chibisov.github.io/drf-extensions/docs/#controller-endpoint-name
 [url-namespace-docs]: https://docs.djangoproject.com/en/4.0/topics/http/urls/#url-namespaces
 [include-api-reference]: https://docs.djangoproject.com/en/4.0/ref/urls/#include
-[simplified-routing-release-note]: https://docs.djangoproject.com/en/2.0/releases/2.0/#simplified-url-routing-syntax
 [path-converters-topic-reference]: https://docs.djangoproject.com/en/2.0/topics/http/urls/#path-converters

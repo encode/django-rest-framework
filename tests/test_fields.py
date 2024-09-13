@@ -1245,13 +1245,13 @@ class TestMinMaxDecimalField(FieldValues):
         '20.0': Decimal('20.0'),
     }
     invalid_inputs = {
-        '9.9': ['Ensure this value is greater than or equal to 10.'],
-        '20.1': ['Ensure this value is less than or equal to 20.'],
+        '9.9': ['Ensure this value is greater than or equal to 10.0.'],
+        '20.1': ['Ensure this value is less than or equal to 20.0.'],
     }
     outputs = {}
     field = serializers.DecimalField(
         max_digits=3, decimal_places=1,
-        min_value=10, max_value=20
+        min_value=10.0, max_value=20.0
     )
 
     def test_warning_when_not_decimal_types(self, caplog):
@@ -1260,14 +1260,14 @@ class TestMinMaxDecimalField(FieldValues):
 
             serializers.DecimalField(
                 max_digits=3, decimal_places=1,
-                min_value=10, max_value=20
+                min_value=10.0, max_value=20.0
             )
 
             assert len(w) == 2
             assert all(issubclass(i.category, UserWarning) for i in w)
 
-            assert 'max_value should be a Decimal instance' in str(w[0].message)
-            assert 'min_value should be a Decimal instance' in str(w[1].message)
+            assert 'max_value should be an integer or Decimal instance' in str(w[0].message)
+            assert 'min_value should be an integer or Decimal instance' in str(w[1].message)
 
 
 class TestAllowEmptyStrDecimalFieldWithValidators(FieldValues):
