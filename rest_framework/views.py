@@ -180,11 +180,11 @@ class APIView(View):
             raise exceptions.NotAuthenticated()
         raise exceptions.PermissionDenied(detail=message, code=code)
 
-    def throttled(self, request, wait):
+    def throttled(self, request, wait, detail=None):
         """
         If request is throttled, determine what kind of exception to raise.
         """
-        raise exceptions.Throttled(wait)
+        raise exceptions.Throttled(wait, detail)
 
     def get_authenticate_header(self, request):
         """
@@ -373,8 +373,12 @@ class APIView(View):
                 if duration is not None
             ]
 
-            duration = max(durations, default=None)
-            self.throttled(request, duration)
+            # consider also wait to return (duration, message) tuple
+            duration = max(durations, key=lambda d: d[0] or 0 if isinstance(d, (list, tuple)) else d, default=None)
+            if isinstance(duration, (list, tuple)):
+                self.throttled(request, *duration[:2])
+            else:
+                self.throttled(request, duration)
 
     def determine_version(self, request, *args, **kwargs):
         """

@@ -201,7 +201,15 @@ User requests to either `ContactListView` or `ContactDetailView` would be restri
 
 To create a custom throttle, override `BaseThrottle` and implement `.allow_request(self, request, view)`.  The method should return `True` if the request should be allowed, and `False` otherwise.
 
-Optionally you may also override the `.wait()` method.  If implemented, `.wait()` should return a recommended number of seconds to wait before attempting the next request, or `None`.  The `.wait()` method will only be called if `.allow_request()` has previously returned `False`.
+Optionally you may also override the `.wait()` method.  If implemented, `.wait()` should return one of the following:
+
+- a single value representing the recommended number of seconds to wait before attempting the next request
+- a tuple with two elements, in order:
+   - the recommended number of seconds to wait before attempting the next request or `None`
+   - a string to be used as _detail_ message
+- `None` (default)
+
+The `.wait()` method will only be called if `.allow_request()` has previously returned `False`.
 
 If the `.wait()` method is implemented and the request is throttled, then a `Retry-After` header will be included in the response.
 
