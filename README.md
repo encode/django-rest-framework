@@ -83,7 +83,7 @@ To help you get started quickly with Django REST framework, follow these steps t
 First, make sure you have Python installed on your machine. You can install Django and Django REST framework using pip:
 
 ```bash
-    pip install django djangorestframework
+pip install django djangorestframework
 ```
 
 ### Step 2: Create a New Django Project
@@ -91,8 +91,8 @@ First, make sure you have Python installed on your machine. You can install Djan
 Create a new Django project by running the following command
 
 ```bash
-    django-admin startproject myproject
-    cd myproject
+django-admin startproject myproject
+cd myproject
 ```
 
 ### Step 3: Create a New Django App
@@ -100,7 +100,7 @@ Create a new Django project by running the following command
 Next, create a new app within your project:
 
 ```bash
-    python manage.py startapp myapp
+python manage.py startapp myapp
 ```
 
 ### Step 4: Update Settings
@@ -108,11 +108,11 @@ Next, create a new app within your project:
 Add your new app and REST framework to the INSTALLED_APPS list in myproject/settings.py:
 
 ```bash
-    INSTALLED_APPS = [
-        ...
-        'rest_framework',
-        'myapp',
-    ]
+INSTALLED_APPS = [
+    ...
+    'rest_framework',
+    'myapp',
+]
 ```
 
 Once you have follow the steps above, you should be able to use the REST framework. View the example below for extra details.
@@ -218,8 +218,8 @@ Or to create a new user:
 If you encounter issues related to database migrations, ensure that you have run:
 
 ```bash
-    python manage.py makemigrations
-    python manage.py migrate
+python manage.py makemigrations
+python manage.py migrate
 ```
 
 ### 2. Missing Packages
