@@ -151,14 +151,19 @@ class APIRequestFactory(DjangoRequestFactory):
         Encode the data returning a two tuple of (bytes, content_type)
         """
 
-        if data is None:
-            return ('', content_type)
-
         assert format is None or content_type is None, (
             'You may not set both `format` and `content_type`.'
         )
 
         if content_type:
+            try:
+                data = self._encode_json(data, content_type)
+            except AttributeError:
+                pass
+
+            if data is None:
+                data = ''
+
             # Content type specified explicitly, treat data as a raw bytestring
             ret = force_bytes(data, settings.DEFAULT_CHARSET)
 
@@ -176,7 +181,6 @@ class APIRequestFactory(DjangoRequestFactory):
 
             # Use format and render the data into a bytestring
             renderer = self.renderer_classes[format]()
-            ret = renderer.render(data)
 
             # Determine the content-type header from the renderer
             content_type = renderer.media_type
@@ -184,6 +188,11 @@ class APIRequestFactory(DjangoRequestFactory):
                 content_type = "{}; charset={}".format(
                     content_type, renderer.charset
                 )
+
+            if data is None:
+                ret = ''
+            else:
+                ret = renderer.render(data)
 
             # Coerce text to bytes if required.
             if isinstance(ret, str):
