@@ -7,11 +7,15 @@ repo_url: https://github.com/encode/django-rest-framework
 theme:
     name: mkdocs
     custom_dir: docs_theme
+        
+watch:
+    - docs_theme
 
 markdown_extensions:
  - admonition
  - toc:
-    anchorlink: True
+    # anchorlink: True
+    permalink: True
 
 nav:
  - Home: 'index.md'
