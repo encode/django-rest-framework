@@ -205,6 +205,43 @@ class SearchFilterTests(TestCase):
             {'id': 3, 'title': 'zzz', 'text': 'cde'}
         ]
 
+    def test_search_with_filter_multiple(self):
+        class TitleSearchFilter(filters.SearchFilter):
+            search_param = 'search_title'
+            search_fields = ('$title', )
+
+        class TextSearchFilter(filters.SearchFilter):
+            search_param = 'search_text'
+            search_fields = ('$text', )
+
+        class SearchListView(generics.ListAPIView):
+            queryset = SearchFilterModel.objects.all()
+            serializer_class = SearchFilterSerializer
+            filter_backends = (TitleSearchFilter, TextSearchFilter)
+
+        view = SearchListView.as_view()
+        request = factory.get('/', {TitleSearchFilter.search_param: r'^z{3}$'})
+        response = view(request)
+        assert response.data == [
+            {'id': 3, 'title': 'zzz', 'text': 'cde'}
+        ]
+
+        request = factory.get('/', {TextSearchFilter.search_param: r'^cde$'})
+        response = view(request)
+        assert response.data == [
+            {'id': 3, 'title': 'zzz', 'text': 'cde'}
+        ]
+
+        request = factory.get('/', {
+            TitleSearchFilter.search_param: r'^(z{3}|z{2})$',
+            TextSearchFilter.search_param: r'^\w{3}$'
+        })
+        response = view(request)
+        assert response.data == [
+            {'id': 2, 'title': 'zz', 'text': 'bcd'},
+            {'id': 3, 'title': 'zzz', 'text': 'cde'}
+        ]
+
     def test_search_field_with_null_characters(self):
         view = generics.GenericAPIView()
         request = factory.get('/?search=\0as%00d\x00f')
