@@ -241,10 +241,10 @@ class OrderingFilter(BaseFilterBackend):
                 return ordering
 
         # No ordering was included, or all the ordering fields were invalid
-        return self.get_default_ordering(view)
+        return self.get_default_ordering(request, queryset, view)
 
-    def get_default_ordering(self, view):
-        ordering = getattr(view, 'ordering', None)
+    def get_default_ordering(self, request, queryset, view):
+        ordering = view.get_ordering(request, queryset)
         if isinstance(ordering, str):
             return (ordering,)
         return ordering
