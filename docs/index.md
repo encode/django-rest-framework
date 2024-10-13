@@ -75,10 +75,11 @@ continued development by **[signing up for a paid plan][funding]**.
     <li><a href="https://cryptapi.io" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/cryptapi.png)">CryptAPI</a></li>
     <li><a href="https://www.fezto.xyz/?utm_source=DjangoRESTFramework" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/fezto.png)">FEZTO</a></li>
     <li><a href="https://www.svix.com/?utm_source=django-REST&utm_medium=sponsorship" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/svix.png)">Svix</a></li>
+    <li><a href="https://zuplo.link/django-web" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/zuplo.png)">Zuplo</a></li>
 </ul>
 <div style="clear: both; padding-bottom: 20px;"></div>
 
-*Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Sentry](https://getsentry.com/welcome/), [Stream](https://getstream.io/?utm_source=DjangoRESTFramework&utm_medium=Webpage_Logo_Ad&utm_content=Developer&utm_campaign=DjangoRESTFramework_Jan2022_HomePage), [Spacinov](https://www.spacinov.com/), [Retool](https://retool.com/?utm_source=djangorest&utm_medium=sponsorship), [bit.io](https://bit.io/jobs?utm_source=DRF&utm_medium=sponsor&utm_campaign=DRF_sponsorship), [PostHog](https://posthog.com?utm_source=DRF&utm_medium=sponsor&utm_campaign=DRF_sponsorship), [CryptAPI](https://cryptapi.io), [FEZTO](https://www.fezto.xyz/?utm_source=DjangoRESTFramework), and [Svix](https://www.svix.com/?utm_source=django-REST&utm_medium=sponsorship).*
+*Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Sentry](https://getsentry.com/welcome/), [Stream](https://getstream.io/?utm_source=DjangoRESTFramework&utm_medium=Webpage_Logo_Ad&utm_content=Developer&utm_campaign=DjangoRESTFramework_Jan2022_HomePage), [Spacinov](https://www.spacinov.com/), [Retool](https://retool.com/?utm_source=djangorest&utm_medium=sponsorship), [bit.io](https://bit.io/jobs?utm_source=DRF&utm_medium=sponsor&utm_campaign=DRF_sponsorship), [PostHog](https://posthog.com?utm_source=DRF&utm_medium=sponsor&utm_campaign=DRF_sponsorship), [CryptAPI](https://cryptapi.io), [FEZTO](https://www.fezto.xyz/?utm_source=DjangoRESTFramework), [Svix](https://www.svix.com/?utm_source=django-REST&utm_medium=sponsorship), , and [Zuplo](https://zuplo.link/django-web).*
 
 ---
 
@@ -86,8 +87,8 @@ continued development by **[signing up for a paid plan][funding]**.
 
 REST framework requires the following:
 
-* Python (3.6, 3.7, 3.8, 3.9, 3.10, 3.11)
-* Django (3.0, 3.1, 3.2, 4.0, 4.1, 4.2, 5.0)
+* Django (4.2, 5.0, 5.1)
+* Python (3.8, 3.9, 3.10, 3.11, 3.12, 3.13)
 
 We **highly recommend** and only officially support the latest patch release of
 each Python and Django series.
@@ -95,8 +96,8 @@ each Python and Django series.
 The following packages are optional:
 
 * [PyYAML][pyyaml], [uritemplate][uriteemplate] (5.1+, 3.0.0+) - Schema generation support.
-* [Markdown][markdown] (3.0.0+) - Markdown support for the browsable API.
-* [Pygments][pygments] (2.4.0+) - Add syntax highlighting to Markdown processing.
+* [Markdown][markdown] (3.3.0+) - Markdown support for the browsable API.
+* [Pygments][pygments] (2.7.0+) - Add syntax highlighting to Markdown processing.
 * [django-filter][django-filter] (1.0.1+) - Filtering support.
 * [django-guardian][django-guardian] (1.1.1+) - Object level permissions support.
 
@@ -184,7 +185,7 @@ Can't wait to get started? The [quickstart guide][quickstart] is the fastest way
 ## Development
 
 See the [Contribution guidelines][contributing] for information on how to clone
-the repository, run the test suite and contribute changes back to REST
+the repository, run the test suite and help maintain the code base of REST
 Framework.
 
 ## Support
@@ -247,7 +248,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [serializer-section]: api-guide/serializers#serializers
 [modelserializer-section]: api-guide/serializers#modelserializer
 [functionview-section]: api-guide/views#function-based-views
-[sandbox]: https://restframework.herokuapp.com/
 [sponsors]: https://fund.django-rest-framework.org/topics/funding/#our-sponsors
 
 [quickstart]: tutorial/quickstart.md

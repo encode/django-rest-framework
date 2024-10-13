@@ -6,11 +6,9 @@
 
 There are many ways you can contribute to Django REST framework.  We'd like it to be a community-led project, so please get involved and help shape the future of the project.
 
----
+!!! note
 
-**Note**: At this point in it's lifespan we consider Django REST framework to be essentially feature-complete. We may accept pull requests that track the continued development of Django versions, but would prefer not to accept new features or code formatting changes.
-
----
+    At this point in its lifespan we consider Django REST framework to be feature-complete. We focus on pull requests that track the continued development of Django versions, and generally do not accept new features or code formatting changes.
 
 ## Community
 
@@ -36,10 +34,9 @@ Our contribution process is that the [GitHub discussions page](https://github.co
 
 Some tips on good potential issue reporting:
 
-* When describing issues try to phrase your ticket in terms of the *behavior* you think needs changing rather than the *code* you think need changing.
+* Django REST framework is considered feature-complete. Please do not file requests to change behavior, unless it is required for security reasons or to maintain compatibility with upcoming Django or Python versions.
 * Search the GitHub project page for related items, and make sure you're running the latest version of REST framework before reporting an issue.
-* Feature requests will often be closed with a recommendation that they be implemented outside of the core REST framework library.  Keeping new feature requests implemented as third party libraries allows us to keep down the maintenance overhead of REST framework, so that the focus can be on continued stability, bugfixes, and great documentation. At this point in it's lifespan we consider Django REST framework to be essentially feature-complete.
-* Closing an issue doesn't necessarily mean the end of a discussion.  If you believe your issue has been closed incorrectly, explain why and we'll consider if it needs to be reopened.
+* Feature requests will typically be closed with a recommendation that they be implemented outside the core REST framework library (e.g. as third-party libraries).  This approach allows us to keep down the maintenance overhead of REST framework, so that the focus can be on continued stability and great documentation.
 
 ## Triaging issues
 
@@ -48,8 +45,8 @@ Getting involved in triaging incoming issues is a good way to start contributing
 * Read through the ticket - does it make sense, is it missing any context that would help explain it better?
 * Is the ticket reported in the correct place, would it be better suited as a discussion on the discussion group?
 * If the ticket is a bug report, can you reproduce it? Are you able to write a failing test case that demonstrates the issue and that can be submitted as a pull request?
-* If the ticket is a feature request, do you agree with it, and could the feature request instead be implemented as a third party package?
-* If a ticket hasn't had much activity and it addresses something you need, then comment on the ticket and try to find out what's needed to get it moving again.
+* If the ticket is a feature request, could the feature request instead be implemented as a third party package?
+* If a ticket hasn't had much activity and addresses something you need, then comment on the ticket and try to find out what's needed to get it moving again.
 
 # Development
 

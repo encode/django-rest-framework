@@ -12,31 +12,26 @@ classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Web Environment",
     "Framework :: Django",
-    "Framework :: Django :: 3.0",
-    "Framework :: Django :: 3.1",
-    "Framework :: Django :: 3.2",
-    "Framework :: Django :: 4.0",
-    "Framework :: Django :: 4.1",
     "Framework :: Django :: 4.2",
     "Framework :: Django :: 5.0",
+    "Framework :: Django :: 5.1",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: BSD License",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.6",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3 :: Only",
     "Topic :: Internet :: WWW/HTTP",
 ]
-requires-python = ">=3.6"
+requires-python = ">=3.8"
 dependencies = [
-    "django>=3.0",
+    "django>=4.2",
     'backports.zoneinfo;python_version<"3.9"',
 ]
 dynamic = ["version"]
@@ -50,5 +45,51 @@ Funding = "https://fund.django-rest-framework.org/topics/funding/"
 Source = "https://github.com/encode/django-rest-framework"
 Changelog = "https://www.django-rest-framework.org/community/release-notes/"
 
+[tool.setuptools]
+zip-safe = false
+include-package-data = true
+license-files = ["LICENSE.md"]
+
 [tool.setuptools.packages.find]
 namespaces = false
+
+[tool.pytest.ini_options]
+addopts = "--tb=short --strict-markers -ra"
+testpaths = ["tests"]
+filterwarnings = ["ignore:CoreAPI compatibility is deprecated*:rest_framework.RemovedInDRF317Warning"]
+
+[tool.flake8]
+ignore = "E501,W503,W504"
+banned-modules = "json = use from rest_framework.utils import json!"
+
+[tool.isort]
+skip = [".tox"]
+atomic = true
+multi_line_output = 5
+extra_standard_library = ["types"]
+known_third_party = ["pytest", "_pytest", "django", "pytz", "uritemplate"]
+known_first_party = ["rest_framework", "tests"]
+
+[tool.coverage.run]
+# NOTE: source is ignored with pytest-cov (but uses the same).
+source = ["."]
+include = ["rest_framework/*", "tests/*"]
+branch = true
+
+[tool.coverage.report]
+include = ["rest_framework/*", "tests/*"]
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+]
+
+[tool.codespell]
+# Ref: https://github.com/codespell-project/codespell#using-a-config-file
+skip = "*/kickstarter-announcement.md,*.js,*.map,*.po"
+ignore-words-list = "fo,malcom,ser"
+
+# (*) Please direct queries to the discussion group, rather than to me directly
+#     Doing so helps ensure your question is helpful to other users.
+#     Queries directly to my email are likely to receive a canned response.
+#
+#     Many thanks for your understanding.

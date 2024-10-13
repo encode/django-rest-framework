@@ -39,6 +39,8 @@ There are a wide range of resources available for learning and using Django REST
 * [Check Credentials Using Django REST Framework][check-credentials-using-django-rest-framework]
 * [Creating a Production Ready API with Python and Django REST Framework – Part 1][creating-a-production-ready-api-with-python-and-drf-part1]
 * [Creating a Production Ready API with Python and Django REST Framework – Part 2][creating-a-production-ready-api-with-python-and-drf-part2]
+* [Creating a Production Ready API with Python and Django REST Framework – Part 3][creating-a-production-ready-api-with-python-and-drf-part3]
+* [Creating a Production Ready API with Python and Django REST Framework – Part 4][creating-a-production-ready-api-with-python-and-drf-part4]
 * [Django REST Framework Tutorial - Build a Blog API][django-rest-framework-tutorial-build-a-blog]
 * [Django REST Framework & React Tutorial - Build a Todo List API][django-rest-framework-react-tutorial-build-a-todo-list]
 * [Tutorial: Django REST with React (Django 2.0)][django-rest-react-valentinog]
@@ -115,8 +117,10 @@ Want your Django REST Framework talk/tutorial/article to be added to our website
 [chatbot-using-drf-part1]: https://chatbotslife.com/chatbot-using-django-rest-framework-api-ai-slack-part-1-3-69c7e38b7b1e#.g2aceuncf
 [new-django-admin-with-drf-and-emberjs]: https://blog.levit.be/new-django-admin-with-emberjs-what-are-the-news/
 [drf-schema]: https://drf-schema-adapter.readthedocs.io/en/latest/
-[creating-a-production-ready-api-with-python-and-drf-part1]: https://www.andreagrandi.it/2016/09/28/creating-production-ready-api-python-django-rest-framework-part-1/
-[creating-a-production-ready-api-with-python-and-drf-part2]: https://www.andreagrandi.it/2016/10/01/creating-a-production-ready-api-with-python-and-django-rest-framework-part-2/
+[creating-a-production-ready-api-with-python-and-drf-part1]: https://www.andreagrandi.it/posts/creating-production-ready-api-python-django-rest-framework-part-1/
+[creating-a-production-ready-api-with-python-and-drf-part2]: https://www.andreagrandi.it/posts/creating-a-production-ready-api-with-python-and-django-rest-framework-part-2/
+[creating-a-production-ready-api-with-python-and-drf-part3]: https://www.andreagrandi.it/posts/creating-a-production-ready-api-with-python-and-django-rest-framework-part-3/
+[creating-a-production-ready-api-with-python-and-drf-part4]: https://www.andreagrandi.it/posts/creating-a-production-ready-api-with-python-and-django-rest-framework-part-4/
 [django-rest-framework-tutorial-build-a-blog]: https://wsvincent.com/django-rest-framework-tutorial/
 [django-rest-framework-react-tutorial-build-a-todo-list]: https://wsvincent.com/django-rest-framework-react-tutorial/
 [django-rest-api-so-easy]: https://www.youtube.com/watch?v=cqP758k1BaQ

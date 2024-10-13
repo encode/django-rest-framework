@@ -4,6 +4,7 @@ import os
 import re
 import sys
 import uuid
+import warnings
 from decimal import ROUND_DOWN, ROUND_UP, Decimal
 from enum import auto
 from unittest.mock import patch
@@ -1244,25 +1245,29 @@ class TestMinMaxDecimalField(FieldValues):
         '20.0': Decimal('20.0'),
     }
     invalid_inputs = {
-        '9.9': ['Ensure this value is greater than or equal to 10.'],
-        '20.1': ['Ensure this value is less than or equal to 20.'],
+        '9.9': ['Ensure this value is greater than or equal to 10.0.'],
+        '20.1': ['Ensure this value is less than or equal to 20.0.'],
     }
     outputs = {}
     field = serializers.DecimalField(
         max_digits=3, decimal_places=1,
-        min_value=10, max_value=20
+        min_value=10.0, max_value=20.0
     )
 
     def test_warning_when_not_decimal_types(self, caplog):
-        import logging
-        serializers.DecimalField(
-            max_digits=3, decimal_places=1,
-            min_value=10, max_value=20
-        )
-        assert caplog.record_tuples == [
-            ("rest_framework.fields", logging.WARNING, "max_value in DecimalField should be Decimal type."),
-            ("rest_framework.fields", logging.WARNING, "min_value in DecimalField should be Decimal type.")
-        ]
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter('always')
+
+            serializers.DecimalField(
+                max_digits=3, decimal_places=1,
+                min_value=10.0, max_value=20.0
+            )
+
+            assert len(w) == 2
+            assert all(issubclass(i.category, UserWarning) for i in w)
+
+            assert 'max_value should be an integer or Decimal instance' in str(w[0].message)
+            assert 'min_value should be an integer or Decimal instance' in str(w[1].message)
 
 
 class TestAllowEmptyStrDecimalFieldWithValidators(FieldValues):
@@ -1628,7 +1633,7 @@ class TestCustomTimezoneForDateTimeField(TestCase):
         assert rendered_date == rendered_date_in_timezone
 
 
-@pytest.mark.skipif(pytz is None, reason="As Django 4.0 has deprecated pytz, this test should eventually be able to get removed.")
+@pytest.mark.skipif(pytz is None, reason="Django 5.0 has removed pytz; this test should eventually be able to get removed.")
 class TestPytzNaiveDayLightSavingTimeTimeZoneDateTimeField(FieldValues):
     """
     Invalid values for `DateTimeField` with datetime in DST shift (non-existing or ambiguous) and timezone with DST.

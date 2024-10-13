@@ -68,14 +68,6 @@ When serializing the instance, default will be used if the object attribute or d
 
 Note that setting a `default` value implies that the field is not required. Including both the `default` and `required` keyword arguments is invalid and will raise an error.
 
-Notes regarding default value propagation from model to serializer:
-
-All the default values from model will pass as default to the serializer and the options method.
-
-If the default is callable then it will be propagated to & evaluated every time in the serializer but not in options method.
-
-If the value for given field is not given then default value will be present in the serializer and available in serializer's methods. Specified validation on given field will be evaluated on default value as that field will be present in the serializer.
-
 ### `allow_null`
 
 Normally an error will be raised if `None` is passed to a serializer field. Set this keyword argument to `True` if `None` should be considered a valid value.
@@ -299,8 +291,8 @@ Corresponds to `django.db.models.fields.DecimalField`.
 * `max_digits` The maximum number of digits allowed in the number. It must be either `None` or an integer greater than or equal to `decimal_places`.
 * `decimal_places` The number of decimal places to store with the number.
 * `coerce_to_string` Set to `True` if string values should be returned for the representation, or `False` if `Decimal` objects should be returned. Defaults to the same value as the `COERCE_DECIMAL_TO_STRING` settings key, which will be `True` unless overridden. If `Decimal` objects are returned by the serializer, then the final output format will be determined by the renderer. Note that setting `localize` will force the value to `True`.
-* `max_value` Validate that the number provided is no greater than this value.
-* `min_value` Validate that the number provided is no less than this value.
+* `max_value` Validate that the number provided is no greater than this value. Should be an integer or `Decimal` object.
+* `min_value` Validate that the number provided is no less than this value. Should be an integer or `Decimal` object.
 * `localize` Set to `True` to enable localization of input and output based on the current locale. This will also force `coerce_to_string` to `True`. Defaults to `False`. Note that data formatting is enabled if you have set `USE_L10N=True` in your settings file.
 * `rounding` Sets the rounding mode used when quantizing to the configured precision. Valid values are [`decimal` module rounding modes][python-decimal-rounding-modes]. Defaults to `None`.
 * `normalize_output` Will normalize the decimal value when serialized. This will strip all trailing zeroes and change the value's precision to the minimum required precision to be able to represent the value without losing data. Defaults to `False`.

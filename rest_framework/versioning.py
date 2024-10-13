@@ -119,16 +119,15 @@ class NamespaceVersioning(BaseVersioning):
 
     def determine_version(self, request, *args, **kwargs):
         resolver_match = getattr(request, 'resolver_match', None)
-        if resolver_match is not None and resolver_match.namespace:
-            # Allow for possibly nested namespaces.
-            possible_versions = resolver_match.namespace.split(':')
-            for version in possible_versions:
-                if self.is_allowed_version(version):
-                    return version
+        if resolver_match is None or not resolver_match.namespace:
+            return self.default_version
 
-        if not self.is_allowed_version(self.default_version):
-            raise exceptions.NotFound(self.invalid_version_message)
-        return self.default_version
+        # Allow for possibly nested namespaces.
+        possible_versions = resolver_match.namespace.split(':')
+        for version in possible_versions:
+            if self.is_allowed_version(version):
+                return version
+        raise exceptions.NotFound(self.invalid_version_message)
 
     def reverse(self, viewname, args=None, kwargs=None, request=None, format=None, **extra):
         if request.version is not None:

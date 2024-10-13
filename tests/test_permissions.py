@@ -80,8 +80,7 @@ class ModelPermissionsIntegrationTests(TestCase):
         user.user_permissions.set([
             Permission.objects.get(codename='add_basicmodel'),
             Permission.objects.get(codename='change_basicmodel'),
-            Permission.objects.get(codename='delete_basicmodel'),
-            Permission.objects.get(codename='view_basicmodel')
+            Permission.objects.get(codename='delete_basicmodel')
         ])
 
         user = User.objects.create_user('updateonly', 'updateonly@example.com', 'password')
@@ -140,15 +139,6 @@ class ModelPermissionsIntegrationTests(TestCase):
         response = get_queryset_list_view(request, pk=1)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    def test_has_get_permissions(self):
-        request = factory.get('/', HTTP_AUTHORIZATION=self.permitted_credentials)
-        response = root_view(request)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        request = factory.get('/1', HTTP_AUTHORIZATION=self.updateonly_credentials)
-        response = root_view(request, pk=1)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
     def test_has_put_permissions(self):
         request = factory.put('/1', {'text': 'foobar'}, format='json',
                               HTTP_AUTHORIZATION=self.permitted_credentials)
@@ -163,15 +153,6 @@ class ModelPermissionsIntegrationTests(TestCase):
     def test_does_not_have_create_permissions(self):
         request = factory.post('/', {'text': 'foobar'}, format='json',
                                HTTP_AUTHORIZATION=self.disallowed_credentials)
-        response = root_view(request, pk=1)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_does_not_have_get_permissions(self):
-        request = factory.get('/', HTTP_AUTHORIZATION=self.disallowed_credentials)
-        response = root_view(request)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-        request = factory.get('/1', HTTP_AUTHORIZATION=self.disallowed_credentials)
         response = root_view(request, pk=1)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -735,3 +716,59 @@ class PermissionsCompositionTests(TestCase):
         composed_perm = (IsAuthenticatedUserOwner | permissions.IsAdminUser)
         hasperm = composed_perm().has_object_permission(request, None, None)
         assert hasperm is False
+
+    def test_operand_holder_is_hashable(self):
+        assert hash((permissions.IsAuthenticated & permissions.IsAdminUser))
+
+    def test_operand_holder_hash_same_for_same_operands_and_operator(self):
+        first_operand_holder = (
+            permissions.IsAuthenticated & permissions.IsAdminUser
+        )
+        second_operand_holder = (
+            permissions.IsAuthenticated & permissions.IsAdminUser
+        )
+
+        assert hash(first_operand_holder) == hash(second_operand_holder)
+
+    def test_operand_holder_hash_differs_for_different_operands(self):
+        first_operand_holder = (
+            permissions.IsAuthenticated & permissions.IsAdminUser
+        )
+        second_operand_holder = (
+            permissions.AllowAny & permissions.IsAdminUser
+        )
+        third_operand_holder = (
+            permissions.IsAuthenticated & permissions.AllowAny
+        )
+
+        assert hash(first_operand_holder) != hash(second_operand_holder)
+        assert hash(first_operand_holder) != hash(third_operand_holder)
+        assert hash(second_operand_holder) != hash(third_operand_holder)
+
+    def test_operand_holder_hash_differs_for_different_operators(self):
+        first_operand_holder = (
+            permissions.IsAuthenticated & permissions.IsAdminUser
+        )
+        second_operand_holder = (
+            permissions.IsAuthenticated | permissions.IsAdminUser
+        )
+
+        assert hash(first_operand_holder) != hash(second_operand_holder)
+
+    def test_filtering_permissions(self):
+        unfiltered_permissions = [
+            permissions.IsAuthenticated & permissions.IsAdminUser,
+            permissions.IsAuthenticated & permissions.IsAdminUser,
+            permissions.AllowAny,
+        ]
+        expected_permissions = [
+            permissions.IsAuthenticated & permissions.IsAdminUser,
+            permissions.AllowAny,
+        ]
+
+        filtered_permissions = [
+            perm for perm
+            in dict.fromkeys(unfiltered_permissions)
+        ]
+
+        assert filtered_permissions == expected_permissions

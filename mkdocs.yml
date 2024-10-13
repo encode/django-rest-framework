@@ -9,6 +9,7 @@ theme:
     custom_dir: docs_theme
 
 markdown_extensions:
+ - admonition
  - toc:
     anchorlink: True
 
