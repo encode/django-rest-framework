@@ -226,8 +226,6 @@ class UnsupportedMediaType(APIException):
 class Throttled(APIException):
     status_code = status.HTTP_429_TOO_MANY_REQUESTS
     default_detail = _('Request was throttled.')
-    extra_detail_singular = _('Expected available in {wait} second.')
-    extra_detail_plural = _('Expected available in {wait} seconds.')
     default_code = 'throttled'
 
     def __init__(self, wait=None, detail=None, code=None):
@@ -235,13 +233,16 @@ class Throttled(APIException):
             detail = force_str(self.default_detail)
         if wait is not None:
             wait = math.ceil(wait)
-            detail = ' '.join((
-                detail,
-                force_str(ngettext(self.extra_detail_singular.format(wait=wait),
-                                   self.extra_detail_plural.format(wait=wait),
-                                   wait))))
+            detail = " ".join((detail, force_str(self.extra_detail(wait))))
         self.wait = wait
         super().__init__(detail, code)
+
+    def extra_detail(self, wait):
+        return ngettext(
+            'Expected available in {wait} second.',
+            'Expected available in {wait} seconds.',
+            wait,
+        ).format(wait=wait)
 
 
 def server_error(request, *args, **kwargs):
