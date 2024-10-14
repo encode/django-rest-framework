@@ -235,11 +235,18 @@ class Throttled(APIException):
             detail = force_str(self.default_detail)
         if wait is not None:
             wait = math.ceil(wait)
-            detail = ' '.join((
-                detail,
-                force_str(ngettext(self.extra_detail_singular.format(wait=wait),
-                                   self.extra_detail_plural.format(wait=wait),
-                                   wait))))
+            detail = " ".join(
+                (
+                    detail,
+                    force_str(
+                        ngettext(
+                            self.extra_detail_singular,
+                            self.extra_detail_plural,
+                            wait,
+                        ).format(wait=wait)
+                    ),
+                )
+            )
         self.wait = wait
         super().__init__(detail, code)
 
