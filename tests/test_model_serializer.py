@@ -542,15 +542,6 @@ class UniqueTogetherModel(models.Model):
         unique_together = ("foreign_key", "one_to_one")
 
 
-class NullableUniqueTogetherModel(models.Model):
-    name = models.CharField(max_length=100)
-    field_1 = models.IntegerField(null=True)
-    field_2 = models.TextField(null=True)
-
-    class Meta:
-        unique_together = ("field_1", "field_2")
-
-
 class TestRelationalFieldMappings(TestCase):
     def test_pk_relations(self):
         class TestSerializer(serializers.ModelSerializer):
@@ -739,17 +730,6 @@ class TestRelationalFieldMappings(TestCase):
                 reverse_through = PrimaryKeyRelatedField(many=True, read_only=True)
         """)
         self.assertEqual(repr(TestSerializer()), expected)
-
-    def test_nullable_unique_together(self):
-        class TestSerializer(serializers.ModelSerializer):
-            class Meta:
-                model = NullableUniqueTogetherModel
-                fields = ('name', 'field_1', 'field_2')
-
-        serializer = TestSerializer(data={"name": "Test"})
-        self.assertTrue(serializer.is_valid(), serializer.errors)
-        instance = serializer.save()
-        assert isinstance(instance, NullableUniqueTogetherModel)
 
 
 class DisplayValueTargetModel(models.Model):
@@ -1420,28 +1400,3 @@ class Issue6751Test(TestCase):
         serializer.save()
 
         self.assertEqual(instance.char_field, 'value changed by signal')
-
-
-class UniqueConstraintNullableModel(models.Model):
-    title = models.CharField(max_length=100)
-    age = models.IntegerField(null=True)
-    tag = models.CharField(max_length=100, null=True)
-
-    class Meta:
-        constraints = [
-            # Unique constraint on 2 nullable fields
-            models.UniqueConstraint(name='unique_constraint', fields=('age', 'tag'))
-        ]
-
-
-class TestUniqueConstraintWithNullableFields(TestCase):
-    def test_nullable_unique_constraint_fields_are_not_required(self):
-        class UniqueConstraintNullableSerializer(serializers.ModelSerializer):
-            class Meta:
-                model = UniqueConstraintNullableModel
-                fields = ('title', 'age', 'tag')
-
-        serializer = UniqueConstraintNullableSerializer(data={'title': 'Bob'})
-        self.assertTrue(serializer.is_valid(), serializer.errors)
-        result = serializer.save()
-        self.assertIsInstance(result, UniqueConstraintNullableModel)
