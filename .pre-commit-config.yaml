@@ -31,3 +31,6 @@ repos:
   hooks:
   - id: codespell
     exclude: locale|kickstarter-announcement.md|coreapi-0.1.1.js
+    additional_dependencies:
+      # python doesn't come with a toml parser prior to 3.11
+      - "tomli; python_version < '3.11'"
