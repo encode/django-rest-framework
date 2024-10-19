@@ -260,6 +260,40 @@ class TestPageNumberPagination:
         with pytest.raises(exceptions.NotFound):
             self.paginate_queryset(request)
 
+    def test_negative_page(self):
+        request = Request(factory.get('/', {'page': -1}))
+        print(request)
+        with pytest.raises(exceptions.NotFound):
+            self.paginate_queryset(request)
+
+    def test_allowed_negative_page(self):
+        self.pagination.allow_negative_page_numbers = True
+        request = Request(factory.get('/', {'page': -2}))
+        queryset = self.paginate_queryset(request)
+        content = self.get_paginated_content(queryset)
+        context = self.get_html_context()
+        assert queryset == [86, 87, 88, 89, 90]
+        assert content == {
+            'results': [86, 87, 88, 89, 90],
+            'previous': 'http://testserver/?page=17',
+            'next': 'http://testserver/?page=19',
+            'count': 100
+        }
+        assert context == {
+            'previous_url': 'http://testserver/?page=17',
+            'next_url': 'http://testserver/?page=19',
+            'page_links': [
+                PageLink('http://testserver/', 1, False, False),
+                PAGE_BREAK,
+                PageLink('http://testserver/?page=17', 17, False, False),
+                PageLink('http://testserver/?page=18', 18, True, False),
+                PageLink('http://testserver/?page=19', 19, False, False),
+                PageLink('http://testserver/?page=20', 20, False, False),
+            ]
+        }
+        assert self.pagination.display_page_controls
+        assert isinstance(self.pagination.to_html(), str)
+
     def test_get_paginated_response_schema(self):
         unpaginated_schema = {
             'type': 'object',
@@ -526,6 +560,42 @@ class TestLimitOffset:
         request = Request(factory.get('/', {'limit': 5, 'offset': 'invalid'}))
         queryset = self.paginate_queryset(request)
         assert queryset == [1, 2, 3, 4, 5]
+
+    def test_negative_offset(self):
+        """
+        A negative offset query param should be treated as 0.
+        """
+        request = Request(factory.get('/', {'limit': 5, 'offset': -5}))
+        queryset = self.paginate_queryset(request)
+        assert queryset == [1, 2, 3, 4, 5]
+
+    def test_allowed_negative_offset(self):
+        """
+        A negative offset query param should be treated as `count - offset`.
+        """
+        self.pagination.allow_negative_offsets = True
+        request = Request(factory.get('/', {'limit': 5, 'offset': -10}))
+        queryset = self.paginate_queryset(request)
+        content = self.get_paginated_content(queryset)
+        context = self.get_html_context()
+        assert queryset == [91, 92, 93, 94, 95]
+        assert content == {
+            'results': [91, 92, 93, 94, 95],
+            'previous': 'http://testserver/?limit=5&offset=85',
+            'next': 'http://testserver/?limit=5&offset=95',
+            'count': 100
+        }
+        assert context == {
+            'previous_url': 'http://testserver/?limit=5&offset=85',
+            'next_url': 'http://testserver/?limit=5&offset=95',
+            'page_links': [
+                PageLink('http://testserver/?limit=5', 1, False, False),
+                PAGE_BREAK,
+                PageLink('http://testserver/?limit=5&offset=85', 18, False, False),
+                PageLink('http://testserver/?limit=5&offset=90', 19, True, False),
+                PageLink('http://testserver/?limit=5&offset=95', 20, False, False),
+            ]
+        }
 
     def test_invalid_limit(self):
         """

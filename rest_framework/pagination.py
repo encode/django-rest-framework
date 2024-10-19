@@ -191,6 +191,7 @@ class PageNumberPagination(BasePagination):
     last_page_strings = ('last',)
 
     template = 'rest_framework/pagination/numbers.html'
+    allow_negative_page_numbers = False
 
     invalid_page_message = _('Invalid page.')
 
@@ -225,6 +226,14 @@ class PageNumberPagination(BasePagination):
         page_number = request.query_params.get(self.page_query_param) or 1
         if page_number in self.last_page_strings:
             page_number = paginator.num_pages
+        if self.allow_negative_page_numbers:
+            try:
+                page_number = int(page_number)
+                if page_number < 0:
+                    page_number = paginator.num_pages + page_number
+                return max(page_number, 0)
+            except ValueError:
+                return page_number
         return page_number
 
     def get_paginated_response(self, data):
@@ -384,6 +393,7 @@ class LimitOffsetPagination(BasePagination):
     offset_query_description = _('The initial index from which to return the results.')
     max_limit = None
     template = 'rest_framework/pagination/numbers.html'
+    allow_negative_offsets = False
 
     def paginate_queryset(self, queryset, request, view=None):
         self.request = request
@@ -447,6 +457,11 @@ class LimitOffsetPagination(BasePagination):
 
     def get_offset(self, request):
         try:
+            if self.allow_negative_offsets:
+                offset = int(request.query_params[self.offset_query_param])
+                if offset < 0:
+                    offset = self.count + offset
+                return max(offset, 0)
             return _positive_int(
                 request.query_params[self.offset_query_param],
             )
