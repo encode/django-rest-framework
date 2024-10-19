@@ -1071,7 +1071,7 @@ class TestAlphabeticField:
     invalid_inputs = {
         'John123': ['This field must contain only alphabetic characters and spaces.'],
         'Alice!': ['This field must contain only alphabetic characters and spaces.'],
-        '': ['This field must contain only alphabetic characters and spaces.'],  
+        '': ['This field must contain only alphabetic characters and spaces.'],
     }
     non_string_inputs = [
         123,                   # Integer
@@ -1085,7 +1085,7 @@ class TestAlphabeticField:
     def test_valid_inputs(self):
         validator = AlphabeticFieldValidator()
         for value in self.valid_inputs.keys():
-            validator(value)  
+            validator(value)
 
     def test_invalid_inputs(self):
         validator = AlphabeticFieldValidator()
@@ -1111,7 +1111,7 @@ class TestAlphanumericField:
     invalid_inputs = {
         'John!': ['This field must contain only alphanumeric characters (letters and numbers).'],
         'Alice 007': ['This field must contain only alphanumeric characters (letters and numbers).'],
-        '': ['This field must contain only alphanumeric characters (letters and numbers).'],  
+        '': ['This field must contain only alphanumeric characters (letters and numbers).'],
     }
     non_string_inputs = [
         123,                   # Integer
@@ -1125,7 +1125,7 @@ class TestAlphanumericField:
     def test_valid_inputs(self):
         validator = AlphanumericFieldValidator()
         for value in self.valid_inputs.keys():
-            validator(value)  
+            validator(value)
 
     def test_invalid_inputs(self):
         validator = AlphanumericFieldValidator()
@@ -1153,12 +1153,12 @@ class TestCustomLengthField:
         'ab': ['This field must be at least 3 characters long.'],  # Too short
         'abcdefghijk': ['This field must be no more than 10 characters long.'],  # Too long
     }
-    field = str  
+    field = str
 
     def test_valid_inputs(self):
         validator = CustomLengthValidator(min_length=3, max_length=10)
         for value in self.valid_inputs.keys():
-            validator(value)  
+            validator(value)
 
     def test_invalid_inputs(self):
         validator = CustomLengthValidator(min_length=3, max_length=10)
