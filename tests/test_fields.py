@@ -1141,6 +1141,7 @@ class TestAlphanumericField:
                 validator(value)
             assert str(excinfo.value) == "This field must be a string."
 
+
 class TestCustomLengthField:
     """
     Valid and invalid values for `CustomLengthValidator`.

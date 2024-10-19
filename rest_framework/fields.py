@@ -894,6 +894,7 @@ class AlphabeticFieldValidator:
         if not re.match(r'^[A-Za-z ]*$', value):
             raise ValueError("This field must contain only alphabetic characters and spaces.")
 
+
 class AlphanumericFieldValidator:
     """
     Custom validator to ensure the field contains only alphanumeric characters (letters and numbers).
@@ -905,6 +906,7 @@ class AlphanumericFieldValidator:
             raise ValueError("This field must contain only alphanumeric characters (letters and numbers).")
         if not re.match(r'^[A-Za-z0-9]*$', value):
             raise ValueError("This field must contain only alphanumeric characters (letters and numbers).")
+
 
 class CustomLengthValidator:
     """

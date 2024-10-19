@@ -172,6 +172,7 @@ class IsAuthenticatedOrReadOnly(BasePermission):
             request.user.is_authenticated
         )
 
+
 class IsAdminUserOrReadOnly(BasePermission):
     """
     Custom permission to only allow admin users to edit an object.
