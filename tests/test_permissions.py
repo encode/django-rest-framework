@@ -772,3 +772,58 @@ class PermissionsCompositionTests(TestCase):
         ]
 
         assert filtered_permissions == expected_permissions
+
+
+class PermissionTests(TestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.admin_user = User.objects.create_user(username='admin', password='password', is_staff=True)
+        self.regular_user = User.objects.create_user(username='user', password='password')
+        self.anonymous_user = AnonymousUser()
+
+    def test_is_admin_user_or_read_only_allow_read(self):
+        # Test that all users can read
+        request = self.factory.get('/1', format='json')
+        request.user = self.anonymous_user
+        permission = permissions.IsAdminUserOrReadOnly()
+        self.assertTrue(permission.has_permission(request, None))  # Allow read access
+
+        request.user = self.admin_user  # Admin user
+        self.assertTrue(permission.has_permission(request, None))  # Allow read access for admin
+
+    def test_is_admin_user_or_read_only_allow_write(self):
+        # Test that only admin users can write
+        request = self.factory.post('/1', format='json')
+        request.user = self.admin_user  # Admin user
+        permission = permissions.IsAdminUserOrReadOnly()
+        self.assertTrue(permission.has_permission(request, None))  # Allow write access for admin
+
+        request.user = self.regular_user  # Non-admin user
+        self.assertFalse(permission.has_permission(request, None))  # Deny write access for non-admin
+
+    def test_is_owner_permission(self):
+        # Setup mock object with owner
+        obj = BasicModel(owner=self.admin_user)  # Assuming BasicModel has an owner field
+
+        # Test that the owner can modify
+        request = self.factory.post('/1', format='json')
+        request.user = self.admin_user
+        permission = permissions.IsOwner()
+        self.assertTrue(permission.has_object_permission(request, None, obj))  # Owner should have access
+
+        # Test that a non-owner cannot modify
+        request.user = self.regular_user  # Another user
+        self.assertFalse(permission.has_object_permission(request, None, obj))  # Another user should not have access
+
+    def test_is_owner_read_access(self):
+        # Setup mock object with owner
+        obj = BasicModel(owner=self.admin_user)  # Assuming BasicModel has an owner field
+
+        # Test read access for any user
+        request = self.factory.get('/1', format='json')
+        request.user = self.regular_user  # Another user
+        permission = permissions.IsOwner()
+        self.assertTrue(permission.has_object_permission(request, None, obj))  # Any user can read
+
+        request.user = self.admin_user  # The owner
+        self.assertTrue(permission.has_object_permission(request, None, obj))  # Owner can read
