@@ -14,7 +14,7 @@ from rest_framework import (
 )
 from rest_framework.routers import DefaultRouter
 from rest_framework.test import APIRequestFactory
-from tests.models import BasicModel
+from tests.models import BasicModel, OwnershipTestModel
 
 factory = APIRequestFactory()
 
@@ -772,3 +772,51 @@ class PermissionsCompositionTests(TestCase):
         ]
 
         assert filtered_permissions == expected_permissions
+
+
+class PermissionTests(TestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.admin_user = User.objects.create_user(username='admin', password='password', is_staff=True)
+        self.regular_user = User.objects.create_user(username='user', password='password')
+        self.anonymous_user = AnonymousUser()
+
+    def test_is_admin_user_or_read_only_allow_read(self):
+        request = self.factory.get('/1', format='json')
+        request.user = self.anonymous_user
+        permission = permissions.IsAdminUserOrReadOnly()
+        self.assertTrue(permission.has_permission(request, None))
+
+        request.user = self.admin_user
+        self.assertTrue(permission.has_permission(request, None))
+
+    def test_is_admin_user_or_read_only_allow_write(self):
+        request = self.factory.post('/1', format='json')
+        request.user = self.admin_user
+        permission = permissions.IsAdminUserOrReadOnly()
+        self.assertTrue(permission.has_permission(request, None))
+
+        request.user = self.regular_user
+        self.assertFalse(permission.has_permission(request, None))
+
+    def test_is_owner_permission(self):
+        obj = OwnershipTestModel.objects.create(owner=self.admin_user, title='Test Title')
+
+        request = self.factory.post('/1', format='json')
+        request.user = self.admin_user
+        permission = permissions.IsOwner()
+        self.assertTrue(permission.has_object_permission(request, None, obj))
+
+        request.user = self.regular_user
+        self.assertFalse(permission.has_object_permission(request, None, obj))
+
+    def test_is_owner_read_access(self):
+        obj = OwnershipTestModel.objects.create(owner=self.admin_user, title='Test Title')
+
+        request = self.factory.get('/1', format='json')
+        request.user = self.regular_user
+        permission = permissions.IsOwner()
+        self.assertTrue(permission.has_object_permission(request, None, obj))
+
+        request.user = self.admin_user
+        self.assertTrue(permission.has_object_permission(request, None, obj))
