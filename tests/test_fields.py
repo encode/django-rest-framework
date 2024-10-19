@@ -25,8 +25,9 @@ from django.utils.timezone import activate, deactivate, override
 import rest_framework
 from rest_framework import exceptions, serializers
 from rest_framework.fields import (
-    AlphabeticFieldValidator, AlphanumericFieldValidator, BuiltinSignatureError, CustomLengthValidator, DjangoImageField, SkipField, empty,
-    is_simple_callable
+    AlphabeticFieldValidator, AlphanumericFieldValidator,
+    BuiltinSignatureError, CustomLengthValidator, DjangoImageField, SkipField,
+    empty, is_simple_callable
 )
 from tests.models import UUIDForeignKeyTarget
 
