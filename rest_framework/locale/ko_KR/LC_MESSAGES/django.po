@@ -289,11 +289,11 @@ msgstr "예상된 datatime 대신 date를 받았습니다."
 #: fields.py:1131
 #, python-brace-format
 msgid "Invalid datetime for the timezone \"{timezone}\"."
-msgstr ""
+msgstr "\"{timezone}\" 시간대에 대한 유효하지 않은 datetime입니다."
 
 #: fields.py:1132
 msgid "Datetime value out of range."
-msgstr ""
+msgstr "Datetime 값이 범위를 벗어났습니다."
 
 #: fields.py:1219
 #, python-brace-format
