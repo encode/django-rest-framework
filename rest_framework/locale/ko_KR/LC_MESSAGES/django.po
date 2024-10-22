@@ -226,7 +226,7 @@ msgstr "유효한 URL을 입력하십시오."
 
 #: fields.py:825
 msgid "Must be a valid UUID."
-msgstr ""
+msgstr "유효한 UUID이어야 합니다."
 
 #: fields.py:861
 msgid "Enter a valid IPv4 or IPv6 address."
