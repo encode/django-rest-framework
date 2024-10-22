@@ -115,7 +115,7 @@ msgstr "서버 장애가 발생했습니다."
 
 #: exceptions.py:145
 msgid "Invalid input."
-msgstr ""
+msgstr "유효하지 않은 입력입니다."
 
 #: exceptions.py:166
 msgid "Malformed request."
