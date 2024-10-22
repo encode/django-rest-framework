@@ -189,16 +189,16 @@ msgstr "이 필드는 blank일 수 없습니다."
 #: fields.py:726 fields.py:1881
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} characters."
-msgstr "이 필드의 글자 수가 {max_length} 이하인지 확인하십시오."
+msgstr "이 필드의 글자 수가 {max_length} 이하인지 확인하세요."
 
 #: fields.py:727
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} characters."
-msgstr "이 필드의 글자 수가 적어도 {min_length} 이상인지 확인하십시오."
+msgstr "이 필드의 글자 수가 적어도 {min_length} 이상인지 확인하세요."
 
 #: fields.py:774
 msgid "Enter a valid email address."
-msgstr "유효한 이메일 주소를 입력하십시오."
+msgstr "유효한 이메일 주소를 입력하세요."
 
 #: fields.py:785
 msgid "This value does not match the required pattern."
@@ -209,20 +209,18 @@ msgid ""
 "Enter a valid \"slug\" consisting of letters, numbers, underscores or "
 "hyphens."
 msgstr ""
-"문자, 숫자, 밑줄( _ ) 또는 하이픈( - )으로 이루어진 유효한 \"slug\"를 입력하"
-"십시오."
+"문자, 숫자, 밑줄( _ ) 또는 하이픈( - )으로 이루어진 유효한 \"slug\"를 입력하세요."
 
 #: fields.py:797
 msgid ""
 "Enter a valid \"slug\" consisting of Unicode letters, numbers, underscores, "
 "or hyphens."
 msgstr ""
-"유니코드 문자, 숫자, 밑줄( _ ) 또는 하이픈( - )으로 이루어진 유효한 \"slug\"를 입력하"
-"십시오."
+"유니코드 문자, 숫자, 밑줄( _ ) 또는 하이픈( - )으로 이루어진 유효한 \"slug\"를 입력하세요."
 
 #: fields.py:812
 msgid "Enter a valid URL."
-msgstr "유효한 URL을 입력하십시오."
+msgstr "유효한 URL을 입력하세요."
 
 #: fields.py:825
 msgid "Must be a valid UUID."
@@ -230,7 +228,7 @@ msgstr "유효한 UUID이어야 합니다."
 
 #: fields.py:861
 msgid "Enter a valid IPv4 or IPv6 address."
-msgstr "유효한 IPv4 또는 IPv6 주소를 입력하십시오."
+msgstr "유효한 IPv4 또는 IPv6 주소를 입력하세요."
 
 #: fields.py:889
 msgid "A valid integer is required."
@@ -239,12 +237,12 @@ msgstr "유효한 정수(integer)를 넣어주세요."
 #: fields.py:890 fields.py:927 fields.py:966 fields.py:1349
 #, python-brace-format
 msgid "Ensure this value is less than or equal to {max_value}."
-msgstr "이 값이 {max_value}보다 작거나 같은지 확인하십시오."
+msgstr "이 값이 {max_value}보다 작거나 같은지 확인하세요."
 
 #: fields.py:891 fields.py:928 fields.py:967 fields.py:1350
 #, python-brace-format
 msgid "Ensure this value is greater than or equal to {min_value}."
-msgstr "이 값이 {min_value}보다 크거나 같은지 확인하십시오."
+msgstr "이 값이 {min_value}보다 크거나 같은지 확인하세요."
 
 #: fields.py:892 fields.py:929 fields.py:971
 msgid "String value too large."
@@ -368,7 +366,7 @@ msgstr "제출한 파일이 비어있습니다."
 msgid ""
 "Ensure this filename has at most {max_length} characters (it has {length})."
 msgstr ""
-"이 파일명의 글자수가 최대 {max_length}를 넘지 않는지 확인하십시오. (이것은 "
+"이 파일명의 글자수가 최대 {max_length}를 넘지 않는지 확인하세요. (이것은 "
 "{length}가 있습니다)."
 
 #: fields.py:1559
@@ -376,7 +374,7 @@ msgid ""
 "Upload a valid image. The file you uploaded was either not an image or a "
 "corrupted image."
 msgstr ""
-"유효한 이미지 파일을 업로드 하십시오. 업로드 하신 파일은 이미지 파일이 아니거"
+"유효한 이미지 파일을 업로드하세요. 업로드하신 파일은 이미지 파일이 아니거"
 "나 손상된 이미지 파일입니다."
 
 #: fields.py:1597 relations.py:487 serializers.py:594
