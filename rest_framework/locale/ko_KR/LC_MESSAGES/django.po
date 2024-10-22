@@ -158,12 +158,12 @@ msgstr "요청이 지연(throttled)되었습니다."
 #: exceptions.py:229
 #, python-brace-format
 msgid "Expected available in {wait} second."
-msgstr ""
+msgstr "{wait} 초 후에 사용 가능합니다."
 
 #: exceptions.py:230
 #, python-brace-format
 msgid "Expected available in {wait} seconds."
-msgstr ""
+msgstr "{wait} 초 후에 사용 가능합니다."
 
 #: fields.py:292 relations.py:240 relations.py:276 validators.py:99
 #: validators.py:219
