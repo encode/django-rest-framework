@@ -71,7 +71,7 @@ msgstr "토큰이 유효하지 않습니다."
 
 #: authtoken/admin.py:28 authtoken/serializers.py:9
 msgid "Username"
-msgstr "유저이름"
+msgstr "사용자 이름"
 
 #: authtoken/apps.py:7
 msgid "Auth Token"
@@ -83,7 +83,7 @@ msgstr "키"
 
 #: authtoken/models.py:16
 msgid "User"
-msgstr "유저"
+msgstr "사용자"
 
 #: authtoken/models.py:18
 msgid "Created"
