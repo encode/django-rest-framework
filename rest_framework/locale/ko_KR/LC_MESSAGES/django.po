@@ -176,11 +176,11 @@ msgstr "이 필드는 null일 수 없습니다."
 
 #: fields.py:661
 msgid "Must be a valid boolean."
-msgstr ""
+msgstr "유효한 불리언이어야 합니다."
 
 #: fields.py:724
 msgid "Not a valid string."
-msgstr ""
+msgstr "유효한 문자열이 아닙니다."
 
 #: fields.py:725
 msgid "This field may not be blank."
