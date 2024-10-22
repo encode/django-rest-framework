@@ -256,7 +256,7 @@ msgstr "유효한 숫자를 넣어주세요."
 
 #: fields.py:930
 msgid "Integer value too large to convert to float"
-msgstr ""
+msgstr "정수(integer) 값이 너무 커서 부동소수점(float)으로 변환할 수 없습니다."
 
 #: fields.py:968
 #, python-brace-format
