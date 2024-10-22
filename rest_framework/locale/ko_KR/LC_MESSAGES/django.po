@@ -261,12 +261,12 @@ msgstr "정수(integer) 값이 너무 커서 부동소수점(float)으로 변환
 #: fields.py:968
 #, python-brace-format
 msgid "Ensure that there are no more than {max_digits} digits in total."
-msgstr "전체 숫자(digits)가 {max_digits} 이하인지 확인하십시오."
+msgstr "총 자릿수(digits)가 {max_digits}을(를) 초과하지 않는지 확인하세요."
 
 #: fields.py:969
 #, python-brace-format
 msgid "Ensure that there are no more than {max_decimal_places} decimal places."
-msgstr "소수점 자릿수가  {max_decimal_places} 이하인지 확인하십시오."
+msgstr "소수점 이하 자릿수가 {max_decimal_places}을(를) 초과하지 않는지 확인하세요."
 
 #: fields.py:970
 #, python-brace-format
@@ -274,7 +274,7 @@ msgid ""
 "Ensure that there are no more than {max_whole_digits} digits before the "
 "decimal point."
 msgstr ""
-"소수점 자리 앞에 숫자(digits)가 {max_whole_digits} 이하인지 확인하십시오."
+"소수점 앞 자릿수가 {max_whole_digits}을(를) 초과하지 않는지 확인하세요."
 
 #: fields.py:1129
 #, python-brace-format
