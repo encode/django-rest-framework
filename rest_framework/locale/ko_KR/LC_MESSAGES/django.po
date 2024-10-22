@@ -325,12 +325,12 @@ msgstr "일수는 {min_days} 이상 {max_days} 이하이어야 합니다."
 #: fields.py:1386 fields.py:1446
 #, python-brace-format
 msgid "\"{input}\" is not a valid choice."
-msgstr "\"{input}\"이 유효하지 않은 선택(choice)입니다."
+msgstr "\"{input}\"은 유효하지 않은 선택(choice)입니다."
 
 #: fields.py:1389
 #, python-brace-format
 msgid "More than {count} items..."
-msgstr ""
+msgstr "{count}개 이상의 아이템이 있습니다..."
 
 #: fields.py:1447 fields.py:1596 relations.py:486 serializers.py:593
 #, python-brace-format
@@ -344,7 +344,7 @@ msgstr "이 선택 항목은 비워 둘 수 없습니다."
 #: fields.py:1487
 #, python-brace-format
 msgid "\"{input}\" is not a valid path choice."
-msgstr "\"{input}\"이 유효하지 않은 경로 선택입니다."
+msgstr "\"{input}\"은 유효하지 않은 경로 선택입니다."
 
 #: fields.py:1507
 msgid "No file was submitted."
