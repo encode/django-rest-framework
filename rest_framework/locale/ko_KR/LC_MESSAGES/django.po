@@ -217,6 +217,8 @@ msgid ""
 "Enter a valid \"slug\" consisting of Unicode letters, numbers, underscores, "
 "or hyphens."
 msgstr ""
+"유니코드 문자, 숫자, 밑줄( _ ) 또는 하이픈( - )으로 이루어진 유효한 \"slug\"를 입력하"
+"십시오."
 
 #: fields.py:812
 msgid "Enter a valid URL."
