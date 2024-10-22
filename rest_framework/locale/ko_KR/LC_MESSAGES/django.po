@@ -3,8 +3,9 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
-# GarakdongBigBoy <novelview9@gmail.com>, 2017
+# JAEGYUN JUNG <twicegoddessana1229@gmail.com>, 2024
 # Hochul Kwak <rhkrghcjf@gmail.com>, 2018
+# GarakdongBigBoy <novelview9@gmail.com>, 2017
 # Joon Hwan 김준환 <xncbf12@gmail.com>, 2017
 # SUN CHOI <best2378@gmail.com>, 2015
 msgid ""
@@ -13,9 +14,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-22 16:13+0900\n"
 "PO-Revision-Date: 2020-10-13 19:45+0000\n"
-"Last-Translator: Xavier Ordoquy <xordoquy@linovia.com>\n"
-"Language-Team: Korean (Korea) (http://www.transifex.com/django-rest-"
-"framework-1/django-rest-framework/language/ko_KR/)\n"
+"Last-Translator: JAEGYUN JUNG <twicegoddessana1229@gmail.com>\n"
 "Language: ko_KR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
