@@ -433,11 +433,11 @@ msgstr "내림차순"
 
 #: pagination.py:180
 msgid "A page number within the paginated result set."
-msgstr ""
+msgstr "페이지네이션된 결과 집합 내의 페이지 번호."
 
 #: pagination.py:185 pagination.py:382 pagination.py:599
 msgid "Number of results to return per page."
-msgstr ""
+msgstr "페이지 당 반환할 결과 수."
 
 #: pagination.py:195
 msgid "Invalid page."
@@ -445,11 +445,11 @@ msgstr "페이지가 유효하지 않습니다."
 
 #: pagination.py:384
 msgid "The initial index from which to return the results."
-msgstr ""
+msgstr "결과를 반환할 초기 인덱스."
 
 #: pagination.py:590
 msgid "The pagination cursor value."
-msgstr ""
+msgstr "페이지네이션 커서(cursor) 값."
 
 #: pagination.py:592
 msgid "Invalid cursor"
@@ -493,20 +493,20 @@ msgstr "값이 유효하지 않습니다."
 
 #: schemas/utils.py:32
 msgid "unique integer value"
-msgstr ""
+msgstr "고유한 정수 값"
 
 #: schemas/utils.py:34
 msgid "UUID string"
-msgstr ""
+msgstr "UUID 문자열"
 
 #: schemas/utils.py:36
 msgid "unique value"
-msgstr ""
+msgstr "고유한 값"
 
 #: schemas/utils.py:38
 #, python-brace-format
 msgid "A {value_type} identifying this {name}."
-msgstr ""
+msgstr "{name}을 식별하는 {value_type}."
 
 #: serializers.py:340
 #, python-brace-format
@@ -517,7 +517,7 @@ msgstr ""
 #: templates/rest_framework/admin.html:116
 #: templates/rest_framework/base.html:136
 msgid "Extra Actions"
-msgstr ""
+msgstr "추가 Action들"
 
 #: templates/rest_framework/admin.html:130
 #: templates/rest_framework/base.html:150
@@ -526,33 +526,33 @@ msgstr "필터"
 
 #: templates/rest_framework/base.html:37
 msgid "navbar"
-msgstr ""
+msgstr "네비게이션 바"
 
 #: templates/rest_framework/base.html:75
 msgid "content"
-msgstr ""
+msgstr "콘텐츠"
 
 #: templates/rest_framework/base.html:78
 msgid "request form"
-msgstr ""
+msgstr "요청 폼"
 
 #: templates/rest_framework/base.html:157
 msgid "main content"
-msgstr ""
+msgstr "메인 콘텐츠"
 
 #: templates/rest_framework/base.html:173
 msgid "request info"
-msgstr ""
+msgstr "요청 정보"
 
 #: templates/rest_framework/base.html:177
 msgid "response info"
-msgstr ""
+msgstr "응답 정보"
 
 #: templates/rest_framework/horizontal/radio.html:4
 #: templates/rest_framework/inline/radio.html:3
 #: templates/rest_framework/vertical/radio.html:3
 msgid "None"
-msgstr ""
+msgstr "없음"
 
 #: templates/rest_framework/horizontal/select_multiple.html:4
 #: templates/rest_framework/inline/select_multiple.html:3
@@ -572,7 +572,7 @@ msgstr "필드 {field_names} 는 반드시 고유(unique)해야 합니다."
 #: validators.py:200
 #, python-brace-format
 msgid "Surrogate characters are not allowed: U+{code_point:X}."
-msgstr ""
+msgstr "대체(surrogate) 문자는 허용되지 않습니다: U+{code_point:X}."
 
 #: validators.py:290
 #, python-brace-format
@@ -582,12 +582,12 @@ msgstr "이 필드는 고유(unique)한 \"{date_field}\" 날짜를 갖습니다.
 #: validators.py:305
 #, python-brace-format
 msgid "This field must be unique for the \"{date_field}\" month."
-msgstr "이 필드는  고유(unique)한 \"{date_field}\" 월을 갖습니다. "
+msgstr "이 필드는  고유(unique)한 \"{date_field}\" 월을 갖습니다."
 
 #: validators.py:318
 #, python-brace-format
 msgid "This field must be unique for the \"{date_field}\" year."
-msgstr "이 필드는 고유(unique)한 \"{date_field}\" 년을 갖습니다. "
+msgstr "이 필드는 고유(unique)한 \"{date_field}\" 년을 갖습니다."
 
 #: versioning.py:40
 msgid "Invalid version in \"Accept\" header."
@@ -595,12 +595,12 @@ msgstr "\"Accept\" 헤더(header)의 버전이 유효하지 않습니다."
 
 #: versioning.py:71
 msgid "Invalid version in URL path."
-msgstr "URL path의 버전이 유효하지 않습니다."
+msgstr "URL 경로의 버전이 유효하지 않습니다."
 
 #: versioning.py:118
 msgid "Invalid version in URL path. Does not match any version namespace."
 msgstr ""
-"URL 경로에 유효하지 않은 버전이 있습니다. 버전 네임 스페이스와 일치하지 않습"
+"URL 경로에 유효하지 않은 버전이 있습니다. 버전 네임스페이스와 일치하지 않습"
 "니다."
 
 #: versioning.py:150
