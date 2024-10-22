@@ -413,7 +413,7 @@ msgstr "검색"
 
 #: filters.py:73
 msgid "A search term."
-msgstr ""
+msgstr "검색어."
 
 #: filters.py:224 templates/rest_framework/filters/ordering.html:3
 msgid "Ordering"
@@ -421,7 +421,7 @@ msgstr "순서"
 
 #: filters.py:225
 msgid "Which field to use when ordering the results."
-msgstr ""
+msgstr "결과 정렬 시 사용할 필드."
 
 #: filters.py:341
 msgid "ascending"
