@@ -61,7 +61,7 @@ If you only wish to support a subset of the available languages, use Django's st
 ## Adding new translations
 
 REST framework translations are managed on GitHub. You can contribute new translation languages or update existing ones
-by following the guidelines in the [Contributing to REST Framework][] section and submitting a pull request.
+by following the guidelines in the [Contributing to REST Framework] section and submitting a pull request.
 
 Sometimes you may need to add translation strings to your project locally. You may need to do this if:
 
