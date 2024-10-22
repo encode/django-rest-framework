@@ -95,7 +95,7 @@ msgstr "토큰"
 
 #: authtoken/models.py:28 authtoken/models.py:55
 msgid "Tokens"
-msgstr "토큰"
+msgstr "토큰(들)"
 
 #: authtoken/serializers.py:13
 msgid "Password"
