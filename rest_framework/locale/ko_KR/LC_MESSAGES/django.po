@@ -87,7 +87,7 @@ msgstr "사용자"
 
 #: authtoken/models.py:18
 msgid "Created"
-msgstr "생성됨"
+msgstr "생성일시"
 
 #: authtoken/models.py:27 authtoken/models.py:54 authtoken/serializers.py:19
 msgid "Token"
