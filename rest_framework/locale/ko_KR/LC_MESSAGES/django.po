@@ -194,7 +194,7 @@ msgstr "이 필드의 글자 수가 {max_length} 이하인지 확인하십시오
 #: fields.py:727
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} characters."
-msgstr "이 필드의 글자 수가  적어도 {min_length} 이상인지 확인하십시오."
+msgstr "이 필드의 글자 수가 적어도 {min_length} 이상인지 확인하십시오."
 
 #: fields.py:774
 msgid "Enter a valid email address."
