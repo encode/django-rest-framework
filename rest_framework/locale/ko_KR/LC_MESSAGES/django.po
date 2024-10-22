@@ -386,21 +386,21 @@ msgstr "이 리스트는 비워 둘 수 없습니다."
 #: fields.py:1598 serializers.py:596
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} elements."
-msgstr ""
+msgstr "이 필드가 최소 {min_length} 개의 요소를 가지는지 확인하세요."
 
 #: fields.py:1599 serializers.py:595
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} elements."
-msgstr ""
+msgstr "이 필드가 최대 {max_length} 개의 요소를 가지는지 확인하세요."
 
 #: fields.py:1677
 #, python-brace-format
 msgid "Expected a dictionary of items but got type \"{input_type}\"."
-msgstr "아이템 딕셔너리가 예상되었으나 \"{input_type}\" 타입을 받았습니다."
+msgstr "아이템 딕셔너리(dictionary)가 예상되었으나 \"{input_type}\" 타입을 받았습니다."
 
 #: fields.py:1678
 msgid "This dictionary may not be empty."
-msgstr ""
+msgstr "이 딕셔너리는 비어있을 수 없습니다."
 
 #: fields.py:1750
 msgid "Value must be valid JSON."
