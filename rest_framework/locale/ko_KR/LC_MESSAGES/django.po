@@ -1,37 +1,43 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
-# GarakdongBigBoy <novelview9@gmail.com>, 2017
+# JAEGYUN JUNG <twicegoddessana1229@gmail.com>, 2024
 # Hochul Kwak <rhkrghcjf@gmail.com>, 2018
+# GarakdongBigBoy <novelview9@gmail.com>, 2017
 # Joon Hwan 김준환 <xncbf12@gmail.com>, 2017
 # SUN CHOI <best2378@gmail.com>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-13 21:45+0200\n"
+"POT-Creation-Date: 2024-10-22 16:13+0900\n"
 "PO-Revision-Date: 2020-10-13 19:45+0000\n"
-"Last-Translator: Xavier Ordoquy <xordoquy@linovia.com>\n"
-"Language-Team: Korean (Korea) (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/ko_KR/)\n"
+"Last-Translator: JAEGYUN JUNG <twicegoddessana1229@gmail.com>\n"
+"Language: ko_KR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: ko_KR\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: authentication.py:70
 msgid "Invalid basic header. No credentials provided."
-msgstr "기본 헤더(basic header)가 유효하지 않습니다. 인증데이터(credentials)가 제공되지 않았습니다."
+msgstr ""
+"기본 헤더(basic header)가 유효하지 않습니다. 인증데이터(credentials)가 제공되"
+"지 않았습니다."
 
 #: authentication.py:73
 msgid "Invalid basic header. Credentials string should not contain spaces."
-msgstr "기본 헤더(basic header)가 유효하지 않습니다. 인증데이터(credentials) 문자열은 빈칸(spaces)을 포함하지 않아야 합니다."
+msgstr ""
+"기본 헤더(basic header)가 유효하지 않습니다. 인증데이터(credentials) 문자열"
+"은 빈칸(spaces)을 포함하지 않아야 합니다."
 
-#: authentication.py:83
+#: authentication.py:84
 msgid "Invalid basic header. Credentials not correctly base64 encoded."
-msgstr "기본 헤더(basic header)가 유효하지 않습니다. 인증데이터(credentials)가 base64로 적절히 부호화(encode)되지 않았습니다."
+msgstr ""
+"기본 헤더(basic header)가 유효하지 않습니다. 인증데이터(credentials)가 base64"
+"로 적절히 부호화(encode)되지 않았습니다."
 
 #: authentication.py:101
 msgid "Invalid username/password."
@@ -43,20 +49,29 @@ msgstr "계정이 중지되었거나 삭제되었습니다."
 
 #: authentication.py:184
 msgid "Invalid token header. No credentials provided."
-msgstr "토큰 헤더가 유효하지 않습니다. 인증데이터(credentials)가 제공되지 않았습니다."
+msgstr ""
+"토큰 헤더가 유효하지 않습니다. 인증데이터(credentials)가 제공되지 않았습니다."
 
 #: authentication.py:187
 msgid "Invalid token header. Token string should not contain spaces."
-msgstr "토큰 헤더가 유효하지 않습니다. 토큰 문자열은 빈칸(spaces)을 포함하지 않아야 합니다."
+msgstr ""
+"토큰 헤더가 유효하지 않습니다. 토큰 문자열은 빈칸(spaces)을 포함하지 않아야 "
+"합니다."
 
 #: authentication.py:193
 msgid ""
 "Invalid token header. Token string should not contain invalid characters."
-msgstr "토큰 헤더가 유효하지 않습니다. 토큰 문자열은 유효하지 않은 문자를 포함하지 않아야 합니다."
+msgstr ""
+"토큰 헤더가 유효하지 않습니다. 토큰 문자열은 유효하지 않은 문자를 포함하지 않"
+"아야 합니다."
 
 #: authentication.py:203
 msgid "Invalid token."
 msgstr "토큰이 유효하지 않습니다."
+
+#: authtoken/admin.py:28 authtoken/serializers.py:9
+msgid "Username"
+msgstr "사용자 이름"
 
 #: authtoken/apps.py:7
 msgid "Auth Token"
@@ -68,23 +83,19 @@ msgstr "키"
 
 #: authtoken/models.py:16
 msgid "User"
-msgstr "유저"
+msgstr "사용자"
 
 #: authtoken/models.py:18
 msgid "Created"
-msgstr "생성됨"
+msgstr "생성일시"
 
-#: authtoken/models.py:27 authtoken/serializers.py:19
+#: authtoken/models.py:27 authtoken/models.py:54 authtoken/serializers.py:19
 msgid "Token"
 msgstr "토큰"
 
-#: authtoken/models.py:28
+#: authtoken/models.py:28 authtoken/models.py:55
 msgid "Tokens"
-msgstr ""
-
-#: authtoken/serializers.py:9
-msgid "Username"
-msgstr "유저이름"
+msgstr "토큰(들)"
 
 #: authtoken/serializers.py:13
 msgid "Password"
@@ -98,392 +109,413 @@ msgstr "제공된 인증데이터(credentials)로는 로그인할 수 없습니�
 msgid "Must include \"username\" and \"password\"."
 msgstr "\"아이디\"와 \"비밀번호\"를 포함해야 합니다."
 
-#: exceptions.py:102
+#: exceptions.py:105
 msgid "A server error occurred."
 msgstr "서버 장애가 발생했습니다."
 
-#: exceptions.py:142
+#: exceptions.py:145
 msgid "Invalid input."
-msgstr ""
+msgstr "유효하지 않은 입력입니다."
 
-#: exceptions.py:161
+#: exceptions.py:166
 msgid "Malformed request."
 msgstr "잘못된 요청입니다."
 
-#: exceptions.py:167
+#: exceptions.py:172
 msgid "Incorrect authentication credentials."
 msgstr "자격 인증데이터(authentication credentials)가 정확하지 않습니다."
 
-#: exceptions.py:173
+#: exceptions.py:178
 msgid "Authentication credentials were not provided."
 msgstr "자격 인증데이터(authentication credentials)가 제공되지 않았습니다."
 
-#: exceptions.py:179
+#: exceptions.py:184
 msgid "You do not have permission to perform this action."
 msgstr "이 작업을 수행할 권한(permission)이 없습니다."
 
-#: exceptions.py:185
+#: exceptions.py:190
 msgid "Not found."
 msgstr "찾을 수 없습니다."
 
-#: exceptions.py:191
+#: exceptions.py:196
 #, python-brace-format
 msgid "Method \"{method}\" not allowed."
 msgstr "메소드(Method) \"{method}\"는 허용되지 않습니다."
 
-#: exceptions.py:202
+#: exceptions.py:207
 msgid "Could not satisfy the request Accept header."
 msgstr "Accept header 요청을 만족할 수 없습니다."
 
-#: exceptions.py:212
+#: exceptions.py:217
 #, python-brace-format
 msgid "Unsupported media type \"{media_type}\" in request."
 msgstr "요청된 \"{media_type}\"가 지원되지 않는 미디어 형태입니다."
 
-#: exceptions.py:223
+#: exceptions.py:228
 msgid "Request was throttled."
 msgstr "요청이 지연(throttled)되었습니다."
 
-#: exceptions.py:224
+#: exceptions.py:229
 #, python-brace-format
 msgid "Expected available in {wait} second."
-msgstr ""
+msgstr "{wait} 초 후에 사용 가능합니다."
 
-#: exceptions.py:225
+#: exceptions.py:230
 #, python-brace-format
 msgid "Expected available in {wait} seconds."
-msgstr ""
+msgstr "{wait} 초 후에 사용 가능합니다."
 
-#: fields.py:316 relations.py:245 relations.py:279 validators.py:90
-#: validators.py:183
+#: fields.py:292 relations.py:240 relations.py:276 validators.py:99
+#: validators.py:219
 msgid "This field is required."
 msgstr "이 필드는 필수 항목입니다."
 
-#: fields.py:317
+#: fields.py:293
 msgid "This field may not be null."
 msgstr "이 필드는 null일 수 없습니다."
 
-#: fields.py:701
+#: fields.py:661
 msgid "Must be a valid boolean."
-msgstr ""
+msgstr "유효한 불리언(boolean)이어야 합니다."
 
-#: fields.py:766
+#: fields.py:724
 msgid "Not a valid string."
-msgstr ""
+msgstr "유효한 문자열이 아닙니다."
 
-#: fields.py:767
+#: fields.py:725
 msgid "This field may not be blank."
 msgstr "이 필드는 blank일 수 없습니다."
 
-#: fields.py:768 fields.py:1881
+#: fields.py:726 fields.py:1881
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} characters."
-msgstr "이 필드의 글자 수가 {max_length} 이하인지 확인하십시오."
+msgstr "이 필드의 글자 수가 {max_length} 이하인지 확인하세요."
 
-#: fields.py:769
+#: fields.py:727
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} characters."
-msgstr "이 필드의 글자 수가  적어도 {min_length} 이상인지 확인하십시오."
+msgstr "이 필드의 글자 수가 적어도 {min_length} 이상인지 확인하세요."
 
-#: fields.py:816
+#: fields.py:774
 msgid "Enter a valid email address."
-msgstr "유효한 이메일 주소를 입력하십시오."
+msgstr "유효한 이메일 주소를 입력하세요."
 
-#: fields.py:827
+#: fields.py:785
 msgid "This value does not match the required pattern."
 msgstr "형식에 맞지 않는 값입니다."
 
-#: fields.py:838
+#: fields.py:796
 msgid ""
 "Enter a valid \"slug\" consisting of letters, numbers, underscores or "
 "hyphens."
-msgstr "문자, 숫자, 밑줄( _ ) 또는 하이픈( - )으로 이루어진 유효한 \"slug\"를 입력하십시오."
+msgstr ""
+"문자, 숫자, 밑줄( _ ) 또는 하이픈( - )으로 이루어진 유효한 \"slug\"를 입력하세요."
 
-#: fields.py:839
+#: fields.py:797
 msgid ""
 "Enter a valid \"slug\" consisting of Unicode letters, numbers, underscores, "
 "or hyphens."
 msgstr ""
+"유니코드 문자, 숫자, 밑줄( _ ) 또는 하이픈( - )으로 이루어진 유효한 \"slug\"를 입력하세요."
 
-#: fields.py:854
+#: fields.py:812
 msgid "Enter a valid URL."
-msgstr "유효한 URL을 입력하십시오."
+msgstr "유효한 URL을 입력하세요."
 
-#: fields.py:867
+#: fields.py:825
 msgid "Must be a valid UUID."
-msgstr ""
+msgstr "유효한 UUID이어야 합니다."
 
-#: fields.py:903
+#: fields.py:861
 msgid "Enter a valid IPv4 or IPv6 address."
-msgstr "유효한 IPv4 또는 IPv6 주소를 입력하십시오."
+msgstr "유효한 IPv4 또는 IPv6 주소를 입력하세요."
 
-#: fields.py:931
+#: fields.py:889
 msgid "A valid integer is required."
 msgstr "유효한 정수(integer)를 넣어주세요."
 
-#: fields.py:932 fields.py:969 fields.py:1005 fields.py:1366
+#: fields.py:890 fields.py:927 fields.py:966 fields.py:1349
 #, python-brace-format
 msgid "Ensure this value is less than or equal to {max_value}."
-msgstr "이 값이 {max_value}보다 작거나 같은지 확인하십시오."
+msgstr "이 값이 {max_value}보다 작거나 같은지 확인하세요."
 
-#: fields.py:933 fields.py:970 fields.py:1006 fields.py:1367
+#: fields.py:891 fields.py:928 fields.py:967 fields.py:1350
 #, python-brace-format
 msgid "Ensure this value is greater than or equal to {min_value}."
-msgstr "이 값이 {min_value}보다 크거나 같은지 확인하십시오."
+msgstr "이 값이 {min_value}보다 크거나 같은지 확인하세요."
 
-#: fields.py:934 fields.py:971 fields.py:1010
+#: fields.py:892 fields.py:929 fields.py:971
 msgid "String value too large."
 msgstr "문자열 값이 너무 큽니다."
 
-#: fields.py:968 fields.py:1004
+#: fields.py:926 fields.py:965
 msgid "A valid number is required."
 msgstr "유효한 숫자를 넣어주세요."
 
-#: fields.py:1007
+#: fields.py:930
+msgid "Integer value too large to convert to float"
+msgstr "정수(integer) 값이 너무 커서 부동소수점(float)으로 변환할 수 없습니다."
+
+#: fields.py:968
 #, python-brace-format
 msgid "Ensure that there are no more than {max_digits} digits in total."
-msgstr "전체 숫자(digits)가 {max_digits} 이하인지 확인하십시오."
+msgstr "총 자릿수(digits)가 {max_digits}을(를) 초과하지 않는지 확인하세요."
 
-#: fields.py:1008
+#: fields.py:969
 #, python-brace-format
-msgid ""
-"Ensure that there are no more than {max_decimal_places} decimal places."
-msgstr "소수점 자릿수가  {max_decimal_places} 이하인지 확인하십시오."
+msgid "Ensure that there are no more than {max_decimal_places} decimal places."
+msgstr "소수점 이하 자릿수가 {max_decimal_places}을(를) 초과하지 않는지 확인하세요."
 
-#: fields.py:1009
+#: fields.py:970
 #, python-brace-format
 msgid ""
 "Ensure that there are no more than {max_whole_digits} digits before the "
 "decimal point."
-msgstr "소수점 자리 앞에 숫자(digits)가 {max_whole_digits} 이하인지 확인하십시오."
+msgstr ""
+"소수점 앞 자릿수가 {max_whole_digits}을(를) 초과하지 않는지 확인하세요."
 
-#: fields.py:1148
+#: fields.py:1129
 #, python-brace-format
 msgid "Datetime has wrong format. Use one of these formats instead: {format}."
-msgstr "Datetime의 포멧이 잘못되었습니다. 이 형식들 중 한가지를 사용하세요: {format}."
+msgstr ""
+"Datetime의 포멧이 잘못되었습니다. 이 형식들 중 한가지를 사용하세요: {format}."
 
-#: fields.py:1149
+#: fields.py:1130
 msgid "Expected a datetime but got a date."
 msgstr "예상된 datatime 대신 date를 받았습니다."
 
-#: fields.py:1150
+#: fields.py:1131
 #, python-brace-format
 msgid "Invalid datetime for the timezone \"{timezone}\"."
-msgstr ""
+msgstr "\"{timezone}\" 시간대에 대한 유효하지 않은 datetime입니다."
 
-#: fields.py:1151
+#: fields.py:1132
 msgid "Datetime value out of range."
-msgstr ""
+msgstr "Datetime 값이 범위를 벗어났습니다."
 
-#: fields.py:1236
+#: fields.py:1219
 #, python-brace-format
 msgid "Date has wrong format. Use one of these formats instead: {format}."
-msgstr "Date의 포멧이 잘못되었습니다. 이 형식들 중 한가지를 사용하세요: {format}."
+msgstr ""
+"Date의 포멧이 잘못되었습니다. 이 형식들 중 한가지를 사용하세요: {format}."
 
-#: fields.py:1237
+#: fields.py:1220
 msgid "Expected a date but got a datetime."
 msgstr "예상된 date 대신 datetime을 받았습니다."
 
-#: fields.py:1303
+#: fields.py:1286
 #, python-brace-format
 msgid "Time has wrong format. Use one of these formats instead: {format}."
-msgstr "Time의 포멧이 잘못되었습니다. 이 형식들 중 한가지를 사용하세요: {format}."
+msgstr ""
+"Time의 포멧이 잘못되었습니다. 이 형식들 중 한가지를 사용하세요: {format}."
 
-#: fields.py:1365
+#: fields.py:1348
 #, python-brace-format
 msgid "Duration has wrong format. Use one of these formats instead: {format}."
-msgstr "Duration의 포멧이 잘못되었습니다. 이 형식들 중 한가지를 사용하세요: {format}."
+msgstr ""
+"Duration의 포멧이 잘못되었습니다. 이 형식들 중 한가지를 사용하세요: {format}."
 
-#: fields.py:1399 fields.py:1456
+#: fields.py:1351
+#, python-brace-format
+msgid "The number of days must be between {min_days} and {max_days}."
+msgstr "일수는 {min_days} 이상 {max_days} 이하이어야 합니다."
+
+#: fields.py:1386 fields.py:1446
 #, python-brace-format
 msgid "\"{input}\" is not a valid choice."
-msgstr "\"{input}\"이 유효하지 않은 선택(choice)입니다."
+msgstr "\"{input}\"은 유효하지 않은 선택(choice)입니다."
 
-#: fields.py:1402
+#: fields.py:1389
 #, python-brace-format
 msgid "More than {count} items..."
-msgstr ""
+msgstr "{count}개 이상의 아이템이 있습니다..."
 
-#: fields.py:1457 fields.py:1603 relations.py:485 serializers.py:570
+#: fields.py:1447 fields.py:1596 relations.py:486 serializers.py:593
 #, python-brace-format
 msgid "Expected a list of items but got type \"{input_type}\"."
 msgstr "아이템 리스트가 예상되었으나 \"{input_type}\"를 받았습니다."
 
-#: fields.py:1458
+#: fields.py:1448
 msgid "This selection may not be empty."
 msgstr "이 선택 항목은 비워 둘 수 없습니다."
 
-#: fields.py:1495
+#: fields.py:1487
 #, python-brace-format
 msgid "\"{input}\" is not a valid path choice."
-msgstr "\"{input}\"이 유효하지 않은 경로 선택입니다."
+msgstr "\"{input}\"은 유효하지 않은 경로 선택입니다."
 
-#: fields.py:1514
+#: fields.py:1507
 msgid "No file was submitted."
 msgstr "파일이 제출되지 않았습니다."
 
-#: fields.py:1515
-msgid ""
-"The submitted data was not a file. Check the encoding type on the form."
-msgstr "제출된 데이터는 파일이 아닙니다. 제출된 서식의 인코딩 형식을 확인하세요."
+#: fields.py:1508
+msgid "The submitted data was not a file. Check the encoding type on the form."
+msgstr ""
+"제출된 데이터는 파일이 아닙니다. 제출된 서식의 인코딩 형식을 확인하세요."
 
-#: fields.py:1516
+#: fields.py:1509
 msgid "No filename could be determined."
 msgstr "파일명을 알 수 없습니다."
 
-#: fields.py:1517
+#: fields.py:1510
 msgid "The submitted file is empty."
 msgstr "제출한 파일이 비어있습니다."
 
-#: fields.py:1518
+#: fields.py:1511
 #, python-brace-format
 msgid ""
 "Ensure this filename has at most {max_length} characters (it has {length})."
-msgstr "이 파일명의 글자수가 최대 {max_length}를 넘지 않는지 확인하십시오. (이것은 {length}가 있습니다)."
+msgstr ""
+"이 파일명의 글자수가 최대 {max_length}를 넘지 않는지 확인하세요. (이것은 "
+"{length}가 있습니다)."
 
-#: fields.py:1566
+#: fields.py:1559
 msgid ""
 "Upload a valid image. The file you uploaded was either not an image or a "
 "corrupted image."
-msgstr "유효한 이미지 파일을 업로드 하십시오. 업로드 하신 파일은 이미지 파일이 아니거나 손상된 이미지 파일입니다."
+msgstr ""
+"유효한 이미지 파일을 업로드하세요. 업로드하신 파일은 이미지 파일이 아니거"
+"나 손상된 이미지 파일입니다."
 
-#: fields.py:1604 relations.py:486 serializers.py:571
+#: fields.py:1597 relations.py:487 serializers.py:594
 msgid "This list may not be empty."
 msgstr "이 리스트는 비워 둘 수 없습니다."
 
-#: fields.py:1605
+#: fields.py:1598 serializers.py:596
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} elements."
-msgstr ""
+msgstr "이 필드가 최소 {min_length} 개의 요소를 가지는지 확인하세요."
 
-#: fields.py:1606
+#: fields.py:1599 serializers.py:595
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} elements."
-msgstr ""
+msgstr "이 필드가 최대 {max_length} 개의 요소를 가지는지 확인하세요."
 
-#: fields.py:1682
+#: fields.py:1677
 #, python-brace-format
 msgid "Expected a dictionary of items but got type \"{input_type}\"."
-msgstr "아이템 딕셔너리가 예상되었으나 \"{input_type}\" 타입을 받았습니다."
+msgstr "아이템 딕셔너리(dictionary)가 예상되었으나 \"{input_type}\" 타입을 받았습니다."
 
-#: fields.py:1683
+#: fields.py:1678
 msgid "This dictionary may not be empty."
-msgstr ""
+msgstr "이 딕셔너리는 비어있을 수 없습니다."
 
-#: fields.py:1755
+#: fields.py:1750
 msgid "Value must be valid JSON."
 msgstr "Value 는 유효한 JSON형식이어야 합니다."
 
-#: filters.py:49 templates/rest_framework/filters/search.html:2
+#: filters.py:72 templates/rest_framework/filters/search.html:2
+#: templates/rest_framework/filters/search.html:8
 msgid "Search"
 msgstr "검색"
 
-#: filters.py:50
+#: filters.py:73
 msgid "A search term."
-msgstr ""
+msgstr "검색어."
 
-#: filters.py:180 templates/rest_framework/filters/ordering.html:3
+#: filters.py:224 templates/rest_framework/filters/ordering.html:3
 msgid "Ordering"
 msgstr "순서"
 
-#: filters.py:181
+#: filters.py:225
 msgid "Which field to use when ordering the results."
-msgstr ""
+msgstr "결과 정렬 시 사용할 필드."
 
-#: filters.py:287
+#: filters.py:341
 msgid "ascending"
 msgstr "오름차순"
 
-#: filters.py:288
+#: filters.py:342
 msgid "descending"
 msgstr "내림차순"
 
-#: pagination.py:174
+#: pagination.py:180
 msgid "A page number within the paginated result set."
-msgstr ""
+msgstr "페이지네이션된 결과 집합 내의 페이지 번호."
 
-#: pagination.py:179 pagination.py:372 pagination.py:590
+#: pagination.py:185 pagination.py:382 pagination.py:599
 msgid "Number of results to return per page."
-msgstr ""
+msgstr "페이지 당 반환할 결과 수."
 
-#: pagination.py:189
+#: pagination.py:195
 msgid "Invalid page."
 msgstr "페이지가 유효하지 않습니다."
 
-#: pagination.py:374
+#: pagination.py:384
 msgid "The initial index from which to return the results."
-msgstr ""
+msgstr "결과를 반환할 초기 인덱스."
 
-#: pagination.py:581
+#: pagination.py:590
 msgid "The pagination cursor value."
-msgstr ""
+msgstr "페이지네이션 커서(cursor) 값."
 
-#: pagination.py:583
+#: pagination.py:592
 msgid "Invalid cursor"
 msgstr "커서(cursor)가 유효하지 않습니다."
 
-#: relations.py:246
+#: relations.py:241
 #, python-brace-format
 msgid "Invalid pk \"{pk_value}\" - object does not exist."
 msgstr "유효하지 않은 pk \"{pk_value}\" - 객체가 존재하지 않습니다."
 
-#: relations.py:247
+#: relations.py:242
 #, python-brace-format
 msgid "Incorrect type. Expected pk value, received {data_type}."
 msgstr "잘못된 형식입니다. pk 값 대신 {data_type}를 받았습니다."
 
-#: relations.py:280
+#: relations.py:277
 msgid "Invalid hyperlink - No URL match."
 msgstr "유효하지 않은 하이퍼링크 - 일치하는 URL이 없습니다."
 
-#: relations.py:281
+#: relations.py:278
 msgid "Invalid hyperlink - Incorrect URL match."
 msgstr "유효하지 않은 하이퍼링크 - URL이 일치하지 않습니다."
 
-#: relations.py:282
+#: relations.py:279
 msgid "Invalid hyperlink - Object does not exist."
 msgstr "유효하지 않은 하이퍼링크 - 객체가 존재하지 않습니다."
 
-#: relations.py:283
+#: relations.py:280
 #, python-brace-format
 msgid "Incorrect type. Expected URL string, received {data_type}."
 msgstr "잘못된 형식입니다. URL 문자열을 예상했으나 {data_type}을 받았습니다."
 
-#: relations.py:448
+#: relations.py:445
 #, python-brace-format
 msgid "Object with {slug_name}={value} does not exist."
 msgstr "{slug_name}={value} 객체가 존재하지 않습니다."
 
-#: relations.py:449
+#: relations.py:446
 msgid "Invalid value."
 msgstr "값이 유효하지 않습니다."
 
 #: schemas/utils.py:32
 msgid "unique integer value"
-msgstr ""
+msgstr "고유한 정수 값"
 
 #: schemas/utils.py:34
 msgid "UUID string"
-msgstr ""
+msgstr "UUID 문자열"
 
 #: schemas/utils.py:36
 msgid "unique value"
-msgstr ""
+msgstr "고유한 값"
 
 #: schemas/utils.py:38
 #, python-brace-format
 msgid "A {value_type} identifying this {name}."
-msgstr ""
+msgstr "{name}을 식별하는 {value_type}."
 
-#: serializers.py:337
+#: serializers.py:340
 #, python-brace-format
 msgid "Invalid data. Expected a dictionary, but got {datatype}."
-msgstr "유효하지 않은 데이터. 딕셔너리(dictionary)대신 {datatype}를 받았습니다."
+msgstr ""
+"유효하지 않은 데이터. 딕셔너리(dictionary)대신 {datatype}를 받았습니다."
 
 #: templates/rest_framework/admin.html:116
 #: templates/rest_framework/base.html:136
 msgid "Extra Actions"
-msgstr ""
+msgstr "추가 Action들"
 
 #: templates/rest_framework/admin.html:130
 #: templates/rest_framework/base.html:150
@@ -492,33 +524,33 @@ msgstr "필터"
 
 #: templates/rest_framework/base.html:37
 msgid "navbar"
-msgstr ""
+msgstr "네비게이션 바"
 
 #: templates/rest_framework/base.html:75
 msgid "content"
-msgstr ""
+msgstr "콘텐츠"
 
 #: templates/rest_framework/base.html:78
 msgid "request form"
-msgstr ""
+msgstr "요청 폼"
 
 #: templates/rest_framework/base.html:157
 msgid "main content"
-msgstr ""
+msgstr "메인 콘텐츠"
 
 #: templates/rest_framework/base.html:173
 msgid "request info"
-msgstr ""
+msgstr "요청 정보"
 
 #: templates/rest_framework/base.html:177
 msgid "response info"
-msgstr ""
+msgstr "응답 정보"
 
 #: templates/rest_framework/horizontal/radio.html:4
 #: templates/rest_framework/inline/radio.html:3
 #: templates/rest_framework/vertical/radio.html:3
 msgid "None"
-msgstr ""
+msgstr "없음"
 
 #: templates/rest_framework/horizontal/select_multiple.html:4
 #: templates/rest_framework/inline/select_multiple.html:3
@@ -530,30 +562,30 @@ msgstr "선택할 아이템이 없습니다."
 msgid "This field must be unique."
 msgstr "이 필드는 반드시 고유(unique)해야 합니다."
 
-#: validators.py:89
+#: validators.py:98
 #, python-brace-format
 msgid "The fields {field_names} must make a unique set."
 msgstr "필드 {field_names} 는 반드시 고유(unique)해야 합니다."
 
-#: validators.py:171
+#: validators.py:200
 #, python-brace-format
 msgid "Surrogate characters are not allowed: U+{code_point:X}."
-msgstr ""
+msgstr "대체(surrogate) 문자는 허용되지 않습니다: U+{code_point:X}."
 
-#: validators.py:243
+#: validators.py:290
 #, python-brace-format
 msgid "This field must be unique for the \"{date_field}\" date."
 msgstr "이 필드는 고유(unique)한 \"{date_field}\" 날짜를 갖습니다."
 
-#: validators.py:258
+#: validators.py:305
 #, python-brace-format
 msgid "This field must be unique for the \"{date_field}\" month."
-msgstr "이 필드는  고유(unique)한 \"{date_field}\" 월을 갖습니다. "
+msgstr "이 필드는  고유(unique)한 \"{date_field}\" 월을 갖습니다."
 
-#: validators.py:271
+#: validators.py:318
 #, python-brace-format
 msgid "This field must be unique for the \"{date_field}\" year."
-msgstr "이 필드는 고유(unique)한 \"{date_field}\" 년을 갖습니다. "
+msgstr "이 필드는 고유(unique)한 \"{date_field}\" 년을 갖습니다."
 
 #: versioning.py:40
 msgid "Invalid version in \"Accept\" header."
@@ -561,16 +593,18 @@ msgstr "\"Accept\" 헤더(header)의 버전이 유효하지 않습니다."
 
 #: versioning.py:71
 msgid "Invalid version in URL path."
-msgstr "URL path의 버전이 유효하지 않습니다."
+msgstr "URL 경로의 버전이 유효하지 않습니다."
 
-#: versioning.py:116
+#: versioning.py:118
 msgid "Invalid version in URL path. Does not match any version namespace."
-msgstr "URL 경로에 유효하지 않은 버전이 있습니다. 버전 네임 스페이스와 일치하지 않습니다."
+msgstr ""
+"URL 경로에 유효하지 않은 버전이 있습니다. 버전 네임스페이스와 일치하지 않습"
+"니다."
 
-#: versioning.py:148
+#: versioning.py:150
 msgid "Invalid version in hostname."
 msgstr "hostname내 버전이 유효하지 않습니다."
 
-#: versioning.py:170
+#: versioning.py:172
 msgid "Invalid version in query parameter."
 msgstr "쿼리 파라메터내 버전이 유효하지 않습니다."
