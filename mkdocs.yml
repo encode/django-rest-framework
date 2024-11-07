@@ -13,6 +13,10 @@ markdown_extensions:
  - toc:
     anchorlink: True
 
+plugins:
+  - mkdocstrings:
+      enable_inventory: true
+
 nav:
  - Home: 'index.md'
  - Tutorial:
