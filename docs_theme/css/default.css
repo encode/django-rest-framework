@@ -453,3 +453,6 @@ ul.sponsor {
   padding: 0.4rem 0.6rem;
 }
 
+.doc.doc-object.doc-class .doc.doc-heading {
+    display: none;
+}
