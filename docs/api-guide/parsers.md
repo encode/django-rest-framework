@@ -73,11 +73,15 @@ Or, if you're using the `@api_view` decorator with function based views.
 
 ## JSONParser
 
+::: rest_framework.parsers.JSONParser
+
 Parses `JSON` request content. `request.data` will be populated with a dictionary of data.
 
 **.media_type**: `application/json`
 
 ## FormParser
+
+::: rest_framework.parsers.FormParser
 
 Parses HTML form content.  `request.data` will be populated with a `QueryDict` of data.
 
@@ -87,6 +91,8 @@ You will typically want to use both `FormParser` and `MultiPartParser` together 
 
 ## MultiPartParser
 
+::: rest_framework.parsers.MultiPartParser
+
 Parses multipart HTML form content, which supports file uploads. `request.data` and `request.FILES` will be populated with a `QueryDict` and `MultiValueDict` respectively.
 
 You will typically want to use both `FormParser` and `MultiPartParser` together in order to fully support HTML form data.
@@ -94,6 +100,8 @@ You will typically want to use both `FormParser` and `MultiPartParser` together 
 **.media_type**: `multipart/form-data`
 
 ## FileUploadParser
+
+::: rest_framework.parsers.FileUploadParser
 
 Parses raw file upload content.  The `request.data` property will be a dictionary with a single key `'file'` containing the uploaded file.
 
@@ -131,6 +139,8 @@ If it is called without a `filename` URL keyword argument, then the client must 
 ---
 
 # Custom parsers
+
+::: rest_framework.parsers.BaseParser
 
 To implement a custom parser, you should override `BaseParser`, set the `.media_type` property, and implement the `.parse(self, stream, media_type, parser_context)` method.
 

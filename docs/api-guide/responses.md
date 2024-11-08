@@ -21,7 +21,10 @@ Unless you want to heavily customize REST framework for some reason, you should 
 
 # Creating responses
 
+
 ## Response()
+
+::: rest_framework.response.Response
 
 **Signature:** `Response(data, status=None, template_name=None, headers=None, content_type=None)`
 

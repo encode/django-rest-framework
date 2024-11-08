@@ -142,6 +142,8 @@ For more details see the [HTML & Forms][html-and-forms] documentation.
 
 ## BooleanField
 
+::: rest_framework.fields.BooleanField
+
 A boolean representation.
 
 When using HTML encoded form input be aware that omitting a value will always be treated as setting a field to `False`, even if it has a `default=True` option specified. This is because HTML checkbox inputs represent the unchecked state by omitting the value, so REST framework treats omission as if it is an empty checkbox input.
@@ -165,6 +167,8 @@ Corresponds to `django.db.models.fields.BooleanField`.
 
 ## CharField
 
+::: rest_framework.fields.CharField
+
 A text representation. Optionally validates the text to be shorter than `max_length` and longer than `min_length`.
 
 Corresponds to `django.db.models.fields.CharField` or `django.db.models.fields.TextField`.
@@ -180,6 +184,8 @@ The `allow_null` option is also available for string fields, although its usage 
 
 ## EmailField
 
+::: rest_framework.fields.EmailField
+
 A text representation, validates the text to be a valid e-mail address.
 
 Corresponds to `django.db.models.fields.EmailField`
@@ -187,6 +193,8 @@ Corresponds to `django.db.models.fields.EmailField`
 **Signature:** `EmailField(max_length=None, min_length=None, allow_blank=False)`
 
 ## RegexField
+
+::: rest_framework.fields.RegexField
 
 A text representation, that validates the given value matches against a certain regular expression.
 
@@ -200,6 +208,8 @@ Uses Django's `django.core.validators.RegexValidator` for validation.
 
 ## SlugField
 
+::: rest_framework.fields.SlugField
+
 A `RegexField` that validates the input against the pattern `[a-zA-Z0-9_-]+`.
 
 Corresponds to `django.db.models.fields.SlugField`.
@@ -208,6 +218,8 @@ Corresponds to `django.db.models.fields.SlugField`.
 
 ## URLField
 
+::: rest_framework.fields.URLField
+
 A `RegexField` that validates the input against a URL matching pattern. Expects fully qualified URLs of the form `http://<host>/<path>`.
 
 Corresponds to `django.db.models.fields.URLField`.  Uses Django's `django.core.validators.URLValidator` for validation.
@@ -215,6 +227,8 @@ Corresponds to `django.db.models.fields.URLField`.  Uses Django's `django.core.v
 **Signature:** `URLField(max_length=200, min_length=None, allow_blank=False)`
 
 ## UUIDField
+
+::: rest_framework.fields.UUIDField
 
 A field that ensures the input is a valid UUID string. The `to_internal_value` method will return a `uuid.UUID` instance. On output the field will return a string in the canonical hyphenated format, for example:
 
@@ -231,6 +245,8 @@ A field that ensures the input is a valid UUID string. The `to_internal_value` m
 
 ## FilePathField
 
+::: rest_framework.fields.FilePathField
+
 A field whose choices are limited to the filenames in a certain directory on the filesystem
 
 Corresponds to `django.forms.fields.FilePathField`.
@@ -244,6 +260,8 @@ Corresponds to `django.forms.fields.FilePathField`.
 * `allow_folders` - Specifies whether folders in the specified location should be included. Default is `False`. Either this or `allow_files` must be `True`.
 
 ## IPAddressField
+
+::: rest_framework.fields.IPAddressField
 
 A field that ensures the input is a valid IPv4 or IPv6 string.
 
@@ -260,6 +278,8 @@ Corresponds to `django.forms.fields.IPAddressField` and `django.forms.fields.Gen
 
 ## IntegerField
 
+::: rest_framework.fields.IntegerField
+
 An integer representation.
 
 Corresponds to `django.db.models.fields.IntegerField`, `django.db.models.fields.SmallIntegerField`, `django.db.models.fields.PositiveIntegerField` and `django.db.models.fields.PositiveSmallIntegerField`.
@@ -271,6 +291,8 @@ Corresponds to `django.db.models.fields.IntegerField`, `django.db.models.fields.
 
 ## FloatField
 
+::: rest_framework.fields.FloatField
+
 A floating point representation.
 
 Corresponds to `django.db.models.fields.FloatField`.
@@ -281,6 +303,8 @@ Corresponds to `django.db.models.fields.FloatField`.
 * `min_value` Validate that the number provided is no less than this value.
 
 ## DecimalField
+
+::: rest_framework.fields.DecimalField
 
 A decimal representation, represented in Python by a `Decimal` instance.
 
@@ -313,6 +337,8 @@ And to validate numbers up to anything less than one billion with a resolution o
 
 ## DateTimeField
 
+::: rest_framework.fields.DateTimeField
+
 A date and time representation.
 
 Corresponds to `django.db.models.fields.DateTimeField`.
@@ -343,6 +369,8 @@ If you want to override this behavior, you'll need to declare the `DateTimeField
 
 ## DateField
 
+::: rest_framework.fields.DateField
+
 A date representation.
 
 Corresponds to `django.db.models.fields.DateField`
@@ -358,6 +386,8 @@ Format strings may either be [Python strftime formats][strftime] which explicitl
 
 ## TimeField
 
+::: rest_framework.fields.TimeField
+
 A time representation.
 
 Corresponds to `django.db.models.fields.TimeField`
@@ -372,6 +402,8 @@ Corresponds to `django.db.models.fields.TimeField`
 Format strings may either be [Python strftime formats][strftime] which explicitly specify the format, or the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style times should be used. (eg `'12:34:56.000000'`)
 
 ## DurationField
+
+::: rest_framework.fields.DurationField
 
 A Duration representation.
 Corresponds to `django.db.models.fields.DurationField`
@@ -390,6 +422,8 @@ The representation is a string following this format `'[DD] [HH:[MM:]]ss[.uuuuuu
 
 ## ChoiceField
 
+::: rest_framework.fields.ChoiceField
+
 A field that can accept a value out of a limited set of choices.
 
 Used by `ModelSerializer` to automatically generate fields if the corresponding model field includes a `choices=…` argument.
@@ -404,6 +438,8 @@ Used by `ModelSerializer` to automatically generate fields if the corresponding 
 Both the `allow_blank` and `allow_null` are valid options on `ChoiceField`, although it is highly recommended that you only use one and not both. `allow_blank` should be preferred for textual choices, and `allow_null` should be preferred for numeric or other non-textual choices.
 
 ## MultipleChoiceField
+
+::: rest_framework.fields.MultipleChoiceField
 
 A field that can accept a set of zero, one or many values, chosen from a limited set of choices. Takes a single mandatory argument. `to_internal_value` returns a `set` containing the selected values.
 
@@ -427,6 +463,8 @@ Django's regular [FILE_UPLOAD_HANDLERS] are used for handling uploaded files.
 
 ## FileField
 
+::: rest_framework.fields.FileField
+
 A file representation.  Performs Django's standard FileField validation.
 
 Corresponds to `django.forms.fields.FileField`.
@@ -438,6 +476,8 @@ Corresponds to `django.forms.fields.FileField`.
 * `use_url` - If set to `True` then URL string values will be used for the output representation. If set to `False` then filename string values will be used for the output representation. Defaults to the value of the `UPLOADED_FILES_USE_URL` settings key, which is `True` unless set otherwise.
 
 ## ImageField
+
+::: rest_framework.fields.ImageField
 
 An image representation. Validates the uploaded file content as matching a known image format.
 
@@ -456,6 +496,8 @@ Requires either the `Pillow` package or `PIL` package.  The `Pillow` package is 
 # Composite fields
 
 ## ListField
+
+::: rest_framework.fields.ListField
 
 A field class that validates a list of objects.
 
@@ -481,6 +523,8 @@ We can now reuse our custom `StringListField` class throughout our application, 
 
 ## DictField
 
+::: rest_framework.fields.DictField
+
 A field class that validates a dictionary of objects. The keys in `DictField` are always assumed to be string values.
 
 **Signature**: `DictField(child=<A_FIELD_INSTANCE>, allow_empty=True)`
@@ -499,6 +543,8 @@ You can also use the declarative style, as with `ListField`. For example:
 
 ## HStoreField
 
+::: rest_framework.fields.HStoreField
+
 A preconfigured `DictField` that is compatible with Django's postgres `HStoreField`.
 
 **Signature**: `HStoreField(child=<A_FIELD_INSTANCE>, allow_empty=True)`
@@ -509,6 +555,8 @@ A preconfigured `DictField` that is compatible with Django's postgres `HStoreFie
 Note that the child field **must** be an instance of `CharField`, as the hstore extension stores values as strings.
 
 ## JSONField
+
+::: rest_framework.fields.JSONField
 
 A field class that validates that the incoming data structure consists of valid JSON primitives. In its alternate binary mode, it will represent and validate JSON-encoded binary strings.
 
@@ -522,6 +570,8 @@ A field class that validates that the incoming data structure consists of valid 
 # Miscellaneous fields
 
 ## ReadOnlyField
+
+::: rest_framework.fields.ReadOnlyField
 
 A field class that simply returns the value of the field without modification.
 
@@ -537,6 +587,8 @@ For example, if `has_expired` was a property on the `Account` model, then the fo
             fields = ['id', 'account_name', 'has_expired']
 
 ## HiddenField
+
+::: rest_framework.fields.HiddenField
 
 A field class that does not take a value based on user input, but instead takes its value from a default value or callable.
 
@@ -558,6 +610,8 @@ For further examples on `HiddenField` see the [validators](validators.md) docume
 
 ## ModelField
 
+::: rest_framework.fields.ModelField
+
 A generic field that can be tied to any arbitrary model field. The `ModelField` class delegates the task of serialization/deserialization to its associated model field.  This field can be used to create serializer fields for custom model fields, without having to create a new custom serializer field.
 
 This field is used by `ModelSerializer` to correspond to custom model field classes.
@@ -567,6 +621,8 @@ This field is used by `ModelSerializer` to correspond to custom model field clas
 The `ModelField` class is generally intended for internal use, but can be used by your API if needed.  In order to properly instantiate a `ModelField`, it must be passed a field that is attached to an instantiated model.  For example: `ModelField(model_field=MyModel()._meta.get_field('custom_field'))`
 
 ## SerializerMethodField
+
+::: rest_framework.fields.SerializerMethodField
 
 This is a read-only field. It gets its value by calling a method on the serializer class it is attached to. It can be used to add any sort of data to the serialized representation of your object.
 

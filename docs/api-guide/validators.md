@@ -59,6 +59,8 @@ Because of this more explicit style REST framework includes a few validator clas
 
 ## UniqueValidator
 
+::: rest_framework.validators.UniqueValidator
+
 This validator can be used to enforce the `unique=True` constraint on model fields.
 It takes a single required argument, and an optional `messages` argument:
 
@@ -75,7 +77,9 @@ This validator should be applied to *serializer fields*, like so:
         validators=[UniqueValidator(queryset=BlogPost.objects.all())]
     )
 
-## UniqueTogetherValidator
+## UniqueTogetherValidator
+
+::: rest_framework.validators.UniqueTogetherValidator
 
 This validator can be used to enforce `unique_together` constraints on model instances.
 It has two required arguments, and a single optional `messages` argument:
@@ -109,9 +113,15 @@ The validator should be applied to *serializer classes*, like so:
 
 ## UniqueForDateValidator
 
+::: rest_framework.validators.UniqueForDateValidator
+
 ## UniqueForMonthValidator
 
+::: rest_framework.validators.UniqueForMonthValidator
+
 ## UniqueForYearValidator
+
+::: rest_framework.validators.UniqueForYearValidator
 
 These validators can be used to enforce the `unique_for_date`, `unique_for_month` and `unique_for_year` constraints on model instances. They take the following arguments:
 
@@ -181,6 +191,9 @@ REST framework includes a couple of defaults that may be useful in this context.
 
 #### CurrentUserDefault
 
+::: rest_framework.fields.CurrentUserDefault
+::: rest_framework.serializers.CurrentUserDefault
+
 A default class that can be used to represent the current user. In order to use this, the 'request' must have been provided as part of the context dictionary when instantiating the serializer.
 
     owner = serializers.HiddenField(
@@ -188,6 +201,9 @@ A default class that can be used to represent the current user. In order to use 
     )
 
 #### CreateOnlyDefault
+
+::: rest_framework.fields.CreateOnlyDefault
+::: rest_framework.serializers.CreateOnlyDefault
 
 A default class that can be used to *only set a default argument during create operations*. During updates the field is omitted.
 

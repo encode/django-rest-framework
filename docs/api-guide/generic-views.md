@@ -53,6 +53,8 @@ For very simple cases you might want to pass through any class attributes using 
 
 ## GenericAPIView
 
+::: rest_framework.generics.GenericAPIView
+
 This class extends REST framework's `APIView` class, adding commonly required behavior for standard list and detail views.
 
 Each of the concrete generic views provided is built by combining `GenericAPIView`, with one or more mixin classes.
@@ -84,6 +86,8 @@ The following attributes are used to control pagination when used with list view
 
 #### `get_queryset(self)`
 
+::: rest_framework.generics.GenericAPIView.get_queryset
+
 Returns the queryset that should be used for list views, and that should be used as the base for lookups in detail views.  Defaults to returning the queryset specified by the `queryset` attribute.
 
 This method should always be used rather than accessing `self.queryset` directly, as `self.queryset` gets evaluated only once, and those results are cached for all subsequent requests.
@@ -103,6 +107,8 @@ For example:
 ---
 
 #### `get_object(self)`
+
+::: rest_framework.generics.GenericAPIView.get_object
 
 Returns an object instance that should be used for detail views.  Defaults to using the `lookup_field` parameter to filter the base queryset.
 
@@ -124,6 +130,8 @@ Note that if your API doesn't include any object level permissions, you may opti
 
 #### `filter_queryset(self, queryset)`
 
+::: rest_framework.generics.GenericAPIView.filter_queryset
+
 Given a queryset, filter it with whichever filter backends are in use, returning a new queryset.
 
 For example:
@@ -142,6 +150,8 @@ For example:
         return queryset
 
 #### `get_serializer_class(self)`
+
+::: rest_framework.generics.GenericAPIView.get_serializer_class
 
 Returns the class that should be used for the serializer.  Defaults to returning the `serializer_class` attribute.
 
@@ -201,11 +211,15 @@ The mixin classes can be imported from `rest_framework.mixins`.
 
 ## ListModelMixin
 
+::: rest_framework.mixins.ListModelMixin
+
 Provides a `.list(request, *args, **kwargs)` method, that implements listing a queryset.
 
 If the queryset is populated, this returns a `200 OK` response, with a serialized representation of the queryset as the body of the response.  The response data may optionally be paginated.
 
 ## CreateModelMixin
+
+::: rest_framework.mixins.CreateModelMixin
 
 Provides a `.create(request, *args, **kwargs)` method, that implements creating and saving a new model instance.
 
@@ -215,11 +229,15 @@ If the request data provided for creating the object was invalid, a `400 Bad Req
 
 ## RetrieveModelMixin
 
+::: rest_framework.mixins.RetrieveModelMixin
+
 Provides a `.retrieve(request, *args, **kwargs)` method, that implements returning an existing model instance in a response.
 
 If an object can be retrieved this returns a `200 OK` response, with a serialized representation of the object as the body of the response.  Otherwise, it will return a `404 Not Found`.
 
 ## UpdateModelMixin
+
+::: rest_framework.mixins.UpdateModelMixin
 
 Provides a `.update(request, *args, **kwargs)` method, that implements updating and saving an existing model instance.
 
@@ -230,6 +248,8 @@ If an object is updated this returns a `200 OK` response, with a serialized repr
 If the request data provided for updating the object was invalid, a `400 Bad Request` response will be returned, with the error details as the body of the response.
 
 ## DestroyModelMixin
+
+::: rest_framework.mixins.DestroyModelMixin
 
 Provides a `.destroy(request, *args, **kwargs)` method, that implements deletion of an existing model instance.
 
@@ -245,6 +265,8 @@ The view classes can be imported from `rest_framework.generics`.
 
 ## CreateAPIView
 
+::: rest_framework.generics.CreateAPIView
+
 Used for **create-only** endpoints.
 
 Provides a `post` method handler.
@@ -252,6 +274,8 @@ Provides a `post` method handler.
 Extends: [GenericAPIView], [CreateModelMixin]
 
 ## ListAPIView
+
+::: rest_framework.generics.ListAPIView
 
 Used for **read-only** endpoints to represent a **collection of model instances**.
 
@@ -261,6 +285,8 @@ Extends: [GenericAPIView], [ListModelMixin]
 
 ## RetrieveAPIView
 
+::: rest_framework.generics.RetrieveAPIView
+
 Used for **read-only** endpoints to represent a **single model instance**.
 
 Provides a `get` method handler.
@@ -268,6 +294,8 @@ Provides a `get` method handler.
 Extends: [GenericAPIView], [RetrieveModelMixin]
 
 ## DestroyAPIView
+
+::: rest_framework.generics.DestroyAPIView
 
 Used for **delete-only** endpoints for a **single model instance**.
 
@@ -277,6 +305,8 @@ Extends: [GenericAPIView], [DestroyModelMixin]
 
 ## UpdateAPIView
 
+::: rest_framework.generics.UpdateAPIView
+
 Used for **update-only** endpoints for a **single model instance**.
 
 Provides `put` and `patch` method handlers.
@@ -284,6 +314,8 @@ Provides `put` and `patch` method handlers.
 Extends: [GenericAPIView], [UpdateModelMixin]
 
 ## ListCreateAPIView
+
+::: rest_framework.generics.ListCreateAPIView
 
 Used for **read-write** endpoints to represent a **collection of model instances**.
 
@@ -293,6 +325,8 @@ Extends: [GenericAPIView], [ListModelMixin], [CreateModelMixin]
 
 ## RetrieveUpdateAPIView
 
+::: rest_framework.generics.RetrieveUpdateAPIView
+
 Used for **read or update** endpoints to represent a **single model instance**.
 
 Provides `get`, `put` and `patch` method handlers.
@@ -301,6 +335,8 @@ Extends: [GenericAPIView], [RetrieveModelMixin], [UpdateModelMixin]
 
 ## RetrieveDestroyAPIView
 
+::: rest_framework.generics.RetrieveDestroyAPIView
+
 Used for **read or delete** endpoints to represent a **single model instance**.
 
 Provides `get` and `delete` method handlers.
@@ -308,6 +344,8 @@ Provides `get` and `delete` method handlers.
 Extends: [GenericAPIView], [RetrieveModelMixin], [DestroyModelMixin]
 
 ## RetrieveUpdateDestroyAPIView
+
+::: rest_framework.generics.RetrieveUpdateDestroyAPIView
 
 Used for **read-write-delete** endpoints to represent a **single model instance**.
 

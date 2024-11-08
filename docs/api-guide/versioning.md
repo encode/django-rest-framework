@@ -94,7 +94,9 @@ You can also set your versioning class plus those three values on a per-view or 
 
 # API Reference
 
-## AcceptHeaderVersioning
+## AcceptHeaderVersioning
+
+::: rest_framework.versioning.AcceptHeaderVersioning
 
 This scheme requires the client to specify the version as part of the media type in the `Accept` header. The version is included as a media type parameter, that supplements the main media type.
 
@@ -123,6 +125,8 @@ Your client requests would now look like this:
 
 ## URLPathVersioning
 
+::: rest_framework.versioning.URLPathVersioning
+
 This scheme requires the client to specify the version as part of the URL path.
 
     GET /v1/bookings/ HTTP/1.1
@@ -145,6 +149,8 @@ Your URL conf must include a pattern that matches the version with a `'version'`
     ]
 
 ## NamespaceVersioning
+
+::: rest_framework.versioning.NamespaceVersioning
 
 To the client, this scheme is the same as `URLPathVersioning`. The only difference is how it is configured in your Django application, as it uses URL namespacing, instead of URL keyword arguments.
 
@@ -172,6 +178,8 @@ Both `URLPathVersioning` and `NamespaceVersioning` are reasonable if you just ne
 
 ## HostNameVersioning
 
+::: rest_framework.versioning.HostNameVersioning
+
 The hostname versioning scheme requires the client to specify the requested version as part of the hostname in the URL.
 
 For example the following is an HTTP request to the `http://v1.example.com/bookings/` URL:
@@ -192,6 +200,8 @@ Hostname based versioning can be particularly useful if you have requirements to
 
 ## QueryParameterVersioning
 
+::: rest_framework.versioning.QueryParameterVersioning
+
 This scheme is a simple style that includes the version as a query parameter in the URL. For example:
 
     GET /something/?version=0.1 HTTP/1.1
@@ -201,6 +211,8 @@ This scheme is a simple style that includes the version as a query parameter in 
 ---
 
 # Custom versioning schemes
+
+::: rest_framework.versioning.BaseVersioning
 
 To implement a custom versioning scheme, subclass `BaseVersioning` and override the `.determine_version` method.
 

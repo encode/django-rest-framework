@@ -164,6 +164,8 @@ Note that path converters will be used on all URLs registered in the router, inc
 
 ## SimpleRouter
 
+::: rest_framework.routers.SimpleRouter
+
 This router includes routes for the standard set of `list`, `create`, `retrieve`, `update`, `partial_update` and `destroy` actions.  The viewset can also mark additional methods to be routed, using the `@action` decorator.
 
 <table border=1>
@@ -186,6 +188,8 @@ This behavior can be modified by setting the `trailing_slash` argument to `False
 Trailing slashes are conventional in Django, but are not used by default in some other frameworks such as Rails.  Which style you choose to use is largely a matter of preference, although some javascript frameworks may expect a particular routing style.
 
 ## DefaultRouter
+
+::: rest_framework.routers.DefaultRouter
 
 This router is similar to `SimpleRouter` as above, but additionally includes a default API root view, that returns a response containing hyperlinks to all the list views.  It also generates routes for optional `.json` style format suffixes.
 
@@ -314,6 +318,8 @@ The following mappings would be generated...
 For another example of setting the `.routes` attribute, see the source code for the `SimpleRouter` class.
 
 ## Advanced custom routers
+
+::: rest_framework.routers.BaseRouter
 
 If you want to provide totally custom behavior, you can override `BaseRouter` and override the `get_urls(self)` method.  The method should inspect the registered viewsets and return a list of URL patterns.  The registered prefix, viewset and basename tuples may be inspected by accessing the `self.registry` attribute.
 

@@ -9,6 +9,7 @@ source:
 >
 > &mdash; [Ruby on Rails Documentation][cite]
 
+::: rest_framework.viewsets.ViewSet
 
 Django REST framework allows you to combine the logic for a set of related views in a single class, called a `ViewSet`.  In other frameworks you may also find conceptually similar implementations named something like 'Resources' or 'Controllers'.
 
@@ -130,6 +131,8 @@ You may inspect these attributes to adjust behavior based on the current action.
 
 ## Marking extra actions for routing
 
+::: rest_framework.decorators.action
+
 If you have ad-hoc methods that should be routable, you can mark them as such with the `@action` decorator. Like regular actions, extra actions may be intended for either a single object, or an entire collection. To indicate this, set the `detail` argument to `True` or `False`. The router will configure its URL patterns accordingly. e.g., the `DefaultRouter` will configure detail actions to contain `pk` in their URL patterns.
 
 A more complete example of extra actions:
@@ -247,11 +250,15 @@ The `ViewSet` class does not provide any implementations of actions.  In order t
 
 ## GenericViewSet
 
+::: rest_framework.viewsets.GenericViewSet
+
 The `GenericViewSet` class inherits from `GenericAPIView`, and provides the default set of `get_object`, `get_queryset` methods and other generic view base behavior, but does not include any actions by default.
 
 In order to use a `GenericViewSet` class you'll override the class and either mixin the required mixin classes, or define the action implementations explicitly.
 
 ## ModelViewSet
+
+::: rest_framework.viewsets.ModelViewSet
 
 The `ModelViewSet` class inherits from `GenericAPIView` and includes implementations for various actions, by mixing in the behavior of the various mixin classes.
 
@@ -287,6 +294,8 @@ Note however that upon removal of the `queryset` property from your `ViewSet`, a
 Also note that although this class provides the complete set of create/list/retrieve/update/destroy actions by default, you can restrict the available operations by using the standard permission classes.
 
 ## ReadOnlyModelViewSet
+
+::: rest_framework.viewsets.ReadOnlyModelViewSet
 
 The `ReadOnlyModelViewSet` class also inherits from `GenericAPIView`.  As with `ModelViewSet` it also includes implementations for various actions, but unlike `ModelViewSet` only provides the 'read-only' actions, `.list()` and `.retrieve()`.
 

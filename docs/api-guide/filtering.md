@@ -190,6 +190,8 @@ It's also recommended that you read the section on [DRF integration][django-filt
 
 ## SearchFilter
 
+::: rest_framework.filters.SearchFilter
+
 The `SearchFilter` class supports simple single query parameter based searching, and is based on the [Django admin's search functionality][search-django-admin].
 
 When in use, the browsable API will include a `SearchFilter` control:
@@ -253,6 +255,8 @@ For more details, see the [Django documentation][search-django-admin].
 
 ## OrderingFilter
 
+::: rest_framework.filters.OrderingFilter
+
 The `OrderingFilter` class supports simple query parameter controlled ordering of results.
 
 ![Ordering Filter](../img/ordering-filter.png)
@@ -311,6 +315,8 @@ The `ordering` attribute may be either a string or a list/tuple of strings.
 ---
 
 # Custom generic filtering
+
+::: rest_framework.filters.BaseFilterBackend
 
 You can also provide your own generic filtering backend, or write an installable app for other developers to use.
 

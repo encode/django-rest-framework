@@ -16,6 +16,17 @@ markdown_extensions:
 plugins:
   - mkdocstrings:
       enable_inventory: true
+      default_handler: python
+      handlers:
+        python:
+          options:
+            show_bases: false
+            show_source: false
+            members: false
+            show_docstring: false
+            show_docstring_description: false
+            inherited_members: false
+            summary: false
 
 nav:
  - Home: 'index.md'
