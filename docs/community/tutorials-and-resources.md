@@ -28,7 +28,6 @@ There are a wide range of resources available for learning and using Django REST
 * [Beginner's Guide to the Django REST Framework][beginners-guide-to-the-django-rest-framework]
 * [Django REST Framework - An Introduction][drf-an-intro]
 * [Django REST Framework Tutorial][drf-tutorial]
-* [Django REST Framework Course][django-rest-framework-course]
 * [Building a RESTful API with Django REST Framework][building-a-restful-api-with-drf]
 * [Getting Started with Django REST Framework and AngularJS][getting-started-with-django-rest-framework-and-angularjs]
 * [End to End Web App with Django REST Framework & AngularJS][end-to-end-web-app-with-django-rest-framework-angularjs]
@@ -105,7 +104,6 @@ Want your Django REST Framework talk/tutorial/article to be added to our website
 [api-development-with-django-and-django-rest-framework]: https://bnotions.com/news-and-insights/api-development-with-django-and-django-rest-framework/
 [cdrf.co]:http://www.cdrf.co
 [medium-django-rest-framework]: https://medium.com/django-rest-framework
-[django-rest-framework-course]: https://teamtreehouse.com/library/django-rest-framework
 [pycon-uk-2016]: https://www.youtube.com/watch?v=FjmiGh7OqVg
 [django-under-hood-2014]: https://www.youtube.com/watch?v=3cSsbe-tA0E
 [integrating-pandas-drf-and-bokeh]: https://web.archive.org/web/20180104205117/http://machinalis.com/blog/pandas-django-rest-framework-bokeh/
