@@ -12,7 +12,7 @@ There are a wide range of resources available for learning and using Django REST
     <img src="../../img/books/tsd-cover.png"/>
   </a>
   <a class="book-cover" href="https://djangoforapis.com">
-    <img src="../../img/books/dfa-cover.jpg"/>
+    <img src="../../img/books/dfa-40-cover.jpg"/>
   </a>
   <a class="book-cover" href="https://books.agiliq.com/projects/django-api-polls-tutorial/en/latest/">
     <img src="../../img/books/bda-cover.png"/>
