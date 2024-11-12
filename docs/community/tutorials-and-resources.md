@@ -12,7 +12,7 @@ There are a wide range of resources available for learning and using Django REST
     <img src="../../img/books/tsd-cover.png"/>
   </a>
   <a class="book-cover" href="https://djangoforapis.com">
-    <img src="../../img/books/dfa-cover.jpg"/>
+    <img src="../../img/books/dfa-40-cover.jpg"/>
   </a>
   <a class="book-cover" href="https://books.agiliq.com/projects/django-api-polls-tutorial/en/latest/">
     <img src="../../img/books/bda-cover.png"/>
@@ -28,7 +28,6 @@ There are a wide range of resources available for learning and using Django REST
 * [Beginner's Guide to the Django REST Framework][beginners-guide-to-the-django-rest-framework]
 * [Django REST Framework - An Introduction][drf-an-intro]
 * [Django REST Framework Tutorial][drf-tutorial]
-* [Django REST Framework Course][django-rest-framework-course]
 * [Building a RESTful API with Django REST Framework][building-a-restful-api-with-drf]
 * [Getting Started with Django REST Framework and AngularJS][getting-started-with-django-rest-framework-and-angularjs]
 * [End to End Web App with Django REST Framework & AngularJS][end-to-end-web-app-with-django-rest-framework-angularjs]
@@ -41,8 +40,8 @@ There are a wide range of resources available for learning and using Django REST
 * [Creating a Production Ready API with Python and Django REST Framework – Part 2][creating-a-production-ready-api-with-python-and-drf-part2]
 * [Creating a Production Ready API with Python and Django REST Framework – Part 3][creating-a-production-ready-api-with-python-and-drf-part3]
 * [Creating a Production Ready API with Python and Django REST Framework – Part 4][creating-a-production-ready-api-with-python-and-drf-part4]
-* [Django REST Framework Tutorial - Build a Blog API][django-rest-framework-tutorial-build-a-blog]
-* [Django REST Framework & React Tutorial - Build a Todo List API][django-rest-framework-react-tutorial-build-a-todo-list]
+* [Django Polls Tutorial API][django-polls-api]
+* [Django REST Framework Tutorial: Todo API][django-rest-framework-todo-api]
 * [Tutorial: Django REST with React (Django 2.0)][django-rest-react-valentinog]
 
 
@@ -55,7 +54,7 @@ There are a wide range of resources available for learning and using Django REST
 * [Django REST API - So Easy You Can Learn It in 25 Minutes][django-rest-api-so-easy]
 * [Tom Christie about Django Rest Framework at Django: Under The Hood][django-under-hood-2014]
 * [Django REST Framework: Schemas, Hypermedia & Client Libraries][pycon-uk-2016]
-
+* [Finally Understand Authentication in Django REST Framework][django-con-2018]
 
 ### Tutorials
 
@@ -105,7 +104,6 @@ Want your Django REST Framework talk/tutorial/article to be added to our website
 [api-development-with-django-and-django-rest-framework]: https://bnotions.com/news-and-insights/api-development-with-django-and-django-rest-framework/
 [cdrf.co]:http://www.cdrf.co
 [medium-django-rest-framework]: https://medium.com/django-rest-framework
-[django-rest-framework-course]: https://teamtreehouse.com/library/django-rest-framework
 [pycon-uk-2016]: https://www.youtube.com/watch?v=FjmiGh7OqVg
 [django-under-hood-2014]: https://www.youtube.com/watch?v=3cSsbe-tA0E
 [integrating-pandas-drf-and-bokeh]: https://web.archive.org/web/20180104205117/http://machinalis.com/blog/pandas-django-rest-framework-bokeh/
@@ -121,8 +119,8 @@ Want your Django REST Framework talk/tutorial/article to be added to our website
 [creating-a-production-ready-api-with-python-and-drf-part2]: https://www.andreagrandi.it/posts/creating-a-production-ready-api-with-python-and-django-rest-framework-part-2/
 [creating-a-production-ready-api-with-python-and-drf-part3]: https://www.andreagrandi.it/posts/creating-a-production-ready-api-with-python-and-django-rest-framework-part-3/
 [creating-a-production-ready-api-with-python-and-drf-part4]: https://www.andreagrandi.it/posts/creating-a-production-ready-api-with-python-and-django-rest-framework-part-4/
-[django-rest-framework-tutorial-build-a-blog]: https://wsvincent.com/django-rest-framework-tutorial/
-[django-rest-framework-react-tutorial-build-a-todo-list]: https://wsvincent.com/django-rest-framework-react-tutorial/
+[django-polls-api]: https://learndjango.com/tutorials/django-polls-tutorial-api
+[django-rest-framework-todo-api]: https://learndjango.com/tutorials/django-rest-framework-tutorial-todo-api
 [django-rest-api-so-easy]: https://www.youtube.com/watch?v=cqP758k1BaQ
 [full-fledged-rest-api-with-django-oauth-tookit]: https://www.youtube.com/watch?v=M6Ud3qC2tTk
 [drf-in-your-pjs]: https://www.youtube.com/watch?v=xMtHsWa72Ww
@@ -139,3 +137,4 @@ Want your Django REST Framework talk/tutorial/article to be added to our website
 [django-rest-react-valentinog]: https://www.valentinog.com/blog/tutorial-api-django-rest-react/
 [doordash-implementing-rest-apis]: https://doordash.engineering/2013/10/07/implementing-rest-apis-with-embedded-privacy/
 [developing-restful-apis-with-django-rest-framework]: https://testdriven.io/courses/django-rest-framework/
+[django-con-2018]: https://youtu.be/pY-oje5b5Qk?si=AOU6tLi0IL1_pVzq
