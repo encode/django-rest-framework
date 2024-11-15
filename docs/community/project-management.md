@@ -60,8 +60,8 @@ The following template should be used for the description of the issue, and serv
 
     - [ ] Create pull request for [release notes](https://github.com/encode/django-rest-framework/blob/master/docs/topics/release-notes.md) based on the [*.*.* milestone](https://github.com/encode/django-rest-framework/milestones/***).
     - [ ] Update supported versions:
-        - [ ] `setup.py` `python_requires` list
-        - [ ] `setup.py` Python & Django version trove classifiers
+        - [ ] `pyproject.toml` `python_requires` list
+        - [ ] `pyproject.toml` Python & Django version trove classifiers
         - [ ] `README` Python & Django versions
         - [ ] `docs` Python & Django versions
     - [ ] Update the translations from [transifex](https://www.django-rest-framework.org/topics/project-management/#translations).
@@ -72,7 +72,9 @@ The following template should be used for the description of the issue, and serv
     - [ ] Confirm with @tomchristie that release is finalized and ready to go.
     - [ ] Ensure that release date is included in pull request.
     - [ ] Merge the release pull request.
-    - [ ] Push the package to PyPI with `./setup.py publish`.
+    - [ ] Install the release tools: `pip install build twine`
+    - [ ] Build the package: `python -m build`
+    - [ ] Push the package to PyPI with `twine upload dist/*`
     - [ ] Tag the release, with `git tag -a *.*.* -m 'version *.*.*'; git push --tags`.
     - [ ] Deploy the documentation with `mkdocs gh-deploy`.
     - [ ] Make a release announcement on the [discussion group](https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework).
