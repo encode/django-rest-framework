@@ -150,3 +150,11 @@ class CustomManagerModel(RESTFrameworkModel):
                                    help_text='OneToOneTarget',
                                    verbose_name='OneToOneTarget',
                                    on_delete=models.CASCADE)
+
+
+class OwnershipTestModel(models.Model):
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='ownership_test_models')
+    title = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.title

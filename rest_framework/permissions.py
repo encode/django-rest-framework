@@ -173,6 +173,32 @@ class IsAuthenticatedOrReadOnly(BasePermission):
         )
 
 
+class IsAdminUserOrReadOnly(BasePermission):
+    """
+    Custom permission to only allow admin users to edit an object.
+    """
+
+    def has_permission(self, request, view):
+        # Allow any user to view the object
+        if request.method in ['GET', 'HEAD', 'OPTIONS']:
+            return True
+        # Only allow admin users to modify the object
+        return request.user and request.user.is_staff
+
+
+class IsOwner(BasePermission):
+    """
+    Custom permission to only allow owners of an object to edit it.
+    """
+
+    def has_object_permission(self, request, view, obj):
+        # Allow read-only access to any request
+        if request.method in ['GET', 'HEAD', 'OPTIONS']:
+            return True
+        # Write permissions are only allowed to the owner of the object
+        return obj.owner == request.user
+
+
 class DjangoModelPermissions(BasePermission):
     """
     The request is authenticated using `django.contrib.auth` permissions.
