@@ -30,4 +30,4 @@ repos:
   rev: v2.2.6
   hooks:
   - id: codespell
-    exclude: locale|kickstarter-announcement.md|coreapi-0.1.1.js
+    exclude: locale|kickstarter-announcement.md|coreapi-0.1.1.js|docs_theme/package-lock.json
