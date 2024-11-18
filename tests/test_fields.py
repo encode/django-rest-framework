@@ -1782,8 +1782,31 @@ class TestDurationField(FieldValues):
     field = serializers.DurationField()
 
 
-# Choice types...
+class TestNoOutputFormatDurationField(FieldValues):
+    """
+    Values for `TimeField` with a no output format.
+    """
+    valid_inputs = {}
+    invalid_inputs = {}
+    outputs = {
+        datetime.timedelta(1): datetime.timedelta(1)
+    }
+    field = serializers.DurationField(format=None)
 
+
+class TestISOOutputFormatDurationField(FieldValues):
+    """
+    Values for `TimeField` with a custom output format.
+    """
+    valid_inputs = {}
+    invalid_inputs = {}
+    outputs = {
+        datetime.timedelta(days=3, hours=8, minutes=32, seconds=1, microseconds=123): 'P3DT08H32M01.000123S'
+    }
+    field = serializers.DurationField(format='iso-8601')
+
+
+# Choice types...
 class TestChoiceField(FieldValues):
     """
     Valid and invalid values for `ChoiceField`.
