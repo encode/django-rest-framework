@@ -2,7 +2,6 @@
 Content negotiation deals with selecting an appropriate renderer given the
 incoming request.  Typically this will be based on the request's Accept header.
 """
-from django.http import Http404
 
 from rest_framework import exceptions
 from rest_framework.settings import api_settings
@@ -85,7 +84,10 @@ class DefaultContentNegotiation(BaseContentNegotiation):
         renderers = [renderer for renderer in renderers
                      if renderer.format == format]
         if not renderers:
-            raise Http404
+            raise exceptions.NotAcceptable(
+                detail="Could not satisfy the request format suffix or query.",
+                available_renderers=renderers
+            )
         return renderers
 
     def get_accept_list(self, request):
