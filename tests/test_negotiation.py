@@ -1,7 +1,7 @@
 import pytest
-from django.http import Http404
 from django.test import TestCase
 
+from rest_framework.exceptions import NotAcceptable
 from rest_framework.negotiation import (
     BaseContentNegotiation, DefaultContentNegotiation
 )
@@ -81,7 +81,7 @@ class TestAcceptedMediaType(TestCase):
         class MockRenderer:
             format = 'xml'
         renderers = [MockRenderer()]
-        with pytest.raises(Http404):
+        with pytest.raises(NotAcceptable):
             self.negotiator.filter_renderers(renderers, format='json')
 
 
