@@ -237,7 +237,8 @@ class Throttled(APIException):
         self.wait = wait
         super().__init__(detail, code)
 
-    def extra_detail(self, wait):
+    @staticmethod
+    def extra_detail(wait):
         return ngettext(
             'Expected available in {wait} second.',
             'Expected available in {wait} seconds.',
