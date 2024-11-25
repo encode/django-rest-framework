@@ -11,9 +11,7 @@ from django.core.validators import (
 from django.db import models
 from django.utils.encoding import force_str
 
-from rest_framework import (
-    RemovedInDRF316Warning, exceptions, renderers, serializers
-)
+from rest_framework import exceptions, renderers, serializers
 from rest_framework.compat import inflection, uritemplate
 from rest_framework.fields import _UnvalidatedField, empty
 from rest_framework.settings import api_settings
@@ -721,11 +719,3 @@ class AutoSchema(ViewInspector):
             path = path[1:]
 
         return [path.split('/')[0].replace('_', '-')]
-
-    def _get_reference(self, serializer):
-        warnings.warn(
-            "Method `_get_reference()` has been renamed to `get_reference()`. "
-            "The old name will be removed in DRF v3.16.",
-            RemovedInDRF316Warning, stacklevel=2
-        )
-        return self.get_reference(serializer)
