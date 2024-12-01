@@ -47,7 +47,8 @@ Changelog = "https://www.django-rest-framework.org/community/release-notes/"
 
 [tool.setuptools]
 
-packages = ["rest_framework"]
+[tool.setuptools.packages.find]
+namespaces = false
 
 [tool.pytest.ini_options]
 addopts = "--tb=short --strict-markers -ra"
