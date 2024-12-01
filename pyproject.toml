@@ -46,9 +46,6 @@ Source = "https://github.com/encode/django-rest-framework"
 Changelog = "https://www.django-rest-framework.org/community/release-notes/"
 
 [tool.setuptools]
-zip-safe = false
-include-package-data = true
-license-files = ["LICENSE.md"]
 
 [tool.setuptools.packages.find]
 namespaces = false
