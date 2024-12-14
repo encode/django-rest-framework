@@ -441,6 +441,14 @@ class TestUniquenessTogetherValidation(TestCase):
         serializer = NullUniquenessTogetherSerializer(data=data)
         assert serializer.is_valid()
 
+    def test_ignore_validation_for_missing_nullable_fields(self):
+        data = {
+            'date': datetime.date(2000, 1, 1),
+            'race_name': 'Paris Marathon',
+        }
+        serializer = NullUniquenessTogetherSerializer(data=data)
+        assert serializer.is_valid(), serializer.errors
+
     def test_do_not_ignore_validation_for_null_fields(self):
         # None values that are not on fields part of the uniqueness constraint
         # do not cause the instance to skip validation.
@@ -539,10 +547,28 @@ class UniqueConstraintModel(models.Model):
         ]
 
 
+class UniqueConstraintNullableModel(models.Model):
+    title = models.CharField(max_length=100)
+    age = models.IntegerField(null=True)
+    tag = models.CharField(max_length=100, null=True)
+
+    class Meta:
+        constraints = [
+            # Unique constraint on 2 nullable fields
+            models.UniqueConstraint(name='unique_constraint', fields=('age', 'tag'))
+        ]
+
+
 class UniqueConstraintSerializer(serializers.ModelSerializer):
     class Meta:
         model = UniqueConstraintModel
         fields = '__all__'
+
+
+class UniqueConstraintNullableSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UniqueConstraintNullableModel
+        fields = ('title', 'age', 'tag')
 
 
 class TestUniqueConstraintValidation(TestCase):
@@ -610,6 +636,12 @@ class TestUniqueConstraintValidation(TestCase):
         assert len(validators) == 2 + extra_validators_qty
         ids_in_qs = {frozenset(v.queryset.values_list(flat=True)) for v in validators if hasattr(v, "queryset")}
         assert ids_in_qs == {frozenset([1]), frozenset([3])}
+
+    def test_nullable_unique_constraint_fields_are_not_required(self):
+        serializer = UniqueConstraintNullableSerializer(data={'title': 'Bob'})
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        result = serializer.save()
+        self.assertIsInstance(result, UniqueConstraintNullableModel)
 
 
 # Tests for `UniqueForDateValidator`
