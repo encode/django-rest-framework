@@ -193,7 +193,7 @@ class UniqueTogetherValidator:
             raise ValidationError(message, code='unique')
 
     def __repr__(self):
-        return '<%s(%s)>' % (
+        return '<{}({})>'.format(
             self.__class__.__name__,
             ', '.join(
                 f'{attr}={smart_repr(getattr(self, attr))}'
