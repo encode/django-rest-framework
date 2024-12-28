@@ -571,7 +571,7 @@ class TestUniqueConstraintValidation(TestCase):
             race_name='condition',
             position=1,
             global_id=10,
-            fancy_conditions=10
+            fancy_conditions=10,
         )
         serializer = UniqueConstraintSerializer(data={
             'race_name': 'condition',
