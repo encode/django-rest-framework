@@ -28,7 +28,8 @@ def qs_exists_with_condition(queryset, condition, against):
     if condition is None:
         return qs_exists(queryset)
     try:
-        # use the same query as UniqueConstraint.validate https://github.com/django/django/blob/7ba2a0db20c37a5b1500434ca4ed48022311c171/django/db/models/constraints.py#L672
+        # use the same query as UniqueConstraint.validate
+        # https://github.com/django/django/blob/7ba2a0db20c37a5b1500434ca4ed48022311c171/django/db/models/constraints.py#L672
         return (condition & Exists(queryset.filter(condition))).check(against)
     except (TypeError, ValueError, DataError):
         return False
