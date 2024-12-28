@@ -1473,8 +1473,9 @@ class ModelSerializer(Serializer):
         # Include each of the `unique_together` and `UniqueConstraint` field names,
         # so long as all the field names are included on the serializer.
         for unique_together_list, queryset, condition_fields, condition in self.get_unique_together_constraints(model):
-            if set(field_names).issuperset((*unique_together_list, *condition_fields)):
-                unique_constraint_names |= set((*unique_together_list, *condition_fields))
+            unique_together_list_and_condition_fields = (*unique_together_list, *condition_fields)
+            if set(field_names).issuperset(unique_together_list_and_condition_fields):
+                unique_constraint_names |= set(unique_together_list_and_condition_fields)
 
         # Now we have all the field names that have uniqueness constraints
         # applied, we can add the extra 'required=...' or 'default=...'
