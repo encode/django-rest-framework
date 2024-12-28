@@ -515,7 +515,7 @@ class UniqueConstraintModel(models.Model):
                 condition=models.Q(race_name='example'),
             ),
             models.UniqueConstraint(
-                name="unique_constraint_model_together_uniq2",
+                name='unique_constraint_model_together_uniq2',
                 fields=('race_name', 'position'),
                 condition=models.Q(fancy_conditions__gte=10),
             )
