@@ -1597,7 +1597,8 @@ class ModelSerializer(Serializer):
         validators = []
         for unique_together, queryset, condition_fields, condition in self.get_unique_together_constraints(self.Meta.model):
             # Skip if serializer does not map to all unique together sources
-            if not set(source_map).issuperset((*unique_together, *condition_fields)):
+            unique_together_and_condition_fields = (*unique_together, *condition_fields)
+            if not set(source_map).issuperset(unique_together_and_condition_fields):
                 continue
 
             for source in (*unique_together, *condition_fields):
