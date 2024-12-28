@@ -1601,7 +1601,7 @@ class ModelSerializer(Serializer):
             if not set(source_map).issuperset(unique_together_and_condition_fields):
                 continue
 
-            for source in (*unique_together, *condition_fields):
+            for source in unique_together_and_condition_fields:
                 assert len(source_map[source]) == 1, (
                     "Unable to create `UniqueTogetherValidator` for "
                     "`{model}.{field}` as `{serializer}` has multiple "
