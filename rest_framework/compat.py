@@ -191,7 +191,7 @@ else:
             elif isinstance(child, tuple):
                 lhs, rhs = child
                 yield lhs
-                if hasattr(rhs, "resolve_expression"):
+                if hasattr(rhs, 'resolve_expression'):
                     yield from _get_paths_from_expression(rhs)
             elif hasattr(child, "resolve_expression"):
                 yield from _get_paths_from_expression(child)
