@@ -3,6 +3,9 @@ The `compat` module provides support for backwards compatibility with older
 versions of Django/Python, and compatibility wrappers around optional packages.
 """
 import django
+from django.db import models
+from django.db.models.constants import LOOKUP_SEP
+from django.db.models.sql.query import Node
 from django.views.generic import View
 
 
@@ -157,6 +160,10 @@ if django.VERSION >= (5, 1):
     #       1) the list of validators and 2) the error message. Starting from
     #       Django 5.1 ip_address_validators only returns the list of validators
     from django.core.validators import ip_address_validators
+
+    def get_referenced_base_fields_from_q(q):
+        return q.referenced_base_fields
+
 else:
     # Django <= 5.1: create a compatibility shim for ip_address_validators
     from django.core.validators import \
@@ -164,6 +171,35 @@ else:
 
     def ip_address_validators(protocol, unpack_ipv4):
         return _ip_address_validators(protocol, unpack_ipv4)[0]
+
+    # Django < 5.1: create a compatibility shim for Q.referenced_base_fields
+    # https://github.com/django/django/blob/5.1a1/django/db/models/query_utils.py#L179
+    def _get_paths_from_expression(expr):
+        if isinstance(expr, models.F):
+            yield expr.name
+        elif hasattr(expr, 'flatten'):
+            for child in expr.flatten():
+                if isinstance(child, models.F):
+                    yield child.name
+                elif isinstance(child, models.Q):
+                    yield from _get_children_from_q(child)
+
+    def _get_children_from_q(q):
+        for child in q.children:
+            if isinstance(child, Node):
+                yield from _get_children_from_q(child)
+            elif isinstance(child, tuple):
+                lhs, rhs = child
+                yield lhs
+                if hasattr(rhs, 'resolve_expression'):
+                    yield from _get_paths_from_expression(rhs)
+            elif hasattr(child, 'resolve_expression'):
+                yield from _get_paths_from_expression(child)
+
+    def get_referenced_base_fields_from_q(q):
+        return {
+            child.split(LOOKUP_SEP, 1)[0] for child in _get_children_from_q(q)
+        }
 
 
 # `separators` argument to `json.dumps()` differs between 2.x and 3.x
