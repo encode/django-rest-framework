@@ -1620,7 +1620,10 @@ class ModelSerializer(Serializer):
             field_names = tuple(source_map[f][0] for f in unique_together)
             condition_fields = tuple(source_map[f][0] for f in condition_fields)
             validator = UniqueTogetherValidator(
-                queryset=queryset, fields=field_names, condition_fields=condition_fields, condition=condition
+                queryset=queryset,
+                fields=field_names,
+                condition_fields=tuple(source_map[f][0] for f in condition_fields),
+                condition=condition,
             )
             validators.append(validator)
         return validators
