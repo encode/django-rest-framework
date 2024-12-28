@@ -1436,12 +1436,11 @@ class ModelSerializer(Serializer):
                 yield unique_together, model._default_manager, [], None
             for constraint in parent_class._meta.constraints:
                 if isinstance(constraint, models.UniqueConstraint) and len(constraint.fields) > 1:
-                    queryset = model._default_manager
                     if constraint.condition is None:
                         condition_fields = []
                     else:
                         condition_fields = list(get_referenced_base_fields_from_q(constraint.condition))
-                    yield (constraint.fields, queryset, condition_fields, constraint.condition)
+                    yield (constraint.fields, model._default_manager, condition_fields, constraint.condition)
 
     def get_uniqueness_extra_kwargs(self, field_names, declared_fields, extra_kwargs):
         """
