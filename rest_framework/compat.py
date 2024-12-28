@@ -177,7 +177,7 @@ else:
     def _get_paths_from_expression(expr):
         if isinstance(expr, models.F):
             yield expr.name
-        elif hasattr(expr, "flatten"):
+        elif hasattr(expr, 'flatten'):
             for child in expr.flatten():
                 if isinstance(child, models.F):
                     yield child.name
