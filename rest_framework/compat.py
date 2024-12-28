@@ -193,7 +193,7 @@ else:
                 yield lhs
                 if hasattr(rhs, 'resolve_expression'):
                     yield from _get_paths_from_expression(rhs)
-            elif hasattr(child, "resolve_expression"):
+            elif hasattr(child, 'resolve_expression'):
                 yield from _get_paths_from_expression(child)
 
     def get_referenced_base_fields_from_q(q):
