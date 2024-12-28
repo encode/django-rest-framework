@@ -560,7 +560,6 @@ class TestUniqueConstraintValidation(TestCase):
                 class Meta:
                     validators = \[<UniqueTogetherValidator\(queryset=UniqueConstraintModel.objects.all\(\), fields=\('race_name', 'position'\), condition=<Q: \(AND: \('race_name', 'example'\)\)>\)>\]
         """)
-        print(repr(serializer))
         assert re.search(expected, repr(serializer)) is not None
 
     def test_unique_together_condition(self):
