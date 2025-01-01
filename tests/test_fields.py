@@ -25,8 +25,9 @@ from django.utils.timezone import activate, deactivate, override
 import rest_framework
 from rest_framework import exceptions, serializers
 from rest_framework.fields import (
-    BuiltinSignatureError, DjangoImageField, SkipField, empty,
-    is_simple_callable
+    AlphabeticFieldValidator, AlphanumericFieldValidator,
+    BuiltinSignatureError, CustomLengthValidator, DjangoImageField, SkipField,
+    empty, is_simple_callable
 )
 from tests.models import UUIDForeignKeyTarget
 
@@ -1059,6 +1060,113 @@ class TestFilePathField(FieldValues):
     field = serializers.FilePathField(
         path=os.path.abspath(os.path.dirname(__file__))
     )
+
+
+class TestAlphabeticField:
+    valid_inputs = {
+        'John Doe': 'John Doe',
+        'Alice': 'Alice',
+        'Bob Marley': 'Bob Marley',
+    }
+    invalid_inputs = {
+        'John123': ['This field must contain only alphabetic characters and spaces.'],
+        'Alice!': ['This field must contain only alphabetic characters and spaces.'],
+        '': ['This field must contain only alphabetic characters and spaces.'],
+    }
+    non_string_inputs = [
+        123,                   # Integer
+        45.67,                # Float
+        None,                 # NoneType
+        [],                   # Empty list
+        {},                   # Empty dict
+        set()                 # Empty set
+    ]
+
+    def test_valid_inputs(self):
+        validator = AlphabeticFieldValidator()
+        for value in self.valid_inputs.keys():
+            validator(value)
+
+    def test_invalid_inputs(self):
+        validator = AlphabeticFieldValidator()
+        for value, expected_errors in self.invalid_inputs.items():
+            with pytest.raises(ValueError) as excinfo:
+                validator(value)
+            assert str(excinfo.value) == expected_errors[0]
+
+    def test_non_string_inputs(self):
+        validator = AlphabeticFieldValidator()
+        for value in self.non_string_inputs:
+            with pytest.raises(ValueError) as excinfo:
+                validator(value)
+            assert str(excinfo.value) == "This field must be a string."
+
+
+class TestAlphanumericField:
+    valid_inputs = {
+        'John123': 'John123',
+        'Alice007': 'Alice007',
+        'Bob1990': 'Bob1990',
+    }
+    invalid_inputs = {
+        'John!': ['This field must contain only alphanumeric characters (letters and numbers).'],
+        'Alice 007': ['This field must contain only alphanumeric characters (letters and numbers).'],
+        '': ['This field must contain only alphanumeric characters (letters and numbers).'],
+    }
+    non_string_inputs = [
+        123,                   # Integer
+        45.67,                # Float
+        None,                 # NoneType
+        [],                   # Empty list
+        {},                   # Empty dict
+        set()                 # Empty set
+    ]
+
+    def test_valid_inputs(self):
+        validator = AlphanumericFieldValidator()
+        for value in self.valid_inputs.keys():
+            validator(value)
+
+    def test_invalid_inputs(self):
+        validator = AlphanumericFieldValidator()
+        for value, expected_errors in self.invalid_inputs.items():
+            with pytest.raises(ValueError) as excinfo:
+                validator(value)
+            assert str(excinfo.value) == expected_errors[0]
+
+    def test_non_string_inputs(self):
+        validator = AlphanumericFieldValidator()
+        for value in self.non_string_inputs:
+            with pytest.raises(ValueError) as excinfo:
+                validator(value)
+            assert str(excinfo.value) == "This field must be a string."
+
+
+class TestCustomLengthField:
+    """
+    Valid and invalid values for `CustomLengthValidator`.
+    """
+    valid_inputs = {
+        'abc': 'abc',  # 3 characters
+        'abcdefghij': 'abcdefghij',  # 10 characters
+    }
+    invalid_inputs = {
+        'ab': ['This field must be at least 3 characters long.'],  # Too short
+        'abcdefghijk': ['This field must be no more than 10 characters long.'],  # Too long
+    }
+    field = str
+
+    def test_valid_inputs(self):
+        validator = CustomLengthValidator(min_length=3, max_length=10)
+        for value in self.valid_inputs.keys():
+            validator(value)
+
+    def test_invalid_inputs(self):
+        validator = CustomLengthValidator(min_length=3, max_length=10)
+        for value, expected_errors in self.invalid_inputs.items():
+            with pytest.raises(ValueError) as excinfo:
+                validator(value)
+            assert str(excinfo.value) == expected_errors[0]
 
 
 # Number types...

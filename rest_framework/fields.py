@@ -882,6 +882,48 @@ class IPAddressField(CharField):
         return super().to_internal_value(data)
 
 
+class AlphabeticFieldValidator:
+    """
+    Custom validator to ensure that a field only contains alphabetic characters and spaces.
+    """
+    def __call__(self, value):
+        if not isinstance(value, str):
+            raise ValueError("This field must be a string.")
+        if value == "":
+            raise ValueError("This field must contain only alphabetic characters and spaces.")
+        if not re.match(r'^[A-Za-z ]*$', value):
+            raise ValueError("This field must contain only alphabetic characters and spaces.")
+
+
+class AlphanumericFieldValidator:
+    """
+    Custom validator to ensure the field contains only alphanumeric characters (letters and numbers).
+    """
+    def __call__(self, value):
+        if not isinstance(value, str):
+            raise ValueError("This field must be a string.")
+        if value == "":
+            raise ValueError("This field must contain only alphanumeric characters (letters and numbers).")
+        if not re.match(r'^[A-Za-z0-9]*$', value):
+            raise ValueError("This field must contain only alphanumeric characters (letters and numbers).")
+
+
+class CustomLengthValidator:
+    """
+    Custom validator to ensure the length of a string is within specified limits.
+    """
+    def __init__(self, min_length=0, max_length=None):
+        self.min_length = min_length
+        self.max_length = max_length
+
+    def __call__(self, value):
+        if len(value) < self.min_length:
+            raise ValueError(f"This field must be at least {self.min_length} characters long.")
+
+        if self.max_length is not None and len(value) > self.max_length:
+            raise ValueError(f"This field must be no more than {self.max_length} characters long.")
+
+
 # Number types...
 
 class IntegerField(Field):
