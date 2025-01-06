@@ -34,6 +34,17 @@ The authentication schemes are always defined as a list of classes.  REST framew
 If no class authenticates, `request.user` will be set to an instance of `django.contrib.auth.models.AnonymousUser`, and `request.auth` will be set to `None`.
 
 The value of `request.user` and `request.auth` for unauthenticated requests can be modified using the `UNAUTHENTICATED_USER` and `UNAUTHENTICATED_TOKEN` settings.
+### MultiUserModelAuthentication
+The `MultiUserModelAuthentication` class supports authentication for multiple user models. 
+
+To use this authentication mechanism, add it to your `DEFAULT_AUTHENTICATION_CLASSES` in `settings.py`:
+
+```python
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.MultiUserModelAuthentication',
+    ],
+}
 
 ## Setting the authentication scheme
 

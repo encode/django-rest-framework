@@ -230,3 +230,63 @@ class RemoteUserAuthentication(BaseAuthentication):
         user = authenticate(request=request, remote_user=request.META.get(self.header))
         if user and user.is_active:
             return (user, None)
+class MultiUserModelAuthentication(BaseAuthentication):
+    """
+    Custom authentication to support multiple user models.
+    """
+
+    def authenticate(self, request):
+        """
+        Authenticate the request for multiple user models.
+        Returns a tuple of (user, None) or raises an exception if authentication fails.
+        """
+        auth = get_authorization_header(request).split()
+
+        if not auth or auth[0].lower() != b'basic':
+            return None
+
+        if len(auth) == 1:
+            msg = _('Invalid basic header. No credentials provided.')
+            raise exceptions.AuthenticationFailed(msg)
+        elif len(auth) > 2:
+            msg = _('Invalid basic header. Credentials string should not contain spaces.')
+            raise exceptions.AuthenticationFailed(msg)
+
+        try:
+            try:
+                auth_decoded = base64.b64decode(auth[1]).decode('utf-8')
+            except UnicodeDecodeError:
+                auth_decoded = base64.b64decode(auth[1]).decode('latin-1')
+
+            userid, password = auth_decoded.split(':', 1)
+        except (TypeError, ValueError, UnicodeDecodeError, binascii.Error):
+            msg = _('Invalid basic header. Credentials not correctly base64 encoded.')
+            raise exceptions.AuthenticationFailed(msg)
+
+        return self.authenticate_credentials(userid, password, request)
+
+    def authenticate_credentials(self, userid, password, request=None):
+        """
+        Authenticate credentials for multiple user models.
+        """
+        # List of user models to authenticate against
+        user_models = ['users.User', 'admins.AdminUser']
+
+        for model_name in user_models:
+            try:
+                UserModel = get_user_model()  # Replace with custom logic for each model
+                credentials = {UserModel.USERNAME_FIELD: userid, 'password': password}
+                user = authenticate(request=request, **credentials)
+                
+                if user:
+                    if not user.is_active:
+                        raise exceptions.AuthenticationFailed(_('User inactive or deleted.'))
+                    return (user, None)
+            except Exception as e:
+                # Continue to next user model if the current one fails
+                continue
+
+        raise exceptions.AuthenticationFailed(_('Invalid username/password for all user models.'))
+
+    def authenticate_header(self, request):
+        return 'Basic realm="api"'

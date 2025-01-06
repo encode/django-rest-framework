@@ -6,7 +6,10 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.test import TestCase, override_settings
 from django.urls import include, path
-
+from rest_framework.test import APIClient
+from django.test import TestCase
+from users.models import User
+from admins.models import AdminUser
 from rest_framework import (
     HTTP_HEADER_ENCODING, exceptions, permissions, renderers, status
 )
@@ -597,3 +600,20 @@ class RemoteUserAuthenticationUnitTests(TestCase):
         response = self.client.post('/remote-user/',
                                     REMOTE_USER=self.username)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+class MultiUserModelAuthenticationTest(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.create_user(username='user', password='userpass')
+        self.admin = AdminUser.objects.create_user(username='admin', password='adminpass')
+
+    def test_user_authentication(self):
+        response = self.client.post('/api/token/', {'username': 'user', 'password': 'userpass'})
+        self.assertEqual(response.status_code, 200)
+
+    def test_admin_authentication(self):
+        response = self.client.post('/api/token/', {'username': 'admin', 'password': 'adminpass'})
+        self.assertEqual(response.status_code, 200)
+
+    def test_invalid_authentication(self):
+        response = self.client.post('/api/token/', {'username': 'invalid', 'password': 'invalid'})
+        self.assertEqual(response.status_code, 401)
