@@ -10,7 +10,9 @@ from django.urls import path
 
 from rest_framework import fields, parsers, renderers, serializers, status
 from rest_framework.authtoken.models import Token
-from rest_framework.decorators import api_view, parser_classes, renderer_classes
+from rest_framework.decorators import (
+    api_view, parser_classes, renderer_classes
+)
 from rest_framework.response import Response
 from rest_framework.test import (
     APIClient, APIRequestFactory, URLPatternsTestCase, force_authenticate
@@ -55,10 +57,12 @@ class BasicSerializer(serializers.Serializer):
 def post_json_view(request):
     return Response(request.data)
 
+
 @api_view(['DELETE'])
 @renderer_classes((renderers.JSONRenderer, ))
 def delete_json_view(request):
     return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 @api_view(['POST'])
 def post_view(request):
