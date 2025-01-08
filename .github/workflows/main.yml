@@ -34,7 +34,7 @@ jobs:
       run: python -m pip install --upgrade pip setuptools virtualenv wheel
 
     - name: Install dependencies
-      run: python -m pip install --upgrade codecov tox
+      run: python -m pip install --upgrade tox
 
     - name: Run tox targets for ${{ matrix.python-version }}
       run: tox run -f py$(echo ${{ matrix.python-version }} | tr -d . | cut -f 1 -d '-')
@@ -45,8 +45,9 @@ jobs:
         tox -e base,dist,docs
 
     - name: Upload coverage
-      run: |
-        codecov -e TOXENV,DJANGO
+      uses: codecov/codecov-action@v5
+      with:
+        env_vars: TOXENV,DJANGO
 
   test-docs:
     name: Test documentation links
