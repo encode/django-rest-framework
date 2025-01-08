@@ -189,9 +189,9 @@ class APIRequestFactory(DjangoRequestFactory):
                     content_type, renderer.charset
                 )
 
-                # Coerce text to bytes if required.
-                if isinstance(ret, str):
-                    ret = ret.encode(renderer.charset)
+            # Coerce text to bytes if required.
+            if isinstance(ret, str):
+                ret = ret.encode(renderer.charset)
 
         return ret, content_type
 
