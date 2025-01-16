@@ -500,12 +500,17 @@ class AutoSchema(ViewInspector):
                 'format': 'binary'
             }
 
+        # Also handles serializers.HStoreField,
+        if isinstance(field, serializers.DictField):
+            return {
+                "type": "object",
+                "additionalProperties": self.map_field(field.child),
+            }
+
         # Simplest cases, default to 'string' type:
         FIELD_CLASS_SCHEMA_TYPE = {
             serializers.BooleanField: 'boolean',
             serializers.JSONField: 'object',
-            serializers.DictField: 'object',
-            serializers.HStoreField: 'object',
         }
         return {'type': FIELD_CLASS_SCHEMA_TYPE.get(field.__class__, 'string')}
 
