@@ -501,7 +501,7 @@ class AutoSchema(ViewInspector):
             }
 
         # Also handles serializers.HStoreField,
-        if isinstance(field, DictField):
+        if isinstance(field, serializers.DictField):
             schema = {
                 "type": "object",
                 "additionalProperties": self.map_field(field.child),
