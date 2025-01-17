@@ -501,11 +501,14 @@ class AutoSchema(ViewInspector):
             }
 
         # Also handles serializers.HStoreField,
-        if isinstance(field, serializers.DictField):
-            return {
+        if isinstance(field, DictField):
+            schema = {
                 "type": "object",
                 "additionalProperties": self.map_field(field.child),
             }
+            if field.help_text:
+                schema["description"] = field.help_text
+            return schema
 
         # Simplest cases, default to 'string' type:
         FIELD_CLASS_SCHEMA_TYPE = {
