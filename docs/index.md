@@ -196,9 +196,7 @@ For priority support please sign up for a [professional or premium sponsorship p
 
 ## Security
 
-Security issues are handled under the supervision of the [Django security team](https://www.djangoproject.com/foundation/teams/#security-team).
-
-**Please report security issues by emailing security@djangoproject.com**.
+**Please report security issues by emailing security@encode.io**.
 
 The project maintainers will then work with you to resolve any issues where required, prior to any public disclosure.
 
