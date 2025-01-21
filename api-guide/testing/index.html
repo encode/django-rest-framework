@@ -569,9 +569,12 @@
 # Using the standard RequestFactory API to create a form POST request
 factory = APIRequestFactory()
 request = factory.post('/notes/', {'title': 'new idea'})
+
+# Using the standard RequestFactory API to encode JSON data
+request = factory.post('/notes/', {'title': 'new idea'}, content_type='application/json')
 </code></pre>
 <h4 id="using-the-format-argument"><a class="toclink" href="#using-the-format-argument">Using the <code>format</code> argument</a></h4>
-<p>Methods which create a request body, such as <code>post</code>, <code>put</code> and <code>patch</code>, include a <code>format</code> argument, which make it easy to generate requests using a content type other than multipart form data.  For example:</p>
+<p>Methods which create a request body, such as <code>post</code>, <code>put</code> and <code>patch</code>, include a <code>format</code> argument, which make it easy to generate requests using a wide set of request formats.  When using this argument, the factory will select an appropriate renderer and its configured <code>content_type</code>.  For example:</p>
 <pre><code># Create a JSON POST request
 factory = APIRequestFactory()
 request = factory.post('/notes/', {'title': 'new idea'}, format='json')
@@ -580,7 +583,7 @@ request = factory.post('/notes/', {'title': 'new idea'}, format='json')
 <p>To support a wider set of request formats, or change the default format, <a href="#configuration">see the configuration section</a>.</p>
 <h4 id="explicitly-encoding-the-request-body"><a class="toclink" href="#explicitly-encoding-the-request-body">Explicitly encoding the request body</a></h4>
 <p>If you need to explicitly encode the request body, you can do so by setting the <code>content_type</code> flag.  For example:</p>
-<pre><code>request = factory.post('/notes/', json.dumps({'title': 'new idea'}), content_type='application/json')
+<pre><code>request = factory.post('/notes/', yaml.dump({'title': 'new idea'}), content_type='application/yaml')
 </code></pre>
 <h4 id="put-and-patch-with-form-data"><a class="toclink" href="#put-and-patch-with-form-data">PUT and PATCH with form data</a></h4>
 <p>One difference worth noting between Django's <code>RequestFactory</code> and REST framework's <code>APIRequestFactory</code> is that multipart form data will be encoded for methods other than just <code>.post()</code>.</p>

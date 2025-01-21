@@ -460,9 +460,11 @@
 <p>By default, the API will return the format specified by the headers, which in the case of the browser is HTML.  The format can be specified using <code>?format=</code> in the request, so you can look at the raw JSON response in a browser by adding <code>?format=json</code> to the URL.  There are helpful extensions for viewing JSON in <a href="https://addons.mozilla.org/en-US/firefox/addon/jsonview/">Firefox</a> and <a href="https://chrome.google.com/webstore/detail/chklaanhfefbnpoihckbnefhakgolnmc">Chrome</a>.</p>
 <h2 id="authentication"><a class="toclink" href="#authentication">Authentication</a></h2>
 <p>To quickly add authentication to the browesable api, add a routes named <code>"login"</code> and <code>"logout"</code> under the namespace <code>"rest_framework"</code>. DRF provides default routes for this which you can add to your urlconf:</p>
-<pre><code class="language-python">urlpatterns = [
+<pre><code class="language-python">from django.urls import include, path
+
+urlpatterns = [
     # ...
-    url(r&quot;^api-auth/&quot;, include(&quot;rest_framework.urls&quot;, namespace=&quot;rest_framework&quot;))
+    path(&quot;api-auth/&quot;, include(&quot;rest_framework.urls&quot;, namespace=&quot;rest_framework&quot;))
 ]
 </code></pre>
 <h2 id="customizing"><a class="toclink" href="#customizing">Customizing</a></h2>

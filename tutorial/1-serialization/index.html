@@ -739,7 +739,7 @@ Quit the server with CONTROL-C.
 <pre><code>pip install httpie
 </code></pre>
 <p>Finally, we can get a list of all of the snippets:</p>
-<pre><code>http http://127.0.0.1:8000/snippets/ --unsorted
+<pre><code>http GET http://127.0.0.1:8000/snippets/ --unsorted
 
 HTTP/1.1 200 OK
 ...
@@ -771,7 +771,7 @@ HTTP/1.1 200 OK
 ]
 </code></pre>
 <p>Or we can get a particular snippet by referencing its id:</p>
-<pre><code>http http://127.0.0.1:8000/snippets/2/ --unsorted
+<pre><code>http GET http://127.0.0.1:8000/snippets/2/ --unsorted
 
 HTTP/1.1 200 OK
 ...

@@ -543,7 +543,7 @@
 CustomerReportSerializer():
     id = IntegerField(label='ID', read_only=True)
     time_raised = DateTimeField(read_only=True)
-    reference = CharField(max_length=20, validators=[&lt;UniqueValidator(queryset=CustomerReportRecord.objects.all())&gt;])
+    reference = CharField(max_length=20, validators=[UniqueValidator(queryset=CustomerReportRecord.objects.all())])
     description = CharField(style={'type': 'textarea'})
 </code></pre>
 <p>The interesting bit here is the <code>reference</code> field. We can see that the uniqueness constraint is being explicitly enforced by a validator on the serializer field.</p>
