@@ -128,6 +128,8 @@ You may inspect these attributes to adjust behavior based on the current action.
             permission_classes = [IsAdminUser]
         return [permission() for permission in permission_classes]
 
+**Note**: don't use the `action` attribute in the `get_parsers`, `get_authenticators` or `get_content_negotiator` methods, otherwise you will get an `AttributeError` error.
+
 ## Marking extra actions for routing
 
 If you have ad-hoc methods that should be routable, you can mark them as such with the `@action` decorator. Like regular actions, extra actions may be intended for either a single object, or an entire collection. To indicate this, set the `detail` argument to `True` or `False`. The router will configure its URL patterns accordingly. e.g., the `DefaultRouter` will configure detail actions to contain `pk` in their URL patterns.
