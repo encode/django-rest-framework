@@ -60,11 +60,12 @@ If you only wish to support a subset of the available languages, use Django's st
 
 ## Adding new translations
 
-REST framework translations are managed online using [Transifex][transifex-project]. You can use the Transifex service to add new translation languages. The maintenance team will then ensure that these translation strings are included in the REST framework package.
+REST framework translations are managed on GitHub. You can contribute new translation languages or update existing ones
+by following the guidelines in the [Contributing to REST Framework] section and submitting a pull request.
 
 Sometimes you may need to add translation strings to your project locally. You may need to do this if:
 
-* You want to use REST Framework in a language which has not been translated yet on Transifex.
+* You want to use REST Framework in a language which is not supported by the project.
 * Your project includes custom error messages, which are not part of REST framework's default translation strings.
 
 #### Translating a new language locally
@@ -103,9 +104,9 @@ You can find more information on how the language preference is determined in th
 For API clients the most appropriate of these will typically be to use the `Accept-Language` header; Sessions and cookies will not be available unless using session authentication, and generally better practice to prefer an `Accept-Language` header for API clients rather than using language URL prefixes.
 
 [cite]: https://youtu.be/Wa0VfS2q94Y
+[Contributing to REST Framework]: ../community/contributing.md#development
 [django-translation]: https://docs.djangoproject.com/en/stable/topics/i18n/translation
 [custom-exception-handler]: ../api-guide/exceptions.md#custom-exception-handling
-[transifex-project]: https://explore.transifex.com/django-rest-framework-1/django-rest-framework/
 [django-po-source]: https://raw.githubusercontent.com/encode/django-rest-framework/master/rest_framework/locale/en_US/LC_MESSAGES/django.po
 [django-language-preference]: https://docs.djangoproject.com/en/stable/topics/i18n/translation/#how-django-discovers-language-preference
 [django-locale-paths]: https://docs.djangoproject.com/en/stable/ref/settings/#std:setting-LOCALE_PATHS
