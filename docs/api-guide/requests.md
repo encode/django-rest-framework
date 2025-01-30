@@ -5,6 +5,8 @@ source:
 
 # Requests
 
+::: rest_framework.request.Request
+
 > If you're doing REST-based web service stuff ... you should ignore request.POST.
 >
 > &mdash; Malcom Tredinnick, [Django developers group][cite]
@@ -14,6 +16,7 @@ REST framework's `Request` class extends the standard `HttpRequest`, adding supp
 ---
 
 # Request parsing
+
 
 REST framework's Request objects provide flexible request parsing that allows you to treat requests with JSON data or other media types in the same way that you would normally deal with form data.
 
