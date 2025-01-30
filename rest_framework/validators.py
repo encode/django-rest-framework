@@ -6,6 +6,8 @@ This gives us better separation of concerns, allows us to use single-step
 object creation, and makes it possible to switch between using the implicit
 `ModelSerializer` class and an equivalent explicit `Serializer` class.
 """
+import re
+
 from django.db import DataError
 from django.utils.translation import gettext_lazy as _
 
@@ -197,13 +199,14 @@ class UniqueTogetherValidator:
 
 
 class ProhibitSurrogateCharactersValidator:
+    _regex = re.compile(r'[\ud800-\udfff]')
+
     message = _('Surrogate characters are not allowed: U+{code_point:X}.')
     code = 'surrogate_characters_not_allowed'
 
     def __call__(self, value):
-        for surrogate_character in (ch for ch in str(value)
-                                    if 0xD800 <= ord(ch) <= 0xDFFF):
-            message = self.message.format(code_point=ord(surrogate_character))
+        if match := self._regex.search(str(value)):
+            message = self.message.format(code_point=ord(match.group()))
             raise ValidationError(message, code=self.code)
 
     def __eq__(self, other):
