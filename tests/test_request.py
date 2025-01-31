@@ -58,14 +58,14 @@ class TestContentParsing(TestCase):
         Ensure request.data returns empty QueryDict for GET request.
         """
         request = Request(factory.get('/'))
-        assert request.data == {}
+        assert request.data is None
 
     def test_standard_behaviour_determines_no_content_HEAD(self):
         """
         Ensure request.data returns empty QueryDict for HEAD request.
         """
         request = Request(factory.head('/'))
-        assert request.data == {}
+        assert request.data is None
 
     def test_request_DATA_with_form_content(self):
         """
