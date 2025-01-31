@@ -711,7 +711,7 @@ class ListSerializer(BaseSerializer):
         iterable = data.all() if isinstance(data, models.manager.BaseManager) else data
 
         return [
-            self.child.to_representation(item) for item in iterable
+            self.child.to_representation(item) if item is not None else None for item in iterable
         ]
 
     def validate(self, attrs):
