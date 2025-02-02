@@ -64,7 +64,7 @@ def get_view_description(view, html=False):
 
 
 def set_rollback():
-    for db in connections.all():
+    for db in connections.all(initialized_only=True):
         if db.settings_dict['ATOMIC_REQUESTS'] and db.in_atomic_block:
             db.set_rollback(True)
 
