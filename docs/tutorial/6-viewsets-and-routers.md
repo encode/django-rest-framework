@@ -108,7 +108,7 @@ Now that we've bound our resources into concrete views, we can register the view
 
 Because we're using `ViewSet` classes rather than `View` classes, we actually don't need to design the URL conf ourselves.  The conventions for wiring up resources into views and urls can be handled automatically, using a `Router` class.  All we need to do is register the appropriate view sets with a router, and let it do the rest.
 
-Here's our re-wired `snippets/urls.py` file.
+Here's our re-wired `tutorial/urls.py` file.
 
     from django.urls import path, include
     from rest_framework.routers import DefaultRouter
