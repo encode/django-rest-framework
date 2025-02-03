@@ -1,0 +1,82 @@
+[build-system]
+requires = ["setuptools>=61.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "djangorestframework"
+readme = "README.md"
+authors = [{name = "Tom Christie", email = "tom@tomchristie.com"}]
+license = {text = "BSD"}
+description = "Web APIs for Django, made easy."
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Framework :: Django :: 4.2",
+    "Framework :: Django :: 5.0",
+    "Framework :: Django :: 5.1",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Internet :: WWW/HTTP",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "django>=4.2",
+    'backports.zoneinfo;python_version<"3.9"',
+]
+dynamic = ["version"]
+
+[tool.setuptools.dynamic]
+version = {attr = "rest_framework.__version__"}
+
+[project.urls]
+Homepage = "https://www.django-rest-framework.org/"
+Funding = "https://fund.django-rest-framework.org/topics/funding/"
+Source = "https://github.com/encode/django-rest-framework"
+Changelog = "https://www.django-rest-framework.org/community/release-notes/"
+
+[tool.setuptools]
+
+[tool.setuptools.packages.find]
+include = ["rest_framework*"]
+
+[tool.pytest.ini_options]
+addopts = "--tb=short --strict-markers -ra"
+testpaths = ["tests"]
+filterwarnings = ["ignore:CoreAPI compatibility is deprecated*:rest_framework.RemovedInDRF317Warning"]
+
+[tool.isort]
+skip = [".tox"]
+atomic = true
+multi_line_output = 5
+extra_standard_library = ["types"]
+known_third_party = ["pytest", "_pytest", "django", "pytz", "uritemplate"]
+known_first_party = ["rest_framework", "tests"]
+
+[tool.coverage.run]
+# NOTE: source is ignored with pytest-cov (but uses the same).
+source = ["."]
+include = ["rest_framework/*", "tests/*"]
+branch = true
+
+[tool.coverage.report]
+include = ["rest_framework/*", "tests/*"]
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+]
+
+[tool.codespell]
+# Ref: https://github.com/codespell-project/codespell#using-a-config-file
+skip = "*/kickstarter-announcement.md,*.js,*.map,*.po"
+ignore-words-list = "fo,malcom,ser"
