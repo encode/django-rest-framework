@@ -85,6 +85,8 @@ In order to explain the various types of relational fields, we'll use a couple o
 
 ## StringRelatedField
 
+::: rest_framework.relations.StringRelatedField
+
 `StringRelatedField` may be used to represent the target of the relationship using its `__str__` method.
 
 For example, the following serializer:
@@ -116,6 +118,8 @@ This field is read only.
 * `many` - If applied to a to-many relationship, you should set this argument to `True`.
 
 ## PrimaryKeyRelatedField
+
+::: rest_framework.relations.PrimaryKeyRelatedField
 
 `PrimaryKeyRelatedField` may be used to represent the target of the relationship using its primary key.
 
@@ -152,6 +156,8 @@ By default this field is read-write, although you can change this behavior using
 
 
 ## HyperlinkedRelatedField
+
+::: rest_framework.relations.HyperlinkedRelatedField
 
 `HyperlinkedRelatedField` may be used to represent the target of the relationship using a hyperlink.
 
@@ -205,6 +211,8 @@ If you require more complex hyperlinked representation you'll need to customize 
 
 ## SlugRelatedField
 
+::: rest_framework.relations.SlugRelatedField
+
 `SlugRelatedField` may be used to represent the target of the relationship using a field on the target.
 
 For example, the following serializer:
@@ -245,6 +253,8 @@ When using `SlugRelatedField` as a read-write field, you will normally want to e
 * `allow_null` - If set to `True`, the field will accept values of `None` or the empty string for nullable relationships. Defaults to `False`.
 
 ## HyperlinkedIdentityField
+
+::: rest_framework.relations.HyperlinkedIdentityField
 
 This field can be applied as an identity relationship, such as the `'url'` field on a HyperlinkedModelSerializer.  It can also be used for an attribute on the object.  For example, the following serializer:
 
@@ -361,6 +371,8 @@ By default nested serializers are read-only. If you want to support write-operat
 ---
 
 # Custom relational fields
+
+::: rest_framework.relations.RelatedField
 
 In rare cases where none of the existing relational styles fit the representation you need,
 you can implement a completely custom relational field, that describes exactly how the
