@@ -189,6 +189,13 @@ class PKManyToManyTests(TestCase):
         ]
         assert serializer.data == expected
 
+    def test_many_to_many_grouped_queries(self):
+        data = {'id': 4, 'name': 'source-4', 'targets': [1, 3]}
+        serializer = ManyToManySourceSerializer(data=data)
+        # Only one query should be executed even with several targets
+        with self.assertNumQueries(1):
+            assert serializer.is_valid()
+
     def test_many_to_many_unsaved(self):
         source = ManyToManySource(name='source-unsaved')
 
