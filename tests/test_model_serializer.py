@@ -25,6 +25,7 @@ from django.test import TestCase
 
 from rest_framework import serializers
 from rest_framework.compat import postgres_fields
+from rest_framework.exceptions import ValidationError
 
 from .models import NestedForeignKeySource
 
@@ -409,7 +410,8 @@ class TestDurationFieldMapping(TestCase):
 
 
 class TestGenericIPAddressFieldValidation(TestCase):
-    def test_ip_address_validation(self):
+
+    def setUp(self):
         class IPAddressFieldModel(models.Model):
             address = models.GenericIPAddressField()
 
@@ -418,11 +420,85 @@ class TestGenericIPAddressFieldValidation(TestCase):
                 model = IPAddressFieldModel
                 fields = '__all__'
 
-        s = TestSerializer(data={'address': 'not an ip address'})
+        self.serializer_class = TestSerializer
+        self.model = IPAddressFieldModel
+
+    def test_ip_address_validation(self):
+        s = self.serializer_class(data={'address': 'not an ip address'})
         self.assertFalse(s.is_valid())
         self.assertEqual(1, len(s.errors['address']),
                          'Unexpected number of validation errors: '
                          '{}'.format(s.errors))
+
+    def test_invalid_ipv4_for_ipv4_field(self):
+        """Test that an invalid IPv4 raises only an IPv4-related error."""
+        self.model._meta.get_field("address").protocol = "IPv4"  # Set field to IPv4 only
+        invalid_data = {"address": "invalid-ip"}
+        serializer = self.serializer_class(data=invalid_data)
+
+        with self.assertRaises(ValidationError) as context:
+            serializer.is_valid(raise_exception=True)
+
+        self.assertEqual(
+            str(context.exception.detail["address"][0]),
+            "Enter a valid IPv4 address."
+        )
+
+    def test_invalid_ipv6_for_ipv6_field(self):
+        """Test that an invalid IPv6 raises only an IPv6-related error."""
+        self.model._meta.get_field("address").protocol = "IPv6"  # Set field to IPv6 only
+        invalid_data = {"address": "invalid-ip"}
+        serializer = self.serializer_class(data=invalid_data)
+
+        with self.assertRaises(ValidationError) as context:
+            serializer.is_valid(raise_exception=True)
+
+        self.assertEqual(
+            str(context.exception.detail["address"][0]),
+            "Enter a valid IPv6 address."
+        )
+
+    def test_invalid_both_protocol(self):
+        """Test that an invalid IP raises a combined error message when protocol is both."""
+        self.model._meta.get_field("address").protocol = "both"  # Allow both IPv4 & IPv6
+        invalid_data = {"address": "invalid-ip"}
+        serializer = self.serializer_class(data=invalid_data)
+
+        with self.assertRaises(ValidationError) as context:
+            serializer.is_valid(raise_exception=True)
+
+        self.assertEqual(
+            str(context.exception.detail["address"][0]),
+            "Enter a valid IPv4 or IPv6 address."
+        )
+
+    def test_valid_ipv4(self):
+        """Test that a valid IPv4 passes validation."""
+        self.model._meta.get_field("address").protocol = "IPv4"
+        valid_data = {"address": "192.168.1.1"}
+        serializer = self.serializer_class(data=valid_data)
+        self.assertTrue(serializer.is_valid())
+
+    def test_valid_ipv6(self):
+        """Test that a valid IPv6 passes validation."""
+        self.model._meta.get_field("address").protocol = "IPv6"
+        valid_data = {"address": "2001:db8::ff00:42:8329"}
+        serializer = self.serializer_class(data=valid_data)
+        self.assertTrue(serializer.is_valid())
+
+    def test_valid_ipv4_for_both_protocol(self):
+        """Test that a valid IPv4 is accepted when protocol is 'both'."""
+        self.model._meta.get_field("address").protocol = "both"
+        valid_data = {"address": "192.168.1.1"}
+        serializer = self.serializer_class(data=valid_data)
+        self.assertTrue(serializer.is_valid())
+
+    def test_valid_ipv6_for_both_protocol(self):
+        """Test that a valid IPv6 is accepted when protocol is 'both'."""
+        self.model._meta.get_field("address").protocol = "both"
+        valid_data = {"address": "2001:db8::ff00:42:8329"}
+        serializer = self.serializer_class(data=valid_data)
+        self.assertTrue(serializer.is_valid())
 
 
 @pytest.mark.skipif('not postgres_fields')
