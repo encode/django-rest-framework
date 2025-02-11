@@ -2,7 +2,6 @@
 Provides a set of pluggable permission policies.
 """
 from django.http import Http404
-from django.utils.translation import gettext_lazy as _
 
 from rest_framework import exceptions
 
@@ -59,61 +58,69 @@ class OperandHolder(OperationHolderMixin):
         return hash((self.operator_class, self.op1_class, self.op2_class))
 
 
-class AND:
-    def __init__(self, op1, op2):
-        self.op1 = op1
-        self.op2 = op2
-        self.message = None
+class OperatorBase:
+    def __init__(self, *permissions):
+        self._permissions = permissions
+
+
+class AND(OperatorBase):
 
     def has_permission(self, request, view):
-        if not self.op1.has_permission(request, view):
-            self.message = getattr(self.op1, 'message', None)
-            return False
-
-        if not self.op2.has_permission(request, view):
-            self.message = getattr(self.op2, 'message', None)
-            return False
-
+        for perm in self._permissions:
+            if not perm.has_permission(request, view):
+                self._set_message_and_code(perm)
+                return False
         return True
 
     def has_object_permission(self, request, view, obj):
-        if not self.op1.has_object_permission(request, view, obj):
-            self.message = getattr(self.op1, 'message', None)
-            return False
-
-        if not self.op2.has_object_permission(request, view, obj):
-            self.message = getattr(self.op2, 'message', None)
-            return False
-
+        for perm in self._permissions:
+            if not perm.has_object_permission(request, view, obj):
+                self._set_message_and_code(perm)
+                return False
         return True
 
+    def _set_message_and_code(self, perm):
+        self.message = getattr(perm, 'message', None)
+        self.code = getattr(perm, 'code', None)
 
-class OR:
-    def __init__(self, op1, op2):
-        self.op1 = op1
-        self.op2 = op2
-        self.message1 = getattr(op1, 'message', None)
-        self.message2 = getattr(op2, 'message', None)
-        self.message = self.message1 or self.message2
-        if self.message1 and self.message2:
-            self.message = '"{0}" {1} "{2}"'.format(
-                self.message1, _('OR'), self.message2,
-            )
+
+class OR(OperatorBase):
 
     def has_permission(self, request, view):
-        return (
-            self.op1.has_permission(request, view) or
-            self.op2.has_permission(request, view)
-        )
+        collector = ResultCollector()
+        for perm in self._permissions:
+            if perm.has_permission(request, view):
+                return True
+            else:
+                collector.add_message_and_code(perm)
+        collector.finalize(self)
+        return False
 
     def has_object_permission(self, request, view, obj):
-        return (
-            self.op1.has_permission(request, view)
-            and self.op1.has_object_permission(request, view, obj)
-        ) or (
-            self.op2.has_permission(request, view)
-            and self.op2.has_object_permission(request, view, obj)
-        )
+        collector = ResultCollector()
+        for perm in self._permissions:
+            if perm.has_permission(request, view) and perm.has_object_permission(request, view, obj):
+                return True
+            else:
+                collector.add_message_and_code(perm)
+        collector.finalize(self)
+        return False
+
+
+class ResultCollector:
+    def __init__(self):
+        self.messages = ()
+        self.codes = ()
+
+    def add_message_and_code(self, perm):
+        message = getattr(perm, 'message', None)
+        code = getattr(perm, 'code', None)
+        self.messages += (message,)
+        self.codes += (code,)
+
+    def finalize(self, perm):
+        perm.message = self.messages
+        perm.code = self.codes
 
 
 class NOT:
