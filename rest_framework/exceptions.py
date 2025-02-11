@@ -5,13 +5,14 @@ In addition, Django's built in 403 and 404 exceptions are handled.
 (`django.http.Http404` and `django.core.exceptions.PermissionDenied`)
 """
 import math
+import warnings
 
 from django.http import JsonResponse
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import ngettext
 
-from rest_framework import status
+from rest_framework import RemovedInDRF317Warning, status
 from rest_framework.utils.serializer_helpers import ReturnDict, ReturnList
 
 
@@ -233,12 +234,18 @@ class Throttled(APIException):
             detail = force_str(self.default_detail)
         if wait is not None:
             wait = math.ceil(wait)
-            detail = " ".join((detail, force_str(self.extra_detail(wait))))
+            detail = " ".join((detail, self.extra_detail(wait)))
         self.wait = wait
         super().__init__(detail, code)
 
-    @staticmethod
-    def extra_detail(wait):
+    def extra_detail(self, wait):
+        if hasattr(self, 'extra_detail_singular') or hasattr(self, 'extra_detail_plural'):
+            warnings.warn("You're using incorrect way of specifying extra_detail, please override `extra_detail` instead. This will be removed in DRF 3.17", RemovedInDRF317Warning)
+            return ngettext(
+                getattr(self, 'extra_detail_singular', 'Expected available in {wait} second.'),
+                getattr(self, 'extra_detail_plural', 'Expected available in {wait} seconds.'),
+                wait,
+            ).format(wait=wait)
         return ngettext(
             'Expected available in {wait} second.',
             'Expected available in {wait} seconds.',
