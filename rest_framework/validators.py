@@ -159,17 +159,18 @@ class UniqueTogetherValidator:
         queryset = self.filter_queryset(attrs, queryset, serializer)
         queryset = self.exclude_current_instance(attrs, queryset, serializer.instance)
 
+        checked_names = [
+            serializer.fields[field_name].source for field_name in self.fields
+        ]
         # Ignore validation if any field is None
         if serializer.instance is None:
-            checked_values = [
-                value for field, value in attrs.items() if field in self.fields
-            ]
+            checked_values = [attrs[field_name] for field_name in checked_names]
         else:
             # Ignore validation if all field values are unchanged
             checked_values = [
-                value
-                for field, value in attrs.items()
-                if field in self.fields and value != getattr(serializer.instance, field)
+                attrs[field_name]
+                for field_name in checked_names
+                if attrs[field_name] != getattr(serializer.instance, field_name)
             ]
 
         if checked_values and None not in checked_values and qs_exists(queryset):

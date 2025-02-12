@@ -45,7 +45,7 @@ The default throttling policy may be set globally, using the `DEFAULT_THROTTLE_C
         }
     }
 
-The rate descriptions used in `DEFAULT_THROTTLE_RATES` may include `second`, `minute`, `hour` or `day` as the throttle period.
+The rates used in `DEFAULT_THROTTLE_RATES` can be specified over a period of second, minute, hour or day. The period must be specified after the `/` separator using `s`, `m`, `h` or `d`, respectively. For increased clarity, extended units such as `second`, `minute`, `hour`, `day` or even abbreviations like `sec`, `min`, `hr` are allowed, as only the first character is relevant to identify the rate.
 
 You can also set the throttling policy on a per-view or per-viewset basis,
 using the `APIView` class-based views.

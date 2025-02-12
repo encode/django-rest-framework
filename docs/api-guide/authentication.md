@@ -90,6 +90,12 @@ The kind of response that will be used depends on the authentication scheme.  Al
 
 Note that when a request may successfully authenticate, but still be denied permission to perform the request, in which case a `403 Permission Denied` response will always be used, regardless of the authentication scheme.
 
+## Django 5.1+ `LoginRequiredMiddleware`
+
+If you're running Django 5.1+ and use the [`LoginRequiredMiddleware`][login-required-middleware], please note that all views from DRF are opted-out of this middleware.  This is because the authentication in DRF is based authentication and permissions classes, which may be determined after the middleware has been applied.  Additionally, when the request is not authenticated, the middleware redirects the user to the login page, which is not suitable for API requests, where it's preferable to return a 401 status code.
+
+REST framework offers an equivalent mechanism for DRF views via the global settings, `DEFAULT_AUTHENTICATION_CLASSES` and `DEFAULT_PERMISSION_CLASSES`.  They should be changed accordingly if you need to enforce that API requests are logged in.
+
 ## Apache mod_wsgi specific configuration
 
 Note that if deploying to [Apache using mod_wsgi][mod_wsgi_official], the authorization header is not passed through to a WSGI application by default, as it is assumed that authentication will be handled by Apache, rather than at an application level.
@@ -484,3 +490,4 @@ More information can be found in the [Documentation](https://django-rest-durin.r
 [drfpasswordless]: https://github.com/aaronn/django-rest-framework-passwordless
 [django-rest-authemail]: https://github.com/celiao/django-rest-authemail
 [django-rest-durin]: https://github.com/eshaan7/django-rest-durin
+[login-required-middleware]: https://docs.djangoproject.com/en/stable/ref/middleware/#django.contrib.auth.middleware.LoginRequiredMiddleware

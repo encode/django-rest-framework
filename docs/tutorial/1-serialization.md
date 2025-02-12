@@ -321,7 +321,7 @@ You can install httpie using pip:
 
 Finally, we can get a list of all of the snippets:
 
-    http http://127.0.0.1:8000/snippets/ --unsorted
+    http GET http://127.0.0.1:8000/snippets/ --unsorted
 
     HTTP/1.1 200 OK
     ...
@@ -354,7 +354,7 @@ Finally, we can get a list of all of the snippets:
 
 Or we can get a particular snippet by referencing its id:
 
-    http http://127.0.0.1:8000/snippets/2/ --unsorted
+    http GET http://127.0.0.1:8000/snippets/2/ --unsorted
 
     HTTP/1.1 200 OK
     ...
