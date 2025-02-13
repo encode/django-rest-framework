@@ -222,6 +222,31 @@ class TestUniquenessTogetherValidation(TestCase):
             ]
         }
 
+    def test_is_not_unique_together_with_message_key(self):
+        """
+        Failing unique together validation should result in message_key errors.
+        """
+        class ErrorMessageKeySerializer(serializers.ModelSerializer):
+            class Meta:
+                model = UniquenessTogetherModel
+                fields = '__all__'
+                validators = [
+                    UniqueTogetherValidator(
+                        queryset=UniquenessTogetherModel.objects.all(),
+                        fields=['race_name', 'position'],
+                        message_key='name'
+                    )
+                ]
+
+        data = {'race_name': 'example', 'position': 2}
+        serializer = ErrorMessageKeySerializer(data=data)
+        assert not serializer.is_valid()
+        assert serializer.errors == {
+            'name': [
+                'The fields race_name, position must make a unique set.'
+            ]
+        }
+
     def test_is_unique_together(self):
         """
         In a unique together validation, one field may be non-unique

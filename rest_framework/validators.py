@@ -99,10 +99,11 @@ class UniqueTogetherValidator:
     missing_message = _('This field is required.')
     requires_context = True
 
-    def __init__(self, queryset, fields, message=None):
+    def __init__(self, queryset, fields, message=None, message_key=None):
         self.queryset = queryset
         self.fields = fields
         self.message = message or self.message
+        self.message_key = message_key
 
     def enforce_required_fields(self, attrs, serializer):
         """
@@ -176,7 +177,8 @@ class UniqueTogetherValidator:
         if checked_values and None not in checked_values and qs_exists(queryset):
             field_names = ', '.join(self.fields)
             message = self.message.format(field_names=field_names)
-            raise ValidationError(message, code='unique')
+            error_message = {self.message_key: message} if self.message_key else message
+            raise ValidationError(error_message, code='unique')
 
     def __repr__(self):
         return '<%s(queryset=%s, fields=%s)>' % (
