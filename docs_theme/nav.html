@@ -1,46 +1,187 @@
-    <div class="navbar navbar-inverse navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container-fluid">
-          <a class="repo-link btn btn-primary btn-small" href="https://github.com/encode/django-rest-framework/tree/master">GitHub</a>
-          <a class="repo-link btn btn-inverse btn-small {% if not page.next_page %}disabled{% endif %}" rel="next" {% if page.next_page %}href="{{ page.next_page.url|url }}"{% endif %}>
-            Next <i class="icon-arrow-right icon-white"></i>
-          </a>
-          <a class="repo-link btn btn-inverse btn-small {% if not page.previous_page %}disabled{% endif %}" rel="prev" {% if page.previous_page %}href="{{ page.previous_page.url|url }}"{% endif %}>
-            <i class="icon-arrow-left icon-white"></i> Previous
-          </a>
-          <a id="search_modal_show" class="repo-link btn btn-inverse btn-small" href="#mkdocs_search_modal" data-toggle="modal" data-target="#mkdocs_search_modal"><i class="icon-search icon-white"></i> Search</a>
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-          <a class="brand" href="https://www.django-rest-framework.org/">Django REST framework</a>
-          <div class="nav-collapse collapse">
-            {% if nav|length>1 %}
-            <!-- Main navigation -->
-            <ul class="nav navbar-nav">
-              {% for nav_item in nav %} {% if nav_item.children %}
-              <li class="dropdown{% if nav_item.active %} active{% endif %}">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ nav_item.title }} <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  {% for nav_item in nav_item.children %}
-                  <li {% if nav_item.active %}class="active" {% endif %}>
-                    <a href="{{ nav_item.url|url }}">{{ nav_item.title }}</a>
-                  </li>
-                  {% endfor %}
-                </ul>
-              </li>
-              {% else %}
-              <li {% if nav_item.active %}class="active" {% endif %}>
-                <a href="{{ nav_item.url|url }}">{{ nav_item.title }}</a>
-              </li>
-              {% endif %} {% endfor %}
+<!-- New Navbar -->
+<nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="https://www.django-rest-framework.org/">
+      <span class="d-none d-md-block">Django REST Framework</span>
+      <span class="d-block d-md-none">DRF</span>
+    </a>
 
-            </ul>
-            {% endif %}
-          </div>
-          <!--/.nav-collapse -->
+    <div class="d-flex gap-2 order-lg-5 justify-self-end ms-auto">
+      <button
+        type="button"
+        id="search_modal_show"
+        class="btn btn-sm btn-secondary d-flex align-items-center gap-1"
+        href="#mkdocs_search_modal"
+        data-bs-toggle="modal"
+        data-bs-target="#mkdocs_search_modal"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          fill="currentColor"
+          class="bi bi-search"
+          viewBox="0 0 16 16"
+        >
+          <path
+            d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"
+          />
+        </svg>
 
-        </div>
+        <span class="d-none d-md-block">Search</span>
+      </button>
+      <!-- prettier-ignore -->
+      <a 
+        {% if page.previous_page %}href="{{ page.previous_page.url|url }}"{% endif %}
+        {% if not page.previous_page %}disabled{% endif %}
+        class="btn btn-sm btn-secondary align-items-center gap-1 d-flex"
+      >
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+      </svg>
+
+      <span class="d-none d-md-block">Previous</span>
+    </a>
+
+      <!-- prettier-ignore -->
+      <a
+        {% if page.next_page %}href="{{ page.next_page.url|url }}"{% endif %}
+        {% if not page.next_page %}disabled{% endif %}
+        class="btn btn-sm btn-secondary align-items-center gap-1 d-flex"
+      >
+      <span class="d-none d-md-block">Next</span>
+
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"/>
+      </svg>
+    </a>
+
+      <!-- prettier-ignore -->
+      <a
+        class="btn btn-primary btn-sm align-items-center gap-1 d-none d-sm-flex"
+        href="https://github.com/encode/django-rest-framework/tree/master"
+        >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-github" viewBox="0 0 16 16">
+          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"/>
+        </svg>
+        <span class="d-none d-md-block">Github</span>
+        </a
+      >
+
+      <div class="dropdown">
+        <button
+          class="btn dropdown-toggle d-flex align-items-center"
+          type="button"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+          id="bd-theme"
+        >
+          <div class="theme-icon-active"></div>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="bd-theme-text">
+          <li>
+            <button class="dropdown-item" href="#" data-bs-theme-value="dark">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                class="bi bi-moon-fill"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="M6 .278a.77.77 0 0 1 .08.858 7.2 7.2 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277q.792-.001 1.533-.16a.79.79 0 0 1 .81.316.73.73 0 0 1-.031.893A8.35 8.35 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.75.75 0 0 1 6 .278"
+                />
+              </svg>
+              <span>Dark</span>
+            </button>
+          </li>
+          <li>
+            <button class="dropdown-item" href="#" data-bs-theme-value="light">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                class="bi bi-brightness-high-fill"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="M12 8a4 4 0 1 1-8 0 4 4 0 0 1 8 0M8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0m0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13m8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5M3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8m10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0m-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0m9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707M4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708"
+                />
+              </svg>
+              <span> Light </span>
+            </button>
+          </li>
+          <li>
+            <button class="dropdown-item" href="#" data-bs-theme-value="auto">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                class="bi bi-circle-half"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="M8 15A7 7 0 1 0 8 1zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16"
+                />
+              </svg>
+              <span>Auto</span>
+            </button>
+          </li>
+        </ul>
       </div>
     </div>
+
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Main navigation -->
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      {% if nav|length>1 %}
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        {% for nav_item in nav %} {% if nav_item.children %}
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle"
+            href="#"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            {{ nav_item.title }}
+          </a>
+          <ul class="dropdown-menu">
+            {% for nav_item in nav_item.children %}
+            <li>
+              <!-- prettier-ignore -->
+              <a {% if nav_item.active %} class="dropdown-item active" {% else %} class="dropdown-item" {% endif %}
+              href="{{ nav_item.url|url }}">{{ nav_item.title }}</a>
+            </li>
+            {% endfor %}
+          </ul>
+        </li>
+
+        {% else %}
+        <li class="nav-item">
+          <!-- prettier-ignore -->
+          <a {% if nav_item.active %} class="nav-link active" {% else %} class="nav-link" {% endif %}
+          aria-current="page" href="{{ nav_item.url|url }}">{{ nav_item.title }}</a>
+        </li>
+        {% endif %} {% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+  </div>
+</nav>
