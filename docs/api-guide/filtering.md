@@ -230,6 +230,7 @@ The search behavior may be specified by prefixing field names in `search_fields`
 | `$`    | `iregex`      | Regex search.      |
 | `@`    | `search`      | Full-text search (Currently only supported Django's [PostgreSQL backend][postgres-search]). |
 | None   | `icontains`   | Contains search (Default).  |
+| `&`    | `unaccent`    | Accent-insensitive search. (Currently only supported Django's [PostgreSQL backend][postgres-lookups]). |
 
 For example:
 
@@ -370,3 +371,4 @@ The [djangorestframework-word-filter][django-rest-framework-word-search-filter] 
 [HStoreField]: https://docs.djangoproject.com/en/3.0/ref/contrib/postgres/fields/#hstorefield
 [JSONField]: https://docs.djangoproject.com/en/3.0/ref/contrib/postgres/fields/#jsonfield
 [postgres-search]: https://docs.djangoproject.com/en/stable/ref/contrib/postgres/search/
+[postgres-lookups]: https://docs.djangoproject.com/en/stable/ref/contrib/postgres/lookups/#unaccent
