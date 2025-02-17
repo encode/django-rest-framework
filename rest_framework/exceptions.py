@@ -106,6 +106,17 @@ class APIException(Exception):
     default_code = 'error'
 
     def __init__(self, detail=None, code=None):
+        if (
+            isinstance(detail, tuple)
+            and isinstance(code, tuple)
+            and len(detail) == len(code)
+        ):
+            self.detail = [
+                _get_error_details(d or self.default_detail, c or self.default_code)
+                for d, c in zip(detail, code)
+            ]
+            return
+
         if detail is None:
             detail = self.default_detail
         if code is None:

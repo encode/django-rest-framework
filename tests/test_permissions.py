@@ -12,11 +12,17 @@ from rest_framework import (
     HTTP_HEADER_ENCODING, authentication, generics, permissions, serializers,
     status, views
 )
+from rest_framework.exceptions import ErrorDetail
 from rest_framework.routers import DefaultRouter
 from rest_framework.test import APIRequestFactory
 from tests.models import BasicModel
 
 factory = APIRequestFactory()
+
+DEFAULT_MESSAGE = ErrorDetail('You do not have permission to perform this action.', 'permission_denied')
+CUSTOM_MESSAGE_1 = ErrorDetail('Custom: You cannot access this resource', 'permission_denied_custom')
+CUSTOM_MESSAGE_2 = ErrorDetail('Custom: You do not have permission to view this resource', 'permission_denied_custom')
+INVERTED_MESSAGE = 'Inverted: Your account already active'
 
 
 class BasicSerializer(serializers.ModelSerializer):
@@ -454,8 +460,16 @@ class BasicPerm(permissions.BasePermission):
 
 
 class BasicPermWithDetail(permissions.BasePermission):
-    message = 'Custom: You cannot access this resource'
+    message = CUSTOM_MESSAGE_1
+    message_inverted = INVERTED_MESSAGE
     code = 'permission_denied_custom'
+
+    def has_permission(self, request, view):
+        return False
+
+
+class AnotherBasicPermWithDetail(permissions.BasePermission):
+    message = CUSTOM_MESSAGE_2
 
     def has_permission(self, request, view):
         return False
@@ -467,8 +481,16 @@ class BasicObjectPerm(permissions.BasePermission):
 
 
 class BasicObjectPermWithDetail(permissions.BasePermission):
-    message = 'Custom: You cannot access this resource'
+    message = CUSTOM_MESSAGE_1
+    message_inverted = INVERTED_MESSAGE
     code = 'permission_denied_custom'
+
+    def has_object_permission(self, request, view, obj):
+        return False
+
+
+class AnotherBasicObjectPermWithDetail(permissions.BasePermission):
+    message = CUSTOM_MESSAGE_2
 
     def has_object_permission(self, request, view, obj):
         return False
@@ -487,6 +509,22 @@ class DeniedViewWithDetail(PermissionInstanceView):
     permission_classes = (BasicPermWithDetail,)
 
 
+class DeniedViewWithDetailAND1(PermissionInstanceView):
+    permission_classes = (BasicPermWithDetail & permissions.AllowAny,)
+
+
+class DeniedViewWithDetailAND2(PermissionInstanceView):
+    permission_classes = (permissions.AllowAny & AnotherBasicPermWithDetail,)
+
+
+class DeniedViewWithDetailAND3(PermissionInstanceView):
+    permission_classes = (BasicPermWithDetail & AnotherBasicPermWithDetail,)
+
+
+class DeniedViewWithDetailNOT(PermissionInstanceView):
+    permission_classes = (~BasicPermWithDetail,)
+
+
 class DeniedObjectView(PermissionInstanceView):
     permission_classes = (BasicObjectPerm,)
 
@@ -495,13 +533,41 @@ class DeniedObjectViewWithDetail(PermissionInstanceView):
     permission_classes = (BasicObjectPermWithDetail,)
 
 
+class DeniedObjectViewWithDetailAND1(PermissionInstanceView):
+    permission_classes = (BasicObjectPermWithDetail & permissions.AllowAny,)
+
+
+class DeniedObjectViewWithDetailAND2(PermissionInstanceView):
+    permission_classes = (permissions.AllowAny & AnotherBasicObjectPermWithDetail,)
+
+
+class DeniedObjectViewWithDetailAND3(PermissionInstanceView):
+    permission_classes = (AnotherBasicObjectPermWithDetail & BasicObjectPermWithDetail,)
+
+
+class DeniedObjectViewWithDetailNOT(PermissionInstanceView):
+    permission_classes = (~BasicObjectPermWithDetail,)
+
+
 denied_view = DeniedView.as_view()
 
 denied_view_with_detail = DeniedViewWithDetail.as_view()
 
+denied_view_with_detail_and_1 = DeniedViewWithDetailAND1.as_view()
+denied_view_with_detail_and_2 = DeniedViewWithDetailAND2.as_view()
+denied_view_with_detail_and_3 = DeniedViewWithDetailAND3.as_view()
+
+denied_view_with_detail_not = DeniedObjectViewWithDetailNOT.as_view()
+
 denied_object_view = DeniedObjectView.as_view()
 
 denied_object_view_with_detail = DeniedObjectViewWithDetail.as_view()
+
+denied_object_view_with_detail_and_1 = DeniedObjectViewWithDetailAND1.as_view()
+denied_object_view_with_detail_and_2 = DeniedObjectViewWithDetailAND2.as_view()
+denied_object_view_with_detail_and_3 = DeniedObjectViewWithDetailAND3.as_view()
+
+denied_object_view_with_detail_not = DeniedObjectViewWithDetailNOT.as_view()
 
 
 class CustomPermissionsTests(TestCase):
@@ -510,36 +576,134 @@ class CustomPermissionsTests(TestCase):
         User.objects.create_user('username', 'username@example.com', 'password')
         credentials = basic_auth_header('username', 'password')
         self.request = factory.get('/1', format='json', HTTP_AUTHORIZATION=credentials)
-        self.custom_message = 'Custom: You cannot access this resource'
-        self.custom_code = 'permission_denied_custom'
 
     def test_permission_denied(self):
         response = denied_view(self.request, pk=1)
         detail = response.data.get('detail')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertNotEqual(detail, self.custom_message)
-        self.assertNotEqual(detail.code, self.custom_code)
+        self.assertEqual(detail, DEFAULT_MESSAGE)
 
     def test_permission_denied_with_custom_detail(self):
         response = denied_view_with_detail(self.request, pk=1)
         detail = response.data.get('detail')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(detail, self.custom_message)
-        self.assertEqual(detail.code, self.custom_code)
+        self.assertEqual(detail, CUSTOM_MESSAGE_1)
+
+    def test_permission_denied_with_custom_detail_and_1(self):
+        response = denied_view_with_detail_and_1(self.request, pk=1)
+        detail = response.data.get('detail')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(detail, CUSTOM_MESSAGE_1)
+
+    def test_permission_denied_with_custom_detail_and_2(self):
+        response = denied_view_with_detail_and_2(self.request, pk=1)
+        detail = response.data.get('detail')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(detail, CUSTOM_MESSAGE_2)
+
+    def test_permission_denied_with_custom_detail_and_3(self):
+        response = denied_view_with_detail_and_3(self.request, pk=1)
+        detail = response.data.get('detail')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(detail, CUSTOM_MESSAGE_1)
+
+    def test_permission_denied_with_custom_detail_or_1(self):
+        view = PermissionInstanceView.as_view(
+            permission_classes=(BasicPerm | BasicPermWithDetail,),
+        )
+        response = view(self.request, pk=1)
+        detail = response.data
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(detail, [DEFAULT_MESSAGE, CUSTOM_MESSAGE_1])
+
+    def test_permission_denied_with_custom_detail_or_2(self):
+        view = PermissionInstanceView.as_view(
+            permission_classes=(BasicPermWithDetail | BasicPerm,),
+        )
+        response = view(self.request, pk=1)
+        detail = response.data
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(detail, [CUSTOM_MESSAGE_1, DEFAULT_MESSAGE])
+
+    def test_permission_denied_with_custom_detail_or_3(self):
+        view = PermissionInstanceView.as_view(
+            permission_classes=(BasicPermWithDetail | AnotherBasicPermWithDetail,),
+        )
+        response = view(self.request, pk=1)
+        detail = response.data
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(detail, [CUSTOM_MESSAGE_1, CUSTOM_MESSAGE_2])
+
+    def test_permission_denied_with_custom_detail_not(self):
+        response = denied_view_with_detail_not(self.request, pk=1)
+        detail = response.data.get('detail')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(detail, INVERTED_MESSAGE)
 
     def test_permission_denied_for_object(self):
         response = denied_object_view(self.request, pk=1)
         detail = response.data.get('detail')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertNotEqual(detail, self.custom_message)
-        self.assertNotEqual(detail.code, self.custom_code)
+        self.assertEqual(detail, DEFAULT_MESSAGE)
 
     def test_permission_denied_for_object_with_custom_detail(self):
         response = denied_object_view_with_detail(self.request, pk=1)
         detail = response.data.get('detail')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(detail, self.custom_message)
-        self.assertEqual(detail.code, self.custom_code)
+        self.assertEqual(detail, CUSTOM_MESSAGE_1)
+
+    def test_permission_denied_for_object_with_custom_detail_and_1(self):
+        response = denied_object_view_with_detail_and_1(self.request, pk=1)
+        detail = response.data.get('detail')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(detail, CUSTOM_MESSAGE_1)
+
+    def test_permission_denied_for_object_with_custom_detail_and_2(self):
+        response = denied_object_view_with_detail_and_2(self.request, pk=1)
+        detail = response.data.get('detail')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(detail, CUSTOM_MESSAGE_2)
+
+    def test_permission_denied_for_object_with_custom_detail_and_3(self):
+        response = denied_object_view_with_detail_and_3(self.request, pk=1)
+        detail = response.data.get('detail')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(detail, CUSTOM_MESSAGE_2)
+
+    def test_permission_denied_for_object_with_custom_detail_or_1(self):
+        view = PermissionInstanceView.as_view(
+            permission_classes=(BasicObjectPerm | BasicObjectPermWithDetail,),
+        )
+        response = view(self.request, pk=1)
+        detail = response.data
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(detail, [DEFAULT_MESSAGE, CUSTOM_MESSAGE_1])
+
+    def test_permission_denied_for_object_with_custom_detail_or_2(self):
+        view = PermissionInstanceView.as_view(
+            permission_classes=(BasicObjectPermWithDetail | BasicObjectPerm,),
+        )
+        response = view(self.request, pk=1)
+        detail = response.data
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(detail, [CUSTOM_MESSAGE_1, DEFAULT_MESSAGE])
+
+    def test_permission_denied_for_object_with_custom_detail_or_3(self):
+        view = PermissionInstanceView.as_view(
+            permission_classes=(
+                BasicObjectPermWithDetail | AnotherBasicObjectPermWithDetail,
+            ),
+        )
+        response = view(self.request, pk=1)
+        detail = response.data
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(detail, [CUSTOM_MESSAGE_1, CUSTOM_MESSAGE_2])
+
+    def test_permission_denied_for_object_with_custom_detail_not(self):
+        response = denied_object_view_with_detail_not(self.request, pk=1)
+        detail = response.data.get('detail')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(detail, INVERTED_MESSAGE)
 
 
 class PermissionsCompositionTests(TestCase):

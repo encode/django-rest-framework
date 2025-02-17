@@ -58,48 +58,75 @@ class OperandHolder(OperationHolderMixin):
         return hash((self.operator_class, self.op1_class, self.op2_class))
 
 
-class AND:
-    def __init__(self, op1, op2):
-        self.op1 = op1
-        self.op2 = op2
+class OperatorBase:
+    def __init__(self, *permissions):
+        self._permissions = permissions
+
+
+class AND(OperatorBase):
 
     def has_permission(self, request, view):
-        return (
-            self.op1.has_permission(request, view) and
-            self.op2.has_permission(request, view)
-        )
+        for perm in self._permissions:
+            if not perm.has_permission(request, view):
+                self._set_message_and_code(perm)
+                return False
+        return True
 
     def has_object_permission(self, request, view, obj):
-        return (
-            self.op1.has_object_permission(request, view, obj) and
-            self.op2.has_object_permission(request, view, obj)
-        )
+        for perm in self._permissions:
+            if not perm.has_object_permission(request, view, obj):
+                self._set_message_and_code(perm)
+                return False
+        return True
+
+    def _set_message_and_code(self, perm):
+        self.message = getattr(perm, 'message', None)
+        self.code = getattr(perm, 'code', None)
 
 
-class OR:
-    def __init__(self, op1, op2):
-        self.op1 = op1
-        self.op2 = op2
+class OR(OperatorBase):
 
     def has_permission(self, request, view):
-        return (
-            self.op1.has_permission(request, view) or
-            self.op2.has_permission(request, view)
-        )
+        collector = ResultCollector()
+        for perm in self._permissions:
+            if perm.has_permission(request, view):
+                return True
+            else:
+                collector.add_message_and_code(perm)
+        collector.finalize(self)
+        return False
 
     def has_object_permission(self, request, view, obj):
-        return (
-            self.op1.has_permission(request, view)
-            and self.op1.has_object_permission(request, view, obj)
-        ) or (
-            self.op2.has_permission(request, view)
-            and self.op2.has_object_permission(request, view, obj)
-        )
+        collector = ResultCollector()
+        for perm in self._permissions:
+            if perm.has_permission(request, view) and perm.has_object_permission(request, view, obj):
+                return True
+            else:
+                collector.add_message_and_code(perm)
+        collector.finalize(self)
+        return False
+
+
+class ResultCollector:
+    def __init__(self):
+        self.messages = ()
+        self.codes = ()
+
+    def add_message_and_code(self, perm):
+        message = getattr(perm, 'message', None)
+        code = getattr(perm, 'code', None)
+        self.messages += (message,)
+        self.codes += (code,)
+
+    def finalize(self, perm):
+        perm.message = self.messages
+        perm.code = self.codes
 
 
 class NOT:
     def __init__(self, op1):
         self.op1 = op1
+        self.message = getattr(self.op1, 'message_inverted', None)
 
     def has_permission(self, request, view):
         return not self.op1.has_permission(request, view)
