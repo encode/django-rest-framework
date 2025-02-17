@@ -5,13 +5,14 @@ In addition, Django's built in 403 and 404 exceptions are handled.
 (`django.http.Http404` and `django.core.exceptions.PermissionDenied`)
 """
 import math
+import warnings
 
 from django.http import JsonResponse
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import ngettext
 
-from rest_framework import status
+from rest_framework import RemovedInDRF317Warning, status
 from rest_framework.utils.serializer_helpers import ReturnDict, ReturnList
 
 
@@ -226,8 +227,6 @@ class UnsupportedMediaType(APIException):
 class Throttled(APIException):
     status_code = status.HTTP_429_TOO_MANY_REQUESTS
     default_detail = _('Request was throttled.')
-    extra_detail_singular = _('Expected available in {wait} second.')
-    extra_detail_plural = _('Expected available in {wait} seconds.')
     default_code = 'throttled'
 
     def __init__(self, wait=None, detail=None, code=None):
@@ -235,13 +234,23 @@ class Throttled(APIException):
             detail = force_str(self.default_detail)
         if wait is not None:
             wait = math.ceil(wait)
-            detail = ' '.join((
-                detail,
-                force_str(ngettext(self.extra_detail_singular.format(wait=wait),
-                                   self.extra_detail_plural.format(wait=wait),
-                                   wait))))
+            detail = " ".join((detail, self.extra_detail(wait)))
         self.wait = wait
         super().__init__(detail, code)
+
+    def extra_detail(self, wait):
+        if hasattr(self, 'extra_detail_singular') or hasattr(self, 'extra_detail_plural'):
+            warnings.warn("You're using incorrect way of specifying extra_detail, please override `extra_detail` instead. This will be removed in DRF 3.17", RemovedInDRF317Warning)
+            return ngettext(
+                getattr(self, 'extra_detail_singular', 'Expected available in {wait} second.'),
+                getattr(self, 'extra_detail_plural', 'Expected available in {wait} seconds.'),
+                wait,
+            ).format(wait=wait)
+        return ngettext(
+            'Expected available in {wait} second.',
+            'Expected available in {wait} seconds.',
+            wait,
+        ).format(wait=wait)
 
 
 def server_error(request, *args, **kwargs):
