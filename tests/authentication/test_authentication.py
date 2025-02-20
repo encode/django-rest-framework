@@ -281,7 +281,7 @@ class SessionAuthTests(TestCase):
         Ensure POSTing form over session authentication without logged in user fails.
         """
         response = self.csrf_client.post('/session/', {'example': 'example'})
-        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 class BaseTokenAuthTests:
@@ -440,7 +440,7 @@ class TokenAuthTests(BaseTokenAuthTests, TestCase):
             {'username': self.username, 'password': "badpass"},
             format='json'
         )
-        assert response.status_code == 400
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
     def test_token_login_json_missing_fields(self):
         """Ensure token login view using JSON POST fails if missing fields."""
@@ -490,7 +490,7 @@ class IncorrectCredentialsTests(TestCase):
             permission_classes=()
         )
         response = view(request)
-        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
         assert response.data == {'detail': 'Bad credentials'}
 
 

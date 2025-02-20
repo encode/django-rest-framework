@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.test import TestCase, override_settings
 
+from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.test import APIClient
 
@@ -21,14 +22,14 @@ class AnonymousUserTests(TestCase):
         with self.assertRaises(TypeError):
             self.client.get('/basicviewset')
 
-    def test_get_returns_http_forbidden_when_anonymous_user(self):
+    def test_get_returns_http_unauthorized_when_anonymous_user(self):
         old_permissions = BasicModelWithUsersViewSet.permission_classes
         BasicModelWithUsersViewSet.permission_classes = [IsAuthenticated, OrganizationPermissions]
 
         response = self.client.get('/basicviewset')
 
         BasicModelWithUsersViewSet.permission_classes = old_permissions
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
 @override_settings(ROOT_URLCONF='tests.browsable_api.auth_urls')

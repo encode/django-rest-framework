@@ -463,8 +463,6 @@ class APIView(View):
 
             if auth_header:
                 exc.auth_header = auth_header
-            else:
-                exc.status_code = status.HTTP_403_FORBIDDEN
 
         exception_handler = self.get_exception_handler()
 
