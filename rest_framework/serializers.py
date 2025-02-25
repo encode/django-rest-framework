@@ -27,7 +27,7 @@ from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework.compat import (
-    get_referenced_base_fields_from_q, postgres_fields
+    get_referenced_base_fields_from_q, postgres_fields, ObjectId
 )
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.fields import get_error_detail
@@ -938,6 +938,9 @@ class ModelSerializer(Serializer):
         serializer_field_mapping[postgres_fields.HStoreField] = HStoreField
         serializer_field_mapping[postgres_fields.ArrayField] = ListField
         serializer_field_mapping[postgres_fields.JSONField] = JSONField
+    if ObjectId:
+        from .fields import ObjectIdRestField
+        serializer_field_mapping[models.AutoField] = ObjectIdRestField
     serializer_related_field = PrimaryKeyRelatedField
     serializer_related_to_field = SlugRelatedField
     serializer_url_field = HyperlinkedIdentityField

@@ -35,6 +35,11 @@ try:
 except ImportError:
     pytz = None
 
+try:
+    from bson import ObjectId
+except ImportError:
+    ObjectId = None
+
 from rest_framework import ISO_8601
 from rest_framework.compat import ip_address_validators
 from rest_framework.exceptions import ErrorDetail, ValidationError
@@ -1743,6 +1748,15 @@ class HStoreField(DictField):
             "The `child` argument must be an instance of `CharField`, "
             "as the hstore extension stores values as strings."
         )
+
+
+class ObjectIdRestField(Field):
+    def to_internal_value(self, data):
+        if not ObjectId.is_valid(data):
+            raise ValidationError('Invalid ObjectId')
+
+    def to_representation(self, value):
+        return str(value)
 
 
 class JSONField(Field):

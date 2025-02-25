@@ -16,6 +16,13 @@ def unicode_http_header(value):
     return value
 
 
+# django-mongodb-backend
+try:
+    from bson import ObjectId
+except ImportError:
+    ObjectId = None
+
+
 # django.contrib.postgres requires psycopg2
 try:
     from django.contrib.postgres import fields as postgres_fields
