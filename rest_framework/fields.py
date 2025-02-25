@@ -1756,7 +1756,7 @@ class ObjectIdRestField(Field):
             raise ValidationError('Invalid ObjectId')
 
     def to_representation(self, value):
-        return str(value)
+        return value
 
 
 class JSONField(Field):
