@@ -375,5 +375,6 @@ class OrderingFilter(BaseFilterBackend):
                 'schema': {
                     'type': 'string',
                 },
+                'enum': view.ordering_fields
             },
         ]
