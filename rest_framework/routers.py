@@ -136,7 +136,12 @@ class SimpleRouter(BaseRouter):
     ]
 
     def __init__(self, trailing_slash=True, use_regex_path=True):
-        self.trailing_slash = '/' if trailing_slash else ''
+        if trailing_slash is True:
+            self.trailing_slash = '/'
+        elif trailing_slash is False:
+            self.trailing_slash = ''
+        else:
+            self.trailing_slash = "/?"
         self._use_regex = use_regex_path
         if use_regex_path:
             self._base_pattern = '(?P<{lookup_prefix}{lookup_url_kwarg}>{lookup_value})'
