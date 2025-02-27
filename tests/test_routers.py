@@ -328,6 +328,21 @@ class TestTrailingSlashRemoved(TestCase):
             assert expected[idx] == self.urls[idx].pattern.regex.pattern
 
 
+class TestTrailingSlashOptional(TestCase):
+    def setUp(self):
+        class NoteViewSet(viewsets.ModelViewSet):
+            queryset = RouterTestModel.objects.all()
+
+        self.router = SimpleRouter(trailing_slash=None)
+        self.router.register(r'notes', NoteViewSet)
+        self.urls = self.router.urls
+
+    def test_urls_have_trailing_slash_by_default(self):
+        expected = ['^notes/?$', '^notes/(?P<pk>[^/.]+)/?$']
+        for idx in range(len(expected)):
+            assert expected[idx] == self.urls[idx].pattern.regex.pattern
+
+
 class TestNameableRoot(TestCase):
     def setUp(self):
         class NoteViewSet(viewsets.ModelViewSet):
