@@ -86,15 +86,19 @@
                 {% endif %}
 
                 {% for toc_item in page.toc %}
-                  <li class="{% if page and not page.is_homepage %}main{% endif %}">
-                    <a href="{{ toc_item.url }}">{{ toc_item.title }}</a>
-                  </li>
-
-                  {% for toc_item in toc_item.children %}
-                    <li>
+                  {% if not toc_item.url.startswith('#rest_framework.') %}
+                    <li class="{% if page and not page.is_homepage %}main{% endif %}">
                       <a href="{{ toc_item.url }}">{{ toc_item.title }}</a>
                     </li>
-                  {% endfor %}
+
+                    {% for child in toc_item.children %}
+                      {% if not child.url.startswith('#rest_framework.') %}
+                        <li>
+                          <a href="{{ child.url }}">{{ child.title }}</a>
+                        </li>
+                      {% endif %}
+                    {% endfor %}
+                  {% endif %}
                 {% endfor %}
 
                   <div class="promo">

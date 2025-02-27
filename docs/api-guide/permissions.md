@@ -147,11 +147,15 @@ __Note:__ it supports & (and), | (or) and ~ (not).
 
 ## AllowAny
 
+::: rest_framework.permissions.AllowAny
+
 The `AllowAny` permission class will allow unrestricted access, **regardless of if the request was authenticated or unauthenticated**.
 
 This permission is not strictly required, since you can achieve the same result by using an empty list or tuple for the permissions setting, but you may find it useful to specify this class because it makes the intention explicit.
 
 ## IsAuthenticated
+
+::: rest_framework.permissions.IsAuthenticated
 
 The `IsAuthenticated` permission class will deny permission to any unauthenticated user, and allow permission otherwise.
 
@@ -159,17 +163,23 @@ This permission is suitable if you want your API to only be accessible to regist
 
 ## IsAdminUser
 
+::: rest_framework.permissions.IsAdminUser
+
 The `IsAdminUser` permission class will deny permission to any user, unless `user.is_staff` is `True` in which case permission will be allowed.
 
 This permission is suitable if you want your API to only be accessible to a subset of trusted administrators.
 
 ## IsAuthenticatedOrReadOnly
 
+::: rest_framework.permissions.IsAuthenticatedOrReadOnly
+
 The `IsAuthenticatedOrReadOnly` will allow authenticated users to perform any request.  Requests for unauthenticated users will only be permitted if the request method is one of the "safe" methods; `GET`, `HEAD` or `OPTIONS`.
 
 This permission is suitable if you want to your API to allow read permissions to anonymous users, and only allow write permissions to authenticated users.
 
 ## DjangoModelPermissions
+
+::: rest_framework.permissions.DjangoModelPermissions
 
 This permission class ties into Django's standard `django.contrib.auth` [model permissions][contribauth].  This permission must only be applied to views that have a `.queryset` property or `get_queryset()` method. Authorization will only be granted if the user *is authenticated* and has the *relevant model permissions* assigned. The appropriate model is determined by checking `get_queryset().model` or `queryset.model`.
 
@@ -182,6 +192,8 @@ The default behavior can also be overridden to support custom model permissions.
 To use custom model permissions, override `DjangoModelPermissions` and set the `.perms_map` property.  Refer to the source code for details.
 
 ## DjangoModelPermissionsOrAnonReadOnly
+
+::: rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly
 
 Similar to `DjangoModelPermissions`, but also allows unauthenticated users to have read-only access to the API.
 
@@ -206,6 +218,8 @@ As with `DjangoModelPermissions` you can use custom model permissions by overrid
 ---
 
 # Custom permissions
+
+::: rest_framework.permissions.BasePermission
 
 To implement a custom permission, override `BasePermission` and implement either, or both, of the following methods:
 
