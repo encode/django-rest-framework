@@ -50,7 +50,7 @@ There are a wide range of resources available for learning and using Django REST
 ### Talks
 
 * [Level Up! Rethinking the Web API Framework][pycon-us-2017]
-* [How to Make a Full Fledged REST API with Django OAuth Toolkit][full-fledged-rest-api-with-django-oauth-tookit]
+* [How to Make a Full Fledged REST API with Django OAuth Toolkit][full-fledged-rest-api-with-django-oauth-toolkit]
 * [Django REST API - So Easy You Can Learn It in 25 Minutes][django-rest-api-so-easy]
 * [Tom Christie about Django Rest Framework at Django: Under The Hood][django-under-hood-2014]
 * [Django REST Framework: Schemas, Hypermedia & Client Libraries][pycon-uk-2016]
@@ -122,7 +122,7 @@ Want your Django REST Framework talk/tutorial/article to be added to our website
 [django-polls-api]: https://learndjango.com/tutorials/django-polls-tutorial-api
 [django-rest-framework-todo-api]: https://learndjango.com/tutorials/django-rest-framework-tutorial-todo-api
 [django-rest-api-so-easy]: https://www.youtube.com/watch?v=cqP758k1BaQ
-[full-fledged-rest-api-with-django-oauth-tookit]: https://www.youtube.com/watch?v=M6Ud3qC2tTk
+[full-fledged-rest-api-with-django-oauth-toolkit]: https://www.youtube.com/watch?v=M6Ud3qC2tTk
 [drf-in-your-pjs]: https://www.youtube.com/watch?v=xMtHsWa72Ww
 [building-a-rest-api-using-django-and-drf]: https://www.youtube.com/watch?v=PwssEec3IRw
 [drf-tutorials]: https://www.youtube.com/watch?v=axRCBgbOJp8&list=PLJtp8Jm8EDzjgVg9vVyIUMoGyqtegj7FH
