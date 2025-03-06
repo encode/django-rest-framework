@@ -726,7 +726,7 @@ class OrderingFilterTests(TestCase):
         # create some related models to aggregate order by
         num_objs = [2, 5, 3]
         for obj, num_related in zip(OrderingFilterModel.objects.all(),
-                                     num_objs):
+                                    num_objs):
             for _ in range(num_related):
                 new_related = OrderingFilterRelatedModel(
                     related_object=obj
