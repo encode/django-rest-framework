@@ -513,7 +513,7 @@ class TestLimitOffset:
             ]
         }
 
-    def test_erronous_offset(self):
+    def test_erroneous_offset(self):
         request = Request(factory.get('/', {'limit': 5, 'offset': 1000}))
         queryset = self.paginate_queryset(request)
         self.get_paginated_content(queryset)

@@ -61,8 +61,8 @@ class TestAcceptedMediaType(TestCase):
 
     def test_match_is_false_if_main_types_not_match(self):
         mediatype = _MediaType('test_1')
-        anoter_mediatype = _MediaType('test_2')
-        assert mediatype.match(anoter_mediatype) is False
+        another_mediatype = _MediaType('test_2')
+        assert mediatype.match(another_mediatype) is False
 
     def test_mediatype_match_is_false_if_keys_not_match(self):
         mediatype = _MediaType(';test_param=foo')

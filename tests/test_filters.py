@@ -19,7 +19,7 @@ factory = APIRequestFactory()
 
 class SearchSplitTests(SimpleTestCase):
 
-    def test_keep_quoted_togheter_regardless_of_commas(self):
+    def test_keep_quoted_together_regardless_of_commas(self):
         assert ['hello, world'] == list(filters.search_smart_split('"hello, world"'))
 
     def test_strips_commas_around_quoted(self):
