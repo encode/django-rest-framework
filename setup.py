@@ -2,7 +2,6 @@ import os
 import re
 import shutil
 import sys
-from io import open
 
 from setuptools import find_packages, setup
 
@@ -36,7 +35,7 @@ an older version of Django REST Framework:
 
 
 def read(f):
-    with open(f, 'r', encoding='utf-8') as file:
+    with open(f, encoding='utf-8') as file:
         return file.read()
 
 
