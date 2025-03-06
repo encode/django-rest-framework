@@ -1177,7 +1177,7 @@ class NamingCollisionViewSet(GenericViewSet):
     """
     Example via: https://stackoverflow.com/questions/43778668/django-rest-framwork-occured-typeerror-link-object-does-not-support-item-ass/
     """
-    permision_class = ()
+    permission_classes = ()
 
     @action(detail=False)
     def detail(self, request):
