@@ -406,7 +406,7 @@ class TestUniquenessTogetherValidation(TestCase):
             "with a `UniqueTogetherValidator` using the desired field names.")
         assert str(excinfo.value) == expected
 
-    def test_allow_explict_override(self):
+    def test_allow_explicit_override(self):
         """
         Ensure validators can be explicitly removed..
         """
@@ -664,7 +664,7 @@ class TestUniqueConstraintValidation(TestCase):
         UniqueConstraint with single field must be transformed into
         field's UniqueValidator
         """
-        # Django 5 includes Max and Min values validators for IntergerField
+        # Django 5 includes Max and Min values validators for IntegerField
         extra_validators_qty = 2 if django_version[0] >= 5 else 0
         serializer = UniqueConstraintSerializer()
         assert len(serializer.validators) == 2
