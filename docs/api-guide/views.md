@@ -12,6 +12,8 @@ source:
 
 REST framework provides an `APIView` class, which subclasses Django's `View` class.
 
+::: rest_framework.views.APIView
+
 `APIView` classes are different from regular `View` classes in the following ways:
 
 * Requests passed to the handler methods will be REST framework's `Request` instances, not Django's `HttpRequest` instances.
@@ -58,15 +60,27 @@ The following attributes control the pluggable aspects of API views.
 
 ### .renderer_classes
 
+::: rest_framework.views.APIView.renderer_classes
+
 ### .parser_classes
+
+::: rest_framework.views.APIView.parser_classes
 
 ### .authentication_classes
 
+::: rest_framework.views.APIView.authentication_classes
+
 ### .throttle_classes
+
+::: rest_framework.views.APIView.throttle_classes
 
 ### .permission_classes
 
+::: rest_framework.views.APIView.permission_classes
+
 ### .content_negotiation_class
+
+::: rest_framework.views.APIView.content_negotiation_class
 
 ## API policy instantiation methods
 
@@ -74,17 +88,31 @@ The following methods are used by REST framework to instantiate the various plug
 
 ### .get_renderers(self)
 
+::: rest_framework.views.APIView.get_renderers
+
 ### .get_parsers(self)
+
+::: rest_framework.views.APIView.get_parsers
 
 ### .get_authenticators(self)
 
+::: rest_framework.views.APIView.get_authenticators
+
 ### .get_throttles(self)
+
+::: rest_framework.views.APIView.get_throttles
 
 ### .get_permissions(self)
 
+::: rest_framework.views.APIView.get_permissions
+
 ### .get_content_negotiator(self)
 
+::: rest_framework.views.APIView.get_content_negotiator
+
 ### .get_exception_handler(self)
+
+::: rest_framework.views.APIView.get_exception_handler
 
 ## API policy implementation methods
 
@@ -92,16 +120,26 @@ The following methods are called before dispatching to the handler method.
 
 ### .check_permissions(self, request)
 
+::: rest_framework.views.APIView.check_permissions
+
 ### .check_throttles(self, request)
+
+::: rest_framework.views.APIView.check_throttles
 
 ### .perform_content_negotiation(self, request, force=False)
 
+::: rest_framework.views.APIView.perform_content_negotiation
+
 ## Dispatch methods
+
+::: rest_framework.views.APIView.dispatch
 
 The following methods are called directly by the view's `.dispatch()` method.
 These perform any actions that need to occur before or after calling the handler methods such as `.get()`, `.post()`, `put()`, `patch()` and `.delete()`.
 
 ### .initial(self, request, \*args, **kwargs)
+
+::: rest_framework.views.APIView.initial
 
 Performs any actions that need to occur before the handler method gets called.
 This method is used to enforce permissions and throttling, and perform content negotiation.
@@ -109,6 +147,8 @@ This method is used to enforce permissions and throttling, and perform content n
 You won't typically need to override this method.
 
 ### .handle_exception(self, exc)
+
+::: rest_framework.views.APIView.handle_exception
 
 Any exception thrown by the handler method will be passed to this method, which either returns a `Response` instance, or re-raises the exception.
 
@@ -118,11 +158,15 @@ If you need to customize the error responses your API returns you should subclas
 
 ### .initialize_request(self, request, \*args, **kwargs)
 
+::: rest_framework.views.APIView.initialize_request
+
 Ensures that the request object that is passed to the handler method is an instance of `Request`, rather than the usual Django `HttpRequest`.
 
 You won't typically need to override this method.
 
 ### .finalize_response(self, request, response, \*args, **kwargs)
+
+::: rest_framework.views.APIView.finalize_response
 
 Ensures that any `Response` object returned from the handler method will be rendered into the correct content type, as determined by the content negotiation.
 
@@ -139,6 +183,8 @@ You won't typically need to override this method.
 REST framework also allows you to work with regular function based views.  It provides a set of simple decorators that wrap your function based views to ensure they receive an instance of `Request` (rather than the usual Django `HttpRequest`) and allows them to return a `Response` (instead of a Django `HttpResponse`), and allow you to configure how the request is processed.
 
 ## @api_view()
+
+::: rest_framework.decorators.api_view
 
 **Signature:** `@api_view(http_method_names=['GET'])`
 
@@ -191,6 +237,8 @@ Each of these decorators takes a single argument which must be a list or tuple o
 
 
 ## View schema decorator
+
+::: rest_framework.decorators.schema
 
 To override the default schema generation for function based views you may use
 the `@schema` decorator. This must come *after* (below) the `@api_view`
