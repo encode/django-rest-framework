@@ -18,32 +18,32 @@ Create a new Django project named `tutorial`, then start a new app called `quick
     pip install djangorestframework
 
     # Set up a new project with a single application
-    django-admin startproject tutorial .  # Note the trailing '.' character
-    cd tutorial
+    django-admin startproject my_project .  # Note the trailing '.' character
+    cd my_project
     django-admin startapp quickstart
     cd ..
 
 The project layout should look like:
 
     $ pwd
-    <some path>/tutorial
+    <some path>/my_project
     $ find .
     .
-    ./tutorial
-    ./tutorial/asgi.py
-    ./tutorial/__init__.py
-    ./tutorial/quickstart
-    ./tutorial/quickstart/migrations
-    ./tutorial/quickstart/migrations/__init__.py
-    ./tutorial/quickstart/models.py
-    ./tutorial/quickstart/__init__.py
-    ./tutorial/quickstart/apps.py
-    ./tutorial/quickstart/admin.py
-    ./tutorial/quickstart/tests.py
-    ./tutorial/quickstart/views.py
-    ./tutorial/settings.py
-    ./tutorial/urls.py
-    ./tutorial/wsgi.py
+    ./my_project
+    ./my_project/asgi.py
+    ./my_project/__init__.py
+    ./my_project/quickstart
+    ./my_project/quickstart/migrations
+    ./my_project/quickstart/migrations/__init__.py
+    ./my_project/quickstart/models.py
+    ./my_project/quickstart/__init__.py
+    ./my_project/quickstart/apps.py
+    ./my_project/quickstart/admin.py
+    ./my_project/quickstart/tests.py
+    ./my_project/quickstart/views.py
+    ./my_project/settings.py
+    ./my_project/urls.py
+    ./my_project/wsgi.py
     ./env
     ./env/...
     ./manage.py
@@ -62,7 +62,7 @@ Once you've set up a database and the initial user is created and ready to go, o
 
 ## Serializers
 
-First up we're going to define some serializers. Let's create a new module named `tutorial/quickstart/serializers.py` that we'll use for our data representations.
+First up we're going to define some serializers. Let's create a new module named `my_project/quickstart/serializers.py` that we'll use for our data representations.
 
     from django.contrib.auth.models import Group, User
     from rest_framework import serializers
@@ -83,12 +83,12 @@ Notice that we're using hyperlinked relations in this case with `HyperlinkedMode
 
 ## Views
 
-Right, we'd better write some views then.  Open `tutorial/quickstart/views.py` and get typing.
+Right, we'd better write some views then.  Open `my_project/quickstart/views.py` and get typing.
 
     from django.contrib.auth.models import Group, User
     from rest_framework import permissions, viewsets
 
-    from tutorial.quickstart.serializers import GroupSerializer, UserSerializer
+    from my_project.quickstart.serializers import GroupSerializer, UserSerializer
 
 
     class UserViewSet(viewsets.ModelViewSet):
@@ -114,12 +114,12 @@ We can easily break these down into individual views if we need to, but using vi
 
 ## URLs
 
-Okay, now let's wire up the API URLs.  On to `tutorial/urls.py`...
+Okay, now let's wire up the API URLs.  On to `my_project/urls.py`...
 
     from django.urls import include, path
     from rest_framework import routers
 
-    from tutorial.quickstart import views
+    from my_project.quickstart import views
 
     router = routers.DefaultRouter()
     router.register(r'users', views.UserViewSet)
@@ -139,7 +139,7 @@ Again, if we need more control over the API URLs we can simply drop down to usin
 Finally, we're including default login and logout views for use with the browsable API.  That's optional, but useful if your API requires authentication and you want to use the browsable API.
 
 ## Pagination
-Pagination allows you to control how many objects per page are returned. To enable it add the following lines to `tutorial/settings.py`
+Pagination allows you to control how many objects per page are returned. To enable it add the following lines to `my_project/settings.py`
 
     REST_FRAMEWORK = {
         'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
@@ -148,7 +148,7 @@ Pagination allows you to control how many objects per page are returned. To enab
 
 ## Settings
 
-Add `'rest_framework'` to `INSTALLED_APPS`. The settings module will be in `tutorial/settings.py`
+Add `'rest_framework'` to `INSTALLED_APPS`. The settings module will be in `my_project/settings.py`
 
     INSTALLED_APPS = [
         ...
