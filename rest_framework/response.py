@@ -9,6 +9,7 @@ from http.client import responses
 from django.template.response import SimpleTemplateResponse
 
 from rest_framework.serializers import Serializer
+from rest_framework.status import HTTP_204_NO_CONTENT
 
 
 class Response(SimpleTemplateResponse):
@@ -79,7 +80,7 @@ class Response(SimpleTemplateResponse):
             )
             return ret.encode(charset)
 
-        if not ret:
+        if not ret or self.status_code == HTTP_204_NO_CONTENT:
             del self['Content-Type']
 
         return ret
