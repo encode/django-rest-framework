@@ -33,14 +33,14 @@ Okay, we're ready to get coding.
 To get started, let's create a new project to work with.
 
     cd ~
-    django-admin startproject tutorial
-    cd tutorial
+    django-admin startproject my_project
+    cd my_project
 
 Once that's done we can create an app that we'll use to create a simple Web API.
 
     python manage.py startapp snippets
 
-We'll need to add our new `snippets` app and the `rest_framework` app to `INSTALLED_APPS`. Let's edit the `tutorial/settings.py` file:
+We'll need to add our new `snippets` app and the `rest_framework` app to `INSTALLED_APPS`. Let's edit the `my_project/settings.py` file:
 
     INSTALLED_APPS = [
         ...
@@ -282,7 +282,7 @@ Finally we need to wire these views up.  Create the `snippets/urls.py` file:
         path('snippets/<int:pk>/', views.snippet_detail),
     ]
 
-We also need to wire up the root urlconf, in the `tutorial/urls.py` file, to include our snippet app's URLs.
+We also need to wire up the root urlconf, in the `my_project/urls.py` file, to include our snippet app's URLs.
 
     from django.urls import path, include
 
@@ -307,7 +307,7 @@ Quit out of the shell...
     Validating models...
 
     0 errors found
-    Django version 5.0, using settings 'tutorial.settings'
+    Django version 5.0, using settings 'my_project.settings'
     Starting Development server at http://127.0.0.1:8000/
     Quit the server with CONTROL-C.
 
