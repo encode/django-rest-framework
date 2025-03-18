@@ -62,6 +62,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [drf-oidc-auth][drf-oidc-auth] - Implements OpenID Connect token authentication for DRF.
 * [drfpasswordless][drfpasswordless] - Adds (Medium, Square Cash inspired) passwordless logins and signups via email and mobile numbers.
 * [django-rest-authemail][django-rest-authemail] - Provides a RESTful API for user signup and authentication using email addresses.
+* [dango-pyoidc][django-pyoidc] adds support for OpenID Connect (OIDC) authentication.
 
 ### Permissions
 
@@ -256,3 +257,4 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [drf-api-action]: https://github.com/Ori-Roza/drf-api-action
 [drf-redesign]: https://github.com/youzarsiph/drf-redesign
 [drf-material]: https://github.com/youzarsiph/drf-material
+[django-pyoidc] : https://github.com/makinacorpus/django_pyoidc
