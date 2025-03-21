@@ -4,7 +4,6 @@ be used for paginated responses.
 """
 
 import contextlib
-import warnings
 from base64 import b64decode, b64encode
 from collections import namedtuple
 from urllib import parse
@@ -15,8 +14,6 @@ from django.template import loader
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
 
-from rest_framework import RemovedInDRF317Warning
-from rest_framework.compat import coreapi, coreschema
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from rest_framework.settings import api_settings

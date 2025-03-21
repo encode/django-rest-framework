@@ -3,7 +3,6 @@ Provides generic filtering backends that can be used to filter the results
 returned by list views.
 """
 import operator
-import warnings
 from functools import reduce
 
 from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured
@@ -14,8 +13,6 @@ from django.utils.encoding import force_str
 from django.utils.text import smart_split, unescape_string_literal
 from django.utils.translation import gettext_lazy as _
 
-from rest_framework import RemovedInDRF317Warning
-from rest_framework.compat import coreapi, coreschema
 from rest_framework.fields import CharField
 from rest_framework.settings import api_settings
 
@@ -256,9 +253,9 @@ class OrderingFilter(BaseFilterBackend):
             (field.source.replace('.', '__') or field_name, field.label)
             for field_name, field in serializer_class(context=context).fields.items()
             if (
-                    not getattr(field, 'write_only', False) and
-                    not field.source == '*' and
-                    field.source not in model_property_names
+                not getattr(field, 'write_only', False) and
+                not field.source == '*' and
+                field.source not in model_property_names
             )
         ]
 

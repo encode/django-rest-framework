@@ -1,17 +1,10 @@
-import warnings
 from collections import Counter
-from urllib import parse
 
 from django.db import models
 from django.utils.encoding import force_str
 
-from rest_framework import RemovedInDRF317Warning, exceptions, serializers
-from rest_framework.compat import coreapi, coreschema, uritemplate
-from rest_framework.settings import api_settings
-
-from .generators import BaseSchemaGenerator
-from .inspectors import ViewInspector
-from .utils import get_pk_description, is_list_view
+from rest_framework import serializers
+from rest_framework.compat import coreschema
 
 
 def common_path(paths):
@@ -186,6 +179,3 @@ def field_to_schema(field):
         )
 
     return coreschema.String(title=title, description=description)
-
-
-å
