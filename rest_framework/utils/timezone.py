@@ -1,7 +1,7 @@
 from datetime import datetime, timezone, tzinfo
 
 
-def datetime_exists(dt: datetime) -> bool:
+def datetime_exists(dt) -> bool:
     """Check if a datetime exists. Taken from: https://pytz-deprecation-shim.readthedocs.io/en/latest/migration.html"""
     # There are no non-existent times in UTC, and comparisons between
     # aware time zones always compare absolute times; if a datetime is
