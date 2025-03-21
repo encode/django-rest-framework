@@ -9,7 +9,7 @@ def datetime_exists(dt) -> bool:
     return dt.astimezone(timezone.utc) == dt
 
 
-def datetime_ambiguous(dt: datetime) -> bool:
+def datetime_ambiguous(dt) -> bool:
     """Check whether a datetime is ambiguous. Taken from: https://pytz-deprecation-shim.readthedocs.io/en/latest/migration.html"""
     # If a datetime exists and its UTC offset changes in response to
     # changing `fold`, it is ambiguous in the zone specified.
