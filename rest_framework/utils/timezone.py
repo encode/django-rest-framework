@@ -1,4 +1,4 @@
-from datetime import datetime, timezone, tzinfo
+from datetime import timezone, tzinfo
 
 
 def datetime_exists(dt):
