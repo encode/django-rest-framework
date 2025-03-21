@@ -18,6 +18,6 @@ def datetime_ambiguous(dt):
     )
 
 
-def valid_datetime(dt) -> bool:
+def valid_datetime(dt):
     """Returns True if the datetime is not ambiguous or imaginary, False otherwise."""
     return isinstance(dt.tzinfo, tzinfo) and not datetime_ambiguous(dt)
