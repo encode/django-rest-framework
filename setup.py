@@ -2,6 +2,7 @@ import os
 import re
 import shutil
 import sys
+from pathlib import Path
 
 from setuptools import find_packages, setup
 
@@ -35,16 +36,14 @@ an older version of Django REST Framework:
 
 
 def read(f):
-    with open(f, encoding='utf-8') as file:
-        return file.read()
+    return Path(f).read_text(encoding='utf-8')
 
 
 def get_version(package):
     """
     Return package version as listed in `__version__` in `init.py`.
     """
-    with open(os.path.join(package, '__init__.py'), encoding='utf-8') as f:
-        init_py = f.read()
+    init_py = Path(package, "__init__.py").read_text(encoding="utf-8")
     return re.search("__version__ = ['\"]([^'\"]+)['\"]", init_py).group(1)
 
 
