@@ -40,7 +40,7 @@ You can determine your currently installed version using `pip show`:
 
 ### 3.16.0
 
-**Date**: 31th March 2025
+**Date**: 28th March 2025
 
 This release is considered a significant release to improve upstream support with Django and Python. Some of these may change the behaviour of existing features and pre-existing behaviour. Specifically, some fixes were added to around the support of `UniqueConstraint` with nullable fields which will improve built-in serializer validation.
 
