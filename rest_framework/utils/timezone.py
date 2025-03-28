@@ -1,4 +1,4 @@
-from datetime import datetime, timezone, tzinfo
+from datetime import timezone, tzinfo
 
 
 def datetime_exists(dt):
@@ -9,7 +9,7 @@ def datetime_exists(dt):
     return dt.astimezone(timezone.utc) == dt
 
 
-def datetime_ambiguous(dt: datetime):
+def datetime_ambiguous(dt):
     """Check whether a datetime is ambiguous. Taken from: https://pytz-deprecation-shim.readthedocs.io/en/latest/migration.html"""
     # If a datetime exists and its UTC offset changes in response to
     # changing `fold`, it is ambiguous in the zone specified.
@@ -20,6 +20,4 @@ def datetime_ambiguous(dt: datetime):
 
 def valid_datetime(dt):
     """Returns True if the datetime is not ambiguous or imaginary, False otherwise."""
-    if isinstance(dt.tzinfo, tzinfo) and not datetime_ambiguous(dt):
-        return True
-    return False
+    return isinstance(dt.tzinfo, tzinfo) and not datetime_ambiguous(dt)
