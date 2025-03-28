@@ -207,8 +207,10 @@ def get_field_kwargs(field_name, model_field):
         if isinstance(model_field, models.GenericIPAddressField):
             validator_kwarg = [
                 validator for validator in validator_kwarg
-                if validator is not validators.validate_ipv46_address
+                if validator not in [validators.validate_ipv46_address, validators.validate_ipv6_address, validators.validate_ipv4_address]
             ]
+            kwargs['protocol'] = getattr(model_field, 'protocol', 'both')
+
         # Our decimal validation is handled in the field code, not validator code.
         if isinstance(model_field, models.DecimalField):
             validator_kwarg = [
