@@ -552,7 +552,7 @@ For further examples on `HiddenField` see the [validators](validators.md) docume
 
 ---
 
-**Note:** `HiddenField()` does not appear in `partial=True` serializer (when making `PATCH` request). This behavior might change in future, follow updates on [github discussion](https://github.com/encode/django-rest-framework/discussions/8259). 
+**Note:** `HiddenField()` does not appear in `partial=True` serializer (when making `PATCH` request).
 
 ---
 
