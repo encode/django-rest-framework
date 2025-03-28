@@ -70,6 +70,7 @@ This release is considered a significant release to improve upstream support wit
 
 ## Removals
 
+* Remove support for Python 3.8 in [#9670](https://github.com/encode/django-rest-framework/pull/9670)
 * Remove long deprecated code from request wrapper in [#9441](https://github.com/encode/django-rest-framework/pull/9441)
 * Remove deprecated `AutoSchema._get_reference` method in [#9525](https://github.com/encode/django-rest-framework/pull/9525)
 
