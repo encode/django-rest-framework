@@ -36,6 +36,85 @@ You can determine your currently installed version using `pip show`:
 
 ---
 
+## 3.16.x series
+
+### 3.16.0
+
+**Date**: 31th March 2025
+
+## What's Changed
+* Provide tests for hashing of `OperandHolder` by @vanya909 in https://github.com/encode/django-rest-framework/pull/9437
+* Remove long deprecated code from request wrapper by @sevdog in https://github.com/encode/django-rest-framework/pull/9441
+* Update documentation: Add adrf third party package by @maerteijn in https://github.com/encode/django-rest-framework/pull/9198
+* Fix wrong link PR(#9435) on release-notes 3.15.2 by @FraCata00 in https://github.com/encode/django-rest-framework/pull/9444
+* Update release-notes.md by @AlvaroVega in https://github.com/encode/django-rest-framework/pull/9451
+* Add Zuplo to sponsors by @tomchristie in https://github.com/encode/django-rest-framework/pull/9460
+* Fix get_template_context to handle also lists by @sevdog in https://github.com/encode/django-rest-framework/pull/9467
+* Update tutorials links in Community contributions docs by @andreagrandi in https://github.com/encode/django-rest-framework/pull/9476
+* Added protections to AttributeErrors raised within properties by @james-mchugh in https://github.com/encode/django-rest-framework/pull/9455
+* Fix unique_together validation with source by @yuekui in https://github.com/encode/django-rest-framework/pull/9482
+* Update tutorials-and-resources.md by @ifeanyidavid in https://github.com/encode/django-rest-framework/pull/9479
+* Update jobs.md by @p-schlickmann in https://github.com/encode/django-rest-framework/pull/9480
+* Update django.po by @akkuman in https://github.com/encode/django-rest-framework/pull/9505
+* Fix "Converter is already registered" deprecation warning. by @noamkush in https://github.com/encode/django-rest-framework/pull/9512
+* Update browsable-api.md by @rafaelgramoschi in https://github.com/encode/django-rest-framework/pull/9509
+* Accept integers as min/max values of DecimalField by @browniebroke in https://github.com/encode/django-rest-framework/pull/9515
+* Add official support for Django 5.1 by @browniebroke in https://github.com/encode/django-rest-framework/pull/9514
+* Spelling mistakes in Farsi language were corrected by @Sinaatkd in https://github.com/encode/django-rest-framework/pull/9521
+* Move path converter docs into a separate section by @browniebroke in https://github.com/encode/django-rest-framework/pull/9524
+* Add test covering update view without `queryset` attribute by @browniebroke in https://github.com/encode/django-rest-framework/pull/9528
+* Add support for Python 3.13 by @browniebroke in https://github.com/encode/django-rest-framework/pull/9527
+* Fix Transifex link by @peterthomassen in https://github.com/encode/django-rest-framework/pull/9541
+* Fixing and adding missing pt-br translations by @gtkacz in https://github.com/encode/django-rest-framework/pull/9535
+* Use final version of Python 3.13 by @sliverc in https://github.com/encode/django-rest-framework/pull/9556
+* Update 1-serialization.md by @gabrielromagnoli1987 in https://github.com/encode/django-rest-framework/pull/9543
+* Fix docs typo in Serializers Validators by @cheehong1030 in https://github.com/encode/django-rest-framework/pull/9563
+* Tutorial updates by @wsvincent in https://github.com/encode/django-rest-framework/pull/9589
+* Removed extra <> in validators example by @amansharma612 in https://github.com/encode/django-rest-framework/pull/9590
+* Fix raising on nullable fields part of `UniqueConstraint` by @browniebroke in https://github.com/encode/django-rest-framework/pull/9531
+* support django 2.1+ test client json data automatically serialized by @terencehonles in https://github.com/encode/django-rest-framework/pull/6511
+* Fix typo in renderers.md by @Gluroda in https://github.com/encode/django-rest-framework/pull/9616
+* Fixed regression that tests using format still work by @sliverc in https://github.com/encode/django-rest-framework/pull/9615
+* Update `strftime` formats link in the documentation by @deepakangadi in https://github.com/encode/django-rest-framework/pull/9624
+* Update SECURITY.md by @tomchristie in https://github.com/encode/django-rest-framework/pull/9628
+* Switch to codecov GHA by @browniebroke in https://github.com/encode/django-rest-framework/pull/9618
+* Add note in 'Introspecting ViewSet actions' docs section by @EXG1O in https://github.com/encode/django-rest-framework/pull/9633
+* Drop deprecated `AutoSchema._get_reference` method by @browniebroke in https://github.com/encode/django-rest-framework/pull/9525
+* Improved description of allowed throttling rates in documentation by @decadenza in https://github.com/encode/django-rest-framework/pull/9640
+* Add missing ignore_outcome=true for the Python 3.13 - Django main combination by @browniebroke in https://github.com/encode/django-rest-framework/pull/9637
+* add django 5.2a1 initial support by @auvipy in https://github.com/encode/django-rest-framework/pull/9634
+* Fix unique together validator doesn't respect condition's fields by @kalekseev in https://github.com/encode/django-rest-framework/pull/9360
+* add rest-framework-gm2m-relations package that provides read/write serialization for generic many to many field by @mojtabaakbari221b in https://github.com/encode/django-rest-framework/pull/9063
+* Update django 5.2b1 by @auvipy in https://github.com/encode/django-rest-framework/pull/9657
+* Update usage of open() in setup.py by @mikemanger in https://github.com/encode/django-rest-framework/pull/9661
+* Fix typos by @mikemanger in https://github.com/encode/django-rest-framework/pull/9662
+* Add django-pyoidc as a third party authentication library by @gbip in https://github.com/encode/django-rest-framework/pull/9667
+
+## New Contributors
+* @maerteijn made their first contribution in https://github.com/encode/django-rest-framework/pull/9198
+* @FraCata00 made their first contribution in https://github.com/encode/django-rest-framework/pull/9444
+* @AlvaroVega made their first contribution in https://github.com/encode/django-rest-framework/pull/9451
+* @james-mchugh made their first contribution in https://github.com/encode/django-rest-framework/pull/9455
+* @ifeanyidavid made their first contribution in https://github.com/encode/django-rest-framework/pull/9479
+* @p-schlickmann made their first contribution in https://github.com/encode/django-rest-framework/pull/9480
+* @akkuman made their first contribution in https://github.com/encode/django-rest-framework/pull/9505
+* @rafaelgramoschi made their first contribution in https://github.com/encode/django-rest-framework/pull/9509
+* @Sinaatkd made their first contribution in https://github.com/encode/django-rest-framework/pull/9521
+* @gtkacz made their first contribution in https://github.com/encode/django-rest-framework/pull/9535
+* @sliverc made their first contribution in https://github.com/encode/django-rest-framework/pull/9556
+* @gabrielromagnoli1987 made their first contribution in https://github.com/encode/django-rest-framework/pull/9543
+* @cheehong1030 made their first contribution in https://github.com/encode/django-rest-framework/pull/9563
+* @amansharma612 made their first contribution in https://github.com/encode/django-rest-framework/pull/9590
+* @Gluroda made their first contribution in https://github.com/encode/django-rest-framework/pull/9616
+* @deepakangadi made their first contribution in https://github.com/encode/django-rest-framework/pull/9624
+* @EXG1O made their first contribution in https://github.com/encode/django-rest-framework/pull/9633
+* @decadenza made their first contribution in https://github.com/encode/django-rest-framework/pull/9640
+* @mojtabaakbari221b made their first contribution in https://github.com/encode/django-rest-framework/pull/9063
+* @mikemanger made their first contribution in https://github.com/encode/django-rest-framework/pull/9661
+* @gbip made their first contribution in https://github.com/encode/django-rest-framework/pull/9667
+
+**Full Changelog**: https://github.com/encode/django-rest-framework/compare/3.15.2...3.16.0
+
 ## 3.15.x series
 
 ### 3.15.2
