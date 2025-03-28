@@ -290,6 +290,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../community/3.16-announcement/">3.16 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../community/3.15-announcement/">3.15 Announcement</a>
                   </li>
                   
@@ -598,6 +602,7 @@ urlpatterns = router.urls
         permission_classes = [IsAdminUser]
     return [permission() for permission in permission_classes]
 </code></pre>
+<p><strong>Note</strong>: the <code>action</code> attribute is not available in the <code>get_parsers</code>, <code>get_authenticators</code> and <code>get_content_negotiator</code> methods, as it is set <em>after</em> they are called in the framework lifecycle. If you override one of these methods and try to access the <code>action</code> attribute in them, you will get an <code>AttributeError</code> error.</p>
 <h2 id="marking-extra-actions-for-routing"><a class="toclink" href="#marking-extra-actions-for-routing">Marking extra actions for routing</a></h2>
 <p>If you have ad-hoc methods that should be routable, you can mark them as such with the <code>@action</code> decorator. Like regular actions, extra actions may be intended for either a single object, or an entire collection. To indicate this, set the <code>detail</code> argument to <code>True</code> or <code>False</code>. The router will configure its URL patterns accordingly. e.g., the <code>DefaultRouter</code> will configure detail actions to contain <code>pk</code> in their URL patterns.</p>
 <p>A more complete example of extra actions:</p>

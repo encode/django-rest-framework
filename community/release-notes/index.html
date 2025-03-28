@@ -54,7 +54,7 @@
       <div class="navbar-inner">
         <div class="container-fluid">
           <a class="repo-link btn btn-primary btn-small" href="https://github.com/encode/django-rest-framework/tree/master">GitHub</a>
-          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../3.15-announcement/">
+          <a class="repo-link btn btn-inverse btn-small " rel="next" href="../3.16-announcement/">
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
           <a class="repo-link btn btn-inverse btn-small " rel="prev" href="../project-management/">
@@ -290,6 +290,10 @@
                   </li>
                   
                   <li >
+                    <a href="../3.16-announcement/">3.16 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../3.15-announcement/">3.15 Announcement</a>
                   </li>
                   
@@ -430,6 +434,34 @@
                     </li>
                   
                     <li>
+                      <a href="#316x-series">3.16.x series</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#features">Features</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#bug-fixes">Bug fixes</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#translations">Translations</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#removals">Removals</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#documentation-and-internal-changes">Documentation and internal changes</a>
+                    </li>
+                  
+                    <li>
+                      <a href="#new-contributors">New Contributors</a>
+                    </li>
+                  
+                    <li>
                       <a href="#315x-series">3.15.x series</a>
                     </li>
                   
@@ -545,6 +577,85 @@
 <pre><code>pip show djangorestframework
 </code></pre>
 <hr />
+<h2 id="316x-series"><a class="toclink" href="#316x-series">3.16.x series</a></h2>
+<h3 id="3160"><a class="toclink" href="#3160">3.16.0</a></h3>
+<p><strong>Date</strong>: 28th March 2025</p>
+<p>This release is considered a significant release to improve upstream support with Django and Python. Some of these may change the behaviour of existing features and pre-existing behaviour. Specifically, some fixes were added to around the support of <code>UniqueConstraint</code> with nullable fields which will improve built-in serializer validation.</p>
+<h2 id="features"><a class="toclink" href="#features">Features</a></h2>
+<ul>
+<li>Add official support for Django 5.1 and its new <code>LoginRequiredMiddleware</code> in <a href="https://github.com/encode/django-rest-framework/pull/9514">#9514</a> and <a href="https://github.com/encode/django-rest-framework/pull/9657">#9657</a></li>
+<li>Add official Django 5.2a1 support in <a href="https://github.com/encode/django-rest-framework/pull/9634">#9634</a></li>
+<li>Add support for Python 3.13 in <a href="https://github.com/encode/django-rest-framework/pull/9527">#9527</a> and <a href="https://github.com/encode/django-rest-framework/pull/9556">#9556</a></li>
+<li>Support Django 2.1+ test client JSON data automatically serialized in <a href="https://github.com/encode/django-rest-framework/pull/6511">#6511</a> and fix a regression in <a href="https://github.com/encode/django-rest-framework/pull/9615">#9615</a></li>
+</ul>
+<h2 id="bug-fixes"><a class="toclink" href="#bug-fixes">Bug fixes</a></h2>
+<ul>
+<li>Fix unique together validator to respect condition's fields from <code>UniqueConstraint</code> in <a href="https://github.com/encode/django-rest-framework/pull/9360">#9360</a></li>
+<li>Fix raising on nullable fields part of <code>UniqueConstraint</code> in <a href="https://github.com/encode/django-rest-framework/pull/9531">#9531</a></li>
+<li>Fix <code>unique_together</code> validation with source in <a href="https://github.com/encode/django-rest-framework/pull/9482">#9482</a></li>
+<li>Added protections to <code>AttributeError</code> raised within properties in <a href="https://github.com/encode/django-rest-framework/pull/9455">#9455</a></li>
+<li>Fix <code>get_template_context</code> to handle also lists in <a href="https://github.com/encode/django-rest-framework/pull/9467">#9467</a></li>
+<li>Fix "Converter is already registered" deprecation warning. in <a href="https://github.com/encode/django-rest-framework/pull/9512">#9512</a></li>
+<li>Fix noisy warning and accept integers as min/max values of <code>DecimalField</code> in <a href="https://github.com/encode/django-rest-framework/pull/9515">#9515</a></li>
+<li>Fix usages of <code>open()</code> in <code>setup.py</code> in <a href="https://github.com/encode/django-rest-framework/pull/9661">#9661</a></li>
+</ul>
+<h2 id="translations"><a class="toclink" href="#translations">Translations</a></h2>
+<ul>
+<li>Add some missing Chinese translations in <a href="https://github.com/encode/django-rest-framework/pull/9505">#9505</a></li>
+<li>Fix spelling mistakes in Farsi language were corrected in <a href="https://github.com/encode/django-rest-framework/pull/9521">#9521</a></li>
+<li>Fixing and adding missing Brazilian Portuguese translations in <a href="https://github.com/encode/django-rest-framework/pull/9535">#9535</a></li>
+</ul>
+<h2 id="removals"><a class="toclink" href="#removals">Removals</a></h2>
+<ul>
+<li>Remove support for Python 3.8 in <a href="https://github.com/encode/django-rest-framework/pull/9670">#9670</a></li>
+<li>Remove long deprecated code from request wrapper in <a href="https://github.com/encode/django-rest-framework/pull/9441">#9441</a></li>
+<li>Remove deprecated <code>AutoSchema._get_reference</code> method in <a href="https://github.com/encode/django-rest-framework/pull/9525">#9525</a></li>
+</ul>
+<h2 id="documentation-and-internal-changes"><a class="toclink" href="#documentation-and-internal-changes">Documentation and internal changes</a></h2>
+<ul>
+<li>Provide tests for hashing of <code>OperandHolder</code> in <a href="https://github.com/encode/django-rest-framework/pull/9437">#9437</a></li>
+<li>Update documentation: Add <code>adrf</code> third party package in <a href="https://github.com/encode/django-rest-framework/pull/9198">#9198</a></li>
+<li>Update tutorials links in Community contributions docs in <a href="https://github.com/encode/django-rest-framework/pull/9476">#9476</a></li>
+<li>Fix usage of deprecated Django function in example from docs in <a href="https://github.com/encode/django-rest-framework/pull/9509">#9509</a></li>
+<li>Move path converter docs into a separate section in <a href="https://github.com/encode/django-rest-framework/pull/9524">#9524</a></li>
+<li>Add test covering update view without <code>queryset</code> attribute in <a href="https://github.com/encode/django-rest-framework/pull/9528">#9528</a></li>
+<li>Fix Transifex link in <a href="https://github.com/encode/django-rest-framework/pull/9541">#9541</a></li>
+<li>Fix example <code>httpie</code> call in docs in <a href="https://github.com/encode/django-rest-framework/pull/9543">#9543</a></li>
+<li>Fix example for serializer field with choices in docs in <a href="https://github.com/encode/django-rest-framework/pull/9563">#9563</a></li>
+<li>Remove extra <code>&lt;&gt;</code> in validators example in <a href="https://github.com/encode/django-rest-framework/pull/9590">#9590</a></li>
+<li>Update <code>strftime</code> link in the docs in <a href="https://github.com/encode/django-rest-framework/pull/9624">#9624</a></li>
+<li>Switch to codecov GHA in <a href="https://github.com/encode/django-rest-framework/pull/9618">#9618</a></li>
+<li>Add note regarding availability of the <code>action</code> attribute in 'Introspecting ViewSet actions' docs section in <a href="https://github.com/encode/django-rest-framework/pull/9633">#9633</a></li>
+<li>Improved description of allowed throttling rates in documentation in <a href="https://github.com/encode/django-rest-framework/pull/9640">#9640</a></li>
+<li>Add <code>rest-framework-gm2m-relations</code> package to the list of 3rd party libraries in <a href="https://github.com/encode/django-rest-framework/pull/9063">#9063</a></li>
+<li>Fix a number of typos in the test suite in the docs in <a href="https://github.com/encode/django-rest-framework/pull/9662">#9662</a></li>
+<li>Add <code>django-pyoidc</code> as a third party authentication library in <a href="https://github.com/encode/django-rest-framework/pull/9667">#9667</a></li>
+</ul>
+<h2 id="new-contributors"><a class="toclink" href="#new-contributors">New Contributors</a></h2>
+<ul>
+<li><a href="https://github.com/maerteijn"><code>@maerteijn</code></a> made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9198">#9198</a></li>
+<li><a href="https://github.com/FraCata00"><code>@FraCata00</code></a> made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9444">#9444</a></li>
+<li><a href="https://github.com/AlvaroVega"><code>@AlvaroVega</code></a> made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9451">#9451</a></li>
+<li><a href="https://github.com/james"><code>@james</code></a>-mchugh made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9455">#9455</a></li>
+<li><a href="https://github.com/ifeanyidavid"><code>@ifeanyidavid</code></a> made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9479">#9479</a></li>
+<li><a href="https://github.com/p"><code>@p</code></a>-schlickmann made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9480">#9480</a></li>
+<li><a href="https://github.com/akkuman"><code>@akkuman</code></a> made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9505">#9505</a></li>
+<li><a href="https://github.com/rafaelgramoschi"><code>@rafaelgramoschi</code></a> made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9509">#9509</a></li>
+<li><a href="https://github.com/Sinaatkd"><code>@Sinaatkd</code></a> made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9521">#9521</a></li>
+<li><a href="https://github.com/gtkacz"><code>@gtkacz</code></a> made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9535">#9535</a></li>
+<li><a href="https://github.com/sliverc"><code>@sliverc</code></a> made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9556">#9556</a></li>
+<li><a href="https://github.com/gabrielromagnoli1987"><code>@gabrielromagnoli1987</code></a> made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9543">#9543</a></li>
+<li><a href="https://github.com/cheehong1030"><code>@cheehong1030</code></a> made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9563">#9563</a></li>
+<li><a href="https://github.com/amansharma612"><code>@amansharma612</code></a> made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9590">#9590</a></li>
+<li><a href="https://github.com/Gluroda"><code>@Gluroda</code></a> made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9616">#9616</a></li>
+<li><a href="https://github.com/deepakangadi"><code>@deepakangadi</code></a> made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9624">#9624</a></li>
+<li><a href="https://github.com/EXG1O"><code>@EXG1O</code></a> made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9633">#9633</a></li>
+<li><a href="https://github.com/decadenza"><code>@decadenza</code></a> made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9640">#9640</a></li>
+<li><a href="https://github.com/mojtabaakbari221b"><code>@mojtabaakbari221b</code></a> made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9063">#9063</a></li>
+<li><a href="https://github.com/mikemanger"><code>@mikemanger</code></a> made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9661">#9661</a></li>
+<li><a href="https://github.com/gbip"><code>@gbip</code></a> made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9667">#9667</a></li>
+</ul>
+<p><strong>Full Changelog</strong>: https://github.com/encode/django-rest-framework/compare/3.15.2...3.16.0</p>
 <h2 id="315x-series"><a class="toclink" href="#315x-series">3.15.x series</a></h2>
 <h3 id="3152"><a class="toclink" href="#3152">3.15.2</a></h3>
 <p><strong>Date</strong>: 14th June 2024</p>
@@ -626,7 +737,7 @@
 <li>Fix 404 when page query parameter is empty string [<a href="https://github.com/encode/django-rest-framework/pull/8578">#8578</a>]</li>
 <li>Fixes instance check in ListSerializer.to_representation [<a href="https://github.com/encode/django-rest-framework/pull/8726">#8726</a>] [<a href="https://github.com/encode/django-rest-framework/pull/8727">#8727</a>]</li>
 <li>FloatField will crash if the input is a number that is too big [<a href="https://github.com/encode/django-rest-framework/pull/8725">#8725</a>]</li>
-<li>Add missing DurationField to SimpleMetada label_lookup [<a href="https://github.com/encode/django-rest-framework/pull/8702">#8702</a>]</li>
+<li>Add missing DurationField to SimpleMetadata label_lookup [<a href="https://github.com/encode/django-rest-framework/pull/8702">#8702</a>]</li>
 <li>Add support for Python 3.11 [<a href="https://github.com/encode/django-rest-framework/pull/8752">#8752</a>]</li>
 <li>Make request consistently available in pagination classes [<a href="https://github.com/encode/django-rest-framework/pull/9764">#8764</a>]</li>
 <li>Possibility to remove trailing zeros on DecimalFields representation [<a href="https://github.com/encode/django-rest-framework/pull/6514">#6514</a>]</li>
@@ -901,7 +1012,7 @@ Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.</
 <li>Allow hashing of ErrorDetail. <a href="https://github.com/encode/django-rest-framework/issues/5932">#5932</a></li>
 <li>Correct schema parsing for JSONField <a href="https://github.com/encode/django-rest-framework/issues/5878">#5878</a></li>
 <li>Render descriptions (from help_text) using safe <a href="https://github.com/encode/django-rest-framework/issues/5869">#5869</a></li>
-<li>Removed input value from deault_error_message <a href="https://github.com/encode/django-rest-framework/issues/5881">#5881</a></li>
+<li>Removed input value from default_error_message <a href="https://github.com/encode/django-rest-framework/issues/5881">#5881</a></li>
 <li>Added min_value/max_value support in DurationField <a href="https://github.com/encode/django-rest-framework/issues/5643">#5643</a></li>
 <li>Fixed instance being overwritten in pk-only optimization try/except block <a href="https://github.com/encode/django-rest-framework/issues/5747">#5747</a></li>
 <li>Fixed AttributeError from items filter when value is None <a href="https://github.com/encode/django-rest-framework/issues/5981">#5981</a></li>

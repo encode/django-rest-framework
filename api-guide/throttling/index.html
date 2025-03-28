@@ -290,6 +290,10 @@
                   </li>
                   
                   <li >
+                    <a href="../../community/3.16-announcement/">3.16 Announcement</a>
+                  </li>
+                  
+                  <li >
                     <a href="../../community/3.15-announcement/">3.15 Announcement</a>
                   </li>
                   
@@ -515,7 +519,7 @@ If any throttle check fails an <code>exceptions.Throttled</code> exception will 
     }
 }
 </code></pre>
-<p>The rate descriptions used in <code>DEFAULT_THROTTLE_RATES</code> may include <code>second</code>, <code>minute</code>, <code>hour</code> or <code>day</code> as the throttle period.</p>
+<p>The rates used in <code>DEFAULT_THROTTLE_RATES</code> can be specified over a period of second, minute, hour or day. The period must be specified after the <code>/</code> separator using <code>s</code>, <code>m</code>, <code>h</code> or <code>d</code>, respectively. For increased clarity, extended units such as <code>second</code>, <code>minute</code>, <code>hour</code>, <code>day</code> or even abbreviations like <code>sec</code>, <code>min</code>, <code>hr</code> are allowed, as only the first character is relevant to identify the rate.</p>
 <p>You can also set the throttling policy on a per-view or per-viewset basis,
 using the <code>APIView</code> class-based views.</p>
 <pre><code>from rest_framework.response import Response
