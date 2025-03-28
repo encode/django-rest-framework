@@ -36,6 +36,18 @@ You can determine your currently installed version using `pip show`:
 
 ---
 
+## 3.16.x series
+
+### 3.16.0
+
+**Date**: 28th March 2024
+
+A maintenance release primarily updating supported Python and Django versions.
+
+* Adds support for Django 5.1 and the upcoming Django 5.2 LTS [#9514](https://github.com/encode/django-rest-framework/issues/9514) [#9634](https://github.com/encode/django-rest-framework/issues/9634)
+* Adds support for Python 3.13. [#9527](https://github.com/encode/django-rest-framework/issues/9527)
+* Drops Python 3.8 as EOL [#9670](https://github.com/encode/django-rest-framework/pull/9670)
+
 ## 3.15.x series
 
 ### 3.15.2
