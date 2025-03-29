@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # Cloves Oliveira <clovesolivier23@gmail.com>, 2020
 # Craig Blaszczyk <masterjakul@gmail.com>, 2015
@@ -10,6 +10,7 @@
 # Hugo Leonardo Chalhoub Mendonça <hugoleonardocm@live.com>, 2015
 # Jonatas Baldin <jonatas.baldin@gmail.com>, 2017
 # Gabriel Mitelman Tkacz <gmtkacz@proton.me>, 2024
+# Matheus Oliveira <moliveiracdev@gmail.com>, 2025
 msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
@@ -141,7 +142,7 @@ msgstr "Não foi possível satisfazer a requisição do cabeçalho Accept."
 #: exceptions.py:212
 #, python-brace-format
 msgid "Unsupported media type \"{media_type}\" in request."
-msgstr "Tipo de mídia  \"{media_type}\" no pedido não é suportado."
+msgstr "Tipo de mídia \"{media_type}\" no pedido não é suportado."
 
 #: exceptions.py:223
 msgid "Request was throttled."
@@ -200,17 +201,17 @@ msgstr "Este valor não corresponde ao padrão exigido."
 msgid ""
 "Enter a valid \"slug\" consisting of letters, numbers, underscores or "
 "hyphens."
-msgstr "Entrar um \"slug\" válido que consista de letras, números, sublinhados ou hífens."
+msgstr "Insira um \"slug\" válido que consista de letras, números, sublinhados ou hífens."
 
 #: fields.py:839
 msgid ""
 "Enter a valid \"slug\" consisting of Unicode letters, numbers, underscores, "
 "or hyphens."
-msgstr "Digite um \"slug\" válido que consista de letras Unicode, números, sublinhados ou hífens."
+msgstr "Insira um \"slug\" válido que consista de letras Unicode, números, sublinhados ou hífens."
 
 #: fields.py:854
 msgid "Enter a valid URL."
-msgstr "Entrar um URL válido."
+msgstr "Insira um URL válido."
 
 #: fields.py:867
 msgid "Must be a valid UUID."
@@ -290,12 +291,12 @@ msgstr "Necessário uma data mas recebeu uma data e hora."
 #: fields.py:1303
 #, python-brace-format
 msgid "Time has wrong format. Use one of these formats instead: {format}."
-msgstr "Formato inválido para Tempo. Use um dos formatos a seguir: {format}."
+msgstr "Formato inválido para tempo. Use um dos formatos a seguir: {format}."
 
 #: fields.py:1365
 #, python-brace-format
 msgid "Duration has wrong format. Use one of these formats instead: {format}."
-msgstr "Formato inválido para Duração. Use um dos formatos a seguir: {format}."
+msgstr "Formato inválido para duração. Use um dos formatos a seguir: {format}."
 
 #: fields.py:1399 fields.py:1456
 #, python-brace-format
@@ -348,7 +349,7 @@ msgstr "Certifique-se de que o nome do arquivo tem menos de {max_length} caracte
 msgid ""
 "Upload a valid image. The file you uploaded was either not an image or a "
 "corrupted image."
-msgstr "Fazer upload de uma imagem válida. O arquivo enviado não é um arquivo de imagem ou está corrompido."
+msgstr "Faça upload de uma imagem válida. O arquivo enviado não é um arquivo de imagem ou está corrompido."
 
 #: fields.py:1604 relations.py:486 serializers.py:571
 msgid "This list may not be empty."
@@ -375,7 +376,7 @@ msgstr "Este dicionário não pode estar vazio."
 
 #: fields.py:1755
 msgid "Value must be valid JSON."
-msgstr "Valor devo ser JSON válido."
+msgstr "Valor deve ser JSON válido."
 
 #: filters.py:49 templates/rest_framework/filters/search.html:2
 msgid "Search"
@@ -395,11 +396,11 @@ msgstr "Qual campo usar ao ordenar os resultados."
 
 #: filters.py:287
 msgid "ascending"
-msgstr "ascendente"
+msgstr "crescente"
 
 #: filters.py:288
 msgid "descending"
-msgstr "descendente"
+msgstr "decrescente"
 
 #: pagination.py:174
 msgid "A page number within the paginated result set."
@@ -531,7 +532,7 @@ msgstr "Nenhum item para escholher."
 
 #: validators.py:39
 msgid "This field must be unique."
-msgstr "Esse campo deve ser  único."
+msgstr "Esse campo deve ser único."
 
 #: validators.py:89
 #, python-brace-format
