@@ -603,7 +603,7 @@ msgstr ""
 
 #: versioning.py:150
 msgid "Invalid version in hostname."
-msgstr "hostname내 버전이 유효하지 않습니다."
+msgstr "hostname 내 버전이 유효하지 않습니다."
 
 #: versioning.py:172
 msgid "Invalid version in query parameter."
