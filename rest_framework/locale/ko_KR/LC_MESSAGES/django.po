@@ -607,4 +607,4 @@ msgstr "hostname 내 버전이 유효하지 않습니다."
 
 #: versioning.py:172
 msgid "Invalid version in query parameter."
-msgstr "쿼리 파라메터내 버전이 유효하지 않습니다."
+msgstr "쿼리 파라메터 내 버전이 유효하지 않습니다."
