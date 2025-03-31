@@ -1020,7 +1020,7 @@ Django's regular <a href="https://docs.djangoproject.com/en/stable/ref/settings/
 <p>The <code>HiddenField</code> class is usually only needed if you have some validation that needs to run based on some pre-provided field values, but you do not want to expose all of those fields to the end user.</p>
 <p>For further examples on <code>HiddenField</code> see the <a href="../validators/">validators</a> documentation.</p>
 <hr />
-<p><strong>Note:</strong> <code>HiddenField()</code> does not appear in <code>partial=True</code> serializer (when making <code>PATCH</code> request). This behavior might change in future, follow updates on <a href="https://github.com/encode/django-rest-framework/discussions/8259">github discussion</a>. </p>
+<p><strong>Note:</strong> <code>HiddenField()</code> does not appear in <code>partial=True</code> serializer (when making <code>PATCH</code> request).</p>
 <hr />
 <h2 id="modelfield"><a class="toclink" href="#modelfield">ModelField</a></h2>
 <p>A generic field that can be tied to any arbitrary model field. The <code>ModelField</code> class delegates the task of serialization/deserialization to its associated model field.  This field can be used to create serializer fields for custom model fields, without having to create a new custom serializer field.</p>
