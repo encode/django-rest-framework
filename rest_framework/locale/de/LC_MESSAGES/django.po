@@ -11,6 +11,7 @@
 # Thomas Tanner, 2015
 # Tom Jaster <futur3.tom@googlemail.com>, 2015
 # Xavier Ordoquy <xordoquy@linovia.com>, 2015
+# stefan6419846, 2025
 msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
@@ -27,19 +28,19 @@ msgstr ""
 
 #: authentication.py:70
 msgid "Invalid basic header. No credentials provided."
-msgstr "Ungültiger basic header. Keine Zugangsdaten angegeben."
+msgstr "Ungültiger Basic Header. Keine Zugangsdaten angegeben."
 
 #: authentication.py:73
 msgid "Invalid basic header. Credentials string should not contain spaces."
-msgstr "Ungültiger basic header. Zugangsdaten sollen keine Leerzeichen enthalten."
+msgstr "Ungültiger Basic Header. Zugangsdaten sollen keine Leerzeichen enthalten."
 
 #: authentication.py:83
 msgid "Invalid basic header. Credentials not correctly base64 encoded."
-msgstr "Ungültiger basic header. Zugangsdaten sind nicht korrekt mit base64 kodiert."
+msgstr "Ungültiger Basic Header. Zugangsdaten sind nicht korrekt mit base64 kodiert."
 
 #: authentication.py:101
 msgid "Invalid username/password."
-msgstr "Ungültiger Benutzername/Passwort"
+msgstr "Ungültiger Benutzername/Passwort."
 
 #: authentication.py:104 authentication.py:206
 msgid "User inactive or deleted."
@@ -47,16 +48,16 @@ msgstr "Benutzer inaktiv oder gelöscht."
 
 #: authentication.py:184
 msgid "Invalid token header. No credentials provided."
-msgstr "Ungültiger token header. Keine Zugangsdaten angegeben."
+msgstr "Ungültiger Token Header. Keine Zugangsdaten angegeben."
 
 #: authentication.py:187
 msgid "Invalid token header. Token string should not contain spaces."
-msgstr "Ungültiger token header. Zugangsdaten sollen keine Leerzeichen enthalten."
+msgstr "Ungültiger Token Header. Zugangsdaten sollen keine Leerzeichen enthalten."
 
 #: authentication.py:193
 msgid ""
 "Invalid token header. Token string should not contain invalid characters."
-msgstr "Ungültiger Token Header. Tokens dürfen keine ungültigen Zeichen enthalten."
+msgstr "Ungültiger Token Header. Zugangsdaten dürfen keine ungültigen Zeichen enthalten."
 
 #: authentication.py:203
 msgid "Invalid token."
@@ -108,7 +109,7 @@ msgstr "Ein Serverfehler ist aufgetreten."
 
 #: exceptions.py:142
 msgid "Invalid input."
-msgstr ""
+msgstr "Ungültige Eingabe."
 
 #: exceptions.py:161
 msgid "Malformed request."
@@ -124,7 +125,7 @@ msgstr "Anmeldedaten fehlen."
 
 #: exceptions.py:179
 msgid "You do not have permission to perform this action."
-msgstr "Sie sind nicht berechtigt diese Aktion durchzuführen."
+msgstr "Sie sind nicht berechtigt, diese Aktion durchzuführen."
 
 #: exceptions.py:185
 msgid "Not found."
@@ -151,17 +152,17 @@ msgstr "Die Anfrage wurde gedrosselt."
 #: exceptions.py:224
 #, python-brace-format
 msgid "Expected available in {wait} second."
-msgstr ""
+msgstr "Erwarte Verfügbarkeit in {wait} Sekunde."
 
 #: exceptions.py:225
 #, python-brace-format
 msgid "Expected available in {wait} seconds."
-msgstr ""
+msgstr "Erwarte Verfügbarkeit in {wait} Sekunden."
 
 #: fields.py:316 relations.py:245 relations.py:279 validators.py:90
 #: validators.py:183
 msgid "This field is required."
-msgstr "Dieses Feld ist erforderlich."
+msgstr "Dieses Feld ist zwingend erforderlich."
 
 #: fields.py:317
 msgid "This field may not be null."
@@ -169,11 +170,11 @@ msgstr "Dieses Feld darf nicht null sein."
 
 #: fields.py:701
 msgid "Must be a valid boolean."
-msgstr ""
+msgstr "Muss ein gültiger Wahrheitswert sein."
 
 #: fields.py:766
 msgid "Not a valid string."
-msgstr ""
+msgstr "Kein gültiger String."
 
 #: fields.py:767
 msgid "This field may not be blank."
@@ -207,7 +208,7 @@ msgstr "Gib ein gültiges \"slug\" aus Buchstaben, Ziffern, Unterstrichen und Mi
 msgid ""
 "Enter a valid \"slug\" consisting of Unicode letters, numbers, underscores, "
 "or hyphens."
-msgstr ""
+msgstr "Gib ein gültiges \"slug\" aus Unicode-Buchstaben, Ziffern, Unterstrichen und Minuszeichen ein."
 
 #: fields.py:854
 msgid "Enter a valid URL."
@@ -215,11 +216,11 @@ msgstr "Gib eine gültige URL ein."
 
 #: fields.py:867
 msgid "Must be a valid UUID."
-msgstr ""
+msgstr "Muss eine gültige UUID sein."
 
 #: fields.py:903
 msgid "Enter a valid IPv4 or IPv6 address."
-msgstr "Geben Sie eine gültige IPv4 oder IPv6 Adresse an"
+msgstr "Geben Sie eine gültige IPv4 oder IPv6 Adresse an."
 
 #: fields.py:931
 msgid "A valid integer is required."
@@ -273,11 +274,11 @@ msgstr "Erwarte eine Datums- und Zeitangabe, erhielt aber ein Datum."
 #: fields.py:1150
 #, python-brace-format
 msgid "Invalid datetime for the timezone \"{timezone}\"."
-msgstr ""
+msgstr "Ungültige Datumsangabe für die Zeitzone \"{timezone}\"."
 
 #: fields.py:1151
 msgid "Datetime value out of range."
-msgstr ""
+msgstr "Datumsangabe außerhalb des Bereichs."
 
 #: fields.py:1236
 #, python-brace-format
@@ -358,12 +359,12 @@ msgstr "Diese Liste darf nicht leer sein."
 #: fields.py:1605
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} elements."
-msgstr ""
+msgstr "Dieses Feld muss mindestens {max_length} Einträge enthalten."
 
 #: fields.py:1606
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} elements."
-msgstr ""
+msgstr "Dieses Feld darf nicht mehr als {max_length} Einträge enthalten."
 
 #: fields.py:1682
 #, python-brace-format
@@ -372,7 +373,7 @@ msgstr "Erwartete ein Dictionary mit Elementen, erhielt aber den Typ \"{input_ty
 
 #: fields.py:1683
 msgid "This dictionary may not be empty."
-msgstr ""
+msgstr "Dieses Dictionary darf nicht leer sein."
 
 #: fields.py:1755
 msgid "Value must be valid JSON."
@@ -384,7 +385,7 @@ msgstr "Suche"
 
 #: filters.py:50
 msgid "A search term."
-msgstr ""
+msgstr "Ein Suchbegriff."
 
 #: filters.py:180 templates/rest_framework/filters/ordering.html:3
 msgid "Ordering"
@@ -392,7 +393,7 @@ msgstr "Sortierung"
 
 #: filters.py:181
 msgid "Which field to use when ordering the results."
-msgstr ""
+msgstr "Feld, das zum Sortieren der Ergebnisse verwendet werden soll."
 
 #: filters.py:287
 msgid "ascending"
@@ -404,11 +405,11 @@ msgstr "Absteigend"
 
 #: pagination.py:174
 msgid "A page number within the paginated result set."
-msgstr ""
+msgstr "Eine Seitenzahl in der paginierten Ergebnismenge."
 
 #: pagination.py:179 pagination.py:372 pagination.py:590
 msgid "Number of results to return per page."
-msgstr ""
+msgstr "Anzahl der pro Seite zurückzugebenden Ergebnisse."
 
 #: pagination.py:189
 msgid "Invalid page."
@@ -416,11 +417,11 @@ msgstr "Ungültige Seite."
 
 #: pagination.py:374
 msgid "The initial index from which to return the results."
-msgstr ""
+msgstr "Der initiale Index, von dem die Ergebnisse zurückgegeben werden sollen."
 
 #: pagination.py:581
 msgid "The pagination cursor value."
-msgstr ""
+msgstr "Der Zeigerwert für die Paginierung"
 
 #: pagination.py:583
 msgid "Invalid cursor"
@@ -434,7 +435,7 @@ msgstr "Ungültiger pk \"{pk_value}\" - Object existiert nicht."
 #: relations.py:247
 #, python-brace-format
 msgid "Incorrect type. Expected pk value, received {data_type}."
-msgstr "Falscher Typ. Erwarte pk Wert, erhielt aber {data_type}."
+msgstr "Falscher Typ. Erwarte pk-Wert, erhielt aber {data_type}."
 
 #: relations.py:280
 msgid "Invalid hyperlink - No URL match."
@@ -451,7 +452,7 @@ msgstr "Ungültiger Hyperlink - Objekt existiert nicht."
 #: relations.py:283
 #, python-brace-format
 msgid "Incorrect type. Expected URL string, received {data_type}."
-msgstr "Falscher Typ. Erwarte URL Zeichenkette, erhielt aber {data_type}."
+msgstr "Falscher Typ. Erwarte URL-Zeichenkette, erhielt aber {data_type}."
 
 #: relations.py:448
 #, python-brace-format
@@ -464,20 +465,20 @@ msgstr "Ungültiger Wert."
 
 #: schemas/utils.py:32
 msgid "unique integer value"
-msgstr ""
+msgstr "eindeutiger Ganzzahl-Wert"
 
 #: schemas/utils.py:34
 msgid "UUID string"
-msgstr ""
+msgstr "UUID-String"
 
 #: schemas/utils.py:36
 msgid "unique value"
-msgstr ""
+msgstr "eindeutiger Wert"
 
 #: schemas/utils.py:38
 #, python-brace-format
 msgid "A {value_type} identifying this {name}."
-msgstr ""
+msgstr "Ein {value_type}, der {name} identifiziert."
 
 #: serializers.py:337
 #, python-brace-format
@@ -487,7 +488,7 @@ msgstr "Ungültige Daten. Dictionary erwartet, aber {datatype} erhalten."
 #: templates/rest_framework/admin.html:116
 #: templates/rest_framework/base.html:136
 msgid "Extra Actions"
-msgstr ""
+msgstr "Zusätzliche Aktionen"
 
 #: templates/rest_framework/admin.html:130
 #: templates/rest_framework/base.html:150
@@ -496,27 +497,27 @@ msgstr "Filter"
 
 #: templates/rest_framework/base.html:37
 msgid "navbar"
-msgstr ""
+msgstr "Navigation"
 
 #: templates/rest_framework/base.html:75
 msgid "content"
-msgstr ""
+msgstr "Inhalt"
 
 #: templates/rest_framework/base.html:78
 msgid "request form"
-msgstr ""
+msgstr "Anfrage-Formular"
 
 #: templates/rest_framework/base.html:157
 msgid "main content"
-msgstr ""
+msgstr "Hauptteil"
 
 #: templates/rest_framework/base.html:173
 msgid "request info"
-msgstr ""
+msgstr "Anfrage-Informationen"
 
 #: templates/rest_framework/base.html:177
 msgid "response info"
-msgstr ""
+msgstr "Antwort-Informationen"
 
 #: templates/rest_framework/horizontal/radio.html:4
 #: templates/rest_framework/inline/radio.html:3
@@ -542,7 +543,7 @@ msgstr "Die Felder {field_names} müssen eine eindeutige Menge bilden."
 #: validators.py:171
 #, python-brace-format
 msgid "Surrogate characters are not allowed: U+{code_point:X}."
-msgstr ""
+msgstr "Ersatzzeichen sind nicht erlaubt: U+{code_point:X}."
 
 #: validators.py:243
 #, python-brace-format
@@ -565,7 +566,7 @@ msgstr "Ungültige Version in der \"Accept\" Kopfzeile."
 
 #: versioning.py:71
 msgid "Invalid version in URL path."
-msgstr "Ungültige Version im URL Pfad."
+msgstr "Ungültige Version im URL-Pfad."
 
 #: versioning.py:116
 msgid "Invalid version in URL path. Does not match any version namespace."
