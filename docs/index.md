@@ -87,8 +87,8 @@ continued development by **[signing up for a paid plan][funding]**.
 
 REST framework requires the following:
 
-* Django (4.2, 5.0, 5.1)
-* Python (3.8, 3.9, 3.10, 3.11, 3.12, 3.13)
+* Django (4.2, 5.0, 5.1, 5.2)
+* Python (3.9, 3.10, 3.11, 3.12, 3.13)
 
 We **highly recommend** and only officially support the latest patch release of
 each Python and Django series.
@@ -196,9 +196,7 @@ For priority support please sign up for a [professional or premium sponsorship p
 
 ## Security
 
-Security issues are handled under the supervision of the [Django security team](https://www.djangoproject.com/foundation/teams/#security-team).
-
-**Please report security issues by emailing security@djangoproject.com**.
+**Please report security issues by emailing security@encode.io**.
 
 The project maintainers will then work with you to resolve any issues where required, prior to any public disclosure.
 

@@ -45,7 +45,7 @@ The default throttling policy may be set globally, using the `DEFAULT_THROTTLE_C
         }
     }
 
-The rate descriptions used in `DEFAULT_THROTTLE_RATES` may include `second`, `minute`, `hour` or `day` as the throttle period.
+The rates used in `DEFAULT_THROTTLE_RATES` can be specified over a period of second, minute, hour or day. The period must be specified after the `/` separator using `s`, `m`, `h` or `d`, respectively. For increased clarity, extended units such as `second`, `minute`, `hour`, `day` or even abbreviations like `sec`, `min`, `hr` are allowed, as only the first character is relevant to identify the rate.
 
 You can also set the throttling policy on a per-view or per-viewset basis,
 using the `APIView` class-based views.
@@ -110,7 +110,7 @@ You'll need to remember to also set your custom throttle class in the `'DEFAULT_
 
 The built-in throttle implementations are open to [race conditions][race], so under high concurrency they may allow a few extra requests through.
 
-If your project relies on guaranteeing the number of requests during concurrent requests, you will need to implement your own throttle class. See [issue #5181][gh5181] for more details.
+If your project relies on guaranteeing the number of requests during concurrent requests, you will need to implement your own throttle class.
 
 ---
 
@@ -220,5 +220,4 @@ The following is an example of a rate throttle, that will randomly throttle 1 in
 [identifying-clients]: http://oxpedia.org/wiki/index.php?title=AppSuite:Grizzly#Multiple_Proxies_in_front_of_the_cluster
 [cache-setting]: https://docs.djangoproject.com/en/stable/ref/settings/#caches
 [cache-docs]: https://docs.djangoproject.com/en/stable/topics/cache/#setting-up-the-cache
-[gh5181]: https://github.com/encode/django-rest-framework/issues/5181
 [race]: https://en.wikipedia.org/wiki/Race_condition#Data_race
