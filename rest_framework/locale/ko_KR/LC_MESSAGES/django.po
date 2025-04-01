@@ -573,9 +573,7 @@ msgstr "URL 경로의 버전이 유효하지 않습니다."
 
 #: versioning.py:118
 msgid "Invalid version in URL path. Does not match any version namespace."
-msgstr ""
-"URL 경로에 유효하지 않은 버전이 있습니다. 버전 네임스페이스와 일치하지 않습"
-"니다."
+msgstr "URL 경로에 유효하지 않은 버전이 있습니다. 버전 네임스페이스와 일치하지 않습니다."
 
 #: versioning.py:150
 msgid "Invalid version in hostname."
