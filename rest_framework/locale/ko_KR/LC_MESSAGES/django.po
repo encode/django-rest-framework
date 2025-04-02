@@ -305,7 +305,7 @@ msgstr "일수는 {min_days} 이상 {max_days} 이하이어야 합니다."
 #: fields.py:1386 fields.py:1446
 #, python-brace-format
 msgid "\"{input}\" is not a valid choice."
-msgstr "\"{input}\"은 유효하지 않은 선택(choice)입니다."
+msgstr "\"{input}\"은 유효하지 않은 선택입니다."
 
 #: fields.py:1389
 #, python-brace-format
