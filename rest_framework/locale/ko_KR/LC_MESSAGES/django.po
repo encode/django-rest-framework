@@ -23,15 +23,15 @@ msgstr ""
 
 #: authentication.py:70
 msgid "Invalid basic header. No credentials provided."
-msgstr "기본 헤더(basic header)가 유효하지 않습니다. 인증데이터(credentials)가 제공되지 않았습니다."
+msgstr "기본 헤더가 유효하지 않습니다. 인증 데이터가 제공되지 않았습니다."
 
 #: authentication.py:73
 msgid "Invalid basic header. Credentials string should not contain spaces."
-msgstr "기본 헤더(basic header)가 유효하지 않습니다. 인증데이터(credentials) 문자열은 빈칸(spaces)을 포함하지 않아야 합니다."
+msgstr "기본 헤더가 유효하지 않습니다. 인증 데이터 문자열은 빈칸(spaces)을 포함하지 않아야 합니다."
 
 #: authentication.py:84
 msgid "Invalid basic header. Credentials not correctly base64 encoded."
-msgstr "기본 헤더(basic header)가 유효하지 않습니다. 인증데이터(credentials)가 base64 로 적절히 부호화(encode)되지 않았습니다."
+msgstr "기본 헤더가 유효하지 않습니다. 인증 데이터가 base64 로 적절히 부호화(encode)되지 않았습니다."
 
 #: authentication.py:101
 msgid "Invalid username/password."
@@ -43,7 +43,7 @@ msgstr "계정이 중지되었거나 삭제되었습니다."
 
 #: authentication.py:184
 msgid "Invalid token header. No credentials provided."
-msgstr "토큰 헤더가 유효하지 않습니다. 인증데이터(credentials)가 제공되지 않았습니다."
+msgstr "토큰 헤더가 유효하지 않습니다. 인증 데이터가 제공되지 않았습니다."
 
 #: authentication.py:187
 msgid "Invalid token header. Token string should not contain spaces."
@@ -92,7 +92,7 @@ msgstr "비밀번호"
 
 #: authtoken/serializers.py:35
 msgid "Unable to log in with provided credentials."
-msgstr "제공된 인증데이터(credentials)로는 로그인할 수 없습니다."
+msgstr "제공된 인증 데이터로는 로그인할 수 없습니다."
 
 #: authtoken/serializers.py:38
 msgid "Must include \"username\" and \"password\"."
