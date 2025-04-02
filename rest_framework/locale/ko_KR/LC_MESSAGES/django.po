@@ -27,7 +27,7 @@ msgstr "기본 헤더가 유효하지 않습니다. 인증 데이터가 제공�
 
 #: authentication.py:73
 msgid "Invalid basic header. Credentials string should not contain spaces."
-msgstr "기본 헤더가 유효하지 않습니다. 인증 데이터 문자열은 빈칸(spaces)을 포함하지 않아야 합니다."
+msgstr "기본 헤더가 유효하지 않습니다. 인증 데이터 문자열은 공백을 포함하지 않아야 합니다."
 
 #: authentication.py:84
 msgid "Invalid basic header. Credentials not correctly base64 encoded."
@@ -47,7 +47,7 @@ msgstr "토큰 헤더가 유효하지 않습니다. 인증 데이터가 제공�
 
 #: authentication.py:187
 msgid "Invalid token header. Token string should not contain spaces."
-msgstr "토큰 헤더가 유효하지 않습니다. 토큰 문자열은 빈칸(spaces)을 포함하지 않아야 합니다."
+msgstr "토큰 헤더가 유효하지 않습니다. 토큰 문자열은 공백을 포함하지 않아야 합니다."
 
 #: authentication.py:193
 msgid ""
