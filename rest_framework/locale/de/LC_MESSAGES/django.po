@@ -359,7 +359,7 @@ msgstr "Diese Liste darf nicht leer sein."
 #: fields.py:1605
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} elements."
-msgstr "Dieses Feld muss mindestens {max_length} Einträge enthalten."
+msgstr "Dieses Feld muss mindestens {min_length} Einträge enthalten."
 
 #: fields.py:1606
 #, python-brace-format
