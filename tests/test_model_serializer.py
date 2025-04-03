@@ -13,6 +13,7 @@ import sys
 import tempfile
 
 import pytest
+from django.contrib.auth.models import User
 from django.core.exceptions import ImproperlyConfigured
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.validators import (
@@ -730,6 +731,46 @@ class TestRelationalFieldMappings(TestCase):
                 reverse_through = PrimaryKeyRelatedField(many=True, read_only=True)
         """)
         self.assertEqual(repr(TestSerializer()), expected)
+
+    def test_source_with_attributes(self):
+        class UserProfile(models.Model):
+            age = models.IntegerField()
+            birthdate = models.DateField()
+            user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+        class UserProfileSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = UserProfile
+                fields = ('username', 'email', 'first_name', 'last_name', 'age', 'birthdate')
+                extra_kwargs = {
+                    'username': {
+                        'source': 'user.username',
+                    },
+                    'email': {
+                        'source': 'user.email',
+                    },
+                    'first_name': {
+                        'source': 'user.first_name',
+                    },
+                    'last_name': {
+                        'source': 'user.last_name',
+                    }
+                }
+
+        # In Django 3.0, the maximum length of first_name is 30, whereas it is 150
+        # in later versions, so we can't hard-code the value in the expected variable.
+        max_length = User.first_name.field.max_length
+
+        expected = dedent(f"""
+            UserProfileSerializer():
+                username = CharField(help_text='Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.', max_length=150, source='user.username', validators=[<django.contrib.auth.validators.UnicodeUsernameValidator object>, <UniqueValidator(queryset=User.objects.all())>])
+                email = EmailField(allow_blank=True, label='Email address', max_length=254, required=False, source='user.email')
+                first_name = CharField(allow_blank=True, max_length={max_length}, required=False, source='user.first_name')
+                last_name = CharField(allow_blank=True, max_length=150, required=False, source='user.last_name')
+                age = IntegerField()
+                birthdate = DateField()
+        """)
+        self.assertEqual(repr(UserProfileSerializer()), expected)
 
 
 class DisplayValueTargetModel(models.Model):
