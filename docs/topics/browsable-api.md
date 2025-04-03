@@ -83,20 +83,31 @@ For more specific CSS tweaks than simply overriding the default bootstrap theme 
 
 You can use a third party package for customization, rather than doing it by yourself. Here is 2 packages for customizing the API:
 
-* [rest-framework-redesign][rest-framework-redesign] - A package for customizing the API using Bootstrap 5. Modern and sleek design, it comes with the support for dark mode.
-* [rest-framework-material][rest-framework-material] - Material design for Django REST Framework.
+* [drf-restwind][drf-restwind] - a modern re-imagining of the Django REST Framework utilizes TailwindCSS and DaisyUI to provide flexible and customizable UI solutions with minimal coding effort.
+* [drf-redesign][drf-redesign] - A package for customizing the API using Bootstrap 5. Modern and sleek design, it comes with the support for dark mode.
+* [drf-material][drf-material] - Material design for Django REST Framework.
 
 ---
 
-![Django REST Framework Redesign][rfr]
+![API Root](https://github.com/user-attachments/assets/5197b47d-8bb6-426b-a62b-232cfc34198d)
 
-*Screenshot of the rest-framework-redesign*
+![List View](https://github.com/user-attachments/assets/7665d4c8-e57a-4337-93af-4bb974a4f2d4)
+
+![Detail View](https://github.com/user-attachments/assets/76bddab0-8747-42ae-b79b-b3be7802a729)
+
+*Screenshots of the drf-restwind*
 
 ---
 
-![Django REST Framework Material][rfm]
+---
 
-*Screenshot of the rest-framework-material*
+![Root](https://github.com/user-attachments/assets/7b85732d-c5eb-4c6a-a867-ba9b8d39890a)
+
+![List](https://github.com/user-attachments/assets/3a6b451a-7575-416f-a67f-ff334e70e262)
+
+![Detail](https://github.com/user-attachments/assets/76e6c7f3-aa33-4534-882c-ad6619fd660b)
+
+*Screenshot of the drf-redesign*
 
 ---
 
@@ -197,7 +208,5 @@ There are [a variety of packages for autocomplete widgets][autocomplete-packages
 [bcomponentsnav]: https://getbootstrap.com/2.3.2/components.html#navbar
 [autocomplete-packages]: https://www.djangopackages.com/grids/g/auto-complete/
 [django-autocomplete-light]: https://github.com/yourlabs/django-autocomplete-light
-[rest-framework-redesign]: https://github.com/youzarsiph/rest-framework-redesign
-[rest-framework-material]: https://github.com/youzarsiph/rest-framework-material
-[rfr]: ../img/rfr.png
-[rfm]: ../img/rfm.png
+[drf-redesign]: https://github.com/youzarsiph/drf-redesign
+[drf-material]: https://github.com/youzarsiph/drf-material

@@ -160,6 +160,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 
 ### Customization
 
+* [drf-restwind][drf-restwind] - a modern re-imagining of the Django REST Framework utilizes TailwindCSS and DaisyUI to provide flexible and customizable UI solutions with minimal coding effort.
 * [drf-redesign][drf-redesign] - A project that gives a fresh look to the browse-able API using Bootstrap 5.
 * [drf-material][drf-material] - A project that gives a sleek and elegant look to the browsable API using Material Design.
 
@@ -255,6 +256,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [django-requestlogs]: https://github.com/Raekkeri/django-requestlogs
 [drf-standardized-errors]: https://github.com/ghazi-git/drf-standardized-errors
 [drf-api-action]: https://github.com/Ori-Roza/drf-api-action
+[drf-restwind]: https://github.com/youzarsiph/drf-restwind
 [drf-redesign]: https://github.com/youzarsiph/drf-redesign
 [drf-material]: https://github.com/youzarsiph/drf-material
-[django-pyoidc] : https://github.com/makinacorpus/django_pyoidc
+[django-pyoidc]: https://github.com/makinacorpus/django_pyoidc
