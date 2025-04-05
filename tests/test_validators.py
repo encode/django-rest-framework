@@ -517,11 +517,15 @@ class TestUniquenessTogetherValidation(TestCase):
         assert queryset.called_with == {'race_name': 'bar', 'position': 1}
 
 
+class FancyConditionModel(models.Model):
+    id = models.IntegerField(primary_key=True)
+
+
 class UniqueConstraintModel(models.Model):
     race_name = models.CharField(max_length=100)
     position = models.IntegerField()
     global_id = models.IntegerField()
-    fancy_conditions = models.IntegerField()
+    fancy_conditions = models.ForeignKey(FancyConditionModel, on_delete=models.CASCADE)
 
     class Meta:
         constraints = [
@@ -578,23 +582,24 @@ class UniqueConstraintNullableSerializer(serializers.ModelSerializer):
 
 class TestUniqueConstraintValidation(TestCase):
     def setUp(self):
+        fancy_model_condition = FancyConditionModel.objects.create(id=1)
         self.instance = UniqueConstraintModel.objects.create(
             race_name='example',
             position=1,
             global_id=1,
-            fancy_conditions=1
+            fancy_conditions=fancy_model_condition
         )
         UniqueConstraintModel.objects.create(
             race_name='example',
             position=2,
             global_id=2,
-            fancy_conditions=1
+            fancy_conditions=fancy_model_condition
         )
         UniqueConstraintModel.objects.create(
             race_name='other',
             position=1,
             global_id=3,
-            fancy_conditions=1
+            fancy_conditions=fancy_model_condition
         )
 
     def test_repr(self):
@@ -618,24 +623,27 @@ class TestUniqueConstraintValidation(TestCase):
         Fields used in UniqueConstraint's condition must be included
         into queryset existence check
         """
+        fancy_model_condition_9 = FancyConditionModel.objects.create(id=9)
+        fancy_model_condition_10 = FancyConditionModel.objects.create(id=10)
+        fancy_model_condition_11 = FancyConditionModel.objects.create(id=11)
         UniqueConstraintModel.objects.create(
             race_name='condition',
             position=1,
             global_id=10,
-            fancy_conditions=10,
+            fancy_conditions=fancy_model_condition_10,
         )
         serializer = UniqueConstraintSerializer(data={
             'race_name': 'condition',
             'position': 1,
             'global_id': 11,
-            'fancy_conditions': 9,
+            'fancy_conditions': fancy_model_condition_9,
         })
         assert serializer.is_valid()
         serializer = UniqueConstraintSerializer(data={
             'race_name': 'condition',
             'position': 1,
             'global_id': 11,
-            'fancy_conditions': 11,
+            'fancy_conditions': fancy_model_condition_11,
         })
         assert not serializer.is_valid()
 
