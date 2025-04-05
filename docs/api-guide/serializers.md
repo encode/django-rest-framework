@@ -17,6 +17,8 @@ The serializers in REST framework work very similarly to Django's `Form` and `Mo
 
 ## Declaring Serializers
 
+::: rest_framework.serializers.Serializer
+
 Let's start by creating a simple object we can use for example purposes:
 
     from datetime import datetime
@@ -148,6 +150,8 @@ For example:
 Note that in the case above we're now having to access the serializer `.validated_data` property directly.
 
 ## Validation
+
+::: rest_framework.serializers.Serializer.is_valid
 
 When deserializing data, you always need to call `is_valid()` before attempting to access the validated data, or save an object instance. If any validation errors occur, the `.errors` property will contain a dictionary representing the resulting error messages.  For example:
 
@@ -428,6 +432,8 @@ The context dictionary can be used within any serializer field logic, such as a 
 
 # ModelSerializer
 
+::: rest_framework.serializers.ModelSerializer
+
 Often you'll want serializer classes that map closely to Django model definitions.
 
 The `ModelSerializer` class provides a shortcut that lets you automatically create a `Serializer` class with fields that correspond to the Model fields.
@@ -665,6 +671,8 @@ The default implementation raises an error, although subclasses may customize th
 
 # HyperlinkedModelSerializer
 
+::: rest_framework.serializers.HyperlinkedModelSerializer
+
 The `HyperlinkedModelSerializer` class is similar to the `ModelSerializer` class except that it uses hyperlinks to represent relationships, rather than primary keys.
 
 By default the serializer will include a `url` field instead of a primary key field.
@@ -745,6 +753,8 @@ The name of the URL field defaults to 'url'.  You can override this globally, by
 ---
 
 # ListSerializer
+
+::: rest_framework.serializers.ListSerializer
 
 The `ListSerializer` class provides the behavior for serializing and validating multiple objects at once. You won't *typically* need to use `ListSerializer` directly, but should instead simply pass `many=True` when instantiating a serializer.
 
@@ -863,6 +873,8 @@ Occasionally you might need to explicitly specify how the child and parent class
 ---
 
 # BaseSerializer
+
+::: rest_framework.serializers.BaseSerializer
 
 `BaseSerializer` class that can be used to easily support alternative serialization and deserialization styles.
 

@@ -68,6 +68,8 @@ Or apply the style globally, using the `DEFAULT_PAGINATION_CLASS` settings key. 
 
 ## PageNumberPagination
 
+::: rest_framework.pagination.PageNumberPagination
+
 This pagination style accepts a single number page number in the request query parameters.
 
 **Request**:
@@ -115,6 +117,8 @@ To set these attributes you should override the `PageNumberPagination` class, an
 
 ## LimitOffsetPagination
 
+::: rest_framework.pagination.LimitOffsetPagination
+
 This pagination style mirrors the syntax used when looking up multiple database records. The client includes both a "limit" and an
 "offset" query parameter. The limit indicates the maximum number of items to return, and is equivalent to the `page_size` in other styles. The offset indicates the starting position of the query in relation to the complete set of unpaginated items.
 
@@ -161,6 +165,8 @@ To set these attributes you should override the `LimitOffsetPagination` class, a
 ---
 
 ## CursorPagination
+
+::: rest_framework.pagination.CursorPagination
 
 The cursor-based pagination presents an opaque "cursor" indicator that the client may use to page through the result set. This pagination style only presents forward and reverse controls, and does not allow the client to navigate to arbitrary positions.
 
@@ -217,6 +223,8 @@ To set these attributes you should override the `CursorPagination` class, and th
 ---
 
 # Custom pagination styles
+
+::: rest_framework.pagination.BasePagination
 
 To create a custom pagination serializer class, you should inherit the subclass `pagination.BasePagination`, override the `paginate_queryset(self, queryset, request, view=None)`, and `get_paginated_response(self, data)` methods:
 

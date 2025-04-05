@@ -111,6 +111,8 @@ If you are deploying to Apache, and using any non-session based authentication, 
 
 ## BasicAuthentication
 
+::: rest_framework.authentication.BasicAuthentication
+
 This authentication scheme uses [HTTP Basic Authentication][basicauth], signed against a user's username and password.  Basic authentication is generally only appropriate for testing.
 
 If successfully authenticated, `BasicAuthentication` provides the following credentials.
@@ -125,6 +127,8 @@ Unauthenticated responses that are denied permission will result in an `HTTP 401
 **Note:** If you use `BasicAuthentication` in production you must ensure that your API is only available over `https`.  You should also ensure that your API clients will always re-request the username and password at login, and will never store those details to persistent storage.
 
 ## TokenAuthentication
+
+::: rest_framework.authentication.TokenAuthentication
 
 ---
 
@@ -282,6 +286,8 @@ In case you want to regenerate the token (for example if it has been compromised
 
 ## SessionAuthentication
 
+::: rest_framework.authentication.SessionAuthentication
+
 This authentication scheme uses Django's default session backend for authentication.  Session authentication is appropriate for AJAX clients that are running in the same session context as your website.
 
 If successfully authenticated, `SessionAuthentication` provides the following credentials.
@@ -299,6 +305,8 @@ CSRF validation in REST framework works slightly differently from standard Djang
 
 
 ## RemoteUserAuthentication
+
+::: rest_framework.authentication.RemoteUserAuthentication
 
 This authentication scheme allows you to delegate authentication to your web server, which sets the `REMOTE_USER`
 environment variable.

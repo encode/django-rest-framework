@@ -24,6 +24,8 @@ There's no requirement for you to use them, but if you do then the self-describi
 
 ## reverse
 
+::: rest_framework.reverse.reverse
+
 **Signature:** `reverse(viewname, *args, **kwargs)`
 
 Has the same behavior as [`django.urls.reverse`][reverse], except that it returns a fully qualified URL, using the request to determine the host and port.
@@ -44,6 +46,8 @@ You should **include the request as a keyword argument** to the function, for ex
             return Response(data)
 
 ## reverse_lazy
+
+::: rest_framework.reverse.reverse_lazy
 
 **Signature:** `reverse_lazy(viewname, *args, **kwargs)`
 
