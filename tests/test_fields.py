@@ -8,6 +8,7 @@ import warnings
 from decimal import ROUND_DOWN, ROUND_UP, Decimal
 from enum import auto
 from unittest.mock import patch
+from zoneinfo import ZoneInfo
 
 import pytest
 
@@ -29,11 +30,6 @@ from rest_framework.fields import (
     is_simple_callable
 )
 from tests.models import UUIDForeignKeyTarget
-
-if sys.version_info >= (3, 9):
-    from zoneinfo import ZoneInfo
-else:
-    from backports.zoneinfo import ZoneInfo
 
 utc = datetime.timezone.utc
 
