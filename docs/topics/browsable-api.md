@@ -81,22 +81,43 @@ For more specific CSS tweaks than simply overriding the default bootstrap theme 
 
 ### Third party packages for customization
 
-You can use a third party package for customization, rather than doing it by yourself. Here is 2 packages for customizing the API:
+You can use a third party package for customization, rather than doing it by yourself. Here is 3 packages for customizing the API:
 
-* [rest-framework-redesign][rest-framework-redesign] - A package for customizing the API using Bootstrap 5. Modern and sleek design, it comes with the support for dark mode.
-* [rest-framework-material][rest-framework-material] - Material design for Django REST Framework.
-
----
-
-![Django REST Framework Redesign][rfr]
-
-*Screenshot of the rest-framework-redesign*
+* [drf-restwind][drf-restwind] - a modern re-imagining of the Django REST Framework utilizes TailwindCSS and DaisyUI to provide flexible and customizable UI solutions with minimal coding effort.
+* [drf-redesign][drf-redesign] - A package for customizing the API using Bootstrap 5. Modern and sleek design, it comes with the support for dark mode.
+* [drf-material][drf-material] - Material design for Django REST Framework.
 
 ---
 
-![Django REST Framework Material][rfm]
+![API Root][drf-rw-api-root]
 
-*Screenshot of the rest-framework-material*
+![List View][drf-rw-list-view]
+
+![Detail View][drf-rw-detail-view]
+
+*Screenshots of the drf-restwind*
+
+---
+
+---
+
+![API Root][drf-r-api-root]
+
+![List View][drf-r-list-view]
+
+![Detail View][drf-r-detail-view]
+
+*Screenshot of the drf-redesign*
+
+---
+
+![API Root][drf-m-api-root]
+
+![List View][drf-m-api-root]
+
+![Detail View][drf-m-api-root]
+
+*Screenshot of the drf-material*
 
 ---
 
@@ -197,7 +218,15 @@ There are [a variety of packages for autocomplete widgets][autocomplete-packages
 [bcomponentsnav]: https://getbootstrap.com/2.3.2/components.html#navbar
 [autocomplete-packages]: https://www.djangopackages.com/grids/g/auto-complete/
 [django-autocomplete-light]: https://github.com/yourlabs/django-autocomplete-light
-[rest-framework-redesign]: https://github.com/youzarsiph/rest-framework-redesign
-[rest-framework-material]: https://github.com/youzarsiph/rest-framework-material
-[rfr]: ../img/rfr.png
-[rfm]: ../img/rfm.png
+[drf-restwind]: https://github.com/youzarsiph/drf-restwind
+[drf-rw-api-root]: ../img/drf-rw-api-root.png
+[drf-rw-list-view]: ../img/drf-rw-list-view.png
+[drf-rw-detail-view]: ../img/drf-rw-detail-view.png
+[drf-redesign]: https://github.com/youzarsiph/drf-redesign
+[drf-r-api-root]: ../img/drf-r-api-root.png
+[drf-r-list-view]: ../img/drf-r-list-view.png
+[drf-r-detail-view]: ../img/drf-r-detail-view.png
+[drf-material]: https://github.com/youzarsiph/drf-material
+[drf-m-api-root]: ../img/drf-m-api-root.png
+[drf-m-list-view]: ../img/drf-m-list-view.png
+[drf-m-detail-view]: ../img/drf-m-detail-view.png
