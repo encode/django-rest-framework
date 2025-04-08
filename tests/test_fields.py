@@ -2,12 +2,12 @@ import datetime
 import math
 import os
 import re
-import sys
 import uuid
 import warnings
 from decimal import ROUND_DOWN, ROUND_UP, Decimal
 from enum import auto
 from unittest.mock import patch
+from zoneinfo import ZoneInfo
 
 import pytest
 
@@ -29,11 +29,6 @@ from rest_framework.fields import (
     is_simple_callable
 )
 from tests.models import UUIDForeignKeyTarget
-
-if sys.version_info >= (3, 9):
-    from zoneinfo import ZoneInfo
-else:
-    from backports.zoneinfo import ZoneInfo
 
 utc = datetime.timezone.utc
 
@@ -641,10 +636,6 @@ class Test5087Regression:
 
 
 class TestTyping(TestCase):
-    @pytest.mark.skipif(
-        sys.version_info < (3, 7),
-        reason="subscriptable classes requires Python 3.7 or higher",
-    )
     def test_field_is_subscriptable(self):
         assert serializers.Field is serializers.Field["foo"]
 

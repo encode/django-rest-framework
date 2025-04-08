@@ -1,6 +1,3 @@
-import sys
-
-import pytest
 from django.test import TestCase, override_settings
 from django.urls import include, path, re_path
 
@@ -289,9 +286,5 @@ class Issue807Tests(TestCase):
 
 
 class TestTyping(TestCase):
-    @pytest.mark.skipif(
-        sys.version_info < (3, 7),
-        reason="subscriptable classes requires Python 3.7 or higher",
-    )
     def test_response_is_subscriptable(self):
         assert Response is Response["foo"]
