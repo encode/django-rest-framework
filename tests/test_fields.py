@@ -662,7 +662,7 @@ class FieldValues:
         """
         for input_value, expected_output in get_items(self.valid_inputs):
             assert self.field.run_validation(input_value) == expected_output, \
-                'input value: {}'.format(repr(input_value))
+                f'input value: {repr(input_value)}'
 
     def test_invalid_inputs(self, *args):
         """
@@ -672,12 +672,12 @@ class FieldValues:
             with pytest.raises(serializers.ValidationError) as exc_info:
                 self.field.run_validation(input_value)
             assert exc_info.value.detail == expected_failure, \
-                'input value: {}'.format(repr(input_value))
+                f'input value: {repr(input_value)}'
 
     def test_outputs(self, *args):
         for output_value, expected_output in get_items(self.outputs):
             assert self.field.to_representation(output_value) == expected_output, \
-                'output value: {}'.format(repr(output_value))
+                f'output value: {repr(output_value)}'
 
 
 # Boolean types...
@@ -1422,7 +1422,7 @@ class TestDateField(FieldValues):
     outputs = {
         datetime.date(2001, 1, 1): '2001-01-01',
         '2001-01-01': '2001-01-01',
-        str('2016-01-10'): '2016-01-10',
+        '2016-01-10': '2016-01-10',
         None: None,
         '': None,
     }
@@ -1489,7 +1489,7 @@ class TestDateTimeField(FieldValues):
         datetime.datetime(2001, 1, 1, 13, 00): '2001-01-01T13:00:00Z',
         datetime.datetime(2001, 1, 1, 13, 00, tzinfo=utc): '2001-01-01T13:00:00Z',
         '2001-01-01T00:00:00': '2001-01-01T00:00:00',
-        str('2016-01-10T00:00:00'): '2016-01-10T00:00:00',
+        '2016-01-10T00:00:00': '2016-01-10T00:00:00',
         None: None,
         '': None,
     }

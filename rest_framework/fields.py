@@ -111,7 +111,7 @@ def get_attribute(instance, attrs):
                 # If we raised an Attribute or KeyError here it'd get treated
                 # as an omitted field in `Field.get_attribute()`. Instead we
                 # raise a ValueError to ensure the exception is not masked.
-                raise ValueError('Exception raised in callable attribute "{}"; original exception was: {}'.format(attr, exc))
+                raise ValueError(f'Exception raised in callable attribute "{attr}"; original exception was: {exc}')
 
     return instance
 
@@ -1103,7 +1103,7 @@ class DecimalField(Field):
         if self.localize:
             return localize_input(quantized)
 
-        return '{:f}'.format(quantized)
+        return f'{quantized:f}'
 
     def quantize(self, value):
         """
@@ -1861,7 +1861,7 @@ class SerializerMethodField(Field):
     def bind(self, field_name, parent):
         # The method name defaults to `get_{field_name}`.
         if self.method_name is None:
-            self.method_name = 'get_{field_name}'.format(field_name=field_name)
+            self.method_name = f'get_{field_name}'
 
         super().bind(field_name, parent)
 

@@ -289,7 +289,7 @@ class TestInstanceView(TestCase):
         """
         data = {'text': 'foo'}
         filtered_out_pk = BasicModel.objects.filter(text='filtered out')[0].pk
-        request = factory.put('/{}'.format(filtered_out_pk), data, format='json')
+        request = factory.put(f'/{filtered_out_pk}', data, format='json')
         response = self.view(request, pk=filtered_out_pk).render()
         assert response.status_code == status.HTTP_404_NOT_FOUND
 

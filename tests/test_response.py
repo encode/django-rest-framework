@@ -267,7 +267,7 @@ class Issue807Tests(TestCase):
         """
         headers = {"HTTP_ACCEPT": RendererC.media_type}
         resp = self.client.get('/', **headers)
-        expected = "{}; charset={}".format(RendererC.media_type, RendererC.charset)
+        expected = f"{RendererC.media_type}; charset={RendererC.charset}"
         self.assertEqual(expected, resp['Content-Type'])
 
     def test_content_type_set_explicitly_on_response(self):
