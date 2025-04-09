@@ -39,3 +39,6 @@ def get_pk_description(model, model_field):
         value_type=value_type,
         name=model._meta.verbose_name,
     )
+
+ALLOW_FILTER_ACTIONS = {"list", "retrieve", "update", "partial_update", "destroy"}
+ALLOW_FILTER_METHODS = {"get", "put", "patch", "delete"}

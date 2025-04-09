@@ -11,7 +11,7 @@ from rest_framework.settings import api_settings
 
 from .generators import BaseSchemaGenerator
 from .inspectors import ViewInspector
-from .utils import get_pk_description, is_list_view
+from .utils import get_pk_description, is_list_view, ALLOW_FILTER_ACTIONS, ALLOW_FILTER_METHODS
 
 
 def common_path(paths):
@@ -522,9 +522,9 @@ class AutoSchema(ViewInspector):
             return False
 
         if hasattr(self.view, 'action'):
-            return self.view.action in ["list", "retrieve", "update", "partial_update", "destroy"]
+            return self.view.action in ALLOW_FILTER_ACTIONS
 
-        return method.lower() in ["get", "put", "patch", "delete"]
+        return method.lower() in ALLOW_FILTER_METHODS
 
     def get_filter_fields(self, path, method):
         if not self._allows_filters(path, method):

@@ -18,7 +18,7 @@ from rest_framework.settings import api_settings
 
 from .generators import BaseSchemaGenerator
 from .inspectors import ViewInspector
-from .utils import get_pk_description, is_list_view
+from .utils import get_pk_description, is_list_view, ALLOW_FILTER_ACTIONS, ALLOW_FILTER_METHODS
 
 
 class SchemaGenerator(BaseSchemaGenerator):
@@ -320,8 +320,8 @@ class AutoSchema(ViewInspector):
         if getattr(self.view, 'filter_backends', None) is None:
             return False
         if hasattr(self.view, 'action'):
-            return self.view.action in ["list", "retrieve", "update", "partial_update", "destroy"]
-        return method.lower() in ["get", "put", "patch", "delete"]
+            return self.view.action in ALLOW_FILTER_ACTIONS
+        return method.lower() in ALLOW_FILTER_METHODS
 
     def get_pagination_parameters(self, path, method):
         view = self.view
