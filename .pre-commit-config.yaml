@@ -31,3 +31,9 @@ repos:
   hooks:
   - id: codespell
     exclude: locale|kickstarter-announcement.md|coreapi-0.1.1.js
+
+- repo: https://github.com/asottile/pyupgrade
+  rev: v3.19.1
+  hooks:
+  - id: pyupgrade
+    args: ["--py39-plus", "--keep-percent-format"]

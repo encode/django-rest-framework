@@ -81,7 +81,7 @@ setup(
     author_email='tom@tomchristie.com',  # SEE NOTE BELOW (*)
     packages=find_packages(exclude=['tests*']),
     include_package_data=True,
-    install_requires=["django>=4.2", 'backports.zoneinfo;python_version<"3.9"'],
+    install_requires=["django>=4.2"],
     python_requires=">=3.9",
     zip_safe=False,
     classifiers=[
