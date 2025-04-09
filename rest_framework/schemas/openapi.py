@@ -18,7 +18,10 @@ from rest_framework.settings import api_settings
 
 from .generators import BaseSchemaGenerator
 from .inspectors import ViewInspector
-from .utils import get_pk_description, is_list_view, ALLOW_FILTER_ACTIONS, ALLOW_FILTER_METHODS
+from .utils import (
+    ALLOW_FILTER_ACTIONS, ALLOW_FILTER_METHODS, get_pk_description,
+    is_list_view
+)
 
 
 class SchemaGenerator(BaseSchemaGenerator):
