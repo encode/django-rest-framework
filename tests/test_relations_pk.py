@@ -586,7 +586,7 @@ class OneToOnePrimaryKeyTests(TestCase):
         source = OneToOnePKSourceSerializer(data={'name': 'source-2', 'target': target_pk})
         # Then: The source is valid with the serializer
         if not source.is_valid():
-            self.fail("Expected OneToOnePKTargetSerializer to be valid but had errors: {}".format(source.errors))
+            self.fail(f"Expected OneToOnePKTargetSerializer to be valid but had errors: {source.errors}")
         # Then: Saving the serializer creates a new object
         new_source = source.save()
         # Then: The new object has the same pk as the target object

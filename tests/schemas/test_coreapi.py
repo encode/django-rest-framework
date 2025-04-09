@@ -1234,7 +1234,7 @@ class TestURLNamingCollisions(TestCase):
 
         for method, suffix in zip(methods, suffixes):
             if suffix is not None:
-                key = '{}_{}'.format(method, suffix)
+                key = f'{method}_{suffix}'
             else:
                 key = method
             assert loc[key].url == url

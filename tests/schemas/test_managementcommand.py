@@ -70,7 +70,7 @@ class GenerateSchemaTests(TestCase):
 
     def test_accepts_custom_schema_generator(self):
         call_command('generateschema',
-                     '--generator_class={}.{}'.format(__name__, CustomSchemaGenerator.__name__),
+                     f'--generator_class={__name__}.{CustomSchemaGenerator.__name__}',
                      stdout=self.out)
         out_json = yaml.safe_load(self.out.getvalue())
         assert out_json == CustomSchemaGenerator.SCHEMA
@@ -78,7 +78,7 @@ class GenerateSchemaTests(TestCase):
     def test_writes_schema_to_file_on_parameter(self):
         fd, path = tempfile.mkstemp()
         try:
-            call_command('generateschema', '--file={}'.format(path), stdout=self.out)
+            call_command('generateschema', f'--file={path}', stdout=self.out)
             # nothing on stdout
             assert not self.out.getvalue()
 
