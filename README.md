@@ -1,6 +1,9 @@
 # [Django REST framework][docs]
 
 [![build-status-image]][build-status]
+[![django-ci-status-image]][django-ci-status]
+[![pylint-status-image]][pylint-status]
+[![black-status-image]][black-status]
 [![coverage-status-image]][codecov]
 [![pypi-version]][pypi]
 
@@ -181,6 +184,12 @@ Please see the [security policy][security-policy].
 [build-status]: https://github.com/encode/django-rest-framework/actions/workflows/main.yml
 [coverage-status-image]: https://img.shields.io/codecov/c/github/encode/django-rest-framework/master.svg
 [codecov]: https://codecov.io/github/encode/django-rest-framework?branch=master
+[django-ci-status-image]: https://github.com/encode/django-rest-framework/actions/workflows/django.yml/badge.svg
+[django-ci-status]: https://github.com/encode/django-rest-framework/actions/workflows/django.yml
+[pylint-status-image]: https://github.com/encode/django-rest-framework/actions/workflows/pylint.yml/badge.svg
+[pylint-status]: https://github.com/encode/django-rest-framework/actions/workflows/pylint.yml
+[black-status-image]: https://github.com/encode/django-rest-framework/actions/workflows/black.yml/badge.svg
+[black-status]: https://github.com/encode/django-rest-framework/actions/workflows/black.yml
 [pypi-version]: https://img.shields.io/pypi/v/djangorestframework.svg
 [pypi]: https://pypi.org/project/djangorestframework/
 [group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
