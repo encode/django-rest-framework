@@ -10,7 +10,7 @@ from django.test import SimpleTestCase, TestCase
 from django.test.utils import override_settings
 
 from rest_framework import filters, generics, serializers
-from rest_framework.compat import coreschema
+from rest_framework.compat import coreschema, postgres_fields
 from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIRequestFactory
 
@@ -302,6 +302,25 @@ class SearchFilterTests(TestCase):
         response = view(request)
         assert response.data == [
             {'id': 11, 'title': 'A title', 'text': 'The long text'},
+        ]
+
+
+@pytest.mark.skipif(not postgres_fields, reason='psycopg2 is not installed')
+class SearchPostgreSQLFilterTests(TestCase):
+
+    def test_unaccent_search(self):
+        class SearchListView(generics.ListAPIView):
+            queryset = SearchFilterModel.objects.all()
+            serializer_class = SearchFilterSerializer
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('title', '&text')
+
+        obj = SearchFilterModel.objects.create(title='Accent títle', text='Accent téxt')
+        view = SearchListView.as_view()
+        request = factory.get('/', {'search': 'accent text'})
+        response = view(request)
+        assert response.data == [
+            {'id': obj.id, 'title': 'Accent títle', 'text': 'Accent téxt'}
         ]
 
 
