@@ -1,0 +1,42 @@
+name: Django CI
+
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["master"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+
+      - name: Install Dependencies
+        run: |
+          python -m venv .venv
+          source .vevn/bin/activate
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
+      - name: Create a Django project and configure settings
+        run: |
+          source .vevn/bin/activate
+          python -m django startproject mysite
+          mv rest_framework mysite
+          cd mysite
+          echo "INSTALLED_APPS += ['rest_framework']" >> mysite/settings.py
+          echo "from django.urls import include" >> mysite/urls.py
+          echo "urlpatterns += [path('', include('rest_framework.urls'))]" >> mysite/urls.py
+
+      - name: Run Migrations, System checks and test
+        run: |
+          source .vevn/bin/activate
+          cd mysite
+          python manage.py migrate
+          python manage.py check
+          python manage.py test
