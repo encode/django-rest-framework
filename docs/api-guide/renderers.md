@@ -75,6 +75,8 @@ If your API includes views that can serve both regular webpages and API response
 
 ## JSONRenderer
 
+::: rest_framework.renderers.JSONRenderer
+
 Renders the request data into `JSON`, using utf-8 encoding.
 
 Note that the default style is to include unicode characters, and render the response using a compact style with no unnecessary whitespace:
@@ -97,6 +99,8 @@ The default JSON encoding style can be altered using the `UNICODE_JSON` and `COM
 **.charset**: `None`
 
 ## TemplateHTMLRenderer
+
+::: rest_framework.renderers.TemplateHTMLRenderer
 
 Renders data to HTML, using Django's standard template rendering.
 Unlike other renderers, the data passed to the `Response` does not need to be serialized.  Also, unlike other renderers, you may want to include a `template_name` argument when creating the `Response`.
@@ -148,6 +152,8 @@ See also: `StaticHTMLRenderer`
 
 ## StaticHTMLRenderer
 
+::: rest_framework.renderers.StaticHTMLRenderer
+
 A simple renderer that simply returns pre-rendered HTML.  Unlike other renderers, the data passed to the response object should be a string representing the content to be returned.
 
 An example of a view that uses `StaticHTMLRenderer`:
@@ -169,6 +175,8 @@ You can use `StaticHTMLRenderer` either to return regular HTML pages using REST 
 See also: `TemplateHTMLRenderer`
 
 ## BrowsableAPIRenderer
+
+::: rest_framework.renderers.BrowsableAPIRenderer
 
 Renders data into HTML for the Browsable API:
 
@@ -193,6 +201,8 @@ By default the response content will be rendered with the highest priority rende
             return JSONRenderer()
 
 ## AdminRenderer
+
+::: rest_framework.renderers.AdminRenderer
 
 Renders data into HTML for an admin-like display:
 
@@ -221,6 +231,8 @@ Note that views that have nested or list serializers for their input won't work 
 
 ## HTMLFormRenderer
 
+::: rest_framework.renderers.HTMLFormRenderer
+
 Renders data returned by a serializer into an HTML form. The output of this renderer does not include the enclosing `<form>` tags, a hidden CSRF input or any submit buttons.
 
 This renderer is not intended to be used directly, but can instead be used in templates by passing a serializer instance to the `render_form` template tag.
@@ -245,6 +257,8 @@ For more information see the [HTML & Forms][html-and-forms] documentation.
 
 ## MultiPartRenderer
 
+::: rest_framework.renderers.MultiPartRenderer
+
 This renderer is used for rendering HTML multipart form data.  **It is not suitable as a response renderer**, but is instead used for creating test requests, using REST framework's [test client and test request factory][testing].
 
 **.media_type**: `multipart/form-data; boundary=BoUnDaRyStRiNg`
@@ -256,6 +270,8 @@ This renderer is used for rendering HTML multipart form data.  **It is not suita
 ---
 
 # Custom renderers
+
+::: rest_framework.renderers.BaseRenderer
 
 To implement a custom renderer, you should override `BaseRenderer`, set the `.media_type` and `.format` properties, and implement the `.render(self, data, accepted_media_type=None, renderer_context=None)` method.
 
