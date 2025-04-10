@@ -13,8 +13,12 @@ jobs:
 
     - name: Install dependencies
       run: |
+        python -m venv .venv
+        source .vevn/bin/activate
         python -m pip install --upgrade pip
         pip install pylint
 
     - name: Analysing the code with pylint
-      run: pylint .
+      run: |
+        source .vevn/bin/activate
+        pylint .
