@@ -188,7 +188,10 @@ class UniqueTogetherValidator:
                 if attrs[field_name] != getattr(serializer.instance, field_name)
             ]
 
-        condition_kwargs = {source: attrs[source] for source in self.condition_fields}
+        condition_kwargs = {
+            serializer.fields[field_name].source: attrs[serializer.fields[field_name].source]
+            for field_name in self.condition_fields
+        }
         if checked_values and None not in checked_values and qs_exists_with_condition(queryset, self.condition, condition_kwargs):
             field_names = ', '.join(self.fields)
             message = self.message.format(field_names=field_names)
