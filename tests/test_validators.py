@@ -683,6 +683,24 @@ class TestUniqueConstraintValidation(TestCase):
         result = serializer.save()
         self.assertIsInstance(result, UniqueConstraintNullableModel)
 
+    def test_unique_constraint_source(self):
+        class SourceUniqueConstraintSerializer(serializers.ModelSerializer):
+            raceName = serializers.CharField(source="race_name")
+
+            class Meta:
+                model = UniqueConstraintModel
+                fields = ("raceName", "position", "global_id", "fancy_conditions")
+
+        serializer = SourceUniqueConstraintSerializer(
+            data={
+                "raceName": "example",
+                "position": 5,
+                "global_id": 11,
+                "fancy_conditions": 11,
+            }
+        )
+        assert serializer.is_valid()
+
 
 # Tests for `UniqueForDateValidator`
 # ----------------------------------
