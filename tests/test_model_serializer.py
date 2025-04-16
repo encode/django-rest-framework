@@ -9,7 +9,6 @@ import datetime
 import decimal
 import json  # noqa
 import re
-import sys
 import tempfile
 
 import pytest
@@ -397,10 +396,6 @@ class TestDurationFieldMapping(TestCase):
                 fields = '__all__'
 
         expected = dedent("""
-            TestSerializer():
-                id = IntegerField(label='ID', read_only=True)
-                duration_field = DurationField(max_value=datetime.timedelta(3), min_value=datetime.timedelta(1))
-        """) if sys.version_info < (3, 7) else dedent("""
             TestSerializer():
                 id = IntegerField(label='ID', read_only=True)
                 duration_field = DurationField(max_value=datetime.timedelta(days=3), min_value=datetime.timedelta(days=1))
@@ -797,7 +792,7 @@ class TestIntegration(TestCase):
         )
         self.instance.many_to_many.set(self.many_to_many_targets)
 
-    def test_pk_retrival(self):
+    def test_pk_retrieval(self):
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
                 model = RelationalModel

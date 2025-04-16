@@ -47,7 +47,7 @@ def custom_handler(exc, context):
     return Response({'error': 'UnknownError'}, status=500)
 
 
-class OverridenSettingsView(APIView):
+class OverriddenSettingsView(APIView):
     settings = APISettings({'EXCEPTION_HANDLER': custom_handler})
 
     def get(self, request, *args, **kwargs):
@@ -131,7 +131,7 @@ class TestCustomExceptionHandler(TestCase):
 
 class TestCustomSettings(TestCase):
     def setUp(self):
-        self.view = OverridenSettingsView.as_view()
+        self.view = OverriddenSettingsView.as_view()
 
     def test_get_exception_handler(self):
         request = factory.get('/', content_type='application/json')
