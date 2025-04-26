@@ -6,7 +6,9 @@ This gives us better separation of concerns, allows us to use single-step
 object creation, and makes it possible to switch between using the implicit
 `ModelSerializer` class and an equivalent explicit `Serializer` class.
 """
+from django.core.exceptions import FieldError
 from django.db import DataError
+from django.db.models import Exists
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework.exceptions import ValidationError
@@ -20,6 +22,17 @@ def qs_exists(queryset):
     try:
         return queryset.exists()
     except (TypeError, ValueError, DataError):
+        return False
+
+
+def qs_exists_with_condition(queryset, condition, against):
+    if condition is None:
+        return qs_exists(queryset)
+    try:
+        # use the same query as UniqueConstraint.validate
+        # https://github.com/django/django/blob/7ba2a0db20c37a5b1500434ca4ed48022311c171/django/db/models/constraints.py#L672
+        return (condition & Exists(queryset.filter(condition))).check(against)
+    except (TypeError, ValueError, DataError, FieldError):
         return False
 
 
@@ -99,10 +112,12 @@ class UniqueTogetherValidator:
     missing_message = _('This field is required.')
     requires_context = True
 
-    def __init__(self, queryset, fields, message=None):
+    def __init__(self, queryset, fields, message=None, condition_fields=None, condition=None):
         self.queryset = queryset
         self.fields = fields
         self.message = message or self.message
+        self.condition_fields = [] if condition_fields is None else condition_fields
+        self.condition = condition
 
     def enforce_required_fields(self, attrs, serializer):
         """
@@ -114,7 +129,7 @@ class UniqueTogetherValidator:
 
         missing_items = {
             field_name: self.missing_message
-            for field_name in self.fields
+            for field_name in (*self.fields, *self.condition_fields)
             if serializer.fields[field_name].source not in attrs
         }
         if missing_items:
@@ -159,29 +174,34 @@ class UniqueTogetherValidator:
         queryset = self.filter_queryset(attrs, queryset, serializer)
         queryset = self.exclude_current_instance(attrs, queryset, serializer.instance)
 
+        checked_names = [
+            serializer.fields[field_name].source for field_name in self.fields
+        ]
         # Ignore validation if any field is None
         if serializer.instance is None:
-            checked_values = [
-                value for field, value in attrs.items() if field in self.fields
-            ]
+            checked_values = [attrs[field_name] for field_name in checked_names]
         else:
             # Ignore validation if all field values are unchanged
             checked_values = [
-                value
-                for field, value in attrs.items()
-                if field in self.fields and value != getattr(serializer.instance, field)
+                attrs[field_name]
+                for field_name in checked_names
+                if attrs[field_name] != getattr(serializer.instance, field_name)
             ]
 
-        if checked_values and None not in checked_values and qs_exists(queryset):
+        condition_sources = (serializer.fields[field_name].source for field_name in self.condition_fields)
+        condition_kwargs = {source: attrs[source] for source in condition_sources}
+        if checked_values and None not in checked_values and qs_exists_with_condition(queryset, self.condition, condition_kwargs):
             field_names = ', '.join(self.fields)
             message = self.message.format(field_names=field_names)
             raise ValidationError(message, code='unique')
 
     def __repr__(self):
-        return '<%s(queryset=%s, fields=%s)>' % (
+        return '<{}({})>'.format(
             self.__class__.__name__,
-            smart_repr(self.queryset),
-            smart_repr(self.fields)
+            ', '.join(
+                f'{attr}={smart_repr(getattr(self, attr))}'
+                for attr in ('queryset', 'fields', 'condition')
+                if getattr(self, attr) is not None)
         )
 
     def __eq__(self, other):

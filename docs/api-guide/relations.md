@@ -628,12 +628,16 @@ The [drf-nested-routers package][drf-nested-routers] provides routers and relati
 
 The [rest-framework-generic-relations][drf-nested-relations] library provides read/write serialization for generic foreign keys.
 
+The [rest-framework-gm2m-relations][drf-gm2m-relations] library provides read/write serialization for [django-gm2m][django-gm2m-field].
+
 [cite]: http://users.ece.utexas.edu/~adnan/pike.html
 [reverse-relationships]: https://docs.djangoproject.com/en/stable/topics/db/queries/#following-relationships-backward
 [routers]: https://www.django-rest-framework.org/api-guide/routers#defaultrouter
 [generic-relations]: https://docs.djangoproject.com/en/stable/ref/contrib/contenttypes/#id1
 [drf-nested-routers]: https://github.com/alanjds/drf-nested-routers
 [drf-nested-relations]: https://github.com/Ian-Foote/rest-framework-generic-relations
+[drf-gm2m-relations]: https://github.com/mojtabaakbari221b/rest-framework-gm2m-relations
+[django-gm2m-field]: https://github.com/tkhyn/django-gm2m
 [django-intermediary-manytomany]: https://docs.djangoproject.com/en/stable/topics/db/models/#intermediary-manytomany
 [dealing-with-nested-objects]: https://www.django-rest-framework.org/api-guide/serializers/#dealing-with-nested-objects
 [to_internal_value]: https://www.django-rest-framework.org/api-guide/serializers/#to_internal_valueself-data

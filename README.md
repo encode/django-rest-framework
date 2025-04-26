@@ -28,8 +28,9 @@ The initial aim is to provide a single full-time position on REST framework.
 [![][cryptapi-img]][cryptapi-url]
 [![][fezto-img]][fezto-url]
 [![][svix-img]][svix-url]
+[![][zuplo-img]][zuplo-url]
 
-Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Sentry][sentry-url], [Stream][stream-url], [Spacinov][spacinov-url], [Retool][retool-url], [bit.io][bitio-url], [PostHog][posthog-url], [CryptAPI][cryptapi-url], [FEZTO][fezto-url], and [Svix][svix-url].
+Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Sentry][sentry-url], [Stream][stream-url], [Spacinov][spacinov-url], [Retool][retool-url], [bit.io][bitio-url], [PostHog][posthog-url], [CryptAPI][cryptapi-url], [FEZTO][fezto-url], [Svix][svix-url], and [Zuplo][zuplo-url].
 
 ---
 
@@ -53,8 +54,8 @@ Some reasons you might want to use REST framework:
 
 # Requirements
 
-* Python 3.6+
-* Django 5.0, 4.2, 4.1, 4.0, 3.2, 3.1, 3.0
+* Python 3.9+
+* Django 4.2, 5.0, 5.1, 5.2
 
 We **highly recommend** and only officially support the latest patch release of
 each Python and Django series.
@@ -172,8 +173,6 @@ Full documentation for the project is available at [https://www.django-rest-fram
 
 For questions and support, use the [REST framework discussion group][group], or `#restframework` on libera.chat IRC.
 
-You may also want to [follow the author on Twitter][twitter].
-
 # Security
 
 Please see the [security policy][security-policy].
@@ -184,7 +183,6 @@ Please see the [security policy][security-policy].
 [codecov]: https://codecov.io/github/encode/django-rest-framework?branch=master
 [pypi-version]: https://img.shields.io/pypi/v/djangorestframework.svg
 [pypi]: https://pypi.org/project/djangorestframework/
-[twitter]: https://twitter.com/starletdreaming
 [group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
 
 [funding]: https://fund.django-rest-framework.org/topics/funding/
@@ -199,6 +197,7 @@ Please see the [security policy][security-policy].
 [cryptapi-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/cryptapi-readme.png
 [fezto-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/fezto-readme.png
 [svix-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/svix-premium.png
+[zuplo-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/zuplo-readme.png
 
 [sentry-url]: https://getsentry.com/welcome/
 [stream-url]: https://getstream.io/?utm_source=DjangoRESTFramework&utm_medium=Webpage_Logo_Ad&utm_content=Developer&utm_campaign=DjangoRESTFramework_Jan2022_HomePage
@@ -209,6 +208,7 @@ Please see the [security policy][security-policy].
 [cryptapi-url]: https://cryptapi.io
 [fezto-url]: https://www.fezto.xyz/?utm_source=DjangoRESTFramework
 [svix-url]: https://www.svix.com/?utm_source=django-REST&utm_medium=sponsorship
+[zuplo-url]: https://zuplo.link/django-gh
 
 [oauth1-section]: https://www.django-rest-framework.org/api-guide/authentication/#django-rest-framework-oauth
 [oauth2-section]: https://www.django-rest-framework.org/api-guide/authentication/#django-oauth-toolkit

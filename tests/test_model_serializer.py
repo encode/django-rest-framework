@@ -9,10 +9,8 @@ import datetime
 import decimal
 import json  # noqa
 import re
-import sys
 import tempfile
 
-import django
 import pytest
 from django.core.exceptions import ImproperlyConfigured
 from django.core.serializers.json import DjangoJSONEncoder
@@ -400,10 +398,6 @@ class TestDurationFieldMapping(TestCase):
         expected = dedent("""
             TestSerializer():
                 id = IntegerField(label='ID', read_only=True)
-                duration_field = DurationField(max_value=datetime.timedelta(3), min_value=datetime.timedelta(1))
-        """) if sys.version_info < (3, 7) else dedent("""
-            TestSerializer():
-                id = IntegerField(label='ID', read_only=True)
                 duration_field = DurationField(max_value=datetime.timedelta(days=3), min_value=datetime.timedelta(days=1))
         """)
         self.assertEqual(repr(TestSerializer()), expected)
@@ -453,14 +447,11 @@ class TestPosgresFieldsMapping(TestCase):
                 model = ArrayFieldModel
                 fields = ['array_field', 'array_field_with_blank']
 
-        validators = ""
-        if django.VERSION < (4, 1):
-            validators = ", validators=[<django.core.validators.MaxLengthValidator object>]"
         expected = dedent("""
             TestSerializer():
-                array_field = ListField(allow_empty=False, child=CharField(label='Array field'%s))
-                array_field_with_blank = ListField(child=CharField(label='Array field with blank'%s), required=False)
-        """ % (validators, validators))
+                array_field = ListField(allow_empty=False, child=CharField(label='Array field'))
+                array_field_with_blank = ListField(child=CharField(label='Array field with blank'), required=False)
+        """)
         self.assertEqual(repr(TestSerializer()), expected)
 
     @pytest.mark.skipif(hasattr(models, 'JSONField'), reason='has models.JSONField')
@@ -801,7 +792,7 @@ class TestIntegration(TestCase):
         )
         self.instance.many_to_many.set(self.many_to_many_targets)
 
-    def test_pk_retrival(self):
+    def test_pk_retrieval(self):
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
                 model = RelationalModel

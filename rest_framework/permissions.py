@@ -54,6 +54,9 @@ class OperandHolder(OperationHolderMixin):
             self.op2_class == other.op2_class
         )
 
+    def __hash__(self):
+        return hash((self.operator_class, self.op1_class, self.op2_class))
+
 
 class AND:
     def __init__(self, op1, op2):
@@ -222,7 +225,7 @@ class DjangoModelPermissions(BasePermission):
         if hasattr(view, 'get_queryset'):
             queryset = view.get_queryset()
             assert queryset is not None, (
-                '{}.get_queryset() returned None'.format(view.__class__.__name__)
+                f'{view.__class__.__name__}.get_queryset() returned None'
             )
             return queryset
         return view.queryset

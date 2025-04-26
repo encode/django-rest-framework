@@ -439,3 +439,17 @@ ul.sponsor {
   display: inline-block !important;
 }
 
+/* admonition */
+.admonition {
+  border: .075rem solid #448aff;
+  border-radius: .2rem;
+  margin: 1.5625em 0;
+  padding: 0 .6rem;
+}
+.admonition-title {
+  background: #448aff1a;
+  font-weight: 700;
+  margin:  0 -.6rem 1em;
+  padding: 0.4rem 0.6rem;
+}
+

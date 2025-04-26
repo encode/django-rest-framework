@@ -513,7 +513,7 @@ class TestLimitOffset:
             ]
         }
 
-    def test_erronous_offset(self):
+    def test_erroneous_offset(self):
         request = Request(factory.get('/', {'limit': 5, 'offset': 1000}))
         queryset = self.paginate_queryset(request)
         self.get_paginated_content(queryset)
@@ -536,7 +536,7 @@ class TestLimitOffset:
         content = self.get_paginated_content(queryset)
         next_limit = self.pagination.default_limit
         next_offset = self.pagination.default_limit
-        next_url = 'http://testserver/?limit={}&offset={}'.format(next_limit, next_offset)
+        next_url = f'http://testserver/?limit={next_limit}&offset={next_offset}'
         assert queryset == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
         assert content.get('next') == next_url
 
@@ -549,7 +549,7 @@ class TestLimitOffset:
         content = self.get_paginated_content(queryset)
         next_limit = self.pagination.default_limit
         next_offset = self.pagination.default_limit
-        next_url = 'http://testserver/?limit={}&offset={}'.format(next_limit, next_offset)
+        next_url = f'http://testserver/?limit={next_limit}&offset={next_offset}'
         assert queryset == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
         assert content.get('next') == next_url
 
@@ -565,9 +565,9 @@ class TestLimitOffset:
         max_limit = self.pagination.max_limit
         next_offset = offset + max_limit
         prev_offset = offset - max_limit
-        base_url = 'http://testserver/?limit={}'.format(max_limit)
-        next_url = base_url + '&offset={}'.format(next_offset)
-        prev_url = base_url + '&offset={}'.format(prev_offset)
+        base_url = f'http://testserver/?limit={max_limit}'
+        next_url = base_url + f'&offset={next_offset}'
+        prev_url = base_url + f'&offset={prev_offset}'
         assert queryset == list(range(51, 66))
         assert content.get('next') == next_url
         assert content.get('previous') == prev_url
@@ -972,24 +972,17 @@ class TestCursorPagination(CursorPaginationTestsMixin):
             def __init__(self, items):
                 self.items = items
 
-            def filter(self, q):
-                q_args = dict(q.deconstruct()[1])
-                if not q_args:
-                    # django 3.0.x artifact
-                    q_args = dict(q.deconstruct()[2])
-                created__gt = q_args.get('created__gt')
-                created__lt = q_args.get('created__lt')
-
+            def filter(self, created__gt=None, created__lt=None):
                 if created__gt is not None:
                     return MockQuerySet([
                         item for item in self.items
-                        if item.created is None or item.created > int(created__gt)
+                        if item.created > int(created__gt)
                     ])
 
                 assert created__lt is not None
                 return MockQuerySet([
                     item for item in self.items
-                    if item.created is None or item.created < int(created__lt)
+                    if item.created < int(created__lt)
                 ])
 
             def order_by(self, *ordering):
@@ -1106,127 +1099,6 @@ class TestCursorPaginationWithValueQueryset(CursorPaginationTestsMixin, TestCase
             previous = None
 
         return (previous, current, next, previous_url, next_url)
-
-
-class NullableCursorPaginationModel(models.Model):
-    created = models.IntegerField(null=True)
-
-
-class TestCursorPaginationWithNulls(TestCase):
-    """
-    Unit tests for `pagination.CursorPagination` with ordering on a nullable field.
-    """
-
-    def setUp(self):
-        class ExamplePagination(pagination.CursorPagination):
-            page_size = 1
-            ordering = 'created'
-
-        self.pagination = ExamplePagination()
-        data = [
-            None, None, 3, 4
-        ]
-        for idx in data:
-            NullableCursorPaginationModel.objects.create(created=idx)
-
-        self.queryset = NullableCursorPaginationModel.objects.all()
-
-    get_pages = TestCursorPagination.get_pages
-
-    def test_ascending(self):
-        """Test paginating one row at a time, current should go 1, 2, 3, 4, 3, 2, 1."""
-        (previous, current, next, previous_url, next_url) = self.get_pages('/')
-
-        assert previous is None
-        assert current == [None]
-        assert next == [None]
-
-        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
-
-        assert previous == [None]
-        assert current == [None]
-        assert next == [3]
-
-        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
-
-        assert previous == [3]  # [None] paging artifact documented at https://github.com/ddelange/django-rest-framework/blob/3.14.0/rest_framework/pagination.py#L789
-        assert current == [3]
-        assert next == [4]
-
-        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
-
-        assert previous == [3]
-        assert current == [4]
-        assert next is None
-        assert next_url is None
-
-        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
-
-        assert previous == [None]
-        assert current == [3]
-        assert next == [4]
-
-        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
-
-        assert previous == [None]
-        assert current == [None]
-        assert next == [None]  # [3] paging artifact documented at https://github.com/ddelange/django-rest-framework/blob/3.14.0/rest_framework/pagination.py#L731
-
-        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
-
-        assert previous is None
-        assert current == [None]
-        assert next == [None]
-
-    def test_descending(self):
-        """Test paginating one row at a time, current should go 4, 3, 2, 1, 2, 3, 4."""
-        self.pagination.ordering = ('-created',)
-        (previous, current, next, previous_url, next_url) = self.get_pages('/')
-
-        assert previous is None
-        assert current == [4]
-        assert next == [3]
-
-        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
-
-        assert previous == [None]  # [4] paging artifact
-        assert current == [3]
-        assert next == [None]
-
-        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
-
-        assert previous == [None]  # [3] paging artifact
-        assert current == [None]
-        assert next == [None]
-
-        (previous, current, next, previous_url, next_url) = self.get_pages(next_url)
-
-        assert previous == [None]
-        assert current == [None]
-        assert next is None
-        assert next_url is None
-
-        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
-
-        assert previous == [3]
-        assert current == [None]
-        assert next == [None]
-
-        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
-
-        assert previous == [None]
-        assert current == [3]
-        assert next == [3]  # [4] paging artifact documented at https://github.com/ddelange/django-rest-framework/blob/3.14.0/rest_framework/pagination.py#L731
-
-        # skip back artifact
-        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
-        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
-
-        (previous, current, next, previous_url, next_url) = self.get_pages(previous_url)
-
-        assert previous is None
-        assert current == [4]
-        assert next == [3]
 
 
 def test_get_displayed_page_numbers():

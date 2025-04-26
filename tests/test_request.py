@@ -3,7 +3,6 @@ Tests for content parsing, and form-overloaded content parsing.
 """
 import copy
 import os.path
-import sys
 import tempfile
 
 import pytest
@@ -125,6 +124,25 @@ class TestContentParsing(TestCase):
         request = Request(factory.put('/', content, content_type=content_type))
         request.parsers = (PlainTextParser(), )
         assert request.data == content
+
+    def test_calling_data_fails_when_attribute_error_is_raised(self):
+        """
+        Ensure attribute errors raised when parsing are properly re-raised.
+        """
+        expected_message = "Internal error"
+
+        class BrokenParser:
+            media_type = "application/json"
+
+            def parse(self, *args, **kwargs):
+                raise AttributeError(expected_message)
+
+        http_request = factory.post('/', data={}, format="json")
+        request = Request(http_request)
+        request.parsers = (BrokenParser,)
+
+        with self.assertRaisesMessage(WrappedAttributeError, expected_message):
+            request.data
 
 
 class MockView(APIView):
@@ -356,9 +374,5 @@ class TestDeepcopy(TestCase):
 
 
 class TestTyping(TestCase):
-    @pytest.mark.skipif(
-        sys.version_info < (3, 7),
-        reason="subscriptable classes requires Python 3.7 or higher",
-    )
     def test_request_is_subscriptable(self):
         assert Request is Request["foo"]

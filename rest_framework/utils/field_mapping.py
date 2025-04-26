@@ -66,7 +66,7 @@ def get_unique_validators(field_name, model_field):
     """
     Returns a list of UniqueValidators that should be applied to the field.
     """
-    field_set = set([field_name])
+    field_set = {field_name}
     conditions = {
         c.condition
         for c in model_field.model._meta.constraints
