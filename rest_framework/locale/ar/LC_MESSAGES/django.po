@@ -8,6 +8,7 @@
 # Bashar Al-Abdulhadi, 2016-2017
 # Eyad Toma <d.eyad.t@gmail.com>, 2015,2017
 # zak zak <zakaria.bendifallah@gmail.com>, 2020
+# Salman Saeed Albukhaitan <ssyb2014@gmail.com>, 2024
 msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
@@ -24,19 +25,19 @@ msgstr ""
 
 #: authentication.py:70
 msgid "Invalid basic header. No credentials provided."
-msgstr "رأس أساسي غير صالح, لم تقدم اي بيانات."
+msgstr "ترويسة أساسية غير صالحة. لم تقدم أي بيانات تفويض."
 
 #: authentication.py:73
 msgid "Invalid basic header. Credentials string should not contain spaces."
-msgstr "رأس أساسي غير صالح, سلسلة البيانات لا يجب أن تحتوي على أي أحرف مسافات"
+msgstr "ترويسة أساسية غير صالحة. يجب أن لا تحتوي سلسلة بيانات التفويض على مسافات."
 
 #: authentication.py:83
 msgid "Invalid basic header. Credentials not correctly base64 encoded."
-msgstr "رأس أساسي غير صالح, البيانات ليست مرمّزة بصحة على أساس64."
+msgstr "ترويسة أساسية غير صالحة. بيانات التفويض لم تُشفر بشكل صحيح بنظام أساس64."
 
 #: authentication.py:101
 msgid "Invalid username/password."
-msgstr "اسم المستخدم/كلمة السر غير صحيحين."
+msgstr "اسم المستخدم/كلمة المرور غير صحيحة."
 
 #: authentication.py:104 authentication.py:206
 msgid "User inactive or deleted."
@@ -93,7 +94,7 @@ msgstr "كلمة المرور"
 
 #: authtoken/serializers.py:35
 msgid "Unable to log in with provided credentials."
-msgstr "تعذر تسجيل الدخول بالبيانات التي ادخلتها."
+msgstr "تعذر تسجيل الدخول بالبيانات المدخلة."
 
 #: authtoken/serializers.py:38
 msgid "Must include \"username\" and \"password\"."
@@ -101,11 +102,11 @@ msgstr "يجب أن تتضمن \"اسم المستخدم\" و \"كلمة الم�
 
 #: exceptions.py:102
 msgid "A server error occurred."
-msgstr "حدث خطأ في المخدم."
+msgstr "حدث خطأ في الخادم."
 
 #: exceptions.py:142
 msgid "Invalid input."
-msgstr ""
+msgstr "مدخل غير صالح."
 
 #: exceptions.py:161
 msgid "Malformed request."
@@ -130,11 +131,11 @@ msgstr "غير موجود."
 #: exceptions.py:191
 #, python-brace-format
 msgid "Method \"{method}\" not allowed."
-msgstr "الطريقة \"{method}\" غير مسموح بها."
+msgstr "طريقة \"{method}\" غير مسموح بها."
 
 #: exceptions.py:202
 msgid "Could not satisfy the request Accept header."
-msgstr "لم نتمكن من تلبية الرٱس Accept في الطلب."
+msgstr "تعذر تلبية ترويسة Accept في الطلب."
 
 #: exceptions.py:212
 #, python-brace-format
@@ -143,17 +144,17 @@ msgstr "الوسيط \"{media_type}\" الموجود في الطلب غير مع
 
 #: exceptions.py:223
 msgid "Request was throttled."
-msgstr "تم تقييد الطلب."
+msgstr "تم حد الطلب."
 
 #: exceptions.py:224
 #, python-brace-format
 msgid "Expected available in {wait} second."
-msgstr ""
+msgstr "متوقع التوفر خلال {wait} ثانية."
 
 #: exceptions.py:225
 #, python-brace-format
 msgid "Expected available in {wait} seconds."
-msgstr ""
+msgstr "متوقع التوفر خلال {wait} ثواني."
 
 #: fields.py:316 relations.py:245 relations.py:279 validators.py:90
 #: validators.py:183
@@ -166,11 +167,11 @@ msgstr "لا يمكن لهذا الحقل ان يكون فارغاً null."
 
 #: fields.py:701
 msgid "Must be a valid boolean."
-msgstr ""
+msgstr "يجب أن يكون قيمة منطقية صالحة."
 
 #: fields.py:766
 msgid "Not a valid string."
-msgstr ""
+msgstr "ليس نصاً صالحاً."
 
 #: fields.py:767
 msgid "This field may not be blank."
@@ -179,16 +180,16 @@ msgstr "لا يمكن لهذا الحقل ان يكون فارغاً."
 #: fields.py:768 fields.py:1881
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} characters."
-msgstr "تأكد ان الحقل لا يزيد عن {max_length} محرف."
+msgstr "تأكد ان عدد الحروف في هذا الحقل لا تتجاوز {max_length}."
 
 #: fields.py:769
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} characters."
-msgstr "تأكد ان الحقل {min_length} محرف على الاقل."
+msgstr "تأكد ان عدد الحروف في هذا الحقل لا يقل عن {min_length}."
 
 #: fields.py:816
 msgid "Enter a valid email address."
-msgstr "عليك ان تدخل بريد إلكتروني صالح."
+msgstr "يرجى إدخال عنوان بريد إلكتروني صحيح."
 
 #: fields.py:827
 msgid "This value does not match the required pattern."
@@ -204,7 +205,7 @@ msgstr "أدخل \"slug\" صالح يحتوي على حروف، أرقام، ش�
 msgid ""
 "Enter a valid \"slug\" consisting of Unicode letters, numbers, underscores, "
 "or hyphens."
-msgstr ""
+msgstr "أدخل \"slug\" صالح يحتوي على حروف يونيكود، أرقام، شُرط سفلية أو واصلات."
 
 #: fields.py:854
 msgid "Enter a valid URL."
@@ -212,7 +213,7 @@ msgstr "الرجاء إدخال رابط إلكتروني صالح."
 
 #: fields.py:867
 msgid "Must be a valid UUID."
-msgstr ""
+msgstr "يجب أن يكون معرف UUID صالح."
 
 #: fields.py:903
 msgid "Enter a valid IPv4 or IPv6 address."
@@ -225,16 +226,16 @@ msgstr "الرجاء إدخال رقم صحيح صالح."
 #: fields.py:932 fields.py:969 fields.py:1005 fields.py:1366
 #, python-brace-format
 msgid "Ensure this value is less than or equal to {max_value}."
-msgstr "تأكد ان القيمة أقل أو تساوي {max_value}."
+msgstr "تأكد ان القيمة أقل من أو تساوي {max_value}."
 
 #: fields.py:933 fields.py:970 fields.py:1006 fields.py:1367
 #, python-brace-format
 msgid "Ensure this value is greater than or equal to {min_value}."
-msgstr "تأكد ان القيمة أكبر أو تساوي {min_value}."
+msgstr "تأكد ان القيمة أكبر من أو تساوي {min_value}."
 
 #: fields.py:934 fields.py:971 fields.py:1010
 msgid "String value too large."
-msgstr "السلسلة اطول من القيمة المسموح بها."
+msgstr "النص طويل جداً."
 
 #: fields.py:968 fields.py:1004
 msgid "A valid number is required."
@@ -249,7 +250,7 @@ msgstr "تأكد ان القيمة لا تحوي أكثر من {max_digits} رق
 #, python-brace-format
 msgid ""
 "Ensure that there are no more than {max_decimal_places} decimal places."
-msgstr "تأكد انه لا يوجد اكثر من {max_decimal_places} منازل عشرية."
+msgstr "تأكد انه لا يوجد اكثر من {max_decimal_places} أرقام عشرية."
 
 #: fields.py:1009
 #, python-brace-format
@@ -261,7 +262,7 @@ msgstr "تأكد انه لا يوجد اكثر من {max_whole_digits} أرقا�
 #: fields.py:1148
 #, python-brace-format
 msgid "Datetime has wrong format. Use one of these formats instead: {format}."
-msgstr "صيغة التاريخ و الوقت غير صحيحة. عليك أن تستخدم واحدة من هذه الصيغ التالية: {format}."
+msgstr "صيغة التاريخ و الوقت غير صحيحة. عليك أن تستخدم احد الصيغ التالية: {format}."
 
 #: fields.py:1149
 msgid "Expected a datetime but got a date."
@@ -270,11 +271,11 @@ msgstr "متوقع تاريخ و وقت و وجد تاريخ فقط"
 #: fields.py:1150
 #, python-brace-format
 msgid "Invalid datetime for the timezone \"{timezone}\"."
-msgstr ""
+msgstr "تاريخ و وقت غير صالح للمنطقة الزمنية \"{timezone}\"."
 
 #: fields.py:1151
 msgid "Datetime value out of range."
-msgstr ""
+msgstr "قيمة التاريخ و الوقت خارج النطاق."
 
 #: fields.py:1236
 #, python-brace-format
@@ -293,12 +294,12 @@ msgstr "صيغة الوقت غير صحيحة. عليك أن تستخدم واح
 #: fields.py:1365
 #, python-brace-format
 msgid "Duration has wrong format. Use one of these formats instead: {format}."
-msgstr "صيغة المدة غير صحيحه, يرجى إستخدام إحدى هذه الصيغ: {format}."
+msgstr "صيغة المدة غير صحيحة. يرجى استخدام احد الصيغ التالية: {format}."
 
 #: fields.py:1399 fields.py:1456
 #, python-brace-format
 msgid "\"{input}\" is not a valid choice."
-msgstr "\"{input}\" ليست واحدة من الخيارات الصالحة."
+msgstr "\"{input}\" ليس خياراً صالحاً."
 
 #: fields.py:1402
 #, python-brace-format
@@ -317,7 +318,7 @@ msgstr "هذا التحديد لا يجب أن يكون فارغا."
 #: fields.py:1495
 #, python-brace-format
 msgid "\"{input}\" is not a valid path choice."
-msgstr "{input} كإختيار مسار غير صالح."
+msgstr "{input} ليس خيار مسار صالح."
 
 #: fields.py:1514
 msgid "No file was submitted."
@@ -326,41 +327,41 @@ msgstr "لم يتم إرسال أي ملف."
 #: fields.py:1515
 msgid ""
 "The submitted data was not a file. Check the encoding type on the form."
-msgstr "المعطيات المرسولة ليست ملف. إفحص نوع الترميز في النموذج."
+msgstr "البيانات المرسلة ليست ملف. تأكد من نوع الترميز في النموذج."
 
 #: fields.py:1516
 msgid "No filename could be determined."
-msgstr "ما من إسم ملف أمكن تحديده."
+msgstr "تعذر تحديد اسم الملف."
 
 #: fields.py:1517
 msgid "The submitted file is empty."
-msgstr "الملف الذي تم إرساله فارغ."
+msgstr "الملف المرسل فارغ."
 
 #: fields.py:1518
 #, python-brace-format
 msgid ""
 "Ensure this filename has at most {max_length} characters (it has {length})."
-msgstr "تأكد ان اسم الملف لا يحوي أكثر من {max_length} محرف (الإسم المرسل يحوي {length} محرف)."
+msgstr "تأكد ان طول إسم الملف لا يتجاوز {max_length} حرف (عدد الحروف الحالي {length})."
 
 #: fields.py:1566
 msgid ""
 "Upload a valid image. The file you uploaded was either not an image or a "
 "corrupted image."
-msgstr "الرجاء تحميل صورة صالحة. الملف الذي تم تحميله إما لم يكن صورة او انه كان صورة تالفة."
+msgstr "يرجى رفع صورة صالحة. الملف الذي قمت برفعه ليس صورة أو أنه ملف تالف."
 
 #: fields.py:1604 relations.py:486 serializers.py:571
 msgid "This list may not be empty."
-msgstr "القائمة يجب أن لا تكون فارغة."
+msgstr "يجب أن لا تكون القائمة فارغة."
 
 #: fields.py:1605
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} elements."
-msgstr ""
+msgstr "تأكد ان عدد العناصر في هذا الحقل لا يقل عن {min_length}."
 
 #: fields.py:1606
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} elements."
-msgstr ""
+msgstr "تأكد ان عدد العناصر في هذا الحقل لا يتجاوز {max_length}."
 
 #: fields.py:1682
 #, python-brace-format
@@ -369,7 +370,7 @@ msgstr "المتوقع كان قاموس عناصر و لكن النوع الم�
 
 #: fields.py:1683
 msgid "This dictionary may not be empty."
-msgstr ""
+msgstr "يجب أن لا يكون القاموس فارغاً."
 
 #: fields.py:1755
 msgid "Value must be valid JSON."
@@ -381,7 +382,7 @@ msgstr "بحث"
 
 #: filters.py:50
 msgid "A search term."
-msgstr ""
+msgstr "مصطلح البحث."
 
 #: filters.py:180 templates/rest_framework/filters/ordering.html:3
 msgid "Ordering"
@@ -389,7 +390,7 @@ msgstr "الترتيب"
 
 #: filters.py:181
 msgid "Which field to use when ordering the results."
-msgstr ""
+msgstr "أي حقل يجب استخدامه عند ترتيب النتائج."
 
 #: filters.py:287
 msgid "ascending"
@@ -401,11 +402,11 @@ msgstr "تنازلي"
 
 #: pagination.py:174
 msgid "A page number within the paginated result set."
-msgstr ""
+msgstr "رقم الصفحة ضمن النتائج المقسمة."
 
 #: pagination.py:179 pagination.py:372 pagination.py:590
 msgid "Number of results to return per page."
-msgstr ""
+msgstr "عدد النتائج التي يجب إرجاعها في كل صفحة."
 
 #: pagination.py:189
 msgid "Invalid page."
@@ -413,11 +414,11 @@ msgstr "صفحة غير صحيحة."
 
 #: pagination.py:374
 msgid "The initial index from which to return the results."
-msgstr ""
+msgstr "الفهرس الأولي الذي يجب البدء منه لإرجاع النتائج."
 
 #: pagination.py:581
 msgid "The pagination cursor value."
-msgstr ""
+msgstr "قيمة المؤشر للتقسيم."
 
 #: pagination.py:583
 msgid "Invalid cursor"
@@ -431,24 +432,24 @@ msgstr "معرف العنصر \"{pk_value}\" غير صالح -  العنصر غ�
 #: relations.py:247
 #, python-brace-format
 msgid "Incorrect type. Expected pk value, received {data_type}."
-msgstr "نوع خاطئ. المتوقع قيمة من pk، لكن المتحصل عليه {data_type}."
+msgstr "نوع غير صحيح. يتوقع قيمة معرف العنصر، بينما حصل على {data_type}."
 
 #: relations.py:280
 msgid "Invalid hyperlink - No URL match."
-msgstr "إرتباط تشعبي غير صالح - لا مطابقة لURL."
+msgstr "رابط تشعبي غير صالح - لا يوجد تطابق URL."
 
 #: relations.py:281
 msgid "Invalid hyperlink - Incorrect URL match."
-msgstr "إرتباط تشعبي غير صالح - مطابقة خاطئة لURL."
+msgstr "رابط تشعبي غير صالح - تطابق URL غير صحيح."
 
 #: relations.py:282
 msgid "Invalid hyperlink - Object does not exist."
-msgstr "إرتباط تشعبي غير صالح - عنصر غير موجود."
+msgstr "رابط تشعبي غير صالح - العنصر غير موجود."
 
 #: relations.py:283
 #, python-brace-format
 msgid "Incorrect type. Expected URL string, received {data_type}."
-msgstr "نوع خاطئ. المتوقع سلسلة URL، لكن المتحصل عليه {data_type}."
+msgstr "نوع غير صحيح. المتوقع هو رابط URL، ولكن تم الحصول على {data_type}."
 
 #: relations.py:448
 #, python-brace-format
@@ -461,20 +462,20 @@ msgstr "قيمة غير صالحة."
 
 #: schemas/utils.py:32
 msgid "unique integer value"
-msgstr ""
+msgstr "رقم صحيح فريد"
 
 #: schemas/utils.py:34
 msgid "UUID string"
-msgstr ""
+msgstr "نص UUID"
 
 #: schemas/utils.py:36
 msgid "unique value"
-msgstr ""
+msgstr "قيمة فريدة"
 
 #: schemas/utils.py:38
 #, python-brace-format
 msgid "A {value_type} identifying this {name}."
-msgstr ""
+msgstr "نوع {value_type} يحدد هذا {name}."
 
 #: serializers.py:337
 #, python-brace-format
@@ -484,7 +485,7 @@ msgstr "معطيات غير صالحة. المتوقع هو قاموس، لكن 
 #: templates/rest_framework/admin.html:116
 #: templates/rest_framework/base.html:136
 msgid "Extra Actions"
-msgstr ""
+msgstr "إجراءات إضافية"
 
 #: templates/rest_framework/admin.html:130
 #: templates/rest_framework/base.html:150
@@ -493,27 +494,27 @@ msgstr "مرشحات"
 
 #: templates/rest_framework/base.html:37
 msgid "navbar"
-msgstr ""
+msgstr "شريط التنقل"
 
 #: templates/rest_framework/base.html:75
 msgid "content"
-msgstr ""
+msgstr "المحتوى"
 
 #: templates/rest_framework/base.html:78
 msgid "request form"
-msgstr ""
+msgstr "نموذج الطلب"
 
 #: templates/rest_framework/base.html:157
 msgid "main content"
-msgstr ""
+msgstr "المحتوى الرئيسي"
 
 #: templates/rest_framework/base.html:173
 msgid "request info"
-msgstr ""
+msgstr "معلومات الطلب"
 
 #: templates/rest_framework/base.html:177
 msgid "response info"
-msgstr ""
+msgstr "معلومات الرد"
 
 #: templates/rest_framework/horizontal/radio.html:4
 #: templates/rest_framework/inline/radio.html:3
@@ -525,7 +526,7 @@ msgstr "لا شيء"
 #: templates/rest_framework/inline/select_multiple.html:3
 #: templates/rest_framework/vertical/select_multiple.html:3
 msgid "No items to select."
-msgstr "ما من عناصر للتحديد."
+msgstr "لا يوجد عناصر لتحديدها."
 
 #: validators.py:39
 msgid "This field must be unique."
@@ -539,7 +540,7 @@ msgstr "الحقول {field_names} يجب أن تشكل مجموعة فريدة.
 #: validators.py:171
 #, python-brace-format
 msgid "Surrogate characters are not allowed: U+{code_point:X}."
-msgstr ""
+msgstr "لا يُسمح بالحروف البديلة: U+{code_point:X}."
 
 #: validators.py:243
 #, python-brace-format
@@ -558,11 +559,11 @@ msgstr "الحقل يجب ان يكون فريد للعام {date_field}."
 
 #: versioning.py:40
 msgid "Invalid version in \"Accept\" header."
-msgstr "إصدار غير صالح في الرٱس \"Accept\"."
+msgstr "إصدار غير صالح في ترويسة \"Accept\"."
 
 #: versioning.py:71
 msgid "Invalid version in URL path."
-msgstr "إصدار غير صالح في المسار URL."
+msgstr "نسخة غير صالحة في مسار URL."
 
 #: versioning.py:116
 msgid "Invalid version in URL path. Does not match any version namespace."

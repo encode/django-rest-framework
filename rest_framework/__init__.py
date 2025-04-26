@@ -8,7 +8,7 @@ ______ _____ _____ _____    __
 """
 
 __title__ = 'Django REST framework'
-__version__ = '3.15.2'
+__version__ = '3.16.0'
 __author__ = 'Tom Christie'
 __license__ = 'BSD 3-Clause'
 __copyright__ = 'Copyright 2011-2023 Encode OSS Ltd'
@@ -21,10 +21,6 @@ HTTP_HEADER_ENCODING = 'iso-8859-1'
 
 # Default datetime input and output formats
 ISO_8601 = 'iso-8601'
-
-
-class RemovedInDRF316Warning(DeprecationWarning):
-    pass
 
 
 class RemovedInDRF317Warning(PendingDeprecationWarning):

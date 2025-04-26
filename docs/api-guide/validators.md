@@ -48,7 +48,7 @@ If we open up the Django shell using `manage.py shell` we can now
     CustomerReportSerializer():
         id = IntegerField(label='ID', read_only=True)
         time_raised = DateTimeField(read_only=True)
-        reference = CharField(max_length=20, validators=[<UniqueValidator(queryset=CustomerReportRecord.objects.all())>])
+        reference = CharField(max_length=20, validators=[UniqueValidator(queryset=CustomerReportRecord.objects.all())])
         description = CharField(style={'type': 'textarea'})
 
 The interesting bit here is the `reference` field. We can see that the uniqueness constraint is being explicitly enforced by a validator on the serializer field.
@@ -166,7 +166,7 @@ If you want the date field to be entirely hidden from the user, then use `Hidden
 
 ---
 
-**Note:** `HiddenField()` does not appear in `partial=True` serializer (when making `PATCH` request). This behavior might change in future, follow updates on [github discussion](https://github.com/encode/django-rest-framework/discussions/8259). 
+**Note:** `HiddenField()` does not appear in `partial=True` serializer (when making `PATCH` request).
 
 ---
 

@@ -68,7 +68,7 @@ class LinkNode(dict):
             current_val = self.methods_counter[preferred_key]
             self.methods_counter[preferred_key] += 1
 
-            key = '{}_{}'.format(preferred_key, current_val)
+            key = f'{preferred_key}_{current_val}'
             if key not in self:
                 return key
 
