@@ -729,7 +729,7 @@ class TestRelationalFieldMappings(TestCase):
 
     def test_source_with_attributes(self):
         class UserProfile(models.Model):
-            age = models.IntegerField()
+            age = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(100)])
             birthdate = models.DateField()
             user = models.ForeignKey(User, on_delete=models.CASCADE)
 
@@ -752,17 +752,13 @@ class TestRelationalFieldMappings(TestCase):
                     }
                 }
 
-        # In Django 3.0, the maximum length of first_name is 30, whereas it is 150
-        # in later versions, so we can't hard-code the value in the expected variable.
-        max_length = User.first_name.field.max_length
-
-        expected = dedent(f"""
+        expected = dedent("""
             UserProfileSerializer():
                 username = CharField(help_text='Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.', max_length=150, source='user.username', validators=[<django.contrib.auth.validators.UnicodeUsernameValidator object>, <UniqueValidator(queryset=User.objects.all())>])
                 email = EmailField(allow_blank=True, label='Email address', max_length=254, required=False, source='user.email')
-                first_name = CharField(allow_blank=True, max_length={max_length}, required=False, source='user.first_name')
+                first_name = CharField(allow_blank=True, max_length=150, required=False, source='user.first_name')
                 last_name = CharField(allow_blank=True, max_length=150, required=False, source='user.last_name')
-                age = IntegerField()
+                age = IntegerField(max_value=100, min_value=1)
                 birthdate = DateField()
         """)
         self.assertEqual(repr(UserProfileSerializer()), expected)
