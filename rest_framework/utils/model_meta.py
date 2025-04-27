@@ -7,7 +7,7 @@ Usage: `get_field_info(model)` returns a `FieldInfo` instance.
 """
 from collections import namedtuple
 
-FieldInfo = namedtuple('FieldResult', [
+FieldInfo = namedtuple('FieldInfo', [
     'pk',  # Model field instance
     'fields',  # Dict of field name -> model field instance
     'forward_relations',  # Dict of field name -> RelationInfo

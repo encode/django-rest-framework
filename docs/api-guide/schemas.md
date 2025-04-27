@@ -56,10 +56,11 @@ The following sections explain more.
 
 ### Install dependencies
 
-    pip install pyyaml uritemplate
+    pip install pyyaml uritemplate inflection
 
 * `pyyaml` is used to generate schema into YAML-based OpenAPI format.
 * `uritemplate` is used internally to get parameters in path.
+* `inflection` is used to pluralize operations more appropriately in the list endpoints.
 
 ### Generating a static schema with the `generateschema` management command
 
@@ -94,11 +95,13 @@ urlpatterns = [
     # Use the `get_schema_view()` helper to add a `SchemaView` to project URLs.
     #   * `title` and `description` parameters are passed to `SchemaGenerator`.
     #   * Provide view name for use with `reverse()`.
-    path('openapi', get_schema_view(
-        title="Your Project",
-        description="API for all things …",
-        version="1.0.0"
-    ), name='openapi-schema'),
+    path(
+        "openapi",
+        get_schema_view(
+            title="Your Project", description="API for all things …", version="1.0.0"
+        ),
+        name="openapi-schema",
+    ),
     # ...
 ]
 ```
@@ -259,11 +262,13 @@ class CustomSchema(AutoSchema):
     """
     AutoSchema subclass using schema_extra_info on the view.
     """
+
     ...
+
 
 class CustomView(APIView):
     schema = CustomSchema()
-    schema_extra_info = ... some extra info ...
+    schema_extra_info = ...  # some extra info
 ```
 
 Here, the `AutoSchema` subclass goes looking for `schema_extra_info` on the
@@ -278,10 +283,13 @@ class BaseSchema(AutoSchema):
     """
     AutoSchema subclass that knows how to use extra_info.
     """
+
     ...
 
+
 class CustomSchema(BaseSchema):
-    extra_info = ... some extra info ...
+    extra_info = ...  # some extra info
+
 
 class CustomView(APIView):
     schema = CustomSchema()
@@ -302,10 +310,9 @@ class CustomSchema(BaseSchema):
         self.extra_info = kwargs.pop("extra_info")
         super().__init__(**kwargs)
 
+
 class CustomView(APIView):
-    schema = CustomSchema(
-        extra_info=... some extra info ...
-    )
+    schema = CustomSchema(extra_info=...)  # some extra info
 ```
 
 This saves you having to create a custom subclass per-view for a commonly used option.

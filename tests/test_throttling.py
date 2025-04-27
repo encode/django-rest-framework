@@ -192,7 +192,7 @@ class ThrottlingTests(TestCase):
             if expect is not None:
                 assert response['Retry-After'] == expect
             else:
-                assert not'Retry-After' in response
+                assert 'Retry-After' not in response
 
     def test_seconds_fields(self):
         """

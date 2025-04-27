@@ -9,7 +9,6 @@ from django.db import models
 from django.utils.text import capfirst
 
 from rest_framework.compat import postgres_fields
-from rest_framework.fields import empty
 from rest_framework.validators import UniqueValidator
 
 NUMERIC_FIELD_TYPES = (
@@ -67,7 +66,7 @@ def get_unique_validators(field_name, model_field):
     """
     Returns a list of UniqueValidators that should be applied to the field.
     """
-    field_set = set([field_name])
+    field_set = {field_name}
     conditions = {
         c.condition
         for c in model_field.model._meta.constraints
@@ -127,9 +126,6 @@ def get_field_kwargs(field_name, model_field):
         # Further keyword arguments are not valid.
         kwargs['read_only'] = True
         return kwargs
-
-    if model_field.default is not None and model_field.default != empty and not callable(model_field.default):
-        kwargs['default'] = model_field.default
 
     if model_field.has_default() or model_field.blank or model_field.null:
         kwargs['required'] = False

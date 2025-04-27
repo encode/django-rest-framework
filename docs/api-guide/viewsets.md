@@ -128,6 +128,8 @@ You may inspect these attributes to adjust behavior based on the current action.
             permission_classes = [IsAdminUser]
         return [permission() for permission in permission_classes]
 
+**Note**: the `action` attribute is not available in the `get_parsers`, `get_authenticators` and `get_content_negotiator` methods, as it is set _after_ they are called in the framework lifecycle. If you override one of these methods and try to access the `action` attribute in them, you will get an `AttributeError` error.
+
 ## Marking extra actions for routing
 
 If you have ad-hoc methods that should be routable, you can mark them as such with the `@action` decorator. Like regular actions, extra actions may be intended for either a single object, or an entire collection. To indicate this, set the `detail` argument to `True` or `False`. The router will configure its URL patterns accordingly. e.g., the `DefaultRouter` will configure detail actions to contain `pk` in their URL patterns.
@@ -201,15 +203,16 @@ To view all extra actions, call the `.get_extra_actions()` method.
 Extra actions can map additional HTTP methods to separate `ViewSet` methods. For example, the above password set/unset methods could be consolidated into a single route. Note that additional mappings do not accept arguments.
 
 ```python
-    @action(detail=True, methods=['put'], name='Change Password')
-    def password(self, request, pk=None):
-        """Update the user's password."""
-        ...
+@action(detail=True, methods=["put"], name="Change Password")
+def password(self, request, pk=None):
+    """Update the user's password."""
+    ...
 
-    @password.mapping.delete
-    def delete_password(self, request, pk=None):
-        """Delete the user's password."""
-        ...
+
+@password.mapping.delete
+def delete_password(self, request, pk=None):
+    """Delete the user's password."""
+    ...
 ```
 
 ## Reversing action URLs
@@ -220,14 +223,14 @@ Note that the `basename` is provided by the router during `ViewSet` registration
 
 Using the example from the previous section:
 
-```python
->>> view.reverse_action('set-password', args=['1'])
+```pycon
+>>> view.reverse_action("set-password", args=["1"])
 'http://localhost:8000/api/users/1/set_password'
 ```
 
 Alternatively, you can use the `url_name` attribute set by the `@action` decorator.
 
-```python
+```pycon
 >>> view.reverse_action(view.set_password.url_name, args=['1'])
 'http://localhost:8000/api/users/1/set_password'
 ```
@@ -310,7 +313,7 @@ You may need to provide custom `ViewSet` classes that do not have the full set o
 
 To create a base viewset class that provides `create`, `list` and `retrieve` operations, inherit from `GenericViewSet`, and mixin the required actions:
 
-    from rest_framework import mixins
+    from rest_framework import mixins, viewsets
 
     class CreateListRetrieveViewSet(mixins.CreateModelMixin,
                                     mixins.ListModelMixin,

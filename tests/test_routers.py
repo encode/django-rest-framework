@@ -99,6 +99,13 @@ class UrlPathViewSet(viewsets.ViewSet):
         kwarg = self.kwargs.get('kwarg', '')
         return Response({'pk': pk, 'kwarg': kwarg})
 
+    @action(detail=True, url_path='detail/<int:kwarg>/detail/<int:param>')
+    def url_path_detail_multiple_params(self, request, *args, **kwargs):
+        pk = self.kwargs.get('pk', '')
+        kwarg = self.kwargs.get('kwarg', '')
+        param = self.kwargs.get('param', '')
+        return Response({'pk': pk, 'kwarg': kwarg, 'param': param})
+
 
 notes_router = SimpleRouter()
 notes_router.register(r'notes', NoteViewSet)
@@ -440,9 +447,9 @@ class TestDynamicListAndDetailRouter(TestCase):
             url_path = endpoint.url_path
 
             if method_name.startswith('list_'):
-                assert route.url == '^{{prefix}}/{0}{{trailing_slash}}$'.format(url_path)
+                assert route.url == f'^{{prefix}}/{url_path}{{trailing_slash}}$'
             else:
-                assert route.url == '^{{prefix}}/{{lookup}}/{0}{{trailing_slash}}$'.format(url_path)
+                assert route.url == f'^{{prefix}}/{{lookup}}/{url_path}{{trailing_slash}}$'
             # check method to function mapping
             if method_name.endswith('_post'):
                 method_map = 'post'
@@ -481,14 +488,14 @@ class TestRegexUrlPath(URLPatternsTestCase, TestCase):
 
     def test_regex_url_path_list(self):
         kwarg = '1234'
-        response = self.client.get('/regex/list/{}/'.format(kwarg))
+        response = self.client.get(f'/regex/list/{kwarg}/')
         assert response.status_code == 200
         assert json.loads(response.content.decode()) == {'kwarg': kwarg}
 
     def test_regex_url_path_detail(self):
         pk = '1'
         kwarg = '1234'
-        response = self.client.get('/regex/{}/detail/{}/'.format(pk, kwarg))
+        response = self.client.get(f'/regex/{pk}/detail/{kwarg}/')
         assert response.status_code == 200
         assert json.loads(response.content.decode()) == {'pk': pk, 'kwarg': kwarg}
 
@@ -550,16 +557,28 @@ class TestUrlPath(URLPatternsTestCase, TestCase):
 
     def test_list_extra_action(self):
         kwarg = 1234
-        response = self.client.get('/path/list/{}/'.format(kwarg))
+        response = self.client.get(f'/path/list/{kwarg}/')
         assert response.status_code == 200
         assert json.loads(response.content.decode()) == {'kwarg': kwarg}
 
     def test_detail_extra_action(self):
         pk = '1'
         kwarg = 1234
-        response = self.client.get('/path/{}/detail/{}/'.format(pk, kwarg))
+        response = self.client.get(f'/path/{pk}/detail/{kwarg}/')
         assert response.status_code == 200
         assert json.loads(response.content.decode()) == {'pk': pk, 'kwarg': kwarg}
+
+    def test_detail_extra_other_action(self):
+        # this to assure that ambiguous patterns are interpreted correctly
+        # using the `path` converters this URL is recognized to match the pattern
+        # of `UrlPathViewSet.url_path_detail` when it should match
+        # `UrlPathViewSet.url_path_detail_multiple_params`
+        pk = '1'
+        kwarg = 1234
+        param = 2
+        response = self.client.get('/path/1/detail/1234/detail/2/')
+        assert response.status_code == 200
+        assert json.loads(response.content.decode()) == {'pk': pk, 'kwarg': kwarg, 'param': param}
 
     def test_defaultrouter_root(self):
         response = self.client.get('/default/')

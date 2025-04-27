@@ -8,10 +8,9 @@ an appropriate set of serializer fields for each case.
 import datetime
 import decimal
 import json  # noqa
-import sys
+import re
 import tempfile
 
-import django
 import pytest
 from django.contrib.auth.models import User
 from django.core.exceptions import ImproperlyConfigured
@@ -170,33 +169,32 @@ class TestRegularFieldMappings(TestCase):
                 model = RegularFieldsModel
                 fields = '__all__'
 
-        expected = dedent("""
-            TestSerializer():
-                auto_field = IntegerField(read_only=True)
-                big_integer_field = IntegerField()
-                boolean_field = BooleanField(default=False, required=False)
-                char_field = CharField(max_length=100)
-                comma_separated_integer_field = CharField(max_length=100, validators=[<django.core.validators.RegexValidator object>])
-                date_field = DateField()
-                datetime_field = DateTimeField()
-                decimal_field = DecimalField(decimal_places=1, max_digits=3)
-                email_field = EmailField(max_length=100)
-                float_field = FloatField()
-                integer_field = IntegerField()
-                null_boolean_field = BooleanField(allow_null=True, default=False, required=False)
-                positive_integer_field = IntegerField()
-                positive_small_integer_field = IntegerField()
-                slug_field = SlugField(allow_unicode=False, max_length=100)
-                small_integer_field = IntegerField()
-                text_field = CharField(max_length=100, style={'base_template': 'textarea.html'})
-                file_field = FileField(max_length=100)
-                time_field = TimeField()
-                url_field = URLField(max_length=100)
-                custom_field = ModelField(model_field=<tests.test_model_serializer.CustomField: custom_field>)
-                file_path_field = FilePathField(path=%r)
+        expected = dedent(r"""
+            TestSerializer\(\):
+                auto_field = IntegerField\(read_only=True\)
+                big_integer_field = IntegerField\(.*\)
+                boolean_field = BooleanField\(required=False\)
+                char_field = CharField\(max_length=100\)
+                comma_separated_integer_field = CharField\(max_length=100, validators=\[<django.core.validators.RegexValidator object>\]\)
+                date_field = DateField\(\)
+                datetime_field = DateTimeField\(\)
+                decimal_field = DecimalField\(decimal_places=1, max_digits=3\)
+                email_field = EmailField\(max_length=100\)
+                float_field = FloatField\(\)
+                integer_field = IntegerField\(.*\)
+                null_boolean_field = BooleanField\(allow_null=True, required=False\)
+                positive_integer_field = IntegerField\(.*\)
+                positive_small_integer_field = IntegerField\(.*\)
+                slug_field = SlugField\(allow_unicode=False, max_length=100\)
+                small_integer_field = IntegerField\(.*\)
+                text_field = CharField\(max_length=100, style={'base_template': 'textarea.html'}\)
+                file_field = FileField\(max_length=100\)
+                time_field = TimeField\(\)
+                url_field = URLField\(max_length=100\)
+                custom_field = ModelField\(model_field=<tests.test_model_serializer.CustomField: custom_field>\)
+                file_path_field = FilePathField\(path=%r\)
         """ % tempfile.gettempdir())
-
-        self.assertEqual(repr(TestSerializer()), expected)
+        assert re.search(expected, repr(TestSerializer())) is not None
 
     def test_field_options(self):
         class TestSerializer(serializers.ModelSerializer):
@@ -204,19 +202,19 @@ class TestRegularFieldMappings(TestCase):
                 model = FieldOptionsModel
                 fields = '__all__'
 
-        expected = dedent("""
-            TestSerializer():
-                id = IntegerField(label='ID', read_only=True)
-                value_limit_field = IntegerField(max_value=10, min_value=1)
-                length_limit_field = CharField(max_length=12, min_length=3)
-                blank_field = CharField(allow_blank=True, max_length=10, required=False)
-                null_field = IntegerField(allow_null=True, required=False)
-                default_field = IntegerField(default=0, required=False)
-                descriptive_field = IntegerField(help_text='Some help text', label='A label')
-                choices_field = ChoiceField(choices=(('red', 'Red'), ('blue', 'Blue'), ('green', 'Green')))
-                text_choices_field = ChoiceField(choices=(('red', 'Red'), ('blue', 'Blue'), ('green', 'Green')))
+        expected = dedent(r"""
+            TestSerializer\(\):
+                id = IntegerField\(label='ID', read_only=True\)
+                value_limit_field = IntegerField\(max_value=10, min_value=1\)
+                length_limit_field = CharField\(max_length=12, min_length=3\)
+                blank_field = CharField\(allow_blank=True, max_length=10, required=False\)
+                null_field = IntegerField\(allow_null=True,.*required=False\)
+                default_field = IntegerField\(.*required=False\)
+                descriptive_field = IntegerField\(help_text='Some help text', label='A label'.*\)
+                choices_field = ChoiceField\(choices=(?:\[|\()\('red', 'Red'\), \('blue', 'Blue'\), \('green', 'Green'\)(?:\]|\))\)
+                text_choices_field = ChoiceField\(choices=(?:\[|\()\('red', 'Red'\), \('blue', 'Blue'\), \('green', 'Green'\)(?:\]|\))\)
         """)
-        self.assertEqual(repr(TestSerializer()), expected)
+        assert re.search(expected, repr(TestSerializer())) is not None
 
     def test_nullable_boolean_field_choices(self):
         class NullableBooleanChoicesModel(models.Model):
@@ -401,10 +399,6 @@ class TestDurationFieldMapping(TestCase):
         expected = dedent("""
             TestSerializer():
                 id = IntegerField(label='ID', read_only=True)
-                duration_field = DurationField(max_value=datetime.timedelta(3), min_value=datetime.timedelta(1))
-        """) if sys.version_info < (3, 7) else dedent("""
-            TestSerializer():
-                id = IntegerField(label='ID', read_only=True)
                 duration_field = DurationField(max_value=datetime.timedelta(days=3), min_value=datetime.timedelta(days=1))
         """)
         self.assertEqual(repr(TestSerializer()), expected)
@@ -454,14 +448,11 @@ class TestPosgresFieldsMapping(TestCase):
                 model = ArrayFieldModel
                 fields = ['array_field', 'array_field_with_blank']
 
-        validators = ""
-        if django.VERSION < (4, 1):
-            validators = ", validators=[<django.core.validators.MaxLengthValidator object>]"
         expected = dedent("""
             TestSerializer():
-                array_field = ListField(allow_empty=False, child=CharField(label='Array field'%s))
-                array_field_with_blank = ListField(child=CharField(label='Array field with blank'%s), required=False)
-        """ % (validators, validators))
+                array_field = ListField(allow_empty=False, child=CharField(label='Array field'))
+                array_field_with_blank = ListField(child=CharField(label='Array field with blank'), required=False)
+        """)
         self.assertEqual(repr(TestSerializer()), expected)
 
     @pytest.mark.skipif(hasattr(models, 'JSONField'), reason='has models.JSONField')
@@ -842,7 +833,7 @@ class TestIntegration(TestCase):
         )
         self.instance.many_to_many.set(self.many_to_many_targets)
 
-    def test_pk_retrival(self):
+    def test_pk_retrieval(self):
         class TestSerializer(serializers.ModelSerializer):
             class Meta:
                 model = RelationalModel
@@ -1375,12 +1366,12 @@ class TestFieldSource(TestCase):
                     }
                 }
 
-        expected = dedent("""
-            TestSerializer():
-                number_field = IntegerField(source='integer_field')
+        expected = dedent(r"""
+            TestSerializer\(\):
+                number_field = IntegerField\(.*source='integer_field'\)
         """)
         self.maxDiff = None
-        self.assertEqual(repr(TestSerializer()), expected)
+        assert re.search(expected, repr(TestSerializer())) is not None
 
 
 class Issue6110TestModel(models.Model):

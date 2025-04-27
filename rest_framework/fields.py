@@ -4,9 +4,9 @@ import datetime
 import decimal
 import functools
 import inspect
-import logging
 import re
 import uuid
+import warnings
 from collections.abc import Mapping
 from enum import Enum
 
@@ -16,7 +16,7 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.validators import (
     EmailValidator, MaxLengthValidator, MaxValueValidator, MinLengthValidator,
     MinValueValidator, ProhibitNullCharactersValidator, RegexValidator,
-    URLValidator, ip_address_validators
+    URLValidator
 )
 from django.forms import FilePathField as DjangoFilePathField
 from django.forms import ImageField as DjangoImageField
@@ -36,14 +36,13 @@ except ImportError:
     pytz = None
 
 from rest_framework import ISO_8601
+from rest_framework.compat import ip_address_validators
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.settings import api_settings
 from rest_framework.utils import html, humanize_datetime, json, representation
 from rest_framework.utils.formatting import lazy_format
 from rest_framework.utils.timezone import valid_datetime
 from rest_framework.validators import ProhibitSurrogateCharactersValidator
-
-logger = logging.getLogger("rest_framework.fields")
 
 
 class empty:
@@ -112,7 +111,7 @@ def get_attribute(instance, attrs):
                 # If we raised an Attribute or KeyError here it'd get treated
                 # as an omitted field in `Field.get_attribute()`. Instead we
                 # raise a ValueError to ensure the exception is not masked.
-                raise ValueError('Exception raised in callable attribute "{}"; original exception was: {}'.format(attr, exc))
+                raise ValueError(f'Exception raised in callable attribute "{attr}"; original exception was: {exc}')
 
     return instance
 
@@ -866,7 +865,7 @@ class IPAddressField(CharField):
         self.protocol = protocol.lower()
         self.unpack_ipv4 = (self.protocol == 'both')
         super().__init__(**kwargs)
-        validators, error_message = ip_address_validators(protocol, self.unpack_ipv4)
+        validators = ip_address_validators(protocol, self.unpack_ipv4)
         self.validators.extend(validators)
 
     def to_internal_value(self, data):
@@ -987,10 +986,10 @@ class DecimalField(Field):
         self.max_value = max_value
         self.min_value = min_value
 
-        if self.max_value is not None and not isinstance(self.max_value, decimal.Decimal):
-            logger.warning("max_value in DecimalField should be Decimal type.")
-        if self.min_value is not None and not isinstance(self.min_value, decimal.Decimal):
-            logger.warning("min_value in DecimalField should be Decimal type.")
+        if self.max_value is not None and not isinstance(self.max_value, (int, decimal.Decimal)):
+            warnings.warn("max_value should be an integer or Decimal instance.")
+        if self.min_value is not None and not isinstance(self.min_value, (int, decimal.Decimal)):
+            warnings.warn("min_value should be an integer or Decimal instance.")
 
         if self.max_digits is not None and self.decimal_places is not None:
             self.max_whole_digits = self.max_digits - self.decimal_places
@@ -1104,7 +1103,7 @@ class DecimalField(Field):
         if self.localize:
             return localize_input(quantized)
 
-        return '{:f}'.format(quantized)
+        return f'{quantized:f}'
 
     def quantize(self, value):
         """
@@ -1862,7 +1861,7 @@ class SerializerMethodField(Field):
     def bind(self, field_name, parent):
         # The method name defaults to `get_{field_name}`.
         if self.method_name is None:
-            self.method_name = 'get_{field_name}'.format(field_name=field_name)
+            self.method_name = f'get_{field_name}'
 
         super().bind(field_name, parent)
 

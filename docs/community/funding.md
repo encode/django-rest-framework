@@ -114,7 +114,7 @@ If you use REST framework commercially we strongly encourage you to invest in it
 Signing up for a paid plan will:
 
 * Directly contribute to faster releases, more features, and higher quality software.
-* Allow more time to be invested in documentation, issue triage, and community support.
+* Allow more time to be invested in keeping the package up to date.
 * Safeguard the future development of REST framework.
 
 REST framework continues to be open-source and permissively licensed, but we firmly believe it is in the commercial best-interest for users of the project to invest in its ongoing development.
@@ -131,18 +131,6 @@ REST framework continues to be open-source and permissively licensed, but we fir
 * Around 80-90 issues and pull requests closed per month since Tom Christie started working on the project full-time.
 * A community & operations manager position part-time for 4 months, helping mature the business and grow sponsorship.
 * Contracting development time for the work on the JavaScript client library and API documentation tooling.
-
----
-
-## What future funding will enable
-
-* Realtime API support, using WebSockets. This will consist of documentation and support for using REST framework together with Django Channels, plus integrating WebSocket support into the client libraries.
-* Better authentication defaults, possibly bringing JWT & CORS support into the core package.
-* Securing the community & operations manager position long-term.
-* Opening up and securing a part-time position to focus on ticket triage and resolution.
-* Paying for development time on building API client libraries in a range of programming languages. These would be integrated directly into the upcoming API documentation.
-
-Sign up for a paid plan today, and help ensure that REST framework becomes a sustainable, full-time funded project.
 
 ---
 
@@ -164,6 +152,8 @@ Sign up for a paid plan today, and help ensure that REST framework becomes a sus
 DRF is one of the core reasons why Django is top choice among web frameworks today. In my opinion, it sets the standard for rest frameworks for the development community at large.
 >
 > &mdash; Andrew Conti, Django REST framework user
+
+Sign up for a paid plan today, and help ensure that REST framework becomes a sustainable, full-time funded project.
 
 ---
 

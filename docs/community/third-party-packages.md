@@ -32,7 +32,7 @@ We suggest adding your package to the [REST Framework][rest-framework-grid] grid
 
 #### Adding to the Django REST framework docs
 
-Create a [Pull Request][drf-create-pr] or [Issue][drf-create-issue] on GitHub, and we'll add a link to it from the main REST framework documentation. You can add your package under **Third party packages** of the API Guide section that best applies, like [Authentication][authentication] or [Permissions][permissions]. You can also link your package under the [Third Party Packages][third-party-packages] section.
+Create a [Pull Request][drf-create-pr] on GitHub, and we'll add a link to it from the main REST framework documentation. You can add your package under **Third party packages** of the API Guide section that best applies, like [Authentication][authentication] or [Permissions][permissions]. You can also link your package under the [Third Party Packages][third-party-packages] section.
 
 #### Announce on the discussion group.
 
@@ -44,7 +44,11 @@ Django REST Framework has a growing community of developers, packages, and resou
 
 Check out a grid detailing all the packages and ecosystem around Django REST Framework at [Django Packages][rest-framework-grid].
 
-To submit new content, [open an issue][drf-create-issue] or [create a pull request][drf-create-pr].
+To submit new content, [create a pull request][drf-create-pr].
+
+## Async Support
+
+*  [adrf](https://github.com/em1208/adrf) - Async support, provides async Views, ViewSets, and Serializers.
 
 ### Authentication
 
@@ -58,6 +62,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [drf-oidc-auth][drf-oidc-auth] - Implements OpenID Connect token authentication for DRF.
 * [drfpasswordless][drfpasswordless] - Adds (Medium, Square Cash inspired) passwordless logins and signups via email and mobile numbers.
 * [django-rest-authemail][django-rest-authemail] - Provides a RESTful API for user signup and authentication using email addresses.
+* [dango-pyoidc][django-pyoidc] adds support for OpenID Connect (OIDC) authentication.
 
 ### Permissions
 
@@ -125,6 +130,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 
 ### Misc
 
+* [drf-sendables][drf-sendables] - User messages for Django REST Framework
 * [cookiecutter-django-rest][cookiecutter-django-rest] - A cookiecutter template that takes care of the setup and configuration so you can focus on making your REST apis awesome.
 * [djangorestrelationalhyperlink][djangorestrelationalhyperlink] - A hyperlinked serializer that can can be used to alter relationships via hyperlinks, but otherwise like a hyperlink model serializer.
 * [django-rest-framework-proxy][django-rest-framework-proxy] - Proxy to redirect incoming request to another API server.
@@ -152,6 +158,13 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [drf-standardized-errors][drf-standardized-errors] - DRF exception handler to standardize error responses for all API endpoints.
 * [drf-api-action][drf-api-action] - uses the power of DRF also as a library functions
 
+### Customization
+
+* [drf-restwind][drf-restwind] - a modern re-imagining of the Django REST Framework utilizes TailwindCSS and DaisyUI to provide flexible and customizable UI solutions with minimal coding effort.
+* [drf-redesign][drf-redesign] - A project that gives a fresh look to the browse-able API using Bootstrap 5.
+* [drf-material][drf-material] - A project that gives a sleek and elegant look to the browsable API using Material Design.
+
+[drf-sendables]: https://github.com/amikrop/drf-sendables
 [cite]: http://www.software-ecosystems.com/Software_Ecosystems/Ecosystems.html
 [cookiecutter]: https://github.com/jpadilla/cookiecutter-django-rest-framework
 [new-repo]: https://github.com/new
@@ -162,7 +175,6 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [drf-compat]: https://github.com/encode/django-rest-framework/blob/master/rest_framework/compat.py
 [rest-framework-grid]: https://www.djangopackages.com/grids/g/django-rest-framework/
 [drf-create-pr]: https://github.com/encode/django-rest-framework/compare
-[drf-create-issue]: https://github.com/encode/django-rest-framework/issues/new
 [authentication]: ../api-guide/authentication.md
 [permissions]: ../api-guide/permissions.md
 [third-party-packages]: ../topics/third-party-packages/#existing-third-party-packages
@@ -243,3 +255,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [django-requestlogs]: https://github.com/Raekkeri/django-requestlogs
 [drf-standardized-errors]: https://github.com/ghazi-git/drf-standardized-errors
 [drf-api-action]: https://github.com/Ori-Roza/drf-api-action
+[drf-restwind]: https://github.com/youzarsiph/drf-restwind
+[drf-redesign]: https://github.com/youzarsiph/drf-redesign
+[drf-material]: https://github.com/youzarsiph/drf-material
+[django-pyoidc]: https://github.com/makinacorpus/django_pyoidc

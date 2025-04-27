@@ -223,7 +223,7 @@ class TestNotRequiredNestedSerializerWithMany:
         input_data = {}
         serializer = self.Serializer(data=input_data)
 
-        # request is empty, therefor 'nested' should not be in serializer.data
+        # request is empty, therefore 'nested' should not be in serializer.data
         assert serializer.is_valid()
         assert 'nested' not in serializer.validated_data
 
@@ -237,7 +237,7 @@ class TestNotRequiredNestedSerializerWithMany:
         input_data = QueryDict('')
         serializer = self.Serializer(data=input_data)
 
-        # the querydict is empty, therefor 'nested' should not be in serializer.data
+        # the querydict is empty, therefore 'nested' should not be in serializer.data
         assert serializer.is_valid()
         assert 'nested' not in serializer.validated_data
 

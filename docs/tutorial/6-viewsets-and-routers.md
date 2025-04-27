@@ -10,7 +10,7 @@ A `ViewSet` class is only bound to a set of method handlers at the last moment, 
 
 Let's take our current set of views, and refactor them into view sets.
 
-First of all let's refactor our `UserList` and `UserDetail` classes into a single `UserViewSet` class.  We can remove the two view classes, and replace them with a single ViewSet class:
+First of all let's refactor our `UserList` and `UserDetail` classes into a single `UserViewSet` class. In the `snippets/views.py` file, we can remove the two view classes and replace them with a single ViewSet class:
 
     from rest_framework import viewsets
 

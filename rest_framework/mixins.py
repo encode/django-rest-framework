@@ -4,8 +4,6 @@ Basic building blocks for generic class based views.
 We don't bind behaviour to http method handlers yet,
 which allows mixin classes to be composed in interesting ways.
 """
-from django.db.models.query import prefetch_related_objects
-
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
@@ -69,13 +67,10 @@ class UpdateModelMixin:
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
 
-        queryset = self.filter_queryset(self.get_queryset())
-        if queryset._prefetch_related_lookups:
+        if getattr(instance, '_prefetched_objects_cache', None):
             # If 'prefetch_related' has been applied to a queryset, we need to
-            # forcibly invalidate the prefetch cache on the instance,
-            # and then re-prefetch related objects
+            # forcibly invalidate the prefetch cache on the instance.
             instance._prefetched_objects_cache = {}
-            prefetch_related_objects([instance], *queryset._prefetch_related_lookups)
 
         return Response(serializer.data)
 

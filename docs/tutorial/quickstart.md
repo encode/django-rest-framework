@@ -15,7 +15,6 @@ Create a new Django project named `tutorial`, then start a new app called `quick
     source env/bin/activate  # On Windows use `env\Scripts\activate`
 
     # Install Django and Django REST framework into the virtual environment
-    pip install django
     pip install djangorestframework
 
     # Set up a new project with a single application
@@ -105,7 +104,7 @@ Right, we'd better write some views then.  Open `tutorial/quickstart/views.py` a
         """
         API endpoint that allows groups to be viewed or edited.
         """
-        queryset = Group.objects.all()
+        queryset = Group.objects.all().order_by('name')
         serializer_class = GroupSerializer
         permission_classes = [permissions.IsAuthenticated]
 
@@ -132,8 +131,6 @@ Okay, now let's wire up the API URLs.  On to `tutorial/urls.py`...
         path('', include(router.urls)),
         path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
     ]
-    
-    urlpatterns += router.urls
 
 Because we're using viewsets instead of views, we can automatically generate the URL conf for our API, by simply registering the viewsets with a router class.
 

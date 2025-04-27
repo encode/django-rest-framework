@@ -7,6 +7,7 @@ Looking for a new Django REST Framework related role? On this site we provide a 
 
 * [https://www.djangoproject.com/community/jobs/][djangoproject-website]
 * [https://www.python.org/jobs/][python-org-jobs]
+* [https://django.on-remote.com][django-on-remote]
 * [https://djangogigs.com][django-gigs-com]
 * [https://djangojobs.net/jobs/][django-jobs-net]
 * [https://findwork.dev/django-rest-framework-jobs][findwork-dev]
@@ -26,6 +27,7 @@ Wonder how else you can help? One of the best ways you can help Django REST Fram
 
 [djangoproject-website]: https://www.djangoproject.com/community/jobs/
 [python-org-jobs]: https://www.python.org/jobs/
+[django-on-remote]: https://django.on-remote.com/
 [django-gigs-com]: https://djangogigs.com
 [django-jobs-net]: https://djangojobs.net/jobs/
 [findwork-dev]: https://findwork.dev/django-rest-framework-jobs

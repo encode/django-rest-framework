@@ -42,7 +42,7 @@
                 <ul class="nav navbar-nav pull-right">
                   {% block userlinks %}
                     {% if user.is_authenticated %}
-                      {% optional_logout request user %}
+                      {% optional_logout request user csrf_token %}
                     {% else %}
                       {% optional_login request %}
                     {% endif %}
@@ -250,7 +250,7 @@
             "csrfToken": "{{ csrf_token }}"
           }
         </script>
-        <script src="{% static "rest_framework/js/jquery-3.6.4.min.js" %}"></script>
+        <script src="{% static "rest_framework/js/jquery-3.7.1.min.js" %}"></script>
         <script src="{% static "rest_framework/js/ajax-form.js" %}"></script>
         <script src="{% static "rest_framework/js/csrf.js" %}"></script>
         <script src="{% static "rest_framework/js/bootstrap.min.js" %}"></script>
