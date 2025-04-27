@@ -66,7 +66,7 @@ class Response(SimpleTemplateResponse):
         content_type = self.content_type
 
         if content_type is None and charset is not None:
-            content_type = "{}; charset={}".format(media_type, charset)
+            content_type = f"{media_type}; charset={charset}"
         elif content_type is None:
             content_type = media_type
         self['Content-Type'] = content_type

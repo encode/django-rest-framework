@@ -8,9 +8,11 @@ from django.shortcuts import redirect
 from django.test import TestCase, override_settings
 from django.urls import path
 
-from rest_framework import fields, serializers
+from rest_framework import fields, parsers, renderers, serializers, status
 from rest_framework.authtoken.models import Token
-from rest_framework.decorators import api_view
+from rest_framework.decorators import (
+    api_view, parser_classes, renderer_classes
+)
 from rest_framework.response import Response
 from rest_framework.test import (
     APIClient, APIRequestFactory, URLPatternsTestCase, force_authenticate
@@ -51,6 +53,18 @@ class BasicSerializer(serializers.Serializer):
 
 
 @api_view(['POST'])
+@parser_classes((parsers.JSONParser,))
+def post_json_view(request):
+    return Response(request.data)
+
+
+@api_view(['DELETE'])
+@renderer_classes((renderers.JSONRenderer, ))
+def delete_json_view(request):
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['POST'])
 def post_view(request):
     serializer = BasicSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
@@ -62,7 +76,9 @@ urlpatterns = [
     path('session-view/', session_view),
     path('redirect-view/', redirect_view),
     path('redirect-view/<int:code>/', redirect_307_308_view),
-    path('post-view/', post_view)
+    path('post-json-view/', post_json_view),
+    path('delete-json-view/', delete_json_view),
+    path('post-view/', post_view),
 ]
 
 
@@ -235,6 +251,22 @@ class TestAPITestClient(TestCase):
         )
         assert response.status_code == 200
         assert response.data == {"flag": True}
+
+    def test_post_encodes_data_based_on_json_content_type(self):
+        data = {'data': True}
+        response = self.client.post(
+            '/post-json-view/',
+            data=data,
+            content_type='application/json'
+        )
+
+        assert response.status_code == 200
+        assert response.data == data
+
+    def test_delete_based_on_format(self):
+        response = self.client.delete('/delete-json-view/', format='json')
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+        assert response.data is None
 
 
 class TestAPIRequestFactory(TestCase):

@@ -525,7 +525,7 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 
 ## LaTeX
 
-[Rest Framework Latex] provides a renderer that outputs PDFs using Laulatex. It is maintained by [Pebble (S/F Software)][mypebble].
+[Rest Framework Latex] provides a renderer that outputs PDFs using Lualatex. It is maintained by [Pebble (S/F Software)][mypebble].
 
 
 [cite]: https://docs.djangoproject.com/en/stable/ref/template-response/#the-rendering-process

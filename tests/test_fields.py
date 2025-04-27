@@ -2,12 +2,12 @@ import datetime
 import math
 import os
 import re
-import sys
 import uuid
 import warnings
 from decimal import ROUND_DOWN, ROUND_UP, Decimal
 from enum import auto
 from unittest.mock import patch
+from zoneinfo import ZoneInfo
 
 import pytest
 
@@ -29,11 +29,6 @@ from rest_framework.fields import (
     is_simple_callable
 )
 from tests.models import UUIDForeignKeyTarget
-
-if sys.version_info >= (3, 9):
-    from zoneinfo import ZoneInfo
-else:
-    from backports.zoneinfo import ZoneInfo
 
 utc = datetime.timezone.utc
 
@@ -641,10 +636,6 @@ class Test5087Regression:
 
 
 class TestTyping(TestCase):
-    @pytest.mark.skipif(
-        sys.version_info < (3, 7),
-        reason="subscriptable classes requires Python 3.7 or higher",
-    )
     def test_field_is_subscriptable(self):
         assert serializers.Field is serializers.Field["foo"]
 
@@ -671,7 +662,7 @@ class FieldValues:
         """
         for input_value, expected_output in get_items(self.valid_inputs):
             assert self.field.run_validation(input_value) == expected_output, \
-                'input value: {}'.format(repr(input_value))
+                f'input value: {repr(input_value)}'
 
     def test_invalid_inputs(self, *args):
         """
@@ -681,12 +672,12 @@ class FieldValues:
             with pytest.raises(serializers.ValidationError) as exc_info:
                 self.field.run_validation(input_value)
             assert exc_info.value.detail == expected_failure, \
-                'input value: {}'.format(repr(input_value))
+                f'input value: {repr(input_value)}'
 
     def test_outputs(self, *args):
         for output_value, expected_output in get_items(self.outputs):
             assert self.field.to_representation(output_value) == expected_output, \
-                'output value: {}'.format(repr(output_value))
+                f'output value: {repr(output_value)}'
 
 
 # Boolean types...
@@ -1245,13 +1236,13 @@ class TestMinMaxDecimalField(FieldValues):
         '20.0': Decimal('20.0'),
     }
     invalid_inputs = {
-        '9.9': ['Ensure this value is greater than or equal to 10.'],
-        '20.1': ['Ensure this value is less than or equal to 20.'],
+        '9.9': ['Ensure this value is greater than or equal to 10.0.'],
+        '20.1': ['Ensure this value is less than or equal to 20.0.'],
     }
     outputs = {}
     field = serializers.DecimalField(
         max_digits=3, decimal_places=1,
-        min_value=10, max_value=20
+        min_value=10.0, max_value=20.0
     )
 
     def test_warning_when_not_decimal_types(self, caplog):
@@ -1260,14 +1251,14 @@ class TestMinMaxDecimalField(FieldValues):
 
             serializers.DecimalField(
                 max_digits=3, decimal_places=1,
-                min_value=10, max_value=20
+                min_value=10.0, max_value=20.0
             )
 
             assert len(w) == 2
             assert all(issubclass(i.category, UserWarning) for i in w)
 
-            assert 'max_value should be a Decimal instance' in str(w[0].message)
-            assert 'min_value should be a Decimal instance' in str(w[1].message)
+            assert 'max_value should be an integer or Decimal instance' in str(w[0].message)
+            assert 'min_value should be an integer or Decimal instance' in str(w[1].message)
 
 
 class TestAllowEmptyStrDecimalFieldWithValidators(FieldValues):
@@ -1431,7 +1422,7 @@ class TestDateField(FieldValues):
     outputs = {
         datetime.date(2001, 1, 1): '2001-01-01',
         '2001-01-01': '2001-01-01',
-        str('2016-01-10'): '2016-01-10',
+        '2016-01-10': '2016-01-10',
         None: None,
         '': None,
     }
@@ -1498,7 +1489,7 @@ class TestDateTimeField(FieldValues):
         datetime.datetime(2001, 1, 1, 13, 00): '2001-01-01T13:00:00Z',
         datetime.datetime(2001, 1, 1, 13, 00, tzinfo=utc): '2001-01-01T13:00:00Z',
         '2001-01-01T00:00:00': '2001-01-01T00:00:00',
-        str('2016-01-10T00:00:00'): '2016-01-10T00:00:00',
+        '2016-01-10T00:00:00': '2016-01-10T00:00:00',
         None: None,
         '': None,
     }

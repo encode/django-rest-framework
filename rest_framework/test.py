@@ -150,15 +150,19 @@ class APIRequestFactory(DjangoRequestFactory):
         """
         Encode the data returning a two tuple of (bytes, content_type)
         """
-
         if data is None:
-            return ('', content_type)
+            return (b'', content_type)
 
         assert format is None or content_type is None, (
             'You may not set both `format` and `content_type`.'
         )
 
         if content_type:
+            try:
+                data = self._encode_json(data, content_type)
+            except AttributeError:
+                pass
+
             # Content type specified explicitly, treat data as a raw bytestring
             ret = force_bytes(data, settings.DEFAULT_CHARSET)
 

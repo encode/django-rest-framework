@@ -75,10 +75,11 @@ continued development by **[signing up for a paid plan][funding]**.
     <li><a href="https://cryptapi.io" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/cryptapi.png)">CryptAPI</a></li>
     <li><a href="https://www.fezto.xyz/?utm_source=DjangoRESTFramework" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/fezto.png)">FEZTO</a></li>
     <li><a href="https://www.svix.com/?utm_source=django-REST&utm_medium=sponsorship" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/svix.png)">Svix</a></li>
+    <li><a href="https://zuplo.link/django-web" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/zuplo.png)">Zuplo</a></li>
 </ul>
 <div style="clear: both; padding-bottom: 20px;"></div>
 
-*Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Sentry](https://getsentry.com/welcome/), [Stream](https://getstream.io/?utm_source=DjangoRESTFramework&utm_medium=Webpage_Logo_Ad&utm_content=Developer&utm_campaign=DjangoRESTFramework_Jan2022_HomePage), [Spacinov](https://www.spacinov.com/), [Retool](https://retool.com/?utm_source=djangorest&utm_medium=sponsorship), [bit.io](https://bit.io/jobs?utm_source=DRF&utm_medium=sponsor&utm_campaign=DRF_sponsorship), [PostHog](https://posthog.com?utm_source=DRF&utm_medium=sponsor&utm_campaign=DRF_sponsorship), [CryptAPI](https://cryptapi.io), [FEZTO](https://www.fezto.xyz/?utm_source=DjangoRESTFramework), and [Svix](https://www.svix.com/?utm_source=django-REST&utm_medium=sponsorship).*
+*Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Sentry](https://getsentry.com/welcome/), [Stream](https://getstream.io/?utm_source=DjangoRESTFramework&utm_medium=Webpage_Logo_Ad&utm_content=Developer&utm_campaign=DjangoRESTFramework_Jan2022_HomePage), [Spacinov](https://www.spacinov.com/), [Retool](https://retool.com/?utm_source=djangorest&utm_medium=sponsorship), [bit.io](https://bit.io/jobs?utm_source=DRF&utm_medium=sponsor&utm_campaign=DRF_sponsorship), [PostHog](https://posthog.com?utm_source=DRF&utm_medium=sponsor&utm_campaign=DRF_sponsorship), [CryptAPI](https://cryptapi.io), [FEZTO](https://www.fezto.xyz/?utm_source=DjangoRESTFramework), [Svix](https://www.svix.com/?utm_source=django-REST&utm_medium=sponsorship), , and [Zuplo](https://zuplo.link/django-web).*
 
 ---
 
@@ -86,8 +87,8 @@ continued development by **[signing up for a paid plan][funding]**.
 
 REST framework requires the following:
 
-* Django (4.2, 5.0)
-* Python (3.8, 3.9, 3.10, 3.11, 3.12)
+* Django (4.2, 5.0, 5.1, 5.2)
+* Python (3.9, 3.10, 3.11, 3.12, 3.13)
 
 We **highly recommend** and only officially support the latest patch release of
 each Python and Django series.
@@ -195,9 +196,7 @@ For priority support please sign up for a [professional or premium sponsorship p
 
 ## Security
 
-Security issues are handled under the supervision of the [Django security team](https://www.djangoproject.com/foundation/teams/#security-team).
-
-**Please report security issues by emailing security@djangoproject.com**.
+**Please report security issues by emailing security@encode.io**.
 
 The project maintainers will then work with you to resolve any issues where required, prior to any public disclosure.
 
