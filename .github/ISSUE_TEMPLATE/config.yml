@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Bug report
+    url: https://github.com/encode/django-rest-framework/compare
+    about: To report a bug, please open a pull request with a failing test reproducing the problem.
+  - name: New features
+    url: https://www.django-rest-framework.org/community/contributing/
+    about: |
+      At this point in its lifespan, we consider Django REST framework to be feature-complete. 
+      We focus on pull requests that track the continued development of Django versions, and 
+      generally do not accept new features or code formatting changes.
