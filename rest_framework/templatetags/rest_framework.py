@@ -313,4 +313,3 @@ def smart_urlquote_wrapper(matched_url):
         return smart_urlquote(matched_url)
     except ValueError:
         return None
-
