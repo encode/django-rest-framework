@@ -305,7 +305,7 @@ class SearchFilterTests(TestCase):
         ]
 
 
-@pytest.mark.skipif(not postgres_fields, reason='psycopg2 is not installed')
+@pytest.mark.skipif(not postgres_fields, reason='PostgreSQL support (postgres_fields) is not available')
 class SearchPostgreSQLFilterTests(TestCase):
 
     def test_unaccent_search(self):
