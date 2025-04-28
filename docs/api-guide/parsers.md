@@ -11,11 +11,11 @@ sending more complex data than simple forms
 >
 > &mdash; Malcom Tredinnick, [Django developers group][cite]
 
-REST framework includes a number of built in Parser classes, that allow you to accept requests with various media types.  There is also support for defining your own custom parsers, which gives you the flexibility to design the media types that your API accepts.
+REST framework includes a number of built-in Parser classes, that allow you to accept requests with various media types.  There is also support for defining your own custom parsers, which gives you the flexibility to design the media types that your API accepts.
 
 ## How the parser is determined
 
-The set of valid parsers for a view is always defined as a list of classes.  When  `request.data` is accessed, REST framework will examine the `Content-Type` header on the incoming request, and determine which parser to use to parse the request content.
+The set of valid parsers for a view is always defined as a list of classes.  When `request.data` is accessed, REST framework will examine the `Content-Type` header on the incoming request, and determine which parser to use to parse the request content.
 
 ---
 
@@ -73,7 +73,7 @@ Or, if you're using the `@api_view` decorator with function based views.
 
 ## JSONParser
 
-Parses `JSON` request content.
+Parses `JSON` request content. `request.data` will be populated with a dictionary of data.
 
 **.media_type**: `application/json`
 
@@ -87,7 +87,7 @@ You will typically want to use both `FormParser` and `MultiPartParser` together 
 
 ## MultiPartParser
 
-Parses multipart HTML form content, which supports file uploads.  Both `request.data` will be populated with a `QueryDict`.
+Parses multipart HTML form content, which supports file uploads. `request.data` and `request.FILES` will be populated with a `QueryDict` and `MultiValueDict` respectively.
 
 You will typically want to use both `FormParser` and `MultiPartParser` together in order to fully support HTML form data.
 
@@ -125,7 +125,7 @@ If it is called without a `filename` URL keyword argument, then the client must 
     # urls.py
     urlpatterns = [
         # ...
-        url(r'^upload/(?P<filename>[^/]+)$', FileUploadView.as_view())
+        re_path(r'^upload/(?P<filename>[^/]+)$', FileUploadView.as_view())
     ]
 
 ---

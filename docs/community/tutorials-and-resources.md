@@ -11,20 +11,23 @@ There are a wide range of resources available for learning and using Django REST
   <a class="book-cover" href="https://www.twoscoopspress.com/products/two-scoops-of-django-1-11">
     <img src="../../img/books/tsd-cover.png"/>
   </a>
-  <a class="book-cover" href="https://wsvincent.com/books/">
-    <img src="../../img/books/rad-cover.png"/>
+  <a class="book-cover" href="https://djangoforapis.com">
+    <img src="../../img/books/dfa-40-cover.jpg"/>
   </a>
   <a class="book-cover" href="https://books.agiliq.com/projects/django-api-polls-tutorial/en/latest/">
     <img src="../../img/books/bda-cover.png"/>
   </a>
 </div>
 
+## Courses
+
+* [Developing RESTful APIs with Django REST Framework][developing-restful-apis-with-django-rest-framework]
+
 ## Tutorials
 
 * [Beginner's Guide to the Django REST Framework][beginners-guide-to-the-django-rest-framework]
 * [Django REST Framework - An Introduction][drf-an-intro]
 * [Django REST Framework Tutorial][drf-tutorial]
-* [Django REST Framework Course][django-rest-framework-course]
 * [Building a RESTful API with Django REST Framework][building-a-restful-api-with-drf]
 * [Getting Started with Django REST Framework and AngularJS][getting-started-with-django-rest-framework-and-angularjs]
 * [End to End Web App with Django REST Framework & AngularJS][end-to-end-web-app-with-django-rest-framework-angularjs]
@@ -35,8 +38,10 @@ There are a wide range of resources available for learning and using Django REST
 * [Check Credentials Using Django REST Framework][check-credentials-using-django-rest-framework]
 * [Creating a Production Ready API with Python and Django REST Framework – Part 1][creating-a-production-ready-api-with-python-and-drf-part1]
 * [Creating a Production Ready API with Python and Django REST Framework – Part 2][creating-a-production-ready-api-with-python-and-drf-part2]
-* [Django REST Framework Tutorial - Build a Blog API][django-rest-framework-tutorial-build-a-blog]
-* [Django REST Framework & React Tutorial - Build a Todo List API][django-rest-framework-react-tutorial-build-a-todo-list]
+* [Creating a Production Ready API with Python and Django REST Framework – Part 3][creating-a-production-ready-api-with-python-and-drf-part3]
+* [Creating a Production Ready API with Python and Django REST Framework – Part 4][creating-a-production-ready-api-with-python-and-drf-part4]
+* [Django Polls Tutorial API][django-polls-api]
+* [Django REST Framework Tutorial: Todo API][django-rest-framework-todo-api]
 * [Tutorial: Django REST with React (Django 2.0)][django-rest-react-valentinog]
 
 
@@ -45,11 +50,11 @@ There are a wide range of resources available for learning and using Django REST
 ### Talks
 
 * [Level Up! Rethinking the Web API Framework][pycon-us-2017]
-* [How to Make a Full Fledged REST API with Django OAuth Toolkit][full-fledged-rest-api-with-django-oauth-tookit]
+* [How to Make a Full Fledged REST API with Django OAuth Toolkit][full-fledged-rest-api-with-django-oauth-toolkit]
 * [Django REST API - So Easy You Can Learn It in 25 Minutes][django-rest-api-so-easy]
 * [Tom Christie about Django Rest Framework at Django: Under The Hood][django-under-hood-2014]
 * [Django REST Framework: Schemas, Hypermedia & Client Libraries][pycon-uk-2016]
-
+* [Finally Understand Authentication in Django REST Framework][django-con-2018]
 
 ### Tutorials
 
@@ -76,6 +81,7 @@ There are a wide range of resources available for learning and using Django REST
 * [Chatbot Using Django REST Framework + api.ai + Slack — Part 1/3][chatbot-using-drf-part1]
 * [New Django Admin with DRF and EmberJS... What are the News?][new-django-admin-with-drf-and-emberjs]
 * [Blog posts about Django REST Framework][medium-django-rest-framework]
+* [Implementing Rest APIs With Embedded Privacy][doordash-implementing-rest-apis]
 
 ### Documentations
 * [Classy Django REST Framework][cdrf.co]
@@ -95,27 +101,28 @@ Want your Django REST Framework talk/tutorial/article to be added to our website
 [ember-and-django-part 1-video]: http://www.neckbeardrepublic.com/screencasts/ember-and-django-part-1
 [django-rest-framework-part-1-video]: http://www.neckbeardrepublic.com/screencasts/django-rest-framework-part-1
 [web-api-performance-profiling-django-rest-framework]: https://www.dabapps.com/blog/api-performance-profiling-django-rest-framework/
-[api-development-with-django-and-django-rest-framework]: https://bnotions.com/api-development-with-django-and-django-rest-framework/
+[api-development-with-django-and-django-rest-framework]: https://bnotions.com/news-and-insights/api-development-with-django-and-django-rest-framework/
 [cdrf.co]:http://www.cdrf.co
 [medium-django-rest-framework]: https://medium.com/django-rest-framework
-[django-rest-framework-course]: https://teamtreehouse.com/library/django-rest-framework
 [pycon-uk-2016]: https://www.youtube.com/watch?v=FjmiGh7OqVg
 [django-under-hood-2014]: https://www.youtube.com/watch?v=3cSsbe-tA0E
-[integrating-pandas-drf-and-bokeh]: https://machinalis.com/blog/pandas-django-rest-framework-bokeh/
-[controlling-uncertainty-on-web-apps-and-apis]: https://machinalis.com/blog/controlling-uncertainty-on-web-applications-and-apis/
-[full-text-search-in-drf]: https://machinalis.com/blog/full-text-search-on-django-rest-framework/
-[oauth2-authentication-with-drf]: https://machinalis.com/blog/oauth2-authentication/
-[nested-resources-with-drf]: https://machinalis.com/blog/nested-resources-with-django/
-[image-fields-with-drf]: https://machinalis.com/blog/image-fields-with-django-rest-framework/
+[integrating-pandas-drf-and-bokeh]: https://web.archive.org/web/20180104205117/http://machinalis.com/blog/pandas-django-rest-framework-bokeh/
+[controlling-uncertainty-on-web-apps-and-apis]: https://web.archive.org/web/20180104205043/https://machinalis.com/blog/controlling-uncertainty-on-web-applications-and-apis/
+[full-text-search-in-drf]: https://web.archive.org/web/20180104205059/http://machinalis.com/blog/full-text-search-on-django-rest-framework/
+[oauth2-authentication-with-drf]: https://web.archive.org/web/20180104205054/http://machinalis.com/blog/oauth2-authentication/
+[nested-resources-with-drf]: https://web.archive.org/web/20180104205109/http://machinalis.com/blog/nested-resources-with-django/
+[image-fields-with-drf]: https://web.archive.org/web/20180104205048/http://machinalis.com/blog/image-fields-with-django-rest-framework/
 [chatbot-using-drf-part1]: https://chatbotslife.com/chatbot-using-django-rest-framework-api-ai-slack-part-1-3-69c7e38b7b1e#.g2aceuncf
 [new-django-admin-with-drf-and-emberjs]: https://blog.levit.be/new-django-admin-with-emberjs-what-are-the-news/
 [drf-schema]: https://drf-schema-adapter.readthedocs.io/en/latest/
-[creating-a-production-ready-api-with-python-and-drf-part1]: https://www.andreagrandi.it/2016/09/28/creating-production-ready-api-python-django-rest-framework-part-1/
-[creating-a-production-ready-api-with-python-and-drf-part2]: https://www.andreagrandi.it/2016/10/01/creating-a-production-ready-api-with-python-and-django-rest-framework-part-2/
-[django-rest-framework-tutorial-build-a-blog]: https://wsvincent.com/django-rest-framework-tutorial/
-[django-rest-framework-react-tutorial-build-a-todo-list]: https://wsvincent.com/django-rest-framework-react-tutorial/
+[creating-a-production-ready-api-with-python-and-drf-part1]: https://www.andreagrandi.it/posts/creating-production-ready-api-python-django-rest-framework-part-1/
+[creating-a-production-ready-api-with-python-and-drf-part2]: https://www.andreagrandi.it/posts/creating-a-production-ready-api-with-python-and-django-rest-framework-part-2/
+[creating-a-production-ready-api-with-python-and-drf-part3]: https://www.andreagrandi.it/posts/creating-a-production-ready-api-with-python-and-django-rest-framework-part-3/
+[creating-a-production-ready-api-with-python-and-drf-part4]: https://www.andreagrandi.it/posts/creating-a-production-ready-api-with-python-and-django-rest-framework-part-4/
+[django-polls-api]: https://learndjango.com/tutorials/django-polls-tutorial-api
+[django-rest-framework-todo-api]: https://learndjango.com/tutorials/django-rest-framework-tutorial-todo-api
 [django-rest-api-so-easy]: https://www.youtube.com/watch?v=cqP758k1BaQ
-[full-fledged-rest-api-with-django-oauth-tookit]: https://www.youtube.com/watch?v=M6Ud3qC2tTk
+[full-fledged-rest-api-with-django-oauth-toolkit]: https://www.youtube.com/watch?v=M6Ud3qC2tTk
 [drf-in-your-pjs]: https://www.youtube.com/watch?v=xMtHsWa72Ww
 [building-a-rest-api-using-django-and-drf]: https://www.youtube.com/watch?v=PwssEec3IRw
 [drf-tutorials]: https://www.youtube.com/watch?v=axRCBgbOJp8&list=PLJtp8Jm8EDzjgVg9vVyIUMoGyqtegj7FH
@@ -128,3 +135,6 @@ Want your Django REST Framework talk/tutorial/article to be added to our website
 [anna-email]: mailto:anna@django-rest-framework.org
 [pycon-us-2017]: https://www.youtube.com/watch?v=Rk6MHZdust4
 [django-rest-react-valentinog]: https://www.valentinog.com/blog/tutorial-api-django-rest-react/
+[doordash-implementing-rest-apis]: https://doordash.engineering/2013/10/07/implementing-rest-apis-with-embedded-privacy/
+[developing-restful-apis-with-django-rest-framework]: https://testdriven.io/courses/django-rest-framework/
+[django-con-2018]: https://youtu.be/pY-oje5b5Qk?si=AOU6tLi0IL1_pVzq

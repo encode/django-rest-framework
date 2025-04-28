@@ -6,7 +6,7 @@ pre {
 
 .dropdown .dropdown-menu {
   display: none;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .dropdown.open .dropdown-menu {
@@ -37,7 +37,7 @@ body.index-page #main-content iframe.github-star-button {
     margin-right: -15px;
 }
 
-/* Travis CI and PyPI badge */
+/* CI and PyPI badge */
 body.index-page #main-content img.status-badge {
     float: right;
     margin-right: 8px;
@@ -73,6 +73,12 @@ pre {
   word-wrap: normal;
   white-space: pre;
 }
+
+code, pre {
+    font-family: Consolas,Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace,sans-serif;
+    font-size: 13px;
+}
+
 
 /* Preserve the spacing of the navbar across different screen sizes. */
 .navbar-inner {
@@ -432,3 +438,18 @@ ul.sponsor {
   margin: 0 !important;
   display: inline-block !important;
 }
+
+/* admonition */
+.admonition {
+  border: .075rem solid #448aff;
+  border-radius: .2rem;
+  margin: 1.5625em 0;
+  padding: 0 .6rem;
+}
+.admonition-title {
+  background: #448aff1a;
+  font-weight: 700;
+  margin:  0 -.6rem 1em;
+  padding: 0.4rem 0.6rem;
+}
+

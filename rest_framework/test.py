@@ -79,7 +79,7 @@ if requests is not None:
             """
             raw_kwargs = {}
 
-            def start_response(wsgi_status, wsgi_headers):
+            def start_response(wsgi_status, wsgi_headers, exc_info=None):
                 status, _, reason = wsgi_status.partition(' ')
                 raw_kwargs['status'] = int(status)
                 raw_kwargs['reason'] = reason
@@ -124,7 +124,7 @@ if coreapi is not None:
         def __init__(self, *args, **kwargs):
             self._session = RequestsClient()
             kwargs['transports'] = [coreapi.transports.HTTPTransport(session=self.session)]
-            return super().__init__(*args, **kwargs)
+            super().__init__(*args, **kwargs)
 
         @property
         def session(self):
@@ -150,15 +150,19 @@ class APIRequestFactory(DjangoRequestFactory):
         """
         Encode the data returning a two tuple of (bytes, content_type)
         """
-
         if data is None:
-            return ('', content_type)
+            return (b'', content_type)
 
         assert format is None or content_type is None, (
             'You may not set both `format` and `content_type`.'
         )
 
         if content_type:
+            try:
+                data = self._encode_json(data, content_type)
+            except AttributeError:
+                pass
+
             # Content type specified explicitly, treat data as a raw bytestring
             ret = force_bytes(data, settings.DEFAULT_CHARSET)
 
@@ -179,9 +183,11 @@ class APIRequestFactory(DjangoRequestFactory):
             ret = renderer.render(data)
 
             # Determine the content-type header from the renderer
-            content_type = "{}; charset={}".format(
-                renderer.media_type, renderer.charset
-            )
+            content_type = renderer.media_type
+            if renderer.charset:
+                content_type = "{}; charset={}".format(
+                    content_type, renderer.charset
+                )
 
             # Coerce text to bytes if required.
             if isinstance(ret, str):
@@ -274,7 +280,7 @@ class APIClient(APIRequestFactory, DjangoClient):
         """
         self.handler._force_user = user
         self.handler._force_token = token
-        if user is None:
+        if user is None and token is None:
             self.logout()  # Also clear any possible session info if required
 
     def request(self, **kwargs):
@@ -285,7 +291,7 @@ class APIClient(APIRequestFactory, DjangoClient):
     def get(self, path, data=None, follow=False, **extra):
         response = super().get(path, data=data, **extra)
         if follow:
-            response = self._handle_redirects(response, **extra)
+            response = self._handle_redirects(response, data=data, **extra)
         return response
 
     def post(self, path, data=None, format=None, content_type=None,
@@ -293,7 +299,7 @@ class APIClient(APIRequestFactory, DjangoClient):
         response = super().post(
             path, data=data, format=format, content_type=content_type, **extra)
         if follow:
-            response = self._handle_redirects(response, **extra)
+            response = self._handle_redirects(response, data=data, format=format, content_type=content_type, **extra)
         return response
 
     def put(self, path, data=None, format=None, content_type=None,
@@ -301,7 +307,7 @@ class APIClient(APIRequestFactory, DjangoClient):
         response = super().put(
             path, data=data, format=format, content_type=content_type, **extra)
         if follow:
-            response = self._handle_redirects(response, **extra)
+            response = self._handle_redirects(response, data=data, format=format, content_type=content_type, **extra)
         return response
 
     def patch(self, path, data=None, format=None, content_type=None,
@@ -309,7 +315,7 @@ class APIClient(APIRequestFactory, DjangoClient):
         response = super().patch(
             path, data=data, format=format, content_type=content_type, **extra)
         if follow:
-            response = self._handle_redirects(response, **extra)
+            response = self._handle_redirects(response, data=data, format=format, content_type=content_type, **extra)
         return response
 
     def delete(self, path, data=None, format=None, content_type=None,
@@ -317,7 +323,7 @@ class APIClient(APIRequestFactory, DjangoClient):
         response = super().delete(
             path, data=data, format=format, content_type=content_type, **extra)
         if follow:
-            response = self._handle_redirects(response, **extra)
+            response = self._handle_redirects(response, data=data, format=format, content_type=content_type, **extra)
         return response
 
     def options(self, path, data=None, format=None, content_type=None,
@@ -325,7 +331,7 @@ class APIClient(APIRequestFactory, DjangoClient):
         response = super().options(
             path, data=data, format=format, content_type=content_type, **extra)
         if follow:
-            response = self._handle_redirects(response, **extra)
+            response = self._handle_redirects(response, data=data, format=format, content_type=content_type, **extra)
         return response
 
     def logout(self):
@@ -353,6 +359,13 @@ class APISimpleTestCase(testcases.SimpleTestCase):
 
 class APILiveServerTestCase(testcases.LiveServerTestCase):
     client_class = APIClient
+
+
+def cleanup_url_patterns(cls):
+    if hasattr(cls, '_module_urlpatterns'):
+        cls._module.urlpatterns = cls._module_urlpatterns
+    else:
+        del cls._module.urlpatterns
 
 
 class URLPatternsTestCase(testcases.SimpleTestCase):
@@ -383,14 +396,8 @@ class URLPatternsTestCase(testcases.SimpleTestCase):
         cls._module.urlpatterns = cls.urlpatterns
 
         cls._override.enable()
+
+        cls.addClassCleanup(cls._override.disable)
+        cls.addClassCleanup(cleanup_url_patterns, cls)
+
         super().setUpClass()
-
-    @classmethod
-    def tearDownClass(cls):
-        super().tearDownClass()
-        cls._override.disable()
-
-        if hasattr(cls, '_module_urlpatterns'):
-            cls._module.urlpatterns = cls._module_urlpatterns
-        else:
-            del cls._module.urlpatterns

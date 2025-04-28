@@ -6,18 +6,21 @@ on the response, such as JSON encoded data or HTML output.
 
 REST framework also provides an HTML renderer that renders the browsable API.
 """
+
 import base64
-from collections import OrderedDict
+import contextlib
+import datetime
 from urllib import parse
 
 from django import forms
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.paginator import Page
-from django.http.multipartparser import parse_header
 from django.template import engines, loader
 from django.urls import NoReverseMatch
 from django.utils.html import mark_safe
+from django.utils.http import parse_header_parameters
+from django.utils.safestring import SafeString
 
 from rest_framework import VERSION, exceptions, serializers, status
 from rest_framework.compat import (
@@ -72,12 +75,9 @@ class JSONRenderer(BaseRenderer):
             # If the media type looks like 'application/json; indent=4',
             # then pretty print the result.
             # Note that we coerce `indent=0` into `indent=None`.
-            base_media_type, params = parse_header(accepted_media_type.encode('ascii'))
-            try:
+            base_media_type, params = parse_header_parameters(accepted_media_type)
+            with contextlib.suppress(KeyError, ValueError, TypeError):
                 return zero_as_none(max(min(int(params['indent']), 8), 0))
-            except (KeyError, ValueError, TypeError):
-                pass
-
         # If 'indent' is provided in the context, then pretty print the result.
         # E.g. If we're being called by the BrowsableAPIRenderer.
         return renderer_context.get('indent', None)
@@ -105,7 +105,7 @@ class JSONRenderer(BaseRenderer):
 
         # We always fully escape \u2028 and \u2029 to ensure we output JSON
         # that is a strict javascript subset.
-        # See: http://timelessrepo.com/json-isnt-a-javascript-subset
+        # See: https://gist.github.com/damncabbage/623b879af56f850a6ddc
         ret = ret.replace('\u2028', '\\u2028').replace('\u2029', '\\u2029')
         return ret.encode()
 
@@ -171,6 +171,10 @@ class TemplateHTMLRenderer(BaseRenderer):
 
     def get_template_context(self, data, renderer_context):
         response = renderer_context['response']
+        # in case a ValidationError is caught the data parameter may be a list
+        # see rest_framework.views.exception_handler
+        if isinstance(data, list):
+            return {'details': data, 'status_code': response.status_code}
         if response.exception:
             data['status_code'] = response.status_code
         return data
@@ -329,7 +333,7 @@ class HTMLFormRenderer(BaseRenderer):
         if isinstance(field._field, serializers.HiddenField):
             return ''
 
-        style = dict(self.default_style[field])
+        style = self.default_style[field].copy()
         style.update(field.style)
         if 'template_pack' not in style:
             style['template_pack'] = parent_style.get('template_pack', self.template_pack)
@@ -418,7 +422,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         if render_style == 'binary':
             return '[%d bytes of binary content]' % len(content)
 
-        return content
+        return content.decode('utf-8') if isinstance(content, bytes) else content
 
     def show_form_for_method(self, view, method, request, obj):
         """
@@ -489,11 +493,8 @@ class BrowsableAPIRenderer(BaseRenderer):
                 return
 
             if existing_serializer is not None:
-                try:
+                with contextlib.suppress(TypeError):
                     return self.render_form_for_serializer(existing_serializer)
-                except TypeError:
-                    pass
-
             if has_serializer:
                 if method in ('PUT', 'PATCH'):
                     serializer = view.get_serializer(instance=instance, **kwargs)
@@ -511,6 +512,9 @@ class BrowsableAPIRenderer(BaseRenderer):
             return self.render_form_for_serializer(serializer)
 
     def render_form_for_serializer(self, serializer):
+        if isinstance(serializer, serializers.ListSerializer):
+            return None
+
         if hasattr(serializer, 'initial_data'):
             serializer.is_valid()
 
@@ -560,10 +564,13 @@ class BrowsableAPIRenderer(BaseRenderer):
                 context['indent'] = 4
 
                 # strip HiddenField from output
+                is_list_serializer = isinstance(serializer, serializers.ListSerializer)
+                serializer = serializer.child if is_list_serializer else serializer
                 data = serializer.data.copy()
                 for name, field in serializer.fields.items():
                     if isinstance(field, serializers.HiddenField):
                         data.pop(name, None)
+                data = [data] if is_list_serializer else data
                 content = renderer.render(data, accepted, context)
                 # Renders returns bytes, but CharField expects a str.
                 content = content.decode()
@@ -657,7 +664,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         raw_data_patch_form = self.get_raw_data_form(data, view, 'PATCH', request)
         raw_data_put_or_patch_form = raw_data_put_form or raw_data_patch_form
 
-        response_headers = OrderedDict(sorted(response.items()))
+        response_headers = dict(sorted(response.items()))
         renderer_content_type = ''
         if renderer:
             renderer_content_type = '%s' % renderer.media_type
@@ -856,8 +863,8 @@ class DocumentationRenderer(BaseRenderer):
         return {
             'document': data,
             'langs': self.languages,
-            'lang_htmls': ["rest_framework/docs/langs/%s.html" % l for l in self.languages],
-            'lang_intro_htmls': ["rest_framework/docs/langs/%s-intro.html" % l for l in self.languages],
+            'lang_htmls': ["rest_framework/docs/langs/%s.html" % language for language in self.languages],
+            'lang_intro_htmls': ["rest_framework/docs/langs/%s-intro.html" % language for language in self.languages],
             'code_style': pygments_css(self.code_style),
             'request': request
         }
@@ -1035,13 +1042,16 @@ class CoreAPIJSONOpenAPIRenderer(_BaseOpenAPIRenderer):
     media_type = 'application/vnd.oai.openapi+json'
     charset = None
     format = 'openapi-json'
+    ensure_ascii = not api_settings.UNICODE_JSON
 
     def __init__(self):
         assert coreapi, 'Using CoreAPIJSONOpenAPIRenderer, but `coreapi` is not installed.'
 
     def render(self, data, media_type=None, renderer_context=None):
         structure = self.get_structure(data)
-        return json.dumps(structure, indent=4).encode('utf-8')
+        return json.dumps(
+            structure, indent=4,
+            ensure_ascii=self.ensure_ascii).encode('utf-8')
 
 
 class OpenAPIRenderer(BaseRenderer):
@@ -1053,13 +1063,23 @@ class OpenAPIRenderer(BaseRenderer):
         assert yaml, 'Using OpenAPIRenderer, but `pyyaml` is not installed.'
 
     def render(self, data, media_type=None, renderer_context=None):
-        return yaml.dump(data, default_flow_style=False, sort_keys=False).encode('utf-8')
+        # disable yaml advanced feature 'alias' for clean, portable, and readable output
+        class Dumper(yaml.Dumper):
+            def ignore_aliases(self, data):
+                return True
+        Dumper.add_representer(SafeString, Dumper.represent_str)
+        Dumper.add_representer(datetime.timedelta, encoders.CustomScalar.represent_timedelta)
+        return yaml.dump(data, default_flow_style=False, sort_keys=False, Dumper=Dumper).encode('utf-8')
 
 
 class JSONOpenAPIRenderer(BaseRenderer):
     media_type = 'application/vnd.oai.openapi+json'
     charset = None
+    encoder_class = encoders.JSONEncoder
     format = 'openapi-json'
+    ensure_ascii = not api_settings.UNICODE_JSON
 
     def render(self, data, media_type=None, renderer_context=None):
-        return json.dumps(data, indent=2).encode('utf-8')
+        return json.dumps(
+            data, cls=self.encoder_class, indent=2,
+            ensure_ascii=self.ensure_ascii).encode('utf-8')

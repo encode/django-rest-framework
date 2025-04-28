@@ -10,9 +10,9 @@ from django.conf import settings
 from django.contrib.admindocs.views import simplify_regex
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
+from django.urls import URLPattern, URLResolver
 
 from rest_framework import exceptions
-from rest_framework.compat import URLPattern, URLResolver, get_original_route
 from rest_framework.request import clone_request
 from rest_framework.settings import api_settings
 from rest_framework.utils.model_meta import _get_pk
@@ -79,7 +79,7 @@ class EndpointEnumerator:
         api_endpoints = []
 
         for pattern in patterns:
-            path_regex = prefix + get_original_route(pattern)
+            path_regex = prefix + str(pattern.pattern)
             if isinstance(pattern, URLPattern):
                 path = self.get_path_from_regex(path_regex)
                 callback = pattern.callback
@@ -102,12 +102,12 @@ class EndpointEnumerator:
         Given a URL conf regex, return a URI template string.
         """
         # ???: Would it be feasible to adjust this such that we generate the
-        # path, plus the kwargs, plus the type from the convertor, such that we
+        # path, plus the kwargs, plus the type from the converter, such that we
         # could feed that straight into the parameter schema object?
 
         path = simplify_regex(path_regex)
 
-        # Strip Django 2.0 convertors as they are incompatible with uritemplate format
+        # Strip Django 2.0 converters as they are incompatible with uritemplate format
         return re.sub(_PATH_PARAMETER_COMPONENT_RE, r'{\g<parameter>}', path)
 
     def should_include_endpoint(self, path, callback):
@@ -143,7 +143,7 @@ class EndpointEnumerator:
         return [method for method in methods if method not in ('OPTIONS', 'HEAD')]
 
 
-class BaseSchemaGenerator(object):
+class BaseSchemaGenerator:
     endpoint_inspector_cls = EndpointEnumerator
 
     # 'pk' isn't great as an externally exposed name for an identifier,

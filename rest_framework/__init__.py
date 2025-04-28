@@ -8,10 +8,10 @@ ______ _____ _____ _____    __
 """
 
 __title__ = 'Django REST framework'
-__version__ = '3.11.0'
+__version__ = '3.16.0'
 __author__ = 'Tom Christie'
 __license__ = 'BSD 3-Clause'
-__copyright__ = 'Copyright 2011-2019 Encode OSS Ltd'
+__copyright__ = 'Copyright 2011-2023 Encode OSS Ltd'
 
 # Version synonym
 VERSION = __version__
@@ -22,12 +22,6 @@ HTTP_HEADER_ENCODING = 'iso-8859-1'
 # Default datetime input and output formats
 ISO_8601 = 'iso-8601'
 
-default_app_config = 'rest_framework.apps.RestFrameworkConfig'
 
-
-class RemovedInDRF312Warning(DeprecationWarning):
-    pass
-
-
-class RemovedInDRF313Warning(PendingDeprecationWarning):
+class RemovedInDRF317Warning(PendingDeprecationWarning):
     pass

@@ -1,22 +1,30 @@
 import unittest
 
 import pytest
-from django.conf.urls import include, url
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.test import TestCase, override_settings
+from django.urls import include, path
 
 from rest_framework import (
-    filters, generics, pagination, permissions, serializers
+    RemovedInDRF317Warning, filters, generics, pagination, permissions,
+    serializers
 )
-from rest_framework.compat import coreapi, coreschema, get_regex_pattern, path
+from rest_framework.compat import coreapi, coreschema
 from rest_framework.decorators import action, api_view, schema
+from rest_framework.filters import (
+    BaseFilterBackend, OrderingFilter, SearchFilter
+)
+from rest_framework.pagination import (
+    BasePagination, CursorPagination, LimitOffsetPagination,
+    PageNumberPagination
+)
 from rest_framework.request import Request
 from rest_framework.routers import DefaultRouter, SimpleRouter
 from rest_framework.schemas import (
     AutoSchema, ManualSchema, SchemaGenerator, get_schema_view
 )
-from rest_framework.schemas.coreapi import field_to_schema
+from rest_framework.schemas.coreapi import field_to_schema, is_enabled
 from rest_framework.schemas.generators import EndpointEnumerator
 from rest_framework.schemas.utils import is_list_view
 from rest_framework.test import APIClient, APIRequestFactory
@@ -144,8 +152,8 @@ with override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.s
 router = DefaultRouter()
 router.register('example', ExampleViewSet, basename='example')
 urlpatterns = [
-    url(r'^$', schema_view),
-    url(r'^', include(router.urls))
+    path('', schema_view),
+    path('', include(router.urls))
 ]
 
 
@@ -406,9 +414,9 @@ class ExampleDetailView(APIView):
 class TestSchemaGenerator(TestCase):
     def setUp(self):
         self.patterns = [
-            url(r'^example/?$', views.ExampleListView.as_view()),
-            url(r'^example/(?P<pk>\d+)/?$', views.ExampleDetailView.as_view()),
-            url(r'^example/(?P<pk>\d+)/sub/?$', views.ExampleDetailView.as_view()),
+            path('example/', views.ExampleListView.as_view()),
+            path('example/<int:pk>/', views.ExampleDetailView.as_view()),
+            path('example/<int:pk>/sub/', views.ExampleDetailView.as_view()),
         ]
 
     def test_schema_for_regular_views(self):
@@ -455,7 +463,6 @@ class TestSchemaGenerator(TestCase):
 
 
 @unittest.skipUnless(coreapi, 'coreapi is not installed')
-@unittest.skipUnless(path, 'needs Django 2')
 @override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema'})
 class TestSchemaGeneratorDjango2(TestCase):
     def setUp(self):
@@ -513,9 +520,9 @@ class TestSchemaGeneratorDjango2(TestCase):
 class TestSchemaGeneratorNotAtRoot(TestCase):
     def setUp(self):
         self.patterns = [
-            url(r'^api/v1/example/?$', views.ExampleListView.as_view()),
-            url(r'^api/v1/example/(?P<pk>\d+)/?$', views.ExampleDetailView.as_view()),
-            url(r'^api/v1/example/(?P<pk>\d+)/sub/?$', views.ExampleDetailView.as_view()),
+            path('api/v1/example/', views.ExampleListView.as_view()),
+            path('api/v1/example/<int:pk>/', views.ExampleDetailView.as_view()),
+            path('api/v1/example/<int:pk>/sub/', views.ExampleDetailView.as_view()),
         ]
 
     def test_schema_for_regular_views(self):
@@ -569,7 +576,7 @@ class TestSchemaGeneratorWithMethodLimitedViewSets(TestCase):
         router = DefaultRouter()
         router.register('example1', MethodLimitedViewSet, basename='example1')
         self.patterns = [
-            url(r'^', include(router.urls))
+            path('', include(router.urls))
         ]
 
     def test_schema_for_regular_views(self):
@@ -635,8 +642,8 @@ class TestSchemaGeneratorWithRestrictedViewSets(TestCase):
         router.register('example1', Http404ExampleViewSet, basename='example1')
         router.register('example2', PermissionDeniedExampleViewSet, basename='example2')
         self.patterns = [
-            url('^example/?$', views.ExampleListView.as_view()),
-            url(r'^', include(router.urls))
+            path('example/', views.ExampleListView.as_view()),
+            path('', include(router.urls))
         ]
 
     def test_schema_for_regular_views(self):
@@ -679,7 +686,7 @@ class ForeignKeySourceView(generics.CreateAPIView):
 class TestSchemaGeneratorWithForeignKey(TestCase):
     def setUp(self):
         self.patterns = [
-            url(r'^example/?$', ForeignKeySourceView.as_view()),
+            path('example/', ForeignKeySourceView.as_view()),
         ]
 
     def test_schema_for_regular_views(self):
@@ -725,7 +732,7 @@ class ManyToManySourceView(generics.CreateAPIView):
 class TestSchemaGeneratorWithManyToMany(TestCase):
     def setUp(self):
         self.patterns = [
-            url(r'^example/?$', ManyToManySourceView.as_view()),
+            path('example/', ManyToManySourceView.as_view()),
         ]
 
     def test_schema_for_regular_views(self):
@@ -749,6 +756,67 @@ class TestSchemaGeneratorWithManyToMany(TestCase):
                             coreapi.Field('targets', required=True, location='form', schema=coreschema.Array(title='Targets', items=coreschema.Integer())),
                         ]
                     )
+                }
+            }
+        )
+        assert schema == expected
+
+
+@unittest.skipUnless(coreapi, 'coreapi is not installed')
+@override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema'})
+class TestSchemaGeneratorActionKeysViewSets(TestCase):
+    def test_action_not_coerced_for_get_and_head(self):
+        """
+        Ensure that action name is preserved when action map contains "head".
+        """
+        class CustomViewSet(GenericViewSet):
+            serializer_class = EmptySerializer
+
+            @action(methods=['get', 'head'], detail=True)
+            def custom_read(self, request, pk):
+                raise NotImplementedError
+
+            @action(methods=['put', 'patch'], detail=True)
+            def custom_mixed_update(self, request, pk):
+                raise NotImplementedError
+
+        self.router = DefaultRouter()
+        self.router.register('example', CustomViewSet, basename='example')
+        self.patterns = [
+            path('', include(self.router.urls))
+        ]
+
+        generator = SchemaGenerator(title='Example API', patterns=self.patterns)
+        schema = generator.get_schema()
+
+        expected = coreapi.Document(
+            url='',
+            title='Example API',
+            content={
+                'example': {
+                    'custom_read': coreapi.Link(
+                        url='/example/{id}/custom_read/',
+                        action='get',
+                        fields=[
+                            coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
+                        ]
+                    ),
+                    'custom_mixed_update': {
+                        'update': coreapi.Link(
+                            url='/example/{id}/custom_mixed_update/',
+                            action='put',
+                            fields=[
+                                coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
+                            ]
+                        ),
+                        'partial_update': coreapi.Link(
+                            url='/example/{id}/custom_mixed_update/',
+                            action='patch',
+                            fields=[
+                                coreapi.Field('id', required=True, location='path', schema=coreschema.String()),
+                            ]
+                        )
+                    }
                 }
             }
         )
@@ -1041,9 +1109,9 @@ with override_settings(REST_FRAMEWORK={'DEFAULT_SCHEMA_CLASS': 'rest_framework.s
 class SchemaGenerationExclusionTests(TestCase):
     def setUp(self):
         self.patterns = [
-            url('^excluded-cbv/$', ExcludedAPIView.as_view()),
-            url('^excluded-fbv/$', excluded_fbv),
-            url('^included-fbv/$', included_fbv),
+            path('excluded-cbv/', ExcludedAPIView.as_view()),
+            path('excluded-fbv/', excluded_fbv),
+            path('included-fbv/', included_fbv),
         ]
 
     def test_schema_generator_excludes_correctly(self):
@@ -1078,7 +1146,7 @@ class SchemaGenerationExclusionTests(TestCase):
         inspector = EndpointEnumerator(self.patterns)
 
         # Not pretty. Mimics internals of EndpointEnumerator to put should_include_endpoint under test
-        pairs = [(inspector.get_path_from_regex(get_regex_pattern(pattern)), pattern.callback)
+        pairs = [(inspector.get_path_from_regex(pattern.pattern.regex.pattern), pattern.callback)
                  for pattern in self.patterns]
 
         should_include = [
@@ -1109,7 +1177,7 @@ class NamingCollisionViewSet(GenericViewSet):
     """
     Example via: https://stackoverflow.com/questions/43778668/django-rest-framwork-occured-typeerror-link-object-does-not-support-item-ass/
     """
-    permision_class = ()
+    permission_classes = ()
 
     @action(detail=False)
     def detail(self, request):
@@ -1136,8 +1204,8 @@ class TestURLNamingCollisions(TestCase):
             pass
 
         patterns = [
-            url(r'^test', simple_fbv),
-            url(r'^test/list/', simple_fbv),
+            path('test', simple_fbv),
+            path('test/list/', simple_fbv),
         ]
 
         generator = SchemaGenerator(title='Naming Colisions', patterns=patterns)
@@ -1166,21 +1234,21 @@ class TestURLNamingCollisions(TestCase):
 
         for method, suffix in zip(methods, suffixes):
             if suffix is not None:
-                key = '{}_{}'.format(method, suffix)
+                key = f'{method}_{suffix}'
             else:
                 key = method
             assert loc[key].url == url
 
     def test_manually_routing_generic_view(self):
         patterns = [
-            url(r'^test', NamingCollisionView.as_view()),
-            url(r'^test/retrieve/', NamingCollisionView.as_view()),
-            url(r'^test/update/', NamingCollisionView.as_view()),
+            path('test', NamingCollisionView.as_view()),
+            path('test/retrieve/', NamingCollisionView.as_view()),
+            path('test/update/', NamingCollisionView.as_view()),
 
             # Fails with method names:
-            url(r'^test/get/', NamingCollisionView.as_view()),
-            url(r'^test/put/', NamingCollisionView.as_view()),
-            url(r'^test/delete/', NamingCollisionView.as_view()),
+            path('test/get/', NamingCollisionView.as_view()),
+            path('test/put/', NamingCollisionView.as_view()),
+            path('test/delete/', NamingCollisionView.as_view()),
         ]
 
         generator = SchemaGenerator(title='Naming Colisions', patterns=patterns)
@@ -1196,7 +1264,7 @@ class TestURLNamingCollisions(TestCase):
 
     def test_from_router(self):
         patterns = [
-            url(r'from-router', include(naming_collisions_router.urls)),
+            path('from-router', include(naming_collisions_router.urls)),
         ]
 
         generator = SchemaGenerator(title='Naming Colisions', patterns=patterns)
@@ -1228,8 +1296,8 @@ class TestURLNamingCollisions(TestCase):
 
     def test_url_under_same_key_not_replaced(self):
         patterns = [
-            url(r'example/(?P<pk>\d+)/$', BasicNamingCollisionView.as_view()),
-            url(r'example/(?P<slug>\w+)/$', BasicNamingCollisionView.as_view()),
+            path('example/<int:pk>/', BasicNamingCollisionView.as_view()),
+            path('example/<str:slug>/', BasicNamingCollisionView.as_view()),
         ]
 
         generator = SchemaGenerator(title='Naming Colisions', patterns=patterns)
@@ -1245,8 +1313,8 @@ class TestURLNamingCollisions(TestCase):
             pass
 
         patterns = [
-            url(r'^test/list/', simple_fbv),
-            url(r'^test/(?P<pk>\d+)/list/', simple_fbv),
+            path('test/list/', simple_fbv),
+            path('test/<int:pk>/list/', simple_fbv),
         ]
 
         generator = SchemaGenerator(title='Naming Colisions', patterns=patterns)
@@ -1373,3 +1441,46 @@ def test_schema_handles_exception():
     response.render()
     assert response.status_code == 403
     assert b"You do not have permission to perform this action." in response.content
+
+
+@pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
+def test_coreapi_deprecation():
+    with pytest.warns(RemovedInDRF317Warning):
+        SchemaGenerator()
+
+    with pytest.warns(RemovedInDRF317Warning):
+        AutoSchema()
+
+    with pytest.warns(RemovedInDRF317Warning):
+        ManualSchema({})
+
+    with pytest.warns(RemovedInDRF317Warning):
+        deprecated_filter = OrderingFilter()
+        deprecated_filter.get_schema_fields({})
+
+    with pytest.warns(RemovedInDRF317Warning):
+        deprecated_filter = BaseFilterBackend()
+        deprecated_filter.get_schema_fields({})
+
+    with pytest.warns(RemovedInDRF317Warning):
+        deprecated_filter = SearchFilter()
+        deprecated_filter.get_schema_fields({})
+
+    with pytest.warns(RemovedInDRF317Warning):
+        paginator = BasePagination()
+        paginator.get_schema_fields({})
+
+    with pytest.warns(RemovedInDRF317Warning):
+        paginator = PageNumberPagination()
+        paginator.get_schema_fields({})
+
+    with pytest.warns(RemovedInDRF317Warning):
+        paginator = LimitOffsetPagination()
+        paginator.get_schema_fields({})
+
+    with pytest.warns(RemovedInDRF317Warning):
+        paginator = CursorPagination()
+        paginator.get_schema_fields({})
+
+    with pytest.warns(RemovedInDRF317Warning):
+        is_enabled()

@@ -2,7 +2,7 @@
 
 > "Take a close look at possible CSRF / XSRF vulnerabilities on your own websites.  They're the worst kind of vulnerability &mdash; very easy to exploit by attackers, yet not so intuitively easy to understand for software developers, at least until you've been bitten by one."
 >
->  &mdash; [Jeff Atwood][cite]
+> &mdash; [Jeff Atwood][cite]
 
 ## Javascript clients
 
@@ -31,11 +31,11 @@ In order to make AJAX requests, you need to include CSRF token in the HTTP heade
 
 The best way to deal with CORS in REST framework is to add the required response headers in middleware.  This ensures that CORS is supported transparently, without having to change any behavior in your views.
 
-[Otto Yiu][ottoyiu] maintains the [django-cors-headers] package, which is known to work correctly with REST framework APIs.
+[Adam Johnson][adamchainz] maintains the [django-cors-headers] package, which is known to work correctly with REST framework APIs.
 
 [cite]: https://blog.codinghorror.com/preventing-csrf-and-xsrf-attacks/
 [csrf]: https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)
-[csrf-ajax]: https://docs.djangoproject.com/en/stable/ref/csrf/#ajax
+[csrf-ajax]: https://docs.djangoproject.com/en/stable/howto/csrf/#using-csrf-protection-with-ajax
 [cors]: https://www.w3.org/TR/cors/
-[ottoyiu]: https://github.com/ottoyiu/
-[django-cors-headers]: https://github.com/ottoyiu/django-cors-headers/
+[adamchainz]: https://github.com/adamchainz
+[django-cors-headers]: https://github.com/adamchainz/django-cors-headers

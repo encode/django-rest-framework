@@ -116,7 +116,7 @@ During dispatch, the following attributes are available on the `ViewSet`.
 * `name` - the display name for the viewset. This argument is mutually exclusive to `suffix`.
 * `description` - the display description for the individual view of a viewset.
 
-You may inspect these attributes to adjust behaviour based on the current action. For example, you could restrict permissions to everything except the `list` action similar to this:
+You may inspect these attributes to adjust behavior based on the current action. For example, you could restrict permissions to everything except the `list` action similar to this:
 
     def get_permissions(self):
         """
@@ -125,8 +125,10 @@ You may inspect these attributes to adjust behaviour based on the current action
         if self.action == 'list':
             permission_classes = [IsAuthenticated]
         else:
-            permission_classes = [IsAdmin]
+            permission_classes = [IsAdminUser]
         return [permission() for permission in permission_classes]
+
+**Note**: the `action` attribute is not available in the `get_parsers`, `get_authenticators` and `get_content_negotiator` methods, as it is set _after_ they are called in the framework lifecycle. If you override one of these methods and try to access the `action` attribute in them, you will get an `AttributeError` error.
 
 ## Marking extra actions for routing
 
@@ -152,7 +154,7 @@ A more complete example of extra actions:
             user = self.get_object()
             serializer = PasswordSerializer(data=request.data)
             if serializer.is_valid():
-                user.set_password(serializer.data['password'])
+                user.set_password(serializer.validated_data['password'])
                 user.save()
                 return Response({'status': 'password set'})
             else:
@@ -171,11 +173,6 @@ A more complete example of extra actions:
             serializer = self.get_serializer(recent_users, many=True)
             return Response(serializer.data)
 
-The decorator can additionally take extra arguments that will be set for the routed view only.  For example:
-
-        @action(detail=True, methods=['post'], permission_classes=[IsAdminOrIsSelf])
-        def set_password(self, request, pk=None):
-           ...
 
 The `action` decorator will route `GET` requests by default, but may also accept other HTTP methods by setting the `methods` argument.  For example:
 
@@ -183,7 +180,21 @@ The `action` decorator will route `GET` requests by default, but may also accept
         def unset_password(self, request, pk=None):
            ...
 
-The two new actions will then be available at the urls `^users/{pk}/set_password/$` and `^users/{pk}/unset_password/$`
+Argument `methods` also supports HTTP methods defined as [HTTPMethod](https://docs.python.org/3/library/http.html#http.HTTPMethod). Example below is identical to the one above: 
+
+        from http import HTTPMethod
+
+        @action(detail=True, methods=[HTTPMethod.POST, HTTPMethod.DELETE])
+        def unset_password(self, request, pk=None):
+           ...
+
+The decorator allows you to override any viewset-level configuration such as `permission_classes`, `serializer_class`, `filter_backends`...:
+
+        @action(detail=True, methods=['post'], permission_classes=[IsAdminOrIsSelf])
+        def set_password(self, request, pk=None):
+           ...
+
+The two new actions will then be available at the urls `^users/{pk}/set_password/$` and `^users/{pk}/unset_password/$`. Use the `url_path` and `url_name` parameters to change the URL segment and the reverse URL name of the action.
 
 To view all extra actions, call the `.get_extra_actions()` method.
 
@@ -192,15 +203,16 @@ To view all extra actions, call the `.get_extra_actions()` method.
 Extra actions can map additional HTTP methods to separate `ViewSet` methods. For example, the above password set/unset methods could be consolidated into a single route. Note that additional mappings do not accept arguments.
 
 ```python
-    @action(detail=True, methods=['put'], name='Change Password')
-    def password(self, request, pk=None):
-        """Update the user's password."""
-        ...
+@action(detail=True, methods=["put"], name="Change Password")
+def password(self, request, pk=None):
+    """Update the user's password."""
+    ...
 
-    @password.mapping.delete
-    def delete_password(self, request, pk=None):
-        """Delete the user's password."""
-        ...
+
+@password.mapping.delete
+def delete_password(self, request, pk=None):
+    """Delete the user's password."""
+    ...
 ```
 
 ## Reversing action URLs
@@ -211,14 +223,14 @@ Note that the `basename` is provided by the router during `ViewSet` registration
 
 Using the example from the previous section:
 
-```python
->>> view.reverse_action('set-password', args=['1'])
+```pycon
+>>> view.reverse_action("set-password", args=["1"])
 'http://localhost:8000/api/users/1/set_password'
 ```
 
 Alternatively, you can use the `url_name` attribute set by the `@action` decorator.
 
-```python
+```pycon
 >>> view.reverse_action(view.set_password.url_name, args=['1'])
 'http://localhost:8000/api/users/1/set_password'
 ```
@@ -245,7 +257,7 @@ In order to use a `GenericViewSet` class you'll override the class and either mi
 
 The `ModelViewSet` class inherits from `GenericAPIView` and includes implementations for various actions, by mixing in the behavior of the various mixin classes.
 
-The actions provided by the `ModelViewSet` class are `.list()`, `.retrieve()`,  `.create()`, `.update()`, `.partial_update()`, and `.destroy()`.
+The actions provided by the `ModelViewSet` class are `.list()`, `.retrieve()`, `.create()`, `.update()`, `.partial_update()`, and `.destroy()`.
 
 #### Example
 
@@ -301,7 +313,7 @@ You may need to provide custom `ViewSet` classes that do not have the full set o
 
 To create a base viewset class that provides `create`, `list` and `retrieve` operations, inherit from `GenericViewSet`, and mixin the required actions:
 
-    from rest_framework import mixins
+    from rest_framework import mixins, viewsets
 
     class CreateListRetrieveViewSet(mixins.CreateModelMixin,
                                     mixins.ListModelMixin,
@@ -317,5 +329,5 @@ To create a base viewset class that provides `create`, `list` and `retrieve` ope
 
 By creating your own base `ViewSet` classes, you can provide common behavior that can be reused in multiple viewsets across your API.
 
-[cite]: https://guides.rubyonrails.org/routing.html
+[cite]: https://guides.rubyonrails.org/action_controller_overview.html
 [routers]: routers.md

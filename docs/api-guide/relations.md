@@ -17,6 +17,37 @@ Relational fields are used to represent model relationships.  They can be applie
 
 ---
 
+---
+
+**Note:** REST Framework does not attempt to automatically optimize querysets passed to serializers in terms of `select_related` and `prefetch_related` since it would be too much magic. A serializer with a field spanning an orm relation through its source attribute could require an additional database hit to fetch related objects from the database. It is the programmer's responsibility to optimize queries to avoid additional database hits which could occur while using such a serializer.
+
+For example, the following serializer would lead to a database hit each time evaluating the tracks field if it is not prefetched:
+
+    class AlbumSerializer(serializers.ModelSerializer):
+        tracks = serializers.SlugRelatedField(
+            many=True,
+            read_only=True,
+            slug_field='title'
+        )
+
+        class Meta:
+            model = Album
+            fields = ['album_name', 'artist', 'tracks']
+
+    # For each album object, tracks should be fetched from database
+    qs = Album.objects.all()
+    print(AlbumSerializer(qs, many=True).data)
+
+If `AlbumSerializer` is used to serialize a fairly large queryset with `many=True` then it could be a serious performance problem. Optimizing the queryset passed to `AlbumSerializer` with:
+
+    qs = Album.objects.prefetch_related('tracks')
+    # No additional database hits required
+    print(AlbumSerializer(qs, many=True).data)
+
+would solve the issue.
+
+---
+
 #### Inspecting relationships.
 
 When using the `ModelSerializer` class, serializer fields and relationships will be automatically generated for you. Inspecting these automatically generated fields can be a useful tool for determining how to customize the relationship style.
@@ -56,7 +87,7 @@ In order to explain the various types of relational fields, we'll use a couple o
 
 `StringRelatedField` may be used to represent the target of the relationship using its `__str__` method.
 
-For example, the following serializer.
+For example, the following serializer:
 
     class AlbumSerializer(serializers.ModelSerializer):
         tracks = serializers.StringRelatedField(many=True)
@@ -65,7 +96,7 @@ For example, the following serializer.
             model = Album
             fields = ['album_name', 'artist', 'tracks']
 
-Would serialize to the following representation.
+Would serialize to the following representation:
 
     {
         'album_name': 'Things We Lost In The Fire',
@@ -215,7 +246,7 @@ When using `SlugRelatedField` as a read-write field, you will normally want to e
 
 ## HyperlinkedIdentityField
 
-This field can be applied as an identity relationship, such as the `'url'` field on  a HyperlinkedModelSerializer.  It can also be used for an attribute on the object.  For example, the following serializer:
+This field can be applied as an identity relationship, such as the `'url'` field on a HyperlinkedModelSerializer.  It can also be used for an attribute on the object.  For example, the following serializer:
 
     class AlbumSerializer(serializers.HyperlinkedModelSerializer):
         track_listing = serializers.HyperlinkedIdentityField(view_name='track-list')
@@ -247,7 +278,7 @@ This field is always read-only.
 
 As opposed to previously discussed _references_ to another entity, the referred entity can instead also be embedded or _nested_
 in the representation of the object that refers to it.
-Such nested relationships can be expressed by using serializers as fields. 
+Such nested relationships can be expressed by using serializers as fields.
 
 If the field is used to represent a to-many relationship, you should add the `many=True` flag to the serializer field.
 
@@ -291,7 +322,7 @@ Would serialize to a nested representation like this:
 
 ## Writable nested serializers
 
-By default nested serializers are read-only. If you want to support write-operations to a nested serializer field you'll need to create `create()` and/or `update()` methods in order to explicitly specify how the child relationships should be saved.
+By default nested serializers are read-only. If you want to support write-operations to a nested serializer field you'll need to create `create()` and/or `update()` methods in order to explicitly specify how the child relationships should be saved:
 
     class TrackSerializer(serializers.ModelSerializer):
         class Meta:
@@ -337,13 +368,13 @@ output representation should be generated from the model instance.
 
 To implement a custom relational field, you should override `RelatedField`, and implement the `.to_representation(self, value)` method. This method takes the target of the field as the `value` argument, and should return the representation that should be used to serialize the target. The `value` argument will typically be a model instance.
 
-If you want to implement a read-write relational field, you must also implement the `.to_internal_value(self, data)` method.
+If you want to implement a read-write relational field, you must also implement the [`.to_internal_value(self, data)` method][to_internal_value].
 
 To provide a dynamic queryset based on the `context`, you can also override `.get_queryset(self)` instead of specifying `.queryset` on the class or when initializing the field.
 
 ## Example
 
-For example, we could define a relational field to serialize a track to a custom string representation, using its ordering, title, and duration.
+For example, we could define a relational field to serialize a track to a custom string representation, using its ordering, title, and duration:
 
     import time
 
@@ -359,7 +390,7 @@ For example, we could define a relational field to serialize a track to a custom
             model = Album
             fields = ['album_name', 'artist', 'tracks']
 
-This custom field would then serialize to the following representation.
+This custom field would then serialize to the following representation:
 
     {
         'album_name': 'Sometimes I Wish We Were an Eagle',
@@ -463,8 +494,8 @@ This behavior is intended to prevent a template from being unable to render in a
 
 There are two keyword arguments you can use to control this behavior:
 
-- `html_cutoff` - If set this will be the maximum number of choices that will be displayed by a HTML select drop down. Set to `None` to disable any limiting. Defaults to `1000`.
-- `html_cutoff_text` - If set this will display a textual indicator if the maximum number of items have been cutoff in an HTML select drop down. Defaults to `"More than {count} items…"`
+* `html_cutoff` - If set this will be the maximum number of choices that will be displayed by a HTML select drop down. Set to `None` to disable any limiting. Defaults to `1000`.
+* `html_cutoff_text` - If set this will display a textual indicator if the maximum number of items have been cutoff in an HTML select drop down. Defaults to `"More than {count} items…"`
 
 You can also control these globally using the settings `HTML_SELECT_CUTOFF` and `HTML_SELECT_CUTOFF_TEXT`.
 
@@ -535,7 +566,7 @@ And the following two models, which may have associated tags:
         text = models.CharField(max_length=1000)
         tags = GenericRelation(TaggedItem)
 
-We could define a custom field that could be used to serialize tagged instances, using the type of each instance to determine how it should be serialized.
+We could define a custom field that could be used to serialize tagged instances, using the type of each instance to determine how it should be serialized:
 
     class TaggedObjectRelatedField(serializers.RelatedField):
         """
@@ -597,11 +628,16 @@ The [drf-nested-routers package][drf-nested-routers] provides routers and relati
 
 The [rest-framework-generic-relations][drf-nested-relations] library provides read/write serialization for generic foreign keys.
 
+The [rest-framework-gm2m-relations][drf-gm2m-relations] library provides read/write serialization for [django-gm2m][django-gm2m-field].
+
 [cite]: http://users.ece.utexas.edu/~adnan/pike.html
 [reverse-relationships]: https://docs.djangoproject.com/en/stable/topics/db/queries/#following-relationships-backward
 [routers]: https://www.django-rest-framework.org/api-guide/routers#defaultrouter
 [generic-relations]: https://docs.djangoproject.com/en/stable/ref/contrib/contenttypes/#id1
 [drf-nested-routers]: https://github.com/alanjds/drf-nested-routers
 [drf-nested-relations]: https://github.com/Ian-Foote/rest-framework-generic-relations
-[django-intermediary-manytomany]: https://docs.djangoproject.com/en/2.2/topics/db/models/#intermediary-manytomany
+[drf-gm2m-relations]: https://github.com/mojtabaakbari221b/rest-framework-gm2m-relations
+[django-gm2m-field]: https://github.com/tkhyn/django-gm2m
+[django-intermediary-manytomany]: https://docs.djangoproject.com/en/stable/topics/db/models/#intermediary-manytomany
 [dealing-with-nested-objects]: https://www.django-rest-framework.org/api-guide/serializers/#dealing-with-nested-objects
+[to_internal_value]: https://www.django-rest-framework.org/api-guide/serializers/#to_internal_valueself-data

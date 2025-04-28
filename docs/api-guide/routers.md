@@ -63,7 +63,7 @@ For example, you can append `router.urls` to a list of existing views...
     router.register(r'accounts', AccountViewSet)
 
     urlpatterns = [
-        url(r'^forgot-password/$', ForgotPasswordFormView.as_view()),
+        path('forgot-password/', ForgotPasswordFormView.as_view()),
     ]
 
     urlpatterns += router.urls
@@ -71,22 +71,22 @@ For example, you can append `router.urls` to a list of existing views...
 Alternatively you can use Django's `include` function, like so...
 
     urlpatterns = [
-        url(r'^forgot-password/$', ForgotPasswordFormView.as_view()),
-        url(r'^', include(router.urls)),
+        path('forgot-password', ForgotPasswordFormView.as_view()),
+        path('', include(router.urls)),
     ]
 
 You may use `include` with an application namespace:
 
     urlpatterns = [
-        url(r'^forgot-password/$', ForgotPasswordFormView.as_view()),
-        url(r'^api/', include((router.urls, 'app_name'))),
+        path('forgot-password/', ForgotPasswordFormView.as_view()),
+        path('api/', include((router.urls, 'app_name'))),
     ]
 
 Or both an application and instance namespace:
 
     urlpatterns = [
-        url(r'^forgot-password/$', ForgotPasswordFormView.as_view()),
-        url(r'^api/', include((router.urls, 'app_name'), namespace='instance_name')),
+        path('forgot-password/', ForgotPasswordFormView.as_view()),
+        path('api/', include((router.urls, 'app_name'), namespace='instance_name')),
     ]
 
 See Django's [URL namespaces docs][url-namespace-docs] and the [`include` API reference][include-api-reference] for more details.
@@ -142,6 +142,24 @@ The above example would now generate the following URL pattern:
 * URL path: `^users/{pk}/change-password/$`
 * URL name: `'user-change_password'`
 
+### Using Django `path()` with routers
+
+By default, the URLs created by routers use regular expressions. This behavior can be modified by setting the `use_regex_path` argument to `False` when instantiating the router, in this case [path converters][path-converters-topic-reference] are used. For example:
+
+    router = SimpleRouter(use_regex_path=False)
+
+The router will match lookup values containing any characters except slashes and period characters.  For a more restrictive (or lenient) lookup pattern, set the `lookup_value_regex` attribute on the viewset or `lookup_value_converter` if using path converters.  For example, you can limit the lookup to valid UUIDs:
+
+    class MyModelViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+        lookup_field = 'my_model_id'
+        lookup_value_regex = '[0-9a-f]{32}'
+
+    class MyPathModelViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+        lookup_field = 'my_model_uuid'
+        lookup_value_converter = 'uuid'
+
+Note that path converters will be used on all URLs registered in the router, including viewset actions.
+
 # API Guide
 
 ## SimpleRouter
@@ -160,18 +178,12 @@ This router includes routes for the standard set of `list`, `create`, `retrieve`
     <tr><td>{prefix}/{lookup}/{url_path}/</td><td>GET, or as specified by `methods` argument</td><td>`@action(detail=True)` decorated method</td><td>{basename}-{url_name}</td></tr>
 </table>
 
-By default the URLs created by `SimpleRouter` are appended with a trailing slash.
+By default, the URLs created by `SimpleRouter` are appended with a trailing slash.
 This behavior can be modified by setting the `trailing_slash` argument to `False` when instantiating the router.  For example:
 
     router = SimpleRouter(trailing_slash=False)
 
 Trailing slashes are conventional in Django, but are not used by default in some other frameworks such as Rails.  Which style you choose to use is largely a matter of preference, although some javascript frameworks may expect a particular routing style.
-
-The router will match lookup values containing any characters except slashes and period characters.  For a more restrictive (or lenient) lookup pattern, set the `lookup_value_regex` attribute on the viewset.  For example, you can limit the lookup to valid UUIDs:
-
-    class MyModelViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-        lookup_field = 'my_model_id'
-        lookup_value_regex = '[0-9a-f]{32}'
 
 ## DefaultRouter
 
@@ -338,5 +350,6 @@ The [`DRF-extensions` package][drf-extensions] provides [routers][drf-extensions
 [drf-extensions-nested-viewsets]: https://chibisov.github.io/drf-extensions/docs/#nested-routes
 [drf-extensions-collection-level-controllers]: https://chibisov.github.io/drf-extensions/docs/#collection-level-controllers
 [drf-extensions-customizable-endpoint-names]: https://chibisov.github.io/drf-extensions/docs/#controller-endpoint-name
-[url-namespace-docs]: https://docs.djangoproject.com/en/1.11/topics/http/urls/#url-namespaces
-[include-api-reference]: https://docs.djangoproject.com/en/2.0/ref/urls/#include
+[url-namespace-docs]: https://docs.djangoproject.com/en/4.0/topics/http/urls/#url-namespaces
+[include-api-reference]: https://docs.djangoproject.com/en/4.0/ref/urls/#include
+[path-converters-topic-reference]: https://docs.djangoproject.com/en/2.0/topics/http/urls/#path-converters

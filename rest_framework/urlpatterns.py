@@ -1,12 +1,11 @@
-from django.conf.urls import include, url
+from django.urls import URLResolver, include, path, re_path, register_converter
+from django.urls.converters import get_converters
+from django.urls.resolvers import RoutePattern
 
-from rest_framework.compat import (
-    URLResolver, get_regex_pattern, is_route_pattern, path, register_converter
-)
 from rest_framework.settings import api_settings
 
 
-def _get_format_path_converter(suffix_kwarg, allowed):
+def _get_format_path_converter(allowed):
     if allowed:
         if len(allowed) == 1:
             allowed_pattern = allowed[0]
@@ -25,11 +24,14 @@ def _get_format_path_converter(suffix_kwarg, allowed):
         def to_url(self, value):
             return '.' + value + '/'
 
+    return FormatSuffixConverter
+
+
+def _generate_converter_name(allowed):
     converter_name = 'drf_format_suffix'
     if allowed:
         converter_name += '_' + '_'.join(allowed)
-
-    return converter_name, FormatSuffixConverter
+    return converter_name
 
 
 def apply_suffix_patterns(urlpatterns, suffix_pattern, suffix_required, suffix_route=None):
@@ -37,7 +39,7 @@ def apply_suffix_patterns(urlpatterns, suffix_pattern, suffix_required, suffix_r
     for urlpattern in urlpatterns:
         if isinstance(urlpattern, URLResolver):
             # Set of included URL patterns
-            regex = get_regex_pattern(urlpattern)
+            regex = urlpattern.pattern.regex.pattern
             namespace = urlpattern.namespace
             app_name = urlpattern.app_name
             kwargs = urlpattern.default_kwargs
@@ -48,17 +50,17 @@ def apply_suffix_patterns(urlpatterns, suffix_pattern, suffix_required, suffix_r
                                              suffix_route)
 
             # if the original pattern was a RoutePattern we need to preserve it
-            if is_route_pattern(urlpattern):
+            if isinstance(urlpattern.pattern, RoutePattern):
                 assert path is not None
                 route = str(urlpattern.pattern)
                 new_pattern = path(route, include((patterns, app_name), namespace), kwargs)
             else:
-                new_pattern = url(regex, include((patterns, app_name), namespace), kwargs)
+                new_pattern = re_path(regex, include((patterns, app_name), namespace), kwargs)
 
             ret.append(new_pattern)
         else:
             # Regular URL pattern
-            regex = get_regex_pattern(urlpattern).rstrip('$').rstrip('/') + suffix_pattern
+            regex = urlpattern.pattern.regex.pattern.rstrip('$').rstrip('/') + suffix_pattern
             view = urlpattern.callback
             kwargs = urlpattern.default_args
             name = urlpattern.name
@@ -67,13 +69,13 @@ def apply_suffix_patterns(urlpatterns, suffix_pattern, suffix_required, suffix_r
                 ret.append(urlpattern)
 
             # if the original pattern was a RoutePattern we need to preserve it
-            if is_route_pattern(urlpattern):
+            if isinstance(urlpattern.pattern, RoutePattern):
                 assert path is not None
                 assert suffix_route is not None
                 route = str(urlpattern.pattern).rstrip('$').rstrip('/') + suffix_route
                 new_pattern = path(route, view, kwargs, name)
             else:
-                new_pattern = url(regex, view, kwargs, name)
+                new_pattern = re_path(regex, view, kwargs, name)
 
             ret.append(new_pattern)
 
@@ -106,12 +108,11 @@ def format_suffix_patterns(urlpatterns, suffix_required=False, allowed=None):
     else:
         suffix_pattern = r'\.(?P<%s>[a-z0-9]+)/?$' % suffix_kwarg
 
-    if path and register_converter:
-        converter_name, suffix_converter = _get_format_path_converter(suffix_kwarg, allowed)
+    converter_name = _generate_converter_name(allowed)
+    if converter_name not in get_converters():
+        suffix_converter = _get_format_path_converter(allowed)
         register_converter(suffix_converter, converter_name)
 
-        suffix_route = '<%s:%s>' % (converter_name, suffix_kwarg)
-    else:
-        suffix_route = None
+    suffix_route = '<%s:%s>' % (converter_name, suffix_kwarg)
 
     return apply_suffix_patterns(urlpatterns, suffix_pattern, suffix_required, suffix_route)

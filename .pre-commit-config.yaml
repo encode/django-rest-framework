@@ -1,0 +1,39 @@
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.5.0
+  hooks:
+  - id: check-added-large-files
+  - id: check-case-conflict
+  - id: check-json
+  - id: check-merge-conflict
+  - id: check-symlinks
+  - id: check-toml
+- repo: https://github.com/pycqa/isort
+  rev: 5.13.2
+  hooks:
+  - id: isort
+- repo: https://github.com/PyCQA/flake8
+  rev: 7.0.0
+  hooks:
+  - id: flake8
+    additional_dependencies:
+    - flake8-tidy-imports
+- repo: https://github.com/adamchainz/blacken-docs
+  rev: 1.16.0
+  hooks:
+  - id: blacken-docs
+    exclude: ^(?!docs).*$
+    additional_dependencies:
+    - black==23.1.0
+- repo: https://github.com/codespell-project/codespell
+  # Configuration for codespell is in .codespellrc
+  rev: v2.2.6
+  hooks:
+  - id: codespell
+    exclude: locale|kickstarter-announcement.md|coreapi-0.1.1.js
+
+- repo: https://github.com/asottile/pyupgrade
+  rev: v3.19.1
+  hooks:
+  - id: pyupgrade
+    args: ["--py39-plus", "--keep-percent-format"]

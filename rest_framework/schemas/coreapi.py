@@ -1,11 +1,11 @@
 import warnings
-from collections import Counter, OrderedDict
+from collections import Counter
 from urllib import parse
 
 from django.db import models
 from django.utils.encoding import force_str
 
-from rest_framework import exceptions, serializers
+from rest_framework import RemovedInDRF317Warning, exceptions, serializers
 from rest_framework.compat import coreapi, coreschema, uritemplate
 from rest_framework.settings import api_settings
 
@@ -54,11 +54,11 @@ to customise schema structure.
 """
 
 
-class LinkNode(OrderedDict):
+class LinkNode(dict):
     def __init__(self):
         self.links = []
         self.methods_counter = Counter()
-        super(LinkNode, self).__init__()
+        super().__init__()
 
     def get_available_key(self, preferred_key):
         if preferred_key not in self:
@@ -68,7 +68,7 @@ class LinkNode(OrderedDict):
             current_val = self.methods_counter[preferred_key]
             self.methods_counter[preferred_key] += 1
 
-            key = '{}_{}'.format(preferred_key, current_val)
+            key = f'{preferred_key}_{current_val}'
             if key not in self:
                 return key
 
@@ -118,9 +118,11 @@ class SchemaGenerator(BaseSchemaGenerator):
 
     def __init__(self, title=None, url=None, description=None, patterns=None, urlconf=None, version=None):
         assert coreapi, '`coreapi` must be installed for schema support.'
+        if coreapi is not None:
+            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.17', RemovedInDRF317Warning)
         assert coreschema, '`coreschema` must be installed for schema support.'
 
-        super(SchemaGenerator, self).__init__(title, url, description, patterns, urlconf)
+        super().__init__(title, url, description, patterns, urlconf)
         self.coerce_method_names = api_settings.SCHEMA_COERCE_METHOD_NAMES
 
     def get_links(self, request=None):
@@ -198,7 +200,11 @@ class SchemaGenerator(BaseSchemaGenerator):
 
         if is_custom_action(action):
             # Custom action, eg "/users/{pk}/activate/", "/users/active/"
-            if len(view.action_map) > 1:
+            mapped_methods = {
+                # Don't count head mapping, e.g. not part of the schema
+                method for method in view.action_map if method != 'head'
+            }
+            if len(mapped_methods) > 1:
                 action = self.default_mapping[method.lower()]
                 if action in self.coerce_method_names:
                     action = self.coerce_method_names[action]
@@ -264,11 +270,11 @@ def field_to_schema(field):
         )
     elif isinstance(field, serializers.Serializer):
         return coreschema.Object(
-            properties=OrderedDict([
-                (key, field_to_schema(value))
+            properties={
+                key: field_to_schema(value)
                 for key, value
                 in field.fields.items()
-            ]),
+            },
             title=title,
             description=description
         )
@@ -346,7 +352,10 @@ class AutoSchema(ViewInspector):
         * `manual_fields`: list of `coreapi.Field` instances that
             will be added to auto-generated fields, overwriting on `Field.name`
         """
-        super(AutoSchema, self).__init__()
+        super().__init__()
+        if coreapi is not None:
+            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.17', RemovedInDRF317Warning)
+
         if manual_fields is None:
             manual_fields = []
         self._manual_fields = manual_fields
@@ -545,7 +554,7 @@ class AutoSchema(ViewInspector):
         if not update_with:
             return fields
 
-        by_name = OrderedDict((f.name, f) for f in fields)
+        by_name = {f.name: f for f in fields}
         for f in update_with:
             by_name[f.name] = f
         fields = list(by_name.values())
@@ -587,7 +596,10 @@ class ManualSchema(ViewInspector):
         * `fields`: list of `coreapi.Field` instances.
         * `description`: String description for view. Optional.
         """
-        super(ManualSchema, self).__init__()
+        super().__init__()
+        if coreapi is not None:
+            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.17', RemovedInDRF317Warning)
+
         assert all(isinstance(f, coreapi.Field) for f in fields), "`fields` must be a list of coreapi.Field instances"
         self._fields = fields
         self._description = description
@@ -609,4 +621,6 @@ class ManualSchema(ViewInspector):
 
 def is_enabled():
     """Is CoreAPI Mode enabled?"""
+    if coreapi is not None:
+        warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.17', RemovedInDRF317Warning)
     return issubclass(api_settings.DEFAULT_SCHEMA_CLASS, AutoSchema)

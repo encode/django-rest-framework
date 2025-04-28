@@ -2,10 +2,10 @@ import base64
 
 import pytest
 from django.conf import settings
-from django.conf.urls import include, url
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.test import TestCase, override_settings
+from django.urls import include, path
 
 from rest_framework import (
     HTTP_HEADER_ENCODING, exceptions, permissions, renderers, status
@@ -47,34 +47,34 @@ class MockView(APIView):
 
 
 urlpatterns = [
-    url(
-        r'^session/$',
+    path(
+        'session/',
         MockView.as_view(authentication_classes=[SessionAuthentication])
     ),
-    url(
-        r'^basic/$',
+    path(
+        'basic/',
         MockView.as_view(authentication_classes=[BasicAuthentication])
     ),
-    url(
-        r'^remote-user/$',
+    path(
+        'remote-user/',
         MockView.as_view(authentication_classes=[RemoteUserAuthentication])
     ),
-    url(
-        r'^token/$',
+    path(
+        'token/',
         MockView.as_view(authentication_classes=[TokenAuthentication])
     ),
-    url(
-        r'^customtoken/$',
+    path(
+        'customtoken/',
         MockView.as_view(authentication_classes=[CustomTokenAuthentication])
     ),
-    url(
-        r'^customkeywordtoken/$',
+    path(
+        'customkeywordtoken/',
         MockView.as_view(
             authentication_classes=[CustomKeywordTokenAuthentication]
         )
     ),
-    url(r'^auth-token/$', obtain_auth_token),
-    url(r'^auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('auth-token/', obtain_auth_token),
+    path('auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
 
 
@@ -119,6 +119,22 @@ class BasicAuthTests(TestCase):
         )
         assert response.status_code == status.HTTP_200_OK
 
+    def test_post_json_without_password_failing_basic_auth(self):
+        """Ensure POSTing json without password (even if password is empty string) returns 401"""
+        self.user.set_password("")
+        credentials = ('%s' % (self.username))
+        base64_credentials = base64.b64encode(
+            credentials.encode(HTTP_HEADER_ENCODING)
+        ).decode(HTTP_HEADER_ENCODING)
+        auth = 'Basic %s' % base64_credentials
+        response = self.csrf_client.post(
+            '/basic/',
+            {'example': 'example'},
+            format='json',
+            HTTP_AUTHORIZATION=auth
+        )
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
     def test_regression_handle_bad_base64_basic_auth_header(self):
         """Ensure POSTing JSON over basic auth with incorrectly padded Base64 string is handled correctly"""
         # regression test for issue in 'rest_framework.authentication.BasicAuthentication.authenticate'
@@ -158,6 +174,25 @@ class BasicAuthTests(TestCase):
             HTTP_AUTHORIZATION='Basic foo bar'
         )
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    def test_decoding_of_utf8_credentials(self):
+        username = 'walterwhité'
+        email = 'walterwhite@example.com'
+        password = 'pässwörd'
+        User.objects.create_user(
+            username, email, password
+        )
+        credentials = ('%s:%s' % (username, password))
+        base64_credentials = base64.b64encode(
+            credentials.encode('utf-8')
+        ).decode(HTTP_HEADER_ENCODING)
+        auth = 'Basic %s' % base64_credentials
+        response = self.csrf_client.post(
+            '/basic/',
+            {'example': 'example'},
+            HTTP_AUTHORIZATION=auth
+        )
+        assert response.status_code == status.HTTP_200_OK
 
 
 @override_settings(ROOT_URLCONF=__name__)
@@ -199,12 +234,13 @@ class SessionAuthTests(TestCase):
         Ensure POSTing form over session authentication with CSRF token succeeds.
         Regression test for #6088
         """
-        from django.middleware.csrf import _get_new_csrf_token
-
         self.csrf_client.login(username=self.username, password=self.password)
 
         # Set the csrf_token cookie so that CsrfViewMiddleware._get_token() works
-        token = _get_new_csrf_token()
+        from django.middleware.csrf import (
+            _get_new_csrf_string, _mask_cipher_secret
+        )
+        token = _mask_cipher_secret(_get_new_csrf_string())
         self.csrf_client.cookies[settings.CSRF_COOKIE_NAME] = token
 
         # Post the token matching the cookie value
@@ -376,6 +412,10 @@ class TokenAuthTests(BaseTokenAuthTests, TestCase):
         """Ensure generate_key returns a string"""
         token = self.model()
         key = token.generate_key()
+        assert isinstance(key, str)
+
+    def test_generate_key_accessible_as_classmethod(self):
+        key = self.model.generate_key()
         assert isinstance(key, str)
 
     def test_token_login_json(self):

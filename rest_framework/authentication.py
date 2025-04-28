@@ -74,12 +74,16 @@ class BasicAuthentication(BaseAuthentication):
             raise exceptions.AuthenticationFailed(msg)
 
         try:
-            auth_parts = base64.b64decode(auth[1]).decode(HTTP_HEADER_ENCODING).partition(':')
-        except (TypeError, UnicodeDecodeError, binascii.Error):
+            try:
+                auth_decoded = base64.b64decode(auth[1]).decode('utf-8')
+            except UnicodeDecodeError:
+                auth_decoded = base64.b64decode(auth[1]).decode('latin-1')
+
+            userid, password = auth_decoded.split(':', 1)
+        except (TypeError, ValueError, UnicodeDecodeError, binascii.Error):
             msg = _('Invalid basic header. Credentials not correctly base64 encoded.')
             raise exceptions.AuthenticationFailed(msg)
 
-        userid, password = auth_parts[0], auth_parts[2]
         return self.authenticate_credentials(userid, password, request)
 
     def authenticate_credentials(self, userid, password, request=None):
@@ -132,7 +136,10 @@ class SessionAuthentication(BaseAuthentication):
         """
         Enforce CSRF validation for session based authentication.
         """
-        check = CSRFCheck()
+        def dummy_get_response(request):  # pragma: no cover
+            return None
+
+        check = CSRFCheck(dummy_get_response)
         # populates request.META['CSRF_COOKIE'], which is used in process_view()
         check.process_request(request)
         reason = check.process_view(request, None, (), {})
@@ -220,6 +227,6 @@ class RemoteUserAuthentication(BaseAuthentication):
     header = "REMOTE_USER"
 
     def authenticate(self, request):
-        user = authenticate(remote_user=request.META.get(self.header))
+        user = authenticate(request=request, remote_user=request.META.get(self.header))
         if user and user.is_active:
             return (user, None)

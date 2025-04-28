@@ -2,74 +2,11 @@
 The `compat` module provides support for backwards compatibility with older
 versions of Django/Python, and compatibility wrappers around optional packages.
 """
-import sys
-
-from django.conf import settings
+import django
+from django.db import models
+from django.db.models.constants import LOOKUP_SEP
+from django.db.models.sql.query import Node
 from django.views.generic import View
-
-try:
-    from django.urls import (  # noqa
-        URLPattern,
-        URLResolver,
-    )
-except ImportError:
-    # Will be removed in Django 2.0
-    from django.urls import (  # noqa
-        RegexURLPattern as URLPattern,
-        RegexURLResolver as URLResolver,
-    )
-
-try:
-    from django.core.validators import ProhibitNullCharactersValidator  # noqa
-except ImportError:
-    ProhibitNullCharactersValidator = None
-
-
-def get_original_route(urlpattern):
-    """
-    Get the original route/regex that was typed in by the user into the path(), re_path() or url() directive. This
-    is in contrast with get_regex_pattern below, which for RoutePattern returns the raw regex generated from the path().
-    """
-    if hasattr(urlpattern, 'pattern'):
-        # Django 2.0
-        return str(urlpattern.pattern)
-    else:
-        # Django < 2.0
-        return urlpattern.regex.pattern
-
-
-def get_regex_pattern(urlpattern):
-    """
-    Get the raw regex out of the urlpattern's RegexPattern or RoutePattern. This is always a regular expression,
-    unlike get_original_route above.
-    """
-    if hasattr(urlpattern, 'pattern'):
-        # Django 2.0
-        return urlpattern.pattern.regex.pattern
-    else:
-        # Django < 2.0
-        return urlpattern.regex.pattern
-
-
-def is_route_pattern(urlpattern):
-    if hasattr(urlpattern, 'pattern'):
-        # Django 2.0
-        from django.urls.resolvers import RoutePattern
-        return isinstance(urlpattern.pattern, RoutePattern)
-    else:
-        # Django < 2.0
-        return False
-
-
-def make_url_resolver(regex, urlpatterns):
-    try:
-        # Django 2.0
-        from django.urls.resolvers import RegexPattern
-        return URLResolver(RegexPattern(regex), urlpatterns)
-
-    except ImportError:
-        # Django < 2.0
-        return URLResolver(regex, urlpatterns)
 
 
 def unicode_http_header(value):
@@ -77,13 +14,6 @@ def unicode_http_header(value):
     if isinstance(value, bytes):
         return value.decode('iso-8859-1')
     return value
-
-
-def distinct(queryset, base):
-    if settings.DATABASES[queryset.db]["ENGINE"] == "django.db.backends.oracle":
-        # distinct analogue for Oracle users
-        return base.filter(pk__in=set(queryset.values_list('pk', flat=True)))
-    return queryset.distinct()
 
 
 # django.contrib.postgres requires psycopg2
@@ -118,6 +48,12 @@ try:
     import yaml
 except ImportError:
     yaml = None
+
+# inflection is optional
+try:
+    import inflection
+except ImportError:
+    inflection = None
 
 
 # requests is optional
@@ -162,8 +98,8 @@ except ImportError:
 
 try:
     import pygments
-    from pygments.lexers import get_lexer_by_name, TextLexer
     from pygments.formatters import HtmlFormatter
+    from pygments.lexers import TextLexer, get_lexer_by_name
 
     def pygments_highlight(text, lang, style):
         lexer = get_lexer_by_name(lang, stripall=False)
@@ -187,8 +123,9 @@ if markdown is not None and pygments is not None:
     # starting from this blogpost and modified to support current markdown extensions API
     # https://zerokspot.com/weblog/2008/06/18/syntax-highlighting-in-markdown-with-pygments/
 
-    from markdown.preprocessors import Preprocessor
     import re
+
+    from markdown.preprocessors import Preprocessor
 
     class CodeBlockPreprocessor(Preprocessor):
         pattern = re.compile(
@@ -217,14 +154,52 @@ else:
         return False
 
 
-# Django 1.x url routing syntax. Remove when dropping Django 1.11 support.
-try:
-    from django.urls import include, path, re_path, register_converter  # noqa
-except ImportError:
-    from django.conf.urls import include, url # noqa
-    path = None
-    register_converter = None
-    re_path = url
+if django.VERSION >= (5, 1):
+    # Django 5.1+: use the stock ip_address_validators function
+    # Note: Before Django 5.1, ip_address_validators returns a tuple containing
+    #       1) the list of validators and 2) the error message. Starting from
+    #       Django 5.1 ip_address_validators only returns the list of validators
+    from django.core.validators import ip_address_validators
+
+    def get_referenced_base_fields_from_q(q):
+        return q.referenced_base_fields
+
+else:
+    # Django <= 5.1: create a compatibility shim for ip_address_validators
+    from django.core.validators import \
+        ip_address_validators as _ip_address_validators
+
+    def ip_address_validators(protocol, unpack_ipv4):
+        return _ip_address_validators(protocol, unpack_ipv4)[0]
+
+    # Django < 5.1: create a compatibility shim for Q.referenced_base_fields
+    # https://github.com/django/django/blob/5.1a1/django/db/models/query_utils.py#L179
+    def _get_paths_from_expression(expr):
+        if isinstance(expr, models.F):
+            yield expr.name
+        elif hasattr(expr, 'flatten'):
+            for child in expr.flatten():
+                if isinstance(child, models.F):
+                    yield child.name
+                elif isinstance(child, models.Q):
+                    yield from _get_children_from_q(child)
+
+    def _get_children_from_q(q):
+        for child in q.children:
+            if isinstance(child, Node):
+                yield from _get_children_from_q(child)
+            elif isinstance(child, tuple):
+                lhs, rhs = child
+                yield lhs
+                if hasattr(rhs, 'resolve_expression'):
+                    yield from _get_paths_from_expression(rhs)
+            elif hasattr(child, 'resolve_expression'):
+                yield from _get_paths_from_expression(child)
+
+    def get_referenced_base_fields_from_q(q):
+        return {
+            child.split(LOOKUP_SEP, 1)[0] for child in _get_children_from_q(q)
+        }
 
 
 # `separators` argument to `json.dumps()` differs between 2.x and 3.x
@@ -232,7 +207,3 @@ except ImportError:
 SHORT_SEPARATORS = (',', ':')
 LONG_SEPARATORS = (', ', ': ')
 INDENT_SEPARATORS = (',', ': ')
-
-
-# Version Constants.
-PY36 = sys.version_info >= (3, 6)

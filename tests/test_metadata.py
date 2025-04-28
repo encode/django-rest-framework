@@ -311,7 +311,8 @@ class TestMetadata:
 class TestSimpleMetadataFieldInfo(TestCase):
     def test_null_boolean_field_info_type(self):
         options = metadata.SimpleMetadata()
-        field_info = options.get_field_info(serializers.NullBooleanField())
+        field_info = options.get_field_info(serializers.BooleanField(
+            allow_null=True))
         assert field_info['type'] == 'boolean'
 
     def test_related_field_choices(self):
@@ -322,6 +323,13 @@ class TestSimpleMetadataFieldInfo(TestCase):
                 serializers.RelatedField(queryset=BasicModel.objects.all())
             )
         assert 'choices' not in field_info
+
+    def test_decimal_field_info_type(self):
+        options = metadata.SimpleMetadata()
+        field_info = options.get_field_info(serializers.DecimalField(max_digits=18, decimal_places=4))
+        assert field_info['type'] == 'decimal'
+        assert field_info['max_digits'] == 18
+        assert field_info['decimal_places'] == 4
 
 
 class TestModelSerializerMetadata(TestCase):

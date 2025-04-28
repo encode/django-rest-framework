@@ -17,9 +17,9 @@ You can change the default language by using the standard Django `LANGUAGE_CODE`
 
     LANGUAGE_CODE = "es-es"
 
-You can turn on per-request language requests by adding `LocalMiddleware` to your `MIDDLEWARE_CLASSES` setting:
+You can turn on per-request language requests by adding `LocalMiddleware` to your `MIDDLEWARE` setting:
 
-    MIDDLEWARE_CLASSES = [
+    MIDDLEWARE = [
         ...
         'django.middleware.locale.LocaleMiddleware'
     ]
@@ -90,7 +90,7 @@ If you're only translating custom error messages that exist inside your project 
 
 ## How the language is determined
 
-If you want to allow per-request language preferences you'll need to include `django.middleware.locale.LocaleMiddleware` in your `MIDDLEWARE_CLASSES` setting.
+If you want to allow per-request language preferences you'll need to include `django.middleware.locale.LocaleMiddleware` in your `MIDDLEWARE` setting.
 
 You can find more information on how the language preference is determined in the [Django documentation][django-language-preference]. For reference, the method is:
 
@@ -103,10 +103,10 @@ You can find more information on how the language preference is determined in th
 For API clients the most appropriate of these will typically be to use the `Accept-Language` header; Sessions and cookies will not be available unless using session authentication, and generally better practice to prefer an `Accept-Language` header for API clients rather than using language URL prefixes.
 
 [cite]: https://youtu.be/Wa0VfS2q94Y
-[django-translation]: https://docs.djangoproject.com/en/1.7/topics/i18n/translation
+[django-translation]: https://docs.djangoproject.com/en/stable/topics/i18n/translation
 [custom-exception-handler]: ../api-guide/exceptions.md#custom-exception-handling
-[transifex-project]: https://www.transifex.com/projects/p/django-rest-framework/
+[transifex-project]: https://explore.transifex.com/django-rest-framework-1/django-rest-framework/
 [django-po-source]: https://raw.githubusercontent.com/encode/django-rest-framework/master/rest_framework/locale/en_US/LC_MESSAGES/django.po
-[django-language-preference]: https://docs.djangoproject.com/en/1.7/topics/i18n/translation/#how-django-discovers-language-preference
-[django-locale-paths]: https://docs.djangoproject.com/en/1.7/ref/settings/#std:setting-LOCALE_PATHS
-[django-locale-name]: https://docs.djangoproject.com/en/1.7/topics/i18n/#term-locale-name
+[django-language-preference]: https://docs.djangoproject.com/en/stable/topics/i18n/translation/#how-django-discovers-language-preference
+[django-locale-paths]: https://docs.djangoproject.com/en/stable/ref/settings/#std:setting-LOCALE_PATHS
+[django-locale-name]: https://docs.djangoproject.com/en/stable/topics/i18n/#term-locale-name

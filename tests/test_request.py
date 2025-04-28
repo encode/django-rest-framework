@@ -1,11 +1,11 @@
 """
 Tests for content parsing, and form-overloaded content parsing.
 """
+import copy
 import os.path
 import tempfile
 
 import pytest
-from django.conf.urls import url
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.middleware import AuthenticationMiddleware
 from django.contrib.auth.models import User
@@ -13,6 +13,7 @@ from django.contrib.sessions.middleware import SessionMiddleware
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http.request import RawPostDataException
 from django.test import TestCase, override_settings
+from django.urls import path
 
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
@@ -124,6 +125,25 @@ class TestContentParsing(TestCase):
         request.parsers = (PlainTextParser(), )
         assert request.data == content
 
+    def test_calling_data_fails_when_attribute_error_is_raised(self):
+        """
+        Ensure attribute errors raised when parsing are properly re-raised.
+        """
+        expected_message = "Internal error"
+
+        class BrokenParser:
+            media_type = "application/json"
+
+            def parse(self, *args, **kwargs):
+                raise AttributeError(expected_message)
+
+        http_request = factory.post('/', data={}, format="json")
+        request = Request(http_request)
+        request.parsers = (BrokenParser,)
+
+        with self.assertRaisesMessage(WrappedAttributeError, expected_message):
+            request.data
+
 
 class MockView(APIView):
     authentication_classes = (SessionAuthentication,)
@@ -137,7 +157,9 @@ class MockView(APIView):
 
 class EchoView(APIView):
     def post(self, request):
-        return Response(status=status.HTTP_200_OK, data=request.data)
+        response = Response(status=status.HTTP_200_OK, data=request.data)
+        response._request = request  # test client sets `request` input
+        return response
 
 
 class FileUploadView(APIView):
@@ -151,9 +173,9 @@ class FileUploadView(APIView):
 
 
 urlpatterns = [
-    url(r'^$', MockView.as_view()),
-    url(r'^echo/$', EchoView.as_view()),
-    url(r'^upload/$', FileUploadView.as_view())
+    path('', MockView.as_view()),
+    path('echo/', EchoView.as_view()),
+    path('upload/', FileUploadView.as_view())
 ]
 
 
@@ -203,8 +225,12 @@ class TestUserSetter(TestCase):
         # available to login and logout functions
         self.wrapped_request = factory.get('/')
         self.request = Request(self.wrapped_request)
-        SessionMiddleware().process_request(self.wrapped_request)
-        AuthenticationMiddleware().process_request(self.wrapped_request)
+
+        def dummy_get_response(request):  # pragma: no cover
+            return None
+
+        SessionMiddleware(dummy_get_response).process_request(self.wrapped_request)
+        AuthenticationMiddleware(dummy_get_response).process_request(self.wrapped_request)
 
         User.objects.create_user('ringo', 'starr@thebeatles.com', 'yellow')
         self.user = authenticate(username='ringo', password='yellow')
@@ -272,6 +298,12 @@ class TestSecure(TestCase):
 
 
 class TestHttpRequest(TestCase):
+    def test_repr(self):
+        http_request = factory.get('/path')
+        request = Request(http_request)
+
+        assert repr(request) == "<rest_framework.request.Request: GET '/path'>"
+
     def test_attribute_access_proxy(self):
         http_request = factory.get('/')
         request = Request(http_request)
@@ -300,7 +332,7 @@ class TestHttpRequest(TestCase):
         `RawPostDataException` being raised.
         """
         response = APIClient().post('/echo/', data={'a': 'b'}, format='json')
-        request = response.renderer_context['request']
+        request = response._request
 
         # ensure that request stream was consumed by json parser
         assert request.content_type.startswith('application/json')
@@ -319,7 +351,7 @@ class TestHttpRequest(TestCase):
         the duplicate stream parse exception.
         """
         response = APIClient().post('/echo/', data={'a': 'b'})
-        request = response.renderer_context['request']
+        request = response._request
 
         # ensure that request stream was consumed by form parser
         assert request.content_type.startswith('multipart/form-data')
@@ -327,8 +359,20 @@ class TestHttpRequest(TestCase):
 
         # pass same HttpRequest to view, form data set on underlying request
         response = EchoView.as_view()(request._request)
-        request = response.renderer_context['request']
+        request = response._request
 
         # ensure that request stream was consumed by form parser
         assert request.content_type.startswith('multipart/form-data')
         assert response.data == {'a': ['b']}
+
+
+class TestDeepcopy(TestCase):
+
+    def test_deepcopy_works(self):
+        request = Request(factory.get('/', secure=False))
+        copy.deepcopy(request)
+
+
+class TestTyping(TestCase):
+    def test_request_is_subscriptable(self):
+        assert Request is Request["foo"]

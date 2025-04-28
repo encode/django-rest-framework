@@ -8,7 +8,7 @@ The tutorial is fairly in-depth, so you should probably get a cookie and a cup o
 
 ---
 
-**Note**: The code for this tutorial is available in the [encode/rest-framework-tutorial][repo] repository on GitHub.  The completed implementation is also online as a sandbox version for testing, [available here][sandbox].
+**Note**: The code for this tutorial is available in the [encode/rest-framework-tutorial][repo] repository on GitHub. Feel free to clone the repository and see the code in action.
 
 ---
 
@@ -45,7 +45,7 @@ We'll need to add our new `snippets` app and the `rest_framework` app to `INSTAL
     INSTALLED_APPS = [
         ...
         'rest_framework',
-        'snippets.apps.SnippetsConfig',
+        'snippets',
     ]
 
 Okay, we're ready to roll.
@@ -77,7 +77,7 @@ For the purposes of this tutorial we're going to start by creating a simple `Sni
 We'll also need to create an initial migration for our snippet model, and sync the database for the first time.
 
     python manage.py makemigrations snippets
-    python manage.py migrate
+    python manage.py migrate snippets
 
 ## Creating a Serializer class
 
@@ -150,7 +150,7 @@ At this point we've translated the model instance into Python native datatypes. 
 
     content = JSONRenderer().render(serializer.data)
     content
-    # b'{"id": 2, "title": "", "code": "print(\\"hello, world\\")\\n", "linenos": false, "language": "python", "style": "friendly"}'
+    # b'{"id":2,"title":"","code":"print(\\"hello, world\\")\\n","linenos":false,"language":"python","style":"friendly"}'
 
 Deserialization is similar.  First we parse a stream into Python native datatypes...
 
@@ -165,7 +165,7 @@ Deserialization is similar.  First we parse a stream into Python native datatype
     serializer.is_valid()
     # True
     serializer.validated_data
-    # OrderedDict([('title', ''), ('code', 'print("hello, world")\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])
+    # {'title': '', 'code': 'print("hello, world")', 'linenos': False, 'language': 'python', 'style': 'friendly'}
     serializer.save()
     # <Snippet: Snippet object>
 
@@ -175,11 +175,11 @@ We can also serialize querysets instead of model instances.  To do so we simply 
 
     serializer = SnippetSerializer(Snippet.objects.all(), many=True)
     serializer.data
-    # [OrderedDict([('id', 1), ('title', ''), ('code', 'foo = "bar"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('id', 2), ('title', ''), ('code', 'print("hello, world")\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('id', 3), ('title', ''), ('code', 'print("hello, world")'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])]
+    # [{'id': 1, 'title': '', 'code': 'foo = "bar"\n', 'linenos': False, 'language': 'python', 'style': 'friendly'}, {'id': 2, 'title': '', 'code': 'print("hello, world")\n', 'linenos': False, 'language': 'python', 'style': 'friendly'}, {'id': 3, 'title': '', 'code': 'print("hello, world")', 'linenos': False, 'language': 'python', 'style': 'friendly'}]
 
 ## Using ModelSerializers
 
-Our `SnippetSerializer` class is replicating a lot of information that's also contained in the `Snippet` model.  It would be nice if we could keep our code a bit  more concise.
+Our `SnippetSerializer` class is replicating a lot of information that's also contained in the `Snippet` model.  It would be nice if we could keep our code a bit more concise.
 
 In the same way that Django provides both `Form` classes and `ModelForm` classes, REST framework includes both `Serializer` classes, and `ModelSerializer` classes.
 
@@ -307,8 +307,8 @@ Quit out of the shell...
     Validating models...
 
     0 errors found
-    Django version 1.11, using settings 'tutorial.settings'
-    Development server is running at http://127.0.0.1:8000/
+    Django version 5.0, using settings 'tutorial.settings'
+    Starting Development server at http://127.0.0.1:8000/
     Quit the server with CONTROL-C.
 
 In another terminal window, we can test the server.
@@ -321,42 +321,50 @@ You can install httpie using pip:
 
 Finally, we can get a list of all of the snippets:
 
-    http http://127.0.0.1:8000/snippets/
+    http GET http://127.0.0.1:8000/snippets/ --unsorted
 
     HTTP/1.1 200 OK
     ...
     [
-      {
-        "id": 1,
-        "title": "",
-        "code": "foo = \"bar\"\n",
-        "linenos": false,
-        "language": "python",
-        "style": "friendly"
-      },
-      {
+        {
+            "id": 1,
+            "title": "",
+            "code": "foo = \"bar\"\n",
+            "linenos": false,
+            "language": "python",
+            "style": "friendly"
+        },
+        {
+            "id": 2,
+            "title": "",
+            "code": "print(\"hello, world\")\n",
+            "linenos": false,
+            "language": "python",
+            "style": "friendly"
+        },
+        {
+            "id": 3,
+            "title": "",
+            "code": "print(\"hello, world\")",
+            "linenos": false,
+            "language": "python",
+            "style": "friendly"
+        }
+    ]
+
+Or we can get a particular snippet by referencing its id:
+
+    http GET http://127.0.0.1:8000/snippets/2/ --unsorted
+
+    HTTP/1.1 200 OK
+    ...
+    {
         "id": 2,
         "title": "",
         "code": "print(\"hello, world\")\n",
         "linenos": false,
         "language": "python",
         "style": "friendly"
-      }
-    ]
-
-Or we can get a particular snippet by referencing its id:
-
-    http http://127.0.0.1:8000/snippets/2/
-
-    HTTP/1.1 200 OK
-    ...
-    {
-      "id": 2,
-      "title": "",
-      "code": "print(\"hello, world\")\n",
-      "linenos": false,
-      "language": "python",
-      "style": "friendly"
     }
 
 Similarly, you can have the same json displayed by visiting these URLs in a web browser.
@@ -371,8 +379,7 @@ We'll see how we can start to improve things in [part 2 of the tutorial][tut-2].
 
 [quickstart]: quickstart.md
 [repo]: https://github.com/encode/rest-framework-tutorial
-[sandbox]: https://restframework.herokuapp.com/
 [venv]: https://docs.python.org/3/library/venv.html
 [tut-2]: 2-requests-and-responses.md
-[httpie]: https://github.com/jakubroztocil/httpie#installation
+[httpie]: https://github.com/httpie/httpie#installation
 [curl]: https://curl.haxx.se/

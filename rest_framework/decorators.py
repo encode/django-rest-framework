@@ -36,7 +36,7 @@ def api_view(http_method_names=None):
         #     WrappedAPIView.__doc__ = func.doc    <--- Not possible to do this
 
         # api_view applied without (method_names)
-        assert not(isinstance(http_method_names, types.FunctionType)), \
+        assert not isinstance(http_method_names, types.FunctionType), \
             '@api_view missing list of allowed HTTP methods'
 
         # api_view applied with eg. string instead of list of strings
@@ -142,7 +142,7 @@ def action(methods=None, detail=None, url_path=None, url_name=None, **kwargs):
                    how the `@renderer_classes` etc. decorators work for function-
                    based API views.
     """
-    methods = ['get'] if (methods is None) else methods
+    methods = ['get'] if methods is None else methods
     methods = [method.lower() for method in methods]
 
     assert detail is not None, (

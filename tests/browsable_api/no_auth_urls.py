@@ -1,7 +1,8 @@
-from django.conf.urls import url
+from django.urls import path
 
-from .views import MockView
+from .views import BasicModelWithUsersViewSet, MockView
 
 urlpatterns = [
-    url(r'^$', MockView.as_view()),
+    path('', MockView.as_view()),
+    path('basicviewset', BasicModelWithUsersViewSet.as_view({'get': 'list'})),
 ]

@@ -1,6 +1,7 @@
 """
 Provides an APIView class that is the base of all views in REST framework.
 """
+from django import VERSION as DJANGO_VERSION
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.db import connections, models, transaction
@@ -83,9 +84,9 @@ def exception_handler(exc, context):
     to be raised.
     """
     if isinstance(exc, Http404):
-        exc = exceptions.NotFound()
+        exc = exceptions.NotFound(*(exc.args))
     elif isinstance(exc, PermissionDenied):
-        exc = exceptions.PermissionDenied()
+        exc = exceptions.PermissionDenied(*(exc.args))
 
     if isinstance(exc, exceptions.APIException):
         headers = {}
@@ -143,6 +144,11 @@ class APIView(View):
         view.cls = cls
         view.initkwargs = initkwargs
 
+        # Exempt all DRF views from Django's LoginRequiredMiddleware. Users should set
+        # DEFAULT_PERMISSION_CLASSES to 'rest_framework.permissions.IsAuthenticated' instead
+        if DJANGO_VERSION >= (5, 1):
+            view.login_required = False
+
         # Note: session based authentication is explicitly CSRF validated,
         # all other authentication is CSRF exempt.
         return csrf_exempt(view)
@@ -170,13 +176,13 @@ class APIView(View):
         """
         raise exceptions.MethodNotAllowed(request.method)
 
-    def permission_denied(self, request, message=None):
+    def permission_denied(self, request, message=None, code=None):
         """
         If request is not permitted, determine what kind of exception to raise.
         """
         if request.authenticators and not request.successful_authenticator:
             raise exceptions.NotAuthenticated()
-        raise exceptions.PermissionDenied(detail=message)
+        raise exceptions.PermissionDenied(detail=message, code=code)
 
     def throttled(self, request, wait):
         """
@@ -335,7 +341,9 @@ class APIView(View):
         for permission in self.get_permissions():
             if not permission.has_permission(request, self):
                 self.permission_denied(
-                    request, message=getattr(permission, 'message', None)
+                    request,
+                    message=getattr(permission, 'message', None),
+                    code=getattr(permission, 'code', None)
                 )
 
     def check_object_permissions(self, request, obj):
@@ -346,7 +354,9 @@ class APIView(View):
         for permission in self.get_permissions():
             if not permission.has_object_permission(request, self, obj):
                 self.permission_denied(
-                    request, message=getattr(permission, 'message', None)
+                    request,
+                    message=getattr(permission, 'message', None),
+                    code=getattr(permission, 'code', None)
                 )
 
     def check_throttles(self, request):
@@ -421,7 +431,7 @@ class APIView(View):
         """
         # Make the error obvious if a proper response is not returned
         assert isinstance(response, HttpResponseBase), (
-            'Expected a `Response`, `HttpResponse` or `HttpStreamingResponse` '
+            'Expected a `Response`, `HttpResponse` or `StreamingHttpResponse` '
             'to be returned from the view, but received a `%s`'
             % type(response)
         )

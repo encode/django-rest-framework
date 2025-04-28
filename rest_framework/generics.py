@@ -45,6 +45,10 @@ class GenericAPIView(views.APIView):
     # The style to use for queryset pagination.
     pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
 
+    # Allow generic typing checking for generic views.
+    def __class_getitem__(cls, *args, **kwargs):
+        return cls
+
     def get_queryset(self):
         """
         Get the list of items for this view.
@@ -106,7 +110,7 @@ class GenericAPIView(views.APIView):
         deserializing input, and for serializing output.
         """
         serializer_class = self.get_serializer_class()
-        kwargs['context'] = self.get_serializer_context()
+        kwargs.setdefault('context', self.get_serializer_context())
         return serializer_class(*args, **kwargs)
 
     def get_serializer_class(self):

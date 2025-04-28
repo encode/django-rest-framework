@@ -1,14 +1,12 @@
-#!/usr/bin/env python3
 import os
 import re
 import shutil
 import sys
-from io import open
 
 from setuptools import find_packages, setup
 
 CURRENT_PYTHON = sys.version_info[:2]
-REQUIRED_PYTHON = (3, 5)
+REQUIRED_PYTHON = (3, 9)
 
 # This check and everything above must remain compatible with Python 2.7.
 if CURRENT_PYTHON < REQUIRED_PYTHON:
@@ -37,7 +35,8 @@ an older version of Django REST Framework:
 
 
 def read(f):
-    return open(f, 'r', encoding='utf-8').read()
+    with open(f, encoding='utf-8') as file:
+        return file.read()
 
 
 def get_version(package):
@@ -82,32 +81,34 @@ setup(
     author_email='tom@tomchristie.com',  # SEE NOTE BELOW (*)
     packages=find_packages(exclude=['tests*']),
     include_package_data=True,
-    install_requires=["django>=1.11"],
-    python_requires=">=3.5",
+    install_requires=["django>=4.2"],
+    python_requires=">=3.9",
     zip_safe=False,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
         'Framework :: Django',
-        'Framework :: Django :: 1.11',
-        'Framework :: Django :: 2.0',
-        'Framework :: Django :: 2.1',
-        'Framework :: Django :: 2.2',
+        'Framework :: Django :: 4.2',
+        'Framework :: Django :: 5.0',
+        'Framework :: Django :: 5.1',
+        'Framework :: Django :: 5.2',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
+        'Programming Language :: Python :: 3.13',
         'Programming Language :: Python :: 3 :: Only',
         'Topic :: Internet :: WWW/HTTP',
     ],
     project_urls={
         'Funding': 'https://fund.django-rest-framework.org/topics/funding/',
         'Source': 'https://github.com/encode/django-rest-framework',
+        'Changelog': 'https://www.django-rest-framework.org/community/release-notes/',
     },
 )
 

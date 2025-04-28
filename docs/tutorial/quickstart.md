@@ -15,7 +15,6 @@ Create a new Django project named `tutorial`, then start a new app called `quick
     source env/bin/activate  # On Windows use `env\Scripts\activate`
 
     # Install Django and Django REST framework into the virtual environment
-    pip install django
     pip install djangorestframework
 
     # Set up a new project with a single application
@@ -30,21 +29,24 @@ The project layout should look like:
     <some path>/tutorial
     $ find .
     .
-    ./manage.py
     ./tutorial
+    ./tutorial/asgi.py
     ./tutorial/__init__.py
     ./tutorial/quickstart
-    ./tutorial/quickstart/__init__.py
-    ./tutorial/quickstart/admin.py
-    ./tutorial/quickstart/apps.py
     ./tutorial/quickstart/migrations
     ./tutorial/quickstart/migrations/__init__.py
     ./tutorial/quickstart/models.py
+    ./tutorial/quickstart/__init__.py
+    ./tutorial/quickstart/apps.py
+    ./tutorial/quickstart/admin.py
     ./tutorial/quickstart/tests.py
     ./tutorial/quickstart/views.py
     ./tutorial/settings.py
     ./tutorial/urls.py
     ./tutorial/wsgi.py
+    ./env
+    ./env/...
+    ./manage.py
 
 It may look unusual that the application has been created within the project directory. Using the project's namespace avoids name clashes with external modules (a topic that goes outside the scope of the quickstart).
 
@@ -52,9 +54,9 @@ Now sync your database for the first time:
 
     python manage.py migrate
 
-We'll also create an initial user named `admin` with a password of `password123`. We'll authenticate as that user later in our example.
+We'll also create an initial user named `admin` with a password. We'll authenticate as that user later in our example.
 
-    python manage.py createsuperuser --email admin@example.com --username admin
+    python manage.py createsuperuser --username admin --email admin@example.com
 
 Once you've set up a database and the initial user is created and ready to go, open up the app's directory and we'll get coding...
 
@@ -62,7 +64,7 @@ Once you've set up a database and the initial user is created and ready to go, o
 
 First up we're going to define some serializers. Let's create a new module named `tutorial/quickstart/serializers.py` that we'll use for our data representations.
 
-    from django.contrib.auth.models import User, Group
+    from django.contrib.auth.models import Group, User
     from rest_framework import serializers
 
 
@@ -83,9 +85,10 @@ Notice that we're using hyperlinked relations in this case with `HyperlinkedMode
 
 Right, we'd better write some views then.  Open `tutorial/quickstart/views.py` and get typing.
 
-    from django.contrib.auth.models import User, Group
-    from rest_framework import viewsets
-    from tutorial.quickstart.serializers import UserSerializer, GroupSerializer
+    from django.contrib.auth.models import Group, User
+    from rest_framework import permissions, viewsets
+
+    from tutorial.quickstart.serializers import GroupSerializer, UserSerializer
 
 
     class UserViewSet(viewsets.ModelViewSet):
@@ -94,14 +97,16 @@ Right, we'd better write some views then.  Open `tutorial/quickstart/views.py` a
         """
         queryset = User.objects.all().order_by('-date_joined')
         serializer_class = UserSerializer
+        permission_classes = [permissions.IsAuthenticated]
 
 
     class GroupViewSet(viewsets.ModelViewSet):
         """
         API endpoint that allows groups to be viewed or edited.
         """
-        queryset = Group.objects.all()
+        queryset = Group.objects.all().order_by('name')
         serializer_class = GroupSerializer
+        permission_classes = [permissions.IsAuthenticated]
 
 Rather than write multiple views we're grouping together all the common behavior into classes called `ViewSets`.
 
@@ -113,6 +118,7 @@ Okay, now let's wire up the API URLs.  On to `tutorial/urls.py`...
 
     from django.urls import include, path
     from rest_framework import routers
+
     from tutorial.quickstart import views
 
     router = routers.DefaultRouter()
@@ -134,12 +140,12 @@ Finally, we're including default login and logout views for use with the browsab
 
 ## Pagination
 Pagination allows you to control how many objects per page are returned. To enable it add the following lines to `tutorial/settings.py`
-    
+
     REST_FRAMEWORK = {
         'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
         'PAGE_SIZE': 10
     }
-    
+
 ## Settings
 
 Add `'rest_framework'` to `INSTALLED_APPS`. The settings module will be in `tutorial/settings.py`
@@ -161,9 +167,30 @@ We're now ready to test the API we've built.  Let's fire up the server from the 
 
 We can now access our API, both from the command-line, using tools like `curl`...
 
-    bash: curl -H 'Accept: application/json; indent=4' -u admin:password123 http://127.0.0.1:8000/users/
+    bash: curl -u admin -H 'Accept: application/json; indent=4' http://127.0.0.1:8000/users/
+    Enter host password for user 'admin':
     {
-        "count": 2,
+        "count": 1,
+        "next": null,
+        "previous": null,
+        "results": [
+            {
+                "url": "http://127.0.0.1:8000/users/1/",
+                "username": "admin",
+                "email": "admin@example.com",
+                "groups": []
+            }
+        ]
+    }
+
+Or using the [httpie][httpie], command line tool...
+
+    bash: http -a admin http://127.0.0.1:8000/users/
+    http: password for admin@127.0.0.1:8000:: 
+    $HTTP/1.1 200 OK
+    ...
+    {
+        "count": 1,
         "next": null,
         "previous": null,
         "results": [
@@ -172,38 +199,6 @@ We can now access our API, both from the command-line, using tools like `curl`..
                 "groups": [],
                 "url": "http://127.0.0.1:8000/users/1/",
                 "username": "admin"
-            },
-            {
-                "email": "tom@example.com",
-                "groups": [                ],
-                "url": "http://127.0.0.1:8000/users/2/",
-                "username": "tom"
-            }
-        ]
-    }
-
-Or using the [httpie][httpie], command line tool...
-
-    bash: http -a admin:password123 http://127.0.0.1:8000/users/
-
-    HTTP/1.1 200 OK
-    ...
-    {
-        "count": 2,
-        "next": null,
-        "previous": null,
-        "results": [
-            {
-                "email": "admin@example.com",
-                "groups": [],
-                "url": "http://localhost:8000/users/1/",
-                "username": "paul"
-            },
-            {
-                "email": "tom@example.com",
-                "groups": [                ],
-                "url": "http://127.0.0.1:8000/users/2/",
-                "username": "tom"
             }
         ]
     }
@@ -221,5 +216,5 @@ If you want to get a more in depth understanding of how REST framework fits toge
 
 [image]: ../img/quickstart.png
 [tutorial]: 1-serialization.md
-[guide]: ../#api-guide
-[httpie]: https://github.com/jakubroztocil/httpie#installation
+[guide]: ../api-guide/requests.md
+[httpie]: https://httpie.io/docs#installation

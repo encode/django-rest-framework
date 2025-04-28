@@ -46,7 +46,7 @@
             <ul class="nav navbar-nav pull-right">
               {% block userlinks %}
                 {% if user.is_authenticated %}
-                  {% optional_logout request user %}
+                  {% optional_logout request user csrf_token %}
                 {% else %}
                   {% optional_login request %}
                 {% endif %}
@@ -77,7 +77,7 @@
 
           <div class="region"  aria-label="{% trans "request form" %}">
           {% block request_forms %}
-          
+
           {% if 'GET' in allowed_methods %}
             <form id="get-form" class="pull-right">
               <fieldset>
@@ -158,27 +158,27 @@
               <div class="page-header">
                 <h1>{{ name }}</h1>
               </div>
-              <div style="float:left">
+              <div class="pull-left">
                 {% block description %}
                   {{ description }}
                 {% endblock %}
               </div>
 
               {% if paginator %}
-                <nav style="float: right">
+                <nav class="pull-right">
                   {% get_pagination_html paginator %}
                 </nav>
               {% endif %}
 
-              <div class="request-info" style="clear: both" aria-label="{% trans "request info" %}">
+              <div class="request-info" aria-label="{% trans "request info" %}">
                 <pre class="prettyprint"><b>{{ request.method }}</b> {{ request.get_full_path }}</pre>
               </div>
 
               <div class="response-info" aria-label="{% trans "response info" %}">
                 <pre class="prettyprint"><span class="meta nocode"><b>HTTP {{ response.status_code }} {{ response.status_text }}</b>{% for key, val in response_headers|items %}
-<b>{{ key }}:</b> <span class="lit">{{ val|break_long_headers|urlize_quoted_links }}</span>{% endfor %}
+<b>{{ key }}:</b> <span class="lit">{{ val|break_long_headers|urlize }}</span>{% endfor %}
 
-</span>{{ content|urlize_quoted_links }}</pre>
+</span>{{ content|urlize }}</pre>
               </div>
             </div>
 
@@ -287,23 +287,19 @@
     {% endif %}
 
     {% block script %}
-      <script>
-        window.drf = {
-          csrfHeaderName: "{{ csrf_header_name|default:'X-CSRFToken' }}",
-          csrfToken: "{% if request %}{{ csrf_token }}{% endif %}"
-        };
+      <script type="application/json" id="drf_csrf">
+        {
+          "csrfHeaderName": "{{ csrf_header_name|default:'X-CSRFToken' }}",
+          "csrfToken": "{% if request %}{{ csrf_token }}{% endif %}"
+        }
       </script>
-      <script src="{% static "rest_framework/js/jquery-3.4.1.min.js" %}"></script>
+      <script src="{% static "rest_framework/js/jquery-3.7.1.min.js" %}"></script>
       <script src="{% static "rest_framework/js/ajax-form.js" %}"></script>
       <script src="{% static "rest_framework/js/csrf.js" %}"></script>
       <script src="{% static "rest_framework/js/bootstrap.min.js" %}"></script>
       <script src="{% static "rest_framework/js/prettify-min.js" %}"></script>
       <script src="{% static "rest_framework/js/default.js" %}"></script>
-      <script>
-        $(document).ready(function() {
-          $('form').ajaxForm();
-        });
-      </script>
+      <script src="{% static "rest_framework/js/load-ajax-form.js" %}"></script>
     {% endblock %}
 
   </body>

@@ -1,9 +1,9 @@
 import unittest
 
-from django.conf.urls import url
 from django.db import connection, connections, transaction
 from django.http import Http404
 from django.test import TestCase, TransactionTestCase, override_settings
+from django.urls import path
 
 from rest_framework import status
 from rest_framework.exceptions import APIException
@@ -44,7 +44,8 @@ class NonAtomicAPIExceptionView(APIView):
 
 
 urlpatterns = (
-    url(r'^non-atomic-exception$', NonAtomicAPIExceptionView.as_view()),
+    path('non-atomic-exception', NonAtomicAPIExceptionView.as_view()),
+    path('', NonAtomicAPIExceptionView.as_view()),
 )
 
 
@@ -126,6 +127,41 @@ class DBTransactionAPIExceptionTests(TestCase):
             with transaction.atomic():
                 response = self.view(request)
                 assert transaction.get_rollback()
+        assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
+        assert BasicModel.objects.count() == 0
+
+
+@unittest.skipUnless(
+    connection.features.uses_savepoints,
+    "'atomic' requires transactions and savepoints."
+)
+class MultiDBTransactionAPIExceptionTests(TestCase):
+    databases = '__all__'
+
+    def setUp(self):
+        self.view = APIExceptionView.as_view()
+        connections.databases['default']['ATOMIC_REQUESTS'] = True
+        connections.databases['secondary']['ATOMIC_REQUESTS'] = True
+
+    def tearDown(self):
+        connections.databases['default']['ATOMIC_REQUESTS'] = False
+        connections.databases['secondary']['ATOMIC_REQUESTS'] = False
+
+    def test_api_exception_rollback_transaction(self):
+        """
+        Transaction is rollbacked by our transaction atomic block.
+        """
+        request = factory.post('/')
+        num_queries = 4 if connection.features.can_release_savepoints else 3
+        with self.assertNumQueries(num_queries):
+            # 1 - begin savepoint
+            # 2 - insert
+            # 3 - rollback savepoint
+            # 4 - release savepoint
+            with transaction.atomic(), transaction.atomic(using='secondary'):
+                response = self.view(request)
+                assert transaction.get_rollback()
+                assert transaction.get_rollback(using='secondary')
         assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
         assert BasicModel.objects.count() == 0
 

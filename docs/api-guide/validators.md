@@ -20,7 +20,7 @@ Validation in Django REST framework serializers is handled a little differently 
 With `ModelForm` the validation is performed partially on the form, and partially on the model instance. With REST framework the validation is performed entirely on the serializer class. This is advantageous for the following reasons:
 
 * It introduces a proper separation of concerns, making your code behavior more obvious.
-* It is easy to switch between using shortcut `ModelSerializer` classes and using  explicit `Serializer` classes. Any validation behavior being used for `ModelSerializer` is simple to replicate.
+* It is easy to switch between using shortcut `ModelSerializer` classes and using explicit `Serializer` classes. Any validation behavior being used for `ModelSerializer` is simple to replicate.
 * Printing the `repr` of a serializer instance will show you exactly what validation rules it applies. There's no extra hidden validation behavior being called on the model instance.
 
 When you're using `ModelSerializer` all of this is handled automatically for you. If you want to drop down to using `Serializer` classes instead, then you need to define the validation rules explicitly.
@@ -48,12 +48,12 @@ If we open up the Django shell using `manage.py shell` we can now
     CustomerReportSerializer():
         id = IntegerField(label='ID', read_only=True)
         time_raised = DateTimeField(read_only=True)
-        reference = CharField(max_length=20, validators=[<UniqueValidator(queryset=CustomerReportRecord.objects.all())>])
+        reference = CharField(max_length=20, validators=[UniqueValidator(queryset=CustomerReportRecord.objects.all())])
         description = CharField(style={'type': 'textarea'})
 
 The interesting bit here is the `reference` field. We can see that the uniqueness constraint is being explicitly enforced by a validator on the serializer field.
 
-Because of this more explicit style REST framework includes a few validator classes that are not available in core Django. These classes are detailed below.
+Because of this more explicit style REST framework includes a few validator classes that are not available in core Django. These classes are detailed below.  REST framework validators, like their Django counterparts, implement the `__eq__` method, allowing you to compare instances for equality.
 
 ---
 
@@ -164,14 +164,18 @@ If you want the date field to be entirely hidden from the user, then use `Hidden
 
 ---
 
+---
+
+**Note:** `HiddenField()` does not appear in `partial=True` serializer (when making `PATCH` request).
+
+---
+
 # Advanced field defaults
 
 Validators that are applied across multiple fields in the serializer can sometimes require a field input that should not be provided by the API client, but that *is* available as input to the validator.
+For this purposes use `HiddenField`. This field will be present in `validated_data` but *will not* be used in the serializer output representation.
 
-Two patterns that you may want to use for this sort of validation include:
-
-* Using `HiddenField`. This field will be present in `validated_data` but *will not* be used in the serializer output representation.
-* Using a standard field with `read_only=True`, but that also includes a `default=…` argument. This field *will* be used in the serializer output representation, but cannot be set directly by the user.
+**Note:** Using a `read_only=True` field is excluded from writable fields so it won't use a `default=…` argument. Look [3.8 announcement](https://www.django-rest-framework.org/community/3.8-announcement/#altered-the-behaviour-of-read_only-plus-default-on-field).
 
 REST framework includes a couple of defaults that may be useful in this context.
 
@@ -183,7 +187,7 @@ A default class that can be used to represent the current user. In order to use 
         default=serializers.CurrentUserDefault()
     )
 
-#### CreateOnlyDefault
+#### CreateOnlyDefault
 
 A default class that can be used to *only set a default argument during create operations*. During updates the field is omitted.
 
@@ -208,7 +212,7 @@ by specifying an empty list for the serializer `Meta.validators` attribute.
 
 By default "unique together" validation enforces that all fields be
 `required=True`. In some cases, you might want to explicit apply
-`required=False` to one of the fields, in which case the desired behaviour
+`required=False` to one of the fields, in which case the desired behavior
 of the validation is ambiguous.
 
 In this case you will typically need to exclude the validator from the
@@ -238,7 +242,7 @@ In the case of update operations on *nested* serializers there's no way of
 applying this exclusion, because the instance is not available.
 
 Again, you'll probably want to explicitly remove the validator from the
-serializer class, and write the code the for the validation constraint
+serializer class, and write the code for the validation constraint
 explicitly, in a `.validate()` method, or in the view.
 
 ## Debugging complex cases
@@ -282,7 +286,7 @@ to your `Serializer` subclass. This is documented in the
 
 To write a class-based validator, use the `__call__` method. Class-based validators are useful as they allow you to parameterize and reuse behavior.
 
-    class MultipleOf(object):
+    class MultipleOf:
         def __init__(self, base):
             self.base = base
 
@@ -295,13 +299,14 @@ To write a class-based validator, use the `__call__` method. Class-based validat
 
 In some advanced cases you might want a validator to be passed the serializer
 field it is being used with as additional context. You can do so by setting
-a `requires_context = True` attribute on the validator. The `__call__` method
+a `requires_context = True` attribute on the validator class. The `__call__` method
 will then be called with the `serializer_field`
 or `serializer` as an additional argument.
 
-    requires_context = True
+    class MultipleOf:
+        requires_context = True
 
-    def __call__(self, value, serializer_field):
-        ...
+        def __call__(self, value, serializer_field):
+            ...
 
 [cite]: https://docs.djangoproject.com/en/stable/ref/validators/

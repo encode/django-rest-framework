@@ -1,6 +1,9 @@
 import uuid
 
+from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import QuerySet
+from django.db.models.manager import BaseManager
 from django.utils.translation import gettext_lazy as _
 
 
@@ -33,9 +36,22 @@ class ManyToManySource(RESTFrameworkModel):
     targets = models.ManyToManyField(ManyToManyTarget, related_name='sources')
 
 
+class BasicModelWithUsers(RESTFrameworkModel):
+    users = models.ManyToManyField(User)
+
+
 # ForeignKey
 class ForeignKeyTarget(RESTFrameworkModel):
     name = models.CharField(max_length=100)
+
+    def get_first_source(self):
+        """Used for testing related field against a callable."""
+        return self.sources.all().order_by('pk')[0]
+
+    @property
+    def first_source(self):
+        """Used for testing related field against a property."""
+        return self.sources.all().order_by('pk')[0]
 
 
 class UUIDForeignKeyTarget(RESTFrameworkModel):
@@ -110,3 +126,27 @@ class OneToOnePKSource(RESTFrameworkModel):
     target = models.OneToOneField(
         OneToOneTarget, primary_key=True,
         related_name='required_source', on_delete=models.CASCADE)
+
+
+class CustomManagerModel(RESTFrameworkModel):
+    class CustomManager:
+        def __new__(cls, *args, **kwargs):
+            cls = BaseManager.from_queryset(
+                QuerySet
+            )
+            return cls
+
+    objects = CustomManager()()
+    # `CustomManager()` will return a `BaseManager` class.
+    # We need to instantiation it, so we write `CustomManager()()` here.
+
+    text = models.CharField(
+        max_length=100,
+        verbose_name=_("Text comes here"),
+        help_text=_("Text description.")
+    )
+
+    o2o_target = models.ForeignKey(OneToOneTarget,
+                                   help_text='OneToOneTarget',
+                                   verbose_name='OneToOneTarget',
+                                   on_delete=models.CASCADE)

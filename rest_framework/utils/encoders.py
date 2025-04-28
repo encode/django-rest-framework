@@ -1,6 +1,8 @@
 """
 Helper classes for parsers.
 """
+
+import contextlib
 import datetime
 import decimal
 import json  # noqa
@@ -58,10 +60,19 @@ class JSONEncoder(json.JSONEncoder):
             )
         elif hasattr(obj, '__getitem__'):
             cls = (list if isinstance(obj, (list, tuple)) else dict)
-            try:
+            with contextlib.suppress(Exception):
                 return cls(obj)
-            except Exception:
-                pass
         elif hasattr(obj, '__iter__'):
             return tuple(item for item in obj)
         return super().default(obj)
+
+
+class CustomScalar:
+    """
+    CustomScalar that knows how to encode timedelta that renderer
+    can understand.
+    """
+    @classmethod
+    def represent_timedelta(cls, dumper, data):
+        value = str(data.total_seconds())
+        return dumper.represent_scalar('tag:yaml.org,2002:str', value)
