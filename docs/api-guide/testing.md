@@ -102,7 +102,7 @@ This means that setting attributes directly on the request object may not always
     request.user = user
     response = view(request)
 
-In case you want to test the request having a REST famework's `Request` you have to transform it by-hand before:
+If you want to test a request involving the REST framework’s 'Request' object, you’ll need to manually transform it first:
 
     class DummyView(APIView):
         ...
