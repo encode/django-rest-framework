@@ -1775,7 +1775,7 @@ class TestDurationField(FieldValues):
 
 class TestNoOutputFormatDurationField(FieldValues):
     """
-    Values for `TimeField` with a no output format.
+    Values for `DurationField` with a no output format.
     """
     valid_inputs = {}
     invalid_inputs = {}
