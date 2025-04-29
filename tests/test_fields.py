@@ -1787,7 +1787,7 @@ class TestNoOutputFormatDurationField(FieldValues):
 
 class TestISOOutputFormatDurationField(FieldValues):
     """
-    Values for `TimeField` with a custom output format.
+    Values for `DurationField` with a custom output format.
     """
     valid_inputs = {}
     invalid_inputs = {}
