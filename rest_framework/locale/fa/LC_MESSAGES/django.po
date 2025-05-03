@@ -105,7 +105,7 @@ msgstr "خطای سمت سرور رخ داده است."
 
 #: exceptions.py:142
 msgid "Invalid input."
-msgstr ""
+msgstr "ورودی نامعتبر"
 
 #: exceptions.py:161
 msgid "Malformed request."
@@ -148,12 +148,12 @@ msgstr "تعداد درخواست‌های شما محدود شده است."
 #: exceptions.py:224
 #, python-brace-format
 msgid "Expected available in {wait} second."
-msgstr ""
+msgstr "انتظار می‌رود در {wait} ثانیه در دسترس باشد."
 
 #: exceptions.py:225
 #, python-brace-format
 msgid "Expected available in {wait} seconds."
-msgstr ""
+msgstr "انتظار می‌رود در {wait} ثانیه در دسترس باشد."
 
 #: fields.py:316 relations.py:245 relations.py:279 validators.py:90
 #: validators.py:183
@@ -166,11 +166,11 @@ msgstr "این مقدار نباید توهی باشد."
 
 #: fields.py:701
 msgid "Must be a valid boolean."
-msgstr ""
+msgstr "باید یک مقدار منطقی(بولی) معتبر باشد."
 
 #: fields.py:766
 msgid "Not a valid string."
-msgstr ""
+msgstr "یک رشته معتبر نیست."
 
 #: fields.py:767
 msgid "This field may not be blank."
@@ -212,7 +212,7 @@ msgstr "یک URL معتبر وارد کنید"
 
 #: fields.py:867
 msgid "Must be a valid UUID."
-msgstr ""
+msgstr "باید یک UUID معتبر باشد."
 
 #: fields.py:903
 msgid "Enter a valid IPv4 or IPv6 address."
@@ -270,11 +270,11 @@ msgstr "باید datetime باشد اما date دریافت شد."
 #: fields.py:1150
 #, python-brace-format
 msgid "Invalid datetime for the timezone \"{timezone}\"."
-msgstr ""
+msgstr "تاریخ و زمان برای منطقه زمانی \"{timezone}\" نامعتبر است."
 
 #: fields.py:1151
 msgid "Datetime value out of range."
-msgstr ""
+msgstr "مقدار تاریخ و زمان خارج از محدوده است."
 
 #: fields.py:1236
 #, python-brace-format
@@ -355,12 +355,12 @@ msgstr "این لیست نمی تواند خالی باشد"
 #: fields.py:1605
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} elements."
-msgstr ""
+msgstr "اطمینان حاصل کنید که این فیلد حداقل {min_length} عنصر دارد."
 
 #: fields.py:1606
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} elements."
-msgstr ""
+msgstr "اطمینان حاصل کنید که این فیلد بیش از {max_length} عنصر ندارد."
 
 #: fields.py:1682
 #, python-brace-format
@@ -369,7 +369,7 @@ msgstr "باید دیکشنری از آیتم ها ارسال می شد، اما
 
 #: fields.py:1683
 msgid "This dictionary may not be empty."
-msgstr ""
+msgstr "این دیکشنری نمی‌تواند خالی باشد."
 
 #: fields.py:1755
 msgid "Value must be valid JSON."
@@ -381,7 +381,7 @@ msgstr "جستجو"
 
 #: filters.py:50
 msgid "A search term."
-msgstr ""
+msgstr "یک عبارت جستجو."
 
 #: filters.py:180 templates/rest_framework/filters/ordering.html:3
 msgid "Ordering"
@@ -389,7 +389,7 @@ msgstr "ترتیب"
 
 #: filters.py:181
 msgid "Which field to use when ordering the results."
-msgstr ""
+msgstr "کدام فیلد باید هنگام مرتب‌سازی نتایج استفاده شود."
 
 #: filters.py:287
 msgid "ascending"
@@ -401,11 +401,11 @@ msgstr "نزولی"
 
 #: pagination.py:174
 msgid "A page number within the paginated result set."
-msgstr ""
+msgstr "یک شماره صفحه‌ در مجموعه نتایج صفحه‌بندی شده."
 
 #: pagination.py:179 pagination.py:372 pagination.py:590
 msgid "Number of results to return per page."
-msgstr ""
+msgstr "تعداد نتایج برای نمایش در هر صفحه."
 
 #: pagination.py:189
 msgid "Invalid page."
@@ -413,11 +413,11 @@ msgstr "صفحه نامعتبر"
 
 #: pagination.py:374
 msgid "The initial index from which to return the results."
-msgstr ""
+msgstr "ایندکس اولیه‌ای که از آن نتایج بازگردانده می‌شود."
 
 #: pagination.py:581
 msgid "The pagination cursor value."
-msgstr ""
+msgstr "مقدار نشانگر صفحه‌بندی."
 
 #: pagination.py:583
 msgid "Invalid cursor"
@@ -461,20 +461,20 @@ msgstr "مقدار نامعتبر."
 
 #: schemas/utils.py:32
 msgid "unique integer value"
-msgstr ""
+msgstr "مقداد عدد یکتا"
 
 #: schemas/utils.py:34
 msgid "UUID string"
-msgstr ""
+msgstr "رشته UUID"
 
 #: schemas/utils.py:36
 msgid "unique value"
-msgstr ""
+msgstr "مقدار یکتا"
 
 #: schemas/utils.py:38
 #, python-brace-format
 msgid "A {value_type} identifying this {name}."
-msgstr ""
+msgstr "یک {value_type} که این {name} را شناسایی میکند."
 
 #: serializers.py:337
 #, python-brace-format
@@ -484,7 +484,7 @@ msgstr "داده نامعتبر. باید دیکشنری ارسال می شد، 
 #: templates/rest_framework/admin.html:116
 #: templates/rest_framework/base.html:136
 msgid "Extra Actions"
-msgstr ""
+msgstr "اقدامات اضافی"
 
 #: templates/rest_framework/admin.html:130
 #: templates/rest_framework/base.html:150
@@ -493,27 +493,27 @@ msgstr "فیلترها"
 
 #: templates/rest_framework/base.html:37
 msgid "navbar"
-msgstr ""
+msgstr "نوار ناوبری"
 
 #: templates/rest_framework/base.html:75
 msgid "content"
-msgstr ""
+msgstr "محتوا"
 
 #: templates/rest_framework/base.html:78
 msgid "request form"
-msgstr ""
+msgstr "فرم درخواست"
 
 #: templates/rest_framework/base.html:157
 msgid "main content"
-msgstr ""
+msgstr "محتوای اصلی"
 
 #: templates/rest_framework/base.html:173
 msgid "request info"
-msgstr ""
+msgstr "اطلاعات درخواست"
 
 #: templates/rest_framework/base.html:177
 msgid "response info"
-msgstr ""
+msgstr "اطلاعات پاسخ"
 
 #: templates/rest_framework/horizontal/radio.html:4
 #: templates/rest_framework/inline/radio.html:3
@@ -539,7 +539,7 @@ msgstr "فیلدهای {field_names} باید یک مجموعه یکتا باش�
 #: validators.py:171
 #, python-brace-format
 msgid "Surrogate characters are not allowed: U+{code_point:X}."
-msgstr ""
+msgstr "کاراکترهای جایگزین مجاز نیستند: U+{code_point:X}."
 
 #: validators.py:243
 #, python-brace-format

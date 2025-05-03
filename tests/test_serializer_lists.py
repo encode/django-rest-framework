@@ -1,5 +1,3 @@
-import sys
-
 import pytest
 from django.http import QueryDict
 from django.utils.datastructures import MultiValueDict
@@ -60,10 +58,6 @@ class TestListSerializer:
         assert serializer.is_valid()
         assert serializer.validated_data == expected_output
 
-    @pytest.mark.skipif(
-        sys.version_info < (3, 7),
-        reason="subscriptable classes requires Python 3.7 or higher",
-    )
     def test_list_serializer_is_subscriptable(self):
         assert serializers.ListSerializer is serializers.ListSerializer["foo"]
 

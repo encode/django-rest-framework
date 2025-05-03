@@ -313,14 +313,3 @@ def smart_urlquote_wrapper(matched_url):
         return smart_urlquote(matched_url)
     except ValueError:
         return None
-
-
-@register.filter
-def break_long_headers(header):
-    """
-    Breaks headers longer than 160 characters (~page length)
-    when possible (are comma separated)
-    """
-    if len(header) > 160 and ',' in header:
-        header = mark_safe('<br> ' + ', <br>'.join(escape(header).split(',')))
-    return header

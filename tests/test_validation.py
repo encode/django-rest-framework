@@ -148,14 +148,14 @@ class TestMaxValueValidatorValidation(TestCase):
 
     def test_max_value_validation_success(self):
         obj = ValidationMaxValueValidatorModel.objects.create(number_value=100)
-        request = factory.patch('/{}'.format(obj.pk), {'number_value': 98}, format='json')
+        request = factory.patch(f'/{obj.pk}', {'number_value': 98}, format='json')
         view = UpdateMaxValueValidationModel().as_view()
         response = view(request, pk=obj.pk).render()
         assert response.status_code == status.HTTP_200_OK
 
     def test_max_value_validation_fail(self):
         obj = ValidationMaxValueValidatorModel.objects.create(number_value=100)
-        request = factory.patch('/{}'.format(obj.pk), {'number_value': 101}, format='json')
+        request = factory.patch(f'/{obj.pk}', {'number_value': 101}, format='json')
         view = UpdateMaxValueValidationModel().as_view()
         response = view(request, pk=obj.pk).render()
         assert response.content == b'{"number_value":["Ensure this value is less than or equal to 100."]}'
