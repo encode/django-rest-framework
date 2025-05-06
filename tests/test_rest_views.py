@@ -4,7 +4,7 @@ from django.test import TestCase, override_settings
 
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.rest_views import RESTView, get, post, patch
+from rest_framework.rest_views import RESTView, get, patch, post
 from rest_framework.settings import api_settings
 
 
