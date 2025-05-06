@@ -119,19 +119,19 @@ class RESTView(APIView, metaclass=RESTViewMetaclass):
     Example:
         class UserAPI(RESTView):
 
-            @get(path='/v1/users/', url_name='users')
+            @get(path='v1/users/', url_name='users')
             def list(self, request):
                 ...
 
-            @get(path='/v1/users/<int:user_id>/', url_name='user_detail')
+            @get(path='v1/users/<int:user_id>/', url_name='user_detail')
             def retrieve(self, request, user_id: int):
                 ...
 
-            @post(path='/v1/users/', url_name='users')
+            @post(path='v1/users/', url_name='users')
             def create(self, request):
                 ...
 
-            @patch(path='/v1/users/<int:user_id>/change_password/', url_name='user_change_password')
+            @patch(path='v1/users/<int:user_id>/change_password/', url_name='user_change_password')
             def change_password(self, request, user_id: int):
                 ...
 
