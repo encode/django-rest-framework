@@ -349,7 +349,7 @@ The [`DRF-extensions` package][drf-extensions] provides [routers][drf-extensions
 [drf-extensions-nested-viewsets]: https://chibisov.github.io/drf-extensions/docs/#nested-routes
 [drf-extensions-collection-level-controllers]: https://chibisov.github.io/drf-extensions/docs/#collection-level-controllers
 [drf-extensions-customizable-endpoint-names]: https://chibisov.github.io/drf-extensions/docs/#controller-endpoint-name
-[url-namespace-docs]: https://docs.djangoproject.com/en/4.0/topics/http/urls/#url-namespaces
-[include-api-reference]: https://docs.djangoproject.com/en/4.0/ref/urls/#include
-[simplified-routing-release-note]: https://docs.djangoproject.com/en/2.0/releases/2.0/#simplified-url-routing-syntax
-[path-converters-topic-reference]: https://docs.djangoproject.com/en/2.0/topics/http/urls/#path-converters
+[url-namespace-docs]: https://docs.djangoproject.com/en/stable/topics/http/urls/#url-namespaces
+[include-api-reference]: https://docs.djangoproject.com/en/stable/ref/urls/#include
+[simplified-routing-release-note]: https://docs.djangoproject.com/en/stable/releases/2.0/#simplified-url-routing-syntax
+[path-converters-topic-reference]: https://docs.djangoproject.com/en/stable/topics/http/urls/#path-converters
