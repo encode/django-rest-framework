@@ -25,9 +25,12 @@ The `APIRequestFactory` class supports an almost identical API to Django's stand
     factory = APIRequestFactory()
     request = factory.post('/notes/', {'title': 'new idea'})
 
+    # Using the standard RequestFactory API to encode JSON data
+    request = factory.post('/notes/', {'title': 'new idea'}, content_type='application/json')
+
 #### Using the `format` argument
 
-Methods which create a request body, such as `post`, `put` and `patch`, include a `format` argument, which make it easy to generate requests using a content type other than multipart form data.  For example:
+Methods which create a request body, such as `post`, `put` and `patch`, include a `format` argument, which make it easy to generate requests using a wide set of request formats.  When using this argument, the factory will select an appropriate renderer and its configured `content_type`.  For example:
 
     # Create a JSON POST request
     factory = APIRequestFactory()
@@ -41,7 +44,7 @@ To support a wider set of request formats, or change the default format, [see th
 
 If you need to explicitly encode the request body, you can do so by setting the `content_type` flag.  For example:
 
-    request = factory.post('/notes/', json.dumps({'title': 'new idea'}), content_type='application/json')
+    request = factory.post('/notes/', yaml.dump({'title': 'new idea'}), content_type='application/yaml')
 
 #### PUT and PATCH with form data
 

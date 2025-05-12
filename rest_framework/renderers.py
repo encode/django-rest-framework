@@ -19,12 +19,13 @@ from django.core.paginator import Page
 from django.template import engines, loader
 from django.urls import NoReverseMatch
 from django.utils.html import mark_safe
+from django.utils.http import parse_header_parameters
 from django.utils.safestring import SafeString
 
 from rest_framework import VERSION, exceptions, serializers, status
 from rest_framework.compat import (
     INDENT_SEPARATORS, LONG_SEPARATORS, SHORT_SEPARATORS, coreapi, coreschema,
-    parse_header_parameters, pygments_css, yaml
+    pygments_css, yaml
 )
 from rest_framework.exceptions import ParseError
 from rest_framework.request import is_form_media_type, override_method
@@ -170,6 +171,10 @@ class TemplateHTMLRenderer(BaseRenderer):
 
     def get_template_context(self, data, renderer_context):
         response = renderer_context['response']
+        # in case a ValidationError is caught the data parameter may be a list
+        # see rest_framework.views.exception_handler
+        if isinstance(data, list):
+            return {'details': data, 'status_code': response.status_code}
         if response.exception:
             data['status_code'] = response.status_code
         return data

@@ -283,7 +283,7 @@ By default this will include the following keys: `view`, `request`, `response`, 
 
 The following is an example plaintext renderer that will return a response with the `data` parameter as the content of the response.
 
-    from django.utils.encoding import smart_text
+    from django.utils.encoding import smart_str
     from rest_framework import renderers
 
 
@@ -292,7 +292,7 @@ The following is an example plaintext renderer that will return a response with 
         format = 'txt'
 
         def render(self, data, accepted_media_type=None, renderer_context=None):
-            return smart_text(data, encoding=self.charset)
+            return smart_str(data, encoding=self.charset)
 
 ## Setting the character set
 
@@ -525,7 +525,7 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 
 ## LaTeX
 
-[Rest Framework Latex] provides a renderer that outputs PDFs using Laulatex. It is maintained by [Pebble (S/F Software)][mypebble].
+[Rest Framework Latex] provides a renderer that outputs PDFs using Lualatex. It is maintained by [Pebble (S/F Software)][mypebble].
 
 
 [cite]: https://docs.djangoproject.com/en/stable/ref/template-response/#the-rendering-process

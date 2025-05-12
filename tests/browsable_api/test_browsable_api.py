@@ -65,6 +65,12 @@ class DropdownWithAuthTests(TestCase):
         content = response.content.decode()
         assert '>Log in<' in content
 
+    def test_dropdown_contains_logout_form(self):
+        self.client.login(username=self.username, password=self.password)
+        response = self.client.get('/')
+        content = response.content.decode()
+        assert '<form id="logoutForm" method="post" action="/auth/logout/?next=/">' in content
+
 
 @override_settings(ROOT_URLCONF='tests.browsable_api.no_auth_urls')
 class NoDropdownWithoutAuthTests(TestCase):

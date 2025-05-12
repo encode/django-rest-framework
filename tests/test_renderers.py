@@ -408,7 +408,7 @@ class UnicodeJSONRendererTests(TestCase):
         obj = {'should_escape': '\u2028\u2029'}
         renderer = JSONRenderer()
         content = renderer.render(obj, 'application/json')
-        self.assertEqual(content, '{"should_escape":"\\u2028\\u2029"}'.encode())
+        self.assertEqual(content, b'{"should_escape":"\\u2028\\u2029"}')
 
 
 class AsciiJSONRendererTests(TestCase):
@@ -421,7 +421,7 @@ class AsciiJSONRendererTests(TestCase):
         obj = {'countries': ['United Kingdom', 'France', 'España']}
         renderer = AsciiJSONRenderer()
         content = renderer.render(obj, 'application/json')
-        self.assertEqual(content, '{"countries":["United Kingdom","France","Espa\\u00f1a"]}'.encode())
+        self.assertEqual(content, b'{"countries":["United Kingdom","France","Espa\\u00f1a"]}')
 
 
 # Tests for caching issue, #346
@@ -910,7 +910,7 @@ class TestDocumentationRenderer(TestCase):
             'link': coreapi.Link(url='/data/', action='get', fields=[]),
         }
         html = template.render(context)
-        assert 'testcases list' in html
+        assert 'testcases<span class="w"> </span>list' in html
 
 
 @pytest.mark.skipif(not coreapi, reason='coreapi is not installed')

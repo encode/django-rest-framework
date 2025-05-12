@@ -119,7 +119,7 @@ def optional_docs_login(request):
 
 
 @register.simple_tag
-def optional_logout(request, user):
+def optional_logout(request, user, csrf_token):
     """
     Include a logout snippet if REST framework's logout view is in the URLconf.
     """
@@ -135,11 +135,16 @@ def optional_logout(request, user):
             <b class="caret"></b>
         </a>
         <ul class="dropdown-menu">
-            <li><a href='{href}?next={next}'>Log out</a></li>
+            <form id="logoutForm" method="post" action="{href}?next={next}">
+                <input type="hidden" name="csrfmiddlewaretoken" value="{csrf_token}">
+            </form>
+            <li>
+                <a href="#" onclick='document.getElementById("logoutForm").submit()'>Log out</a>
+            </li>
         </ul>
     </li>"""
-    snippet = format_html(snippet, user=escape(user), href=logout_url, next=escape(request.path))
-
+    snippet = format_html(snippet, user=escape(user), href=logout_url,
+                          next=escape(request.path), csrf_token=csrf_token)
     return mark_safe(snippet)
 
 
@@ -308,14 +313,3 @@ def smart_urlquote_wrapper(matched_url):
         return smart_urlquote(matched_url)
     except ValueError:
         return None
-
-
-@register.filter
-def break_long_headers(header):
-    """
-    Breaks headers longer than 160 characters (~page length)
-    when possible (are comma separated)
-    """
-    if len(header) > 160 and ',' in header:
-        header = mark_safe('<br> ' + ', <br>'.join(header.split(',')))
-    return header

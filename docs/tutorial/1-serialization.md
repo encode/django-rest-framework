@@ -8,7 +8,7 @@ The tutorial is fairly in-depth, so you should probably get a cookie and a cup o
 
 ---
 
-**Note**: The code for this tutorial is available in the [encode/rest-framework-tutorial][repo] repository on GitHub.  The completed implementation is also online as a sandbox version for testing, [available here][sandbox].
+**Note**: The code for this tutorial is available in the [encode/rest-framework-tutorial][repo] repository on GitHub. Feel free to clone the repository and see the code in action.
 
 ---
 
@@ -150,7 +150,7 @@ At this point we've translated the model instance into Python native datatypes. 
 
     content = JSONRenderer().render(serializer.data)
     content
-    # b'{"id": 2, "title": "", "code": "print(\\"hello, world\\")\\n", "linenos": false, "language": "python", "style": "friendly"}'
+    # b'{"id":2,"title":"","code":"print(\\"hello, world\\")\\n","linenos":false,"language":"python","style":"friendly"}'
 
 Deserialization is similar.  First we parse a stream into Python native datatypes...
 
@@ -165,7 +165,7 @@ Deserialization is similar.  First we parse a stream into Python native datatype
     serializer.is_valid()
     # True
     serializer.validated_data
-    # OrderedDict([('title', ''), ('code', 'print("hello, world")\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])
+    # {'title': '', 'code': 'print("hello, world")', 'linenos': False, 'language': 'python', 'style': 'friendly'}
     serializer.save()
     # <Snippet: Snippet object>
 
@@ -175,7 +175,7 @@ We can also serialize querysets instead of model instances.  To do so we simply 
 
     serializer = SnippetSerializer(Snippet.objects.all(), many=True)
     serializer.data
-    # [OrderedDict([('id', 1), ('title', ''), ('code', 'foo = "bar"\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('id', 2), ('title', ''), ('code', 'print("hello, world")\n'), ('linenos', False), ('language', 'python'), ('style', 'friendly')]), OrderedDict([('id', 3), ('title', ''), ('code', 'print("hello, world")'), ('linenos', False), ('language', 'python'), ('style', 'friendly')])]
+    # [{'id': 1, 'title': '', 'code': 'foo = "bar"\n', 'linenos': False, 'language': 'python', 'style': 'friendly'}, {'id': 2, 'title': '', 'code': 'print("hello, world")\n', 'linenos': False, 'language': 'python', 'style': 'friendly'}, {'id': 3, 'title': '', 'code': 'print("hello, world")', 'linenos': False, 'language': 'python', 'style': 'friendly'}]
 
 ## Using ModelSerializers
 
@@ -307,7 +307,7 @@ Quit out of the shell...
     Validating models...
 
     0 errors found
-    Django version 4.0, using settings 'tutorial.settings'
+    Django version 5.0, using settings 'tutorial.settings'
     Starting Development server at http://127.0.0.1:8000/
     Quit the server with CONTROL-C.
 
@@ -321,42 +321,50 @@ You can install httpie using pip:
 
 Finally, we can get a list of all of the snippets:
 
-    http http://127.0.0.1:8000/snippets/
+    http GET http://127.0.0.1:8000/snippets/ --unsorted
 
     HTTP/1.1 200 OK
     ...
     [
-      {
-        "id": 1,
-        "title": "",
-        "code": "foo = \"bar\"\n",
-        "linenos": false,
-        "language": "python",
-        "style": "friendly"
-      },
-      {
+        {
+            "id": 1,
+            "title": "",
+            "code": "foo = \"bar\"\n",
+            "linenos": false,
+            "language": "python",
+            "style": "friendly"
+        },
+        {
+            "id": 2,
+            "title": "",
+            "code": "print(\"hello, world\")\n",
+            "linenos": false,
+            "language": "python",
+            "style": "friendly"
+        },
+        {
+            "id": 3,
+            "title": "",
+            "code": "print(\"hello, world\")",
+            "linenos": false,
+            "language": "python",
+            "style": "friendly"
+        }
+    ]
+
+Or we can get a particular snippet by referencing its id:
+
+    http GET http://127.0.0.1:8000/snippets/2/ --unsorted
+
+    HTTP/1.1 200 OK
+    ...
+    {
         "id": 2,
         "title": "",
         "code": "print(\"hello, world\")\n",
         "linenos": false,
         "language": "python",
         "style": "friendly"
-      }
-    ]
-
-Or we can get a particular snippet by referencing its id:
-
-    http http://127.0.0.1:8000/snippets/2/
-
-    HTTP/1.1 200 OK
-    ...
-    {
-      "id": 2,
-      "title": "",
-      "code": "print(\"hello, world\")\n",
-      "linenos": false,
-      "language": "python",
-      "style": "friendly"
     }
 
 Similarly, you can have the same json displayed by visiting these URLs in a web browser.
@@ -371,7 +379,6 @@ We'll see how we can start to improve things in [part 2 of the tutorial][tut-2].
 
 [quickstart]: quickstart.md
 [repo]: https://github.com/encode/rest-framework-tutorial
-[sandbox]: https://restframework.herokuapp.com/
 [venv]: https://docs.python.org/3/library/venv.html
 [tut-2]: 2-requests-and-responses.md
 [httpie]: https://github.com/httpie/httpie#installation

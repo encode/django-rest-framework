@@ -8,8 +8,8 @@ from rest_framework.compat import coreapi, coreschema
 from rest_framework.relations import Hyperlink
 from rest_framework.templatetags import rest_framework
 from rest_framework.templatetags.rest_framework import (
-    add_nested_class, add_query_param, as_string, break_long_headers,
-    format_value, get_pagination_html, schema_links
+    add_nested_class, add_query_param, as_string, format_value,
+    get_pagination_html, schema_links
 )
 from rest_framework.test import APIRequestFactory
 
@@ -233,11 +233,6 @@ class TemplateTagTests(TestCase):
         pager = MockPager()
         get_pagination_html(pager)
         assert pager.called is True
-
-    def test_break_long_lines(self):
-        header = 'long test header,' * 20
-        expected_header = '<br> ' + ', <br>'.join(header.split(','))
-        assert break_long_headers(header) == expected_header
 
 
 class Issue1386Tests(TestCase):

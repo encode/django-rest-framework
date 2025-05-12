@@ -2,11 +2,13 @@
 
 ## Versioning
 
-Minor version numbers (0.0.x) are used for changes that are API compatible.  You should be able to upgrade between minor point releases without any other code changes.
+- **Minor** version numbers (0.0.x) are used for changes that are API compatible.  You should be able to upgrade between minor point releases without any other code changes.
 
-Medium version numbers (0.x.0) may include API changes, in line with the [deprecation policy][deprecation-policy].  You should read the release notes carefully before upgrading between medium point releases.
+- **Medium** version numbers (0.x.0) may include API changes, in line with the [deprecation policy][deprecation-policy].  You should read the release notes carefully before upgrading between medium point releases.
 
-Major version numbers (x.0.0) are reserved for substantial project milestones.
+- **Major** version numbers (x.0.0) are reserved for substantial project milestones.
+
+As REST Framework is considered feature-complete, most releases are expected to be minor releases.
 
 ## Deprecation policy
 
@@ -33,6 +35,191 @@ You can determine your currently installed version using `pip show`:
     pip show djangorestframework
 
 ---
+
+## 3.16.x series
+
+### 3.16.0
+
+**Date**: 28th March 2025
+
+This release is considered a significant release to improve upstream support with Django and Python. Some of these may change the behaviour of existing features and pre-existing behaviour. Specifically, some fixes were added to around the support of `UniqueConstraint` with nullable fields which will improve built-in serializer validation.
+
+## Features
+
+* Add official support for Django 5.1 and its new `LoginRequiredMiddleware` in [#9514](https://github.com/encode/django-rest-framework/pull/9514) and [#9657](https://github.com/encode/django-rest-framework/pull/9657)
+* Add official Django 5.2a1 support in [#9634](https://github.com/encode/django-rest-framework/pull/9634)
+* Add support for Python 3.13 in [#9527](https://github.com/encode/django-rest-framework/pull/9527) and [#9556](https://github.com/encode/django-rest-framework/pull/9556)
+* Support Django 2.1+ test client JSON data automatically serialized in [#6511](https://github.com/encode/django-rest-framework/pull/6511) and fix a regression in [#9615](https://github.com/encode/django-rest-framework/pull/9615)
+
+## Bug fixes
+
+* Fix unique together validator to respect condition's fields from `UniqueConstraint` in [#9360](https://github.com/encode/django-rest-framework/pull/9360)
+* Fix raising on nullable fields part of `UniqueConstraint` in [#9531](https://github.com/encode/django-rest-framework/pull/9531)
+* Fix `unique_together` validation with source in [#9482](https://github.com/encode/django-rest-framework/pull/9482)
+* Added protections to `AttributeError` raised within properties in [#9455](https://github.com/encode/django-rest-framework/pull/9455)
+* Fix `get_template_context` to handle also lists in [#9467](https://github.com/encode/django-rest-framework/pull/9467)
+* Fix "Converter is already registered" deprecation warning. in [#9512](https://github.com/encode/django-rest-framework/pull/9512)
+* Fix noisy warning and accept integers as min/max values of `DecimalField` in [#9515](https://github.com/encode/django-rest-framework/pull/9515)
+* Fix usages of `open()` in `setup.py` in [#9661](https://github.com/encode/django-rest-framework/pull/9661)
+
+## Translations
+
+* Add some missing Chinese translations in [#9505](https://github.com/encode/django-rest-framework/pull/9505)
+* Fix spelling mistakes in Farsi language were corrected in [#9521](https://github.com/encode/django-rest-framework/pull/9521)
+* Fixing and adding missing Brazilian Portuguese translations in [#9535](https://github.com/encode/django-rest-framework/pull/9535)
+
+## Removals
+
+* Remove support for Python 3.8 in [#9670](https://github.com/encode/django-rest-framework/pull/9670)
+* Remove long deprecated code from request wrapper in [#9441](https://github.com/encode/django-rest-framework/pull/9441)
+* Remove deprecated `AutoSchema._get_reference` method in [#9525](https://github.com/encode/django-rest-framework/pull/9525)
+
+## Documentation and internal changes
+
+* Provide tests for hashing of `OperandHolder` in [#9437](https://github.com/encode/django-rest-framework/pull/9437)
+* Update documentation: Add `adrf` third party package in [#9198](https://github.com/encode/django-rest-framework/pull/9198)
+* Update tutorials links in Community contributions docs in [#9476](https://github.com/encode/django-rest-framework/pull/9476)
+* Fix usage of deprecated Django function in example from docs in [#9509](https://github.com/encode/django-rest-framework/pull/9509)
+* Move path converter docs into a separate section in [#9524](https://github.com/encode/django-rest-framework/pull/9524)
+* Add test covering update view without `queryset` attribute in [#9528](https://github.com/encode/django-rest-framework/pull/9528)
+* Fix Transifex link in [#9541](https://github.com/encode/django-rest-framework/pull/9541)
+* Fix example `httpie` call in docs in [#9543](https://github.com/encode/django-rest-framework/pull/9543)
+* Fix example for serializer field with choices in docs in [#9563](https://github.com/encode/django-rest-framework/pull/9563)
+* Remove extra `<>` in validators example in [#9590](https://github.com/encode/django-rest-framework/pull/9590)
+* Update `strftime` link in the docs in [#9624](https://github.com/encode/django-rest-framework/pull/9624)
+* Switch to codecov GHA in [#9618](https://github.com/encode/django-rest-framework/pull/9618)
+* Add note regarding availability of the `action` attribute in 'Introspecting ViewSet actions' docs section in [#9633](https://github.com/encode/django-rest-framework/pull/9633)
+* Improved description of allowed throttling rates in documentation in [#9640](https://github.com/encode/django-rest-framework/pull/9640)
+* Add `rest-framework-gm2m-relations` package to the list of 3rd party libraries in [#9063](https://github.com/encode/django-rest-framework/pull/9063)
+* Fix a number of typos in the test suite in the docs in [#9662](https://github.com/encode/django-rest-framework/pull/9662)
+* Add `django-pyoidc` as a third party authentication library in [#9667](https://github.com/encode/django-rest-framework/pull/9667)
+
+## New Contributors
+
+* [`@maerteijn`](https://github.com/maerteijn) made their first contribution in [#9198](https://github.com/encode/django-rest-framework/pull/9198)
+* [`@FraCata00`](https://github.com/FraCata00) made their first contribution in [#9444](https://github.com/encode/django-rest-framework/pull/9444)
+* [`@AlvaroVega`](https://github.com/AlvaroVega) made their first contribution in [#9451](https://github.com/encode/django-rest-framework/pull/9451)
+* [`@james`](https://github.com/james)-mchugh made their first contribution in [#9455](https://github.com/encode/django-rest-framework/pull/9455)
+* [`@ifeanyidavid`](https://github.com/ifeanyidavid) made their first contribution in [#9479](https://github.com/encode/django-rest-framework/pull/9479)
+* [`@p`](https://github.com/p)-schlickmann made their first contribution in [#9480](https://github.com/encode/django-rest-framework/pull/9480)
+* [`@akkuman`](https://github.com/akkuman) made their first contribution in [#9505](https://github.com/encode/django-rest-framework/pull/9505)
+* [`@rafaelgramoschi`](https://github.com/rafaelgramoschi) made their first contribution in [#9509](https://github.com/encode/django-rest-framework/pull/9509)
+* [`@Sinaatkd`](https://github.com/Sinaatkd) made their first contribution in [#9521](https://github.com/encode/django-rest-framework/pull/9521)
+* [`@gtkacz`](https://github.com/gtkacz) made their first contribution in [#9535](https://github.com/encode/django-rest-framework/pull/9535)
+* [`@sliverc`](https://github.com/sliverc) made their first contribution in [#9556](https://github.com/encode/django-rest-framework/pull/9556)
+* [`@gabrielromagnoli1987`](https://github.com/gabrielromagnoli1987) made their first contribution in [#9543](https://github.com/encode/django-rest-framework/pull/9543)
+* [`@cheehong1030`](https://github.com/cheehong1030) made their first contribution in [#9563](https://github.com/encode/django-rest-framework/pull/9563)
+* [`@amansharma612`](https://github.com/amansharma612) made their first contribution in [#9590](https://github.com/encode/django-rest-framework/pull/9590)
+* [`@Gluroda`](https://github.com/Gluroda) made their first contribution in [#9616](https://github.com/encode/django-rest-framework/pull/9616)
+* [`@deepakangadi`](https://github.com/deepakangadi) made their first contribution in [#9624](https://github.com/encode/django-rest-framework/pull/9624)
+* [`@EXG1O`](https://github.com/EXG1O) made their first contribution in [#9633](https://github.com/encode/django-rest-framework/pull/9633)
+* [`@decadenza`](https://github.com/decadenza) made their first contribution in [#9640](https://github.com/encode/django-rest-framework/pull/9640)
+* [`@mojtabaakbari221b`](https://github.com/mojtabaakbari221b) made their first contribution in [#9063](https://github.com/encode/django-rest-framework/pull/9063)
+* [`@mikemanger`](https://github.com/mikemanger) made their first contribution in [#9661](https://github.com/encode/django-rest-framework/pull/9661)
+* [`@gbip`](https://github.com/gbip) made their first contribution in [#9667](https://github.com/encode/django-rest-framework/pull/9667)
+
+**Full Changelog**: https://github.com/encode/django-rest-framework/compare/3.15.2...3.16.0
+
+## 3.15.x series
+
+### 3.15.2
+
+**Date**: 14th June 2024
+
+* Fix potential XSS vulnerability in browsable API. [#9435](https://github.com/encode/django-rest-framework/pull/9435)
+* Revert "Ensure CursorPagination respects nulls in the ordering field". [#9381](https://github.com/encode/django-rest-framework/pull/9381)
+* Use warnings rather than logging a warning for DecimalField. [#9367](https://github.com/encode/django-rest-framework/pull/9367)
+* Remove unused code. [#9393](https://github.com/encode/django-rest-framework/pull/9393)
+* Django < 4.2 and Python < 3.8 no longer supported. [#9393](https://github.com/encode/django-rest-framework/pull/9393)
+
+### 3.15.1
+
+Date: 22nd March 2024
+
+* Fix `SearchFilter` handling of quoted and comma separated strings, when `.get_search_terms` is being called into by a custom class. See [[#9338](https://github.com/encode/django-rest-framework/issues/9338)]
+* Revert number of 3.15.0 issues which included unintended side-effects. See [[#9331](https://github.com/encode/django-rest-framework/issues/9331)]
+
+### 3.15.0
+
+Date: 15th March 2024
+
+* Django 5.0 and Python 3.12 support [[#9157](https://github.com/encode/django-rest-framework/pull/9157)]
+* Use POST method instead of GET to perform logout in browsable API [[9208](https://github.com/encode/django-rest-framework/pull/9208)]
+* Added jQuery 3.7.1 support & dropped previous version [[#9094](https://github.com/encode/django-rest-framework/pull/9094)]
+* Use str as default path converter [[#9066](https://github.com/encode/django-rest-framework/pull/9066)]
+* Document support for http.HTTPMethod in the @action decorator added in Python 3.11 [[#9067](https://github.com/encode/django-rest-framework/pull/9067)]
+* Update exceptions.md [[#9071](https://github.com/encode/django-rest-framework/pull/9071)]
+* Partial serializer should not have required fields [[#7563](https://github.com/encode/django-rest-framework/pull/7563)]
+* Propagate 'default' from model field to serializer field. [[#9030](https://github.com/encode/django-rest-framework/pull/9030)]
+* Allow to override child.run_validation call in ListSerializer [[#8035](https://github.com/encode/django-rest-framework/pull/8035)]
+* Align SearchFilter behaviour to django.contrib.admin search [[#9017](https://github.com/encode/django-rest-framework/pull/9017)]
+* Class name added to unknown field error [[#9019](https://github.com/encode/django-rest-framework/pull/9019)]
+* Fix: Pagination response schemas. [[#9049](https://github.com/encode/django-rest-framework/pull/9049)]
+* Fix choices in ChoiceField to support IntEnum [[#8955](https://github.com/encode/django-rest-framework/pull/8955)]
+* Fix `SearchFilter` rendering search field with invalid value [[#9023](https://github.com/encode/django-rest-framework/pull/9023)]
+* Fix OpenAPI Schema yaml rendering for `timedelta` [[#9007](https://github.com/encode/django-rest-framework/pull/9007)]
+* Fix `NamespaceVersioning` ignoring `DEFAULT_VERSION` on non-None namespaces [[#7278](https://github.com/encode/django-rest-framework/pull/7278)]
+* Added Deprecation Warnings for CoreAPI [[#7519](https://github.com/encode/django-rest-framework/pull/7519)]
+* Removed usage of `field.choices` that triggered full table load [[#8950](https://github.com/encode/django-rest-framework/pull/8950)]
+* Permit mixed casing of string values for `BooleanField` validation [[#8970](https://github.com/encode/django-rest-framework/pull/8970)]
+* Fixes `BrowsableAPIRenderer` for usage with `ListSerializer`. [[#7530](https://github.com/encode/django-rest-framework/pull/7530)]
+* Change semantic of `OR` of two permission classes [[#7522](https://github.com/encode/django-rest-framework/pull/7522)]
+* Remove dependency on `pytz` [[#8984](https://github.com/encode/django-rest-framework/pull/8984)]
+* Make set_value a method within `Serializer` [[#8001](https://github.com/encode/django-rest-framework/pull/8001)]
+* Fix URLPathVersioning reverse fallback [[#7247](https://github.com/encode/django-rest-framework/pull/7247)]
+* Warn about Decimal type in min_value and max_value arguments of DecimalField [[#8972](https://github.com/encode/django-rest-framework/pull/8972)]
+* Fix mapping for choice values [[#8968](https://github.com/encode/django-rest-framework/pull/8968)]
+* Refactor read function to use context manager for file handling [[#8967](https://github.com/encode/django-rest-framework/pull/8967)]
+* Fix: fallback on CursorPagination ordering if unset on the view [[#8954](https://github.com/encode/django-rest-framework/pull/8954)]
+* Replaced `OrderedDict` with `dict` [[#8964](https://github.com/encode/django-rest-framework/pull/8964)]
+* Refactor get_field_info method to include max_digits and decimal_places attributes in SimpleMetadata class [[#8943](https://github.com/encode/django-rest-framework/pull/8943)]
+* Implement `__eq__` for validators [[#8925](https://github.com/encode/django-rest-framework/pull/8925)]
+* Ensure CursorPagination respects nulls in the ordering field [[#8912](https://github.com/encode/django-rest-framework/pull/8912)]
+* Use ZoneInfo as primary source of timezone data [[#8924](https://github.com/encode/django-rest-framework/pull/8924)]
+* Add username search field for TokenAdmin (#8927) [[#8934](https://github.com/encode/django-rest-framework/pull/8934)]
+* Handle Nested Relation in SlugRelatedField when many=False [[#8922](https://github.com/encode/django-rest-framework/pull/8922)]
+* Bump version of jQuery to 3.6.4 & updated ref links [[#8909](https://github.com/encode/django-rest-framework/pull/8909)]
+* Support UniqueConstraint [[#7438](https://github.com/encode/django-rest-framework/pull/7438)]
+* Allow Request, Response, Field, and GenericAPIView to be subscriptable. This allows the classes to be made generic for type checking. [[#8825](https://github.com/encode/django-rest-framework/pull/8825)]
+* Feat: Add some changes to ValidationError to support django style validation errors [[#8863](https://github.com/encode/django-rest-framework/pull/8863)]
+* Fix Respect `can_read_model` permission in DjangoModelPermissions [[#8009](https://github.com/encode/django-rest-framework/pull/8009)]
+* Add SimplePathRouter [[#6789](https://github.com/encode/django-rest-framework/pull/6789)]
+* Re-prefetch related objects after updating [[#8043](https://github.com/encode/django-rest-framework/pull/8043)]
+* Fix FilePathField required argument [[#8805](https://github.com/encode/django-rest-framework/pull/8805)]
+* Raise ImproperlyConfigured exception if `basename` is not unique  [[#8438](https://github.com/encode/django-rest-framework/pull/8438)]
+* Use PrimaryKeyRelatedField pkfield in openapi [[#8315](https://github.com/encode/django-rest-framework/pull/8315)]
+* replace partition with split in BasicAuthentication [[#8790](https://github.com/encode/django-rest-framework/pull/8790)]
+* Fix BooleanField's allow_null behavior [[#8614](https://github.com/encode/django-rest-framework/pull/8614)]
+* Handle Django's ValidationErrors in ListField [[#6423](https://github.com/encode/django-rest-framework/pull/6423)]
+* Remove a bit of inline CSS. Add CSP nonce where it might be required and is available [[#8783](https://github.com/encode/django-rest-framework/pull/8783)]
+* Use autocomplete widget for user selection in Token admin [[#8534](https://github.com/encode/django-rest-framework/pull/8534)]
+* Make browsable API compatible with strong CSP [[#8784](https://github.com/encode/django-rest-framework/pull/8784)]
+* Avoid inline script execution for injecting CSRF token [[#7016](https://github.com/encode/django-rest-framework/pull/7016)]
+* Mitigate global dependency on inflection [[#8017](https://github.com/encode/django-rest-framework/pull/8017)] [[#8781](https://github.com/encode/django-rest-framework/pull/8781)]
+* Register Django urls  [[#8778](https://github.com/encode/django-rest-framework/pull/8778)]
+* Implemented Verbose Name Translation for TokenProxy [[#8713](https://github.com/encode/django-rest-framework/pull/8713)]
+* Properly handle OverflowError in DurationField deserialization [[#8042](https://github.com/encode/django-rest-framework/pull/8042)]
+* Fix OpenAPI operation name plural appropriately [[#8017](https://github.com/encode/django-rest-framework/pull/8017)]
+* Represent SafeString as plain string on schema rendering [[#8429](https://github.com/encode/django-rest-framework/pull/8429)]
+* Fix #8771 - Checking for authentication even if `_ignore_model_permissions = True` [[#8772](https://github.com/encode/django-rest-framework/pull/8772)]
+* Fix 404 when page query parameter is empty string [[#8578](https://github.com/encode/django-rest-framework/pull/8578)]
+* Fixes instance check in ListSerializer.to_representation [[#8726](https://github.com/encode/django-rest-framework/pull/8726)] [[#8727](https://github.com/encode/django-rest-framework/pull/8727)]
+* FloatField will crash if the input is a number that is too big [[#8725](https://github.com/encode/django-rest-framework/pull/8725)]
+* Add missing DurationField to SimpleMetadata label_lookup [[#8702](https://github.com/encode/django-rest-framework/pull/8702)]
+* Add support for Python 3.11 [[#8752](https://github.com/encode/django-rest-framework/pull/8752)]
+* Make request consistently available in pagination classes [[#8764](https://github.com/encode/django-rest-framework/pull/9764)]
+* Possibility to remove trailing zeros on DecimalFields representation [[#6514](https://github.com/encode/django-rest-framework/pull/6514)]
+* Add a method for getting serializer field name (OpenAPI) [[#7493](https://github.com/encode/django-rest-framework/pull/7493)]
+* Add `__eq__` method for `OperandHolder` class [[#8710](https://github.com/encode/django-rest-framework/pull/8710)]
+* Avoid importing `django.test` package when not testing  [[#8699](https://github.com/encode/django-rest-framework/pull/8699)]
+* Preserve exception messages for wrapped Django exceptions [[#8051](https://github.com/encode/django-rest-framework/pull/8051)]
+* Include `examples` and `format` to OpenAPI schema of CursorPagination [[#8687](https://github.com/encode/django-rest-framework/pull/8687)] [[#8686](https://github.com/encode/django-rest-framework/pull/8686)]
+* Fix infinite recursion with deepcopy on Request [[#8684](https://github.com/encode/django-rest-framework/pull/8684)]
+* Refactor: Replace try/except with contextlib.suppress() [[#8676](https://github.com/encode/django-rest-framework/pull/8676)]
+* Minor fix to SerializeMethodField docstring [[#8629](https://github.com/encode/django-rest-framework/pull/8629)]
+* Minor refactor: Unnecessary use of list() function [[#8672](https://github.com/encode/django-rest-framework/pull/8672)]
+* Unnecessary list comprehension [[#8670](https://github.com/encode/django-rest-framework/pull/8670)]
+* Use correct class to indicate present deprecation [[#8665](https://github.com/encode/django-rest-framework/pull/8665)]
 
 ## 3.14.x series
 
@@ -325,7 +512,7 @@ Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.
 * Allow hashing of ErrorDetail. [#5932][gh5932]
 * Correct schema parsing for JSONField [#5878][gh5878]
 * Render descriptions (from help_text) using safe [#5869][gh5869]
-* Removed input value from deault_error_message [#5881][gh5881]
+* Removed input value from default_error_message [#5881][gh5881]
 * Added min_value/max_value support in DurationField [#5643][gh5643]
 * Fixed instance being overwritten in pk-only optimization try/except block [#5747][gh5747]
 * Fixed AttributeError from items filter when value is None [#5981][gh5981]
@@ -946,7 +1133,7 @@ See the [release announcement][3.6-release].
 * description.py codes and tests removal. ([#4153][gh4153])
 * Wrap guardian.VERSION in tuple. ([#4149][gh4149])
 * Refine validator for fields with <source=> kwargs. ([#4146][gh4146])
-* Fix None values representation in childs of ListField, DictField. ([#4118][gh4118])
+* Fix None values representation in children of ListField, DictField. ([#4118][gh4118])
 * Resolve TimeField representation for midnight value. ([#4107][gh4107])
 * Set proper status code in AdminRenderer for the redirection after POST/DELETE requests. ([#4106][gh4106])
 * TimeField render returns None instead of 00:00:00. ([#4105][gh4105])

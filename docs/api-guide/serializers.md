@@ -233,7 +233,7 @@ Serializer classes can also include reusable validators that are applied to the 
 
     class EventSerializer(serializers.Serializer):
         name = serializers.CharField()
-        room_number = serializers.IntegerField(choices=[101, 102, 103, 201])
+        room_number = serializers.ChoiceField(choices=[101, 102, 103, 201])
         date = serializers.DateField()
 
         class Meta:
@@ -844,8 +844,6 @@ Here's an example of how you might choose to implement multiple updates:
 
         class Meta:
             list_serializer_class = BookListSerializer
-
-It is possible that a third party package may be included alongside the 3.1 release that provides some automatic support for multiple update operations, similar to the `allow_add_remove` behavior that was present in REST framework 2.
 
 #### Customizing ListSerializer initialization
 

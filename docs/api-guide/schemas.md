@@ -56,10 +56,11 @@ The following sections explain more.
 
 ### Install dependencies
 
-    pip install pyyaml uritemplate
+    pip install pyyaml uritemplate inflection
 
 * `pyyaml` is used to generate schema into YAML-based OpenAPI format.
 * `uritemplate` is used internally to get parameters in path.
+* `inflection` is used to pluralize operations more appropriately in the list endpoints.
 
 ### Generating a static schema with the `generateschema` management command
 
@@ -450,7 +451,7 @@ If your views have related customizations that are needed frequently, you can
 create a base `AutoSchema` subclass for your project that takes additional
 `__init__()` kwargs to save subclassing `AutoSchema` for each view.
 
-[cite]: https://blog.heroku.com/archives/2014/1/8/json_schema_for_heroku_platform_api
+[cite]: https://www.heroku.com/blog/json_schema_for_heroku_platform_api/
 [openapi]: https://github.com/OAI/OpenAPI-Specification
 [openapi-specification-extensions]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#specification-extensions
 [openapi-operation]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#operationObject
