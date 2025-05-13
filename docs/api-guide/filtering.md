@@ -368,5 +368,5 @@ The [djangorestframework-word-filter][django-rest-framework-word-search-filter] 
 [django-url-filter]: https://github.com/miki725/django-url-filter
 [drf-url-filter]: https://github.com/manjitkumar/drf-url-filters
 [HStoreField]: https://docs.djangoproject.com/en/stable/ref/contrib/postgres/fields/#hstorefield
-[JSONField]: https://docs.djangoproject.com/en/3.0/ref/contrib/postgres/fields/#jsonfield
+[JSONField]: https://docs.djangoproject.com/en/stable/ref/models/fields/#django.db.models.JSONField
 [postgres-search]: https://docs.djangoproject.com/en/stable/ref/contrib/postgres/search/
