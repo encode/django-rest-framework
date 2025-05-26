@@ -1483,6 +1483,12 @@ class ModelSerializer(Serializer):
         hidden_fields = {}
         uniqueness_extra_kwargs = {}
 
+        # Identify declared SerializerMethodFields to prevent them from becoming HiddenFields
+        serializer_method_field_names = {
+            name for name, field_instance in declared_fields.items()
+            if isinstance(field_instance, SerializerMethodField)
+        }
+
         for unique_constraint_name in unique_constraint_names:
             # Get the model field that is referred too.
             unique_constraint_field = model._meta.get_field(unique_constraint_name)
@@ -1507,8 +1513,10 @@ class ModelSerializer(Serializer):
             elif default is not empty:
                 # The corresponding field is not present in the
                 # serializer. We have a default to use for it, so
-                # add in a hidden field that populates it.
-                hidden_fields[unique_constraint_name] = HiddenField(default=default)
+                # add in a hidden field that populates it,
+                # unless it's a SerializerMethodField.
+                if unique_constraint_name not in serializer_method_field_names:
+                    hidden_fields[unique_constraint_name] = HiddenField(default=default)
 
         # Update `extra_kwargs` with any new options.
         for key, value in uniqueness_extra_kwargs.items():
