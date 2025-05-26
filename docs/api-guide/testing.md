@@ -105,6 +105,20 @@ This means that setting attributes directly on the request object may not always
     request.user = user
     response = view(request)
 
+If you want to test a request involving the REST framework’s 'Request' object, you’ll need to manually transform it first:
+
+    class DummyView(APIView):
+        ...
+
+    factory = APIRequestFactory()
+    request = factory.get('/', {'demo': 'test'})
+    DRF_request = DummyView().initialize_request(request)
+    assert DRF_request.query_params == {'demo': ['test']}
+
+    request = factory.post('/', {'example': 'test'})
+    DRF_request = DummyView().initialize_request(request)
+    assert DRF_request.data.get('example') == 'test'
+
 ---
 
 ## Forcing CSRF validation
