@@ -552,6 +552,45 @@ class UniqueConstraintModel(models.Model):
         ]
 
 
+class FancyConditionModel(models.Model):
+    id = models.IntegerField(primary_key=True)
+
+
+class UniqueConstraintForeignKeyModel(models.Model):
+    race_name = models.CharField(max_length=100)
+    position = models.IntegerField()
+    global_id = models.IntegerField()
+    fancy_conditions = models.ForeignKey(FancyConditionModel, on_delete=models.CASCADE)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                name="unique_constraint_foreign_key_model_global_id_uniq",
+                fields=('global_id',),
+            ),
+            models.UniqueConstraint(
+                name="unique_constraint_foreign_key_model_fancy_1_uniq",
+                fields=('fancy_conditions',),
+                condition=models.Q(global_id__lte=1)
+            ),
+            models.UniqueConstraint(
+                name="unique_constraint_foreign_key_model_fancy_3_uniq",
+                fields=('fancy_conditions',),
+                condition=models.Q(global_id__gte=3)
+            ),
+            models.UniqueConstraint(
+                name="unique_constraint_foreign_key_model_together_uniq",
+                fields=('race_name', 'position'),
+                condition=models.Q(race_name='example'),
+            ),
+            models.UniqueConstraint(
+                name='unique_constraint_foreign_key_model_together_uniq2',
+                fields=('race_name', 'position'),
+                condition=models.Q(fancy_conditions__gte=10),
+            ),
+        ]
+
+
 class UniqueConstraintNullableModel(models.Model):
     title = models.CharField(max_length=100)
     age = models.IntegerField(null=True)
@@ -567,6 +606,12 @@ class UniqueConstraintNullableModel(models.Model):
 class UniqueConstraintSerializer(serializers.ModelSerializer):
     class Meta:
         model = UniqueConstraintModel
+        fields = '__all__'
+
+
+class UniqueConstraintForeignKeySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UniqueConstraintForeignKeyModel
         fields = '__all__'
 
 
@@ -700,6 +745,118 @@ class TestUniqueConstraintValidation(TestCase):
             }
         )
         assert serializer.is_valid()
+
+
+class TestUniqueConstraintForeignKeyValidation(TestCase):
+    def setUp(self):
+        fancy_model_condition = FancyConditionModel.objects.create(id=1)
+        self.instance = UniqueConstraintForeignKeyModel.objects.create(
+            race_name='example',
+            position=1,
+            global_id=1,
+            fancy_conditions=fancy_model_condition
+        )
+        UniqueConstraintForeignKeyModel.objects.create(
+            race_name='example',
+            position=2,
+            global_id=2,
+            fancy_conditions=fancy_model_condition
+        )
+        UniqueConstraintForeignKeyModel.objects.create(
+            race_name='other',
+            position=1,
+            global_id=3,
+            fancy_conditions=fancy_model_condition
+        )
+
+    def test_repr(self):
+        serializer = UniqueConstraintForeignKeySerializer()
+        # the order of validators isn't deterministic so delete
+        # fancy_conditions field that has two of them
+        del serializer.fields['fancy_conditions']
+        expected = dedent(r"""
+            UniqueConstraintForeignKeySerializer\(\):
+                id = IntegerField\(label='ID', read_only=True\)
+                race_name = CharField\(max_length=100, required=True\)
+                position = IntegerField\(.*required=True\)
+                global_id = IntegerField\(.*validators=\[<UniqueValidator\(queryset=UniqueConstraintForeignKeyModel.objects.all\(\)\)>\]\)
+                class Meta:
+                    validators = \[<UniqueTogetherValidator\(queryset=UniqueConstraintForeignKeyModel.objects.all\(\), fields=\('race_name', 'position'\), condition=<Q: \(AND: \('race_name', 'example'\)\)>\)>\]
+        """)
+        assert re.search(expected, repr(serializer)) is not None
+
+    def test_unique_together_condition(self):
+        """
+        Fields used in UniqueConstraint's condition must be included
+        into queryset existence check
+        """
+        fancy_model_condition_9 = FancyConditionModel.objects.create(id=9)
+        fancy_model_condition_10 = FancyConditionModel.objects.create(id=10)
+        fancy_model_condition_11 = FancyConditionModel.objects.create(id=11)
+        UniqueConstraintForeignKeyModel.objects.create(
+            race_name='condition',
+            position=1,
+            global_id=10,
+            fancy_conditions=fancy_model_condition_10,
+        )
+        serializer = UniqueConstraintForeignKeySerializer(data={
+            'race_name': 'condition',
+            'position': 1,
+            'global_id': 11,
+            'fancy_conditions': fancy_model_condition_9,
+        })
+        assert serializer.is_valid()
+        serializer = UniqueConstraintForeignKeySerializer(data={
+            'race_name': 'condition',
+            'position': 1,
+            'global_id': 11,
+            'fancy_conditions': fancy_model_condition_11,
+        })
+        assert not serializer.is_valid()
+
+    def test_unique_together_condition_fields_required(self):
+        """
+        Fields used in UniqueConstraint's condition must be present in serializer
+        """
+        serializer = UniqueConstraintForeignKeySerializer(data={
+            'race_name': 'condition',
+            'position': 1,
+            'global_id': 11,
+        })
+        assert not serializer.is_valid()
+        assert serializer.errors == {'fancy_conditions': ['This field is required.']}
+
+        class NoFieldsSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = UniqueConstraintForeignKeyModel
+                fields = ('race_name', 'position', 'global_id')
+
+        serializer = NoFieldsSerializer()
+        assert len(serializer.validators) == 1
+
+    def test_single_field_uniq_validators(self):
+        """
+        UniqueConstraint with single field must be transformed into
+        field's UniqueValidator
+        """
+        # Django 5 includes Max and Min values validators for IntegerField
+        extra_validators_qty = 2 if django_version[0] >= 5 else 0
+        serializer = UniqueConstraintForeignKeySerializer()
+        assert len(serializer.validators) == 2
+        validators = serializer.fields['global_id'].validators
+        assert len(validators) == 1 + extra_validators_qty
+        assert validators[0].queryset == UniqueConstraintForeignKeyModel.objects
+
+        validators = serializer.fields['fancy_conditions'].validators
+        assert len(validators) == 2 + extra_validators_qty
+        ids_in_qs = {frozenset(v.queryset.values_list(flat=True)) for v in validators if hasattr(v, "queryset")}
+        assert ids_in_qs == {frozenset([1]), frozenset([3])}
+
+    def test_nullable_unique_constraint_fields_are_not_required(self):
+        serializer = UniqueConstraintNullableSerializer(data={'title': 'Bob'})
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        result = serializer.save()
+        self.assertIsInstance(result, UniqueConstraintNullableModel)
 
 
 # Tests for `UniqueForDateValidator`
