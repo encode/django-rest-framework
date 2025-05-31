@@ -1469,12 +1469,13 @@ class ModelSerializer(Serializer):
                                         model_field.unique_for_year}
 
         unique_constraint_names -= {None}
+        model_fields_names = set(model_fields.keys())
 
         # Include each of the `unique_together` and `UniqueConstraint` field names,
         # so long as all the field names are included on the serializer.
         for unique_together_list, queryset, condition_fields, condition in self.get_unique_together_constraints(model):
             unique_together_list_and_condition_fields = set(unique_together_list) | set(condition_fields)
-            if set(field_names).issuperset(unique_together_list_and_condition_fields):
+            if model_fields_names.issuperset(unique_together_list_and_condition_fields):
                 unique_constraint_names |= unique_together_list_and_condition_fields
 
         # Now we have all the field names that have uniqueness constraints
