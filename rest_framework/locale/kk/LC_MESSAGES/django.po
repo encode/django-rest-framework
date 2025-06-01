@@ -1,6 +1,6 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
+# This file is distributed under the same license as the Django REST framework package.
+# Translators:
+# Dulat Kushibayev <kushibayev@gmail.com>, 2025
 #
 msgid ""
 msgstr ""
@@ -136,7 +136,7 @@ msgstr "Сұраныстағы \"{media_type}\" медиа түрі қолдау
 
 #: exceptions.py:228
 msgid "Request was throttled."
-msgstr "Сұраныс шектетілді."
+msgstr "Сұраныс жиілігі шектелді."
 
 #: exceptions.py:229
 #, python-brace-format
