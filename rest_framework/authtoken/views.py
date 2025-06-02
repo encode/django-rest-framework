@@ -1,3 +1,5 @@
+from django.contrib.auth import get_user_model
+
 from rest_framework import parsers, renderers
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.serializers import AuthTokenSerializer
@@ -16,15 +18,17 @@ class ObtainAuthToken(APIView):
     serializer_class = AuthTokenSerializer
 
     if coreapi_schema.is_enabled():
+        USER_MODEL = get_user_model()
+        identifier_field_name = USER_MODEL.USERNAME_FIELD
         schema = ManualSchema(
             fields=[
                 coreapi.Field(
-                    name="username",
+                    name=identifier_field_name,
                     required=True,
                     location='form',
                     schema=coreschema.String(
-                        title="Username",
-                        description="Valid username for authentication",
+                        title=identifier_field_name.title(),
+                        description=f"Valid {identifier_field_name} for authentication",
                     ),
                 ),
                 coreapi.Field(
