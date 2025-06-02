@@ -196,7 +196,7 @@ When in use, the browsable API will include a `SearchFilter` control:
 
 ![Search Filter](../img/search-filter.png)
 
-The `SearchFilter` class will only be applied if the view has a `search_fields` attribute set.  The `search_fields` attribute should be a list of names of text type fields on the model, such as `CharField` or `TextField`.
+The `SearchFilter` class will only be applied if `SearchFilter` class itself or the view has a `search_fields` attribute set. The `search_fields` attribute should be a list of names of text type fields on the model, such as `CharField` or `TextField`.
 
     from rest_framework import filters
 
@@ -246,6 +246,21 @@ To dynamically change search fields based on request content, it's possible to s
             if request.query_params.get('title_only'):
                 return ['title']
             return super().get_search_fields(view, request)
+
+To use use multiple filters in the same view, override `search_param` and `search_fields` attribute. Many filters can be applied simultaneously on the same view. For example, the following subclass will search on `title` if the query parameter `search_title` is used and search on `text` if the query parameter `search_title` is used:
+
+    from rest_framework import filters
+
+        class TitleSearchFilter(filters.SearchFilter):
+            search_param = 'search_title'
+            search_fields = ('$title', )
+
+        class TextSearchFilter(filters.SearchFilter):
+            search_param = 'search_text'
+            search_fields = ('$text', )
+
+        class SearchListView(generics.ListAPIView):
+            filter_backends = (TitleSearchFilter, TextSearchFilter)
 
 For more details, see the [Django documentation][search-django-admin].
 
