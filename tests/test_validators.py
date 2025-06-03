@@ -516,6 +516,43 @@ class TestUniquenessTogetherValidation(TestCase):
         validator.filter_queryset(attrs=data, queryset=queryset, serializer=serializer)
         assert queryset.called_with == {'race_name': 'bar', 'position': 1}
 
+    def test_uniq_together_validation_uses_model_fields_method_field(self):
+        class TestSerializer(serializers.ModelSerializer):
+            position = serializers.SerializerMethodField()
+
+            def get_position(self, obj):
+                return obj.position or 0
+
+            class Meta:
+                model = NullUniquenessTogetherModel
+                fields = ['race_name', 'position']
+
+        serializer = TestSerializer()
+        expected = dedent("""
+            TestSerializer():
+                race_name = CharField(max_length=100)
+                position = SerializerMethodField()
+        """)
+        assert repr(serializer) == expected
+
+    def test_uniq_together_validation_uses_model_fields_with_source_field(self):
+        class TestSerializer(serializers.ModelSerializer):
+            pos = serializers.IntegerField(source='position')
+
+            class Meta:
+                model = NullUniquenessTogetherModel
+                fields = ['race_name', 'pos']
+
+        serializer = TestSerializer()
+        expected = dedent("""
+            TestSerializer():
+                race_name = CharField(max_length=100, required=True)
+                pos = IntegerField(source='position')
+                class Meta:
+                    validators = [<UniqueTogetherValidator(queryset=NullUniquenessTogetherModel.objects.all(), fields=('race_name', 'pos'))>]
+        """)
+        assert repr(serializer) == expected
+
 
 class UniqueConstraintModel(models.Model):
     race_name = models.CharField(max_length=100)
