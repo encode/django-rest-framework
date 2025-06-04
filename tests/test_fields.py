@@ -1626,7 +1626,7 @@ class TestCustomTimezoneForDateTimeField(TestCase):
 
 
 @pytest.mark.skipif(pytz is None or django.VERSION >= (5,),
-    reason="Django 5.0 has removed pytz; this test should eventually be able to get removed.")
+                    reason="Django 5.0 has removed pytz; this test should eventually be able to get removed.")
 class TestPytzNaiveDayLightSavingTimeTimeZoneDateTimeField(FieldValues):
     """
     Invalid values for `DateTimeField` with datetime in DST shift (non-existing or ambiguous) and timezone with DST.
