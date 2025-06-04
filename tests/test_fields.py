@@ -16,6 +16,7 @@ try:
 except ImportError:
     pytz = None
 
+import django
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db.models import IntegerChoices, TextChoices
 from django.http import QueryDict
@@ -1624,7 +1625,8 @@ class TestCustomTimezoneForDateTimeField(TestCase):
         assert rendered_date == rendered_date_in_timezone
 
 
-@pytest.mark.skipif(pytz is None, reason="Django 5.0 has removed pytz; this test should eventually be able to get removed.")
+@pytest.mark.skipif(pytz is None or django.VERSION >= (5,),
+    reason="Django 5.0 has removed pytz; this test should eventually be able to get removed.")
 class TestPytzNaiveDayLightSavingTimeTimeZoneDateTimeField(FieldValues):
     """
     Invalid values for `DateTimeField` with datetime in DST shift (non-existing or ambiguous) and timezone with DST.
