@@ -1346,6 +1346,31 @@ class Issue6110ModelSerializer(serializers.ModelSerializer):
         fields = ('name',)
 
 
+class UniqueTestModel(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.CharField(max_length=100, null=True, blank=True)
+    other_field = models.CharField(max_length=100, default="default_value")
+
+    class Meta:
+        unique_together = [("name", "description")]
+
+    def __str__(self):
+        return f"{self.name} - {self.description or 'No description'}"
+
+
+class UniqueTestModelSerializer(serializers.ModelSerializer):
+    description = serializers.SerializerMethodField()
+
+    class Meta:
+        model = UniqueTestModel
+        fields = ["name", "description", "other_field"]
+
+    def get_description(self, obj):
+        if obj.description:
+            return f"Serialized: {obj.description}"
+        return "Serialized: No description provided"
+
+
 class Issue6110Test(TestCase):
     def test_model_serializer_custom_manager(self):
         instance = Issue6110ModelSerializer().create({'name': 'test_name'})
@@ -1395,3 +1420,68 @@ class Issue6751Test(TestCase):
         serializer.save()
 
         self.assertEqual(instance.char_field, 'value changed by signal')
+
+
+class TestSerializerMethodFieldInUniqueTogether(TestCase):
+    def test_serializer_method_field_not_hidden_in_unique_together(self):
+        """
+        Tests that a SerializerMethodField named the same as a model field
+        in a unique_together constraint is not treated as a HiddenField and
+        that unique_together validation still functions correctly.
+        """
+        serializer = UniqueTestModelSerializer()
+
+        self.assertFalse(
+            isinstance(serializer.fields['description'], serializers.HiddenField),
+            "Field 'description' should not be a HiddenField."
+        )
+        self.assertTrue(
+            isinstance(serializer.fields['description'], serializers.SerializerMethodField),
+            "Field 'description' should be a SerializerMethodField."
+        )
+
+        instance = UniqueTestModel.objects.create(name="TestName", description="TestDesc")
+        serializer_output = UniqueTestModelSerializer(instance).data
+        self.assertIn("description", serializer_output)
+        self.assertEqual(serializer_output["description"], "Serialized: TestDesc")
+
+        instance_no_desc = UniqueTestModel.objects.create(name="TestNameNoDesc")
+        serializer_output_no_desc = UniqueTestModelSerializer(instance_no_desc).data
+        self.assertEqual(serializer_output_no_desc["description"], "Serialized: No description provided")
+
+        UniqueTestModel.objects.create(name="UniqueName", description="UniqueDesc")
+        invalid_data = {"name": "UniqueName", "description": "UniqueDesc", "other_field": "some_value"}
+        serializer_invalid = UniqueTestModelSerializer(data=invalid_data)
+        with self.assertRaises(serializers.ValidationError) as context:
+            serializer_invalid.is_valid(raise_exception=True)
+        self.assertIn("non_field_errors", context.exception.detail)
+        self.assertTrue(any("unique test model with this name and description already exists" in str(err)
+                            for err_list in context.exception.detail.values() for err in err_list))
+
+        UniqueTestModel.objects.create(name="UniqueNameNull", description=None)
+        invalid_data_null = {"name": "UniqueNameNull", "description": None, "other_field": "some_value"}
+        serializer_invalid_null = UniqueTestModelSerializer(data=invalid_data_null)
+        with self.assertRaises(serializers.ValidationError) as context_null:
+            serializer_invalid_null.is_valid(raise_exception=True)
+        self.assertIn("non_field_errors", context_null.exception.detail)
+        self.assertTrue(any("unique test model with this name and description already exists" in str(err)
+                            for err_list in context_null.exception.detail.values() for err in err_list))
+
+        valid_data = {"name": "NewName", "description": "NewDesc", "other_field": "another_value"}
+        serializer_valid = UniqueTestModelSerializer(data=valid_data)
+        self.assertTrue(serializer_valid.is_valid(raise_exception=True))
+        self.assertEqual(serializer_valid.validated_data['name'], "NewName")
+
+        valid_data_no_desc = {"name": "NameOnly"}
+        serializer_valid_no_desc = UniqueTestModelSerializer(data=valid_data_no_desc)
+        self.assertTrue(serializer_valid_no_desc.is_valid(raise_exception=True))
+        self.assertIsNone(serializer_valid_no_desc.validated_data.get('description'))
+        self.assertEqual(serializer_valid_no_desc.validated_data['other_field'], "default_value")
+
+        saved_instance = serializer_valid_no_desc.save()
+        self.assertEqual(saved_instance.name, "NameOnly")
+        self.assertIsNone(saved_instance.description)
+        self.assertEqual(saved_instance.other_field, "default_value")
+
+        output_after_save = UniqueTestModelSerializer(saved_instance).data
+        self.assertEqual(output_after_save['description'], "Serialized: No description provided")
