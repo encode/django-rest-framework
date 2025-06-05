@@ -1625,7 +1625,6 @@ class TestCustomTimezoneForDateTimeField(TestCase):
         assert rendered_date == rendered_date_in_timezone
 
 
-@pytest.mark.skipif(condition=pytz is None, reason="pytz is not available.")
 @pytest.mark.skipif(
     condition=django.VERSION >= (5,),
     reason="Django 5.0 has removed pytz; this test should eventually be able to get removed.",
