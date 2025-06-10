@@ -30,6 +30,7 @@ The [Django code of conduct][code-of-conduct] gives a fuller set of guidelines f
 
 * Django REST framework is considered feature-complete. Please do not file requests to change behavior, unless it is required for security reasons or to maintain compatibility with upcoming Django or Python versions.
 * Feature requests will typically be closed with a recommendation that they be implemented outside the core REST framework library (e.g. as third-party libraries).  This approach allows us to keep down the maintenance overhead of REST framework, so that the focus can be on continued stability and great documentation.
+* To report a bug, open a pull request with a failing test. Apart from the above categories, we mainly focus on fixing regression bugs: things that used to work but recently stopped working. Anything else will be treated as a feature request.
 
 # Development
 
