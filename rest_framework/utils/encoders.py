@@ -41,8 +41,7 @@ class JSONEncoder(json.JSONEncoder):
         elif isinstance(obj, datetime.timedelta):
             return str(obj.total_seconds())
         elif isinstance(obj, decimal.Decimal):
-            # Serializers will coerce decimals to strings by default.
-            return float(obj)
+            return str(obj)
         elif isinstance(obj, uuid.UUID):
             return str(obj)
         elif isinstance(obj, QuerySet):
