@@ -21,7 +21,7 @@ from rest_framework.test import (
 
 @api_view(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'])
 def view(request):
-    data = {'auth': request.META.get('HTTP_AUTHORIZATION', b'')}
+    data = {'auth': request.headers.get('authorization', b'')}
     if request.user:
         data['user'] = request.user.username
     if request.auth:
@@ -347,7 +347,7 @@ class TestAPIRequestFactory(TestCase):
             data=None,
             content_type='application/json',
         )
-        assert request.META['CONTENT_TYPE'] == 'application/json'
+        assert request.headers['content-type'] == 'application/json'
 
 
 class TestUrlPatternTestCase(URLPatternsTestCase):
