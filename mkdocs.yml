@@ -54,6 +54,7 @@ nav:
     - 'Settings': 'api-guide/settings.md'
  - Topics:
      - 'Documenting your API': 'topics/documenting-your-api.md'
+     - 'Observability': 'topics/observability.md'
      - 'Internationalization': 'topics/internationalization.md'
      - 'AJAX, CSRF & CORS': 'topics/ajax-csrf-cors.md'
      - 'HTML & Forms': 'topics/html-and-forms.md'
