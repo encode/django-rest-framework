@@ -4,11 +4,11 @@
 >
 > &mdash; H. James Harrington
 
-REST framework doesn't ship with built-in observability features, but there are many widely-used tools, standards and third party packages to choose from that work well with it. If your needs are simple, you can also implement your own.
+REST framework doesn’t include built-in observability features, but it works well with popular tools, standards, and third party packages. For simpler needs, you can also implement custom logging or metrics collection using Django middleware.
 
 ## Custom request logging
 
-You can implement a custom middleware that logs relevant information about handled API requests and responses using Python's builtin `logging` module.
+You can implement a custom middleware that logs relevant information about handled API requests and responses using Python's built-in `logging` module.
 
 ```python
 import logging
@@ -39,7 +39,7 @@ MIDDLEWARE = [
 
 [Prometheus](https://prometheus.io/) is an open-source monitoring system that collects metrics by scraping HTTP endpoints exposed by applications. It stores the data in a time series database and supports flexible querying and alerting.
 
-For a REST framework project, Prometheus can be used to track metrics such as request counts, response codes, error rates, and latency. The [django-prometheus](https://pypi.org/project/django-prometheus/) package adds the necessary instrumentation and exposes a `/metrics` endpoint that Prometheus can scrape. You can also add your own application-specific metrics.
+For a REST framework project, Prometheus can be used to track metrics such as request counts, error rates, and latency. The [django-prometheus](https://pypi.org/project/django-prometheus/) package adds the necessary instrumentation and exposes a `/metrics` endpoint that Prometheus can scrape. You can also add your own application-specific metrics.
 
 Prometheus can be paired with [Grafana](https://grafana.com/) to visualize metrics with interactive charts and dashboards.
 
@@ -49,7 +49,7 @@ Prometheus can be paired with [Grafana](https://grafana.com/) to visualize metri
 
 In Django applications, OpenTelemetry can be used to trace requests through views, middleware, and database operations. The [opentelemetry-instrumentation-django](https://pypi.org/project/opentelemetry-instrumentation-django/) package automatically instruments Django and integrates with the wider OpenTelemetry ecosystem.
 
-The collected data can be exported to and visualized with any tool that supports OpenTelemetry, such as:
+The collected data can be exported to any OpenTelemetry-compatible backend for visualization and analysis. Examples include:
 
 - Jaeger
 - Grafana Tempo
@@ -74,7 +74,7 @@ The library is helpful for production deployments as it enables load balancers, 
 
 [django-silk](https://pypi.org/project/django-silk/) is a profiling tool designed specifically for Django applications. It provides detailed insights into request performance, database queries, and custom code blocks or functions through context managers and decorators.
 
-The package offers a web-based interface for analyzing requests, database queries, and profiling your code. It's particularly useful during development to identify performance bottlenecks before they reach production.
+The package offers a web-based interface for analyzing requests, database queries, and profiling code. It's primarily intended for local development to identify performance bottlenecks before they reach production.
 
 ### Sentry
 
