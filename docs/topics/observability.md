@@ -14,14 +14,16 @@ You can implement a custom middleware that logs relevant information about handl
 import logging
 import time
 
-logger = logging.getLogger('your_app.requests')
+logger = logging.getLogger("your_app.requests")
 
 def request_logging_middleware(get_response):
     def middleware(request):
         start_time = time.time()
         response = get_response(request)
         duration = time.time() - start_time
-        logger.info(f'{request.method} {request.path} - {response.status_code} {response.reason_phrase} - {int(duration*1000)}ms')
+        logger.info(
+            f"{request.method} {request.path} - {response.status_code} {response.reason_phrase} - {int(duration*1000)}ms"
+        )
         return response
     return middleware
 ```
@@ -30,7 +32,7 @@ Then, add the middleware to your Django settings.
 
 ```python
 MIDDLEWARE = [
-    'your_app.middleware.request_logging_middleware',
+    "your_app.middleware.request_logging_middleware",
     # ... other middleware
 ]
 ```
