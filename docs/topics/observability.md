@@ -39,14 +39,6 @@ MIDDLEWARE = [
 ]
 ```
 
-## Prometheus
-
-[Prometheus](https://prometheus.io/) is an open-source monitoring system that collects metrics by scraping HTTP endpoints exposed by applications. It stores the data in a time series database and supports flexible querying and alerting.
-
-For a REST framework project, Prometheus can be used to track metrics such as request counts, error rates, and latency. The [django-prometheus](https://pypi.org/project/django-prometheus/) package adds the necessary instrumentation and exposes a `/metrics` endpoint that Prometheus can scrape. You can also add your own application-specific metrics.
-
-Prometheus can be paired with [Grafana](https://grafana.com/) to visualize metrics with interactive charts and dashboards.
-
 ## OpenTelemetry
 
 [OpenTelemetry](https://opentelemetry.io/) is an open-source framework for collecting distributed traces and metrics from applications. It provides a vendor-neutral standard for instrumenting code and exporting telemetry data.
@@ -59,6 +51,14 @@ The collected data can be exported to any OpenTelemetry-compatible backend for v
 - Grafana Tempo
 - Datadog
 - Elastic APM
+
+## Prometheus
+
+[Prometheus](https://prometheus.io/) is an open-source monitoring system that collects metrics by scraping HTTP endpoints exposed by applications. It stores the data in a time series database and supports flexible querying and alerting.
+
+For a REST framework project, Prometheus can be used to track metrics such as request counts, error rates, and latency. The [django-prometheus](https://pypi.org/project/django-prometheus/) package adds the necessary instrumentation and exposes a `/metrics` endpoint that Prometheus can scrape. You can also add your own application-specific metrics.
+
+Prometheus can be paired with [Grafana](https://grafana.com/) to visualize metrics with interactive charts and dashboards.
 
 ## Other third party packages
 
