@@ -16,6 +16,7 @@ import time
 
 logger = logging.getLogger("your_app.requests")
 
+
 def request_logging_middleware(get_response):
     def middleware(request):
         start_time = time.time()
@@ -25,6 +26,7 @@ def request_logging_middleware(get_response):
             f"{request.method} {request.path} - {response.status_code} {response.reason_phrase} - {int(duration*1000)}ms"
         )
         return response
+
     return middleware
 ```
 
