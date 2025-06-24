@@ -11,6 +11,7 @@ from django.utils.cache import cc_delim_re, patch_vary_headers
 from django.utils.encoding import smart_str
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
+from django.http import JsonResponse
 
 from rest_framework import exceptions, status
 from rest_framework.request import Request
@@ -20,6 +21,8 @@ from rest_framework.settings import api_settings
 from rest_framework.utils import formatting
 
 
+def health_check(request):
+    return JsonResponse({"status": "ok"})
 def get_view_name(view):
     """
     Given a view instance, return a textual name to represent the view.
