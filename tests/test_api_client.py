@@ -4,7 +4,7 @@ import unittest
 
 from django.http import HttpResponse
 from django.test import override_settings
-from django.urls import path, re_path
+from django.urls import path
 
 from rest_framework.compat import coreapi, coreschema
 from rest_framework.parsers import FileUploadParser
@@ -180,7 +180,7 @@ class HeadersView(APIView):
 urlpatterns = [
     path('', SchemaView.as_view()),
     path('example/', ListView.as_view()),
-    re_path(r'^example/(?P<id>[0-9]+)/$', DetailView.as_view()),
+    path('example/<int:id>/', DetailView.as_view()),
     path('upload/', UploadView.as_view()),
     path('download/', DownloadView.as_view()),
     path('text/', TextView.as_view()),
