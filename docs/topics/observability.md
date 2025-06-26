@@ -74,12 +74,6 @@ The [apitally](https://pypi.org/project/apitally/) package integrates with Djang
 
 The library is helpful for production deployments as it enables load balancers, orchestration systems, and monitoring tools to determine application health. It supports both simple health checks and detailed status reporting for different application components.
 
-### django-silk
-
-[django-silk](https://pypi.org/project/django-silk/) is a profiling tool designed specifically for Django applications. It provides detailed insights into request performance, database queries, and custom code blocks or functions through context managers and decorators.
-
-The package offers a web-based interface for analyzing requests, database queries, and profiling code. It's primarily intended for local development to identify performance bottlenecks before they reach production.
-
 ### Sentry
 
 [Sentry](https://sentry.io/) is an error monitoring platform that provides real-time error tracking and performance monitoring for applications. It automatically captures exceptions, tracks performance issues, and provides detailed context to help debug problems in production.
