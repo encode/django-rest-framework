@@ -54,13 +54,13 @@ nav:
     - 'Settings': 'api-guide/settings.md'
  - Topics:
      - 'Documenting your API': 'topics/documenting-your-api.md'
-     - 'Observability': 'topics/observability.md'
      - 'Internationalization': 'topics/internationalization.md'
      - 'AJAX, CSRF & CORS': 'topics/ajax-csrf-cors.md'
      - 'HTML & Forms': 'topics/html-and-forms.md'
      - 'Browser Enhancements': 'topics/browser-enhancements.md'
      - 'The Browsable API': 'topics/browsable-api.md'
      - 'REST, Hypermedia & HATEOAS': 'topics/rest-hypermedia-hateoas.md'
+     - 'Observability': 'topics/observability.md'
  - Community:
      - 'Tutorials and Resources': 'community/tutorials-and-resources.md'
      - 'Third Party Packages': 'community/third-party-packages.md'
