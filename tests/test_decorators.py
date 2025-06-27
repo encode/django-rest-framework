@@ -7,7 +7,8 @@ from rest_framework import status
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.decorators import (
     action, api_view, authentication_classes, parser_classes,
-    permission_classes, renderer_classes, schema, throttle_classes
+    permission_classes, renderer_classes, schema, throttle_classes,
+    versioning_class
 )
 from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAuthenticated
@@ -16,6 +17,7 @@ from rest_framework.response import Response
 from rest_framework.schemas import AutoSchema
 from rest_framework.test import APIRequestFactory
 from rest_framework.throttling import UserRateThrottle
+from rest_framework.versioning import QueryParameterVersioning
 from rest_framework.views import APIView
 
 
@@ -149,6 +151,16 @@ class DecoratorTestCase(TestCase):
 
         response = view(request)
         assert response.status_code == status.HTTP_429_TOO_MANY_REQUESTS
+
+    def test_versioning_class(self):
+        @api_view(["GET"])
+        @versioning_class(QueryParameterVersioning)
+        def view(request):
+            return Response({"version": request.version})
+
+        request = self.factory.get("/?version=1.2.3")
+        response = view(request)
+        assert response.data == {"version": "1.2.3"}
 
     def test_schema(self):
         """
