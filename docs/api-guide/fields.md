@@ -42,7 +42,7 @@ Set to false if this field is not required to be present during deserialization.
 
 Setting this to `False` also allows the object attribute or dictionary key to be omitted from output when serializing the instance. If the key is not present it will simply not be included in the output representation.
 
-Defaults to `True`. If you're using [Model Serializer](https://www.django-rest-framework.org/api-guide/serializers/#modelserializer) default value will be `False` if you have specified `blank=True` or `default` or `null=True` at your field in your `Model`.
+Defaults to `True`. If you're using [Model Serializer](https://www.django-rest-framework.org/api-guide/serializers/#modelserializer), the default value will be `False` when you have specified a `default`, or when the corresponding `Model` field has `blank=True` or `null=True` and is not part of a unique constraint at the same time. (Note that without a `default` value, [unique constraints will cause the field to be required](https://www.django-rest-framework.org/api-guide/validators/#optional-fields).)
 
 ### `default`
 
