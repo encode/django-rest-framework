@@ -80,7 +80,7 @@ class SearchFilter(BaseFilterBackend):
         """
         return getattr(view, 'search_fields', None)
 
-    def get_search_terms(self, request):
+    def get_search_terms(self, request, view):
         """
         Search terms are set by a ?search=... query parameter,
         and may be whitespace delimited.
@@ -146,7 +146,7 @@ class SearchFilter(BaseFilterBackend):
 
     def filter_queryset(self, request, queryset, view):
         search_fields = self.get_search_fields(view, request)
-        search_terms = self.get_search_terms(request)
+        search_terms = self.get_search_terms(request, view)
 
         if not search_fields or not search_terms:
             return queryset
