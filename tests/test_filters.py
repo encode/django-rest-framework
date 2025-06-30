@@ -211,7 +211,7 @@ class SearchFilterTests(TestCase):
         request = view.initialize_request(request)
 
         with self.assertRaises(ValidationError):
-            filters.SearchFilter().get_search_terms(request)
+            filters.SearchFilter().get_search_terms(request, view)
 
     def test_search_field_with_custom_lookup(self):
         class SearchListView(generics.ListAPIView):
