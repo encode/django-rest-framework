@@ -2056,16 +2056,18 @@ class TestMultipleChoiceField(FieldValues):
     Valid and invalid values for `MultipleChoiceField`.
     """
     valid_inputs = {
-        (): set(),
-        ('aircon',): {'aircon'},
-        ('aircon', 'manual'): {'aircon', 'manual'},
+        (): list(),
+        ("aircon",): ["aircon"],
+        ("aircon", "manual"): ["aircon", "manual"],
+        ("manual", "aircon"): ["manual", "aircon"],
     }
     invalid_inputs = {
         'abc': ['Expected a list of items but got type "str".'],
         ('aircon', 'incorrect'): ['"incorrect" is not a valid choice.']
     }
     outputs = [
-        (['aircon', 'manual', 'incorrect'], {'aircon', 'manual', 'incorrect'})
+        (["aircon", "manual", "incorrect"], ["aircon", "manual", "incorrect"]),
+        (["manual", "aircon", "incorrect"], ["manual", "aircon", "incorrect"]),
     ]
     field = serializers.MultipleChoiceField(
         choices=[
