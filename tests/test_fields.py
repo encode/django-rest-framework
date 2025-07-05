@@ -11,6 +11,8 @@ from zoneinfo import ZoneInfo
 
 import pytest
 
+from rest_framework.utils import json
+
 try:
     import pytz
 except ImportError:
@@ -2082,7 +2084,30 @@ class TestMultipleChoiceField(FieldValues):
         field.partial = False
         assert field.get_value(QueryDict('')) == []
         field.partial = True
-        assert field.get_value(QueryDict('')) == rest_framework.fields.empty
+        assert field.get_value(QueryDict("")) == rest_framework.fields.empty
+
+    def test_valid_inputs_is_json_serializable(self):
+        for input_value, _ in get_items(self.valid_inputs):
+            validated = self.field.run_validation(input_value)
+
+            try:
+                json.dumps(validated)
+            except TypeError as e:
+                assert (
+                    False
+                ), f"Validated output not JSON serializable: {repr(validated)}; Error: {e}"
+
+    def test_output_is_json_serializable(self):
+        for output_value, _ in get_items(self.outputs):
+            representation = self.field.to_representation(output_value)
+
+            try:
+                json.dumps(representation)
+            except TypeError as e:
+                assert False, (
+                    f"to_representation output not JSON serializable: "
+                    f"{repr(representation)}; Error: {e}"
+                )
 
 
 class TestEmptyMultipleChoiceField(FieldValues):
