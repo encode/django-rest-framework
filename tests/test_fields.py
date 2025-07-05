@@ -2059,17 +2059,17 @@ class TestMultipleChoiceField(FieldValues):
     """
     valid_inputs = {
         (): list(),
-        ("aircon",): ["aircon"],
-        ("aircon", "manual"): ["aircon", "manual"],
-        ("manual", "aircon"): ["manual", "aircon"],
+        ('aircon',): ['aircon'],
+        ('aircon', 'manual'): ['aircon', 'manual'],
+        ('manual', 'aircon'): ['manual', 'aircon'],
     }
     invalid_inputs = {
         'abc': ['Expected a list of items but got type "str".'],
         ('aircon', 'incorrect'): ['"incorrect" is not a valid choice.']
     }
     outputs = [
-        (["aircon", "manual", "incorrect"], ["aircon", "manual", "incorrect"]),
-        (["manual", "aircon", "incorrect"], ["manual", "aircon", "incorrect"]),
+        (['aircon', 'manual', 'incorrect'], ['aircon', 'manual', 'incorrect']),
+        (['manual', 'aircon', 'incorrect'], ['manual', 'aircon', 'incorrect']),
     ]
     field = serializers.MultipleChoiceField(
         choices=[
@@ -2084,7 +2084,7 @@ class TestMultipleChoiceField(FieldValues):
         field.partial = False
         assert field.get_value(QueryDict('')) == []
         field.partial = True
-        assert field.get_value(QueryDict("")) == rest_framework.fields.empty
+        assert field.get_value(QueryDict('')) == rest_framework.fields.empty
 
     def test_valid_inputs_is_json_serializable(self):
         for input_value, _ in get_items(self.valid_inputs):
@@ -2095,7 +2095,7 @@ class TestMultipleChoiceField(FieldValues):
             except TypeError as e:
                 assert (
                     False
-                ), f"Validated output not JSON serializable: {repr(validated)}; Error: {e}"
+                ), f'Validated output not JSON serializable: {repr(validated)}; Error: {e}'
 
     def test_output_is_json_serializable(self):
         for output_value, _ in get_items(self.outputs):
@@ -2105,8 +2105,8 @@ class TestMultipleChoiceField(FieldValues):
                 json.dumps(representation)
             except TypeError as e:
                 assert False, (
-                    f"to_representation output not JSON serializable: "
-                    f"{repr(representation)}; Error: {e}"
+                    f'to_representation output not JSON serializable: '
+                    f'{repr(representation)}; Error: {e}'
                 )
 
 
