@@ -109,6 +109,7 @@ You must write:
 If your view is a subclass of `GenericAPIView`, you may use the `get_serializer_context()` as a convenience method.
 
 ---
+
 ## Making sure our URL patterns are named
 
 If we're going to have a hyperlinked API, we need to make sure we name our URL patterns.  Let's take a look at which URL patterns we need to name.
