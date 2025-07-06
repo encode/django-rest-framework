@@ -126,7 +126,7 @@ To submit new content, [create a pull request][drf-create-pr].
 * [djangorestframework-chain][djangorestframework-chain] - Allows arbitrary chaining of both relations and lookup filters.
 * [django-url-filter][django-url-filter] - Allows a safe way to filter data via human-friendly URLs. It is a generic library which is not tied to DRF but it provides easy integration with DRF.
 * [drf-url-filter][drf-url-filter] is a simple Django app to apply filters on drf `ModelViewSet`'s `Queryset` in a clean, simple and configurable way. It also supports validations on incoming query params and their values.
-* [django-rest-framework-guardian2][django-rest-framework-guardian2] - Provides integration with django-guardian, including the `DjangoObjectPermissionsFilter` previously found in DRF.
+* [django-rest-framework-guardian][django-rest-framework-guardian] - Provides integration with django-guardian, including the `DjangoObjectPermissionsFilter` previously found in DRF.
 
 ### Misc
 
@@ -242,7 +242,7 @@ To submit new content, [create a pull request][drf-create-pr].
 [djangorestframework-dataclasses]: https://github.com/oxan/djangorestframework-dataclasses
 [django-restql]: https://github.com/yezyilomo/django-restql
 [djangorestframework-mvt]: https://github.com/corteva/djangorestframework-mvt
-[django-rest-framework-guardian2]: https://github.com/johnthagen/django-rest-framework-guardian2
+[django-rest-framework-guardian]: https://github.com/rpkilby/django-rest-framework-guardian
 [drf-viewset-profiler]: https://github.com/fvlima/drf-viewset-profiler
 [djangorestframework-features]: https://github.com/cloudcode-hungary/django-rest-framework-features/
 [django-elasticsearch-dsl-drf]: https://github.com/barseghyanartur/django-elasticsearch-dsl-drf
