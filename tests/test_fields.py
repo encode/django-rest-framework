@@ -2093,9 +2093,7 @@ class TestMultipleChoiceField(FieldValues):
             try:
                 json.dumps(validated)
             except TypeError as e:
-                assert (
-                    False
-                ), f'Validated output not JSON serializable: {repr(validated)}; Error: {e}'
+                pytest.fail(f'Validated output not JSON serializable: {repr(validated)}; Error: {e}')
 
     def test_output_is_json_serializable(self):
         for output_value, _ in get_items(self.outputs):
@@ -2104,7 +2102,7 @@ class TestMultipleChoiceField(FieldValues):
             try:
                 json.dumps(representation)
             except TypeError as e:
-                assert False, (
+                pytest.fail(
                     f'to_representation output not JSON serializable: '
                     f'{repr(representation)}; Error: {e}'
                 )
