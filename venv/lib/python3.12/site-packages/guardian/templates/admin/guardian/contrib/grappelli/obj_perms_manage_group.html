@@ -1,0 +1,67 @@
+{% extends "admin/change_form.html" %}
+{% load i18n %}
+{% load admin_urls %}
+
+{% block extrahead %}{{ block.super }}
+{{ form.media }}
+{% endblock %}
+
+{% block breadcrumbs %}{% if not is_popup %}
+<ul>
+    <li><a href="{% url 'admin:index' %}">{% trans 'Home' %}</a></li>
+    <li><a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a></li>
+    {% if has_change_permission %}
+        <li>
+            {% url opts|admin_urlname:'changelist' as changelist_url %}
+            <a href="{% add_preserved_filters changelist_url %}">{{ opts.verbose_name_plural|capfirst }}</a>
+        </li>
+        <li>
+            {% url opts|admin_urlname:'change' object.pk|admin_urlquote as object_url %}
+            <a href="{% add_preserved_filters object_url %}">{{ object|truncatewords:"18" }}</a>
+        </li>
+        <li>
+            {% url opts|admin_urlname:'permissions' object.pk|admin_urlquote as permissions_url %}
+            <a href="{% add_preserved_filters permissions_url %}">{% trans "Object permissions" %}</a>
+        </li>
+    {% else %}
+        <li>{{ opts.verbose_name_plural|capfirst }}</li>
+        <li>{{ original|truncatewords:"18" }}</li>
+        <li>{% trans "Object permissions" %}</li>
+    {% endif %}
+    <li>{% trans "Manage group" %}: {{ group_obj|truncatewords:"18" }}</li>
+</ul>
+{% endif %}{% endblock %}
+
+{% block content %}
+<form action="." method="post">
+    {% csrf_token %}
+    <div>
+    <fieldset class="grp-module">
+        <h2 class="grp-collapse-handler">{% trans "Object permissions" %}</h2>
+        <div class="grp-row grp-cells-1 object">
+            <div class="l-2c-fluid l-d-4">
+                <div class="c-1"><label for="object" class="required">{% trans "Object" %}</label></div>
+                <div class="c-2"><div id="object" class="grp-readonly">{{ object }}</div></div>
+            </div>
+        </div>
+        <div class="grp-row grp-cells-1 user">
+            <div class="l-2c-fluid l-d-4">
+                <div class="c-1"><label for="group" class="required">{% trans "Group" %}</label></div>
+                <div class="c-2"><div id="group" class="grp-readonly">{{ group_obj }}</div></div>
+            </div>
+        </div>
+        {% for field in form %}
+            {% include "admin/guardian/contrib/grappelli/field.html" %}
+        {% endfor %}
+        <div class="grp-row grp-cells-1">
+            <div class="l-2c-fluid l-d-4">
+                <div class="c-1">&nbsp;</div>
+                <div class="c-2">
+                    <input id="submit" type="submit" value="{% trans "Save" %}"/>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+    </div>
+</form>
+{% endblock %}

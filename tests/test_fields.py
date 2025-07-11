@@ -2710,3 +2710,10 @@ class TestValidationErrorCode:
                 ),
             ]
         }
+from decimal import Decimal, ROUND_HALF_UP
+from rest_framework.fields import DecimalField
+
+def test_decimalfield_rounding_half_up():
+    field = DecimalField(decimal_places=1, max_digits=4, rounding=ROUND_HALF_UP)
+    result = field.to_representation(Decimal('7.25'))
+    assert result == '7.3'

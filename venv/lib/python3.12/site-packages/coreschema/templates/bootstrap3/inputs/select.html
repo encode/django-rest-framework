@@ -1,0 +1,16 @@
+<div class="form-group">
+    <label>
+      {{ schema.title or key }}
+    </label>
+
+  <select class="form-control" name="{{ key }}" {{ get_attrs(schema) }}>
+    <option></option>
+    {% for value in schema.enum %}
+        <option value="{{ value }}">{{ value }}</option>
+    {% endfor %}
+  </select>
+
+  {% if schema.description %}
+    <span class="help-block">{{ schema.description }}</span>
+  {% endif %}
+</div>

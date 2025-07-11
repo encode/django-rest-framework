@@ -1,0 +1,51 @@
+Metadata-Version: 2.4
+Name: pyproject-api
+Version: 1.9.1
+Summary: API to interact with the python pyproject.toml based projects
+Project-URL: Changelog, https://github.com/tox-dev/pyproject-api/releases
+Project-URL: Homepage, https://pyproject-api.readthedocs.io
+Project-URL: Source, https://github.com/tox-dev/pyproject-api
+Project-URL: Tracker, https://github.com/tox-dev/pyproject-api/issues
+Author-email: Bernát Gábor <gaborjbernat@gmail.com>
+Maintainer-email: Bernát Gábor <gaborjbernat@gmail.com>
+License-Expression: MIT
+License-File: LICENSE
+Keywords: environments,isolated,testing,virtual
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Framework :: tox
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: MacOS :: MacOS X
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Operating System :: POSIX
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Topic :: Software Development :: Libraries
+Classifier: Topic :: Software Development :: Testing
+Classifier: Topic :: Utilities
+Requires-Python: >=3.9
+Requires-Dist: packaging>=25
+Requires-Dist: tomli>=2.2.1; python_version < '3.11'
+Provides-Extra: docs
+Requires-Dist: furo>=2024.8.6; extra == 'docs'
+Requires-Dist: sphinx-autodoc-typehints>=3.2; extra == 'docs'
+Provides-Extra: testing
+Requires-Dist: covdefaults>=2.3; extra == 'testing'
+Requires-Dist: pytest-cov>=6.1.1; extra == 'testing'
+Requires-Dist: pytest-mock>=3.14; extra == 'testing'
+Requires-Dist: pytest>=8.3.5; extra == 'testing'
+Requires-Dist: setuptools>=80.3.1; extra == 'testing'
+Description-Content-Type: text/markdown
+
+# [`pyproject-api`](https://pyproject-api.readthedocs.io/en/latest/)
+
+[![PyPI](https://img.shields.io/pypi/v/pyproject-api?style=flat-square)](https://pypi.org/project/pyproject-api/)
+[![Supported Python
+versions](https://img.shields.io/pypi/pyversions/pyproject-api.svg)](https://pypi.org/project/pyproject-api/)
+[![Downloads](https://static.pepy.tech/badge/pyproject-api/month)](https://pepy.tech/project/pyproject-api)
+[![check](https://github.com/tox-dev/pyproject-api/actions/workflows/check.yaml/badge.svg)](https://github.com/tox-dev/pyproject-api/actions/workflows/check.yaml)
+[![Documentation Status](https://readthedocs.org/projects/pyproject-api/badge/?version=latest)](https://pyproject-api.readthedocs.io/en/latest/?badge=latest)

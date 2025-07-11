@@ -1,0 +1,159 @@
+# Spanish translation of django-guardian.
+# This file is distributed under the same license as django-guardian's package.
+# Translator: Adrián López Calvo <adrianlopezcalvo@gmail.com>, 2013.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: django-guardian 1.0.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-05-10 18:01+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Adrián López Calvo <adrianlopezcalvo@gmail.com>\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: admin.py:32 admin.py:42 forms.py:55
+msgid "Permissions"
+msgstr "Permisos"
+
+#: admin.py:189
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:22
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage_group.html:14
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage_group.html:25
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage_user.html:14
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage_user.html:25
+#: templates/admin/guardian/model/change_form.html:7
+#: templates/admin/guardian/model/obj_perms_manage.html:17
+#: templates/admin/guardian/model/obj_perms_manage_group.html:14
+#: templates/admin/guardian/model/obj_perms_manage_group.html:25
+#: templates/admin/guardian/model/obj_perms_manage_user.html:14
+#: templates/admin/guardian/model/obj_perms_manage_user.html:25
+msgid "Object permissions"
+msgstr "Permisos de objeto"
+
+#: admin.py:278 admin.py:331
+msgid "Permissions saved."
+msgstr "Permisos guardados."
+
+#: admin.py:375
+msgid "Username"
+msgstr "Nombre de usuario"
+
+#: admin.py:378
+msgid "This value may contain only letters, numbers and @/./+/-/_ characters."
+msgstr "Este valor puede contener sólo letras, números y @/./+/-/_."
+
+#: admin.py:380
+msgid "This user does not exist"
+msgstr "Este usuario no existe"
+
+#: admin.py:397
+msgid "This group does not exist"
+msgstr "Este grupo no existe"
+
+#: models.py:46
+msgid "object ID"
+msgstr "ID del objeto"
+
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:18
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage_group.html:10
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage_user.html:10
+#: templates/admin/guardian/model/obj_perms_manage.html:13
+#: templates/admin/guardian/model/obj_perms_manage_group.html:10
+#: templates/admin/guardian/model/obj_perms_manage_user.html:10
+msgid "Home"
+msgstr "Inicio"
+
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:33
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:93
+#: templates/admin/guardian/model/obj_perms_manage.html:28
+#: templates/admin/guardian/model/obj_perms_manage.html:82
+msgid "Please correct the errors below."
+msgstr "Por favor, corrija los siguientes errores"
+
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:37
+#: templates/admin/guardian/model/obj_perms_manage.html:32
+msgid "Users"
+msgstr "Usuarios"
+
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:43
+#: templates/admin/guardian/model/obj_perms_manage.html:38
+msgid "User permissions"
+msgstr "Permisos de usuario"
+
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:46
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage_user.html:36
+#: templates/admin/guardian/model/obj_perms_manage.html:41
+#: templates/admin/guardian/model/obj_perms_manage_user.html:30
+msgid "User"
+msgstr "Usuario"
+
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:50
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:110
+#: templates/admin/guardian/model/obj_perms_manage.html:45
+#: templates/admin/guardian/model/obj_perms_manage.html:99
+msgid "Action"
+msgstr "Acción"
+
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:67
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:127
+#: templates/admin/guardian/model/obj_perms_manage.html:62
+#: templates/admin/guardian/model/obj_perms_manage.html:116
+msgid "Edit"
+msgstr "Editar"
+
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:80
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage_user.html:15
+#: templates/admin/guardian/model/obj_perms_manage.html:73
+#: templates/admin/guardian/model/obj_perms_manage_user.html:15
+msgid "Manage user"
+msgstr "Gestionar usuario"
+
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:97
+#: templates/admin/guardian/model/obj_perms_manage.html:86
+msgid "Groups"
+msgstr "Grupos"
+
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:103
+#: templates/admin/guardian/model/obj_perms_manage.html:92
+msgid "Group permissions"
+msgstr "Permisos de grupo"
+
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:106
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage_group.html:36
+#: templates/admin/guardian/model/obj_perms_manage.html:95
+#: templates/admin/guardian/model/obj_perms_manage_group.html:30
+msgid "Group"
+msgstr "Grupo"
+
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:140
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage_group.html:15
+#: templates/admin/guardian/model/obj_perms_manage.html:127
+#: templates/admin/guardian/model/obj_perms_manage_group.html:15
+msgid "Manage group"
+msgstr "Gestionar grupo"
+
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage_group.html:28
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage_user.html:28
+#: templates/admin/guardian/model/obj_perms_manage_group.html:27
+#: templates/admin/guardian/model/obj_perms_manage_user.html:27
+msgid "Object"
+msgstr "Objeto"
+
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage_group.html:48
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage_user.html:48
+#: templates/admin/guardian/model/obj_perms_manage_group.html:37
+#: templates/admin/guardian/model/obj_perms_manage_user.html:37
+msgid "Save"
+msgstr "Guardar"
+
+#: templates/admin/guardian/model/change_form.html:8
+msgid "History"
+msgstr "Historial"
+
+#: templates/admin/guardian/model/change_form.html:9
+msgid "View on site"
+msgstr "Ver en el sitio"

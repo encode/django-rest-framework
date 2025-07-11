@@ -1,0 +1,74 @@
+Metadata-Version: 2.4
+Name: tox
+Version: 4.27.0
+Summary: tox is a generic virtualenv management and test command line tool
+Project-URL: Documentation, https://tox.wiki
+Project-URL: Homepage, http://tox.readthedocs.org
+Project-URL: Release Notes, https://tox.wiki/en/latest/changelog.html
+Project-URL: Source, https://github.com/tox-dev/tox
+Project-URL: Tracker, https://github.com/tox-dev/tox/issues
+Author-email: Bernát Gábor <gaborjbernat@gmail.com>
+Maintainer-email: Anthony Sottile <asottile@umich.edu>, Bernát Gábor <gaborjbernat@gmail.com>, Jürgen Gmach <juergen.gmach@googlemail.com>, Oliver Bestwalter <oliver@bestwalter.de>
+License-Expression: MIT
+License-File: LICENSE
+Keywords: environments,isolated,testing,virtual
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Framework :: tox
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: MacOS :: MacOS X
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Operating System :: POSIX
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Programming Language :: Python :: 3.14
+Classifier: Topic :: Software Development :: Libraries
+Classifier: Topic :: Software Development :: Testing
+Classifier: Topic :: Utilities
+Requires-Python: >=3.9
+Requires-Dist: cachetools>=5.5.1
+Requires-Dist: chardet>=5.2
+Requires-Dist: colorama>=0.4.6
+Requires-Dist: filelock>=3.16.1
+Requires-Dist: packaging>=24.2
+Requires-Dist: platformdirs>=4.3.6
+Requires-Dist: pluggy>=1.5
+Requires-Dist: pyproject-api>=1.8
+Requires-Dist: tomli>=2.2.1; python_version < '3.11'
+Requires-Dist: typing-extensions>=4.12.2; python_version < '3.11'
+Requires-Dist: virtualenv>=20.31
+Provides-Extra: test
+Requires-Dist: devpi-process>=1.0.2; extra == 'test'
+Requires-Dist: pytest-mock>=3.14; extra == 'test'
+Requires-Dist: pytest>=8.3.4; extra == 'test'
+Description-Content-Type: text/markdown
+
+# tox
+
+[![PyPI](https://img.shields.io/pypi/v/tox)](https://pypi.org/project/tox/)
+[![Supported Python
+versions](https://img.shields.io/pypi/pyversions/tox.svg)](https://pypi.org/project/tox/)
+[![Downloads](https://static.pepy.tech/badge/tox/month)](https://pepy.tech/project/tox)
+[![Documentation
+status](https://readthedocs.org/projects/tox/badge/?version=latest)](https://tox.readthedocs.io/en/latest/?badge=latest)
+[![check](https://github.com/tox-dev/tox/actions/workflows/check.yaml/badge.svg)](https://github.com/tox-dev/tox/actions/workflows/check.yaml)
+
+`tox` aims to automate and standardize testing in Python. It is part of a larger vision of easing the packaging, testing
+and release process of Python software (alongside [pytest](https://docs.pytest.org/en/latest/) and
+[devpi](https://www.devpi.net)).
+
+tox is a generic virtual environment management and test command line tool you can use for:
+
+- checking your package builds and installs correctly under different environments (such as different Python
+  implementations, versions or installation dependencies),
+- running your tests in each of the environments with the test tool of choice,
+- acting as a frontend to continuous integration servers, greatly reducing boilerplate and merging CI and shell-based
+  testing.
+
+Please read our [user guide](https://tox.wiki/en/latest/user_guide.html#basic-example) for an example and more detailed
+introduction, or watch [this YouTube video](https://www.youtube.com/watch?v=SFqna5ilqig) that presents the problem space
+and how tox solves it.

@@ -1,0 +1,439 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://github.com/tox-dev/tox/blob/main/src/tox/util/tox.schema.json",
+  "type": "object",
+  "properties": {
+    "tox_root": {
+      "type": "string",
+      "description": "the root directory (where the configuration file is found)"
+    },
+    "toxinidir": {
+      "$ref": "#/properties/tox_root"
+    },
+    "work_dir": {
+      "type": "string",
+      "description": "working directory"
+    },
+    "toxworkdir": {
+      "$ref": "#/properties/work_dir"
+    },
+    "temp_dir": {
+      "type": "string",
+      "description": "a folder for temporary files (is not cleaned at start)"
+    },
+    "env_list": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/subs"
+      },
+      "description": "define environments to automatically run"
+    },
+    "envlist": {
+      "$ref": "#/properties/env_list"
+    },
+    "base": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/subs"
+      },
+      "description": "inherit missing keys from these sections"
+    },
+    "min_version": {
+      "type": "string",
+      "description": "Define the minimal tox version required to run"
+    },
+    "minversion": {
+      "$ref": "#/properties/min_version"
+    },
+    "provision_tox_env": {
+      "type": "string",
+      "description": "Name of the virtual environment used to provision a tox."
+    },
+    "requires": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/subs"
+      },
+      "description": "Name of the virtual environment used to provision a tox."
+    },
+    "labels": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/subs"
+        }
+      },
+      "description": "core labels"
+    },
+    "ignore_base_python_conflict": {
+      "type": "boolean",
+      "description": "do not raise error if the environment name conflicts with base python"
+    },
+    "ignore_basepython_conflict": {
+      "$ref": "#/properties/ignore_base_python_conflict"
+    },
+    "skip_missing_interpreters": {
+      "type": "boolean",
+      "description": "skip running missing interpreters"
+    },
+    "no_package": {
+      "type": "boolean",
+      "description": "is there any packaging involved in this project"
+    },
+    "skipsdist": {
+      "$ref": "#/properties/no_package"
+    },
+    "package_env": {
+      "type": "string",
+      "description": "tox environment used to package"
+    },
+    "isolated_build_env": {
+      "$ref": "#/properties/package_env"
+    },
+    "package_root": {
+      "type": "string",
+      "description": "indicates where the packaging root file exists (historically setup.py file or pyproject.toml now)"
+    },
+    "setupdir": {
+      "$ref": "#/properties/package_root"
+    },
+    "env_run_base": {
+      "type": "object",
+      "properties": {
+        "set_env": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/subs"
+          },
+          "description": "environment variables to set when running commands in the tox environment"
+        },
+        "setenv": {
+          "$ref": "#/properties/env_run_base/properties/set_env"
+        },
+        "base": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/subs"
+          },
+          "description": "inherit missing keys from these sections"
+        },
+        "runner": {
+          "type": "string",
+          "description": "the tox execute used to evaluate this environment"
+        },
+        "description": {
+          "type": "string",
+          "description": "description attached to the tox environment"
+        },
+        "depends": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/subs"
+          },
+          "description": "tox environments that this environment depends on (must be run after those)"
+        },
+        "labels": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/subs"
+          },
+          "description": "labels attached to the tox environment"
+        },
+        "env_dir": {
+          "type": "string",
+          "description": "directory assigned to the tox environment"
+        },
+        "envdir": {
+          "$ref": "#/properties/env_run_base/properties/env_dir"
+        },
+        "env_tmp_dir": {
+          "type": "string",
+          "description": "a folder that is always reset at the start of the run"
+        },
+        "envtmpdir": {
+          "$ref": "#/properties/env_run_base/properties/env_tmp_dir"
+        },
+        "env_log_dir": {
+          "type": "string",
+          "description": "a folder for logging where tox will put logs of tool invocation"
+        },
+        "envlogdir": {
+          "$ref": "#/properties/env_run_base/properties/env_log_dir"
+        },
+        "suicide_timeout": {
+          "type": "number",
+          "description": "timeout to allow process to exit before sending SIGINT"
+        },
+        "interrupt_timeout": {
+          "type": "number",
+          "description": "timeout before sending SIGTERM after SIGINT"
+        },
+        "terminate_timeout": {
+          "type": "number",
+          "description": "timeout before sending SIGKILL after SIGTERM"
+        },
+        "platform": {
+          "type": "string",
+          "description": "run on platforms that match this regular expression (empty means any platform)"
+        },
+        "pass_env": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/subs"
+          },
+          "description": "environment variables to pass on to the tox environment"
+        },
+        "passenv": {
+          "$ref": "#/properties/env_run_base/properties/pass_env"
+        },
+        "parallel_show_output": {
+          "type": "boolean",
+          "description": "if set to True the content of the output will always be shown  when running in parallel mode"
+        },
+        "recreate": {
+          "type": "boolean",
+          "description": "always recreate virtual environment if this option is true, otherwise leave it up to tox"
+        },
+        "allowlist_externals": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/subs"
+          },
+          "description": "external command glob to allow calling"
+        },
+        "list_dependencies_command": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/subs"
+          },
+          "description": "command used to list installed packages"
+        },
+        "pip_pre": {
+          "type": "boolean",
+          "description": "install the latest available pre-release (alpha/beta/rc) of dependencies without a specified version"
+        },
+        "install_command": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/subs"
+          },
+          "description": "command used to install packages"
+        },
+        "constrain_package_deps": {
+          "type": "boolean",
+          "description": "If true, apply constraints during install_package_deps."
+        },
+        "use_frozen_constraints": {
+          "type": "boolean",
+          "description": "Use the exact versions of installed deps as constraints, otherwise use the listed deps."
+        },
+        "commands_pre": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/subs"
+            }
+          },
+          "description": "the commands to be called before testing"
+        },
+        "commands": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/subs"
+            }
+          },
+          "description": "the commands to be called for testing"
+        },
+        "commands_post": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/subs"
+            }
+          },
+          "description": "the commands to be called after testing"
+        },
+        "change_dir": {
+          "type": "string",
+          "description": "change to this working directory when executing the test command"
+        },
+        "changedir": {
+          "$ref": "#/properties/env_run_base/properties/change_dir"
+        },
+        "args_are_paths": {
+          "type": "boolean",
+          "description": "if True rewrite relative posargs paths from cwd to change_dir"
+        },
+        "ignore_errors": {
+          "type": "boolean",
+          "description": "when executing the commands keep going even if a sub-command exits with non-zero exit code"
+        },
+        "ignore_outcome": {
+          "type": "boolean",
+          "description": "if set to true a failing result of this testenv will not make tox fail (instead just warn)"
+        },
+        "base_python": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/subs"
+          },
+          "description": "environment identifier for python, first one found wins"
+        },
+        "basepython": {
+          "$ref": "#/properties/env_run_base/properties/base_python"
+        },
+        "deps": {
+          "type": "string",
+          "description": "Name of the python dependencies as specified by PEP-440"
+        },
+        "dependency_groups": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/subs"
+          },
+          "description": "dependency groups to install of the target package"
+        },
+        "system_site_packages": {
+          "type": "boolean",
+          "description": "create virtual environments that also have access to globally installed packages."
+        },
+        "sitepackages": {
+          "$ref": "#/properties/env_run_base/properties/system_site_packages"
+        },
+        "always_copy": {
+          "type": "boolean",
+          "description": "force virtualenv to always copy rather than symlink"
+        },
+        "alwayscopy": {
+          "$ref": "#/properties/env_run_base/properties/always_copy"
+        },
+        "download": {
+          "type": "boolean",
+          "description": "true if you want virtualenv to upgrade pip/wheel/setuptools to the latest version"
+        },
+        "skip_install": {
+          "type": "boolean",
+          "description": "skip installation"
+        },
+        "use_develop": {
+          "type": "boolean",
+          "description": "use develop mode"
+        },
+        "usedevelop": {
+          "$ref": "#/properties/env_run_base/properties/use_develop"
+        },
+        "package": {
+          "type": "string",
+          "description": "package installation mode - wheel | sdist | editable | editable-legacy | skip | external "
+        },
+        "extras": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/subs"
+          },
+          "description": "extras to install of the target package"
+        },
+        "package_env": {
+          "type": "string",
+          "description": "tox environment used to package"
+        },
+        "wheel_build_env": {
+          "type": "string",
+          "description": "wheel tag to use for building applications"
+        }
+      },
+      "additionalProperties": true
+    },
+    "env_pkg_base": {
+      "$ref": "#/properties/env_run_base",
+      "additionalProperties": true
+    },
+    "env": {
+      "type": "object",
+      "patternProperties": {
+        "^.*$": {
+          "$ref": "#/properties/env_run_base"
+        }
+      }
+    },
+    "legacy_tox_ini": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true,
+  "definitions": {
+    "subs": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "replace": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "default": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/subs"
+                  }
+                }
+              ]
+            },
+            "extend": {
+              "type": "boolean"
+            }
+          },
+          "required": ["replace"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "replace": {
+              "type": "string"
+            },
+            "of": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "default": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/subs"
+                  }
+                }
+              ]
+            },
+            "extend": {
+              "type": "boolean"
+            }
+          },
+          "required": ["replace", "of"],
+          "additionalProperties": false
+        }
+      ]
+    }
+  }
+}

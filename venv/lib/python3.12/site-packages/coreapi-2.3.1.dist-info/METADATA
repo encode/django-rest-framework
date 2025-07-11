@@ -1,0 +1,24 @@
+Metadata-Version: 2.0
+Name: coreapi
+Version: 2.3.1
+Summary: Python client library for Core API.
+Home-page: https://github.com/core-api/python-client
+Author: Tom Christie
+Author-email: tom@tomchristie.com
+License: BSD
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Environment :: Web Environment
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Topic :: Internet :: WWW/HTTP
+Requires-Dist: coreschema
+Requires-Dist: requests
+Requires-Dist: itypes
+Requires-Dist: uritemplate
+
+UNKNOWN
+
+

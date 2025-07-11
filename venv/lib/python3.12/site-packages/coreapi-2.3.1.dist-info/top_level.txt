@@ -1,0 +1,3 @@
+coreapi
+coreapi/codecs
+coreapi/transports

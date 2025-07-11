@@ -1080,7 +1080,6 @@ class DecimalField(Field):
             self.fail('max_whole_digits', max_whole_digits=self.max_whole_digits)
 
         return value
-
     def to_representation(self, value):
         coerce_to_string = getattr(self, 'coerce_to_string', api_settings.COERCE_DECIMAL_TO_STRING)
 
@@ -1095,11 +1094,17 @@ class DecimalField(Field):
 
         quantized = self.quantize(value)
 
+        # Apply optional custom rounding if specified
+        if self.rounding is not None:
+            quant = decimal.Decimal(1).scaleb(-self.decimal_places)
+            quantized = quantized.quantize(quant, rounding=self.rounding)
+
         if self.normalize_output:
             quantized = quantized.normalize()
 
         if not coerce_to_string:
             return quantized
+
         if self.localize:
             return localize_input(quantized)
 

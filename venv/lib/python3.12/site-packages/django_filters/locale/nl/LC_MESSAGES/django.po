@@ -1,0 +1,189 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-08-21 12:25+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Storm Heg <storm@stormbase.digital>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+#: conf.py:16
+msgid "date"
+msgstr "datum"
+
+#: conf.py:17
+msgid "year"
+msgstr "jaar"
+
+#: conf.py:18
+msgid "month"
+msgstr "maand"
+
+#: conf.py:19
+msgid "day"
+msgstr "dag"
+
+#: conf.py:20
+msgid "week day"
+msgstr "weekdag"
+
+#: conf.py:21
+msgid "hour"
+msgstr "uur"
+
+#: conf.py:22
+msgid "minute"
+msgstr "minuur"
+
+#: conf.py:23
+msgid "second"
+msgstr "seconde"
+
+#: conf.py:27 conf.py:28
+msgid "contains"
+msgstr "bevat"
+
+#: conf.py:29
+msgid "is in"
+msgstr "zit in"
+
+#: conf.py:30
+msgid "is greater than"
+msgstr "is groter dan"
+
+#: conf.py:31
+msgid "is greater than or equal to"
+msgstr "is groter dan of gelijk aan"
+
+#: conf.py:32
+msgid "is less than"
+msgstr "is minder dan"
+
+#: conf.py:33
+msgid "is less than or equal to"
+msgstr "is minder dan of gelijk aan"
+
+#: conf.py:34 conf.py:35
+msgid "starts with"
+msgstr "begint met"
+
+#: conf.py:36 conf.py:37
+msgid "ends with"
+msgstr "eindigt met"
+
+#: conf.py:38
+msgid "is in range"
+msgstr "zit in bereik"
+
+#: conf.py:39
+msgid "is null"
+msgstr "is null"
+
+#: conf.py:40 conf.py:41
+msgid "matches regex"
+msgstr "matcht regex"
+
+#: conf.py:42 conf.py:49
+msgid "search"
+msgstr "zoek"
+
+#: conf.py:44
+msgid "is contained by"
+msgstr "wordt bevat door"
+
+#: conf.py:45
+msgid "overlaps"
+msgstr "overlapt"
+
+#: conf.py:46
+msgid "has key"
+msgstr "heeft key"
+
+#: conf.py:47
+msgid "has keys"
+msgstr "heeft keys"
+
+#: conf.py:48
+msgid "has any keys"
+msgstr "heeft keys"
+
+#: fields.py:94
+msgid "Select a lookup."
+msgstr "Selecteer een lookup."
+
+#: fields.py:198
+msgid "Range query expects two values."
+msgstr "Bereik query verwacht twee waarden."
+
+#: filters.py:437
+msgid "Today"
+msgstr "Vandaag"
+
+#: filters.py:438
+msgid "Yesterday"
+msgstr "Gisteren"
+
+#: filters.py:439
+msgid "Past 7 days"
+msgstr "Afgelopen 7 dagen"
+
+#: filters.py:440
+msgid "This month"
+msgstr "Deze maand"
+
+#: filters.py:441
+msgid "This year"
+msgstr "Dit jaar"
+
+#: filters.py:543
+msgid "Multiple values may be separated by commas."
+msgstr "Meerdere waarden kunnen gescheiden worden door komma's."
+
+#: filters.py:721 tests/test_filters.py:1670
+#, python-format
+msgid "%s (descending)"
+msgstr "%s (aflopend)"
+
+#: filters.py:737
+msgid "Ordering"
+msgstr "Volgorde"
+
+#: rest_framework/filterset.py:33
+#: templates/rest_framework/form.html:5
+msgid "Submit"
+msgstr "Indienen"
+
+#: templates/django_filters/rest_framework/crispy_form.html:4
+#: templates/django_filters/rest_framework/form.html:2
+msgid "Field filters"
+msgstr "Veld filters"
+
+#: utils.py:323
+msgid "exclude"
+msgstr "uitsluiten"
+
+#: widgets.py:58
+msgid "All"
+msgstr "Alles"
+
+#: widgets.py:162
+msgid "Unknown"
+msgstr "Onbekend"
+
+#: widgets.py:162
+msgid "Yes"
+msgstr "Ja"
+
+#: widgets.py:162
+msgid "No"
+msgstr "Nee"

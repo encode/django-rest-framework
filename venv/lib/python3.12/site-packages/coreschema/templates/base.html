@@ -1,0 +1,162 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>Theme Template for Bootstrap</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../../dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap theme -->
+    <link href="../../dist/css/bootstrap-theme.min.css" rel="stylesheet">
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="theme.css" rel="stylesheet">
+    <link href="chosen.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <style>
+        .checkbox label.control-label {font-weight: bold}
+        body {padding-top: 0}
+    </style>
+  </head>
+
+  <body>
+    <div class="container col-md-4 col-md-offset-4" role="main">
+        <h1>CoreSchema</h1>
+        <form id="coreschema" novalidate>
+            {% for key, schema in parent.properties.items() %}
+                {% set template_path = determine_html_template(schema) %}
+                {% set required = key in parent.required %}
+                {% include template_path %}
+            {% endfor %}
+        </form>
+        <pre>
+        </pre>
+    </div> <!-- /container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+    <script src="../../dist/js/bootstrap.min.js"></script>
+    <script src="../../assets/js/docs.min.js"></script>
+    <script src="chosen.jquery.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
+    <script>
+        const options = {
+            placeholder_text_single: '',
+            placeholder_text_multiple: '',
+            allow_single_deselect: true
+        }
+        $('select').chosen(options)
+
+        $('#coreschema :input').on('input propertychange', function() {
+            const form = $(this).closest('form')
+            formToData(form)
+        })
+        $('#coreschema :input').change(function() {
+            const form = $(this).closest('form')
+            formToData(form)
+        })
+
+        function formToData(form) {
+            const formData = new FormData(form.get()[0])
+            var params = new Map()
+            var errors = []
+            var inputElements = {}
+
+            // Initially iterate through all the inputs
+            form.find(':input').each(function(key, value) {
+                var elem = $(this)
+                var name = elem.attr('name')
+                if (name !== undefined) {
+                    inputElements[name] = elem
+                    var emptyValue = elem.data('empty')
+                    if (emptyValue !== undefined) {
+                        params[name] = emptyValue
+                    }
+                }
+            })
+
+            // Now iterate through all the supplied form values
+            for (let [paramKey, paramValue] of formData.entries()) {
+                let inputElement = inputElements[paramKey]
+                let dataType = inputElement.data('type')
+                try {
+                    if (!inputElement[0].checkValidity()) {
+                        // Invalid inputs return paramValue of '',
+                        // so we need to differentiate between that
+                        // and an actually empty input
+                        throw Error()
+                    } else if (dataType === 'integer') {
+                        if (!paramValue) {
+                            params[paramKey] = null
+                        } else {
+                            if (paramValue.includes('.')) {
+                                throw Error()
+                            }
+                            paramValue = parseInt(paramValue)
+                            if (paramValue != paramValue) {
+                                throw Error()
+                            }
+                            params[paramKey] = paramValue
+                        }
+                    } else if (dataType === 'number') {
+                        if (!paramValue) {
+                            params[paramKey] = null
+                        } else {
+                            paramValue = parseFloat(paramValue)
+                            if (paramValue != paramValue) {
+                                throw Error()
+                            }
+                            params[paramKey] = paramValue
+                        }
+                    } else if (dataType === 'boolean') {
+                        params[paramKey] = true
+                    } else if (dataType === 'array') {
+                        if (inputElement.is('select')) {
+                            params[paramKey] = params[paramKey].concat([paramValue])
+                        } else {
+                            params[paramKey] = JSON.parse(paramValue)
+                        }
+                    } else if (dataType === 'object') {
+                        params[paramKey] = JSON.parse(paramValue)
+                    } else {
+                        params[paramKey] = paramValue
+                    }
+                } catch(e) {
+                    errors.push(paramKey)
+                }
+            }
+
+            form.find('.form-group').removeClass('has-error')
+            for (let name of errors) {
+                let inputElement = inputElements[name]
+                let formGroup = inputElement.closest('.form-group')
+                formGroup.addClass('has-error')
+            }
+
+            const text = JSON.stringify(params, null, 2)
+            form.next('pre').text(text)
+        }
+    </script>
+  </body>
+</html>

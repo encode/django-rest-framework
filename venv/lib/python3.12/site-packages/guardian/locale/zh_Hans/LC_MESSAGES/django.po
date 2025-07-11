@@ -1,0 +1,161 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-07-27 10:10+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: guardian/admin.py:30 guardian/admin.py:41 guardian/forms.py:52
+msgid "Permissions"
+msgstr "权限"
+
+#: guardian/admin.py:136
+#: guardian/templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:24
+#: guardian/templates/admin/guardian/contrib/grappelli/obj_perms_manage_group.html:24
+#: guardian/templates/admin/guardian/contrib/grappelli/obj_perms_manage_group.html:29
+#: guardian/templates/admin/guardian/contrib/grappelli/obj_perms_manage_group.html:40
+#: guardian/templates/admin/guardian/contrib/grappelli/obj_perms_manage_user.html:24
+#: guardian/templates/admin/guardian/contrib/grappelli/obj_perms_manage_user.html:29
+#: guardian/templates/admin/guardian/contrib/grappelli/obj_perms_manage_user.html:40
+#: guardian/templates/admin/guardian/model/change_form.html:6
+#: guardian/templates/admin/guardian/model/obj_perms_manage.html:16
+#: guardian/templates/admin/guardian/model/obj_perms_manage_group.html:14
+#: guardian/templates/admin/guardian/model/obj_perms_manage_group.html:25
+#: guardian/templates/admin/guardian/model/obj_perms_manage_user.html:14
+#: guardian/templates/admin/guardian/model/obj_perms_manage_user.html:25
+msgid "Object permissions"
+msgstr "对象权限"
+
+#: guardian/admin.py:253 guardian/admin.py:329
+msgid "Permissions saved."
+msgstr "权限已保存"
+
+#: guardian/admin.py:457
+msgid "User identification"
+msgstr "用户 ID"
+
+#: guardian/admin.py:460
+msgid "This user does not exist"
+msgstr "用户不存在"
+
+#: guardian/admin.py:462
+msgid "Enter a value compatible with User.USERNAME_FIELD"
+msgstr "输入对应 User.USERNAME_FIELD 的值"
+
+#: guardian/admin.py:485
+msgid "This group does not exist"
+msgstr "组不存在"
+
+#: guardian/models.py:46
+msgid "object ID"
+msgstr "对象 ID"
+
+#: guardian/templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:9
+#: guardian/templates/admin/guardian/contrib/grappelli/obj_perms_manage_group.html:11
+#: guardian/templates/admin/guardian/contrib/grappelli/obj_perms_manage_user.html:11
+#: guardian/templates/admin/guardian/model/obj_perms_manage.html:12
+#: guardian/templates/admin/guardian/model/obj_perms_manage_group.html:10
+#: guardian/templates/admin/guardian/model/obj_perms_manage_user.html:10
+msgid "Home"
+msgstr "首页"
+
+#: guardian/templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:33
+#: guardian/templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:94
+msgid "Please correct the error below."
+msgid_plural "Please correct the errors below."
+msgstr[0] "请修复下列错误"
+msgstr[1] "请修复下列错误"
+
+#: guardian/templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:37
+#: guardian/templates/admin/guardian/model/obj_perms_manage.html:31
+msgid "Users"
+msgstr "用户"
+
+#: guardian/templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:40
+#: guardian/templates/admin/guardian/model/obj_perms_manage.html:37
+msgid "User permissions"
+msgstr "用户权限"
+
+#: guardian/templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:45
+#: guardian/templates/admin/guardian/contrib/grappelli/obj_perms_manage_user.html:49
+#: guardian/templates/admin/guardian/model/obj_perms_manage.html:40
+#: guardian/templates/admin/guardian/model/obj_perms_manage_user.html:30
+msgid "User"
+msgstr "用户"
+
+#: guardian/templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:49
+#: guardian/templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:110
+#: guardian/templates/admin/guardian/model/obj_perms_manage.html:44
+#: guardian/templates/admin/guardian/model/obj_perms_manage.html:98
+msgid "Action"
+msgstr "行为"
+
+#: guardian/templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:66
+#: guardian/templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:127
+#: guardian/templates/admin/guardian/model/obj_perms_manage.html:61
+#: guardian/templates/admin/guardian/model/obj_perms_manage.html:115
+msgid "Edit"
+msgstr "编辑"
+
+#: guardian/templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:82
+#: guardian/templates/admin/guardian/contrib/grappelli/obj_perms_manage_user.html:31
+#: guardian/templates/admin/guardian/model/obj_perms_manage.html:72
+#: guardian/templates/admin/guardian/model/obj_perms_manage_user.html:15
+msgid "Manage user"
+msgstr "管理用户"
+
+#: guardian/templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:98
+#: guardian/templates/admin/guardian/model/obj_perms_manage.html:85
+msgid "Groups"
+msgstr "组"
+
+#: guardian/templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:101
+#: guardian/templates/admin/guardian/model/obj_perms_manage.html:91
+msgid "Group permissions"
+msgstr "组权限"
+
+#: guardian/templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:106
+#: guardian/templates/admin/guardian/contrib/grappelli/obj_perms_manage_group.html:49
+#: guardian/templates/admin/guardian/model/obj_perms_manage.html:94
+#: guardian/templates/admin/guardian/model/obj_perms_manage_group.html:30
+msgid "Group"
+msgstr "组"
+
+#: guardian/templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:144
+#: guardian/templates/admin/guardian/contrib/grappelli/obj_perms_manage_group.html:31
+#: guardian/templates/admin/guardian/model/obj_perms_manage.html:126
+#: guardian/templates/admin/guardian/model/obj_perms_manage_group.html:15
+msgid "Manage group"
+msgstr "管理组"
+
+#: guardian/templates/admin/guardian/contrib/grappelli/obj_perms_manage_group.html:43
+#: guardian/templates/admin/guardian/contrib/grappelli/obj_perms_manage_user.html:43
+#: guardian/templates/admin/guardian/model/obj_perms_manage_group.html:27
+#: guardian/templates/admin/guardian/model/obj_perms_manage_user.html:27
+msgid "Object"
+msgstr "对象"
+
+#: guardian/templates/admin/guardian/contrib/grappelli/obj_perms_manage_group.html:60
+#: guardian/templates/admin/guardian/contrib/grappelli/obj_perms_manage_user.html:60
+#: guardian/templates/admin/guardian/model/obj_perms_manage_group.html:37
+#: guardian/templates/admin/guardian/model/obj_perms_manage_user.html:37
+msgid "Save"
+msgstr "保存"
+
+#: guardian/templates/admin/guardian/model/obj_perms_manage.html:27
+#: guardian/templates/admin/guardian/model/obj_perms_manage.html:81
+msgid "Please correct the errors below."
+msgstr "请修复下列错误"

@@ -1,0 +1,16 @@
+<div class="grp-row grp-cells-1{% if field.errors %} grp-errors{% endif %} {{ field.name }}">
+    <div class="l-2c-fluid l-d-4">
+    {% if field.is_checkbox %}
+        <div class="c-1">&nbsp;</div>
+        <div class="c-2">
+            {{ field }}<label for="{{ field.auto_id }}" class="required vCheckboxLabel">{{ field.label }}</label>
+    {% else %}
+        <div class="c-1"><label for="{{ field.auto_id }}" class="required">{{ field.label }}</label></div>
+        <div class="c-2">
+            {{ field }}
+    {% endif %}
+    {% if field.help_text %}<p class="grp-help">{{ field.help_text|safe }}</p>{% endif %}
+    {{ field.errors }}
+        </div>
+    </div>
+</div>

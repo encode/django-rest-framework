@@ -1,0 +1,158 @@
+# Dutch translation of django-guardian
+# This file is distributed under the same license as the PACKAGE package.
+# Translator: Melvyn Sopacua <melvyn@pluggable.nl>, 2017.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.4.9\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-10-16 07:58+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Melvyn Sopacua <melvyn@pluggable.nl>\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: admin.py:30 admin.py:41 forms.py:52
+msgid "Permissions"
+msgstr "Permissies"
+
+#: admin.py:136
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:24
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage_group.html:24
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage_group.html:29
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage_group.html:40
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage_user.html:24
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage_user.html:29
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage_user.html:40
+#: templates/admin/guardian/model/change_form.html:6
+#: templates/admin/guardian/model/obj_perms_manage.html:16
+#: templates/admin/guardian/model/obj_perms_manage_group.html:14
+#: templates/admin/guardian/model/obj_perms_manage_group.html:25
+#: templates/admin/guardian/model/obj_perms_manage_user.html:14
+#: templates/admin/guardian/model/obj_perms_manage_user.html:25
+msgid "Object permissions"
+msgstr "Object permissies"
+
+#: admin.py:253 admin.py:329
+msgid "Permissions saved."
+msgstr "Permissies zijn opgeslagen."
+
+#: admin.py:457
+msgid "User identification"
+msgstr "Gebruikersindentificatie"
+
+#: admin.py:460
+msgid "This user does not exist"
+msgstr "Deze gebruiker bestaat niet"
+
+#: admin.py:462
+msgid "Enter a value compatible with User.USERNAME_FIELD"
+msgstr "Voer een waarde in die compatible is met User.USERNAME_FIELD"
+
+#: admin.py:485
+msgid "This group does not exist"
+msgstr "Deze groep bestaat niet"
+
+#: models.py:46
+msgid "object ID"
+msgstr "object ID"
+
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:9
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage_group.html:11
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage_user.html:11
+#: templates/admin/guardian/model/obj_perms_manage.html:12
+#: templates/admin/guardian/model/obj_perms_manage_group.html:10
+#: templates/admin/guardian/model/obj_perms_manage_user.html:10
+msgid "Home"
+msgstr "Home"
+
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:33
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:94
+msgid "Please correct the error below."
+msgid_plural "Please correct the errors below."
+msgstr[0] "Corrigeer de fout hieronder."
+msgstr[1] "Corrigeer de fouten hieronder."
+
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:37
+#: templates/admin/guardian/model/obj_perms_manage.html:31
+msgid "Users"
+msgstr "Gebruikers"
+
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:40
+#: templates/admin/guardian/model/obj_perms_manage.html:37
+msgid "User permissions"
+msgstr "Gebruiker's permissies"
+
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:45
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage_user.html:49
+#: templates/admin/guardian/model/obj_perms_manage.html:40
+#: templates/admin/guardian/model/obj_perms_manage_user.html:30
+msgid "User"
+msgstr "Gebruiker"
+
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:49
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:110
+#: templates/admin/guardian/model/obj_perms_manage.html:44
+#: templates/admin/guardian/model/obj_perms_manage.html:98
+msgid "Action"
+msgstr "Actie"
+
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:66
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:127
+#: templates/admin/guardian/model/obj_perms_manage.html:61
+#: templates/admin/guardian/model/obj_perms_manage.html:115
+msgid "Edit"
+msgstr "Veranderen"
+
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:82
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage_user.html:31
+#: templates/admin/guardian/model/obj_perms_manage.html:72
+#: templates/admin/guardian/model/obj_perms_manage_user.html:15
+msgid "Manage user"
+msgstr "Beheer de gebruiker"
+
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:98
+#: templates/admin/guardian/model/obj_perms_manage.html:85
+msgid "Groups"
+msgstr "Groepen"
+
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:101
+#: templates/admin/guardian/model/obj_perms_manage.html:91
+msgid "Group permissions"
+msgstr "Groep permissies"
+
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:106
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage_group.html:49
+#: templates/admin/guardian/model/obj_perms_manage.html:94
+#: templates/admin/guardian/model/obj_perms_manage_group.html:30
+msgid "Group"
+msgstr "Groep"
+
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage.html:144
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage_group.html:31
+#: templates/admin/guardian/model/obj_perms_manage.html:126
+#: templates/admin/guardian/model/obj_perms_manage_group.html:15
+msgid "Manage group"
+msgstr "Beheer de groep"
+
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage_group.html:43
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage_user.html:43
+#: templates/admin/guardian/model/obj_perms_manage_group.html:27
+#: templates/admin/guardian/model/obj_perms_manage_user.html:27
+msgid "Object"
+msgstr "Object"
+
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage_group.html:60
+#: templates/admin/guardian/contrib/grappelli/obj_perms_manage_user.html:60
+#: templates/admin/guardian/model/obj_perms_manage_group.html:37
+#: templates/admin/guardian/model/obj_perms_manage_user.html:37
+msgid "Save"
+msgstr "Opslaan"
+
+#: templates/admin/guardian/model/obj_perms_manage.html:27
+#: templates/admin/guardian/model/obj_perms_manage.html:81
+msgid "Please correct the errors below."
+msgstr "Corrigeer de fout hieronder."

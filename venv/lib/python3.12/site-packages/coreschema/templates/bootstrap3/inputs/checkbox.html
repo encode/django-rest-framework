@@ -1,0 +1,14 @@
+<div class="form-group">
+    <div class="checkbox">
+        <label class="control-label">
+            <input type="checkbox" name="{{ key }}" value="true" {{ get_attrs(schema) }}>
+            {{ schema.title or key }}
+            {% if required %}
+                <span class="text-danger">*</span>
+            {% endif %}
+        </label>
+    </div>
+    {% if schema.description %}
+        <span class="help-block">{{ schema.description }}</span>
+    {% endif %}
+</div>

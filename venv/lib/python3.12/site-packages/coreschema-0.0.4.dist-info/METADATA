@@ -1,0 +1,23 @@
+Metadata-Version: 2.4
+Name: coreschema
+Version: 0.0.4
+Summary: Core Schema.
+Home-page: https://github.com/core-api/python-coreschema
+Author: Tom Christie
+Author-email: tom@tomchristie.com
+License: BSD
+Classifier: Development Status :: 3 - Alpha
+Classifier: Environment :: Web Environment
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Topic :: Internet :: WWW/HTTP
+Requires-Dist: jinja2
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: home-page
+Dynamic: license
+Dynamic: requires-dist
+Dynamic: summary

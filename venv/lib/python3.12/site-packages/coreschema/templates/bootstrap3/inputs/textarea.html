@@ -1,0 +1,12 @@
+<div class="form-group">
+    <label for="{{ key }}" class="control-label">
+        {{ schema.title or key }}
+        {% if required %}
+            <span class="text-danger">*</span>
+        {% endif %}
+    </label>
+    <textarea name="{{ key }}" class="form-control"  {{ get_attrs(schema) }} {% if required %}required{% endif %}>{{ get_textarea_value(schema) }}</textarea>
+    {% if schema.description %}
+        <p class="help-block">{{ schema.description }}</p>
+    {% endif %}
+</div>

@@ -1,0 +1,133 @@
+{% extends "admin/change_form.html" %}
+{% load i18n %}
+{% load guardian_tags %}
+
+{% block extrahead %}{{ block.super }}
+<style type="text/css">
+</style>
+{% endblock %}
+
+{% block breadcrumbs %}{% if not is_popup %}
+<div class="breadcrumbs">
+     <a href="../../../../">{% trans "Home" %}</a> &rsaquo;
+     <a href="../../../">{{ opts.app_config.verbose_name|capfirst|escape }}</a> &rsaquo;
+     {% if has_change_permission %}<a href="../../">{{ opts.verbose_name_plural|capfirst }}</a>{% else %}{{ opts.verbose_name_plural|capfirst }}{% endif %} &rsaquo;
+     {% if has_change_permission %}<a href="../">{{ original|truncatewords:"18" }}</a>{% else %}{{ original|truncatewords:"18" }}{% endif %} &rsaquo;
+     {% trans "Object permissions" %}
+</div>
+{% endif %}{% endblock %}
+
+{% block content %}
+<div id="content-main">
+
+<form action="." method="post">
+    {% csrf_token %}
+    {% if user_form.errors %}
+    <div>
+        <p class="errornote">{% trans "Please correct the errors below." %}</p>
+    </div>
+    {% endif %}
+    <fieldset class="module aligned">
+        <h2>{% trans "Users" %}</h2>
+        {% for error in user_form.errors %}
+            <p class="error">{{ error }}</p>
+        {% endfor %}
+        <div class="form-row user_permissions">
+            <table id="user-permissions" class="object-perms">
+                <caption>{% trans "User permissions" %}</caption>
+                <thead>
+                    <tr>
+                        <th>{% trans "User" %}</th>
+                        {% for perm in model_perms %}
+                        <th>{{ perm.name }}</th>
+                        {% endfor %}
+                        <th>{% trans "Action" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user, user_perms in users_perms.items %}
+                    <tr>
+                        <td>{{ user }}</td>
+                        {% for perm in model_perms %}
+                        <td>
+                            {% if perm.codename in user_perms %}
+                            {% include "admin/guardian/model/obj_perms_yes.html" %}
+                            {% else %}
+                            {% include "admin/guardian/model/obj_perms_no.html" %}
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+                        <td>
+                            <a href="user-manage/{{ user.id|safe }}/">{% trans "Edit" %}</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% for field in user_form %}
+            {% include "admin/guardian/model/field.html" %}
+        {% endfor %}
+        <div>
+            <input name="submit_manage_user" type="submit" value="{% trans "Manage user" %}"/>
+        </div>
+    </fieldset>
+</form>
+
+<form action="." method="post">
+    {% csrf_token %}
+    {% if group_form.errors %}
+    <div>
+        <p class="errornote">{% trans "Please correct the errors below." %}</p>
+    </div>
+    {% endif %}
+    <fieldset class="module aligned">
+        <h2>{% trans "Groups" %}</h2>
+        {% for error in group_form.errors %}
+            <p class="error">{{ error }}</p>
+        {% endfor %}
+        <div class="form-row user_permissions">
+            <table id="group-permissions" class="object-perms">
+                <caption>{% trans "Group permissions" %}</caption>
+                <thead>
+                    <tr>
+                        <th>{% trans "Group" %}</th>
+                        {% for perm in model_perms %}
+                        <th>{{ perm.name }}</th>
+                        {% endfor %}
+                        <th>{% trans "Action" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for group, group_perms in groups_perms.items %}
+                    <tr>
+                        <td>{{ group }}</td>
+                        {% for perm in model_perms %}
+                        <td>
+                            {% if perm.codename in group_perms %}
+                            {% include "admin/guardian/model/obj_perms_yes.html" %}
+                            {% else %}
+                            {% include "admin/guardian/model/obj_perms_no.html" %}
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+                        <td>
+                            <a href="group-manage/{{ group.id|safe }}/">{% trans "Edit" %}</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% for field in group_form %}
+            {% include "admin/guardian/model/field.html" %}
+        {% endfor %}
+        <div>
+            <input name="submit_manage_group" type="submit" value="{% trans "Manage group" %}"/>
+        </div>
+    </fieldset>
+</form>
+
+</div>
+{% endblock %}
+
