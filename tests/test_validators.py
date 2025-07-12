@@ -1,16 +1,20 @@
 import datetime
+import io
 import re
 from unittest.mock import MagicMock, patch
 
 import pytest
 from django import VERSION as django_version
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import DataError, models
 from django.test import TestCase
+from PIL import Image
 
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.validators import (
-    BaseUniqueForValidator, UniqueTogetherValidator, UniqueValidator, qs_exists
+    BaseUniqueForValidator, MaxFileSizeValidator, MinFileSizeValidator,
+    UniqueTogetherValidator, UniqueValidator, qs_exists
 )
 
 
@@ -972,3 +976,281 @@ class ValidatorsTests(TestCase):
         assert validator == validator2
         validator2.date_field = "bar2"
         assert validator != validator2
+
+
+# Tests for `MaxFileSizeValidator` and `MinFileSizeValidator`
+# -----------------------------------------------------------
+
+class TestFileSizeValidators(TestCase):
+    class DummyFile:
+        def __init__(self, size):
+            self.size = size
+
+    def test_max_file_size_validator_pass(self):
+        validator = MaxFileSizeValidator(1024)
+        file = self.DummyFile(1024)
+        # Should not raise
+        validator(file)
+
+    def test_max_file_size_validator_fail(self):
+        validator = MaxFileSizeValidator(1024)
+        file = self.DummyFile(1025)
+        with pytest.raises(ValidationError) as exc:
+            validator(file)
+        assert 'File size must not exceed 1024 bytes.' in str(exc.value)
+        assert exc.value.get_codes() == ['max_file_size']
+
+    def test_min_file_size_validator_pass(self):
+        validator = MinFileSizeValidator(100)
+        file = self.DummyFile(200)
+        # Should not raise
+        validator(file)
+
+    def test_min_file_size_validator_fail(self):
+        validator = MinFileSizeValidator(100)
+        file = self.DummyFile(50)
+        with pytest.raises(ValidationError) as exc:
+            validator(file)
+        assert 'File size must be at least 100 bytes.' in str(exc.value)
+        assert exc.value.get_codes() == ['min_file_size']
+
+    def test_max_file_size_validator_exact_size(self):
+        validator = MaxFileSizeValidator(1024)
+        file = self.DummyFile(1024)
+        # Should not raise for exact size
+        validator(file)
+
+    def test_min_file_size_validator_exact_size(self):
+        validator = MinFileSizeValidator(100)
+        file = self.DummyFile(100)
+        # Should not raise for exact size
+        validator(file)
+
+    def test_max_file_size_validator_zero_size(self):
+        validator = MaxFileSizeValidator(1024)
+        file = self.DummyFile(0)
+        # Should not raise for zero size
+        validator(file)
+
+    def test_min_file_size_validator_zero_size(self):
+        validator = MinFileSizeValidator(100)
+        file = self.DummyFile(0)
+        with pytest.raises(ValidationError) as exc:
+            validator(file)
+        assert 'File size must be at least 100 bytes.' in str(exc.value)
+
+    def test_max_file_size_validator_no_size_attribute(self):
+        validator = MaxFileSizeValidator(1024)
+        # Object without size attribute should not raise
+        validator("not a file")
+
+    def test_min_file_size_validator_no_size_attribute(self):
+        validator = MinFileSizeValidator(100)
+        # Object without size attribute should not raise
+        validator("not a file")
+
+    def test_max_file_size_validator_custom_message(self):
+        validator = MaxFileSizeValidator(1024, message="File too big: {max_size}")
+        file = self.DummyFile(1025)
+        with pytest.raises(ValidationError) as exc:
+            validator(file)
+        assert 'File too big: 1024' in str(exc.value)
+
+    def test_min_file_size_validator_custom_message(self):
+        validator = MinFileSizeValidator(100, message="File too small: {min_size}")
+        file = self.DummyFile(50)
+        with pytest.raises(ValidationError) as exc:
+            validator(file)
+        assert 'File too small: 100' in str(exc.value)
+
+    def test_max_file_size_validator_custom_code(self):
+        validator = MaxFileSizeValidator(1024, code='custom_max_size')
+        file = self.DummyFile(1025)
+        with pytest.raises(ValidationError) as exc:
+            validator(file)
+        assert exc.value.get_codes() == ['custom_max_size']
+
+    def test_min_file_size_validator_custom_code(self):
+        validator = MinFileSizeValidator(100, code='custom_min_size')
+        file = self.DummyFile(50)
+        with pytest.raises(ValidationError) as exc:
+            validator(file)
+        assert exc.value.get_codes() == ['custom_min_size']
+
+    def test_max_file_size_validator_equality(self):
+        validator1 = MaxFileSizeValidator(1024)
+        validator2 = MaxFileSizeValidator(1024)
+        validator3 = MaxFileSizeValidator(2048)
+        validator4 = MaxFileSizeValidator(1024, message="Custom")
+
+        assert validator1 == validator2
+        assert validator1 != validator3
+        assert validator1 != validator4
+
+    def test_min_file_size_validator_equality(self):
+        validator1 = MinFileSizeValidator(100)
+        validator2 = MinFileSizeValidator(100)
+        validator3 = MinFileSizeValidator(200)
+        validator4 = MinFileSizeValidator(100, message="Custom")
+
+        assert validator1 == validator2
+        assert validator1 != validator3
+        assert validator1 != validator4
+
+    def test_max_file_size_validator_repr(self):
+        validator = MaxFileSizeValidator(1024)
+        assert repr(validator) == '<MaxFileSizeValidator(max_size=1024)>'
+
+    def test_min_file_size_validator_repr(self):
+        validator = MinFileSizeValidator(100)
+        assert repr(validator) == '<MinFileSizeValidator(min_size=100)>'
+
+    def test_max_file_size_validator_boundary_conditions(self):
+        validator = MaxFileSizeValidator(1024)
+        # One byte over
+        file = self.DummyFile(1025)
+        with pytest.raises(ValidationError):
+            validator(file)
+        # One byte under
+        file = self.DummyFile(1023)
+        validator(file)  # Should not raise
+
+    def test_min_file_size_validator_boundary_conditions(self):
+        validator = MinFileSizeValidator(100)
+        # One byte under
+        file = self.DummyFile(99)
+        with pytest.raises(ValidationError):
+            validator(file)
+        # One byte over
+        file = self.DummyFile(101)
+        validator(file)  # Should not raise
+
+
+class TestFileSizeValidatorIntegration(TestCase):
+    def test_filefield_max_and_min_size(self):
+        class FileSerializer(serializers.Serializer):
+            file = serializers.FileField(validators=[
+                MaxFileSizeValidator(10),
+                MinFileSizeValidator(5),
+            ])
+
+        # File of size 7 (should pass)
+        file = SimpleUploadedFile('test.txt', b'1234567')
+        serializer = FileSerializer(data={'file': file})
+        assert serializer.is_valid(), serializer.errors
+
+        # File of size 4 (too small)
+        file = SimpleUploadedFile('test.txt', b'1234')
+        serializer = FileSerializer(data={'file': file})
+        assert not serializer.is_valid()
+        assert 'min_file_size' in serializer.errors['file'][0].code
+
+        # File of size 12 (too large)
+        file = SimpleUploadedFile('test.txt', b'123456789012')
+        serializer = FileSerializer(data={'file': file})
+        assert not serializer.is_valid()
+        assert 'max_file_size' in serializer.errors['file'][0].code
+
+    def test_filefield_max_size_only(self):
+        class FileSerializer(serializers.Serializer):
+            file = serializers.FileField(validators=[
+                MaxFileSizeValidator(1024),
+            ])
+
+        # File under limit (should pass)
+        file = SimpleUploadedFile('test.txt', b'x' * 512)
+        serializer = FileSerializer(data={'file': file})
+        assert serializer.is_valid(), serializer.errors
+
+        # File over limit
+        file = SimpleUploadedFile('test.txt', b'x' * 2048)
+        serializer = FileSerializer(data={'file': file})
+        assert not serializer.is_valid()
+        assert 'max_file_size' in serializer.errors['file'][0].code
+
+    def test_filefield_min_size_only(self):
+        class FileSerializer(serializers.Serializer):
+            file = serializers.FileField(validators=[
+                MinFileSizeValidator(100),
+            ])
+
+        # File over minimum (should pass)
+        file = SimpleUploadedFile('test.txt', b'x' * 200)
+        serializer = FileSerializer(data={'file': file})
+        assert serializer.is_valid(), serializer.errors
+
+        # File under minimum
+        file = SimpleUploadedFile('test.txt', b'x' * 50)
+        serializer = FileSerializer(data={'file': file})
+        assert not serializer.is_valid()
+        assert 'min_file_size' in serializer.errors['file'][0].code
+
+    def test_imagefield_max_size(self):
+        class ImageSerializer(serializers.Serializer):
+            image = serializers.ImageField(validators=[MaxFileSizeValidator(1024)])
+
+        # Create a small image in memory
+        img = Image.new('RGB', (10, 10), color='red')
+        buf = io.BytesIO()
+        img.save(buf, format='PNG')
+        buf.seek(0)
+        image_bytes = buf.read()
+        image_file = SimpleUploadedFile('test.png', image_bytes, content_type='image/png')
+        serializer = ImageSerializer(data={'image': image_file})
+        assert serializer.is_valid(), serializer.errors
+
+        # Create a valid image, then pad it to exceed the size limit
+        big_bytes = image_bytes + b'0' * (1025 - len(image_bytes))
+        big_image_file = SimpleUploadedFile('big.png', big_bytes, content_type='image/png')
+        serializer = ImageSerializer(data={'image': big_image_file})
+        assert not serializer.is_valid()
+        assert 'max_file_size' in serializer.errors['image'][0].code
+
+    def test_imagefield_min_size(self):
+        class ImageSerializer(serializers.Serializer):
+            image = serializers.ImageField(validators=[MinFileSizeValidator(100)])
+
+        # Create a large image in memory
+        img = Image.new('RGB', (50, 50), color='blue')
+        buf = io.BytesIO()
+        img.save(buf, format='PNG')
+        buf.seek(0)
+        image_bytes = buf.read()
+        image_file = SimpleUploadedFile('test.png', image_bytes, content_type='image/png')
+        serializer = ImageSerializer(data={'image': image_file})
+        assert serializer.is_valid(), serializer.errors
+
+        # Create a small image
+        small_img = Image.new('RGB', (5, 5), color='green')
+        small_buf = io.BytesIO()
+        small_img.save(small_buf, format='PNG')
+        small_buf.seek(0)
+        small_image_bytes = small_buf.read()
+        small_image_file = SimpleUploadedFile('small.png', small_image_bytes, content_type='image/png')
+        serializer = ImageSerializer(data={'image': small_image_file})
+        assert not serializer.is_valid()
+        assert 'min_file_size' in serializer.errors['image'][0].code
+
+    def test_multiple_validators_on_same_field(self):
+        class FileSerializer(serializers.Serializer):
+            file = serializers.FileField(validators=[
+                MaxFileSizeValidator(1000),
+                MinFileSizeValidator(100),
+            ])
+
+        # Valid file
+        file = SimpleUploadedFile('test.txt', b'x' * 500)
+        serializer = FileSerializer(data={'file': file})
+        assert serializer.is_valid(), serializer.errors
+
+        # Too small
+        file = SimpleUploadedFile('test.txt', b'x' * 50)
+        serializer = FileSerializer(data={'file': file})
+        assert not serializer.is_valid()
+        assert 'min_file_size' in serializer.errors['file'][0].code
+
+        # Too large
+        file = SimpleUploadedFile('test.txt', b'x' * 1500)
+        serializer = FileSerializer(data={'file': file})
+        assert not serializer.is_valid()
+        assert 'max_file_size' in serializer.errors['file'][0].code

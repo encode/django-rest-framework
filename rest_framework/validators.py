@@ -9,6 +9,7 @@ object creation, and makes it possible to switch between using the implicit
 from django.core.exceptions import FieldError
 from django.db import DataError
 from django.db.models import Exists
+from django.utils.deconstruct import deconstructible
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework.exceptions import ValidationError
@@ -344,3 +345,73 @@ class UniqueForYearValidator(BaseUniqueForValidator):
         filter_kwargs[field_name] = value
         filter_kwargs['%s__year' % date_field_name] = date.year
         return qs_filter(queryset, **filter_kwargs)
+
+
+@deconstructible
+class MaxFileSizeValidator:
+    """
+    Validator that ensures uploaded files do not exceed a maximum size.
+
+    Should be applied to individual file fields on the serializer.
+    """
+    message = _('File size must not exceed {max_size} bytes.')
+    code = 'max_file_size'
+
+    def __init__(self, max_size, message=None, code=None):
+        self.max_size = max_size
+        self.message = message or self.message
+        self.code = code or self.code
+
+    def __call__(self, value):
+        if hasattr(value, 'size'):
+            if value.size > self.max_size:
+                message = self.message.format(max_size=self.max_size)
+                raise ValidationError(message, code=self.code)
+
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return (self.message == other.message
+                and self.code == other.code
+                and self.max_size == other.max_size)
+
+    def __repr__(self):
+        return '<%s(max_size=%s)>' % (
+            self.__class__.__name__,
+            smart_repr(self.max_size)
+        )
+
+
+@deconstructible
+class MinFileSizeValidator:
+    """
+    Validator that ensures uploaded files meet a minimum size.
+
+    Should be applied to individual file fields on the serializer.
+    """
+    message = _('File size must be at least {min_size} bytes.')
+    code = 'min_file_size'
+
+    def __init__(self, min_size, message=None, code=None):
+        self.min_size = min_size
+        self.message = message or self.message
+        self.code = code or self.code
+
+    def __call__(self, value):
+        if hasattr(value, 'size'):
+            if value.size < self.min_size:
+                message = self.message.format(min_size=self.min_size)
+                raise ValidationError(message, code=self.code)
+
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return (self.message == other.message
+                and self.code == other.code
+                and self.min_size == other.min_size)
+
+    def __repr__(self):
+        return '<%s(min_size=%s)>' % (
+            self.__class__.__name__,
+            smart_repr(self.min_size)
+        )

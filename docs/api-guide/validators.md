@@ -170,6 +170,74 @@ If you want the date field to be entirely hidden from the user, then use `Hidden
 
 ---
 
+## MaxFileSizeValidator and MinFileSizeValidator
+
+These validators can be used to enforce file size constraints on uploaded files. They are especially useful for `FileField` and `ImageField` in serializers.
+
+### MaxFileSizeValidator
+
+Ensures that the uploaded file does not exceed a maximum size (in bytes).
+
+**Parameters:**
+
+* `max_size` (*required*) — The maximum file size in bytes.
+* `message` — Custom error message. May use `{max_size}` in the string.
+* `code` — Custom error code. Default is `'max_file_size'`.
+
+### MinFileSizeValidator
+
+Ensures that the uploaded file meets a minimum size (in bytes).
+
+**Parameters:**
+
+* `min_size` (*required*) — The minimum file size in bytes.
+* `message` — Custom error message. May use `{min_size}` in the string.
+* `code` — Custom error code. Default is `'min_file_size'`.
+
+### Usage Examples
+
+#### Basic usage with FileField
+
+    from rest_framework import serializers
+    from rest_framework.validators import MaxFileSizeValidator, MinFileSizeValidator
+
+    class FileUploadSerializer(serializers.Serializer):
+        file = serializers.FileField(validators=[
+            MaxFileSizeValidator(1024 * 1024),  # 1MB max
+            MinFileSizeValidator(1024),         # 1KB min
+        ])
+
+#### Usage with ImageField
+
+    class ImageUploadSerializer(serializers.Serializer):
+        image = serializers.ImageField(validators=[
+            MaxFileSizeValidator(5 * 1024 * 1024),  # 5MB max
+            MinFileSizeValidator(1024),             # 1KB min
+        ])
+
+#### Custom error messages and codes
+
+    class CustomFileSerializer(serializers.Serializer):
+        file = serializers.FileField(validators=[
+            MaxFileSizeValidator(
+                max_size=1024 * 1024,
+                message="File size cannot exceed {max_size} bytes",
+                code='file_too_large'
+            ),
+            MinFileSizeValidator(
+                min_size=1024,
+                message="File must be at least {min_size} bytes",
+                code='file_too_small'
+            ),
+        ])
+
+### Error Codes
+
+* `max_file_size` — Default error code for MaxFileSizeValidator
+* `min_file_size` — Default error code for MinFileSizeValidator
+
+---
+
 # Advanced field defaults
 
 Validators that are applied across multiple fields in the serializer can sometimes require a field input that should not be provided by the API client, but that *is* available as input to the validator.
