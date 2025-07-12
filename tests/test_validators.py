@@ -8,7 +8,6 @@ from django import VERSION as django_version
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import DataError, models
 from django.test import TestCase
-from PIL import Image
 
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -1186,6 +1185,11 @@ class TestFileSizeValidatorIntegration(TestCase):
         assert 'min_file_size' in serializer.errors['file'][0].code
 
     def test_imagefield_max_size(self):
+        try:
+            from PIL import Image
+        except ImportError:
+            pytest.skip("PIL not available")
+
         class ImageSerializer(serializers.Serializer):
             image = serializers.ImageField(validators=[MaxFileSizeValidator(1024)])
 
@@ -1207,6 +1211,11 @@ class TestFileSizeValidatorIntegration(TestCase):
         assert 'max_file_size' in serializer.errors['image'][0].code
 
     def test_imagefield_min_size(self):
+        try:
+            from PIL import Image
+        except ImportError:
+            pytest.skip("PIL not available")
+
         class ImageSerializer(serializers.Serializer):
             image = serializers.ImageField(validators=[MinFileSizeValidator(100)])
 
