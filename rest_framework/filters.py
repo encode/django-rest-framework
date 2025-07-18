@@ -249,7 +249,9 @@ class OrderingFilter(BaseFilterBackend):
             return (ordering,)
         return ordering
 
-    def get_default_valid_fields(self, queryset, view, context={}):
+    def get_default_valid_fields(self, queryset, view, context=None):
+        if context is None:
+            context = {}
         # If `ordering_fields` is not specified, then we determine a default
         # based on the serializer class, if one exists on the view.
         if hasattr(view, 'get_serializer_class'):
@@ -286,7 +288,9 @@ class OrderingFilter(BaseFilterBackend):
             )
         ]
 
-    def get_valid_fields(self, queryset, view, context={}):
+    def get_valid_fields(self, queryset, view, context=None):
+        if context is None:
+            context = {}
         valid_fields = getattr(view, 'ordering_fields', self.ordering_fields)
 
         if valid_fields is None:
