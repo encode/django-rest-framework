@@ -42,7 +42,7 @@ Set to false if this field is not required to be present during deserialization.
 
 Setting this to `False` also allows the object attribute or dictionary key to be omitted from output when serializing the instance. If the key is not present it will simply not be included in the output representation.
 
-Defaults to `True`. If you're using [Model Serializer](https://www.django-rest-framework.org/api-guide/serializers/#modelserializer) default value will be `False` if you have specified `blank=True` or `default` or `null=True` at your field in your `Model`.
+Defaults to `True`. If you're using [Model Serializer](https://www.django-rest-framework.org/api-guide/serializers/#modelserializer), the default value will be `False` when you have specified a `default`, or when the corresponding `Model` field has `blank=True` or `null=True` and is not part of a unique constraint at the same time. (Note that without a `default` value, [unique constraints will cause the field to be required](https://www.django-rest-framework.org/api-guide/validators/#optional-fields).)
 
 ### `default`
 
@@ -552,7 +552,7 @@ For further examples on `HiddenField` see the [validators](validators.md) docume
 
 ---
 
-**Note:** `HiddenField()` does not appear in `partial=True` serializer (when making `PATCH` request). This behavior might change in future, follow updates on [github discussion](https://github.com/encode/django-rest-framework/discussions/8259). 
+**Note:** `HiddenField()` does not appear in `partial=True` serializer (when making `PATCH` request).
 
 ---
 
@@ -857,4 +857,4 @@ The [django-rest-framework-hstore][django-rest-framework-hstore] package provide
 [django-hstore]: https://github.com/djangonauts/django-hstore
 [python-decimal-rounding-modes]: https://docs.python.org/3/library/decimal.html#rounding-modes
 [django-current-timezone]: https://docs.djangoproject.com/en/stable/topics/i18n/timezones/#default-time-zone-and-current-time-zone
-[django-docs-select-related]: https://docs.djangoproject.com/en/3.1/ref/models/querysets/#django.db.models.query.QuerySet.select_related
+[django-docs-select-related]: https://docs.djangoproject.com/en/stable/ref/models/querysets/#django.db.models.query.QuerySet.select_related

@@ -395,4 +395,4 @@ The following third party packages provide additional generic view implementatio
 [UpdateModelMixin]: #updatemodelmixin
 [DestroyModelMixin]: #destroymodelmixin
 [django-rest-multiple-models]: https://github.com/MattBroach/DjangoRestMultipleModels
-[django-docs-select-related]: https://docs.djangoproject.com/en/3.1/ref/models/querysets/#django.db.models.query.QuerySet.select_related
+[django-docs-select-related]: https://docs.djangoproject.com/en/stable/ref/models/querysets/#django.db.models.query.QuerySet.select_related
