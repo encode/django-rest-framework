@@ -43,6 +43,7 @@ from rest_framework.validators import (
     UniqueForDateValidator, UniqueForMonthValidator, UniqueForYearValidator,
     UniqueTogetherValidator
 )
+from rest_framework.compat import get_referenced_base_fields_from_q
 
 # Note: We do the following so that users of the framework can use this style:
 #
@@ -1459,18 +1460,23 @@ class ModelSerializer(Serializer):
             for unique_together in parent_class._meta.unique_together:
                 yield unique_together, model._default_manager, [], None, None
             for constraint in parent_class._meta.constraints:
-                if isinstance(constraint, models.UniqueConstraint) and len(constraint.fields) > 1:
+                if isinstance(constraint, models.UniqueConstraint):
                     if constraint.condition is None:
                         condition_fields = []
                     else:
-                        condition_fields = list(constraint.condition.referenced_base_fields)
-                    yield (
-                        constraint.fields,
-                        model._default_manager,
-                        condition_fields,
-                        constraint.condition,
-                        constraint.nulls_distinct,
-                    )
+                        condition_fields = list(
+                            get_referenced_base_fields_from_q(constraint.condition)
+                        )
+
+                    required_fields = {*constraint.fields, *condition_fields}
+                    if len(required_fields) > 1:
+                        yield (
+                            constraint.fields,
+                            model._default_manager,
+                            condition_fields,
+                            constraint.condition,
+                            constraint.nulls_distinct,
+                        )
 
     def get_uniqueness_extra_kwargs(self, field_names, declared_fields, extra_kwargs):
         """

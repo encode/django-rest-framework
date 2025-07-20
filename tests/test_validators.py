@@ -170,6 +170,24 @@ class NullUniquenessTogetherModel(models.Model):
         unique_together = ('race_name', 'position')
 
 
+class ConditionUniquenessTogetherModel(models.Model):
+    """
+    Used to ensure that unique constraints with single fields but at least one other
+    distinct condition field are included when checking unique_together constraints.
+    """
+    race_name = models.CharField(max_length=100)
+    position = models.IntegerField()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                name="condition_uniqueness_together_model_race_name",
+                fields=('race_name',),
+                condition=models.Q(position__lte=1)
+            )
+        ]
+
+
 class UniquenessTogetherSerializer(serializers.ModelSerializer):
     class Meta:
         model = UniquenessTogetherModel
@@ -179,6 +197,12 @@ class UniquenessTogetherSerializer(serializers.ModelSerializer):
 class NullUniquenessTogetherSerializer(serializers.ModelSerializer):
     class Meta:
         model = NullUniquenessTogetherModel
+        fields = '__all__'
+
+
+class ConditionUniquenessTogetherSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ConditionUniquenessTogetherModel
         fields = '__all__'
 
 
@@ -222,6 +246,22 @@ class TestUniquenessTogetherValidation(TestCase):
             ]
         }
 
+    def test_is_not_unique_together_condition_based(self):
+        """
+        Failing unique together validation should result in non field errors when a condition-based
+        unique together constraint is violated.
+        """
+        ConditionUniquenessTogetherModel.objects.create(race_name='example', position=1)
+
+        data = {'race_name': 'example', 'position': 1}
+        serializer = ConditionUniquenessTogetherSerializer(data=data)
+        assert not serializer.is_valid()
+        assert serializer.errors == {
+            'non_field_errors': [
+                'The fields race_name must make a unique set.'
+            ]
+        }
+
     def test_is_unique_together(self):
         """
         In a unique together validation, one field may be non-unique
@@ -233,6 +273,21 @@ class TestUniquenessTogetherValidation(TestCase):
         assert serializer.validated_data == {
             'race_name': 'other',
             'position': 2
+        }
+
+    def test_unique_together_condition_based(self):
+        """
+        In a unique together validation, one field may be non-unique
+        so long as the set as a whole is unique.
+        """
+        ConditionUniquenessTogetherModel.objects.create(race_name='example', position=1)
+
+        data = {'race_name': 'other', 'position': 1}
+        serializer = ConditionUniquenessTogetherSerializer(data=data)
+        assert serializer.is_valid()
+        assert serializer.validated_data == {
+            'race_name': 'other',
+            'position': 1
         }
 
     def test_updated_instance_excluded_from_unique_together(self):
@@ -248,35 +303,52 @@ class TestUniquenessTogetherValidation(TestCase):
             'position': 1
         }
 
-    def test_many_update_requires_child_instance(self):
-        class ListUpdateSerializer(serializers.ListSerializer):
-            def update(self, instance, validated_data):
-                return instance
 
-        class Serializer(UniquenessTogetherSerializer):
-            id = serializers.IntegerField()
+def test_many_update_requires_child_instance(self):
+    class ListUpdateSerializer(serializers.ListSerializer):
+        def update(self, instance, validated_data):
+            return instance
 
-            class Meta(UniquenessTogetherSerializer.Meta):
-                list_serializer_class = ListUpdateSerializer
+    class Serializer(UniquenessTogetherSerializer):
+        id = serializers.IntegerField()
 
-        serializer = Serializer(
-            instance=UniquenessTogetherModel.objects.all(),
-            data=[{
-                'id': self.instance.pk,
-                'race_name': self.instance.race_name,
-                'position': self.instance.position,
-            }],
-            many=True,
-        )
-        message = (
-            '`UniqueTogetherValidator` cannot determine the current instance '
-            'during a multiple update. Override '
-            '`ListSerializer.run_child_validation()` to set `child.instance` '
-            'before validation.'
-        )
+        class Meta(UniquenessTogetherSerializer.Meta):
+            list_serializer_class = ListUpdateSerializer
 
-        with pytest.raises(RuntimeError, match=re.escape(message)):
-            serializer.is_valid()
+    serializer = Serializer(
+        instance=UniquenessTogetherModel.objects.all(),
+        data=[{
+            'id': self.instance.pk,
+            'race_name': self.instance.race_name,
+            'position': self.instance.position,
+        }],
+        many=True,
+    )
+    message = (
+        '`UniqueTogetherValidator` cannot determine the current instance '
+        'during a multiple update. Override '
+        '`ListSerializer.run_child_validation()` to set `child.instance` '
+        'before validation.'
+    )
+
+    with pytest.raises(RuntimeError, match=re.escape(message)):
+        serializer.is_valid()
+
+
+def test_updated_instance_excluded_from_unique_together_condition_based(self):
+    """
+    When performing an update, the existing instance does not count
+    as a match against uniqueness.
+    """
+    ConditionUniquenessTogetherModel.objects.create(race_name='example', position=1)
+
+    data = {'race_name': 'example', 'position': 0}
+    serializer = ConditionUniquenessTogetherSerializer(self.instance, data=data)
+    assert serializer.is_valid()
+    assert serializer.validated_data == {
+        'race_name': 'example',
+        'position': 0
+    }
 
     def test_unique_together_is_required(self):
         """
@@ -786,14 +858,14 @@ class TestUniqueConstraintValidation(TestCase):
     def test_single_field_uniq_validators(self):
         """
         UniqueConstraint with single field must be transformed into
-        field's UniqueValidator
+        field's UniqueValidator if no distinct condition fields exist (else UniqueTogetherValidator)
         """
         # Backends like PostgreSQL add Min/Max validators for IntegerField;
         # SQLite does not because it has no fixed integer range.
         has_int_range = connection.ops.integer_field_range('IntegerField')[0] is not None
         extra_validators_qty = 2 if has_int_range else 0
         serializer = UniqueConstraintSerializer()
-        assert len(serializer.validators) == 2
+        assert len(serializer.validators) == 4
         validators = serializer.fields['global_id'].validators
         assert len(validators) == 1 + extra_validators_qty
         assert validators[0].queryset == UniqueConstraintModel.objects
