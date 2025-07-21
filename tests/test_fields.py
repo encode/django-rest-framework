@@ -9,10 +9,9 @@ from enum import auto
 from unittest.mock import patch
 from zoneinfo import ZoneInfo
 
+import django
 import pytest
 import pytz
-
-import django
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db.models import IntegerChoices, TextChoices
 from django.http import QueryDict
