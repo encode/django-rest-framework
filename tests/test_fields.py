@@ -10,11 +10,7 @@ from unittest.mock import patch
 from zoneinfo import ZoneInfo
 
 import pytest
-
-try:
-    import pytz
-except ImportError:
-    pytz = None
+import pytz
 
 import django
 from django.core.exceptions import ValidationError as DjangoValidationError
@@ -1642,16 +1638,15 @@ class TestPytzNaiveDayLightSavingTimeTimeZoneDateTimeField(FieldValues):
     }
     outputs = {}
 
-    if pytz:
-        class MockTimezone(pytz.BaseTzInfo):
-            @staticmethod
-            def localize(value, is_dst):
-                raise pytz.InvalidTimeError()
+    class MockTimezone(pytz.BaseTzInfo):
+        @staticmethod
+        def localize(value, is_dst):
+            raise pytz.InvalidTimeError()
 
-            def __str__(self):
-                return 'America/New_York'
+        def __str__(self):
+            return 'America/New_York'
 
-        field = serializers.DateTimeField(default_timezone=MockTimezone())
+    field = serializers.DateTimeField(default_timezone=MockTimezone())
 
 
 @patch('rest_framework.utils.timezone.datetime_ambiguous', return_value=True)
