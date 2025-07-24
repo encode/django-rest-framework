@@ -9,13 +9,9 @@ from enum import auto
 from unittest.mock import patch
 from zoneinfo import ZoneInfo
 
+import django
 import pytest
-
-try:
-    import pytz
-except ImportError:
-    pytz = None
-
+import pytz
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db.models import IntegerChoices, TextChoices
 from django.http import QueryDict
@@ -1624,7 +1620,10 @@ class TestCustomTimezoneForDateTimeField(TestCase):
         assert rendered_date == rendered_date_in_timezone
 
 
-@pytest.mark.skipif(pytz is None, reason="Django 5.0 has removed pytz; this test should eventually be able to get removed.")
+@pytest.mark.skipif(
+    condition=django.VERSION >= (5,),
+    reason="Django 5.0 has removed pytz; this test should eventually be able to get removed.",
+)
 class TestPytzNaiveDayLightSavingTimeTimeZoneDateTimeField(FieldValues):
     """
     Invalid values for `DateTimeField` with datetime in DST shift (non-existing or ambiguous) and timezone with DST.
@@ -1638,16 +1637,15 @@ class TestPytzNaiveDayLightSavingTimeTimeZoneDateTimeField(FieldValues):
     }
     outputs = {}
 
-    if pytz:
-        class MockTimezone(pytz.BaseTzInfo):
-            @staticmethod
-            def localize(value, is_dst):
-                raise pytz.InvalidTimeError()
+    class MockTimezone(pytz.BaseTzInfo):
+        @staticmethod
+        def localize(value, is_dst):
+            raise pytz.InvalidTimeError()
 
-            def __str__(self):
-                return 'America/New_York'
+        def __str__(self):
+            return 'America/New_York'
 
-        field = serializers.DateTimeField(default_timezone=MockTimezone())
+    field = serializers.DateTimeField(default_timezone=MockTimezone())
 
 
 @patch('rest_framework.utils.timezone.datetime_ambiguous', return_value=True)
