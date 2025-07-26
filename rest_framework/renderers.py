@@ -343,7 +343,11 @@ class HTMLFormRenderer(BaseRenderer):
         field = field.as_form_field()
 
         if style.get('input_type') == 'datetime-local' and isinstance(field.value, str):
-            field.value = field.value.rstrip('Z')
+            # The format of an input type="datetime-local" is "yyyy-MM-ddThh:mm"
+            # followed by optional ":ss" or ":ss.SSS", so keep only the first three
+            # digits of milliseconds to avoid browser console error.
+            datetime_parts = field.value.split(".")
+            field.value = f"{datetime_parts[0]}.{datetime_parts[1][:3]}"
 
         if 'template' in style:
             template_name = style['template']
