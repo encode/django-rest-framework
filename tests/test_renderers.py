@@ -1,5 +1,7 @@
 import re
 from collections.abc import MutableMapping
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 import pytest
 from django.core.cache import cache
@@ -486,6 +488,85 @@ class TestHiddenFieldHTMLFormRenderer(TestCase):
         field = serializer['published']
         rendered = renderer.render_field(field, {})
         assert rendered == ''
+
+
+class TestDateTimeFieldHTMLFormRender(TestCase):
+    """
+    Default USE_TZ is True.
+    Default TIME_ZONE is 'America/Chicago'.
+    """
+
+    def _assert_datetime_rendering(self, appointment, expected, datetimefield_kwargs=None):
+        datetimefield_kwargs = datetimefield_kwargs or {}
+
+        class TestSerializer(serializers.Serializer):
+            appointment = serializers.DateTimeField(**datetimefield_kwargs)
+
+        serializer = TestSerializer(data={"appointment": appointment})
+        serializer.is_valid()
+        renderer = HTMLFormRenderer()
+        field = serializer['appointment']
+        rendered = renderer.render_field(field, {})
+        expected_html = (
+            '<input name="appointment" class="form-control" '
+            f'type="datetime-local" value="{expected}">'
+        )
+
+        self.assertInHTML(expected_html, rendered)
+
+    def test_datetime_field_rendering_milliseconds(self):
+        self._assert_datetime_rendering(
+            datetime(2024, 12, 24, 0, 55, 30, 345678), "2024-12-24T00:55:30.345"
+        )
+
+    def test_datetime_field_rendering_no_seconds_and_no_milliseconds(self):
+        self._assert_datetime_rendering(
+            datetime(2024, 12, 24, 0, 55, 0, 0), "2024-12-24T00:55:00.000"
+        )
+
+    def test_datetime_field_rendering_with_format_as_none(self):
+        self._assert_datetime_rendering(
+            datetime(2024, 12, 24, 0, 55, 30, 345678),
+            "2024-12-24T00:55:30.345",
+            {"format": None}
+        )
+
+    def test_datetime_field_rendering_with_format(self):
+        self._assert_datetime_rendering(
+            datetime(2024, 12, 24, 0, 55, 30, 345678),
+            "2024-12-24T00:55:00.000",
+            {"format": "%a %d %b %Y, %I:%M%p"}
+        )
+
+    # New project templates default to 'UTC'.
+    @override_settings(TIME_ZONE='UTC')
+    def test_datetime_field_rendering_utc(self):
+        self._assert_datetime_rendering(
+            datetime(2024, 12, 24, 0, 55, 30, 345678),
+            "2024-12-24T00:55:30.345"
+        )
+
+    @override_settings(REST_FRAMEWORK={'DATETIME_FORMAT': '%a %d %b %Y, %I:%M%p'})
+    def test_datetime_field_rendering_with_custom_datetime_format(self):
+        self._assert_datetime_rendering(
+            datetime(2024, 12, 24, 0, 55, 30, 345678),
+            "2024-12-24T00:55:00.000"
+        )
+
+    @override_settings(REST_FRAMEWORK={'DATETIME_FORMAT': None})
+    def test_datetime_field_rendering_datetime_format_is_none(self):
+        self._assert_datetime_rendering(
+            datetime(2024, 12, 24, 0, 55, 30, 345678),
+            "2024-12-24T00:55:30.345"
+        )
+
+    # Enforce it in True because in Django versions under 4.2 was False by default.
+    @override_settings(USE_TZ=True)
+    def test_datetime_field_rendering_timezone_aware_datetime(self):
+        self._assert_datetime_rendering(
+            datetime(2024, 12, 24, 0, 55, 30, 345678, tzinfo=ZoneInfo('Asia/Tokyo')),  # +09:00
+            "2024-12-23T09:55:30.345"  # Rendered in -06:00
+        )
 
 
 class TestHTMLFormRenderer(TestCase):

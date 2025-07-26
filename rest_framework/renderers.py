@@ -22,7 +22,7 @@ from django.utils.html import mark_safe
 from django.utils.http import parse_header_parameters
 from django.utils.safestring import SafeString
 
-from rest_framework import VERSION, exceptions, serializers, status
+from rest_framework import ISO_8601, VERSION, exceptions, serializers, status
 from rest_framework.compat import (
     INDENT_SEPARATORS, LONG_SEPARATORS, SHORT_SEPARATORS, coreapi, coreschema,
     pygments_css, yaml
@@ -339,11 +339,27 @@ class HTMLFormRenderer(BaseRenderer):
             style['template_pack'] = parent_style.get('template_pack', self.template_pack)
         style['renderer'] = self
 
-        # Get a clone of the field with text-only value representation.
+        # Get a clone of the field with text-only value representation ('' if None or False).
         field = field.as_form_field()
 
-        if style.get('input_type') == 'datetime-local' and isinstance(field.value, str):
-            field.value = field.value.rstrip('Z')
+        if style.get('input_type') == 'datetime-local':
+            try:
+                format_ = field._field.format
+            except AttributeError:
+                format_ = api_settings.DATETIME_FORMAT
+
+            if format_ is not None:
+                # field.value is expected to be a string
+                # https://www.django-rest-framework.org/api-guide/fields/#datetimefield
+                field.value = (
+                    datetime.datetime.fromisoformat(field.value.rstrip('Z')) if format_ == ISO_8601
+                    else datetime.datetime.strptime(field.value, format_)
+                )
+
+            # The format of an input type="datetime-local" is "yyyy-MM-ddThh:mm"
+            # followed by optional ":ss" or ":ss.SSS", so keep only the first three
+            # digits of milliseconds to avoid browser console error.
+            field.value = field.value.replace(tzinfo=None).isoformat(timespec="milliseconds")
 
         if 'template' in style:
             template_name = style['template']
