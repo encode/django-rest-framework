@@ -106,14 +106,14 @@ This release is considered a bugfix release.
 
 This release is considered a significant release to improve upstream support with Django and Python. Some of these may change the behaviour of existing features and pre-existing behaviour. Specifically, some fixes were added to around the support of `UniqueConstraint` with nullable fields which will improve built-in serializer validation.
 
-## Features
+#### Features
 
 * Add official support for Django 5.1 and its new `LoginRequiredMiddleware` in [#9514](https://github.com/encode/django-rest-framework/pull/9514) and [#9657](https://github.com/encode/django-rest-framework/pull/9657)
 * Add official Django 5.2a1 support in [#9634](https://github.com/encode/django-rest-framework/pull/9634)
 * Add support for Python 3.13 in [#9527](https://github.com/encode/django-rest-framework/pull/9527) and [#9556](https://github.com/encode/django-rest-framework/pull/9556)
 * Support Django 2.1+ test client JSON data automatically serialized in [#6511](https://github.com/encode/django-rest-framework/pull/6511) and fix a regression in [#9615](https://github.com/encode/django-rest-framework/pull/9615)
 
-## Bug fixes
+#### Bug fixes
 
 * Fix unique together validator to respect condition's fields from `UniqueConstraint` in [#9360](https://github.com/encode/django-rest-framework/pull/9360)
 * Fix raising on nullable fields part of `UniqueConstraint` in [#9531](https://github.com/encode/django-rest-framework/pull/9531)
@@ -124,19 +124,19 @@ This release is considered a significant release to improve upstream support wit
 * Fix noisy warning and accept integers as min/max values of `DecimalField` in [#9515](https://github.com/encode/django-rest-framework/pull/9515)
 * Fix usages of `open()` in `setup.py` in [#9661](https://github.com/encode/django-rest-framework/pull/9661)
 
-## Translations
+#### Translations
 
 * Add some missing Chinese translations in [#9505](https://github.com/encode/django-rest-framework/pull/9505)
 * Fix spelling mistakes in Farsi language were corrected in [#9521](https://github.com/encode/django-rest-framework/pull/9521)
 * Fixing and adding missing Brazilian Portuguese translations in [#9535](https://github.com/encode/django-rest-framework/pull/9535)
 
-## Removals
+#### Removals
 
 * Remove support for Python 3.8 in [#9670](https://github.com/encode/django-rest-framework/pull/9670)
 * Remove long deprecated code from request wrapper in [#9441](https://github.com/encode/django-rest-framework/pull/9441)
 * Remove deprecated `AutoSchema._get_reference` method in [#9525](https://github.com/encode/django-rest-framework/pull/9525)
 
-## Documentation and internal changes
+#### Documentation and internal changes
 
 * Provide tests for hashing of `OperandHolder` in [#9437](https://github.com/encode/django-rest-framework/pull/9437)
 * Update documentation: Add `adrf` third party package in [#9198](https://github.com/encode/django-rest-framework/pull/9198)
@@ -156,7 +156,7 @@ This release is considered a significant release to improve upstream support wit
 * Fix a number of typos in the test suite in the docs in [#9662](https://github.com/encode/django-rest-framework/pull/9662)
 * Add `django-pyoidc` as a third party authentication library in [#9667](https://github.com/encode/django-rest-framework/pull/9667)
 
-## New Contributors
+#### New Contributors
 
 * [`@maerteijn`](https://github.com/maerteijn) made their first contribution in [#9198](https://github.com/encode/django-rest-framework/pull/9198)
 * [`@FraCata00`](https://github.com/FraCata00) made their first contribution in [#9444](https://github.com/encode/django-rest-framework/pull/9444)
