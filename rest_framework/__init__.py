@@ -8,7 +8,7 @@ ______ _____ _____ _____    __
 """
 
 __title__ = 'Django REST framework'
-__version__ = '3.16.0'
+__version__ = '3.16.1'
 __author__ = 'Tom Christie'
 __license__ = 'BSD 3-Clause'
 __copyright__ = 'Copyright 2011-2023 Encode OSS Ltd'
