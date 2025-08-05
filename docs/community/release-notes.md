@@ -38,6 +38,68 @@ You can determine your currently installed version using `pip show`:
 
 ## 3.16.x series
 
+### 3.16.1
+
+**Date**: TBC
+
+This release is considered a bugfix release.
+
+#### Minor changes
+
+* Cleanup optional `backports.zoneinfo` dependency and conditions on unsupported Python 3.8 and lower in [#9681](https://github.com/encode/django-rest-framework/pull/9681). Python versions prior to 3.9 were already unsupported so this shouldn't be a breaking change.
+
+#### Bug fixes
+
+* Fix `UniqueTogetherValidator` to handle fields w/ `source` attr in [#9688](https://github.com/encode/django-rest-framework/pull/9688)
+* Drop HTML line breaks on long headers in browsable API in [#9438](https://github.com/encode/django-rest-framework/pull/9438)
+* Fix regression in `unique_together` validation with `SerializerMethodField` in [#9712](https://github.com/encode/django-rest-framework/pull/9712)
+
+#### Translations
+
+* Add Kazakh locale support in [#9713](https://github.com/encode/django-rest-framework/pull/9713)
+* Update translations for Korean translations in [#9571](https://github.com/encode/django-rest-framework/pull/9571)
+* Update German translations in [#9676](https://github.com/encode/django-rest-framework/pull/9676)
+* Update Chinese translations in [#9675](https://github.com/encode/django-rest-framework/pull/9675)
+* Update Arabic translations-sal in [#9595](https://github.com/encode/django-rest-framework/pull/9595)
+* Update Persian translations in [#9576](https://github.com/encode/django-rest-framework/pull/9576)
+* Update Spanish translations in [#9701](https://github.com/encode/django-rest-framework/pull/9701)
+* Update Turkish Translations in [#9749](https://github.com/encode/django-rest-framework/pull/9749)
+* Fix some typos in Brazilian Portuguese translations in [#9673](https://github.com/encode/django-rest-framework/pull/9673)
+
+#### Documentation
+
+* Removed reference to GitHub Issues and Discussions in [#9660](https://github.com/encode/django-rest-framework/pull/9660)
+* Add `drf-restwind` and update outdated images in `browsable-api.md` in [#9680](https://github.com/encode/django-rest-framework/pull/9680)
+* Updated funding page to represent current scope in [#9686](https://github.com/encode/django-rest-framework/pull/9686)
+* Fix broken Heroku JSON Schema link in [#9693](https://github.com/encode/django-rest-framework/pull/9693)
+* Update Django documentation links to use stable version in [#9698](https://github.com/encode/django-rest-framework/pull/9698)
+* Expand docs on unique constraints cause 'required=True' in [#9725](https://github.com/encode/django-rest-framework/pull/9725)
+* Revert extension back from `djangorestframework-guardian2` to `djangorestframework-guardian` in [#9734](https://github.com/encode/django-rest-framework/pull/9734)
+* Add note to tutorial about required `request` in serializer context when using `HyperlinkedModelSerializer` in [#9732](https://github.com/encode/django-rest-framework/pull/9732)
+
+#### Internal changes
+
+* Update GitHub Actions to use Ubuntu 24.04 for testing in [#9677](https://github.com/encode/django-rest-framework/pull/9677)
+* Update test matrix to use Django 5.2 stable version in [#9679](https://github.com/encode/django-rest-framework/pull/9679)
+* Add `pyupgrade` to `pre-commit` hooks in [#9682](https://github.com/encode/django-rest-framework/pull/9682)
+* Fix test with Django 5 when `pytz` is available in [#9715](https://github.com/encode/django-rest-framework/pull/9715)
+
+#### New Contributors
+* [`@araggohnxd`](https://github.com/araggohnxd) made their first contribution in [#9673](https://github.com/encode/django-rest-framework/pull/9673)
+* [`@mbeijen`](https://github.com/mbeijen) made their first contribution in [#9660](https://github.com/encode/django-rest-framework/pull/9660)
+* [`@stefan6419846`](https://github.com/stefan6419846) made their first contribution in [#9676](https://github.com/encode/django-rest-framework/pull/9676)
+* [`@ren000thomas`](https://github.com/ren000thomas) made their first contribution in [#9675](https://github.com/encode/django-rest-framework/pull/9675)
+* [`@ulgens`](https://github.com/ulgens) made their first contribution in [#9682](https://github.com/encode/django-rest-framework/pull/9682)
+* [`@bukh-sal`](https://github.com/bukh-sal) made their first contribution in [#9595](https://github.com/encode/django-rest-framework/pull/9595)
+* [`@rezatn0934`](https://github.com/rezatn0934) made their first contribution in [#9576](https://github.com/encode/django-rest-framework/pull/9576)
+* [`@Rohit10jr`](https://github.com/Rohit10jr) made their first contribution in [#9693](https://github.com/encode/django-rest-framework/pull/9693)
+* [`@kushibayev`](https://github.com/kushibayev) made their first contribution in [#9713](https://github.com/encode/django-rest-framework/pull/9713)
+* [`@alihassancods`](https://github.com/alihassancods) made their first contribution in [#9732](https://github.com/encode/django-rest-framework/pull/9732)
+* [`@kulikjak`](https://github.com/kulikjak) made their first contribution in [#9715](https://github.com/encode/django-rest-framework/pull/9715)
+* [`@Natgho`](https://github.com/Natgho) made their first contribution in [#9749](https://github.com/encode/django-rest-framework/pull/9749)
+
+**Full Changelog**: https://github.com/encode/django-rest-framework/compare/3.16.0...3.16.1
+
 ### 3.16.0
 
 **Date**: 28th March 2025
