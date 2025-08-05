@@ -6,7 +6,7 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.decorators import (
-    action, api_view, authentication_classes, parser_classes,
+    action, api_view, authentication_classes, metadata_class, parser_classes,
     permission_classes, renderer_classes, schema, throttle_classes,
     versioning_class
 )
@@ -161,6 +161,18 @@ class DecoratorTestCase(TestCase):
         request = self.factory.get("/?version=1.2.3")
         response = view(request)
         assert response.data == {"version": "1.2.3"}
+
+    def test_metadata_class(self):
+        # From TestMetadata.test_none_metadata()
+        @api_view()
+        @metadata_class(None)
+        def view(request):
+            return Response({})
+
+        request = self.factory.options('/')
+        response = view(request)
+        assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
+        assert response.data == {'detail': 'Method "OPTIONS" not allowed.'}
 
     def test_schema(self):
         """
