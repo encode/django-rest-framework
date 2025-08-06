@@ -40,9 +40,9 @@ You can determine your currently installed version using `pip show`:
 
 ### 3.16.1
 
-**Date**: 7th July 2025
+**Date**: 6th July 2025
 
-This release is considered a bugfix release.
+This release fixes a few bugs, clean-up some old code paths for unsupported Python versions and improve translations.
 
 #### Minor changes
 
@@ -50,9 +50,9 @@ This release is considered a bugfix release.
 
 #### Bug fixes
 
-* Fix `UniqueTogetherValidator` to handle fields w/ `source` attr in [#9688](https://github.com/encode/django-rest-framework/pull/9688)
-* Drop HTML line breaks on long headers in browsable API in [#9438](https://github.com/encode/django-rest-framework/pull/9438)
 * Fix regression in `unique_together` validation with `SerializerMethodField` in [#9712](https://github.com/encode/django-rest-framework/pull/9712)
+* Fix `UniqueTogetherValidator` to handle fields with `source` attribute in [#9688](https://github.com/encode/django-rest-framework/pull/9688)
+* Drop HTML line breaks on long headers in browsable API in [#9438](https://github.com/encode/django-rest-framework/pull/9438)
 
 #### Translations
 
