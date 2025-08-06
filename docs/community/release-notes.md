@@ -40,7 +40,7 @@ You can determine your currently installed version using `pip show`:
 
 ### 3.16.1
 
-**Date**: 6th July 2025
+**Date**: 6th August 2025
 
 This release fixes a few bugs, clean-up some old code paths for unsupported Python versions and improve translations.
 
