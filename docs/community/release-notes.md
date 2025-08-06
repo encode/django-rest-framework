@@ -85,6 +85,7 @@ This release fixes a few bugs, clean-up some old code paths for unsupported Pyth
 * Fix test with Django 5 when `pytz` is available in [#9715](https://github.com/encode/django-rest-framework/pull/9715)
 
 #### New Contributors
+
 * [`@araggohnxd`](https://github.com/araggohnxd) made their first contribution in [#9673](https://github.com/encode/django-rest-framework/pull/9673)
 * [`@mbeijen`](https://github.com/mbeijen) made their first contribution in [#9660](https://github.com/encode/django-rest-framework/pull/9660)
 * [`@stefan6419846`](https://github.com/stefan6419846) made their first contribution in [#9676](https://github.com/encode/django-rest-framework/pull/9676)
