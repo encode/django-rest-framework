@@ -40,7 +40,7 @@ You can determine your currently installed version using `pip show`:
 
 ### 3.16.1
 
-**Date**: 7th July 2025
+**Date**: 7th August 2025
 
 This release is considered a bugfix release.
 
