@@ -538,6 +538,16 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 </code></pre>
 <p>Notice that we've also added a new <code>'highlight'</code> field.  This field is of the same type as the <code>url</code> field, except that it points to the <code>'snippet-highlight'</code> url pattern, instead of the <code>'snippet-detail'</code> url pattern.</p>
 <p>Because we've included format suffixed URLs such as <code>'.json'</code>, we also need to indicate on the <code>highlight</code> field that any format suffixed hyperlinks it returns should use the <code>'.html'</code> suffix.</p>
+<hr />
+<p><strong>Note:</strong></p>
+<p>When you are manually instantiating these serializers inside your views (e.g., in <code>SnippetDetail</code> or <code>SnippetList</code>), you <strong>must</strong> pass <code>context={'request': request}</code> so the serializer knows how to build absolute URLs. For example, instead of:</p>
+<pre><code>serializer = SnippetSerializer(snippet)
+</code></pre>
+<p>You must write:</p>
+<pre><code>serializer = SnippetSerializer(snippet, context={'request': request})
+</code></pre>
+<p>If your view is a subclass of <code>GenericAPIView</code>, you may use the <code>get_serializer_context()</code> as a convenience method.</p>
+<hr />
 <h2 id="making-sure-our-url-patterns-are-named"><a class="toclink" href="#making-sure-our-url-patterns-are-named">Making sure our URL patterns are named</a></h2>
 <p>If we're going to have a hyperlinked API, we need to make sure we name our URL patterns.  Let's take a look at which URL patterns we need to name.</p>
 <ul>

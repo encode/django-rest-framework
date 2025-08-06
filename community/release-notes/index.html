@@ -438,30 +438,6 @@
                     </li>
                   
                     <li>
-                      <a href="#features">Features</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#bug-fixes">Bug fixes</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#translations">Translations</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#removals">Removals</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#documentation-and-internal-changes">Documentation and internal changes</a>
-                    </li>
-                  
-                    <li>
-                      <a href="#new-contributors">New Contributors</a>
-                    </li>
-                  
-                    <li>
                       <a href="#315x-series">3.15.x series</a>
                     </li>
                   
@@ -578,17 +554,76 @@
 </code></pre>
 <hr />
 <h2 id="316x-series"><a class="toclink" href="#316x-series">3.16.x series</a></h2>
+<h3 id="3161"><a class="toclink" href="#3161">3.16.1</a></h3>
+<p><strong>Date</strong>: 6th August 2025</p>
+<p>This release fixes a few bugs, clean-up some old code paths for unsupported Python versions and improve translations.</p>
+<h4 id="minor-changes"><a class="toclink" href="#minor-changes">Minor changes</a></h4>
+<ul>
+<li>Cleanup optional <code>backports.zoneinfo</code> dependency and conditions on unsupported Python 3.8 and lower in <a href="https://github.com/encode/django-rest-framework/pull/9681">#9681</a>. Python versions prior to 3.9 were already unsupported so this shouldn't be a breaking change.</li>
+</ul>
+<h4 id="bug-fixes"><a class="toclink" href="#bug-fixes">Bug fixes</a></h4>
+<ul>
+<li>Fix regression in <code>unique_together</code> validation with <code>SerializerMethodField</code> in <a href="https://github.com/encode/django-rest-framework/pull/9712">#9712</a></li>
+<li>Fix <code>UniqueTogetherValidator</code> to handle fields with <code>source</code> attribute in <a href="https://github.com/encode/django-rest-framework/pull/9688">#9688</a></li>
+<li>Drop HTML line breaks on long headers in browsable API in <a href="https://github.com/encode/django-rest-framework/pull/9438">#9438</a></li>
+</ul>
+<h4 id="translations"><a class="toclink" href="#translations">Translations</a></h4>
+<ul>
+<li>Add Kazakh locale support in <a href="https://github.com/encode/django-rest-framework/pull/9713">#9713</a></li>
+<li>Update translations for Korean translations in <a href="https://github.com/encode/django-rest-framework/pull/9571">#9571</a></li>
+<li>Update German translations in <a href="https://github.com/encode/django-rest-framework/pull/9676">#9676</a></li>
+<li>Update Chinese translations in <a href="https://github.com/encode/django-rest-framework/pull/9675">#9675</a></li>
+<li>Update Arabic translations-sal in <a href="https://github.com/encode/django-rest-framework/pull/9595">#9595</a></li>
+<li>Update Persian translations in <a href="https://github.com/encode/django-rest-framework/pull/9576">#9576</a></li>
+<li>Update Spanish translations in <a href="https://github.com/encode/django-rest-framework/pull/9701">#9701</a></li>
+<li>Update Turkish Translations in <a href="https://github.com/encode/django-rest-framework/pull/9749">#9749</a></li>
+<li>Fix some typos in Brazilian Portuguese translations in <a href="https://github.com/encode/django-rest-framework/pull/9673">#9673</a></li>
+</ul>
+<h4 id="documentation"><a class="toclink" href="#documentation">Documentation</a></h4>
+<ul>
+<li>Removed reference to GitHub Issues and Discussions in <a href="https://github.com/encode/django-rest-framework/pull/9660">#9660</a></li>
+<li>Add <code>drf-restwind</code> and update outdated images in <code>browsable-api.md</code> in <a href="https://github.com/encode/django-rest-framework/pull/9680">#9680</a></li>
+<li>Updated funding page to represent current scope in <a href="https://github.com/encode/django-rest-framework/pull/9686">#9686</a></li>
+<li>Fix broken Heroku JSON Schema link in <a href="https://github.com/encode/django-rest-framework/pull/9693">#9693</a></li>
+<li>Update Django documentation links to use stable version in <a href="https://github.com/encode/django-rest-framework/pull/9698">#9698</a></li>
+<li>Expand docs on unique constraints cause 'required=True' in <a href="https://github.com/encode/django-rest-framework/pull/9725">#9725</a></li>
+<li>Revert extension back from <code>djangorestframework-guardian2</code> to <code>djangorestframework-guardian</code> in <a href="https://github.com/encode/django-rest-framework/pull/9734">#9734</a></li>
+<li>Add note to tutorial about required <code>request</code> in serializer context when using <code>HyperlinkedModelSerializer</code> in <a href="https://github.com/encode/django-rest-framework/pull/9732">#9732</a></li>
+</ul>
+<h4 id="internal-changes"><a class="toclink" href="#internal-changes">Internal changes</a></h4>
+<ul>
+<li>Update GitHub Actions to use Ubuntu 24.04 for testing in <a href="https://github.com/encode/django-rest-framework/pull/9677">#9677</a></li>
+<li>Update test matrix to use Django 5.2 stable version in <a href="https://github.com/encode/django-rest-framework/pull/9679">#9679</a></li>
+<li>Add <code>pyupgrade</code> to <code>pre-commit</code> hooks in <a href="https://github.com/encode/django-rest-framework/pull/9682">#9682</a></li>
+<li>Fix test with Django 5 when <code>pytz</code> is available in <a href="https://github.com/encode/django-rest-framework/pull/9715">#9715</a></li>
+</ul>
+<h4 id="new-contributors"><a class="toclink" href="#new-contributors">New Contributors</a></h4>
+<ul>
+<li><a href="https://github.com/araggohnxd"><code>@araggohnxd</code></a> made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9673">#9673</a></li>
+<li><a href="https://github.com/mbeijen"><code>@mbeijen</code></a> made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9660">#9660</a></li>
+<li><a href="https://github.com/stefan6419846"><code>@stefan6419846</code></a> made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9676">#9676</a></li>
+<li><a href="https://github.com/ren000thomas"><code>@ren000thomas</code></a> made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9675">#9675</a></li>
+<li><a href="https://github.com/ulgens"><code>@ulgens</code></a> made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9682">#9682</a></li>
+<li><a href="https://github.com/bukh-sal"><code>@bukh-sal</code></a> made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9595">#9595</a></li>
+<li><a href="https://github.com/rezatn0934"><code>@rezatn0934</code></a> made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9576">#9576</a></li>
+<li><a href="https://github.com/Rohit10jr"><code>@Rohit10jr</code></a> made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9693">#9693</a></li>
+<li><a href="https://github.com/kushibayev"><code>@kushibayev</code></a> made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9713">#9713</a></li>
+<li><a href="https://github.com/alihassancods"><code>@alihassancods</code></a> made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9732">#9732</a></li>
+<li><a href="https://github.com/kulikjak"><code>@kulikjak</code></a> made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9715">#9715</a></li>
+<li><a href="https://github.com/Natgho"><code>@Natgho</code></a> made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9749">#9749</a></li>
+</ul>
+<p><strong>Full Changelog</strong>: https://github.com/encode/django-rest-framework/compare/3.16.0...3.16.1</p>
 <h3 id="3160"><a class="toclink" href="#3160">3.16.0</a></h3>
 <p><strong>Date</strong>: 28th March 2025</p>
 <p>This release is considered a significant release to improve upstream support with Django and Python. Some of these may change the behaviour of existing features and pre-existing behaviour. Specifically, some fixes were added to around the support of <code>UniqueConstraint</code> with nullable fields which will improve built-in serializer validation.</p>
-<h2 id="features"><a class="toclink" href="#features">Features</a></h2>
+<h4 id="features"><a class="toclink" href="#features">Features</a></h4>
 <ul>
 <li>Add official support for Django 5.1 and its new <code>LoginRequiredMiddleware</code> in <a href="https://github.com/encode/django-rest-framework/pull/9514">#9514</a> and <a href="https://github.com/encode/django-rest-framework/pull/9657">#9657</a></li>
 <li>Add official Django 5.2a1 support in <a href="https://github.com/encode/django-rest-framework/pull/9634">#9634</a></li>
 <li>Add support for Python 3.13 in <a href="https://github.com/encode/django-rest-framework/pull/9527">#9527</a> and <a href="https://github.com/encode/django-rest-framework/pull/9556">#9556</a></li>
 <li>Support Django 2.1+ test client JSON data automatically serialized in <a href="https://github.com/encode/django-rest-framework/pull/6511">#6511</a> and fix a regression in <a href="https://github.com/encode/django-rest-framework/pull/9615">#9615</a></li>
 </ul>
-<h2 id="bug-fixes"><a class="toclink" href="#bug-fixes">Bug fixes</a></h2>
+<h4 id="bug-fixes_1"><a class="toclink" href="#bug-fixes_1">Bug fixes</a></h4>
 <ul>
 <li>Fix unique together validator to respect condition's fields from <code>UniqueConstraint</code> in <a href="https://github.com/encode/django-rest-framework/pull/9360">#9360</a></li>
 <li>Fix raising on nullable fields part of <code>UniqueConstraint</code> in <a href="https://github.com/encode/django-rest-framework/pull/9531">#9531</a></li>
@@ -599,19 +634,19 @@
 <li>Fix noisy warning and accept integers as min/max values of <code>DecimalField</code> in <a href="https://github.com/encode/django-rest-framework/pull/9515">#9515</a></li>
 <li>Fix usages of <code>open()</code> in <code>setup.py</code> in <a href="https://github.com/encode/django-rest-framework/pull/9661">#9661</a></li>
 </ul>
-<h2 id="translations"><a class="toclink" href="#translations">Translations</a></h2>
+<h4 id="translations_1"><a class="toclink" href="#translations_1">Translations</a></h4>
 <ul>
 <li>Add some missing Chinese translations in <a href="https://github.com/encode/django-rest-framework/pull/9505">#9505</a></li>
 <li>Fix spelling mistakes in Farsi language were corrected in <a href="https://github.com/encode/django-rest-framework/pull/9521">#9521</a></li>
 <li>Fixing and adding missing Brazilian Portuguese translations in <a href="https://github.com/encode/django-rest-framework/pull/9535">#9535</a></li>
 </ul>
-<h2 id="removals"><a class="toclink" href="#removals">Removals</a></h2>
+<h4 id="removals"><a class="toclink" href="#removals">Removals</a></h4>
 <ul>
 <li>Remove support for Python 3.8 in <a href="https://github.com/encode/django-rest-framework/pull/9670">#9670</a></li>
 <li>Remove long deprecated code from request wrapper in <a href="https://github.com/encode/django-rest-framework/pull/9441">#9441</a></li>
 <li>Remove deprecated <code>AutoSchema._get_reference</code> method in <a href="https://github.com/encode/django-rest-framework/pull/9525">#9525</a></li>
 </ul>
-<h2 id="documentation-and-internal-changes"><a class="toclink" href="#documentation-and-internal-changes">Documentation and internal changes</a></h2>
+<h4 id="documentation-and-internal-changes"><a class="toclink" href="#documentation-and-internal-changes">Documentation and internal changes</a></h4>
 <ul>
 <li>Provide tests for hashing of <code>OperandHolder</code> in <a href="https://github.com/encode/django-rest-framework/pull/9437">#9437</a></li>
 <li>Update documentation: Add <code>adrf</code> third party package in <a href="https://github.com/encode/django-rest-framework/pull/9198">#9198</a></li>
@@ -631,7 +666,7 @@
 <li>Fix a number of typos in the test suite in the docs in <a href="https://github.com/encode/django-rest-framework/pull/9662">#9662</a></li>
 <li>Add <code>django-pyoidc</code> as a third party authentication library in <a href="https://github.com/encode/django-rest-framework/pull/9667">#9667</a></li>
 </ul>
-<h2 id="new-contributors"><a class="toclink" href="#new-contributors">New Contributors</a></h2>
+<h4 id="new-contributors_1"><a class="toclink" href="#new-contributors_1">New Contributors</a></h4>
 <ul>
 <li><a href="https://github.com/maerteijn"><code>@maerteijn</code></a> made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9198">#9198</a></li>
 <li><a href="https://github.com/FraCata00"><code>@FraCata00</code></a> made their first contribution in <a href="https://github.com/encode/django-rest-framework/pull/9444">#9444</a></li>

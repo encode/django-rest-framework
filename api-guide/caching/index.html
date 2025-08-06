@@ -454,10 +454,10 @@ memory ... She remembered enough to work, and she worked hard.
 provided in Django.</p>
 <hr />
 <h2 id="using-cache-with-apiview-and-viewsets"><a class="toclink" href="#using-cache-with-apiview-and-viewsets">Using cache with apiview and viewsets</a></h2>
-<p>Django provides a <a href="https://docs.djangoproject.com/en/dev/topics/class-based-views/intro/#decorating-the-class"><code>method_decorator</code></a> to use
+<p>Django provides a <a href="https://docs.djangoproject.com/en/stable/topics/class-based-views/intro/#decorating-the-class"><code>method_decorator</code></a> to use
 decorators with class based views. This can be used with
-other cache decorators such as <a href="https://docs.djangoproject.com/en/dev/topics/cache/#the-per-view-cache"><code>cache_page</code></a>,
-<a href="https://docs.djangoproject.com/en/dev/topics/http/decorators/#django.views.decorators.vary.vary_on_cookie"><code>vary_on_cookie</code></a> and <a href="https://docs.djangoproject.com/en/dev/topics/http/decorators/#django.views.decorators.vary.vary_on_headers"><code>vary_on_headers</code></a>.</p>
+other cache decorators such as <a href="https://docs.djangoproject.com/en/stable/topics/cache/#the-per-view-cache"><code>cache_page</code></a>,
+<a href="https://docs.djangoproject.com/en/stable/topics/http/decorators/#django.views.decorators.vary.vary_on_cookie"><code>vary_on_cookie</code></a> and <a href="https://docs.djangoproject.com/en/stable/topics/http/decorators/#django.views.decorators.vary.vary_on_headers"><code>vary_on_headers</code></a>.</p>
 <pre><code class="language-python">from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_cookie, vary_on_headers
@@ -500,8 +500,8 @@ class PostView(APIView):
         return Response(content)
 </code></pre>
 <h2 id="using-cache-with-api_view-decorator"><a class="toclink" href="#using-cache-with-api_view-decorator">Using cache with @api_view decorator</a></h2>
-<p>When using @api_view decorator, the Django-provided method-based cache decorators such as <a href="https://docs.djangoproject.com/en/dev/topics/cache/#the-per-view-cache"><code>cache_page</code></a>,
-<a href="https://docs.djangoproject.com/en/dev/topics/http/decorators/#django.views.decorators.vary.vary_on_cookie"><code>vary_on_cookie</code></a> and <a href="https://docs.djangoproject.com/en/dev/topics/http/decorators/#django.views.decorators.vary.vary_on_headers"><code>vary_on_headers</code></a> can be called directly.</p>
+<p>When using @api_view decorator, the Django-provided method-based cache decorators such as <a href="https://docs.djangoproject.com/en/stable/topics/cache/#the-per-view-cache"><code>cache_page</code></a>,
+<a href="https://docs.djangoproject.com/en/stable/topics/http/decorators/#django.views.decorators.vary.vary_on_cookie"><code>vary_on_cookie</code></a> and <a href="https://docs.djangoproject.com/en/stable/topics/http/decorators/#django.views.decorators.vary.vary_on_headers"><code>vary_on_headers</code></a> can be called directly.</p>
 <pre><code class="language-python">from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_cookie
 
@@ -516,7 +516,7 @@ def get_user_list(request):
     content = {&quot;user_feed&quot;: request.user.get_user_feed()}
     return Response(content)
 </code></pre>
-<p><strong>NOTE:</strong> The <a href="https://docs.djangoproject.com/en/dev/topics/cache/#the-per-view-cache"><code>cache_page</code></a> decorator only caches the
+<p><strong>NOTE:</strong> The <a href="https://docs.djangoproject.com/en/stable/topics/cache/#the-per-view-cache"><code>cache_page</code></a> decorator only caches the
 <code>GET</code> and <code>HEAD</code> responses with status 200.</p>
             
 

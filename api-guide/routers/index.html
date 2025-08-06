@@ -566,7 +566,7 @@ urlpatterns += router.urls
     path('api/', include((router.urls, 'app_name'), namespace='instance_name')),
 ]
 </code></pre>
-<p>See Django's <a href="https://docs.djangoproject.com/en/4.0/topics/http/urls/#url-namespaces">URL namespaces docs</a> and the <a href="https://docs.djangoproject.com/en/4.0/ref/urls/#include"><code>include</code> API reference</a> for more details.</p>
+<p>See Django's <a href="https://docs.djangoproject.com/en/stable/topics/http/urls/#url-namespaces">URL namespaces docs</a> and the <a href="https://docs.djangoproject.com/en/stable/ref/urls/#include"><code>include</code> API reference</a> for more details.</p>
 <hr />
 <p><strong>Note</strong>: If using namespacing with hyperlinked serializers you'll also need to ensure that any <code>view_name</code> parameters
 on the serializers correctly reflect the namespace. In the examples above you'd need to include a parameter such as
@@ -611,7 +611,7 @@ class UserViewSet(ModelViewSet):
 <li>URL name: <code>'user-change_password'</code></li>
 </ul>
 <h3 id="using-django-path-with-routers"><a class="toclink" href="#using-django-path-with-routers">Using Django <code>path()</code> with routers</a></h3>
-<p>By default, the URLs created by routers use regular expressions. This behavior can be modified by setting the <code>use_regex_path</code> argument to <code>False</code> when instantiating the router, in this case <a href="https://docs.djangoproject.com/en/2.0/topics/http/urls/#path-converters">path converters</a> are used. For example:</p>
+<p>By default, the URLs created by routers use regular expressions. This behavior can be modified by setting the <code>use_regex_path</code> argument to <code>False</code> when instantiating the router, in this case <a href="https://docs.djangoproject.com/en/stable/topics/http/urls/#path-converters">path converters</a> are used. For example:</p>
 <pre><code>router = SimpleRouter(use_regex_path=False)
 </code></pre>
 <p>The router will match lookup values containing any characters except slashes and period characters.  For a more restrictive (or lenient) lookup pattern, set the <code>lookup_value_regex</code> attribute on the viewset or <code>lookup_value_converter</code> if using path converters.  For example, you can limit the lookup to valid UUIDs:</p>

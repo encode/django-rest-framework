@@ -668,7 +668,7 @@
 <p>Normally an error will be raised if a field is not supplied during deserialization.
 Set to false if this field is not required to be present during deserialization.</p>
 <p>Setting this to <code>False</code> also allows the object attribute or dictionary key to be omitted from output when serializing the instance. If the key is not present it will simply not be included in the output representation.</p>
-<p>Defaults to <code>True</code>. If you're using <a href="https://www.django-rest-framework.org/api-guide/serializers/#modelserializer">Model Serializer</a> default value will be <code>False</code> if you have specified <code>blank=True</code> or <code>default</code> or <code>null=True</code> at your field in your <code>Model</code>.</p>
+<p>Defaults to <code>True</code>. If you're using <a href="https://www.django-rest-framework.org/api-guide/serializers/#modelserializer">Model Serializer</a>, the default value will be <code>False</code> when you have specified a <code>default</code>, or when the corresponding <code>Model</code> field has <code>blank=True</code> or <code>null=True</code> and is not part of a unique constraint at the same time. (Note that without a <code>default</code> value, <a href="https://www.django-rest-framework.org/api-guide/validators/#optional-fields">unique constraints will cause the field to be required</a>.)</p>
 <h3 id="default"><a class="toclink" href="#default"><code>default</code></a></h3>
 <p>If set, this gives the default value that will be used for the field if no input value is supplied. If not set the default behavior is to not populate the attribute at all.</p>
 <p>The <code>default</code> is not applied during partial update operations. In the partial update case only fields that are provided in the incoming data will have a validated value returned.</p>
@@ -696,7 +696,7 @@ Set to false if this field is not required to be present during deserialization.
 <pre><code>class CommentSerializer(serializers.Serializer):
     email = serializers.EmailField(source="user.email")
 </code></pre>
-<p>This case would require user object to be fetched from database when it is not prefetched. If that is not wanted, be sure to be using <code>prefetch_related</code> and <code>select_related</code> methods appropriately. For more information about the methods refer to <a href="https://docs.djangoproject.com/en/3.1/ref/models/querysets/#django.db.models.query.QuerySet.select_related">django documentation</a>.</p>
+<p>This case would require user object to be fetched from database when it is not prefetched. If that is not wanted, be sure to be using <code>prefetch_related</code> and <code>select_related</code> methods appropriately. For more information about the methods refer to <a href="https://docs.djangoproject.com/en/stable/ref/models/querysets/#django.db.models.query.QuerySet.select_related">django documentation</a>.</p>
 <p>The value <code>source='*'</code> has a special meaning, and is used to indicate that the entire object should be passed through to the field.  This can be useful for creating nested representations, or for fields which require access to the complete object in order to determine the output representation.</p>
 <p>Defaults to the name of the field.</p>
 <h3 id="validators"><a class="toclink" href="#validators"><code>validators</code></a></h3>

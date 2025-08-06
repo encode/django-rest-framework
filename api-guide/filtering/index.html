@@ -689,7 +689,7 @@ class UserListView(generics.ListAPIView):
 <p>You can also perform a related lookup on a ForeignKey or ManyToManyField with the lookup API double-underscore notation:</p>
 <pre><code>search_fields = ['username', 'email', 'profile__profession']
 </code></pre>
-<p>For <a href="https://docs.djangoproject.com/en/3.0/ref/contrib/postgres/fields/#jsonfield">JSONField</a> and <a href="https://docs.djangoproject.com/en/3.0/ref/contrib/postgres/fields/#hstorefield">HStoreField</a> fields you can filter based on nested values within the data structure using the same double-underscore notation:</p>
+<p>For <a href="https://docs.djangoproject.com/en/stable/ref/models/fields/#django.db.models.JSONField">JSONField</a> and <a href="https://docs.djangoproject.com/en/stable/ref/contrib/postgres/fields/#hstorefield">HStoreField</a> fields you can filter based on nested values within the data structure using the same double-underscore notation:</p>
 <pre><code>search_fields = ['data__breed', 'data__owner__other_pets__0__name']
 </code></pre>
 <p>By default, searches will use case-insensitive partial matches. The search parameter may contain multiple search terms, which should be whitespace and/or comma separated. If multiple search terms are used then objects will be returned in the list only if all the provided terms are matched. Searches may contain <em>quoted phrases</em> with spaces, each phrase is considered as a single search term.</p>
