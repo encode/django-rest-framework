@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "djangorestframework"
 readme = "README.md"
 authors = [{name = "Tom Christie", email = "tom@tomchristie.com"}]
-license = "BSD"
+license = "BSD-3-Clause"
 description = "Web APIs for Django, made easy."
 classifiers = [
     "Development Status :: 5 - Production/Stable",
