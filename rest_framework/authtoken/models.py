@@ -29,7 +29,7 @@ class Token(models.Model):
     def save(self, *args, **kwargs):
         """
         Save the token instance.
-        
+
         If no key is provided, generates a cryptographically secure key.
         For existing tokens with cleared keys, regenerates the key.
         For new tokens, ensures they are inserted as new (not updated).
@@ -45,10 +45,10 @@ class Token(models.Model):
     def generate_key(cls):
         """
         Generate a cryptographically secure token key.
-        
+
         Uses secrets.token_hex(20) which provides 40 hexadecimal characters
         (160 bits of entropy) suitable for authentication tokens.
-        
+
         Returns:
             str: A 40-character hexadecimal string
         """

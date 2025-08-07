@@ -1,5 +1,4 @@
 import importlib
-import secrets
 from io import StringIO
 from unittest import mock
 
@@ -75,7 +74,7 @@ class AuthTokenTests(TestCase):
         """
         user2 = User.objects.create_user('user2', 'user2@example.com', 'p')
         existing_token = Token.objects.create(user=user2)
-        
+
         # Try to create another token with the same key
         with self.assertRaises(IntegrityError):
             Token.objects.create(key=existing_token.key, user=self.user)
@@ -90,11 +89,11 @@ class AuthTokenTests(TestCase):
         token = Token(user=self.user)
         token.key = ""  # Explicitly clear the key
         token.save()
-        
+
         # Verify the key was generated
         self.assertEqual(len(token.key), 40)
         self.assertEqual(token.user, self.user)
-        
+
         # Verify it's saved in the database
         token.refresh_from_db()
         self.assertEqual(len(token.key), 40)
