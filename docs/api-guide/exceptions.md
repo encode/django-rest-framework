@@ -269,5 +269,5 @@ The [drf-standardized-errors][drf-standardized-errors] package provides an excep
 
 [cite]: https://doughellmann.com/blog/2009/06/19/python-exception-handling-techniques/
 [authentication]: authentication.md
-[django-custom-error-views]: https://docs.djangoproject.com/en/dev/topics/http/views/#customizing-error-views
+[django-custom-error-views]: https://docs.djangoproject.com/en/stable/topics/http/views/#customizing-error-views
 [drf-standardized-errors]: https://github.com/ghazi-git/drf-standardized-errors
