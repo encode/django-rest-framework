@@ -21,13 +21,8 @@ class AuthTokenTests(TestCase):
 
     def setUp(self):
         self.site = site
-        # CORRECTED: Only create the user. Each test will now create its own
-        # token(s) to ensure proper test isolation.
-        self.user = User.objects.create_user(
-            username='test_user',
-            email='test@example.com',
-            password='password'
-        )
+        self.user = User.objects.create_user(username='test_user')
+        self.token = Token.objects.create(key='test token', user=self.user)
 
     def test_authtoken_can_be_imported_when_not_included_in_installed_apps(self):
         import rest_framework.authtoken.models
@@ -38,16 +33,12 @@ class AuthTokenTests(TestCase):
         importlib.reload(rest_framework.authtoken.models)
 
     def test_model_admin_displayed_fields(self):
-        # Create a token specifically for this test.
-        token = Token.objects.create(user=self.user)
         mock_request = object()
-        token_admin = TokenAdmin(token, self.site)
+        token_admin = TokenAdmin(self.token, self.site)
         assert token_admin.get_fields(mock_request) == ('user',)
 
     def test_token_string_representation(self):
-        # Create a token with a known key specifically for this test.
-        token = Token.objects.create(key='test token', user=self.user)
-        assert str(token) == 'test token'
+        assert str(self.token) == 'test token'
 
     def test_validate_raise_error_if_no_credentials_provided(self):
         with pytest.raises(ValidationError):
@@ -59,14 +50,7 @@ class AuthTokenTests(TestCase):
         self.user.save()
         assert AuthTokenSerializer(data=data).is_valid()
 
-    # --- Tests for Issue #9250 and secrets module refactor ---
 
-    def test_token_string_representation_is_randomly_generated_key(self):
-        """
-        Ensure the string representation of a token is its key when auto-generated.
-        """
-        token = Token.objects.create(user=self.user)
-        self.assertEqual(str(token), token.key)
 
     def test_token_creation_collision_raises_integrity_error(self):
         """
@@ -85,41 +69,43 @@ class AuthTokenTests(TestCase):
         This tests the backward compatibility scenario where existing code might
         create tokens without explicitly setting a key.
         """
+        # Create a new user for this test to avoid conflicts with setUp token
+        user2 = User.objects.create_user('test_user2', 'test2@example.com', 'password')
+        
         # Create a token without a key - it should generate one automatically
-        token = Token(user=self.user)
+        token = Token(user=user2)
         token.key = ""  # Explicitly clear the key
         token.save()
 
         # Verify the key was generated
         self.assertEqual(len(token.key), 40)
-        self.assertEqual(token.user, self.user)
+        self.assertEqual(token.user, user2)
 
         # Verify it's saved in the database
         token.refresh_from_db()
         self.assertEqual(len(token.key), 40)
-        self.assertEqual(token.user, self.user)
+        self.assertEqual(token.user, user2)
 
     def test_saving_existing_token_without_changes_does_not_alter_key(self):
         """
         Ensure that calling save() on an existing token without modifications
         does not change its key.
         """
-        token = Token.objects.create(user=self.user)
-        original_key = token.key
+        original_key = self.token.key
 
-        token.save()
-        self.assertEqual(token.key, original_key)
+        self.token.save()
+        self.assertEqual(self.token.key, original_key)
 
-    def test_generate_key_uses_secrets_module(self):
+    def test_generate_key_uses_os_urandom(self):
         """
-        Verify that `generate_key` correctly calls `secrets.token_hex`.
+        Verify that `generate_key` correctly calls `os.urandom`.
         """
-        with mock.patch('rest_framework.authtoken.models.secrets.token_hex') as mock_token_hex:
-            mock_token_hex.return_value = 'a_mocked_key_of_proper_length_0123456789'
+        with mock.patch('rest_framework.authtoken.models.os.urandom') as mock_urandom:
+            mock_urandom.return_value = b'a_mocked_key_of_proper_length_0123456789'
             key = Token.generate_key()
 
-            mock_token_hex.assert_called_once_with(20)
-            self.assertEqual(key, 'a_mocked_key_of_proper_length_0123456789')
+            mock_urandom.assert_called_once_with(20)
+            self.assertEqual(key, '615f6d6f636b65645f6b65795f6f665f70726f7065725f6c656e6774685f30313233343536373839')
 
 
 class AuthTokenCommandTests(TestCase):

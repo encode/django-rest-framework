@@ -1,4 +1,5 @@
-import secrets
+import binascii
+import os
 
 from django.conf import settings
 from django.db import models
@@ -43,16 +44,7 @@ class Token(models.Model):
 
     @classmethod
     def generate_key(cls):
-        """
-        Generate a cryptographically secure token key.
-
-        Uses secrets.token_hex(20) which provides 40 hexadecimal characters
-        (160 bits of entropy) suitable for authentication tokens.
-
-        Returns:
-            str: A 40-character hexadecimal string
-        """
-        return secrets.token_hex(20)
+        return binascii.hexlify(os.urandom(20)).decode()
 
     def __str__(self):
         return self.key
