@@ -82,10 +82,6 @@ class AuthTokenTests(TestCase):
         self.assertEqual(token.user, user2)
 
     def test_saving_existing_token_without_changes_does_not_alter_key(self):
-        """
-        Ensure that calling save() on an existing token without modifications
-        does not change its key.
-        """
         original_key = self.token.key
 
         self.token.save()
