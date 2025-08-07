@@ -50,8 +50,6 @@ class AuthTokenTests(TestCase):
         self.user.save()
         assert AuthTokenSerializer(data=data).is_valid()
 
-
-
     def test_token_creation_collision_raises_integrity_error(self):
         """
         Verify that creating a token with an existing key raises IntegrityError.
@@ -71,7 +69,7 @@ class AuthTokenTests(TestCase):
         """
         # Create a new user for this test to avoid conflicts with setUp token
         user2 = User.objects.create_user('test_user2', 'test2@example.com', 'password')
-        
+
         # Create a token without a key - it should generate one automatically
         token = Token(user=user2)
         token.key = ""  # Explicitly clear the key
