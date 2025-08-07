@@ -1,12 +1,12 @@
 [build-system]
-requires = ["setuptools>=61.2"]
+requires = ["setuptools>=77.0.3"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "djangorestframework"
 readme = "README.md"
 authors = [{name = "Tom Christie", email = "tom@tomchristie.com"}]
-license = {text = "BSD"}
+license = "BSD"
 description = "Web APIs for Django, made easy."
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -17,7 +17,6 @@ classifiers = [
     "Framework :: Django :: 5.1",
     "Framework :: Django :: 5.2",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: BSD License",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
