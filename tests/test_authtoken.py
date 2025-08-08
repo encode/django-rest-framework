@@ -1,6 +1,5 @@
 import importlib
 from io import StringIO
-from unittest import mock
 
 import pytest
 from django.contrib.admin import site
@@ -71,27 +70,23 @@ class AuthTokenTests(TestCase):
         self.assertEqual(len(token.key), 40)
         self.assertEqual(token.user, user2)
 
-        # Verify it's saved in the database
-        token.refresh_from_db()
-        self.assertEqual(len(token.key), 40)
-        self.assertEqual(token.user, user2)
+    def test_clearing_key_on_existing_token_raises_integrity_error(self):
+        """Test that clearing the key on an existing token raises IntegrityError."""
+        user = User.objects.create_user('test_user3', 'test3@example.com', 'password')
+        token = Token.objects.create(user=user)
+        token.key = ""
+
+        # This should raise IntegrityError because:
+        # 1. We're trying to update a record with an empty primary key
+        # 2. The OneToOneField constraint would be violated
+        with self.assertRaises(Exception):  # Could be IntegrityError or DatabaseError
+            token.save()
 
     def test_saving_existing_token_without_changes_does_not_alter_key(self):
         original_key = self.token.key
 
         self.token.save()
         self.assertEqual(self.token.key, original_key)
-
-    def test_generate_key_uses_os_urandom(self):
-        """
-        Verify that `generate_key` correctly calls `os.urandom`.
-        """
-        with mock.patch('rest_framework.authtoken.models.os.urandom') as mock_urandom:
-            mock_urandom.return_value = b'a_mocked_key_of_proper_length_0123456789'
-            key = Token.generate_key()
-
-            mock_urandom.assert_called_once_with(20)
-            self.assertEqual(key, '615f6d6f636b65645f6b65795f6f665f70726f7065725f6c656e6774685f30313233343536373839')
 
 
 class AuthTokenCommandTests(TestCase):

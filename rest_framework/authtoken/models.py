@@ -32,7 +32,6 @@ class Token(models.Model):
         Save the token instance.
 
         If no key is provided, generates a cryptographically secure key.
-        For existing tokens with cleared keys, regenerates the key.
         For new tokens, ensures they are inserted as new (not updated).
         """
         if not self.key:
