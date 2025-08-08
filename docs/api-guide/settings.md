@@ -317,7 +317,7 @@ Default: `['iso-8601']`
 
 #### DURATION_FORMAT
 
-Indicates the default format thath should be used for rendering the output of `DurationField` serializer fields.  If `None`, then `DurationField` serializer fields will return Python `timedelta` objects, and the duration encoding will be determined by the renderer.
+Indicates the default format that should be used for rendering the output of `DurationField` serializer fields.  If `None`, then `DurationField` serializer fields will return Python `timedelta` objects, and the duration encoding will be determined by the renderer.
 
 May be any of `None`, `'iso-8601'` or `'django'` (the format accepted by `django.utils.dateparse.parse_duration`).
 
