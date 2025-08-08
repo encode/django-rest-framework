@@ -40,3 +40,8 @@ repos:
   hooks:
   - id: pyupgrade
     args: ["--py39-plus", "--keep-percent-format"]
+
+- repo: https://github.com/tox-dev/pyproject-fmt
+  rev: v2.6.0
+  hooks:
+  - id: pyproject-fmt
