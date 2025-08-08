@@ -30,9 +30,7 @@ The [Django code of conduct][code-of-conduct] gives a fuller set of guidelines f
 
 # Issues
 
-Our contribution process is that the [GitHub discussions page](https://github.com/encode/django-rest-framework/discussions) should generally be your starting point. Please only raise an issue or pull request if you've been recommended to do so after discussion.
-
-Some tips on good potential issue reporting:
+Our contribution process is that the [GitHub discussions page](https://github.com/encode/django-rest-framework/discussions) should generally be your starting point. Some tips on good potential issue reporting:
 
 * Django REST framework is considered feature-complete. Please do not file requests to change behavior, unless it is required for security reasons or to maintain compatibility with upcoming Django or Python versions.
 * Search the GitHub project page for related items, and make sure you're running the latest version of REST framework before reporting an issue.
@@ -206,7 +204,6 @@ If you want to draw attention to a note or warning, use a pair of enclosing line
 [code-of-conduct]: https://www.djangoproject.com/conduct/
 [google-group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
 [so-filter]: https://stackexchange.com/filters/66475/rest-framework
-[issues]: https://github.com/encode/django-rest-framework/issues?state=open
 [pep-8]: https://www.python.org/dev/peps/pep-0008/
 [build-status]: ../img/build-status.png
 [pull-requests]: https://help.github.com/articles/using-pull-requests
