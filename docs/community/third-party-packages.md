@@ -32,7 +32,7 @@ We suggest adding your package to the [REST Framework][rest-framework-grid] grid
 
 #### Adding to the Django REST framework docs
 
-Create a [Pull Request][drf-create-pr] on GitHub, and we'll add a link to it from the main REST framework documentation. You can add your package under **Third party packages** of the API Guide section that best applies, like [Authentication][authentication] or [Permissions][permissions]. You can also link your package under the [Third Party Packages][third-party-packages] section.
+Create a [Pull Request][drf-create-pr] or [Issue][drf-create-issue] on GitHub, and we'll add a link to it from the main REST framework documentation. You can add your package under **Third party packages** of the API Guide section that best applies, like [Authentication][authentication] or [Permissions][permissions]. You can also link your package under the [Third Party Packages][third-party-packages] section.
 
 #### Announce on the discussion group.
 
@@ -44,7 +44,7 @@ Django REST Framework has a growing community of developers, packages, and resou
 
 Check out a grid detailing all the packages and ecosystem around Django REST Framework at [Django Packages][rest-framework-grid].
 
-To submit new content, [create a pull request][drf-create-pr].
+To submit new content, [open an issue][drf-create-issue] or [create a pull request][drf-create-pr].
 
 ## Async Support
 
@@ -175,6 +175,7 @@ To submit new content, [create a pull request][drf-create-pr].
 [drf-compat]: https://github.com/encode/django-rest-framework/blob/master/rest_framework/compat.py
 [rest-framework-grid]: https://www.djangopackages.com/grids/g/django-rest-framework/
 [drf-create-pr]: https://github.com/encode/django-rest-framework/compare
+[drf-create-issue]: https://github.com/encode/django-rest-framework/issues/new
 [authentication]: ../api-guide/authentication.md
 [permissions]: ../api-guide/permissions.md
 [third-party-packages]: ../topics/third-party-packages/#existing-third-party-packages
