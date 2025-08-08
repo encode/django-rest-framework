@@ -1357,10 +1357,15 @@ class DurationField(Field):
         if format is not empty:
             if format is None or (isinstance(format, str) and format.lower() in (ISO_8601, DJANGO_DURATION_FORMAT)):
                 self.format = format
-            else:
+            elif isinstance(format, str):
                 raise ValueError(
                     f"Unknown duration format provided, got '{format}'"
                     " while expecting 'django', 'iso-8601' or `None`."
+                )
+            else:
+                raise TypeError(
+                    "duration format must be either str or `None`,"
+                    f" not {type(format).__name__}"
                 )
         super().__init__(**kwargs)
         if self.max_value is not None:
@@ -1396,9 +1401,13 @@ class DurationField(Field):
             if output_format.lower() == DJANGO_DURATION_FORMAT:
                 return duration_string(value)
 
-        raise ValueError(
-            f"Unknown duration format provided, got '{output_format}'"
-            " while expecting 'django', 'iso-8601' or `None`."
+            raise ValueError(
+                f"Unknown duration format provided, got '{output_format}'"
+                " while expecting 'django', 'iso-8601' or `None`."
+            )
+        raise TypeError(
+            "duration format must be either str or `None`,"
+            f" not {type(output_format).__name__}"
         )
 
 

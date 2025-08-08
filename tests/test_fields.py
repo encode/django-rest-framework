@@ -1779,23 +1779,28 @@ class TestDurationField(FieldValues):
             "Unknown duration format provided, got 'unknown'"
             " while expecting 'django', 'iso-8601' or `None`."
         )
-        with pytest.raises(ValueError) as exc_info:
+        with pytest.raises(TypeError) as exc_info:
             serializers.DurationField(format=123)
         assert str(exc_info.value) == (
-            "Unknown duration format provided, got '123'"
-            " while expecting 'django', 'iso-8601' or `None`."
+            "duration format must be either str or `None`, not int"
         )
 
-    @override_settings(REST_FRAMEWORK={'DURATION_FORMAT': 'unknown'})
     def test_invalid_format_in_config(self):
         field = serializers.DurationField()
 
-        with pytest.raises(ValueError) as exc_info:
-            field.to_representation(datetime.timedelta(days=1))
+        with override_settings(REST_FRAMEWORK={'DURATION_FORMAT': 'unknown'}):
+            with pytest.raises(ValueError) as exc_info:
+                field.to_representation(datetime.timedelta(days=1))
 
         assert str(exc_info.value) == (
             "Unknown duration format provided, got 'unknown'"
             " while expecting 'django', 'iso-8601' or `None`."
+        )
+        with override_settings(REST_FRAMEWORK={'DURATION_FORMAT': 123}):
+            with pytest.raises(TypeError) as exc_info:
+                field.to_representation(datetime.timedelta(days=1))
+        assert str(exc_info.value) == (
+            "duration format must be either str or `None`, not int"
         )
 
 
