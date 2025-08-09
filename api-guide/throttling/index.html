@@ -569,7 +569,7 @@ class CustomAnonRateThrottle(AnonRateThrottle):
 <p>You'll need to remember to also set your custom throttle class in the <code>'DEFAULT_THROTTLE_CLASSES'</code> settings key, or using the <code>throttle_classes</code> view attribute.</p>
 <h2 id="a-note-on-concurrency"><a class="toclink" href="#a-note-on-concurrency">A note on concurrency</a></h2>
 <p>The built-in throttle implementations are open to <a href="https://en.wikipedia.org/wiki/Race_condition#Data_race">race conditions</a>, so under high concurrency they may allow a few extra requests through.</p>
-<p>If your project relies on guaranteeing the number of requests during concurrent requests, you will need to implement your own throttle class.</p>
+<p>If your project relies on guaranteeing the number of requests during concurrent requests, you will need to implement your own throttle class. See <a href="https://github.com/encode/django-rest-framework/issues/5181">issue #5181</a> for more details.</p>
 <hr />
 <h1 id="api-reference"><a class="toclink" href="#api-reference">API Reference</a></h1>
 <h2 id="anonratethrottle"><a class="toclink" href="#anonratethrottle">AnonRateThrottle</a></h2>
