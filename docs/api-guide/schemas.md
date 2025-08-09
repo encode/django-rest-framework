@@ -392,7 +392,7 @@ introspection.
 
 #### `get_operation_id()`
 
-There must be a unique [operationid](openapi-operationid) for each operation.
+There must be a unique [operationid][openapi-operationid] for each operation.
 By default the `operationId` is deduced from the model name, serializer name or
 view name. The operationId looks like "listItems", "retrieveItem",
 "updateItem", etc. The `operationId` is camelCase by convention.

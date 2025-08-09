@@ -177,7 +177,7 @@ To submit new content, [create a pull request][drf-create-pr].
 [drf-create-pr]: https://github.com/encode/django-rest-framework/compare
 [authentication]: ../api-guide/authentication.md
 [permissions]: ../api-guide/permissions.md
-[third-party-packages]: ../topics/third-party-packages/#existing-third-party-packages
+[third-party-packages]: #existing-third-party-packages
 [discussion-group]: https://groups.google.com/forum/#!forum/django-rest-framework
 [djangorestframework-digestauth]: https://github.com/juanriaza/django-rest-framework-digestauth
 [django-oauth-toolkit]: https://github.com/evonove/django-oauth-toolkit
