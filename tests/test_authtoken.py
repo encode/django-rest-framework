@@ -57,7 +57,7 @@ class AuthTokenTests(TestCase):
         with self.assertRaises(IntegrityError):
             Token.objects.create(key=existing_token.key, user=self.user)
 
-    def test_key_regeneration_on_save_when_cleared(self):
+    def test_key_generated_on_save_when_cleared(self):
         # Create a new user for this test to avoid conflicts with setUp token
         user2 = User.objects.create_user('test_user2', 'test2@example.com', 'password')
 
