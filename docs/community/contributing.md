@@ -4,6 +4,8 @@
 >
 > &mdash; [Tim Berners-Lee][cite]
 
+There are many ways you can contribute to Django REST framework.  We'd like it to be a community-led project, so please get involved and help shape the future of the project.
+
 !!! note
 
     At this point in its lifespan we consider Django REST framework to be feature-complete. We focus on pull requests that track the continued development of Django versions, and generally do not accept new features or code formatting changes.
@@ -28,8 +30,21 @@ The [Django code of conduct][code-of-conduct] gives a fuller set of guidelines f
 
 # Issues
 
+Our contribution process is that the [GitHub discussions page](https://github.com/encode/django-rest-framework/discussions) should generally be your starting point. Some tips on good potential issue reporting:
+
 * Django REST framework is considered feature-complete. Please do not file requests to change behavior, unless it is required for security reasons or to maintain compatibility with upcoming Django or Python versions.
+* Search the GitHub project page for related items, and make sure you're running the latest version of REST framework before reporting an issue.
 * Feature requests will typically be closed with a recommendation that they be implemented outside the core REST framework library (e.g. as third-party libraries).  This approach allows us to keep down the maintenance overhead of REST framework, so that the focus can be on continued stability and great documentation.
+
+## Triaging issues
+
+Getting involved in triaging incoming issues is a good way to start contributing.  Every single ticket that comes into the ticket tracker needs to be reviewed in order to determine what the next steps should be.  Anyone can help out with this, you just need to be willing to
+
+* Read through the ticket - does it make sense, is it missing any context that would help explain it better?
+* Is the ticket reported in the correct place, would it be better suited as a discussion on the discussion group?
+* If the ticket is a bug report, can you reproduce it? Are you able to write a failing test case that demonstrates the issue and that can be submitted as a pull request?
+* If the ticket is a feature request, could the feature request instead be implemented as a third party package?
+* If a ticket hasn't had much activity and addresses something you need, then comment on the ticket and try to find out what's needed to get it moving again.
 
 # Development
 
