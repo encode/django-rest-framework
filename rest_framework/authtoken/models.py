@@ -1,5 +1,4 @@
-import binascii
-import os
+import secrets
 
 from django.conf import settings
 from django.db import models
@@ -34,7 +33,7 @@ class Token(models.Model):
 
     @classmethod
     def generate_key(cls):
-        return binascii.hexlify(os.urandom(20)).decode()
+        return secrets.token_hex(20)
 
     def __str__(self):
         return self.key
