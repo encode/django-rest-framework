@@ -27,8 +27,17 @@ class Token(models.Model):
         verbose_name_plural = _("Tokens")
 
     def save(self, *args, **kwargs):
+        """
+        Save the token instance.
+
+        If no key is provided, generates a cryptographically secure key.
+        For new tokens, ensures they are inserted as new (not updated).
+        """
         if not self.key:
             self.key = self.generate_key()
+            # For new objects, force INSERT to prevent overwriting existing tokens
+            if self._state.adding:
+                kwargs['force_insert'] = True
         return super().save(*args, **kwargs)
 
     @classmethod
