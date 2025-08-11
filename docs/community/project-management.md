@@ -31,7 +31,7 @@ Team members have the following responsibilities.
 
 Further notes for maintainers:
 
-* Code changes should come in the form of a pull request - do not push directly to master.
+* Code changes should come in the form of a pull request - do not push directly to main.
 * Maintainers should typically not merge their own pull requests.
 * Each issue/pull request should have exactly one label once triaged.
 * Search for un-triaged issues with [is:open no:label][un-triaged].
@@ -58,14 +58,14 @@ The following template should be used for the description of the issue, and serv
 
     Checklist:
 
-    - [ ] Create pull request for [release notes](https://github.com/encode/django-rest-framework/blob/master/docs/topics/release-notes.md) based on the [*.*.* milestone](https://github.com/encode/django-rest-framework/milestones/***).
+    - [ ] Create pull request for [release notes](https://github.com/encode/django-rest-framework/blob/mains/docs/topics/release-notes.md) based on the [*.*.* milestone](https://github.com/encode/django-rest-framework/milestones/***).
     - [ ] Update supported versions:
         - [ ] `setup.py` `python_requires` list
         - [ ] `setup.py` Python & Django version trove classifiers
         - [ ] `README` Python & Django versions
         - [ ] `docs` Python & Django versions
     - [ ] Update the translations from [transifex](https://www.django-rest-framework.org/topics/project-management/#translations).
-    - [ ] Ensure the pull request increments the version to `*.*.*` in [`restframework/__init__.py`](https://github.com/encode/django-rest-framework/blob/master/rest_framework/__init__.py).
+    - [ ] Ensure the pull request increments the version to `*.*.*` in [`restframework/__init__.py`](https://github.com/encode/django-rest-framework/blob/main/rest_framework/__init__.py).
     - [ ] Ensure documentation validates
         - Build and serve docs `mkdocs serve`
         - Validate links `pylinkvalidate.py -P http://127.0.0.1:8000`

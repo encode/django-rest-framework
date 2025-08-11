@@ -209,7 +209,7 @@ If you want to draw attention to a note or warning, use a pair of enclosing line
 [pull-requests]: https://help.github.com/articles/using-pull-requests
 [tox]: https://tox.readthedocs.io/en/latest/
 [markdown]: https://daringfireball.net/projects/markdown/basics
-[docs]: https://github.com/encode/django-rest-framework/tree/master/docs
+[docs]: https://github.com/encode/django-rest-framework/tree/main/docs
 [mou]: http://mouapp.com/
 [repo]: https://github.com/encode/django-rest-framework
 [how-to-fork]: https://help.github.com/articles/fork-a-repo/
