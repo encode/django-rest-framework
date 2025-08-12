@@ -683,6 +683,10 @@ internally in the codebase.</p>
 <p>A list of format strings that should be used by default for parsing inputs to <code>TimeField</code> serializer fields.</p>
 <p>May be a list including the string <code>'iso-8601'</code> or Python <a href="https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes">strftime format</a> strings.</p>
 <p>Default: <code>['iso-8601']</code></p>
+<h4 id="duration_format"><a class="toclink" href="#duration_format">DURATION_FORMAT</a></h4>
+<p>Indicates the default format that should be used for rendering the output of <code>DurationField</code> serializer fields.  If <code>None</code>, then <code>DurationField</code> serializer fields will return Python <code>timedelta</code> objects, and the duration encoding will be determined by the renderer.</p>
+<p>May be any of <code>None</code>, <code>'iso-8601'</code> or <code>'django'</code> (the format accepted by <code>django.utils.dateparse.parse_duration</code>).</p>
+<p>Default: <code>'django'</code></p>
 <hr />
 <h2 id="encodings"><a class="toclink" href="#encodings">Encodings</a></h2>
 <h4 id="unicode_json"><a class="toclink" href="#unicode_json">UNICODE_JSON</a></h4>
