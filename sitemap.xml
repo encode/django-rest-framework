@@ -2,352 +2,352 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://www.django-rest-framework.org/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/api-guide/authentication/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/api-guide/caching/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/api-guide/content-negotiation/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/api-guide/exceptions/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/api-guide/fields/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/api-guide/filtering/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/api-guide/format-suffixes/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/api-guide/generic-views/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/api-guide/metadata/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/api-guide/pagination/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/api-guide/parsers/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/api-guide/permissions/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/api-guide/relations/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/api-guide/renderers/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/api-guide/requests/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/api-guide/responses/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/api-guide/reverse/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/api-guide/routers/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/api-guide/schemas/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/api-guide/serializers/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/api-guide/settings/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/api-guide/status-codes/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/api-guide/testing/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/api-guide/throttling/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/api-guide/validators/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/api-guide/versioning/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/api-guide/views/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/api-guide/viewsets/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/community/3.0-announcement/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/community/3.1-announcement/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/community/3.10-announcement/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/community/3.11-announcement/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/community/3.12-announcement/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/community/3.13-announcement/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/community/3.14-announcement/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/community/3.15-announcement/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/community/3.16-announcement/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/community/3.2-announcement/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/community/3.3-announcement/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/community/3.4-announcement/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/community/3.5-announcement/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/community/3.6-announcement/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/community/3.7-announcement/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/community/3.8-announcement/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/community/3.9-announcement/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/community/contributing/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/community/funding/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/community/jobs/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/community/kickstarter-announcement/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/community/mozilla-grant/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/community/project-management/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/community/release-notes/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/community/third-party-packages/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/community/tutorials-and-resources/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/topics/ajax-csrf-cors/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/topics/browsable-api/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/topics/browser-enhancements/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/topics/documenting-your-api/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/topics/html-and-forms/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/topics/internationalization/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/topics/rest-hypermedia-hateoas/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/topics/writable-nested-serializers/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/tutorial/1-serialization/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/tutorial/2-requests-and-responses/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/tutorial/3-class-based-views/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/tutorial/4-authentication-and-permissions/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/tutorial/5-relationships-and-hyperlinked-apis/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/tutorial/6-viewsets-and-routers/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://www.django-rest-framework.org/tutorial/quickstart/</loc>
-         <lastmod>2025-08-10</lastmod>
+         <lastmod>2025-08-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>
