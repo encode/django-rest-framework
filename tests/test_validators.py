@@ -753,22 +753,30 @@ class TestUniqueConstraintValidation(TestCase):
         )
         assert serializer.is_valid()
 
-    def test_uniq_constraint_condition_read_only(self):
+    def test_uniq_constraint_condition_read_only_create(self):
         class UniqueConstraintReadOnlyFieldModelSerializer(serializers.ModelSerializer):
             class Meta:
                 model = UniqueConstraintReadOnlyFieldModel
                 read_only_fields = ("state",)
                 fields = ("position", "something", *read_only_fields)
-
         serializer = UniqueConstraintReadOnlyFieldModelSerializer(
             data={"position": 1, "something": 1}
         )
         assert serializer.is_valid()
-        UniqueConstraintReadOnlyFieldModel.objects.create(position=1, something=1)
+
+    def test_uniq_constraint_condition_read_only_partial(self):
+        class UniqueConstraintReadOnlyFieldModelSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = UniqueConstraintReadOnlyFieldModel
+                read_only_fields = ("state",)
+                fields = ("position", "something", *read_only_fields)
+        instance = UniqueConstraintReadOnlyFieldModel.objects.create(position=1, something=1)
         serializer = UniqueConstraintReadOnlyFieldModelSerializer(
-            data={"position": 1, "something": 1}
+            instance=instance,
+            data={"position": 1, "something": 1},
+            partial=True
         )
-        assert not serializer.is_valid()
+        assert serializer.is_valid()
 
 
 # Tests for `UniqueForDateValidator`
