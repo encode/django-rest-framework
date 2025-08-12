@@ -149,6 +149,14 @@ class UniquenessTogetherModel(models.Model):
         unique_together = ('race_name', 'position')
 
 
+class BlankUniquenessTogetherModel(models.Model):
+    race_name = models.CharField(max_length=100, blank=True)
+    position = models.IntegerField()
+
+    class Meta:
+        unique_together = ('race_name', 'position')
+
+
 class NullUniquenessTogetherModel(models.Model):
     """
     Used to ensure that null values are not included when checking
@@ -173,6 +181,12 @@ class NullUniquenessTogetherModel(models.Model):
 class UniquenessTogetherSerializer(serializers.ModelSerializer):
     class Meta:
         model = UniquenessTogetherModel
+        fields = '__all__'
+
+
+class BlankUniquenessTogetherSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BlankUniquenessTogetherModel
         fields = '__all__'
 
 
@@ -461,6 +475,34 @@ class TestUniquenessTogetherValidation(TestCase):
         serializer = NullUniquenessTogetherSerializer(data=data)
         assert not serializer.is_valid()
 
+    def test_validation_for_provided_blank_fields(self):
+        BlankUniquenessTogetherModel.objects.create(
+            position=1
+        )
+        data = {
+            'race_name': '',
+            'position': 1
+        }
+        serializer = BlankUniquenessTogetherSerializer(data=data)
+        assert not serializer.is_valid()
+
+    def test_validation_for_missing_blank_fields(self):
+        BlankUniquenessTogetherModel.objects.create(
+            position=1
+        )
+        data = {
+            'position': 1
+        }
+        serializer = BlankUniquenessTogetherSerializer(data=data)
+        assert not serializer.is_valid()
+
+    def test_ignore_validation_for_missing_blank_fields(self):
+        data = {
+            'position': 1
+        }
+        serializer = BlankUniquenessTogetherSerializer(data=data)
+        assert serializer.is_valid(), serializer.errors
+
     def test_ignore_validation_for_unchanged_fields(self):
         """
         If all fields in the unique together constraint are unchanged,
@@ -589,6 +631,18 @@ class UniqueConstraintModel(models.Model):
         ]
 
 
+class UniqueConstraintBlankModel(models.Model):
+    title = models.CharField(max_length=100, blank=True)
+    age = models.IntegerField()
+    tag = models.CharField(max_length=100, blank=True)
+
+    class Meta:
+        constraints = [
+            # Unique constraint on 2 blank fields
+            models.UniqueConstraint(name='unique_constraint', fields=('age', 'tag'), condition=~models.Q(models.Q(title='') & models.Q(tag='True')))
+        ]
+
+
 class UniqueConstraintNullableModel(models.Model):
     title = models.CharField(max_length=100)
     age = models.IntegerField(null=True)
@@ -605,6 +659,12 @@ class UniqueConstraintSerializer(serializers.ModelSerializer):
     class Meta:
         model = UniqueConstraintModel
         fields = '__all__'
+
+
+class UniqueConstraintBlankSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UniqueConstraintBlankModel
+        fields = ('title', 'age', 'tag')
 
 
 class UniqueConstraintNullableSerializer(serializers.ModelSerializer):
@@ -713,6 +773,12 @@ class TestUniqueConstraintValidation(TestCase):
         assert len(validators) == 2 + extra_validators_qty
         ids_in_qs = {frozenset(v.queryset.values_list(flat=True)) for v in validators if hasattr(v, "queryset")}
         assert ids_in_qs == {frozenset([1]), frozenset([3])}
+
+    def test_blank_uqnique_constraint_fields_are_not_required(self):
+        serializer = UniqueConstraintBlankSerializer(data={'age': 25})
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        result = serializer.save()
+        self.assertIsInstance(result, UniqueConstraintBlankModel)
 
     def test_nullable_unique_constraint_fields_are_not_required(self):
         serializer = UniqueConstraintNullableSerializer(data={'title': 'Bob'})
