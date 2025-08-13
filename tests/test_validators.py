@@ -589,6 +589,21 @@ class UniqueConstraintModel(models.Model):
         ]
 
 
+class UniqueConstraintReadOnlyFieldModel(models.Model):
+    state = models.CharField(max_length=100, default="new")
+    position = models.IntegerField()
+    something = models.IntegerField()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                name="unique_constraint_%(class)s",
+                fields=("position", "something"),
+                condition=models.Q(state="new"),
+            ),
+        ]
+
+
 class UniqueConstraintNullableModel(models.Model):
     title = models.CharField(max_length=100)
     age = models.IntegerField(null=True)
@@ -735,6 +750,31 @@ class TestUniqueConstraintValidation(TestCase):
                 "global_id": 11,
                 "fancy_conditions": 11,
             }
+        )
+        assert serializer.is_valid()
+
+    def test_uniq_constraint_condition_read_only_create(self):
+        class UniqueConstraintReadOnlyFieldModelSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = UniqueConstraintReadOnlyFieldModel
+                read_only_fields = ("state",)
+                fields = ("position", "something", *read_only_fields)
+        serializer = UniqueConstraintReadOnlyFieldModelSerializer(
+            data={"position": 1, "something": 1}
+        )
+        assert serializer.is_valid()
+
+    def test_uniq_constraint_condition_read_only_partial(self):
+        class UniqueConstraintReadOnlyFieldModelSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = UniqueConstraintReadOnlyFieldModel
+                read_only_fields = ("state",)
+                fields = ("position", "something", *read_only_fields)
+        instance = UniqueConstraintReadOnlyFieldModel.objects.create(position=1, something=1)
+        serializer = UniqueConstraintReadOnlyFieldModelSerializer(
+            instance=instance,
+            data={"position": 1, "something": 1},
+            partial=True
         )
         assert serializer.is_valid()
 
