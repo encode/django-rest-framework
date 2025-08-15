@@ -13,7 +13,7 @@ Most of the time you're dealing with validation in REST framework you'll simply 
 
 However, sometimes you'll want to place your validation logic into reusable components, so that it can easily be reused throughout your codebase. This can be achieved by using validator functions and validator classes.
 
-## Validation in REST framework
+## Validation in REST framework
 
 Validation in Django REST framework serializers is handled a little differently to how validation works in Django's `ModelForm` class.
 
@@ -75,7 +75,7 @@ This validator should be applied to *serializer fields*, like so:
         validators=[UniqueValidator(queryset=BlogPost.objects.all())]
     )
 
-## UniqueTogetherValidator
+## UniqueTogetherValidator
 
 This validator can be used to enforce `unique_together` constraints on model instances.
 It has two required arguments, and a single optional `messages` argument:
@@ -92,7 +92,7 @@ The validator should be applied to *serializer classes*, like so:
         # ...
         class Meta:
             # ToDo items belong to a parent list, and have an ordering defined
-            # by the 'position' field. No two items in a given list may share
+            # by the 'position' field. No two items in a given list may share
             # the same position.
             validators = [
                 UniqueTogetherValidator(
@@ -166,7 +166,7 @@ If you want the date field to be entirely hidden from the user, then use `Hidden
 
 ---
 
-**Note:** `HiddenField()` does not appear in `partial=True` serializer (when making `PATCH` request).
+**Note:** `HiddenField()` does not appear in `partial=True` serializer (when making `PATCH` request). 
 
 ---
 

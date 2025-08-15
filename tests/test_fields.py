@@ -1770,9 +1770,69 @@ class TestDurationField(FieldValues):
     }
     field = serializers.DurationField()
 
+    def test_invalid_format(self):
+        with pytest.raises(ValueError) as exc_info:
+            serializers.DurationField(format='unknown')
+        assert str(exc_info.value) == (
+            "Unknown duration format provided, got 'unknown'"
+            " while expecting 'django', 'iso-8601' or `None`."
+        )
+        with pytest.raises(TypeError) as exc_info:
+            serializers.DurationField(format=123)
+        assert str(exc_info.value) == (
+            "duration format must be either str or `None`, not int"
+        )
+
+    def test_invalid_format_in_config(self):
+        field = serializers.DurationField()
+
+        with override_settings(REST_FRAMEWORK={'DURATION_FORMAT': 'unknown'}):
+            with pytest.raises(ValueError) as exc_info:
+                field.to_representation(datetime.timedelta(days=1))
+
+        assert str(exc_info.value) == (
+            "Unknown duration format provided, got 'unknown'"
+            " while expecting 'django', 'iso-8601' or `None`."
+        )
+        with override_settings(REST_FRAMEWORK={'DURATION_FORMAT': 123}):
+            with pytest.raises(TypeError) as exc_info:
+                field.to_representation(datetime.timedelta(days=1))
+        assert str(exc_info.value) == (
+            "duration format must be either str or `None`, not int"
+        )
+
+
+class TestNoOutputFormatDurationField(FieldValues):
+    """
+    Values for `DurationField` with a no output format.
+    """
+    valid_inputs = {}
+    invalid_inputs = {}
+    outputs = {
+        datetime.timedelta(1): datetime.timedelta(1)
+    }
+    field = serializers.DurationField(format=None)
+
+
+class TestISOOutputFormatDurationField(FieldValues):
+    """
+    Values for `DurationField` with a custom output format.
+    """
+    valid_inputs = {
+        '13': datetime.timedelta(seconds=13),
+        'P3DT08H32M01.000123S': datetime.timedelta(days=3, hours=8, minutes=32, seconds=1, microseconds=123),
+        'PT8H1M': datetime.timedelta(hours=8, minutes=1),
+        '-P999999999D': datetime.timedelta(days=-999999999),
+        'P999999999D': datetime.timedelta(days=999999999)
+    }
+    invalid_inputs = {}
+    outputs = {
+        datetime.timedelta(days=3, hours=8, minutes=32, seconds=1, microseconds=123): 'P3DT08H32M01.000123S'
+    }
+    field = serializers.DurationField(format='iso-8601')
+
 
 # Choice types...
-
 class TestChoiceField(FieldValues):
     """
     Valid and invalid values for `ChoiceField`.
