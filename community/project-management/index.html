@@ -53,7 +53,7 @@
         <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
-          <a class="repo-link btn btn-primary btn-small" href="https://github.com/encode/django-rest-framework/tree/master">GitHub</a>
+          <a class="repo-link btn btn-primary btn-small" href="https://github.com/encode/django-rest-framework">GitHub</a>
           <a class="repo-link btn btn-inverse btn-small " rel="next" href="../release-notes/">
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
@@ -480,7 +480,7 @@
 </ul>
 <p>Further notes for maintainers:</p>
 <ul>
-<li>Code changes should come in the form of a pull request - do not push directly to master.</li>
+<li>Code changes should come in the form of a pull request - do not push directly to main.</li>
 <li>Maintainers should typically not merge their own pull requests.</li>
 <li>Each issue/pull request should have exactly one label once triaged.</li>
 <li>Search for un-triaged issues with <a href="https://github.com/encode/django-rest-framework/issues?q=is%3Aopen+no%3Alabel">is:open no:label</a>.</li>
@@ -504,14 +504,14 @@ During development cycle:
 
 Checklist:
 
-- [ ] Create pull request for [release notes](https://github.com/encode/django-rest-framework/blob/master/docs/topics/release-notes.md) based on the [*.*.* milestone](https://github.com/encode/django-rest-framework/milestones/***).
+- [ ] Create pull request for [release notes](https://github.com/encode/django-rest-framework/blob/mains/docs/topics/release-notes.md) based on the [*.*.* milestone](https://github.com/encode/django-rest-framework/milestones/***).
 - [ ] Update supported versions:
     - [ ] `setup.py` `python_requires` list
     - [ ] `setup.py` Python &amp; Django version trove classifiers
     - [ ] `README` Python &amp; Django versions
     - [ ] `docs` Python &amp; Django versions
 - [ ] Update the translations from [transifex](https://www.django-rest-framework.org/topics/project-management/#translations).
-- [ ] Ensure the pull request increments the version to `*.*.*` in [`restframework/__init__.py`](https://github.com/encode/django-rest-framework/blob/master/rest_framework/__init__.py).
+- [ ] Ensure the pull request increments the version to `*.*.*` in [`restframework/__init__.py`](https://github.com/encode/django-rest-framework/blob/main/rest_framework/__init__.py).
 - [ ] Ensure documentation validates
     - Build and serve docs `mkdocs serve`
     - Validate links `pylinkvalidate.py -P http://127.0.0.1:8000`

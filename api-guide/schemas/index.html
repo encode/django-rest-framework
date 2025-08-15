@@ -53,7 +53,7 @@
         <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
-          <a class="repo-link btn btn-primary btn-small" href="https://github.com/encode/django-rest-framework/tree/master">GitHub</a>
+          <a class="repo-link btn btn-primary btn-small" href="https://github.com/encode/django-rest-framework">GitHub</a>
           <a class="repo-link btn btn-inverse btn-small " rel="next" href="../format-suffixes/">
             Next <i class="icon-arrow-right icon-white"></i>
           </a>
@@ -452,7 +452,7 @@
             
               
                 
-                  <a class="github" href="https://github.com/encode/django-rest-framework/tree/master/rest_framework/schemas">
+                  <a class="github" href="https://github.com/encode/django-rest-framework/tree/main/rest_framework/schemas">
                     <span class="label label-info">schemas</span>
                   </a>
                 
@@ -643,9 +643,9 @@ accessible via the <code>schema</code> attribute on <code>APIView</code>.</p>
 <p><code>AutoSchema</code> provides the OpenAPI elements needed for each view, request method
 and path:</p>
 <ul>
-<li>A list of <a href="https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#componentsObject">OpenAPI components</a>. In DRF terms these are
+<li>A list of <a href="https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.2.md#componentsObject">OpenAPI components</a>. In DRF terms these are
   mappings of serializers that describe request and response bodies.</li>
-<li>The appropriate <a href="https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#operationObject">OpenAPI operation object</a> that describes
+<li>The appropriate <a href="https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.2.md#operationObject">OpenAPI operation object</a> that describes
   the endpoint, including path and query parameters for pagination, filtering,
   and so on.</li>
 </ul>
@@ -759,13 +759,13 @@ the tag <code>users</code>.</p>
 <p>You can pass an <code>__init__()</code> kwarg to manually specify tags (see below), or
 override <code>get_tags()</code> to provide custom logic.</p>
 <h4 id="get_operation"><a class="toclink" href="#get_operation"><code>get_operation()</code></a></h4>
-<p>Returns the <a href="https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#operationObject">OpenAPI operation object</a> that describes the
+<p>Returns the <a href="https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.2.md#operationObject">OpenAPI operation object</a> that describes the
 endpoint, including path and query parameters for pagination, filtering, and so
 on.</p>
 <p>Together with <code>get_components()</code>, this is the main entry point to the view
 introspection.</p>
 <h4 id="get_operation_id"><a class="toclink" href="#get_operation_id"><code>get_operation_id()</code></a></h4>
-<p>There must be a unique <a href="https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#fixed-fields-17">operationid</a> for each operation.
+<p>There must be a unique <a href="https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.2.md#fixed-fields-17">operationid</a> for each operation.
 By default the <code>operationId</code> is deduced from the model name, serializer name or
 view name. The operationId looks like "listItems", "retrieveItem",
 "updateItem", etc. The <code>operationId</code> is camelCase by convention.</p>
