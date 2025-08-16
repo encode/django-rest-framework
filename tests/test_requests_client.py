@@ -28,7 +28,7 @@ class Root(APIView):
         }
         post = request.POST
         json = None
-        if request.META.get('CONTENT_TYPE') == 'application/json':
+        if request.headers.get('content-type') == 'application/json':
             json = request.data
 
         return Response({

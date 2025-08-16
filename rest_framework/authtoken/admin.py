@@ -21,6 +21,7 @@ class TokenChangeList(ChangeList):
                        current_app=self.model_admin.admin_site.name)
 
 
+@admin.register(TokenProxy)
 class TokenAdmin(admin.ModelAdmin):
     list_display = ('key', 'user', 'created')
     fields = ('user',)
@@ -49,6 +50,3 @@ class TokenAdmin(admin.ModelAdmin):
         # Map back to actual Token, since delete() uses pk.
         token = Token.objects.get(key=obj.key)
         return super().delete_model(request, token)
-
-
-admin.site.register(TokenProxy, TokenAdmin)
