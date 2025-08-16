@@ -634,6 +634,19 @@ request = factory.get('/accounts/django-superstars/')
 request.user = user
 response = view(request)
 </code></pre>
+<p>If you want to test a request involving the REST framework’s 'Request' object, you’ll need to manually transform it first:</p>
+<pre><code>class DummyView(APIView):
+    ...
+
+factory = APIRequestFactory()
+request = factory.get('/', {'demo': 'test'})
+drf_request = DummyView().initialize_request(request)
+assert drf_request.query_params == {'demo': ['test']}
+
+request = factory.post('/', {'example': 'test'})
+drf_request = DummyView().initialize_request(request)
+assert drf_request.data.get('example') == 'test'
+</code></pre>
 <hr />
 <h2 id="forcing-csrf-validation"><a class="toclink" href="#forcing-csrf-validation">Forcing CSRF validation</a></h2>
 <p>By default, requests created with <code>APIRequestFactory</code> will not have CSRF validation applied when passed to a REST framework view.  If you need to explicitly turn CSRF validation on, you can do so by setting the <code>enforce_csrf_checks</code> flag when instantiating the factory.</p>
