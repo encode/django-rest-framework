@@ -494,7 +494,7 @@ class TestDateTimeFieldHTMLFormRender(TestCase):
         class TestSerializer(serializers.Serializer):
             appointment = serializers.DateTimeField()
 
-        appointment = datetime(2024, 12, 24, 00, 55, 30, 345678)
+        appointment = datetime(2024, 12, 24, 0, 55, 30, 345678)
         serializer = TestSerializer(data={"appointment": appointment})
         serializer.is_valid()
         renderer = HTMLFormRenderer()
