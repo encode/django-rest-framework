@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # Erwann Mest <m+transifex@kud.io>, 2019
 # Etienne Desgagné <etienne.desgagne@evimbec.ca>, 2015
@@ -14,14 +14,15 @@ msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-13 21:45+0200\n"
-"PO-Revision-Date: 2020-10-13 19:45+0000\n"
+"PO-Revision-Date: 2025-08-17 20:22+0200\n"
 "Last-Translator: Xavier Ordoquy <xordoquy@linovia.com>\n"
 "Language-Team: French (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/fr/)\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Poedit 3.6\n"
 
 #: authentication.py:70
 msgid "Invalid basic header. No credentials provided."
@@ -52,8 +53,7 @@ msgid "Invalid token header. Token string should not contain spaces."
 msgstr "En-tête « token » non valide. Un token ne doit pas contenir d'espaces."
 
 #: authentication.py:193
-msgid ""
-"Invalid token header. Token string should not contain invalid characters."
+msgid "Invalid token header. Token string should not contain invalid characters."
 msgstr "En-tête « token » non valide. Un token ne doit pas contenir de caractères invalides."
 
 #: authentication.py:203
@@ -106,11 +106,11 @@ msgstr "Une erreur du serveur est survenue."
 
 #: exceptions.py:142
 msgid "Invalid input."
-msgstr ""
+msgstr "Entrée invalide."
 
 #: exceptions.py:161
 msgid "Malformed request."
-msgstr "Requête malformée"
+msgstr "Requête malformée."
 
 #: exceptions.py:167
 msgid "Incorrect authentication credentials."
@@ -149,12 +149,12 @@ msgstr "Requête ralentie."
 #: exceptions.py:224
 #, python-brace-format
 msgid "Expected available in {wait} second."
-msgstr ""
+msgstr "Disponible à nouveau dans {wait} second."
 
 #: exceptions.py:225
 #, python-brace-format
 msgid "Expected available in {wait} seconds."
-msgstr ""
+msgstr "Disponible à nouveau dans {wait} secondes."
 
 #: fields.py:316 relations.py:245 relations.py:279 validators.py:90
 #: validators.py:183
@@ -167,11 +167,11 @@ msgstr "Ce champ ne peut être nul."
 
 #: fields.py:701
 msgid "Must be a valid boolean."
-msgstr ""
+msgstr "Doit être un booléen valide."
 
 #: fields.py:766
 msgid "Not a valid string."
-msgstr ""
+msgstr "Chaîne invalide."
 
 #: fields.py:767
 msgid "This field may not be blank."
@@ -196,16 +196,12 @@ msgid "This value does not match the required pattern."
 msgstr "Cette valeur ne satisfait pas le motif imposé."
 
 #: fields.py:838
-msgid ""
-"Enter a valid \"slug\" consisting of letters, numbers, underscores or "
-"hyphens."
+msgid "Enter a valid \"slug\" consisting of letters, numbers, underscores or hyphens."
 msgstr "Ce champ ne doit contenir que des lettres, des nombres, des tirets bas _ et des traits d'union."
 
 #: fields.py:839
-msgid ""
-"Enter a valid \"slug\" consisting of Unicode letters, numbers, underscores, "
-"or hyphens."
-msgstr ""
+msgid "Enter a valid \"slug\" consisting of Unicode letters, numbers, underscores, or hyphens."
+msgstr "Saisir un \"slug\" valide composé de lettres Unicode, chiffres, tirets bas et tirets."
 
 #: fields.py:854
 msgid "Enter a valid URL."
@@ -213,7 +209,7 @@ msgstr "Saisissez une URL valide."
 
 #: fields.py:867
 msgid "Must be a valid UUID."
-msgstr ""
+msgstr "Doit être un UUID valide."
 
 #: fields.py:903
 msgid "Enter a valid IPv4 or IPv6 address."
@@ -248,15 +244,12 @@ msgstr "Assurez-vous qu'il n'y a pas plus de {max_digits} chiffres au total."
 
 #: fields.py:1008
 #, python-brace-format
-msgid ""
-"Ensure that there are no more than {max_decimal_places} decimal places."
+msgid "Ensure that there are no more than {max_decimal_places} decimal places."
 msgstr "Assurez-vous qu'il n'y a pas plus de {max_decimal_places} chiffres après la virgule."
 
 #: fields.py:1009
 #, python-brace-format
-msgid ""
-"Ensure that there are no more than {max_whole_digits} digits before the "
-"decimal point."
+msgid "Ensure that there are no more than {max_whole_digits} digits before the decimal point."
 msgstr "Assurez-vous qu'il n'y a pas plus de {max_whole_digits} chiffres avant la virgule."
 
 #: fields.py:1148
@@ -271,11 +264,11 @@ msgstr "Attendait une date + heure mais a reçu une date."
 #: fields.py:1150
 #, python-brace-format
 msgid "Invalid datetime for the timezone \"{timezone}\"."
-msgstr ""
+msgstr "Date invalide pour le fuseau \"{timezone}\"."
 
 #: fields.py:1151
 msgid "Datetime value out of range."
-msgstr ""
+msgstr "Valuer de date hors de l'intervalle."
 
 #: fields.py:1236
 #, python-brace-format
@@ -325,8 +318,7 @@ msgid "No file was submitted."
 msgstr "Aucun fichier n'a été soumis."
 
 #: fields.py:1515
-msgid ""
-"The submitted data was not a file. Check the encoding type on the form."
+msgid "The submitted data was not a file. Check the encoding type on the form."
 msgstr "La donnée soumise n'est pas un fichier. Vérifiez le type d'encodage du formulaire."
 
 #: fields.py:1516
@@ -339,14 +331,11 @@ msgstr "Le fichier soumis est vide."
 
 #: fields.py:1518
 #, python-brace-format
-msgid ""
-"Ensure this filename has at most {max_length} characters (it has {length})."
+msgid "Ensure this filename has at most {max_length} characters (it has {length})."
 msgstr "Assurez-vous que le nom de fichier comporte au plus {max_length} caractères (il en comporte {length})."
 
 #: fields.py:1566
-msgid ""
-"Upload a valid image. The file you uploaded was either not an image or a "
-"corrupted image."
+msgid "Upload a valid image. The file you uploaded was either not an image or a corrupted image."
 msgstr "Transférez une image valide. Le fichier que vous avez transféré n'est pas une image, ou il est corrompu."
 
 #: fields.py:1604 relations.py:486 serializers.py:571
@@ -356,12 +345,12 @@ msgstr "Cette liste ne peut pas être vide."
 #: fields.py:1605
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} elements."
-msgstr ""
+msgstr "Vérifier que ce champ a au moins {min_length} éléments."
 
 #: fields.py:1606
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} elements."
-msgstr ""
+msgstr "Vérifier que ce champ n'a pas plus de {max_length} éléments."
 
 #: fields.py:1682
 #, python-brace-format
@@ -370,7 +359,7 @@ msgstr "Attendait un dictionnaire d'éléments mais a reçu « {input_type} »
 
 #: fields.py:1683
 msgid "This dictionary may not be empty."
-msgstr ""
+msgstr "Ce dictionnaire ne peut être vide."
 
 #: fields.py:1755
 msgid "Value must be valid JSON."
@@ -382,7 +371,7 @@ msgstr "Recherche"
 
 #: filters.py:50
 msgid "A search term."
-msgstr ""
+msgstr "Un terme de recherche."
 
 #: filters.py:180 templates/rest_framework/filters/ordering.html:3
 msgid "Ordering"
@@ -390,7 +379,7 @@ msgstr "Ordre"
 
 #: filters.py:181
 msgid "Which field to use when ordering the results."
-msgstr ""
+msgstr "Quel champ utiliser pour trier les résultats."
 
 #: filters.py:287
 msgid "ascending"
@@ -402,11 +391,11 @@ msgstr "décroissant"
 
 #: pagination.py:174
 msgid "A page number within the paginated result set."
-msgstr ""
+msgstr "Un numéro de page de l'ensemble des résultats."
 
 #: pagination.py:179 pagination.py:372 pagination.py:590
 msgid "Number of results to return per page."
-msgstr ""
+msgstr "Nombre de résultats à retourner par page."
 
 #: pagination.py:189
 msgid "Invalid page."
@@ -414,11 +403,11 @@ msgstr "Page non valide."
 
 #: pagination.py:374
 msgid "The initial index from which to return the results."
-msgstr ""
+msgstr "L'index initial depuis lequel retourner les résultats."
 
 #: pagination.py:581
 msgid "The pagination cursor value."
-msgstr ""
+msgstr "La valeur du curseur de pagination."
 
 #: pagination.py:583
 msgid "Invalid cursor"
@@ -462,20 +451,20 @@ msgstr "Valeur non valide."
 
 #: schemas/utils.py:32
 msgid "unique integer value"
-msgstr ""
+msgstr "valeur entière unique"
 
 #: schemas/utils.py:34
 msgid "UUID string"
-msgstr ""
+msgstr "Chaîne UUID"
 
 #: schemas/utils.py:36
 msgid "unique value"
-msgstr ""
+msgstr "valeur unique"
 
 #: schemas/utils.py:38
 #, python-brace-format
 msgid "A {value_type} identifying this {name}."
-msgstr ""
+msgstr "Un(une) {value_type} identifiant ce(cette) {name}."
 
 #: serializers.py:337
 #, python-brace-format
@@ -485,7 +474,7 @@ msgstr "Donnée non valide. Attendait un dictionnaire, a reçu {datatype}."
 #: templates/rest_framework/admin.html:116
 #: templates/rest_framework/base.html:136
 msgid "Extra Actions"
-msgstr ""
+msgstr "Actions supplémentaires"
 
 #: templates/rest_framework/admin.html:130
 #: templates/rest_framework/base.html:150
@@ -494,27 +483,27 @@ msgstr "Filtres"
 
 #: templates/rest_framework/base.html:37
 msgid "navbar"
-msgstr ""
+msgstr "barre de navigation"
 
 #: templates/rest_framework/base.html:75
 msgid "content"
-msgstr ""
+msgstr "contenu"
 
 #: templates/rest_framework/base.html:78
 msgid "request form"
-msgstr ""
+msgstr "formulaire de requête"
 
 #: templates/rest_framework/base.html:157
 msgid "main content"
-msgstr ""
+msgstr "contenu principal"
 
 #: templates/rest_framework/base.html:173
 msgid "request info"
-msgstr ""
+msgstr "information de la requête"
 
 #: templates/rest_framework/base.html:177
 msgid "response info"
-msgstr ""
+msgstr "information de la réponse"
 
 #: templates/rest_framework/horizontal/radio.html:4
 #: templates/rest_framework/inline/radio.html:3
@@ -540,7 +529,7 @@ msgstr "Les champs {field_names} doivent former un ensemble unique."
 #: validators.py:171
 #, python-brace-format
 msgid "Surrogate characters are not allowed: U+{code_point:X}."
-msgstr ""
+msgstr "Les caractères de substitution ne sont pas autorisés : U+{code_point:X}."
 
 #: validators.py:243
 #, python-brace-format
