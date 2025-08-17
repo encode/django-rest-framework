@@ -489,8 +489,9 @@ class TestHiddenFieldHTMLFormRenderer(TestCase):
         assert rendered == ''
 
 
+@override_settings(TIME_ZONE='UTC', USE_TZ=True)
 class TestDateTimeFieldHTMLFormRender(TestCase):
-    def test_datetime_field_rendering(self):
+    def test_datetime_field_rendering_milliseconds(self):
         class TestSerializer(serializers.Serializer):
             appointment = serializers.DateTimeField()
 
@@ -502,6 +503,36 @@ class TestDateTimeFieldHTMLFormRender(TestCase):
         rendered = renderer.render_field(field, {})
         self.assertInHTML(
             '<input name="appointment" class="form-control" type="datetime-local" value="2024-12-24T00:55:30.345">',
+            rendered
+        )
+
+    def test_datetime_field_rendering_no_milliseconds(self):
+        class TestSerializer(serializers.Serializer):
+            appointment = serializers.DateTimeField()
+
+        appointment = datetime(2024, 12, 24, 0, 55, 30, 0)
+        serializer = TestSerializer(data={"appointment": appointment})
+        serializer.is_valid()
+        renderer = HTMLFormRenderer()
+        field = serializer['appointment']
+        rendered = renderer.render_field(field, {})
+        self.assertInHTML(
+            '<input name="appointment" class="form-control" type="datetime-local" value="2024-12-24T00:55:30">',
+            rendered
+        )
+
+    def test_datetime_field_rendering_no_seconds_and_milliseconds(self):
+        class TestSerializer(serializers.Serializer):
+            appointment = serializers.DateTimeField()
+
+        appointment = datetime(2024, 12, 24, 0, 55, 0, 0)
+        serializer = TestSerializer(data={"appointment": appointment})
+        serializer.is_valid()
+        renderer = HTMLFormRenderer()
+        field = serializer['appointment']
+        rendered = renderer.render_field(field, {})
+        self.assertInHTML(
+            '<input name="appointment" class="form-control" type="datetime-local" value="2024-12-24T00:55:00">',
             rendered
         )
 
