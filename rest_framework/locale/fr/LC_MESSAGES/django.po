@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-13 21:45+0200\n"
-"PO-Revision-Date: 2025-08-17 20:22+0200\n"
+"PO-Revision-Date: 2025-08-17 20:30+0200\n"
 "Last-Translator: Xavier Ordoquy <xordoquy@linovia.com>\n"
 "Language-Team: French (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/fr/)\n"
 "Language: fr\n"
@@ -149,7 +149,7 @@ msgstr "Requête ralentie."
 #: exceptions.py:224
 #, python-brace-format
 msgid "Expected available in {wait} second."
-msgstr "Disponible à nouveau dans {wait} second."
+msgstr "Disponible à nouveau dans {wait} seconde."
 
 #: exceptions.py:225
 #, python-brace-format
@@ -201,7 +201,7 @@ msgstr "Ce champ ne doit contenir que des lettres, des nombres, des tirets bas _
 
 #: fields.py:839
 msgid "Enter a valid \"slug\" consisting of Unicode letters, numbers, underscores, or hyphens."
-msgstr "Saisir un \"slug\" valide composé de lettres Unicode, chiffres, tirets bas et tirets."
+msgstr "Ce champ ne doit contenir que des lettres Unicode, des nombres, des tirets bas _ et des traits d'union."
 
 #: fields.py:854
 msgid "Enter a valid URL."
@@ -222,7 +222,7 @@ msgstr "Un nombre entier valide est requis."
 #: fields.py:932 fields.py:969 fields.py:1005 fields.py:1366
 #, python-brace-format
 msgid "Ensure this value is less than or equal to {max_value}."
-msgstr "Assurez-vous que cette valeur est inférieure ou égale à {max_value}."
+msgstr "Assurez-vous que cette valeur est inférieure ou égale à {max_value}."
 
 #: fields.py:933 fields.py:970 fields.py:1006 fields.py:1367
 #, python-brace-format
@@ -268,7 +268,7 @@ msgstr "Date invalide pour le fuseau \"{timezone}\"."
 
 #: fields.py:1151
 msgid "Datetime value out of range."
-msgstr "Valuer de date hors de l'intervalle."
+msgstr "Valeur de date hors de l'intervalle."
 
 #: fields.py:1236
 #, python-brace-format
@@ -443,7 +443,7 @@ msgstr "Type incorrect. Attendait une URL, a reçu {data_type}."
 #: relations.py:448
 #, python-brace-format
 msgid "Object with {slug_name}={value} does not exist."
-msgstr "L'object avec {slug_name}={value} n'existe pas."
+msgstr "L'objet avec {slug_name}={value} n'existe pas."
 
 #: relations.py:449
 msgid "Invalid value."
