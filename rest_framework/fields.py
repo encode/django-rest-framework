@@ -24,7 +24,7 @@ from django.utils import timezone
 from django.utils.dateparse import (
     parse_date, parse_datetime, parse_duration, parse_time
 )
-from django.utils.duration import duration_string
+from django.utils.duration import duration_iso_string, duration_string
 from django.utils.encoding import is_protected_type, smart_str
 from django.utils.formats import localize_input, sanitize_separators
 from django.utils.ipv6 import clean_ipv6_address
@@ -35,7 +35,7 @@ try:
 except ImportError:
     pytz = None
 
-from rest_framework import ISO_8601
+from rest_framework import DJANGO_DURATION_FORMAT, ISO_8601
 from rest_framework.compat import ip_address_validators
 from rest_framework.exceptions import ErrorDetail, ValidationError
 from rest_framework.settings import api_settings
@@ -1351,9 +1351,22 @@ class DurationField(Field):
         'overflow': _('The number of days must be between {min_days} and {max_days}.'),
     }
 
-    def __init__(self, **kwargs):
+    def __init__(self, *, format=empty, **kwargs):
         self.max_value = kwargs.pop('max_value', None)
         self.min_value = kwargs.pop('min_value', None)
+        if format is not empty:
+            if format is None or (isinstance(format, str) and format.lower() in (ISO_8601, DJANGO_DURATION_FORMAT)):
+                self.format = format
+            elif isinstance(format, str):
+                raise ValueError(
+                    f"Unknown duration format provided, got '{format}'"
+                    " while expecting 'django', 'iso-8601' or `None`."
+                )
+            else:
+                raise TypeError(
+                    "duration format must be either str or `None`,"
+                    f" not {type(format).__name__}"
+                )
         super().__init__(**kwargs)
         if self.max_value is not None:
             message = lazy_format(self.error_messages['max_value'], max_value=self.max_value)
@@ -1376,7 +1389,26 @@ class DurationField(Field):
         self.fail('invalid', format='[DD] [HH:[MM:]]ss[.uuuuuu]')
 
     def to_representation(self, value):
-        return duration_string(value)
+        output_format = getattr(self, 'format', api_settings.DURATION_FORMAT)
+
+        if output_format is None:
+            return value
+
+        if isinstance(output_format, str):
+            if output_format.lower() == ISO_8601:
+                return duration_iso_string(value)
+
+            if output_format.lower() == DJANGO_DURATION_FORMAT:
+                return duration_string(value)
+
+            raise ValueError(
+                f"Unknown duration format provided, got '{output_format}'"
+                " while expecting 'django', 'iso-8601' or `None`."
+            )
+        raise TypeError(
+            "duration format must be either str or `None`,"
+            f" not {type(output_format).__name__}"
+        )
 
 
 # Choice types...

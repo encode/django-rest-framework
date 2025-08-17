@@ -9,14 +9,9 @@ from enum import auto
 from unittest.mock import patch
 from zoneinfo import ZoneInfo
 
+import django
 import pytest
-
-from rest_framework.utils import json
-
-try:
-    import pytz
-except ImportError:
-    pytz = None
+import pytz
 
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db.models import IntegerChoices, TextChoices
@@ -1626,7 +1621,10 @@ class TestCustomTimezoneForDateTimeField(TestCase):
         assert rendered_date == rendered_date_in_timezone
 
 
-@pytest.mark.skipif(pytz is None, reason="Django 5.0 has removed pytz; this test should eventually be able to get removed.")
+@pytest.mark.skipif(
+    condition=django.VERSION >= (5,),
+    reason="Django 5.0 has removed pytz; this test should eventually be able to get removed.",
+)
 class TestPytzNaiveDayLightSavingTimeTimeZoneDateTimeField(FieldValues):
     """
     Invalid values for `DateTimeField` with datetime in DST shift (non-existing or ambiguous) and timezone with DST.
@@ -1640,16 +1638,15 @@ class TestPytzNaiveDayLightSavingTimeTimeZoneDateTimeField(FieldValues):
     }
     outputs = {}
 
-    if pytz:
-        class MockTimezone(pytz.BaseTzInfo):
-            @staticmethod
-            def localize(value, is_dst):
-                raise pytz.InvalidTimeError()
+    class MockTimezone(pytz.BaseTzInfo):
+        @staticmethod
+        def localize(value, is_dst):
+            raise pytz.InvalidTimeError()
 
-            def __str__(self):
-                return 'America/New_York'
+        def __str__(self):
+            return 'America/New_York'
 
-        field = serializers.DateTimeField(default_timezone=MockTimezone())
+    field = serializers.DateTimeField(default_timezone=MockTimezone())
 
 
 @patch('rest_framework.utils.timezone.datetime_ambiguous', return_value=True)
@@ -1774,9 +1771,69 @@ class TestDurationField(FieldValues):
     }
     field = serializers.DurationField()
 
+    def test_invalid_format(self):
+        with pytest.raises(ValueError) as exc_info:
+            serializers.DurationField(format='unknown')
+        assert str(exc_info.value) == (
+            "Unknown duration format provided, got 'unknown'"
+            " while expecting 'django', 'iso-8601' or `None`."
+        )
+        with pytest.raises(TypeError) as exc_info:
+            serializers.DurationField(format=123)
+        assert str(exc_info.value) == (
+            "duration format must be either str or `None`, not int"
+        )
+
+    def test_invalid_format_in_config(self):
+        field = serializers.DurationField()
+
+        with override_settings(REST_FRAMEWORK={'DURATION_FORMAT': 'unknown'}):
+            with pytest.raises(ValueError) as exc_info:
+                field.to_representation(datetime.timedelta(days=1))
+
+        assert str(exc_info.value) == (
+            "Unknown duration format provided, got 'unknown'"
+            " while expecting 'django', 'iso-8601' or `None`."
+        )
+        with override_settings(REST_FRAMEWORK={'DURATION_FORMAT': 123}):
+            with pytest.raises(TypeError) as exc_info:
+                field.to_representation(datetime.timedelta(days=1))
+        assert str(exc_info.value) == (
+            "duration format must be either str or `None`, not int"
+        )
+
+
+class TestNoOutputFormatDurationField(FieldValues):
+    """
+    Values for `DurationField` with a no output format.
+    """
+    valid_inputs = {}
+    invalid_inputs = {}
+    outputs = {
+        datetime.timedelta(1): datetime.timedelta(1)
+    }
+    field = serializers.DurationField(format=None)
+
+
+class TestISOOutputFormatDurationField(FieldValues):
+    """
+    Values for `DurationField` with a custom output format.
+    """
+    valid_inputs = {
+        '13': datetime.timedelta(seconds=13),
+        'P3DT08H32M01.000123S': datetime.timedelta(days=3, hours=8, minutes=32, seconds=1, microseconds=123),
+        'PT8H1M': datetime.timedelta(hours=8, minutes=1),
+        '-P999999999D': datetime.timedelta(days=-999999999),
+        'P999999999D': datetime.timedelta(days=999999999)
+    }
+    invalid_inputs = {}
+    outputs = {
+        datetime.timedelta(days=3, hours=8, minutes=32, seconds=1, microseconds=123): 'P3DT08H32M01.000123S'
+    }
+    field = serializers.DurationField(format='iso-8601')
+
 
 # Choice types...
-
 class TestChoiceField(FieldValues):
     """
     Valid and invalid values for `ChoiceField`.
