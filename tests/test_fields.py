@@ -20,6 +20,7 @@ from django.utils.timezone import activate, deactivate, override
 
 import rest_framework
 from rest_framework import exceptions, serializers
+from rest_framework.utils import json
 from rest_framework.fields import (
     BuiltinSignatureError, DjangoImageField, SkipField, empty,
     is_simple_callable
