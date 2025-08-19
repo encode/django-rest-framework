@@ -267,7 +267,7 @@ msgstr "Date et heure non valides pour le fuseau horaire \"{timezone}\"."
 
 #: fields.py:1151
 msgid "Datetime value out of range."
-msgstr "Valeur de date hors de l'intervalle."
+msgstr "Valeur de date et heure hors de l'intervalle."
 
 #: fields.py:1236
 #, python-brace-format
