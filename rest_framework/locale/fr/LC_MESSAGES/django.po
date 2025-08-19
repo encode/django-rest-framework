@@ -378,7 +378,7 @@ msgstr "Ordre"
 
 #: filters.py:181
 msgid "Which field to use when ordering the results."
-msgstr "Quel champ utiliser pour trier les résultats."
+msgstr "Quel champ utiliser pour classer les résultats."
 
 #: filters.py:287
 msgid "ascending"
