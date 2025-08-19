@@ -263,7 +263,7 @@ msgstr "Attendait une date + heure mais a reçu une date."
 #: fields.py:1150
 #, python-brace-format
 msgid "Invalid datetime for the timezone \"{timezone}\"."
-msgstr "Date invalide pour le fuseau \"{timezone}\"."
+msgstr "Date et heure non valides pour le fuseau horaire \"{timezone}\"."
 
 #: fields.py:1151
 msgid "Datetime value out of range."
