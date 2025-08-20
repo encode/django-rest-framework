@@ -627,13 +627,7 @@ class UniqueConstraintCustomMessageCodeModel(models.Model):
                 fields=("username", "company_id"),
                 name="unique_username_company_custom_msg",
                 violation_error_message="Username must be unique within a company.",
-                violation_error_code="duplicate_username",
-            )
-            if django_version[0] >= 5
-            else models.UniqueConstraint(
-                fields=("username", "company_id"),
-                name="unique_username_company_custom_msg",
-                violation_error_message="Username must be unique within a company.",
+                **(dict(violation_error_code="duplicate_username") if django_version[0] >= 5 else {}),
             ),
             models.UniqueConstraint(
                 fields=("company_id", "role"),

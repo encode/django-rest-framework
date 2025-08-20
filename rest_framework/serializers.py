@@ -1607,7 +1607,9 @@ class ModelSerializer(Serializer):
             source_map[source].append(name)
 
         unique_constraint_by_fields = {
-            constraint.fields: constraint for constraint in self.Meta.model._meta.constraints
+            constraint.fields: constraint
+            for model_cls in (self.Meta.model, *self.Meta.model._meta.parents)
+            for constraint in model_cls._meta.constraints
             if isinstance(constraint, models.UniqueConstraint)
         }
 
