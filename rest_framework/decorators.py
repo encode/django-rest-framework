@@ -70,6 +70,15 @@ def api_view(http_method_names=None):
         WrappedAPIView.permission_classes = getattr(func, 'permission_classes',
                                                     APIView.permission_classes)
 
+        WrappedAPIView.content_negotiation_class = getattr(func, 'content_negotiation_class',
+                                                           APIView.content_negotiation_class)
+
+        WrappedAPIView.metadata_class = getattr(func, 'metadata_class',
+                                                APIView.metadata_class)
+
+        WrappedAPIView.versioning_class = getattr(func, "versioning_class",
+                                                  APIView.versioning_class)
+
         WrappedAPIView.schema = getattr(func, 'schema',
                                         APIView.schema)
 
@@ -109,6 +118,27 @@ def throttle_classes(throttle_classes):
 def permission_classes(permission_classes):
     def decorator(func):
         func.permission_classes = permission_classes
+        return func
+    return decorator
+
+
+def content_negotiation_class(content_negotiation_class):
+    def decorator(func):
+        func.content_negotiation_class = content_negotiation_class
+        return func
+    return decorator
+
+
+def metadata_class(metadata_class):
+    def decorator(func):
+        func.metadata_class = metadata_class
+        return func
+    return decorator
+
+
+def versioning_class(versioning_class):
+    def decorator(func):
+        func.versioning_class = versioning_class
         return func
     return decorator
 

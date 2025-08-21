@@ -6,9 +6,11 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.decorators import (
-    action, api_view, authentication_classes, parser_classes,
-    permission_classes, renderer_classes, schema, throttle_classes
+    action, api_view, authentication_classes, content_negotiation_class,
+    metadata_class, parser_classes, permission_classes, renderer_classes,
+    schema, throttle_classes, versioning_class
 )
+from rest_framework.negotiation import BaseContentNegotiation
 from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import JSONRenderer
@@ -16,6 +18,7 @@ from rest_framework.response import Response
 from rest_framework.schemas import AutoSchema
 from rest_framework.test import APIRequestFactory
 from rest_framework.throttling import UserRateThrottle
+from rest_framework.versioning import QueryParameterVersioning
 from rest_framework.views import APIView
 
 
@@ -149,6 +152,43 @@ class DecoratorTestCase(TestCase):
 
         response = view(request)
         assert response.status_code == status.HTTP_429_TOO_MANY_REQUESTS
+
+    def test_versioning_class(self):
+        @api_view(["GET"])
+        @versioning_class(QueryParameterVersioning)
+        def view(request):
+            return Response({"version": request.version})
+
+        request = self.factory.get("/?version=1.2.3")
+        response = view(request)
+        assert response.data == {"version": "1.2.3"}
+
+    def test_metadata_class(self):
+        # From TestMetadata.test_none_metadata()
+        @api_view()
+        @metadata_class(None)
+        def view(request):
+            return Response({})
+
+        request = self.factory.options('/')
+        response = view(request)
+        assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
+        assert response.data == {'detail': 'Method "OPTIONS" not allowed.'}
+
+    def test_content_negotiation(self):
+        class CustomContentNegotiation(BaseContentNegotiation):
+            def select_renderer(self, request, renderers, format_suffix):
+                assert request.META['HTTP_ACCEPT'] == 'custom/type'
+                return (renderers[0], renderers[0].media_type)
+
+        @api_view(["GET"])
+        @content_negotiation_class(CustomContentNegotiation)
+        def view(request):
+            return Response({})
+
+        request = self.factory.get('/', HTTP_ACCEPT='custom/type')
+        response = view(request)
+        assert response.status_code == status.HTTP_200_OK
 
     def test_schema(self):
         """
