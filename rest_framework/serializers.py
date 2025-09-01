@@ -652,6 +652,26 @@ class ListSerializer(BaseSerializer):
         self.child.initial_data = data
         return super().run_child_validation(data)
         """
+        child_instance = getattr(self.child, "instance", None)
+
+        if self.instance is not None:
+            pk_name = None
+            child_meta = getattr(self.child, "Meta", None)
+            model = getattr(child_meta, "model", None) if child_meta else None
+
+            if model is not None:
+                pk_name = model._meta.pk.name
+
+            if pk_name:
+                obj_id = data.get(pk_name, data.get("pk", data.get("id")))
+                if obj_id is not None:
+                    for obj in self.instance:
+                        if hasattr(obj, pk_name) and getattr(obj, pk_name) == obj_id:
+                            child_instance = obj
+                            break
+
+        self.child.instance = child_instance
+        self.child.initial_data = data
         return self.child.run_validation(data)
 
     def to_internal_value(self, data):
