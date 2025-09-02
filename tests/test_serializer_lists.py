@@ -6,7 +6,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail
 from tests.models import (
     CustomManagerModel, EmailPKModel, ListModelForTest, NullableOneToOneSource,
-    OneToOneTarget
+    OneToOneTarget, PersonUUID
 )
 
 
@@ -839,4 +839,30 @@ class TestManyTrueValidationCheck:
     def test_email_pk_instance_validation(self):
         input_data = [{"email": "test@test.com", "name": "bar"}]
         serializer = self.email_serializer(instance=EmailPKModel.objects.all(), data=input_data, many=True)
+        assert serializer.is_valid(), serializer.errors
+
+    def test_uuid_validate_many(self):
+        PersonUUID.objects.create(id="c20f2f31-65a3-451f-ae7d-e939b7d9f84b", name="valid")
+        PersonUUID.objects.create(id="3308237e-18d8-4074-9d05-79cc0fdb5bb3", name="other")
+
+        class PersonUUIDSerializer(serializers.ModelSerializer):
+            uuid = serializers.UUIDField(source="id")
+
+            class Meta:
+                model = PersonUUID
+                fields = ("uuid", "name")
+                read_only_fields = ('uuid',)
+
+            def validate_name(self, value):
+                if value and not self.instance.is_valid:
+                    return False
+                return value
+
+        input_data = [
+            {
+                "uuid": "t3308237e-18d8-4074-9d05-79cc0fdb5bb3",
+                "name": "bar",
+            },
+        ]
+        serializer = PersonUUIDSerializer(instance=list(PersonUUID.objects.all()), data=input_data, many=True)
         assert serializer.is_valid(), serializer.errors

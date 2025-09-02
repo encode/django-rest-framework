@@ -168,3 +168,12 @@ class EmailPKModel(RESTFrameworkModel):
     @property
     def is_valid(self):
         return self.name == 'valid'
+
+
+class PersonUUID(RESTFrameworkModel):
+    id = models.UUIDField(primary_key=True)
+    name = models.CharField(max_length=100)
+
+    @property
+    def is_valid(self):
+        return self.name == 'valid'
