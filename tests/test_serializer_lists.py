@@ -785,6 +785,19 @@ class TestManyTrueValidationCheck:
     (integer and email).
     """
 
+    class PersonUUIDSerializer(serializers.ModelSerializer):
+        uuid = serializers.UUIDField(source="id")
+
+        class Meta:
+            model = PersonUUID
+            fields = ("uuid", "name")
+            read_only_fields = ("uuid",)
+
+        def validate_name(self, value):
+            if value and not self.instance.is_valid:
+                return False
+            return value
+
     def setup_method(self):
         self.obj1 = ListModelForTest.objects.create(name="valid", status="new")
         self.obj2 = ListModelForTest.objects.create(name="invalid", status="")
@@ -845,24 +858,20 @@ class TestManyTrueValidationCheck:
         PersonUUID.objects.create(id="c20f2f31-65a3-451f-ae7d-e939b7d9f84b", name="valid")
         PersonUUID.objects.create(id="3308237e-18d8-4074-9d05-79cc0fdb5bb3", name="other")
 
-        class PersonUUIDSerializer(serializers.ModelSerializer):
-            uuid = serializers.UUIDField(source="id")
-
-            class Meta:
-                model = PersonUUID
-                fields = ("uuid", "name")
-                read_only_fields = ('uuid',)
-
-            def validate_name(self, value):
-                if value and not self.instance.is_valid:
-                    return False
-                return value
-
         input_data = [
             {
                 "uuid": "t3308237e-18d8-4074-9d05-79cc0fdb5bb3",
                 "name": "bar",
             },
         ]
-        serializer = PersonUUIDSerializer(instance=list(PersonUUID.objects.all()), data=input_data, many=True)
+        serializer = self.PersonUUIDSerializer(instance=list(PersonUUID.objects.all()), data=input_data, many=True)
+        assert serializer.is_valid(), serializer.errors
+
+    def test_uuid_validate_single(self):
+        instance = PersonUUID.objects.create(id="c20f2f31-65a3-451f-ae7d-e939b7d9f84b", name="food")
+
+        serializer = self.PersonUUIDSerializer(
+            instance=instance,
+            data={"uuid": "c20f2f31-65a3-451f-ae7d-e939b7d9f84b", "name": "valid"},
+        )
         assert serializer.is_valid(), serializer.errors
