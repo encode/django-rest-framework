@@ -860,7 +860,7 @@ class TestManyTrueValidationCheck:
 
         input_data = [
             {
-                "uuid": "t3308237e-18d8-4074-9d05-79cc0fdb5bb3",
+                "uuid": "c20f2f31-65a3-451f-ae7d-e939b7d9f84b",
                 "name": "bar",
             },
         ]
