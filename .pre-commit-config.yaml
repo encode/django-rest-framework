@@ -37,3 +37,13 @@ repos:
   hooks:
   - id: pyupgrade
     args: ["--py39-plus", "--keep-percent-format"]
+
+- repo: https://github.com/adamchainz/django-upgrade
+  rev: 1.24.0
+  hooks:
+  - id: django-upgrade
+    args: [
+      --target-version, "4.2",
+      # test_urlpatterns.py has re_path related tests
+      --skip, "django_urls", "tests/test_urlpatterns.py",
+    ]
