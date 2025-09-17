@@ -26,7 +26,7 @@ Please keep the tone polite & professional.  For some users a discussion on the 
 
 Be mindful in the language you choose.  As an example, in an environment that is heavily male-dominated, posts that start 'Hey guys,' can come across as unintentionally exclusive.  It's just as easy, and more inclusive to use gender neutral language in those situations.
 
-The [Django code of conduct][code-of-conduct] gives a fuller set of guidelines for participating in community forums.
+The [Django Commons Code of Conduct][code-of-conduct] gives a fuller set of guidelines for participating in community forums.
 
 # Issues
 
@@ -201,7 +201,7 @@ If you want to draw attention to a note or warning, use a pair of enclosing line
 
 
 [cite]: https://www.w3.org/People/Berners-Lee/FAQ.html
-[code-of-conduct]: https://www.djangoproject.com/conduct/
+[code-of-conduct]: https://github.com/django-commons/membership/blob/main/CODE_OF_CONDUCT.md
 [google-group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
 [so-filter]: https://stackexchange.com/filters/66475/rest-framework
 [pep-8]: https://www.python.org/dev/peps/pep-0008/
