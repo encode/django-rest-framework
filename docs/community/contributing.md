@@ -30,7 +30,7 @@ The [Django Commons Code of Conduct][code-of-conduct] gives a fuller set of guid
 
 # Issues
 
-Our contribution process is that the [GitHub discussions page](https://github.com/encode/django-rest-framework/discussions) should generally be your starting point. Some tips on good potential issue reporting:
+Our contribution process is that the [GitHub discussions page](https://github.com/django-commons/django-rest-framework/discussions) should generally be your starting point. Some tips on good potential issue reporting:
 
 * Django REST framework is considered feature-complete. Please do not file requests to change behavior, unless it is required for security reasons or to maintain compatibility with upcoming Django or Python versions.
 * Search the GitHub project page for related items, and make sure you're running the latest version of REST framework before reporting an issue.
@@ -209,7 +209,7 @@ If you want to draw attention to a note or warning, use a pair of enclosing line
 [pull-requests]: https://help.github.com/articles/using-pull-requests
 [tox]: https://tox.readthedocs.io/en/latest/
 [markdown]: https://daringfireball.net/projects/markdown/basics
-[docs]: https://github.com/encode/django-rest-framework/tree/main/docs
+[docs]: https://github.com/django-commons/django-rest-framework/tree/main/docs
 [mou]: http://mouapp.com/
-[repo]: https://github.com/encode/django-rest-framework
+[repo]: https://github.com/django-commons/django-rest-framework
 [how-to-fork]: https://help.github.com/articles/fork-a-repo/

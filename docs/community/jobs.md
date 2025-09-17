@@ -39,5 +39,5 @@ Wonder how else you can help? One of the best ways you can help Django REST Fram
 [remotepython-com]: https://www.remotepython.com/jobs/
 [pyjobs-com]: https://www.pyjobs.com/
 [drf-funding]: https://fund.django-rest-framework.org/topics/funding/
-[submit-pr]: https://github.com/encode/django-rest-framework
+[submit-pr]: https://github.com/django-commons/django-rest-framework
 [anna-email]: mailto:anna@django-rest-framework.org
