@@ -170,7 +170,7 @@ msgstr "Doit être un booléen valide."
 
 #: fields.py:766
 msgid "Not a valid string."
-msgstr "Chaîne invalide."
+msgstr "Chaîne de charactère invalide."
 
 #: fields.py:767
 msgid "This field may not be blank."
