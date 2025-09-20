@@ -605,8 +605,12 @@ def view(request):
 <li><code>@authentication_classes(...)</code></li>
 <li><code>@throttle_classes(...)</code></li>
 <li><code>@permission_classes(...)</code></li>
+<li><code>@content_negotiation_class(...)</code></li>
+<li><code>@metadata_class(...)</code></li>
+<li><code>@versioning_class(...)</code></li>
 </ul>
-<p>Each of these decorators takes a single argument which must be a list or tuple of classes.</p>
+<p>Each of these decorators is equivalent to setting their respective <a href="./#api-policy-attributes">api policy attributes</a>.</p>
+<p>All decorators take a single argument. The ones that end with <code>_class</code> expect a single class while the ones ending in <code>_classes</code> expect a list or tuple of classes.</p>
 <h2 id="view-schema-decorator"><a class="toclink" href="#view-schema-decorator">View schema decorator</a></h2>
 <p>To override the default schema generation for function based views you may use
 the <code>@schema</code> decorator. This must come <em>after</em> (below) the <code>@api_view</code>
