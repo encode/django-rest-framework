@@ -45,3 +45,8 @@ repos:
   rev: v2.6.0
   hooks:
   - id: pyproject-fmt
+
+- repo: https://github.com/browniebroke/django-pre-commit-hooks
+  rev: v1.1.0
+  hooks:
+  - id: compile-messages
