@@ -276,7 +276,7 @@ msgstr "La date n'a pas le bon format. Utilisez un des formats suivants : {form
 
 #: fields.py:1237
 msgid "Expected a date but got a datetime."
-msgstr "Attendait une date mais a reçu une date + heure."
+msgstr "Attendait une date mais a reçu une date et heure."
 
 #: fields.py:1303
 #, python-brace-format
