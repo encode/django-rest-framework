@@ -177,8 +177,8 @@ For questions and support, use the [REST framework discussion group][group], or 
 
 Please see the [security policy][security-policy].
 
-[build-status-image]: https://github.com/encode/django-rest-framework/actions/workflows/main.yml/badge.svg
-[build-status]: https://github.com/encode/django-rest-framework/actions/workflows/main.yml
+[build-status-image]: https://github.com/django-commons/django-rest-framework/actions/workflows/main.yml/badge.svg
+[build-status]: https://github.com/django-commons/django-rest-framework/actions/workflows/main.yml
 [coverage-status-image]: https://img.shields.io/codecov/c/github/encode/django-rest-framework/main.svg
 [codecov]: https://codecov.io/github/encode/django-rest-framework?branch=main
 [pypi-version]: https://img.shields.io/pypi/v/djangorestframework.svg
@@ -223,4 +223,4 @@ Please see the [security policy][security-policy].
 [image]: https://www.django-rest-framework.org/img/quickstart.png
 
 [docs]: https://www.django-rest-framework.org/
-[security-policy]: https://github.com/encode/django-rest-framework/security/policy
+[security-policy]: https://github.com/django-commons/django-rest-framework/security/policy
