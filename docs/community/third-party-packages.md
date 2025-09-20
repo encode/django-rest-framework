@@ -55,6 +55,7 @@ To submit new content, [create a pull request][drf-create-pr].
 * [djangorestframework-digestauth][djangorestframework-digestauth] - Provides Digest Access Authentication support.
 * [django-oauth-toolkit][django-oauth-toolkit] - Provides OAuth 2.0 support.
 * [djangorestframework-simplejwt][djangorestframework-simplejwt] - Provides JSON Web Token Authentication support.
+* [DRF Auth Kit][drf-auth-kit] - Provides complete REST authentication with JWT cookies, social login, MFA, and user management. Features full type safety and automatic OpenAPI schema generation.
 * [hawkrest][hawkrest] - Provides Hawk HTTP Authorization.
 * [djangorestframework-httpsignature][djangorestframework-httpsignature] - Provides an easy to use HTTP Signature Authentication mechanism.
 * [djoser][djoser] - Provides a set of views to handle basic actions such as registration, login, logout, password reset and account activation.
@@ -180,6 +181,7 @@ To submit new content, [create a pull request][drf-create-pr].
 [permissions]: ../api-guide/permissions.md
 [third-party-packages]: #existing-third-party-packages
 [discussion-group]: https://groups.google.com/forum/#!forum/django-rest-framework
+[drf-auth-kit]: https://github.com/huynguyengl99/drf-auth-kit
 [djangorestframework-digestauth]: https://github.com/juanriaza/django-rest-framework-digestauth
 [django-oauth-toolkit]: https://github.com/evonove/django-oauth-toolkit
 [djangorestframework-jwt]: https://github.com/GetBlimp/django-rest-framework-jwt
