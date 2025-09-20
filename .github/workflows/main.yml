@@ -37,6 +37,11 @@ jobs:
     - name: Run tox targets for ${{ matrix.python-version }}
       run: tox run -f py$(echo ${{ matrix.python-version }} | tr -d . | cut -f 1 -d '-')
 
+    - name: Run extra tox targets
+      if: ${{ matrix.python-version == '3.13' }}
+      run: |
+        tox -e base,dist,docs
+
     - name: Upload coverage
       uses: codecov/codecov-action@v5
       with:
