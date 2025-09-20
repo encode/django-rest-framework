@@ -84,7 +84,7 @@ class JSONEncoderTests(TestCase):
         Tests encoding ipaddress IPv4Address object
         """
         obj = ipaddress.IPv4Address("192.168.1.1")
-        assert self.encoder.default(obj) == str(obj)
+        assert self.encoder.default(obj) == "192.168.1.1"
 
     def test_encode_ipaddress_ipv6address(self):
         """
