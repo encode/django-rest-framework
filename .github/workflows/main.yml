@@ -14,7 +14,6 @@ jobs:
     strategy:
       matrix:
         python-version:
-        - '3.9'
         - '3.10'
         - '3.11'
         - '3.12'
@@ -39,7 +38,7 @@ jobs:
       run: tox run -f py$(echo ${{ matrix.python-version }} | tr -d . | cut -f 1 -d '-')
 
     - name: Run extra tox targets
-      if: ${{ matrix.python-version == '3.9' }}
+      if: ${{ matrix.python-version == '3.13' }}
       run: |
         tox -e base,dist,docs
 
@@ -56,7 +55,7 @@ jobs:
 
     - uses: actions/setup-python@v6
       with:
-        python-version: '3.9'
+        python-version: '3.13'
 
     - name: Install dependencies
       run: pip install -r requirements/requirements-documentation.txt
