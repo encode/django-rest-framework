@@ -808,7 +808,6 @@ class BaseRetrieveUpdateDestroyView(MultipleFieldLookupMixin,
 <p>Prior to version 3.0 the REST framework mixins treated <code>PUT</code> as either an update or a create operation, depending on if the object already existed or not.</p>
 <p>Allowing <code>PUT</code> as create operations is problematic, as it necessarily exposes information about the existence or non-existence of objects. It's also not obvious that transparently allowing re-creating of previously deleted instances is necessarily a better default behavior than simply returning <code>404</code> responses.</p>
 <p>Both styles "<code>PUT</code> as 404" and "<code>PUT</code> as create" can be valid in different circumstances, but from version 3.0 onwards we now use 404 behavior as the default, due to it being simpler and more obvious.</p>
-<p>If you need to generic PUT-as-create behavior you may want to include something like <a href="https://gist.github.com/tomchristie/a2ace4577eff2c603b1b">this <code>AllowPUTAsCreateMixin</code> class</a> as a mixin to your views.</p>
 <hr />
 <h1 id="third-party-packages"><a class="toclink" href="#third-party-packages">Third party packages</a></h1>
 <p>The following third party packages provide additional generic view implementations.</p>
