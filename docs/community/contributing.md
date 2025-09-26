@@ -81,6 +81,23 @@ To run the tests, clone the repository, and then:
     # Run the tests
     ./runtests.py
 
+---
+
+**Note:**  
+If your tests require access to the database, do not forget to inherit from `django.test.TestCase`.  
+For example:
+
+    from django.test import TestCase
+
+    class MyDatabaseTest(TestCase):
+        def test_something(self):
+            # Your test code here
+            pass
+
+You can reuse existing models defined in `tests/models.py` for your tests.
+
+---
+
 ### Test options
 
 Run using a more concise output style.
@@ -98,6 +115,10 @@ Run the tests for a given test method.
 Shorter form to run the tests for a given test method.
 
     ./runtests.py test_this_method
+
+**Note:** If you do not want the output to be captured (for example, to see print statements directly), you can use the `-s` flag:
+
+    ./runtests.py -s
 
 Note: The test case and test method matching is fuzzy and will sometimes run other tests that contain a partial string match to the given  command line input.
 
