@@ -1090,6 +1090,14 @@ class ModelSerializer(Serializer):
         # Determine the fields that should be included on the serializer.
         fields = {}
 
+        # If it's a ManyToMany field, and the default is None, then raises an exception to prevent exceptions on .set()
+        for field_name in declared_fields.keys():
+            if field_name in info.relations and info.relations[field_name].to_many and declared_fields[field_name].default is None:
+                raise ValueError(
+                    f"The field '{field_name}' on serializer '{self.__class__.__name__}' is a ManyToMany field and cannot have a default value of None. "
+                    "Please set an appropriate default value, such as an empty list, or remove the default."
+                )
+
         for field_name in field_names:
             # If the field is explicitly declared on the class then use that.
             if field_name in declared_fields:
