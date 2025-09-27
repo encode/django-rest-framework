@@ -42,7 +42,7 @@ Set to false if this field is not required to be present during deserialization.
 
 Setting this to `False` also allows the object attribute or dictionary key to be omitted from output when serializing the instance. If the key is not present it will simply not be included in the output representation.
 
-Defaults to `True`. If you're using [Model Serializer](https://www.django-rest-framework.org/api-guide/serializers/#modelserializer) default value will be `False` if you have specified `blank=True` or `default` or `null=True` at your field in your `Model`.
+Defaults to `True`. If you're using [Model Serializer](https://www.django-rest-framework.org/api-guide/serializers/#modelserializer), the default value will be `False` when you have specified a `default`, or when the corresponding `Model` field has `blank=True` or `null=True` and is not part of a unique constraint at the same time. (Note that without a `default` value, [unique constraints will cause the field to be required](https://www.django-rest-framework.org/api-guide/validators/#optional-fields).)
 
 ### `default`
 
@@ -377,12 +377,15 @@ A Duration representation.
 Corresponds to `django.db.models.fields.DurationField`
 
 The `validated_data` for these fields will contain a `datetime.timedelta` instance.
-The representation is a string following this format `'[DD] [HH:[MM:]]ss[.uuuuuu]'`.
 
-**Signature:** `DurationField(max_value=None, min_value=None)`
+**Signature:** `DurationField(format=api_settings.DURATION_FORMAT, max_value=None, min_value=None)`
 
+* `format` - A string representing the output format.  If not specified, this defaults to the same value as the `DURATION_FORMAT` settings key, which will be `'django'` unless set. Formats are described below. Setting this value to `None` indicates that Python `timedelta` objects should be returned by `to_representation`. In this case the date encoding will be determined by the renderer.
 * `max_value` Validate that the duration provided is no greater than this value.
 * `min_value` Validate that the duration provided is no less than this value.
+
+#### `DurationField` formats
+Format may either be the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style intervals should be used (eg `'P4DT1H15M20S'`), or `'django'` which indicates that Django interval format `'[DD] [HH:[MM:]]ss[.uuuuuu]'` should be used (eg: `'4 1:15:20'`).
 
 ---
 
@@ -857,4 +860,4 @@ The [django-rest-framework-hstore][django-rest-framework-hstore] package provide
 [django-hstore]: https://github.com/djangonauts/django-hstore
 [python-decimal-rounding-modes]: https://docs.python.org/3/library/decimal.html#rounding-modes
 [django-current-timezone]: https://docs.djangoproject.com/en/stable/topics/i18n/timezones/#default-time-zone-and-current-time-zone
-[django-docs-select-related]: https://docs.djangoproject.com/en/3.1/ref/models/querysets/#django.db.models.query.QuerySet.select_related
+[django-docs-select-related]: https://docs.djangoproject.com/en/stable/ref/models/querysets/#django.db.models.query.QuerySet.select_related

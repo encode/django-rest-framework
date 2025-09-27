@@ -516,6 +516,43 @@ class TestUniquenessTogetherValidation(TestCase):
         validator.filter_queryset(attrs=data, queryset=queryset, serializer=serializer)
         assert queryset.called_with == {'race_name': 'bar', 'position': 1}
 
+    def test_uniq_together_validation_uses_model_fields_method_field(self):
+        class TestSerializer(serializers.ModelSerializer):
+            position = serializers.SerializerMethodField()
+
+            def get_position(self, obj):
+                return obj.position or 0
+
+            class Meta:
+                model = NullUniquenessTogetherModel
+                fields = ['race_name', 'position']
+
+        serializer = TestSerializer()
+        expected = dedent("""
+            TestSerializer():
+                race_name = CharField(max_length=100)
+                position = SerializerMethodField()
+        """)
+        assert repr(serializer) == expected
+
+    def test_uniq_together_validation_uses_model_fields_with_source_field(self):
+        class TestSerializer(serializers.ModelSerializer):
+            pos = serializers.IntegerField(source='position')
+
+            class Meta:
+                model = NullUniquenessTogetherModel
+                fields = ['race_name', 'pos']
+
+        serializer = TestSerializer()
+        expected = dedent("""
+            TestSerializer():
+                race_name = CharField(max_length=100, required=True)
+                pos = IntegerField(source='position')
+                class Meta:
+                    validators = [<UniqueTogetherValidator(queryset=NullUniquenessTogetherModel.objects.all(), fields=('race_name', 'pos'))>]
+        """)
+        assert repr(serializer) == expected
+
 
 class UniqueConstraintModel(models.Model):
     race_name = models.CharField(max_length=100)
@@ -548,6 +585,21 @@ class UniqueConstraintModel(models.Model):
                 name='unique_constraint_model_together_uniq2',
                 fields=('race_name', 'position'),
                 condition=models.Q(fancy_conditions__gte=10),
+            ),
+        ]
+
+
+class UniqueConstraintReadOnlyFieldModel(models.Model):
+    state = models.CharField(max_length=100, default="new")
+    position = models.IntegerField()
+    something = models.IntegerField()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                name="unique_constraint_%(class)s",
+                fields=("position", "something"),
+                condition=models.Q(state="new"),
             ),
         ]
 
@@ -698,6 +750,31 @@ class TestUniqueConstraintValidation(TestCase):
                 "global_id": 11,
                 "fancy_conditions": 11,
             }
+        )
+        assert serializer.is_valid()
+
+    def test_uniq_constraint_condition_read_only_create(self):
+        class UniqueConstraintReadOnlyFieldModelSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = UniqueConstraintReadOnlyFieldModel
+                read_only_fields = ("state",)
+                fields = ("position", "something", *read_only_fields)
+        serializer = UniqueConstraintReadOnlyFieldModelSerializer(
+            data={"position": 1, "something": 1}
+        )
+        assert serializer.is_valid()
+
+    def test_uniq_constraint_condition_read_only_partial(self):
+        class UniqueConstraintReadOnlyFieldModelSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = UniqueConstraintReadOnlyFieldModel
+                read_only_fields = ("state",)
+                fields = ("position", "something", *read_only_fields)
+        instance = UniqueConstraintReadOnlyFieldModel.objects.create(position=1, something=1)
+        serializer = UniqueConstraintReadOnlyFieldModelSerializer(
+            instance=instance,
+            data={"position": 1, "something": 1},
+            partial=True
         )
         assert serializer.is_valid()
 

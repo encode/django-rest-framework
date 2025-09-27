@@ -105,6 +105,20 @@ This means that setting attributes directly on the request object may not always
     request.user = user
     response = view(request)
 
+If you want to test a request involving the REST framework’s 'Request' object, you’ll need to manually transform it first:
+
+    class DummyView(APIView):
+        ...
+
+    factory = APIRequestFactory()
+    request = factory.get('/', {'demo': 'test'})
+    drf_request = DummyView().initialize_request(request)
+    assert drf_request.query_params == {'demo': ['test']}
+
+    request = factory.post('/', {'example': 'test'})
+    drf_request = DummyView().initialize_request(request)
+    assert drf_request.data.get('example') == 'test'
+
 ---
 
 ## Forcing CSRF validation
@@ -417,5 +431,5 @@ For example, to add support for using `format='html'` in test requests, you migh
 [requestfactory]: https://docs.djangoproject.com/en/stable/topics/testing/advanced/#django.test.client.RequestFactory
 [configuration]: #configuration
 [refresh_from_db_docs]: https://docs.djangoproject.com/en/stable/ref/models/instances/#django.db.models.Model.refresh_from_db
-[session_objects]: https://requests.readthedocs.io/en/master/user/advanced/#session-objects
+[session_objects]: https://requests.readthedocs.io/en/latest/user/advanced/#session-objects
 [provided_test_case_classes]: https://docs.djangoproject.com/en/stable/topics/testing/tools/#provided-test-case-classes

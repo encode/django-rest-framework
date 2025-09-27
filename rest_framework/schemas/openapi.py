@@ -428,7 +428,7 @@ class AutoSchema(ViewInspector):
             }
 
         # "Formats such as "email", "uuid", and so on, MAY be used even though undefined by this specification."
-        # see: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#data-types
+        # see: https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.2.md#data-types
         # see also: https://swagger.io/docs/specification/data-models/data-types/#string
         if isinstance(field, serializers.EmailField):
             return {
@@ -555,7 +555,7 @@ class AutoSchema(ViewInspector):
         """
         for v in field.validators:
             # "Formats such as "email", "uuid", and so on, MAY be used even though undefined by this specification."
-            # https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#data-types
+            # https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.2.md#data-types
             if isinstance(v, EmailValidator):
                 schema['format'] = 'email'
             if isinstance(v, URLValidator):

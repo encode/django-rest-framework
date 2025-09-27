@@ -5,3 +5,4 @@ pytest-django>=4.5.2,<5.0
 importlib-metadata<5.0
 # temporary pin of attrs
 attrs==22.1.0
+pytz  # Remove when dropping support for Django<5.0

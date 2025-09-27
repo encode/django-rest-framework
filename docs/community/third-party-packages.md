@@ -88,6 +88,7 @@ To submit new content, [create a pull request][drf-create-pr].
 * [djangorestframework-dataclasses][djangorestframework-dataclasses] - Serializer providing automatic field generation for Python dataclasses, like the built-in ModelSerializer does for models.
 * [django-restql][django-restql] - Turn your REST API into a GraphQL like API(It allows clients to control which fields will be sent in a response, uses GraphQL like syntax, supports read and write on both flat and nested fields).
 * [graphwrap][graphwrap] - Transform your REST API into a fully compliant GraphQL API with just two lines of code. Leverages [Graphene-Django](https://docs.graphene-python.org/projects/django/en/latest/) to dynamically build, at runtime, a GraphQL ObjectType for each view in your API.
+* [drf-shapeless-serializers][drf-shapeless-serializers] - Dynamically assemble, configure, and shape your Django Rest Framework serializers at runtime, much like connecting Lego bricks.
 
 ### Serializer fields
 
@@ -126,7 +127,7 @@ To submit new content, [create a pull request][drf-create-pr].
 * [djangorestframework-chain][djangorestframework-chain] - Allows arbitrary chaining of both relations and lookup filters.
 * [django-url-filter][django-url-filter] - Allows a safe way to filter data via human-friendly URLs. It is a generic library which is not tied to DRF but it provides easy integration with DRF.
 * [drf-url-filter][drf-url-filter] is a simple Django app to apply filters on drf `ModelViewSet`'s `Queryset` in a clean, simple and configurable way. It also supports validations on incoming query params and their values.
-* [django-rest-framework-guardian2][django-rest-framework-guardian2] - Provides integration with django-guardian, including the `DjangoObjectPermissionsFilter` previously found in DRF.
+* [django-rest-framework-guardian][django-rest-framework-guardian] - Provides integration with django-guardian, including the `DjangoObjectPermissionsFilter` previously found in DRF.
 
 ### Misc
 
@@ -172,12 +173,12 @@ To submit new content, [create a pull request][drf-create-pr].
 [pypi-register]: https://pypi.org/account/register/
 [semver]: https://semver.org/
 [tox-docs]: https://tox.readthedocs.io/en/latest/
-[drf-compat]: https://github.com/encode/django-rest-framework/blob/master/rest_framework/compat.py
+[drf-compat]: https://github.com/encode/django-rest-framework/blob/main/rest_framework/compat.py
 [rest-framework-grid]: https://www.djangopackages.com/grids/g/django-rest-framework/
 [drf-create-pr]: https://github.com/encode/django-rest-framework/compare
 [authentication]: ../api-guide/authentication.md
 [permissions]: ../api-guide/permissions.md
-[third-party-packages]: ../topics/third-party-packages/#existing-third-party-packages
+[third-party-packages]: #existing-third-party-packages
 [discussion-group]: https://groups.google.com/forum/#!forum/django-rest-framework
 [djangorestframework-digestauth]: https://github.com/juanriaza/django-rest-framework-digestauth
 [django-oauth-toolkit]: https://github.com/evonove/django-oauth-toolkit
@@ -242,7 +243,7 @@ To submit new content, [create a pull request][drf-create-pr].
 [djangorestframework-dataclasses]: https://github.com/oxan/djangorestframework-dataclasses
 [django-restql]: https://github.com/yezyilomo/django-restql
 [djangorestframework-mvt]: https://github.com/corteva/djangorestframework-mvt
-[django-rest-framework-guardian2]: https://github.com/johnthagen/django-rest-framework-guardian2
+[django-rest-framework-guardian]: https://github.com/rpkilby/django-rest-framework-guardian
 [drf-viewset-profiler]: https://github.com/fvlima/drf-viewset-profiler
 [djangorestframework-features]: https://github.com/cloudcode-hungary/django-rest-framework-features/
 [django-elasticsearch-dsl-drf]: https://github.com/barseghyanartur/django-elasticsearch-dsl-drf
@@ -259,3 +260,4 @@ To submit new content, [create a pull request][drf-create-pr].
 [drf-redesign]: https://github.com/youzarsiph/drf-redesign
 [drf-material]: https://github.com/youzarsiph/drf-material
 [django-pyoidc]: https://github.com/makinacorpus/django_pyoidc
+[drf-shapeless-serializers]: https://github.com/khaledsukkar2/drf-shapeless-serializers
