@@ -1569,6 +1569,17 @@ class ModelSerializer(Serializer):
             self.get_unique_for_date_validators()
         )
 
+    def _get_constraint_violation_error_message(self, constraint):
+        """
+        Returns the violation error message for the UniqueConstraint,
+        or None if the message is the default.
+        """
+        violation_error_message = constraint.get_violation_error_message()
+        default_error_message = constraint.default_violation_error_message % {"name": constraint.name}
+        if violation_error_message == default_error_message:
+            return None
+        return violation_error_message
+
     def get_unique_together_validators(self):
         """
         Determine a default set of validators for any unique_together constraints.
@@ -1594,6 +1605,13 @@ class ModelSerializer(Serializer):
         source_map = defaultdict(list)
         for name, source in field_sources.items():
             source_map[source].append(name)
+
+        unique_constraint_by_fields = {
+            constraint.fields: constraint
+            for model_cls in (*self.Meta.model._meta.parents, self.Meta.model)
+            for constraint in model_cls._meta.constraints
+            if isinstance(constraint, models.UniqueConstraint)
+        }
 
         # Note that we make sure to check `unique_together` both on the
         # base model class, but also on any parent classes.
@@ -1621,11 +1639,17 @@ class ModelSerializer(Serializer):
                 )
 
             field_names = tuple(source_map[f][0] for f in unique_together)
+
+            constraint = unique_constraint_by_fields.get(tuple(unique_together))
+            violation_error_message = self._get_constraint_violation_error_message(constraint) if constraint else None
+
             validator = UniqueTogetherValidator(
                 queryset=queryset,
                 fields=field_names,
                 condition_fields=tuple(source_map[f][0] for f in condition_fields),
                 condition=condition,
+                message=violation_error_message,
+                code=getattr(constraint, 'violation_error_code', None),
             )
             validators.append(validator)
         return validators
