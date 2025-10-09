@@ -25,6 +25,7 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Topic :: Internet :: WWW/HTTP",
 ]
 dynamic = [ "version" ]
@@ -55,6 +56,9 @@ known_first_party = [ "rest_framework", "tests" ]
 # Ref: https://github.com/codespell-project/codespell#using-a-config-file
 skip = "*/kickstarter-announcement.md,*.js,*.map,*.po"
 ignore-words-list = "fo,malcom,ser"
+
+[tool.pyproject-fmt]
+max_supported_python = "3.14"
 
 [tool.pytest.ini_options]
 addopts = "--tb=short --strict-markers -ra"
