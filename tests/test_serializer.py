@@ -798,7 +798,7 @@ class TestWarningManyToMany(TestCase):
             "name": "Invalid Example",
         })
 
-        error_msg = "The field 'targets' on serializer 'ManyToManySourceSerializer' is a ManyToMany field and cannot have a default value of None. Please set an appropriate default value, such as an empty list, or remove the default."
+        error_msg = "The field 'targets' on serializer 'ManyToManySourceSerializer' is a ManyToMany field and cannot have a default value of None."
 
         # Calls to get_fields() should raise a ValueError
         with pytest.raises(ValueError) as exc_info:
