@@ -793,7 +793,7 @@ class TestWarningManyToMany(TestCase):
                 model = ManyToManySource
                 fields = '__all__'
 
-        # Instantiates with invalid data (no value for a ManyToMany field to force using the default)
+        # Instantiates serializer without 'value' field to force using the default=None for the ManyToMany relation
         serializer = ManyToManySourceSerializer(data={
             "name": "Invalid Example",
         })
