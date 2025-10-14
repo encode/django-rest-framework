@@ -552,9 +552,33 @@ pip install -r requirements.txt
 # Run the tests
 ./runtests.py
 </code></pre>
+<hr />
+<p><strong>Note:</strong> if your tests require access to the database, do not forget to inherit from <code>django.test.TestCase</code> or use the <code>@pytest.mark.django_db()</code> decorator.</p>
+<p>For example, with TestCase:</p>
+<pre><code>from django.test import TestCase
+
+class MyDatabaseTest(TestCase):
+    def test_something(self):
+        # Your test code here
+        pass
+</code></pre>
+<p>Or with decorator:</p>
+<pre><code>import pytest
+
+@pytest.mark.django_db()
+class MyDatabaseTest:
+    def test_something(self):
+        # Your test code here
+        pass
+</code></pre>
+<p>You can reuse existing models defined in <code>tests/models.py</code> for your tests.</p>
+<hr />
 <h3 id="test-options"><a class="toclink" href="#test-options">Test options</a></h3>
 <p>Run using a more concise output style.</p>
 <pre><code>./runtests.py -q
+</code></pre>
+<p>If you do not want the output to be captured (for example, to see print statements directly), you can use the <code>-s</code> flag.</p>
+<pre><code>./runtests.py -s
 </code></pre>
 <p>Run the tests for a given test case.</p>
 <pre><code>./runtests.py MyTestCase
