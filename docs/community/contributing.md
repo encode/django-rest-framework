@@ -83,13 +83,23 @@ To run the tests, clone the repository, and then:
 
 ---
 
-**Note:**  
-If your tests require access to the database, do not forget to inherit from `django.test.TestCase`.  
-For example:
+**Note:** if your tests require access to the database, do not forget to inherit from `django.test.TestCase` or use the `@pytest.mark.django_db()` decorator.
+
+For example, with TestCase:
 
     from django.test import TestCase
 
     class MyDatabaseTest(TestCase):
+        def test_something(self):
+            # Your test code here
+            pass
+
+Or with decorator:
+
+    import pytest
+
+    @pytest.mark.django_db()
+    class MyDatabaseTest:
         def test_something(self):
             # Your test code here
             pass
