@@ -459,35 +459,36 @@
 <h2 id="refactoring-to-use-viewsets"><a class="toclink" href="#refactoring-to-use-viewsets">Refactoring to use ViewSets</a></h2>
 <p>Let's take our current set of views, and refactor them into view sets.</p>
 <p>First of all let's refactor our <code>UserList</code> and <code>UserDetail</code> classes into a single <code>UserViewSet</code> class. In the <code>snippets/views.py</code> file, we can remove the two view classes and replace them with a single ViewSet class:</p>
-<pre><code>from rest_framework import viewsets
+<pre><code class="language-python">from rest_framework import viewsets
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
-    """
+    &quot;&quot;&quot;
     This viewset automatically provides `list` and `retrieve` actions.
-    """
+    &quot;&quot;&quot;
+
     queryset = User.objects.all()
     serializer_class = UserSerializer
 </code></pre>
 <p>Here we've used the <code>ReadOnlyModelViewSet</code> class to automatically provide the default 'read-only' operations.  We're still setting the <code>queryset</code> and <code>serializer_class</code> attributes exactly as we did when we were using regular views, but we no longer need to provide the same information to two separate classes.</p>
 <p>Next we're going to replace the <code>SnippetList</code>, <code>SnippetDetail</code> and <code>SnippetHighlight</code> view classes.  We can remove the three views, and again replace them with a single class.</p>
-<pre><code>from rest_framework import permissions
+<pre><code class="language-python">from rest_framework import permissions
 from rest_framework import renderers
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 
 class SnippetViewSet(viewsets.ModelViewSet):
-    """
+    &quot;&quot;&quot;
     This ViewSet automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
 
     Additionally we also provide an extra `highlight` action.
-    """
+    &quot;&quot;&quot;
+
     queryset = Snippet.objects.all()
     serializer_class = SnippetSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly,
-                          IsOwnerOrReadOnly]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
 
     @action(detail=True, renderer_classes=[renderers.StaticHTMLRenderer])
     def highlight(self, request, *args, **kwargs):
@@ -505,57 +506,51 @@ class SnippetViewSet(viewsets.ModelViewSet):
 <p>The handler methods only get bound to the actions when we define the URLConf.
 To see what's going on under the hood let's first explicitly create a set of views from our ViewSets.</p>
 <p>In the <code>snippets/urls.py</code> file we bind our <code>ViewSet</code> classes into a set of concrete views.</p>
-<pre><code>from rest_framework import renderers
+<pre><code class="language-python">from rest_framework import renderers
 
 from snippets.views import api_root, SnippetViewSet, UserViewSet
 
-snippet_list = SnippetViewSet.as_view({
-    'get': 'list',
-    'post': 'create'
-})
-snippet_detail = SnippetViewSet.as_view({
-    'get': 'retrieve',
-    'put': 'update',
-    'patch': 'partial_update',
-    'delete': 'destroy'
-})
-snippet_highlight = SnippetViewSet.as_view({
-    'get': 'highlight'
-}, renderer_classes=[renderers.StaticHTMLRenderer])
-user_list = UserViewSet.as_view({
-    'get': 'list'
-})
-user_detail = UserViewSet.as_view({
-    'get': 'retrieve'
-})
+snippet_list = SnippetViewSet.as_view({&quot;get&quot;: &quot;list&quot;, &quot;post&quot;: &quot;create&quot;})
+snippet_detail = SnippetViewSet.as_view(
+    {&quot;get&quot;: &quot;retrieve&quot;, &quot;put&quot;: &quot;update&quot;, &quot;patch&quot;: &quot;partial_update&quot;, &quot;delete&quot;: &quot;destroy&quot;}
+)
+snippet_highlight = SnippetViewSet.as_view(
+    {&quot;get&quot;: &quot;highlight&quot;}, renderer_classes=[renderers.StaticHTMLRenderer]
+)
+user_list = UserViewSet.as_view({&quot;get&quot;: &quot;list&quot;})
+user_detail = UserViewSet.as_view({&quot;get&quot;: &quot;retrieve&quot;})
 </code></pre>
 <p>Notice how we're creating multiple views from each <code>ViewSet</code> class, by binding the HTTP methods to the required action for each view.</p>
 <p>Now that we've bound our resources into concrete views, we can register the views with the URL conf as usual.</p>
-<pre><code>urlpatterns = format_suffix_patterns([
-    path('', api_root),
-    path('snippets/', snippet_list, name='snippet-list'),
-    path('snippets/&lt;int:pk&gt;/', snippet_detail, name='snippet-detail'),
-    path('snippets/&lt;int:pk&gt;/highlight/', snippet_highlight, name='snippet-highlight'),
-    path('users/', user_list, name='user-list'),
-    path('users/&lt;int:pk&gt;/', user_detail, name='user-detail')
-])
+<pre><code class="language-python">urlpatterns = format_suffix_patterns(
+    [
+        path(&quot;&quot;, api_root),
+        path(&quot;snippets/&quot;, snippet_list, name=&quot;snippet-list&quot;),
+        path(&quot;snippets/&lt;int:pk&gt;/&quot;, snippet_detail, name=&quot;snippet-detail&quot;),
+        path(
+            &quot;snippets/&lt;int:pk&gt;/highlight/&quot;, snippet_highlight, name=&quot;snippet-highlight&quot;
+        ),
+        path(&quot;users/&quot;, user_list, name=&quot;user-list&quot;),
+        path(&quot;users/&lt;int:pk&gt;/&quot;, user_detail, name=&quot;user-detail&quot;),
+    ]
+)
 </code></pre>
 <h2 id="using-routers"><a class="toclink" href="#using-routers">Using Routers</a></h2>
 <p>Because we're using <code>ViewSet</code> classes rather than <code>View</code> classes, we actually don't need to design the URL conf ourselves.  The conventions for wiring up resources into views and urls can be handled automatically, using a <code>Router</code> class.  All we need to do is register the appropriate view sets with a router, and let it do the rest.</p>
 <p>Here's our re-wired <code>snippets/urls.py</code> file.</p>
-<pre><code>from django.urls import path, include
+<pre><code class="language-python">from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 from snippets import views
 
 # Create a router and register our ViewSets with it.
 router = DefaultRouter()
-router.register(r'snippets', views.SnippetViewSet, basename='snippet')
-router.register(r'users', views.UserViewSet, basename='user')
+router.register(r&quot;snippets&quot;, views.SnippetViewSet, basename=&quot;snippet&quot;)
+router.register(r&quot;users&quot;, views.UserViewSet, basename=&quot;user&quot;)
 
 # The API URLs are now determined automatically by the router.
 urlpatterns = [
-    path('', include(router.urls)),
+    path(&quot;&quot;, include(router.urls)),
 ]
 </code></pre>
 <p>Registering the ViewSets with the router is similar to providing a urlpattern.  We include two arguments - the URL prefix for the views, and the view set itself.</p>

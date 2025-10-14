@@ -473,12 +473,12 @@
 Let's introduce a couple of essential building blocks.</p>
 <h2 id="request-objects"><a class="toclink" href="#request-objects">Request objects</a></h2>
 <p>REST framework introduces a <code>Request</code> object that extends the regular <code>HttpRequest</code>, and provides more flexible request parsing.  The core functionality of the <code>Request</code> object is the <code>request.data</code> attribute, which is similar to <code>request.POST</code>, but more useful for working with Web APIs.</p>
-<pre><code>request.POST  # Only handles form data.  Only works for 'POST' method.
+<pre><code class="language-python">request.POST  # Only handles form data.  Only works for 'POST' method.
 request.data  # Handles arbitrary data.  Works for 'POST', 'PUT' and 'PATCH' methods.
 </code></pre>
 <h2 id="response-objects"><a class="toclink" href="#response-objects">Response objects</a></h2>
 <p>REST framework also introduces a <code>Response</code> object, which is a type of <code>TemplateResponse</code> that takes unrendered content and uses content negotiation to determine the correct content type to return to the client.</p>
-<pre><code>return Response(data)  # Renders to content type as requested by the client.
+<pre><code class="language-python">return Response(data)  # Renders to content type as requested by the client.
 </code></pre>
 <h2 id="status-codes"><a class="toclink" href="#status-codes">Status codes</a></h2>
 <p>Using numeric HTTP status codes in your views doesn't always make for obvious reading, and it's easy to not notice if you get an error code wrong.  REST framework provides more explicit identifiers for each status code, such as <code>HTTP_400_BAD_REQUEST</code> in the <code>status</code> module.  It's a good idea to use these throughout rather than using numeric identifiers.</p>
@@ -492,24 +492,24 @@ request.data  # Handles arbitrary data.  Works for 'POST', 'PUT' and 'PATCH' met
 <p>The wrappers also provide behavior such as returning <code>405 Method Not Allowed</code> responses when appropriate, and handling any <code>ParseError</code> exceptions that occur when accessing <code>request.data</code> with malformed input.</p>
 <h2 id="pulling-it-all-together"><a class="toclink" href="#pulling-it-all-together">Pulling it all together</a></h2>
 <p>Okay, let's go ahead and start using these new components to refactor our views slightly.</p>
-<pre><code>from rest_framework import status
+<pre><code class="language-python">from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from snippets.models import Snippet
 from snippets.serializers import SnippetSerializer
 
 
-@api_view(['GET', 'POST'])
+@api_view([&quot;GET&quot;, &quot;POST&quot;])
 def snippet_list(request):
-    """
+    &quot;&quot;&quot;
     List all code snippets, or create a new snippet.
-    """
-    if request.method == 'GET':
+    &quot;&quot;&quot;
+    if request.method == &quot;GET&quot;:
         snippets = Snippet.objects.all()
         serializer = SnippetSerializer(snippets, many=True)
         return Response(serializer.data)
 
-    elif request.method == 'POST':
+    elif request.method == &quot;POST&quot;:
         serializer = SnippetSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -518,49 +518,47 @@ def snippet_list(request):
 </code></pre>
 <p>Our instance view is an improvement over the previous example.  It's a little more concise, and the code now feels very similar to if we were working with the Forms API.  We're also using named status codes, which makes the response meanings more obvious.</p>
 <p>Here is the view for an individual snippet, in the <code>views.py</code> module.</p>
-<pre><code>@api_view(['GET', 'PUT', 'DELETE'])
+<pre><code class="language-python">@api_view([&quot;GET&quot;, &quot;PUT&quot;, &quot;DELETE&quot;])
 def snippet_detail(request, pk):
-    """
+    &quot;&quot;&quot;
     Retrieve, update or delete a code snippet.
-    """
+    &quot;&quot;&quot;
     try:
         snippet = Snippet.objects.get(pk=pk)
     except Snippet.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    if request.method == 'GET':
+    if request.method == &quot;GET&quot;:
         serializer = SnippetSerializer(snippet)
         return Response(serializer.data)
 
-    elif request.method == 'PUT':
+    elif request.method == &quot;PUT&quot;:
         serializer = SnippetSerializer(snippet, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    elif request.method == 'DELETE':
+    elif request.method == &quot;DELETE&quot;:
         snippet.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 </code></pre>
 <p>This should all feel very familiar - it is not a lot different from working with regular Django views.</p>
 <p>Notice that we're no longer explicitly tying our requests or responses to a given content type.  <code>request.data</code> can handle incoming <code>json</code> requests, but it can also handle other formats.  Similarly we're returning response objects with data, but allowing REST framework to render the response into the correct content type for us.</p>
 <h2 id="adding-optional-format-suffixes-to-our-urls"><a class="toclink" href="#adding-optional-format-suffixes-to-our-urls">Adding optional format suffixes to our URLs</a></h2>
-<p>To take advantage of the fact that our responses are no longer hardwired to a single content type let's add support for format suffixes to our API endpoints.  Using format suffixes gives us URLs that explicitly refer to a given format, and means our API will be able to handle URLs such as <a href="http://example.com/api/items/4.json">http://example.com/api/items/4.json</a>.</p>
-<p>Start by adding a <code>format</code> keyword argument to both of the views, like so.</p>
-<pre><code>def snippet_list(request, format=None):
-</code></pre>
-<p>and</p>
-<pre><code>def snippet_detail(request, pk, format=None):
-</code></pre>
+<p>To take advantage of the fact that our responses are no longer hardwired to a single content type let's add support for format suffixes to our API endpoints.  Using format suffixes gives us URLs that explicitly refer to a given format, and means our API will be able to handle URLs such as <a href="http://example.com/api/items/4.json"><a href="http://example.com/api/items/4.json">http://example.com/api/items/4.json</a></a>.</p>
+<p>Start by adding a <code>format</code> keyword argument to both of the views, like so.
+<code>def snippet_list(request, format=None):</code>
+and
+<code>def snippet_detail(request, pk, format=None):</code></p>
 <p>Now update the <code>snippets/urls.py</code> file slightly, to append a set of <code>format_suffix_patterns</code> in addition to the existing URLs.</p>
-<pre><code>from django.urls import path
+<pre><code class="language-python">from django.urls import path
 from rest_framework.urlpatterns import format_suffix_patterns
 from snippets import views
 
 urlpatterns = [
-    path('snippets/', views.snippet_list),
-    path('snippets/&lt;int:pk&gt;/', views.snippet_detail),
+    path(&quot;snippets/&quot;, views.snippet_list),
+    path(&quot;snippets/&lt;int:pk&gt;/&quot;, views.snippet_detail),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
@@ -569,64 +567,64 @@ urlpatterns = format_suffix_patterns(urlpatterns)
 <h2 id="hows-it-looking"><a class="toclink" href="#hows-it-looking">How's it looking?</a></h2>
 <p>Go ahead and test the API from the command line, as we did in <a href="../1-serialization/">tutorial part 1</a>.  Everything is working pretty similarly, although we've got some nicer error handling if we send invalid requests.</p>
 <p>We can get a list of all of the snippets, as before.</p>
-<pre><code>http http://127.0.0.1:8000/snippets/
+<pre><code class="language-bash">http http://127.0.0.1:8000/snippets/
 
 HTTP/1.1 200 OK
 ...
 [
-  {
-    "id": 1,
-    "title": "",
-    "code": "foo = \"bar\"\n",
-    "linenos": false,
-    "language": "python",
-    "style": "friendly"
-  },
-  {
-    "id": 2,
-    "title": "",
-    "code": "print(\"hello, world\")\n",
-    "linenos": false,
-    "language": "python",
-    "style": "friendly"
-  }
+    {
+    &quot;id&quot;: 1,
+    &quot;title&quot;: &quot;&quot;,
+    &quot;code&quot;: &quot;foo = \&quot;bar\&quot;\n&quot;,
+    &quot;linenos&quot;: false,
+    &quot;language&quot;: &quot;python&quot;,
+    &quot;style&quot;: &quot;friendly&quot;
+    },
+    {
+    &quot;id&quot;: 2,
+    &quot;title&quot;: &quot;&quot;,
+    &quot;code&quot;: &quot;print(\&quot;hello, world\&quot;)\n&quot;,
+    &quot;linenos&quot;: false,
+    &quot;language&quot;: &quot;python&quot;,
+    &quot;style&quot;: &quot;friendly&quot;
+    }
 ]
 </code></pre>
 <p>We can control the format of the response that we get back, either by using the <code>Accept</code> header:</p>
-<pre><code>http http://127.0.0.1:8000/snippets/ Accept:application/json  # Request JSON
+<pre><code class="language-bash">http http://127.0.0.1:8000/snippets/ Accept:application/json  # Request JSON
 http http://127.0.0.1:8000/snippets/ Accept:text/html         # Request HTML
 </code></pre>
 <p>Or by appending a format suffix:</p>
-<pre><code>http http://127.0.0.1:8000/snippets.json  # JSON suffix
+<pre><code class="language-bash">http http://127.0.0.1:8000/snippets.json  # JSON suffix
 http http://127.0.0.1:8000/snippets.api   # Browsable API suffix
 </code></pre>
 <p>Similarly, we can control the format of the request that we send, using the <code>Content-Type</code> header.</p>
-<pre><code># POST using form data
-http --form POST http://127.0.0.1:8000/snippets/ code="print(123)"
+<pre><code class="language-bash"># POST using form data
+http --form POST http://127.0.0.1:8000/snippets/ code=&quot;print(123)&quot;
 
 {
-  "id": 3,
-  "title": "",
-  "code": "print(123)",
-  "linenos": false,
-  "language": "python",
-  "style": "friendly"
+    &quot;id&quot;: 3,
+    &quot;title&quot;: &quot;&quot;,
+    &quot;code&quot;: &quot;print(123)&quot;,
+    &quot;linenos&quot;: false,
+    &quot;language&quot;: &quot;python&quot;,
+    &quot;style&quot;: &quot;friendly&quot;
 }
 
 # POST using JSON
-http --json POST http://127.0.0.1:8000/snippets/ code="print(456)"
+http --json POST http://127.0.0.1:8000/snippets/ code=&quot;print(456)&quot;
 
 {
-    "id": 4,
-    "title": "",
-    "code": "print(456)",
-    "linenos": false,
-    "language": "python",
-    "style": "friendly"
+    &quot;id&quot;: 4,
+    &quot;title&quot;: &quot;&quot;,
+    &quot;code&quot;: &quot;print(456)&quot;,
+    &quot;linenos&quot;: false,
+    &quot;language&quot;: &quot;python&quot;,
+    &quot;style&quot;: &quot;friendly&quot;
 }
 </code></pre>
 <p>If you add a <code>--debug</code> switch to the <code>http</code> requests above, you will be able to see the request type in request headers.</p>
-<p>Now go and open the API in a web browser, by visiting <a href="http://127.0.0.1:8000/snippets/">http://127.0.0.1:8000/snippets/</a>.</p>
+<p>Now go and open the API in a web browser, by visiting <a href="http://127.0.0.1:8000/snippets/"><a href="http://127.0.0.1:8000/snippets/">http://127.0.0.1:8000/snippets/</a></a>.</p>
 <h3 id="browsability"><a class="toclink" href="#browsability">Browsability</a></h3>
 <p>Because the API chooses the content type of the response based on the client request, it will, by default, return an HTML-formatted representation of the resource when that resource is requested by a web browser.  This allows for the API to return a fully web-browsable HTML representation.</p>
 <p>Having a web-browsable API is a huge usability win, and makes developing and using your API much easier.  It also dramatically lowers the barrier-to-entry for other developers wanting to inspect and work with your API.</p>
