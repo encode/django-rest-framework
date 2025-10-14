@@ -35,7 +35,7 @@ repos:
       # python doesn't come with a toml parser prior to 3.11
       - "tomli; python_version < '3.11'"
 - repo: https://github.com/asottile/pyupgrade
-  rev: v3.19.1
+  rev: v3.21.0
   hooks:
   - id: pyupgrade
     args: ["--py310-plus", "--keep-percent-format"]
