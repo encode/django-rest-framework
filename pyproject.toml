@@ -8,7 +8,7 @@ description = "Web APIs for Django, made easy."
 readme = "README.md"
 license = "BSD-3-Clause"
 authors = [ { name = "Tom Christie", email = "tom@tomchristie.com" } ]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 classifiers = [
   "Development Status :: 5 - Production/Stable",
   "Environment :: Web Environment",
@@ -21,11 +21,11 @@ classifiers = [
   "Operating System :: OS Independent",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Topic :: Internet :: WWW/HTTP",
 ]
 dynamic = [ "version" ]
@@ -56,6 +56,9 @@ known_first_party = [ "rest_framework", "tests" ]
 # Ref: https://github.com/codespell-project/codespell#using-a-config-file
 skip = "*/kickstarter-announcement.md,*.js,*.map,*.po"
 ignore-words-list = "fo,malcom,ser"
+
+[tool.pyproject-fmt]
+max_supported_python = "3.14"
 
 [tool.pytest.ini_options]
 addopts = "--tb=short --strict-markers -ra"
