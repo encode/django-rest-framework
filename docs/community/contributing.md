@@ -104,6 +104,12 @@ Run using a more concise output style.
 
     ./runtests.py -q
 
+
+If you do not want the output to be captured (for example, to see print statements directly), you can use the `-s` flag.
+
+    ./runtests.py -s
+
+
 Run the tests for a given test case.
 
     ./runtests.py MyTestCase
@@ -116,9 +122,6 @@ Shorter form to run the tests for a given test method.
 
     ./runtests.py test_this_method
 
-**Note:** If you do not want the output to be captured (for example, to see print statements directly), you can use the `-s` flag:
-
-    ./runtests.py -s
 
 Note: The test case and test method matching is fuzzy and will sometimes run other tests that contain a partial string match to the given  command line input.
 
