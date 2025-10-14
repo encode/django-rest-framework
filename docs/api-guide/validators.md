@@ -5,7 +5,7 @@ source:
 
 # Validators
 
-> Validators can be useful for re-using validation logic between different types of fields.
+> Validators can be useful for reusing validation logic between different types of fields.
 >
 > &mdash; [Django documentation][cite]
 

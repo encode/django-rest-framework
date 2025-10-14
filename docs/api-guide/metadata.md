@@ -66,7 +66,7 @@ The REST framework package only includes a single metadata class implementation,
 
 ## Creating schema endpoints
 
-If you have specific requirements for creating schema endpoints that are accessed with regular `GET` requests, you might consider re-using the metadata API for doing so.
+If you have specific requirements for creating schema endpoints that are accessed with regular `GET` requests, you might consider reusing the metadata API for doing so.
 
 For example, the following additional route could be used on a viewset to provide a linkable schema endpoint.
 

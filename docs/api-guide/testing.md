@@ -92,7 +92,7 @@ For example, when forcibly authenticating using a token, you might do something 
 
 ---
 
-**Note**: `force_authenticate` directly sets `request.user` to the in-memory `user` instance. If you are re-using the same `user` instance across multiple tests that update the saved `user` state, you may need to call [`refresh_from_db()`][refresh_from_db_docs] between tests.
+**Note**: `force_authenticate` directly sets `request.user` to the in-memory `user` instance. If you are reusing the same `user` instance across multiple tests that update the saved `user` state, you may need to call [`refresh_from_db()`][refresh_from_db_docs] between tests.
 
 ---
 
