@@ -22,7 +22,6 @@ repos:
   rev: 1.20.0
   hooks:
   - id: blacken-docs
-    exclude: ^(?!docs).*$
     additional_dependencies:
     - black==25.9.0
 - repo: https://github.com/codespell-project/codespell
