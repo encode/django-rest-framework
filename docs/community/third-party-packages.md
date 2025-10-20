@@ -55,10 +55,10 @@ To submit new content, [create a pull request][drf-create-pr].
 * [djangorestframework-digestauth][djangorestframework-digestauth] - Provides Digest Access Authentication support.
 * [django-oauth-toolkit][django-oauth-toolkit] - Provides OAuth 2.0 support.
 * [djangorestframework-simplejwt][djangorestframework-simplejwt] - Provides JSON Web Token Authentication support.
-* [DRF Auth Kit][drf-auth-kit] - Provides complete REST authentication with JWT cookies, social login, MFA, and user management. Features full type safety and automatic OpenAPI schema generation.
 * [hawkrest][hawkrest] - Provides Hawk HTTP Authorization.
 * [djangorestframework-httpsignature][djangorestframework-httpsignature] - Provides an easy to use HTTP Signature Authentication mechanism.
 * [djoser][djoser] - Provides a set of views to handle basic actions such as registration, login, logout, password reset and account activation.
+* [DRF Auth Kit][drf-auth-kit] - Provides complete REST authentication with JWT cookies, social login, MFA, and user management. Features full type safety and automatic OpenAPI schema generation.
 * [dj-rest-auth][dj-rest-auth] - Provides a set of REST API endpoints for registration, authentication (including social media authentication), password reset, retrieve and update user details, etc.
 * [drf-oidc-auth][drf-oidc-auth] - Implements OpenID Connect token authentication for DRF.
 * [drfpasswordless][drfpasswordless] - Adds (Medium, Square Cash inspired) passwordless logins and signups via email and mobile numbers.
