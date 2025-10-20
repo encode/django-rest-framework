@@ -591,7 +591,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 <li><code>page_query_param</code> - A string value indicating the name of the query parameter to use for the pagination control.</li>
 <li><code>page_size_query_param</code> - If set, this is a string value indicating the name of a query parameter that allows the client to set the page size on a per-request basis. Defaults to <code>None</code>, indicating that the client may not control the requested page size.</li>
 <li><code>max_page_size</code> - If set, this is a numeric value indicating the maximum allowable requested page size. This attribute is only valid if <code>page_size_query_param</code> is also set.</li>
-<li><code>last_page_strings</code> - A list or tuple of string values indicating values that may be used with the <code>page_query_param</code> to request the final page in the set. Defaults to <code>('last',)</code></li>
+<li><code>last_page_strings</code> - A list or tuple of string values indicating values that may be used with the <code>page_query_param</code> to request the final page in the set. Defaults to <code>('last',)</code>. For example, use <code>?page=last</code> to go directly to the last page.</li>
 <li><code>template</code> - The name of a template to use when rendering pagination controls in the browsable API. May be overridden to modify the rendering style, or set to <code>None</code> to disable HTML pagination controls completely. Defaults to <code>"rest_framework/pagination/numbers.html"</code>.</li>
 </ul>
 <hr />
