@@ -1,8 +1,8 @@
 # Pytest for running the tests.
-pytest>=7.0.1,<8.0
-pytest-cov>=4.0.0,<5.0
-pytest-django>=4.5.2,<5.0
-importlib-metadata<5.0
+pytest>=7.0.1,<9.0
+pytest-cov>=4.0.0,<8.0
+pytest-django>=4.11.1,<5.0
+importlib-metadata<8.7.0
 # temporary pin of attrs
-attrs==22.1.0
+attrs==25.4.0
 pytz  # Remove when dropping support for Django<5.0
