@@ -501,5 +501,5 @@ More information can be found in the [Documentation](https://django-pyoidc.readt
 [django-rest-authemail]: https://github.com/celiao/django-rest-authemail
 [django-rest-durin]: https://github.com/eshaan7/django-rest-durin
 [login-required-middleware]: https://docs.djangoproject.com/en/stable/ref/middleware/#django.contrib.auth.middleware.LoginRequiredMiddleware
-[django-pyoidc] : https://github.com/makinacorpus/django_pyoidc
+[django-pyoidc]: https://github.com/makinacorpus/django_pyoidc
 [drf-auth-kit]: https://github.com/huynguyengl99/drf-auth-kit
