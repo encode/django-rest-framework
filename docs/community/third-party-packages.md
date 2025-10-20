@@ -32,7 +32,7 @@ We suggest adding your package to the [REST Framework][rest-framework-grid] grid
 
 #### Adding to the Django REST framework docs
 
-Create a [Pull Request][drf-create-pr] or [Issue][drf-create-issue] on GitHub, and we'll add a link to it from the main REST framework documentation. You can add your package under **Third party packages** of the API Guide section that best applies, like [Authentication][authentication] or [Permissions][permissions]. You can also link your package under the [Third Party Packages][third-party-packages] section.
+Create a [Pull Request][drf-create-pr] on GitHub, and we'll add a link to it from the main REST framework documentation. You can add your package under **Third party packages** of the API Guide section that best applies, like [Authentication][authentication] or [Permissions][permissions]. You can also link your package under the [Third Party Packages][third-party-packages] section.
 
 #### Announce on the discussion group.
 
@@ -44,7 +44,7 @@ Django REST Framework has a growing community of developers, packages, and resou
 
 Check out a grid detailing all the packages and ecosystem around Django REST Framework at [Django Packages][rest-framework-grid].
 
-To submit new content, [open an issue][drf-create-issue] or [create a pull request][drf-create-pr].
+To submit new content, [create a pull request][drf-create-pr].
 
 ## Async Support
 
@@ -62,6 +62,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [drf-oidc-auth][drf-oidc-auth] - Implements OpenID Connect token authentication for DRF.
 * [drfpasswordless][drfpasswordless] - Adds (Medium, Square Cash inspired) passwordless logins and signups via email and mobile numbers.
 * [django-rest-authemail][django-rest-authemail] - Provides a RESTful API for user signup and authentication using email addresses.
+* [dango-pyoidc][django-pyoidc] adds support for OpenID Connect (OIDC) authentication.
 
 ### Permissions
 
@@ -87,6 +88,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [djangorestframework-dataclasses][djangorestframework-dataclasses] - Serializer providing automatic field generation for Python dataclasses, like the built-in ModelSerializer does for models.
 * [django-restql][django-restql] - Turn your REST API into a GraphQL like API(It allows clients to control which fields will be sent in a response, uses GraphQL like syntax, supports read and write on both flat and nested fields).
 * [graphwrap][graphwrap] - Transform your REST API into a fully compliant GraphQL API with just two lines of code. Leverages [Graphene-Django](https://docs.graphene-python.org/projects/django/en/latest/) to dynamically build, at runtime, a GraphQL ObjectType for each view in your API.
+* [drf-shapeless-serializers][drf-shapeless-serializers] - Dynamically assemble, configure, and shape your Django Rest Framework serializers at runtime, much like connecting Lego bricks.
 
 ### Serializer fields
 
@@ -125,7 +127,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 * [djangorestframework-chain][djangorestframework-chain] - Allows arbitrary chaining of both relations and lookup filters.
 * [django-url-filter][django-url-filter] - Allows a safe way to filter data via human-friendly URLs. It is a generic library which is not tied to DRF but it provides easy integration with DRF.
 * [drf-url-filter][drf-url-filter] is a simple Django app to apply filters on drf `ModelViewSet`'s `Queryset` in a clean, simple and configurable way. It also supports validations on incoming query params and their values.
-* [django-rest-framework-guardian2][django-rest-framework-guardian2] - Provides integration with django-guardian, including the `DjangoObjectPermissionsFilter` previously found in DRF.
+* [django-rest-framework-guardian][django-rest-framework-guardian] - Provides integration with django-guardian, including the `DjangoObjectPermissionsFilter` previously found in DRF.
 
 ### Misc
 
@@ -159,6 +161,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 
 ### Customization
 
+* [drf-restwind][drf-restwind] - a modern re-imagining of the Django REST Framework utilizes TailwindCSS and DaisyUI to provide flexible and customizable UI solutions with minimal coding effort.
 * [drf-redesign][drf-redesign] - A project that gives a fresh look to the browse-able API using Bootstrap 5.
 * [drf-material][drf-material] - A project that gives a sleek and elegant look to the browsable API using Material Design.
 
@@ -170,13 +173,12 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [pypi-register]: https://pypi.org/account/register/
 [semver]: https://semver.org/
 [tox-docs]: https://tox.readthedocs.io/en/latest/
-[drf-compat]: https://github.com/encode/django-rest-framework/blob/master/rest_framework/compat.py
+[drf-compat]: https://github.com/encode/django-rest-framework/blob/main/rest_framework/compat.py
 [rest-framework-grid]: https://www.djangopackages.com/grids/g/django-rest-framework/
 [drf-create-pr]: https://github.com/encode/django-rest-framework/compare
-[drf-create-issue]: https://github.com/encode/django-rest-framework/issues/new
 [authentication]: ../api-guide/authentication.md
 [permissions]: ../api-guide/permissions.md
-[third-party-packages]: ../topics/third-party-packages/#existing-third-party-packages
+[third-party-packages]: #existing-third-party-packages
 [discussion-group]: https://groups.google.com/forum/#!forum/django-rest-framework
 [djangorestframework-digestauth]: https://github.com/juanriaza/django-rest-framework-digestauth
 [django-oauth-toolkit]: https://github.com/evonove/django-oauth-toolkit
@@ -241,7 +243,7 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [djangorestframework-dataclasses]: https://github.com/oxan/djangorestframework-dataclasses
 [django-restql]: https://github.com/yezyilomo/django-restql
 [djangorestframework-mvt]: https://github.com/corteva/djangorestframework-mvt
-[django-rest-framework-guardian2]: https://github.com/johnthagen/django-rest-framework-guardian2
+[django-rest-framework-guardian]: https://github.com/rpkilby/django-rest-framework-guardian
 [drf-viewset-profiler]: https://github.com/fvlima/drf-viewset-profiler
 [djangorestframework-features]: https://github.com/cloudcode-hungary/django-rest-framework-features/
 [django-elasticsearch-dsl-drf]: https://github.com/barseghyanartur/django-elasticsearch-dsl-drf
@@ -254,5 +256,8 @@ To submit new content, [open an issue][drf-create-issue] or [create a pull reque
 [django-requestlogs]: https://github.com/Raekkeri/django-requestlogs
 [drf-standardized-errors]: https://github.com/ghazi-git/drf-standardized-errors
 [drf-api-action]: https://github.com/Ori-Roza/drf-api-action
+[drf-restwind]: https://github.com/youzarsiph/drf-restwind
 [drf-redesign]: https://github.com/youzarsiph/drf-redesign
 [drf-material]: https://github.com/youzarsiph/drf-material
+[django-pyoidc]: https://github.com/makinacorpus/django_pyoidc
+[drf-shapeless-serializers]: https://github.com/khaledsukkar2/drf-shapeless-serializers

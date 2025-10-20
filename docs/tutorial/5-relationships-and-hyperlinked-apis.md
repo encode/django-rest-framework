@@ -6,17 +6,21 @@ At the moment relationships within our API are represented by using primary keys
 
 Right now we have endpoints for 'snippets' and 'users', but we don't have a single entry point to our API.  To create one, we'll use a regular function-based view and the `@api_view` decorator we introduced earlier. In your `snippets/views.py` add:
 
-    from rest_framework.decorators import api_view
-    from rest_framework.response import Response
-    from rest_framework.reverse import reverse
+```python
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework.reverse import reverse
 
 
-    @api_view(['GET'])
-    def api_root(request, format=None):
-        return Response({
-            'users': reverse('user-list', request=request, format=format),
-            'snippets': reverse('snippet-list', request=request, format=format)
-        })
+@api_view(["GET"])
+def api_root(request, format=None):
+    return Response(
+        {
+            "users": reverse("user-list", request=request, format=format),
+            "snippets": reverse("snippet-list", request=request, format=format),
+        }
+    )
+```
 
 Two things should be noticed here. First, we're using REST framework's `reverse` function in order to return fully-qualified URLs; second, URL patterns are identified by convenience names that we will declare later on in our `snippets/urls.py`.
 
@@ -30,24 +34,31 @@ The other thing we need to consider when creating the code highlight view is tha
 
 Instead of using a concrete generic view, we'll use the base class for representing instances, and create our own `.get()` method.  In your `snippets/views.py` add:
 
-    from rest_framework import renderers
+```python
+from rest_framework import renderers
 
-    class SnippetHighlight(generics.GenericAPIView):
-        queryset = Snippet.objects.all()
-        renderer_classes = [renderers.StaticHTMLRenderer]
 
-        def get(self, request, *args, **kwargs):
-            snippet = self.get_object()
-            return Response(snippet.highlighted)
+class SnippetHighlight(generics.GenericAPIView):
+    queryset = Snippet.objects.all()
+    renderer_classes = [renderers.StaticHTMLRenderer]
+
+    def get(self, request, *args, **kwargs):
+        snippet = self.get_object()
+        return Response(snippet.highlighted)
+```
 
 As usual we need to add the new views that we've created in to our URLconf.
 We'll add a url pattern for our new API root in `snippets/urls.py`:
 
-    path('', views.api_root),
+```python
+path("", views.api_root),
+```
 
 And then add a url pattern for the snippet highlights:
 
-    path('snippets/<int:pk>/highlight/', views.SnippetHighlight.as_view()),
+```python
+path("snippets/<int:pk>/highlight/", views.SnippetHighlight.as_view()),
+```
 
 ## Hyperlinking our API
 
@@ -73,26 +84,61 @@ The `HyperlinkedModelSerializer` has the following differences from `ModelSerial
 
 We can easily re-write our existing serializers to use hyperlinking. In your `snippets/serializers.py` add:
 
-    class SnippetSerializer(serializers.HyperlinkedModelSerializer):
-        owner = serializers.ReadOnlyField(source='owner.username')
-        highlight = serializers.HyperlinkedIdentityField(view_name='snippet-highlight', format='html')
+```python
+class SnippetSerializer(serializers.HyperlinkedModelSerializer):
+    owner = serializers.ReadOnlyField(source="owner.username")
+    highlight = serializers.HyperlinkedIdentityField(
+        view_name="snippet-highlight", format="html"
+    )
 
-        class Meta:
-            model = Snippet
-            fields = ['url', 'id', 'highlight', 'owner',
-                      'title', 'code', 'linenos', 'language', 'style']
+    class Meta:
+        model = Snippet
+        fields = [
+            "url",
+            "id",
+            "highlight",
+            "owner",
+            "title",
+            "code",
+            "linenos",
+            "language",
+            "style",
+        ]
 
 
-    class UserSerializer(serializers.HyperlinkedModelSerializer):
-        snippets = serializers.HyperlinkedRelatedField(many=True, view_name='snippet-detail', read_only=True)
+class UserSerializer(serializers.HyperlinkedModelSerializer):
+    snippets = serializers.HyperlinkedRelatedField(
+        many=True, view_name="snippet-detail", read_only=True
+    )
 
-        class Meta:
-            model = User
-            fields = ['url', 'id', 'username', 'snippets']
+    class Meta:
+        model = User
+        fields = ["url", "id", "username", "snippets"]
+```
 
 Notice that we've also added a new `'highlight'` field.  This field is of the same type as the `url` field, except that it points to the `'snippet-highlight'` url pattern, instead of the `'snippet-detail'` url pattern.
 
 Because we've included format suffixed URLs such as `'.json'`, we also need to indicate on the `highlight` field that any format suffixed hyperlinks it returns should use the `'.html'` suffix.
+
+---
+
+**Note:**
+
+When you are manually instantiating these serializers inside your views (e.g., in `SnippetDetail` or `SnippetList`), you **must** pass `context={'request': request}` so the serializer knows how to build absolute URLs. For example, instead of:
+
+```python
+serializer = SnippetSerializer(snippet)
+```
+
+You must write:
+
+```python
+serializer = SnippetSerializer(snippet, context={"request": request})
+```
+
+If your view is a subclass of `GenericAPIView`, you may use the `get_serializer_context()` as a convenience method.
+
+---
 
 ## Making sure our URL patterns are named
 
@@ -105,29 +151,29 @@ If we're going to have a hyperlinked API, we need to make sure we name our URL p
 
 After adding all those names into our URLconf, our final `snippets/urls.py` file should look like this:
 
-    from django.urls import path
-    from rest_framework.urlpatterns import format_suffix_patterns
-    from snippets import views
+```python
+from django.urls import path
+from rest_framework.urlpatterns import format_suffix_patterns
+from snippets import views
 
-    # API endpoints
-    urlpatterns = format_suffix_patterns([
-        path('', views.api_root),
-        path('snippets/',
-            views.SnippetList.as_view(),
-            name='snippet-list'),
-        path('snippets/<int:pk>/',
-            views.SnippetDetail.as_view(),
-            name='snippet-detail'),
-        path('snippets/<int:pk>/highlight/',
+# API endpoints
+urlpatterns = format_suffix_patterns(
+    [
+        path("", views.api_root),
+        path("snippets/", views.SnippetList.as_view(), name="snippet-list"),
+        path(
+            "snippets/<int:pk>/", views.SnippetDetail.as_view(), name="snippet-detail"
+        ),
+        path(
+            "snippets/<int:pk>/highlight/",
             views.SnippetHighlight.as_view(),
-            name='snippet-highlight'),
-        path('users/',
-            views.UserList.as_view(),
-            name='user-list'),
-        path('users/<int:pk>/',
-            views.UserDetail.as_view(),
-            name='user-detail')
-    ])
+            name="snippet-highlight",
+        ),
+        path("users/", views.UserList.as_view(), name="user-list"),
+        path("users/<int:pk>/", views.UserDetail.as_view(), name="user-detail"),
+    ]
+)
+```
 
 ## Adding pagination
 
@@ -135,10 +181,12 @@ The list views for users and code snippets could end up returning quite a lot of
 
 We can change the default list style to use pagination, by modifying our `tutorial/settings.py` file slightly. Add the following setting:
 
-    REST_FRAMEWORK = {
-        'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-        'PAGE_SIZE': 10
-    }
+```python
+REST_FRAMEWORK = {
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 10,
+}
+```
 
 Note that settings in REST framework are all namespaced into a single dictionary setting, named `REST_FRAMEWORK`, which helps keep them well separated from your other project settings.
 

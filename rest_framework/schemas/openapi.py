@@ -11,9 +11,7 @@ from django.core.validators import (
 from django.db import models
 from django.utils.encoding import force_str
 
-from rest_framework import (
-    RemovedInDRF316Warning, exceptions, renderers, serializers
-)
+from rest_framework import exceptions, renderers, serializers
 from rest_framework.compat import inflection, uritemplate
 from rest_framework.fields import _UnvalidatedField, empty
 from rest_framework.settings import api_settings
@@ -84,7 +82,7 @@ class SchemaGenerator(BaseSchemaGenerator):
                     continue
                 if components_schemas[k] == components[k]:
                     continue
-                warnings.warn('Schema component "{}" has been overridden with a different value.'.format(k))
+                warnings.warn(f'Schema component "{k}" has been overridden with a different value.')
 
             components_schemas.update(components)
 
@@ -430,7 +428,7 @@ class AutoSchema(ViewInspector):
             }
 
         # "Formats such as "email", "uuid", and so on, MAY be used even though undefined by this specification."
-        # see: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#data-types
+        # see: https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.2.md#data-types
         # see also: https://swagger.io/docs/specification/data-models/data-types/#string
         if isinstance(field, serializers.EmailField):
             return {
@@ -557,7 +555,7 @@ class AutoSchema(ViewInspector):
         """
         for v in field.validators:
             # "Formats such as "email", "uuid", and so on, MAY be used even though undefined by this specification."
-            # https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#data-types
+            # https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.2.md#data-types
             if isinstance(v, EmailValidator):
                 schema['format'] = 'email'
             if isinstance(v, URLValidator):
@@ -646,7 +644,7 @@ class AutoSchema(ViewInspector):
         return self.get_serializer(path, method)
 
     def get_reference(self, serializer):
-        return {'$ref': '#/components/schemas/{}'.format(self.get_component_name(serializer))}
+        return {'$ref': f'#/components/schemas/{self.get_component_name(serializer)}'}
 
     def get_request_body(self, path, method):
         if method not in ('PUT', 'PATCH', 'POST'):
@@ -721,11 +719,3 @@ class AutoSchema(ViewInspector):
             path = path[1:]
 
         return [path.split('/')[0].replace('_', '-')]
-
-    def _get_reference(self, serializer):
-        warnings.warn(
-            "Method `_get_reference()` has been renamed to `get_reference()`. "
-            "The old name will be removed in DRF v3.16.",
-            RemovedInDRF316Warning, stacklevel=2
-        )
-        return self.get_reference(serializer)

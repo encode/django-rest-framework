@@ -30,9 +30,7 @@ The [Django code of conduct][code-of-conduct] gives a fuller set of guidelines f
 
 # Issues
 
-Our contribution process is that the [GitHub discussions page](https://github.com/encode/django-rest-framework/discussions) should generally be your starting point. Please only raise an issue or pull request if you've been recommended to do so after discussion.
-
-Some tips on good potential issue reporting:
+Our contribution process is that the [GitHub discussions page](https://github.com/encode/django-rest-framework/discussions) should generally be your starting point. Some tips on good potential issue reporting:
 
 * Django REST framework is considered feature-complete. Please do not file requests to change behavior, unless it is required for security reasons or to maintain compatibility with upcoming Django or Python versions.
 * Search the GitHub project page for related items, and make sure you're running the latest version of REST framework before reporting an issue.
@@ -83,11 +81,44 @@ To run the tests, clone the repository, and then:
     # Run the tests
     ./runtests.py
 
+---
+
+**Note:** if your tests require access to the database, do not forget to inherit from `django.test.TestCase` or use the `@pytest.mark.django_db()` decorator.
+
+For example, with TestCase:
+
+    from django.test import TestCase
+
+    class MyDatabaseTest(TestCase):
+        def test_something(self):
+            # Your test code here
+            pass
+
+Or with decorator:
+
+    import pytest
+
+    @pytest.mark.django_db()
+    class MyDatabaseTest:
+        def test_something(self):
+            # Your test code here
+            pass
+
+You can reuse existing models defined in `tests/models.py` for your tests.
+
+---
+
 ### Test options
 
 Run using a more concise output style.
 
     ./runtests.py -q
+
+
+If you do not want the output to be captured (for example, to see print statements directly), you can use the `-s` flag.
+
+    ./runtests.py -s
+
 
 Run the tests for a given test case.
 
@@ -100,6 +131,7 @@ Run the tests for a given test method.
 Shorter form to run the tests for a given test method.
 
     ./runtests.py test_this_method
+
 
 Note: The test case and test method matching is fuzzy and will sometimes run other tests that contain a partial string match to the given  command line input.
 
@@ -206,13 +238,12 @@ If you want to draw attention to a note or warning, use a pair of enclosing line
 [code-of-conduct]: https://www.djangoproject.com/conduct/
 [google-group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
 [so-filter]: https://stackexchange.com/filters/66475/rest-framework
-[issues]: https://github.com/encode/django-rest-framework/issues?state=open
 [pep-8]: https://www.python.org/dev/peps/pep-0008/
 [build-status]: ../img/build-status.png
 [pull-requests]: https://help.github.com/articles/using-pull-requests
 [tox]: https://tox.readthedocs.io/en/latest/
 [markdown]: https://daringfireball.net/projects/markdown/basics
-[docs]: https://github.com/encode/django-rest-framework/tree/master/docs
+[docs]: https://github.com/encode/django-rest-framework/tree/main/docs
 [mou]: http://mouapp.com/
 [repo]: https://github.com/encode/django-rest-framework
 [how-to-fork]: https://help.github.com/articles/fork-a-repo/

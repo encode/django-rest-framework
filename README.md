@@ -54,8 +54,8 @@ Some reasons you might want to use REST framework:
 
 # Requirements
 
-* Python 3.8+
-* Django 4.2, 5.0, 5.1
+* Python 3.10+
+* Django 4.2, 5.0, 5.1, 5.2
 
 We **highly recommend** and only officially support the latest patch release of
 each Python and Django series.
@@ -179,8 +179,8 @@ Please see the [security policy][security-policy].
 
 [build-status-image]: https://github.com/encode/django-rest-framework/actions/workflows/main.yml/badge.svg
 [build-status]: https://github.com/encode/django-rest-framework/actions/workflows/main.yml
-[coverage-status-image]: https://img.shields.io/codecov/c/github/encode/django-rest-framework/master.svg
-[codecov]: https://codecov.io/github/encode/django-rest-framework?branch=master
+[coverage-status-image]: https://img.shields.io/codecov/c/github/encode/django-rest-framework/main.svg
+[codecov]: https://codecov.io/github/encode/django-rest-framework?branch=main
 [pypi-version]: https://img.shields.io/pypi/v/djangorestframework.svg
 [pypi]: https://pypi.org/project/djangorestframework/
 [group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
@@ -188,16 +188,16 @@ Please see the [security policy][security-policy].
 [funding]: https://fund.django-rest-framework.org/topics/funding/
 [sponsors]: https://fund.django-rest-framework.org/topics/funding/#our-sponsors
 
-[sentry-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/sentry-readme.png
-[stream-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/stream-readme.png
-[spacinov-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/spacinov-readme.png
-[retool-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/retool-readme.png
-[bitio-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/bitio-readme.png
-[posthog-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/posthog-readme.png
-[cryptapi-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/cryptapi-readme.png
-[fezto-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/fezto-readme.png
-[svix-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/svix-premium.png
-[zuplo-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/zuplo-readme.png
+[sentry-img]: https://raw.githubusercontent.com/encode/django-rest-framework/main/docs/img/premium/sentry-readme.png
+[stream-img]: https://raw.githubusercontent.com/encode/django-rest-framework/main/docs/img/premium/stream-readme.png
+[spacinov-img]: https://raw.githubusercontent.com/encode/django-rest-framework/main/docs/img/premium/spacinov-readme.png
+[retool-img]: https://raw.githubusercontent.com/encode/django-rest-framework/main/docs/img/premium/retool-readme.png
+[bitio-img]: https://raw.githubusercontent.com/encode/django-rest-framework/main/docs/img/premium/bitio-readme.png
+[posthog-img]: https://raw.githubusercontent.com/encode/django-rest-framework/main/docs/img/premium/posthog-readme.png
+[cryptapi-img]: https://raw.githubusercontent.com/encode/django-rest-framework/main/docs/img/premium/cryptapi-readme.png
+[fezto-img]: https://raw.githubusercontent.com/encode/django-rest-framework/main/docs/img/premium/fezto-readme.png
+[svix-img]: https://raw.githubusercontent.com/encode/django-rest-framework/main/docs/img/premium/svix-premium.png
+[zuplo-img]: https://raw.githubusercontent.com/encode/django-rest-framework/main/docs/img/premium/zuplo-readme.png
 
 [sentry-url]: https://getsentry.com/welcome/
 [stream-url]: https://getstream.io/?utm_source=DjangoRESTFramework&utm_medium=Webpage_Logo_Ad&utm_content=Developer&utm_campaign=DjangoRESTFramework_Jan2022_HomePage
