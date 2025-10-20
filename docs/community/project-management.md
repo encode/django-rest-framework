@@ -59,7 +59,6 @@ The following template should be used for the description of the issue, and serv
         - [ ] `pyproject.toml` Python & Django version trove classifiers
         - [ ] `README` Python & Django versions
         - [ ] `docs` Python & Django versions
-
     - [ ] Ensure the pull request increments the version to `*.*.*` in [`restframework/__init__.py`](https://github.com/encode/django-rest-framework/blob/main/rest_framework/__init__.py).
     - [ ] Ensure documentation validates
         - Build and serve docs `mkdocs serve`
