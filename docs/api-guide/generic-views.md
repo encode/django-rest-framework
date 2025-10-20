@@ -102,6 +102,39 @@ For example:
 
 ---
 
+### Avoiding N+1 Queries
+
+When listing objects (e.g. using `ListAPIView` or `ModelViewSet`), serializers may trigger an N+1 query pattern if related objects are accessed individually for each item.
+
+To prevent this, optimize the queryset in `get_queryset()` or by setting the `queryset` class attribute using [`select_related()`](https://docs.djangoproject.com/en/stable/ref/models/querysets/#select-related) and [`prefetch_related()`](https://docs.djangoproject.com/en/stable/ref/models/querysets/#prefetch-related), depending on the type of relationship.
+
+**For ForeignKey and OneToOneField**:
+
+Use `select_related()` to fetch related objects in the same query:
+
+    def get_queryset(self):
+        return Order.objects.select_related("customer", "billing_address")
+
+**For reverse and many-to-many relationships**:
+
+Use `prefetch_related()` to efficiently load collections of related objects:
+
+    def get_queryset(self):
+        return Book.objects.prefetch_related("categories", "reviews__user")
+
+**Combining both**:
+
+    def get_queryset(self):
+        return (
+            Order.objects
+            .select_related("customer")
+            .prefetch_related("items__product")
+        )
+
+These optimizations reduce repeated database access and improve list view performance.
+
+---
+
 #### `get_object(self)`
 
 Returns an object instance that should be used for detail views.  Defaults to using the `lookup_field` parameter to filter the base queryset.
