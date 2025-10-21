@@ -616,6 +616,26 @@ class UniqueConstraintNullableModel(models.Model):
         ]
 
 
+class UniqueConstraintCustomMessageCodeModel(models.Model):
+    username = models.CharField(max_length=32)
+    company_id = models.IntegerField()
+    role = models.CharField(max_length=32)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=("username", "company_id"),
+                name="unique_username_company_custom_msg",
+                violation_error_message="Username must be unique within a company.",
+                **(dict(violation_error_code="duplicate_username") if django_version[0] >= 5 else {}),
+            ),
+            models.UniqueConstraint(
+                fields=("company_id", "role"),
+                name="unique_company_role_default_msg",
+            ),
+        ]
+
+
 class UniqueConstraintSerializer(serializers.ModelSerializer):
     class Meta:
         model = UniqueConstraintModel
@@ -626,6 +646,12 @@ class UniqueConstraintNullableSerializer(serializers.ModelSerializer):
     class Meta:
         model = UniqueConstraintNullableModel
         fields = ('title', 'age', 'tag')
+
+
+class UniqueConstraintCustomMessageCodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UniqueConstraintCustomMessageCodeModel
+        fields = ('username', 'company_id', 'role')
 
 
 class TestUniqueConstraintValidation(TestCase):
@@ -777,6 +803,31 @@ class TestUniqueConstraintValidation(TestCase):
             partial=True
         )
         assert serializer.is_valid()
+
+    def test_unique_constraint_custom_message_code(self):
+        UniqueConstraintCustomMessageCodeModel.objects.create(username="Alice", company_id=1, role="member")
+        expected_code = "duplicate_username" if django_version[0] >= 5 else UniqueTogetherValidator.code
+
+        serializer = UniqueConstraintCustomMessageCodeSerializer(data={
+            "username": "Alice",
+            "company_id": 1,
+            "role": "admin",
+        })
+        assert not serializer.is_valid()
+        assert serializer.errors == {"non_field_errors": ["Username must be unique within a company."]}
+        assert serializer.errors["non_field_errors"][0].code == expected_code
+
+    def test_unique_constraint_default_message_code(self):
+        UniqueConstraintCustomMessageCodeModel.objects.create(username="Alice", company_id=1, role="member")
+        serializer = UniqueConstraintCustomMessageCodeSerializer(data={
+            "username": "John",
+            "company_id": 1,
+            "role": "member",
+        })
+        expected_message = UniqueTogetherValidator.message.format(field_names=', '.join(("company_id", "role")))
+        assert not serializer.is_valid()
+        assert serializer.errors == {"non_field_errors": [expected_message]}
+        assert serializer.errors["non_field_errors"][0].code == UniqueTogetherValidator.code
 
 
 # Tests for `UniqueForDateValidator`

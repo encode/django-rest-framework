@@ -159,6 +159,7 @@ To submit new content, [create a pull request][drf-create-pr].
 * [django-requestlogs] - Providing middleware and other helpers for audit logging for REST framework.
 * [drf-standardized-errors][drf-standardized-errors] - DRF exception handler to standardize error responses for all API endpoints.
 * [drf-api-action][drf-api-action] - uses the power of DRF also as a library functions
+* [apitally] - A simple API monitoring, analytics, and request logging tool using middleware. For DRF-specific setup guide, [click here](https://docs.apitally.io/frameworks/django-rest-framework).
 
 ### Customization
 
@@ -262,4 +263,5 @@ To submit new content, [create a pull request][drf-create-pr].
 [drf-redesign]: https://github.com/youzarsiph/drf-redesign
 [drf-material]: https://github.com/youzarsiph/drf-material
 [django-pyoidc]: https://github.com/makinacorpus/django_pyoidc
+[apitally]: https://github.com/apitally/apitally-py
 [drf-shapeless-serializers]: https://github.com/khaledsukkar2/drf-shapeless-serializers
