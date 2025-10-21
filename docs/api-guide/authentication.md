@@ -454,7 +454,7 @@ There are currently two forks of this project.
 
 More information can be found in the [Documentation](https://django-rest-durin.readthedocs.io/en/latest/index.html).
 
-## django-pyoidc
+## django-pyoidc
 
 [dango-pyoidc][django_pyoidc] adds support for OpenID Connect (OIDC) authentication. This allows you to delegate user management to an Identity Provider, which can be used to implement Single-Sign-On (SSO). It provides support for most uses-cases, such as customizing how token info are mapped to user models, using OIDC audiences for access control, etc.
 
@@ -497,4 +497,4 @@ More information can be found in the [Documentation](https://django-pyoidc.readt
 [django-rest-authemail]: https://github.com/celiao/django-rest-authemail
 [django-rest-durin]: https://github.com/eshaan7/django-rest-durin
 [login-required-middleware]: https://docs.djangoproject.com/en/stable/ref/middleware/#django.contrib.auth.middleware.LoginRequiredMiddleware
-[django-pyoidc] : https://github.com/makinacorpus/django_pyoidc
+[django-pyoidc]: https://github.com/makinacorpus/django_pyoidc
