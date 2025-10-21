@@ -683,7 +683,7 @@ def delete_password(self, request, pk=None):
 'http://localhost:8000/api/users/1/set_password'
 </code></pre>
 <p>Alternatively, you can use the <code>url_name</code> attribute set by the <code>@action</code> decorator.</p>
-<pre><code class="language-pycon">&gt;&gt;&gt; view.reverse_action(view.set_password.url_name, args=['1'])
+<pre><code class="language-pycon">&gt;&gt;&gt; view.reverse_action(view.set_password.url_name, args=[&quot;1&quot;])
 'http://localhost:8000/api/users/1/set_password'
 </code></pre>
 <p>The <code>url_name</code> argument for <code>.reverse_action()</code> should match the same argument to the <code>@action</code> decorator. Additionally, this method can be used to reverse the default actions, such as <code>list</code> and <code>create</code>.</p>

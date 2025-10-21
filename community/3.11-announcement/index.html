@@ -495,11 +495,9 @@ be extracted from the class docstring:</p>
 
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-    def get(self, request, *args, **kwargs):
-        ...
+    def get(self, request, *args, **kwargs): ...
 
-    def post(self, request, *args, **kwargs):
-        ...
+    def post(self, request, *args, **kwargs): ...
 </code></pre>
 <h2 id="validator-default-context"><a class="toclink" href="#validator-default-context">Validator / Default Context</a></h2>
 <p>In some circumstances a Validator class or a Default class may need to access the serializer field with which it is called, or the <code>.context</code> with which the serializer was instantiated. In particular:</p>
@@ -514,15 +512,13 @@ be extracted from the class docstring:</p>
 <pre><code class="language-python">class CustomValidator:
     requires_context = True
 
-    def __call__(self, value, serializer_field):
-        ...
+    def __call__(self, value, serializer_field): ...
 </code></pre>
 <p>Default implementations will look like this:</p>
 <pre><code class="language-python">class CustomDefault:
     requires_context = True
 
-    def __call__(self, serializer_field):
-        ...
+    def __call__(self, serializer_field): ...
 </code></pre>
 <hr />
 <h2 id="funding"><a class="toclink" href="#funding">Funding</a></h2>
