@@ -524,7 +524,7 @@ Content-Type: application/json
 </code></pre>
 <p>The REST framework package only includes a single metadata class implementation, named <code>SimpleMetadata</code>. If you want to use an alternative style you'll need to implement a custom metadata class.</p>
 <h2 id="creating-schema-endpoints"><a class="toclink" href="#creating-schema-endpoints">Creating schema endpoints</a></h2>
-<p>If you have specific requirements for creating schema endpoints that are accessed with regular <code>GET</code> requests, you might consider re-using the metadata API for doing so.</p>
+<p>If you have specific requirements for creating schema endpoints that are accessed with regular <code>GET</code> requests, you might consider reusing the metadata API for doing so.</p>
 <p>For example, the following additional route could be used on a viewset to provide a linkable schema endpoint.</p>
 <pre><code>@action(methods=['GET'], detail=False)
 def api_schema(self, request):
