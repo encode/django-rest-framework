@@ -90,8 +90,11 @@ REST framework requires the following:
 * Django (4.2, 5.0, 5.1, 5.2)
 * Python (3.10, 3.11, 3.12, 3.13, 3.14)
 
-We **highly recommend** and only officially support the latest patch release of
-each Python and Django series.
+**Note:** Python **3.14** requires Django **5.2 or newer**.  
+For more details, see [Django version support](https://docs.djangoproject.com/en/5.2/faq/install/#what-python-version-can-i-use-with-django).
+
+
+We **highly recommend** and only officially support the latest patch release (for example, 3.12.x or 5.2.x) of each supported Python and Django series.
 
 The following packages are optional:
 
