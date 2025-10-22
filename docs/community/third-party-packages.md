@@ -153,6 +153,7 @@ To submit new content, [create a pull request][drf-create-pr].
 * [drf-viewset-profiler][drf-viewset-profiler] - Lib to profile all methods from a viewset line by line.
 * [djangorestframework-features][djangorestframework-features] - Advanced schema generation and more based on named features.
 * [django-elasticsearch-dsl-drf][django-elasticsearch-dsl-drf] - Integrate Elasticsearch DSL with Django REST framework. Package provides views, serializers, filter backends, pagination and other handy add-ons.
+* [django-lisan](https://github.com/Nabute/django-lisan) - A lightweight translation and localization framework for Django REST Framework APIs. PyPI: [django-lisan](https://pypi.org/project/lisan)
 * [django-api-client][django-api-client] - DRF client that groups the Endpoint response, for use in CBVs and FBV as if you were working with Django's Native Models..
 * [fast-drf] - A model based library for making API development faster and easier.
 * [django-requestlogs] - Providing middleware and other helpers for audit logging for REST framework.
