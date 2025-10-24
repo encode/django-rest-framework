@@ -180,7 +180,7 @@ The `allow_null` option is also available for string fields, although its usage 
 
 ## EmailField
 
-A text representation, validates the text to be a valid e-mail address.
+A text representation, validates the text to be a valid email address.
 
 Corresponds to `django.db.models.fields.EmailField`
 

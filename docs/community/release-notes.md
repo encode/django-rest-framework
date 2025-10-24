@@ -105,7 +105,7 @@ This release fixes a few bugs, clean-up some old code paths for unsupported Pyth
 
 **Date**: 28th March 2025
 
-This release is considered a significant release to improve upstream support with Django and Python. Some of these may change the behaviour of existing features and pre-existing behaviour. Specifically, some fixes were added to around the support of `UniqueConstraint` with nullable fields which will improve built-in serializer validation.
+This release is considered a significant release to improve upstream support with Django and Python. Some of these may change the behavior of existing features and pre-existing behavior. Specifically, some fixes were added to around the support of `UniqueConstraint` with nullable fields which will improve built-in serializer validation.
 
 #### Features
 
@@ -215,7 +215,7 @@ Date: 15th March 2024
 * Partial serializer should not have required fields [[#7563](https://github.com/encode/django-rest-framework/pull/7563)]
 * Propagate 'default' from model field to serializer field. [[#9030](https://github.com/encode/django-rest-framework/pull/9030)]
 * Allow to override child.run_validation call in ListSerializer [[#8035](https://github.com/encode/django-rest-framework/pull/8035)]
-* Align SearchFilter behaviour to django.contrib.admin search [[#9017](https://github.com/encode/django-rest-framework/pull/9017)]
+* Align SearchFilter behavior to django.contrib.admin search [[#9017](https://github.com/encode/django-rest-framework/pull/9017)]
 * Class name added to unknown field error [[#9019](https://github.com/encode/django-rest-framework/pull/9019)]
 * Fix: Pagination response schemas. [[#9049](https://github.com/encode/django-rest-framework/pull/9049)]
 * Fix choices in ChoiceField to support IntEnum [[#8955](https://github.com/encode/django-rest-framework/pull/8955)]
@@ -621,13 +621,13 @@ Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.
 **Date**: [3rd April 2018][3.8.0-milestone]
 
 
-* **Breaking Change**: Alter `read_only` plus `default` behaviour. [#5886][gh5886]
+* **Breaking Change**: Alter `read_only` plus `default` behavior. [#5886][gh5886]
 
     `read_only` fields will now **always** be excluded from writable fields.
 
     Previously `read_only` fields with a `default` value would use the `default` for create and update operations.
 
-    In order to maintain the old behaviour you may need to pass the value of `read_only` fields when calling `save()` in
+    In order to maintain the old behavior you may need to pass the value of `read_only` fields when calling `save()` in
     the view:
 
         def perform_create(self, serializer):
@@ -635,13 +635,13 @@ Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.
 
     Alternatively you may override `save()` or `create()` or `update()` on the serializer as appropriate.
 
-* Correct allow_null behaviour when required=False [#5888][gh5888]
+* Correct allow_null behavior when required=False [#5888][gh5888]
 
     Without an explicit `default`, `allow_null` implies a default of `null` for outgoing serialization. Previously such
     fields were being skipped when read-only or otherwise not required.
 
     **Possible backwards compatibility break** if you were relying on such fields being excluded from the outgoing
-    representation. In order to restore the old behaviour you can override `data` to exclude the field when `None`.
+    representation. In order to restore the old behavior you can override `data` to exclude the field when `None`.
 
     For example:
 
@@ -883,7 +883,7 @@ Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.
 * Don't strip microseconds from `time` when encoding. Makes consistent with `datetime`.
     **BC Change**: Previously only milliseconds were encoded. [#5440][gh5440]
 * Added `STRICT_JSON` setting (default `True`) to raise exception for the extended float values (`nan`, `inf`, `-inf`) accepted by Python's `json` module.
-    **BC Change**: Previously these values would converted to corresponding strings. Set `STRICT_JSON` to `False` to restore the previous behaviour. [#5265][gh5265]
+    **BC Change**: Previously these values would converted to corresponding strings. Set `STRICT_JSON` to `False` to restore the previous behavior. [#5265][gh5265]
 * Add support for `page_size` parameter in CursorPaginator class [#5250][gh5250]
 * Make `DEFAULT_PAGINATION_CLASS` `None` by default.
     **BC Change**: If your were **just** setting `PAGE_SIZE` to enable pagination you will need to add `DEFAULT_PAGINATION_CLASS`.
