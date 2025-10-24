@@ -369,7 +369,7 @@ Date: 28th September 2020
 
 * Add `--file` option to `generateschema` command. [#7130]
 * Support `tags` for OpenAPI schema generation. See [the schema docs](https://www.django-rest-framework.org/api-guide/schemas/#grouping-operations-with-tags). [#7184]
-* Support customising the operation ID for schema generation. See [the schema docs](https://www.django-rest-framework.org/api-guide/schemas/#operationid). [#7190]
+* Support customizing the operation ID for schema generation. See [the schema docs](https://www.django-rest-framework.org/api-guide/schemas/#operationid). [#7190]
 * Support OpenAPI components for schema generation. See [the schema docs](https://www.django-rest-framework.org/api-guide/schemas/#components). [#7124]
 * The following methods on `AutoSchema` become public API: `get_path_parameters`, `get_pagination_parameters`, `get_filter_parameters`, `get_request_body`, `get_responses`, `get_serializer`, `get_paginator`, `map_serializer`, `map_field`, `map_choice_field`, `map_field_validators`, `allows_filters`. See [the schema docs](https://www.django-rest-framework.org/api-guide/schemas/#autoschema)
 * Add support for Django 3.1's database-agnositic `JSONField`. [#7467]
@@ -407,7 +407,7 @@ Date: 28th September 2020
 * Fix `PrimaryKeyRelatedField` and `HyperlinkedRelatedField` when source field is actually a property. [#7142]
 * `Token.generate_key` is now a class method. [#7502]
 * `@action` warns if method is wrapped in a decorator that does not preserve information using `@functools.wraps`. [#7098]
-* Deprecate `serializers.NullBooleanField` in favour of `serializers.BooleanField` with `allow_null=True` [#7122]
+* Deprecate `serializers.NullBooleanField` in favor of `serializers.BooleanField` with `allow_null=True` [#7122]
 
 ---
 
@@ -417,7 +417,7 @@ Date: 28th September 2020
 
 **Date**: 30th September 2020
 
-* **Security**: Drop `urlize_quoted_links` template tag in favour of Django's built-in `urlize`. Removes a XSS vulnerability for some kinds of content in the browsable API.
+* **Security**: Drop `urlize_quoted_links` template tag in favor of Django's built-in `urlize`. Removes a XSS vulnerability for some kinds of content in the browsable API.
 
 ### 3.11.1
 
@@ -429,7 +429,7 @@ Date: 28th September 2020
 
 **Date**: 12th December 2019
 
-* Drop `.set_context` API [in favour of a `requires_context` marker](3.11-announcement.md#validator-default-context).
+* Drop `.set_context` API [in favor of a `requires_context` marker](3.11-announcement.md#validator-default-context).
 * Changed default widget for TextField with choices to select box. [#6892][gh6892]
 * Supported nested writes on non-relational fields, such as JSONField. [#6916][gh6916]
 * Include request/response media types in OpenAPI schemas, based on configured parsers/renderers. [#6865][gh6865]
@@ -698,7 +698,7 @@ Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.
 * Add HStoreField, postgres fields tests [#5654][gh5654]
 * Always fully qualify ValidationError in docs [#5751][gh5751]
 * Remove unreachable code from ManualSchema [#5766][gh5766]
-* Allowed customising API documentation code samples [#5752][gh5752]
+* Allowed customizing API documentation code samples [#5752][gh5752]
 * Updated docs to use `pip show` [#5757][gh5757]
 * Load 'static' instead of 'staticfiles' in templates [#5773][gh5773]
 * Fixed a typo in `fields` docs [#5783][gh5783]
@@ -761,7 +761,7 @@ Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.
 
 * Schema: Extract method for `manual_fields` processing [#5633][gh5633]
 
-    Allows for easier customisation of `manual_fields` processing, for example
+    Allows for easier customization of `manual_fields` processing, for example
     to provide per-method manual fields. `AutoSchema` adds `get_manual_fields`,
     as the intended override point, and a utility method `update_fields`, to
     handle by-name field replacement from a list, which, in general, you are not
@@ -921,10 +921,10 @@ Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.
 * Fix naming collisions in Schema Generation [#5464][gh5464]
 * Call Django's authenticate function with the request object [#5295][gh5295]
 * Update coreapi JS to 0.1.1 [#5479][gh5479]
-* Have `is_list_view` recognise RetrieveModel… views [#5480][gh5480]
+* Have `is_list_view` recognize RetrieveModel… views [#5480][gh5480]
 * Remove Django 1.8 & 1.9 compatibility code [#5481][gh5481]
 * Remove deprecated schema code from DefaultRouter [#5482][gh5482]
-* Refactor schema generation to allow per-view customisation.
+* Refactor schema generation to allow per-view customization.
     **BC Change**: `SchemaGenerator.get_serializer_fields` has been refactored as `AutoSchema.get_serializer_fields` and drops the `view` argument [#5354][gh5354]
 
 ## 3.6.x series
