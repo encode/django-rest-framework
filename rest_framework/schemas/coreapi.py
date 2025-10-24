@@ -50,7 +50,7 @@ Position conflicts with coreapi.Link for URL path {target_url}.
 Attempted to insert link with keys: {keys}.
 
 Adjust URLs to avoid naming collision or override `SchemaGenerator.get_keys()`
-to customise schema structure.
+to customize schema structure.
 """
 
 
@@ -513,7 +513,7 @@ class AutoSchema(ViewInspector):
         Default implementation looks for ModelViewSet or GenericAPIView
         actions/methods that cause filtering on the default implementation.
 
-        Override to adjust behaviour for your view.
+        Override to adjust behavior for your view.
 
         Note: Introduced in v3.7: Initially "private" (i.e. with leading underscore)
             to allow changes based on user experience.

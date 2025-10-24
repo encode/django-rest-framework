@@ -300,7 +300,7 @@ For example, the following serializer:
 
 Would serialize to a nested representation like this:
 
-    >>> album = Album.objects.create(album_name="The Grey Album", artist='Danger Mouse')
+    >>> album = Album.objects.create(album_name="The Gray Album", artist='Danger Mouse')
     >>> Track.objects.create(album=album, order=1, title='Public Service Announcement', duration=245)
     <Track: Track object>
     >>> Track.objects.create(album=album, order=2, title='What More Can I Say', duration=264)
@@ -310,7 +310,7 @@ Would serialize to a nested representation like this:
     >>> serializer = AlbumSerializer(instance=album)
     >>> serializer.data
     {
-        'album_name': 'The Grey Album',
+        'album_name': 'The Gray Album',
         'artist': 'Danger Mouse',
         'tracks': [
             {'order': 1, 'title': 'Public Service Announcement', 'duration': 245},
@@ -344,7 +344,7 @@ By default nested serializers are read-only. If you want to support write-operat
             return album
 
     >>> data = {
-        'album_name': 'The Grey Album',
+        'album_name': 'The Gray Album',
         'artist': 'Danger Mouse',
         'tracks': [
             {'order': 1, 'title': 'Public Service Announcement', 'duration': 245},

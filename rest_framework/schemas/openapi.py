@@ -86,7 +86,7 @@ class SchemaGenerator(BaseSchemaGenerator):
 
             components_schemas.update(components)
 
-            # Normalise path for any provided mount url.
+            # Normalize path for any provided mount url.
             if path.startswith('/'):
                 path = path[1:]
             path = urljoin(self.url or '/', path)

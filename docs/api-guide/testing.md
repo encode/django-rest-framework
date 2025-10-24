@@ -264,7 +264,7 @@ For example...
     csrftoken = response.cookies['csrftoken']
 
     # Interact with the API.
-    response = client.post('http://testserver/organisations/', json={
+    response = client.post('http://testserver/organizations/', json={
         'name': 'MegaCorp',
         'status': 'active'
     }, headers={'X-CSRFToken': csrftoken})
@@ -292,12 +292,12 @@ The CoreAPIClient allows you to interact with your API using the Python
     client = CoreAPIClient()
     schema = client.get('http://testserver/schema/')
 
-    # Create a new organisation
+    # Create a new organization
     params = {'name': 'MegaCorp', 'status': 'active'}
-    client.action(schema, ['organisations', 'create'], params)
+    client.action(schema, ['organizations', 'create'], params)
 
-    # Ensure that the organisation exists in the listing
-    data = client.action(schema, ['organisations', 'list'])
+    # Ensure that the organization exists in the listing
+    data = client.action(schema, ['organizations', 'list'])
     assert(len(data) == 1)
     assert(data == [{'name': 'MegaCorp', 'status': 'active'}])
 

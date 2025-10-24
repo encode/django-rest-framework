@@ -287,7 +287,7 @@ class TestNestedListSerializer:
 
 
 class TestNestedListSerializerAllowEmpty:
-    """Tests the behaviour of allow_empty=False when a ListSerializer is used as a field."""
+    """Tests the behavior of allow_empty=False when a ListSerializer is used as a field."""
 
     @pytest.mark.parametrize('partial', (False, True))
     def test_allow_empty_true(self, partial):
@@ -643,7 +643,7 @@ class TestSerializerPartialUsage:
 
 class TestEmptyListSerializer:
     """
-    Tests the behaviour of ListSerializers when there is no data passed to it
+    Tests the behavior of ListSerializers when there is no data passed to it
     """
 
     def setup_method(self):
@@ -672,7 +672,7 @@ class TestEmptyListSerializer:
 
 class TestMaxMinLengthListSerializer:
     """
-    Tests the behaviour of ListSerializers when max_length and min_length are used
+    Tests the behavior of ListSerializers when max_length and min_length are used
     """
 
     def setup_method(self):

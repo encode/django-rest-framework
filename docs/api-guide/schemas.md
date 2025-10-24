@@ -20,7 +20,7 @@ package and then subsequently retired over the next releases.
 
 As a full-fledged replacement, we recommend the [drf-spectacular] package.
 It has extensive support for generating OpenAPI 3 schemas from
-REST framework APIs, with both automatic and customisable options available.
+REST framework APIs, with both automatic and customizable options available.
 For further information please refer to
 [Documenting your API](../topics/documenting-your-api.md#drf-spectacular).
 

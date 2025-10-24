@@ -332,7 +332,7 @@ class TestInitialWithCallable:
 
     def test_initial_should_accept_callable(self):
         """
-        Follows the default ``Field.initial`` behaviour where they accept a
+        Follows the default ``Field.initial`` behavior where they accept a
         callable to produce the initial value"""
         assert self.serializer.data == {
             'initial_field': 123,
