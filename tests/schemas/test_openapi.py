@@ -257,7 +257,6 @@ class TestOperationIntrospection(TestCase):
         inspector.view = view
 
         request_body = inspector.get_request_body(path, method)
-        print(request_body)
         assert request_body['content']['application/json']['schema']['$ref'] == '#/components/schemas/Item'
 
         components = inspector.get_components(path, method)
@@ -928,7 +927,6 @@ class TestOperationIntrospection(TestCase):
         request = create_request('/')
         schema = generator.get_schema(request=request)
         schema_str = str(schema)
-        print(schema_str)
         assert schema_str.count("operationId") == 2
         assert schema_str.count("newExample") == 1
         assert schema_str.count("oldExample") == 1
@@ -948,7 +946,6 @@ class TestOperationIntrospection(TestCase):
 
             assert len(w) == 1
             assert issubclass(w[-1].category, UserWarning)
-            print(str(w[-1].message))
             assert 'You have a duplicated operationId' in str(w[-1].message)
 
     def test_operation_id_viewset(self):
@@ -960,7 +957,6 @@ class TestOperationIntrospection(TestCase):
 
         request = create_request('/')
         schema = generator.get_schema(request=request)
-        print(schema)
         assert schema['paths']['/account/']['get']['operationId'] == 'listExampleViewSets'
         assert schema['paths']['/account/']['post']['operationId'] == 'createExampleViewSet'
         assert schema['paths']['/account/{id}/']['get']['operationId'] == 'retrieveExampleViewSet'
@@ -1284,7 +1280,6 @@ class TestGenerator(TestCase):
         request = create_request('/')
         schema = generator.get_schema(request=request)
 
-        print(schema)
 
         assert 'components' in schema
         assert 'schemas' in schema['components']
@@ -1299,7 +1294,6 @@ class TestGenerator(TestCase):
         request = create_request('/')
         schema = generator.get_schema(request=request)
 
-        print(schema)
 
         route = schema['paths']['/api-token-auth/']['post']
         body_schema = route['requestBody']['content']['application/json']['schema']
@@ -1327,7 +1321,6 @@ class TestGenerator(TestCase):
         request = create_request('/')
         schema = generator.get_schema(request=request)
 
-        print(schema)
         assert 'components' in schema
         assert 'schemas' in schema['components']
         assert 'Ulysses' in schema['components']['schemas']
