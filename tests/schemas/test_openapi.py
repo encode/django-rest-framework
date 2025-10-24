@@ -1280,7 +1280,6 @@ class TestGenerator(TestCase):
         request = create_request('/')
         schema = generator.get_schema(request=request)
 
-
         assert 'components' in schema
         assert 'schemas' in schema['components']
         assert 'ExampleModel' in schema['components']['schemas']
@@ -1293,7 +1292,6 @@ class TestGenerator(TestCase):
 
         request = create_request('/')
         schema = generator.get_schema(request=request)
-
 
         route = schema['paths']['/api-token-auth/']['post']
         body_schema = route['requestBody']['content']['application/json']['schema']
