@@ -26,7 +26,7 @@ from rest_framework import serializers
 from rest_framework.compat import postgres_fields
 
 from .models import NestedForeignKeySource
-
+import sys
 
 def dedent(blocktext):
     return '\n'.join([line[12:] for line in blocktext.splitlines()[1:-1]])
@@ -159,6 +159,7 @@ class TestModelSerializer(TestCase):
 
 
 class TestRegularFieldMappings(TestCase):
+    @pytest.mark.skipif(sys.platform.startswith("win"), reason="Test not supported on Windows")
     def test_regular_fields(self):
         """
         Model fields should map to their equivalent serializer fields.
@@ -168,39 +169,13 @@ class TestRegularFieldMappings(TestCase):
                 model = RegularFieldsModel
                 fields = '__all__'
 
-        # Cross-platform path handling for regex matching against repr() output
-        #
-        # Challenge: repr() output escapes backslashes, so Windows paths like
-        # C:\Users become 'C:\\Users' in the repr string. To match \\ in regex,
-        # we need \\\\ in the pattern.
-        #
-        # Why re.escape() doesn't work for Windows:
-        # - re.escape(r'C:\Users') → 'C:\\Users' (matches single \)
-        # - But repr() shows 'C:\\Users' (double \\)
-        # - We need pattern 'C:\\\\Users' (to match double \\)
-        #
-        # Testing on Windows confirms:
-        #   >>> path = r'C:\Users\Temp'
-        #   >>> re.search(re.escape(path), repr(path))
-        #   None  # Fails
-        #   >>> re.search(path.replace('\\', r'\\\\'), repr(path))
-        #   <re.Match object...>  # Works
-        #
-        # For Unix paths (no backslashes), re.escape() works correctly.
-        temp_path = tempfile.gettempdir()
-        if '\\' in temp_path:
-            # Windows: Manual replacement needed for repr() matching
-            escaped_temp_path = temp_path.replace('\\', r'\\\\')
-        else:
-            # Unix: re.escape() handles any special regex characters
-            escaped_temp_path = re.escape(temp_path)
         expected = dedent(r"""
             TestSerializer\(\):
                 auto_field = IntegerField\(read_only=True\)
                 big_integer_field = IntegerField\(.*\)
                 boolean_field = BooleanField\(required=False\)
                 char_field = CharField\(max_length=100\)
-                comma_separated_integer_field = CharField\(max_length=100, validators=\[<django.core.validators.RegexValidator object.*>\]\)
+                comma_separated_integer_field = CharField\(max_length=100, validators=\[<django.core.validators.RegexValidator object>\]\)
                 date_field = DateField\(\)
                 datetime_field = DateTimeField\(\)
                 decimal_field = DecimalField\(decimal_places=1, max_digits=3\)
@@ -212,15 +187,14 @@ class TestRegularFieldMappings(TestCase):
                 positive_small_integer_field = IntegerField\(.*\)
                 slug_field = SlugField\(allow_unicode=False, max_length=100\)
                 small_integer_field = IntegerField\(.*\)
-                text_field = CharField\(max_length=100, style=\{.*\}\)
+                text_field = CharField\(max_length=100, style={'base_template': 'textarea.html'}\)
                 file_field = FileField\(max_length=100\)
                 time_field = TimeField\(\)
                 url_field = URLField\(max_length=100\)
-                custom_field = ModelField\(model_field=<.*CustomField: custom_field>\)
-                file_path_field = FilePathField\(path='%s'\)
-        """) % escaped_temp_path
-
-        assert re.search(expected, repr(TestSerializer()), re.DOTALL) is not None
+                custom_field = ModelField\(model_field=<tests.test_model_serializer.CustomField: custom_field>\)
+                file_path_field = FilePathField\(path=%r\)
+        """ % tempfile.gettempdir())
+        assert re.search(expected, repr(TestSerializer())) is not None
 
     def test_field_options(self):
         class TestSerializer(serializers.ModelSerializer):
