@@ -168,6 +168,32 @@ class TestRegularFieldMappings(TestCase):
                 model = RegularFieldsModel
                 fields = '__all__'
 
+        # Cross-platform path handling for regex matching against repr() output
+        #
+        # Challenge: repr() output escapes backslashes, so Windows paths like
+        # C:\Users become 'C:\\Users' in the repr string. To match \\ in regex,
+        # we need \\\\ in the pattern.
+        #
+        # Why re.escape() doesn't work for Windows:
+        # - re.escape(r'C:\Users') → 'C:\\Users' (matches single \)
+        # - But repr() shows 'C:\\Users' (double \\)
+        # - We need pattern 'C:\\\\Users' (to match double \\)
+        #
+        # Testing on Windows confirms:
+        #   >>> path = r'C:\Users\Temp'
+        #   >>> re.search(re.escape(path), repr(path))
+        #   None  # Fails
+        #   >>> re.search(path.replace('\\', r'\\\\'), repr(path))
+        #   <re.Match object...>  # Works
+        #
+        # For Unix paths (no backslashes), re.escape() works correctly.
+        temp_path = tempfile.gettempdir()
+        if '\\' in temp_path:
+            # Windows: Manual replacement needed for repr() matching
+            escaped_temp_path = temp_path.replace('\\', r'\\\\')
+        else:
+            # Unix: re.escape() handles any special regex characters
+            escaped_temp_path = re.escape(temp_path)
         expected = dedent(r"""
             TestSerializer\(\):
                 auto_field = IntegerField\(read_only=True\)
@@ -192,7 +218,7 @@ class TestRegularFieldMappings(TestCase):
                 url_field = URLField\(max_length=100\)
                 custom_field = ModelField\(model_field=<.*CustomField: custom_field>\)
                 file_path_field = FilePathField\(path='%s'\)
-        """ % tempfile.gettempdir().replace('\\', r'\\\\'))
+        """) % escaped_temp_path
 
         assert re.search(expected, repr(TestSerializer()), re.DOTALL) is not None
 
