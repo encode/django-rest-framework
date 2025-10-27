@@ -426,6 +426,11 @@ HTTP Signature (currently a [IETF draft][http-signature-ietf-draft]) provides a 
 
 [Djoser][djoser] library provides a set of views to handle basic actions such as registration, login, logout, password reset and account activation. The package works with a custom user model and uses token-based authentication. This is a ready to use REST implementation of the Django authentication system.
 
+## DRF Auth Kit
+
+[DRF Auth Kit][drf-auth-kit] library provides a modern REST authentication solution with JWT cookies, social login, multi-factor authentication, and comprehensive user management. The package offers full type safety, automatic OpenAPI schema generation with DRF Spectacular. It supports multiple authentication types (JWT, DRF Token, or Custom) and includes built-in internationalization for 50+ languages.
+
+
 ## django-rest-auth / dj-rest-auth
 
 This library provides a set of REST API endpoints for registration, authentication (including social media authentication), password reset, retrieve and update user details, etc. By having these API endpoints, your client apps such as AngularJS, iOS, Android, and others can communicate to your Django backend site independently via REST APIs for user management.
@@ -498,3 +503,4 @@ More information can be found in the [Documentation](https://django-pyoidc.readt
 [django-rest-durin]: https://github.com/eshaan7/django-rest-durin
 [login-required-middleware]: https://docs.djangoproject.com/en/stable/ref/middleware/#django.contrib.auth.middleware.LoginRequiredMiddleware
 [django-pyoidc]: https://github.com/makinacorpus/django_pyoidc
+[drf-auth-kit]: https://github.com/huynguyengl99/drf-auth-kit
