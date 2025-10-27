@@ -430,10 +430,6 @@
                     </li>
                   
                     <li>
-                      <a href="#translations">Translations</a>
-                    </li>
-                  
-                    <li>
                       <a href="#project-requirements">Project requirements</a>
                     </li>
                   
@@ -497,11 +493,6 @@
 <pre><code>Release manager is @***.
 Pull request is #***.
 
-During development cycle:
-
-- [ ] Upload the new content to be translated to [transifex](https://www.django-rest-framework.org/topics/project-management/#translations).
-
-
 Checklist:
 
 - [ ] Create pull request for [release notes](https://github.com/encode/django-rest-framework/blob/mains/docs/topics/release-notes.md) based on the [*.*.* milestone](https://github.com/encode/django-rest-framework/milestones/***).
@@ -510,7 +501,6 @@ Checklist:
     - [ ] `pyproject.toml` Python &amp; Django version trove classifiers
     - [ ] `README` Python &amp; Django versions
     - [ ] `docs` Python &amp; Django versions
-- [ ] Update the translations from [transifex](https://www.django-rest-framework.org/topics/project-management/#translations).
 - [ ] Ensure the pull request increments the version to `*.*.*` in [`restframework/__init__.py`](https://github.com/encode/django-rest-framework/blob/main/rest_framework/__init__.py).
 - [ ] Ensure documentation validates
     - Build and serve docs `mkdocs serve`
@@ -530,44 +520,6 @@ Checklist:
 To modify this process for future releases make a pull request to the [project management](https://www.django-rest-framework.org/topics/project-management/) documentation.
 </code></pre>
 <p>When pushing the release to PyPI ensure that your environment has been installed from our development <code>requirement.txt</code>, so that documentation and PyPI installs are consistently being built against a pinned set of packages.</p>
-<hr />
-<h2 id="translations"><a class="toclink" href="#translations">Translations</a></h2>
-<p>The maintenance team are responsible for managing the translation packs include in REST framework. Translating the source strings into multiple languages is managed through the <a href="https://www.transifex.com/projects/p/django-rest-framework/">transifex service</a>.</p>
-<h3 id="managing-transifex"><a class="toclink" href="#managing-transifex">Managing Transifex</a></h3>
-<p>The <a href="https://pypi.org/project/transifex-client/">official Transifex client</a> is used to upload and download translations to Transifex. The client is installed using pip:</p>
-<pre><code>pip install transifex-client
-</code></pre>
-<p>To use it you'll need a login to Transifex which has a password, and you'll need to have administrative access to the Transifex project. You'll need to create a <code>~/.transifexrc</code> file which contains your credentials.</p>
-<pre><code>[https://www.transifex.com]
-username = ***
-token = ***
-password = ***
-hostname = https://www.transifex.com
-</code></pre>
-<h3 id="upload-new-source-files"><a class="toclink" href="#upload-new-source-files">Upload new source files</a></h3>
-<p>When any user visible strings are changed, they should be uploaded to Transifex so that the translators can start to translate them. To do this, just run:</p>
-<pre><code># 1. Update the source django.po file, which is the US English version.
-cd rest_framework
-django-admin makemessages -l en_US
-# 2. Push the source django.po file to Transifex.
-cd ..
-tx push -s
-</code></pre>
-<p>When pushing source files, Transifex will update the source strings of a resource to match those from the new source file.</p>
-<p>Here's how differences between the old and new source files will be handled:</p>
-<ul>
-<li>New strings will be added.</li>
-<li>Modified strings will be added as well.</li>
-<li>Strings which do not exist in the new source file will be removed from the database, along with their translations. If that source strings gets re-added later then <a href="http://docs.transifex.com/guides/tm#let-tm-automatically-populate-translations">Transifex Translation Memory</a> will automatically include the translation string.</li>
-</ul>
-<h3 id="download-translations"><a class="toclink" href="#download-translations">Download translations</a></h3>
-<p>When a translator has finished translating their work needs to be downloaded from Transifex into the REST framework repository. To do this, run:</p>
-<pre><code># 3. Pull the translated django.po files from Transifex.
-tx pull -a --minimum-perc 10
-cd rest_framework
-# 4. Compile the binary .mo files for all supported languages.
-django-admin compilemessages
-</code></pre>
 <hr />
 <h2 id="project-requirements"><a class="toclink" href="#project-requirements">Project requirements</a></h2>
 <p>All our test requirements are pinned to exact versions, in order to ensure that our test runs are reproducible. We maintain the requirements in the <code>requirements</code> directory. The requirements files are referenced from the <code>tox.ini</code> configuration file, ensuring we have a single source of truth for package versions used in testing.</p>
