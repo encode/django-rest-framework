@@ -484,7 +484,7 @@ are likely in the composite fields, <code>ListField</code> and <code>DictField</
 <p>They must now use the more explicit keyword argument style...</p>
 <pre><code class="language-python">aliases = serializers.ListField(child=serializers.CharField())
 </code></pre>
-<p>This change has been made because using positional arguments here <em>does not</em> result in the expected behaviour.</p>
+<p>This change has been made because using positional arguments here <em>does not</em> result in the expected behavior.</p>
 <p>See Pull Request <a href="https://github.com/encode/django-rest-framework/pull/7632">#7632</a> for more details.</p>
             
 

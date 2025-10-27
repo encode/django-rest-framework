@@ -502,7 +502,7 @@
 <p>The schema generation introduced in 3.5 and the related API docs generation in 3.6 are both hugely powerful features, however they've been somewhat limited in cases where the view introspection isn't able to correctly identify the schema for a particular view.</p>
 <p>In order to try to address this we're now adding the ability for per-view customization of the API schema. The interface that we're adding for this allows either basic manual overrides over which fields should be included on a view, or for more complex programmatic overriding of the schema generation. We believe this release comprehensively addresses some of the existing shortcomings of the schema features.</p>
 <p>Let's take a quick look at using the new functionality...</p>
-<p>The <code>APIView</code> class has a <code>schema</code> attribute, that is used to control how the Schema for that particular view is generated. The default behaviour is to use the <code>AutoSchema</code> class.</p>
+<p>The <code>APIView</code> class has a <code>schema</code> attribute, that is used to control how the Schema for that particular view is generated. The default behavior is to use the <code>AutoSchema</code> class.</p>
 <pre><code>from rest_framework.views import APIView
 from rest_framework.schemas import AutoSchema
 

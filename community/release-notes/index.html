@@ -615,7 +615,7 @@
 <p><strong>Full Changelog</strong>: https://github.com/encode/django-rest-framework/compare/3.16.0...3.16.1</p>
 <h3 id="3160"><a class="toclink" href="#3160">3.16.0</a></h3>
 <p><strong>Date</strong>: 28th March 2025</p>
-<p>This release is considered a significant release to improve upstream support with Django and Python. Some of these may change the behaviour of existing features and pre-existing behaviour. Specifically, some fixes were added to around the support of <code>UniqueConstraint</code> with nullable fields which will improve built-in serializer validation.</p>
+<p>This release is considered a significant release to improve upstream support with Django and Python. Some of these may change the behavior of existing features and pre-existing behavior. Specifically, some fixes were added to around the support of <code>UniqueConstraint</code> with nullable fields which will improve built-in serializer validation.</p>
 <h4 id="features"><a class="toclink" href="#features">Features</a></h4>
 <ul>
 <li>Add official support for Django 5.1 and its new <code>LoginRequiredMiddleware</code> in <a href="https://github.com/encode/django-rest-framework/pull/9514">#9514</a> and <a href="https://github.com/encode/django-rest-framework/pull/9657">#9657</a></li>
@@ -719,7 +719,7 @@
 <li>Partial serializer should not have required fields [<a href="https://github.com/encode/django-rest-framework/pull/7563">#7563</a>]</li>
 <li>Propagate 'default' from model field to serializer field. [<a href="https://github.com/encode/django-rest-framework/pull/9030">#9030</a>]</li>
 <li>Allow to override child.run_validation call in ListSerializer [<a href="https://github.com/encode/django-rest-framework/pull/8035">#8035</a>]</li>
-<li>Align SearchFilter behaviour to django.contrib.admin search [<a href="https://github.com/encode/django-rest-framework/pull/9017">#9017</a>]</li>
+<li>Align SearchFilter behavior to django.contrib.admin search [<a href="https://github.com/encode/django-rest-framework/pull/9017">#9017</a>]</li>
 <li>Class name added to unknown field error [<a href="https://github.com/encode/django-rest-framework/pull/9019">#9019</a>]</li>
 <li>Fix: Pagination response schemas. [<a href="https://github.com/encode/django-rest-framework/pull/9049">#9049</a>]</li>
 <li>Fix choices in ChoiceField to support IntEnum [<a href="https://github.com/encode/django-rest-framework/pull/8955">#8955</a>]</li>
@@ -861,7 +861,7 @@
 <ul>
 <li>Add <code>--file</code> option to <code>generateschema</code> command. [#7130]</li>
 <li>Support <code>tags</code> for OpenAPI schema generation. See <a href="https://www.django-rest-framework.org/api-guide/schemas/#grouping-operations-with-tags">the schema docs</a>. [#7184]</li>
-<li>Support customising the operation ID for schema generation. See <a href="https://www.django-rest-framework.org/api-guide/schemas/#operationid">the schema docs</a>. [#7190]</li>
+<li>Support customizing the operation ID for schema generation. See <a href="https://www.django-rest-framework.org/api-guide/schemas/#operationid">the schema docs</a>. [#7190]</li>
 <li>Support OpenAPI components for schema generation. See <a href="https://www.django-rest-framework.org/api-guide/schemas/#components">the schema docs</a>. [#7124]</li>
 <li>The following methods on <code>AutoSchema</code> become public API: <code>get_path_parameters</code>, <code>get_pagination_parameters</code>, <code>get_filter_parameters</code>, <code>get_request_body</code>, <code>get_responses</code>, <code>get_serializer</code>, <code>get_paginator</code>, <code>map_serializer</code>, <code>map_field</code>, <code>map_choice_field</code>, <code>map_field_validators</code>, <code>allows_filters</code>. See <a href="https://www.django-rest-framework.org/api-guide/schemas/#autoschema">the schema docs</a></li>
 <li>Add support for Django 3.1's database-agnositic <code>JSONField</code>. [#7467]</li>
@@ -899,14 +899,14 @@
 <li>Fix <code>PrimaryKeyRelatedField</code> and <code>HyperlinkedRelatedField</code> when source field is actually a property. [#7142]</li>
 <li><code>Token.generate_key</code> is now a class method. [#7502]</li>
 <li><code>@action</code> warns if method is wrapped in a decorator that does not preserve information using <code>@functools.wraps</code>. [#7098]</li>
-<li>Deprecate <code>serializers.NullBooleanField</code> in favour of <code>serializers.BooleanField</code> with <code>allow_null=True</code> [#7122]</li>
+<li>Deprecate <code>serializers.NullBooleanField</code> in favor of <code>serializers.BooleanField</code> with <code>allow_null=True</code> [#7122]</li>
 </ul>
 <hr />
 <h2 id="311x-series"><a class="toclink" href="#311x-series">3.11.x series</a></h2>
 <h3 id="3112"><a class="toclink" href="#3112">3.11.2</a></h3>
 <p><strong>Date</strong>: 30th September 2020</p>
 <ul>
-<li><strong>Security</strong>: Drop <code>urlize_quoted_links</code> template tag in favour of Django's built-in <code>urlize</code>. Removes a XSS vulnerability for some kinds of content in the browsable API.</li>
+<li><strong>Security</strong>: Drop <code>urlize_quoted_links</code> template tag in favor of Django's built-in <code>urlize</code>. Removes a XSS vulnerability for some kinds of content in the browsable API.</li>
 </ul>
 <h3 id="3111"><a class="toclink" href="#3111">3.11.1</a></h3>
 <p><strong>Date</strong>: 5th August 2020</p>
@@ -916,7 +916,7 @@
 <h3 id="3110"><a class="toclink" href="#3110">3.11.0</a></h3>
 <p><strong>Date</strong>: 12th December 2019</p>
 <ul>
-<li>Drop <code>.set_context</code> API <a href="../3.11-announcement/#validator-default-context">in favour of a <code>requires_context</code> marker</a>.</li>
+<li>Drop <code>.set_context</code> API <a href="../3.11-announcement/#validator-default-context">in favor of a <code>requires_context</code> marker</a>.</li>
 <li>Changed default widget for TextField with choices to select box. <a href="https://github.com/encode/django-rest-framework/issues/6892">#6892</a></li>
 <li>Supported nested writes on non-relational fields, such as JSONField. <a href="https://github.com/encode/django-rest-framework/issues/6916">#6916</a></li>
 <li>Include request/response media types in OpenAPI schemas, based on configured parsers/renderers. <a href="https://github.com/encode/django-rest-framework/issues/6865">#6865</a></li>
@@ -1087,10 +1087,10 @@ basing it on the <code>url_path</code> instead of the function name.</p>
 <p><strong>Date</strong>: <a href="https://github.com/encode/django-rest-framework/milestone/61?closed=1">3rd April 2018</a></p>
 <ul>
 <li>
-<p><strong>Breaking Change</strong>: Alter <code>read_only</code> plus <code>default</code> behaviour. <a href="https://github.com/encode/django-rest-framework/issues/5886">#5886</a></p>
+<p><strong>Breaking Change</strong>: Alter <code>read_only</code> plus <code>default</code> behavior. <a href="https://github.com/encode/django-rest-framework/issues/5886">#5886</a></p>
 <p><code>read_only</code> fields will now <strong>always</strong> be excluded from writable fields.</p>
 <p>Previously <code>read_only</code> fields with a <code>default</code> value would use the <code>default</code> for create and update operations.</p>
-<p>In order to maintain the old behaviour you may need to pass the value of <code>read_only</code> fields when calling <code>save()</code> in
+<p>In order to maintain the old behavior you may need to pass the value of <code>read_only</code> fields when calling <code>save()</code> in
 the view:</p>
 <pre><code>def perform_create(self, serializer):
     serializer.save(owner=self.request.user)
@@ -1098,11 +1098,11 @@ the view:</p>
 <p>Alternatively you may override <code>save()</code> or <code>create()</code> or <code>update()</code> on the serializer as appropriate.</p>
 </li>
 <li>
-<p>Correct allow_null behaviour when required=False <a href="https://github.com/encode/django-rest-framework/issues/5888">#5888</a></p>
+<p>Correct allow_null behavior when required=False <a href="https://github.com/encode/django-rest-framework/issues/5888">#5888</a></p>
 <p>Without an explicit <code>default</code>, <code>allow_null</code> implies a default of <code>null</code> for outgoing serialization. Previously such
 fields were being skipped when read-only or otherwise not required.</p>
 <p><strong>Possible backwards compatibility break</strong> if you were relying on such fields being excluded from the outgoing
-representation. In order to restore the old behaviour you can override <code>data</code> to exclude the field when <code>None</code>.</p>
+representation. In order to restore the old behavior you can override <code>data</code> to exclude the field when <code>None</code>.</p>
 <p>For example:</p>
 <pre><code>@property
 def data(self):
@@ -1161,7 +1161,7 @@ it to introspect its set of actions and the details of the current action.</p>
 <li>Add HStoreField, postgres fields tests <a href="https://github.com/encode/django-rest-framework/issues/5654">#5654</a></li>
 <li>Always fully qualify ValidationError in docs <a href="https://github.com/encode/django-rest-framework/issues/5751">#5751</a></li>
 <li>Remove unreachable code from ManualSchema <a href="https://github.com/encode/django-rest-framework/issues/5766">#5766</a></li>
-<li>Allowed customising API documentation code samples <a href="https://github.com/encode/django-rest-framework/issues/5752">#5752</a></li>
+<li>Allowed customizing API documentation code samples <a href="https://github.com/encode/django-rest-framework/issues/5752">#5752</a></li>
 <li>Updated docs to use <code>pip show</code> <a href="https://github.com/encode/django-rest-framework/issues/5757">#5757</a></li>
 <li>Load 'static' instead of 'staticfiles' in templates <a href="https://github.com/encode/django-rest-framework/issues/5773">#5773</a></li>
 <li>Fixed a typo in <code>fields</code> docs <a href="https://github.com/encode/django-rest-framework/issues/5783">#5783</a></li>
@@ -1218,7 +1218,7 @@ it to introspect its set of actions and the details of the current action.</p>
 <ul>
 <li>
 <p>Schema: Extract method for <code>manual_fields</code> processing <a href="https://github.com/encode/django-rest-framework/issues/5633">#5633</a></p>
-<p>Allows for easier customisation of <code>manual_fields</code> processing, for example
+<p>Allows for easier customization of <code>manual_fields</code> processing, for example
 to provide per-method manual fields. <code>AutoSchema</code> adds <code>get_manual_fields</code>,
 as the intended override point, and a utility method <code>update_fields</code>, to
 handle by-name field replacement from a list, which, in general, you are not
@@ -1334,7 +1334,7 @@ Previously may have been stored internally as <code>None</code>.</p>
 <li>Don't strip microseconds from <code>time</code> when encoding. Makes consistent with <code>datetime</code>.
     <strong>BC Change</strong>: Previously only milliseconds were encoded. <a href="https://github.com/encode/django-rest-framework/issues/5440">#5440</a></li>
 <li>Added <code>STRICT_JSON</code> setting (default <code>True</code>) to raise exception for the extended float values (<code>nan</code>, <code>inf</code>, <code>-inf</code>) accepted by Python's <code>json</code> module.
-    <strong>BC Change</strong>: Previously these values would converted to corresponding strings. Set <code>STRICT_JSON</code> to <code>False</code> to restore the previous behaviour. <a href="https://github.com/encode/django-rest-framework/issues/5265">#5265</a></li>
+    <strong>BC Change</strong>: Previously these values would converted to corresponding strings. Set <code>STRICT_JSON</code> to <code>False</code> to restore the previous behavior. <a href="https://github.com/encode/django-rest-framework/issues/5265">#5265</a></li>
 <li>Add support for <code>page_size</code> parameter in CursorPaginator class <a href="https://github.com/encode/django-rest-framework/issues/5250">#5250</a></li>
 <li>Make <code>DEFAULT_PAGINATION_CLASS</code> <code>None</code> by default.
     <strong>BC Change</strong>: If your were <strong>just</strong> setting <code>PAGE_SIZE</code> to enable pagination you will need to add <code>DEFAULT_PAGINATION_CLASS</code>.
@@ -1372,10 +1372,10 @@ Previously may have been stored internally as <code>None</code>.</p>
 <li>Fix naming collisions in Schema Generation <a href="https://github.com/encode/django-rest-framework/issues/5464">#5464</a></li>
 <li>Call Django's authenticate function with the request object <a href="https://github.com/encode/django-rest-framework/issues/5295">#5295</a></li>
 <li>Update coreapi JS to 0.1.1 <a href="https://github.com/encode/django-rest-framework/issues/5479">#5479</a></li>
-<li>Have <code>is_list_view</code> recognise RetrieveModel… views <a href="https://github.com/encode/django-rest-framework/issues/5480">#5480</a></li>
+<li>Have <code>is_list_view</code> recognize RetrieveModel… views <a href="https://github.com/encode/django-rest-framework/issues/5480">#5480</a></li>
 <li>Remove Django 1.8 &amp; 1.9 compatibility code <a href="https://github.com/encode/django-rest-framework/issues/5481">#5481</a></li>
 <li>Remove deprecated schema code from DefaultRouter <a href="https://github.com/encode/django-rest-framework/issues/5482">#5482</a></li>
-<li>Refactor schema generation to allow per-view customisation.
+<li>Refactor schema generation to allow per-view customization.
     <strong>BC Change</strong>: <code>SchemaGenerator.get_serializer_fields</code> has been refactored as <code>AutoSchema.get_serializer_fields</code> and drops the <code>view</code> argument [#5354][gh5354]</li>
 </ul>
 <h2 id="36x-series"><a class="toclink" href="#36x-series">3.6.x series</a></h2>

@@ -545,7 +545,7 @@ so if you're already using schema generation you should make sure to review
 a dynamic client library to interact with your API.</p>
 <p>Finally, we're also now exposing the schema generation as a
 <a href="../../api-guide/schemas/#schemagenerator">publicly documented API</a>, allowing you to more easily
-override the behaviour.</p>
+override the behavior.</p>
 <h2 id="requests-test-client"><a class="toclink" href="#requests-test-client">Requests test client</a></h2>
 <p>You can now test your project using the <code>requests</code> library.</p>
 <p>This exposes exactly the same interface as if you were using a standard
@@ -563,12 +563,12 @@ client library.</p>
 client = CoreAPIClient()
 schema = client.get('http://testserver/schema/')
 
-# Create a new organisation
+# Create a new organization
 params = {'name': 'MegaCorp', 'status': 'active'}
-client.action(schema, ['organisations', 'create'], params)
+client.action(schema, ['organizations', 'create'], params)
 
-# Ensure that the organisation exists in the listing
-data = client.action(schema, ['organisations', 'list'])
+# Ensure that the organization exists in the listing
+data = client.action(schema, ['organizations', 'list'])
 assert(len(data) == 1)
 assert(data == [{'name': 'MegaCorp', 'status': 'active'}])
 </code></pre>
@@ -636,14 +636,14 @@ urlpatterns = [
 <p>The <code>'pk'</code> identifier in schema paths is now mapped onto the actually model field
 name by default. This will typically be <code>'id'</code>.</p>
 <p>This gives a better external representation for schemas, with less implementation
-detail being exposed. It also reflects the behaviour of using a ModelSerializer
+detail being exposed. It also reflects the behavior of using a ModelSerializer
 class with <code>fields = '__all__'</code>.</p>
-<p>You can revert to the previous behaviour by setting <code>'SCHEMA_COERCE_PATH_PK': False</code>
+<p>You can revert to the previous behavior by setting <code>'SCHEMA_COERCE_PATH_PK': False</code>
 in the REST framework settings.</p>
 <h3 id="schema-action-name-representations"><a class="toclink" href="#schema-action-name-representations">Schema action name representations</a></h3>
 <p>The internal <code>retrieve()</code> and <code>destroy()</code> method names are now coerced to an
 external representation of <code>read</code> and <code>delete</code>.</p>
-<p>You can revert to the previous behaviour by setting <code>'SCHEMA_COERCE_METHOD_NAMES': {}</code>
+<p>You can revert to the previous behavior by setting <code>'SCHEMA_COERCE_METHOD_NAMES': {}</code>
 in the REST framework settings.</p>
 <h3 id="djangofilterbackend"><a class="toclink" href="#djangofilterbackend">DjangoFilterBackend</a></h3>
 <p>The functionality of the built-in <code>DjangoFilterBackend</code> is now completely

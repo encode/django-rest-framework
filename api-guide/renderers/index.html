@@ -679,7 +679,7 @@ Unlike other renderers, the data passed to the <code>Response</code> does not ne
         return Response({'user': self.object}, template_name='user_detail.html')
 </code></pre>
 <p>You can use <code>TemplateHTMLRenderer</code> either to return regular HTML pages using REST framework, or to return both HTML and API responses from a single endpoint.</p>
-<p>If you're building websites that use <code>TemplateHTMLRenderer</code> along with other renderer classes, you should consider listing <code>TemplateHTMLRenderer</code> as the first class in the <code>renderer_classes</code> list, so that it will be prioritised first even for browsers that send poorly formed <code>ACCEPT:</code> headers.</p>
+<p>If you're building websites that use <code>TemplateHTMLRenderer</code> along with other renderer classes, you should consider listing <code>TemplateHTMLRenderer</code> as the first class in the <code>renderer_classes</code> list, so that it will be prioritized first even for browsers that send poorly formed <code>ACCEPT:</code> headers.</p>
 <p>See the <a href="../../topics/html-and-forms/"><em>HTML &amp; Forms</em> Topic Page</a> for further examples of <code>TemplateHTMLRenderer</code> usage.</p>
 <p><strong>.media_type</strong>: <code>text/html</code></p>
 <p><strong>.format</strong>: <code>'html'</code></p>

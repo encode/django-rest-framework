@@ -502,7 +502,7 @@
 <p>&mdash; <a href="https://docs.djangoproject.com/en/stable/ref/template-response/">Django documentation</a></p>
 </blockquote>
 <p>REST framework supports HTTP content negotiation by providing a <code>Response</code> class which allows you to return content that can be rendered into multiple content types, depending on the client request.</p>
-<p>The <code>Response</code> class subclasses Django's <code>SimpleTemplateResponse</code>.  <code>Response</code> objects are initialised with data, which should consist of native Python primitives.  REST framework then uses standard HTTP content negotiation to determine how it should render the final response content.</p>
+<p>The <code>Response</code> class subclasses Django's <code>SimpleTemplateResponse</code>.  <code>Response</code> objects are initialized with data, which should consist of native Python primitives.  REST framework then uses standard HTTP content negotiation to determine how it should render the final response content.</p>
 <p>There's no requirement for you to use the <code>Response</code> class, you can also return regular <code>HttpResponse</code> or <code>StreamingHttpResponse</code> objects from your views if required.  Using the <code>Response</code> class simply provides a nicer interface for returning content-negotiated Web API responses, that can be rendered to multiple formats.</p>
 <p>Unless you want to heavily customize REST framework for some reason, you should always use an <code>APIView</code> class or <code>@api_view</code> function for views that return <code>Response</code> objects.  Doing so ensures that the view can perform content negotiation and select the appropriate renderer for the response, before it is returned from the view.</p>
 <hr />

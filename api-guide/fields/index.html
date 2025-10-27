@@ -759,7 +759,7 @@ explicitly declare the <code>BooleanField</code> on the serializer class, or use
 </ul>
 <p>The <code>allow_null</code> option is also available for string fields, although its usage is discouraged in favor of <code>allow_blank</code>. It is valid to set both <code>allow_blank=True</code> and <code>allow_null=True</code>, but doing so means that there will be two differing types of empty value permissible for string representations, which can lead to data inconsistencies and subtle application bugs.</p>
 <h2 id="emailfield"><a class="toclink" href="#emailfield">EmailField</a></h2>
-<p>A text representation, validates the text to be a valid e-mail address.</p>
+<p>A text representation, validates the text to be a valid email address.</p>
 <p>Corresponds to <code>django.db.models.fields.EmailField</code></p>
 <p><strong>Signature:</strong> <code>EmailField(max_length=None, min_length=None, allow_blank=False)</code></p>
 <h2 id="regexfield"><a class="toclink" href="#regexfield">RegexField</a></h2>
@@ -1204,7 +1204,7 @@ OrderedDict([('label', 'Second Example'),
 </code></pre>
 </li>
 </ul>
-<p>For completeness lets do the same thing again but with the nested serializer
+<p>For completeness let's do the same thing again but with the nested serializer
 approach suggested above:</p>
 <pre><code>class NestedCoordinateSerializer(serializers.Serializer):
     x = serializers.IntegerField(source='x_coordinate')

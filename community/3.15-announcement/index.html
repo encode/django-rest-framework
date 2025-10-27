@@ -438,7 +438,7 @@
                     </li>
                   
                     <li>
-                      <a href="#align-searchfilter-behaviour-to-djangocontribadmin-search">Align SearchFilter behaviour to django.contrib.admin search</a>
+                      <a href="#align-searchfilter-behavior-to-djangocontribadmin-search">Align SearchFilter behavior to django.contrib.admin search</a>
                     </li>
                   
                     <li>
@@ -490,10 +490,10 @@
 <p>By default the URLs created by <code>SimpleRouter</code> use regular expressions. This behavior can be modified by setting the <code>use_regex_path</code> argument to <code>False</code> when instantiating the router.</p>
 <h2 id="zoneinfo-as-the-primary-source-of-timezone-data"><a class="toclink" href="#zoneinfo-as-the-primary-source-of-timezone-data">ZoneInfo as the primary source of timezone data</a></h2>
 <p>Dependency on pytz has been removed and deprecation warnings have been added, Django will provide ZoneInfo instances as long as USE_DEPRECATED_PYTZ is not enabled. More info on the migration can be found <a href="https://pytz-deprecation-shim.readthedocs.io/en/latest/migration.html">in this guide</a>.</p>
-<h2 id="align-searchfilter-behaviour-to-djangocontribadmin-search"><a class="toclink" href="#align-searchfilter-behaviour-to-djangocontribadmin-search">Align <code>SearchFilter</code> behaviour to <code>django.contrib.admin</code> search</a></h2>
+<h2 id="align-searchfilter-behavior-to-djangocontribadmin-search"><a class="toclink" href="#align-searchfilter-behavior-to-djangocontribadmin-search">Align <code>SearchFilter</code> behavior to <code>django.contrib.admin</code> search</a></h2>
 <p>Searches now may contain <em>quoted phrases</em> with spaces, each phrase is considered as a single search term, and it will raise a validation error if any null-character is provided in search. See the <a href="../../api-guide/filtering/">Filtering API guide</a> for more information.</p>
 <h2 id="other-fixes-and-improvements"><a class="toclink" href="#other-fixes-and-improvements">Other fixes and improvements</a></h2>
-<p>There are a number of fixes and minor improvements in this release, ranging from documentation, internal infrastructure (typing, testing, requirements, deprecation, etc.), security and overall behaviour.</p>
+<p>There are a number of fixes and minor improvements in this release, ranging from documentation, internal infrastructure (typing, testing, requirements, deprecation, etc.), security and overall behavior.</p>
 <p>See the <a href="../release-notes/">release notes</a> page for a complete listing.</p>
             
 
