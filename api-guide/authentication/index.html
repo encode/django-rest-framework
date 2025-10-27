@@ -508,6 +508,10 @@
                     </li>
                   
                     <li>
+                      <a href="#drf-auth-kit">DRF Auth Kit</a>
+                    </li>
+                  
+                    <li>
                       <a href="#django-rest-auth-dj-rest-auth">django-rest-auth / dj-rest-auth</a>
                     </li>
                   
@@ -854,6 +858,8 @@ REST_FRAMEWORK = {
 <p>HTTP Signature (currently a <a href="https://datatracker.ietf.org/doc/draft-cavage-http-signatures/">IETF draft</a>) provides a way to achieve origin authentication and message integrity for HTTP messages. Similar to <a href="https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html">Amazon's HTTP Signature scheme</a>, used by many of its services, it permits stateless, per-request authentication. <a href="https://github.com/etoccalino/">Elvio Toccalino</a> maintains the <a href="https://github.com/etoccalino/django-rest-framework-httpsignature">djangorestframework-httpsignature</a> (outdated) package which provides an easy-to-use HTTP Signature Authentication mechanism. You can use the updated fork version of <a href="https://github.com/etoccalino/django-rest-framework-httpsignature">djangorestframework-httpsignature</a>, which is <a href="https://github.com/ahknight/drf-httpsig">drf-httpsig</a>.</p>
 <h2 id="djoser"><a class="toclink" href="#djoser">Djoser</a></h2>
 <p><a href="https://github.com/sunscrapers/djoser">Djoser</a> library provides a set of views to handle basic actions such as registration, login, logout, password reset and account activation. The package works with a custom user model and uses token-based authentication. This is a ready to use REST implementation of the Django authentication system.</p>
+<h2 id="drf-auth-kit"><a class="toclink" href="#drf-auth-kit">DRF Auth Kit</a></h2>
+<p><a href="https://github.com/huynguyengl99/drf-auth-kit">DRF Auth Kit</a> library provides a modern REST authentication solution with JWT cookies, social login, multi-factor authentication, and comprehensive user management. The package offers full type safety, automatic OpenAPI schema generation with DRF Spectacular. It supports multiple authentication types (JWT, DRF Token, or Custom) and includes built-in internationalization for 50+ languages.</p>
 <h2 id="django-rest-auth-dj-rest-auth"><a class="toclink" href="#django-rest-auth-dj-rest-auth">django-rest-auth / dj-rest-auth</a></h2>
 <p>This library provides a set of REST API endpoints for registration, authentication (including social media authentication), password reset, retrieve and update user details, etc. By having these API endpoints, your client apps such as AngularJS, iOS, Android, and others can communicate to your Django backend site independently via REST APIs for user management.</p>
 <p>There are currently two forks of this project.</p>
