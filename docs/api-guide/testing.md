@@ -92,7 +92,7 @@ For example, when forcibly authenticating using a token, you might do something 
 
 ---
 
-**Note**: `force_authenticate` directly sets `request.user` to the in-memory `user` instance. If you are re-using the same `user` instance across multiple tests that update the saved `user` state, you may need to call [`refresh_from_db()`][refresh_from_db_docs] between tests.
+**Note**: `force_authenticate` directly sets `request.user` to the in-memory `user` instance. If you are reusing the same `user` instance across multiple tests that update the saved `user` state, you may need to call [`refresh_from_db()`][refresh_from_db_docs] between tests.
 
 ---
 
@@ -104,6 +104,20 @@ This means that setting attributes directly on the request object may not always
     request = factory.get('/accounts/django-superstars/')
     request.user = user
     response = view(request)
+
+If you want to test a request involving the REST framework’s 'Request' object, you’ll need to manually transform it first:
+
+    class DummyView(APIView):
+        ...
+
+    factory = APIRequestFactory()
+    request = factory.get('/', {'demo': 'test'})
+    drf_request = DummyView().initialize_request(request)
+    assert drf_request.query_params == {'demo': ['test']}
+
+    request = factory.post('/', {'example': 'test'})
+    drf_request = DummyView().initialize_request(request)
+    assert drf_request.data.get('example') == 'test'
 
 ---
 
@@ -250,7 +264,7 @@ For example...
     csrftoken = response.cookies['csrftoken']
 
     # Interact with the API.
-    response = client.post('http://testserver/organisations/', json={
+    response = client.post('http://testserver/organizations/', json={
         'name': 'MegaCorp',
         'status': 'active'
     }, headers={'X-CSRFToken': csrftoken})
@@ -278,12 +292,12 @@ The CoreAPIClient allows you to interact with your API using the Python
     client = CoreAPIClient()
     schema = client.get('http://testserver/schema/')
 
-    # Create a new organisation
+    # Create a new organization
     params = {'name': 'MegaCorp', 'status': 'active'}
-    client.action(schema, ['organisations', 'create'], params)
+    client.action(schema, ['organizations', 'create'], params)
 
-    # Ensure that the organisation exists in the listing
-    data = client.action(schema, ['organisations', 'list'])
+    # Ensure that the organization exists in the listing
+    data = client.action(schema, ['organizations', 'list'])
     assert(len(data) == 1)
     assert(data == [{'name': 'MegaCorp', 'status': 'active'}])
 
@@ -417,5 +431,5 @@ For example, to add support for using `format='html'` in test requests, you migh
 [requestfactory]: https://docs.djangoproject.com/en/stable/topics/testing/advanced/#django.test.client.RequestFactory
 [configuration]: #configuration
 [refresh_from_db_docs]: https://docs.djangoproject.com/en/stable/ref/models/instances/#django.db.models.Model.refresh_from_db
-[session_objects]: https://requests.readthedocs.io/en/master/user/advanced/#session-objects
+[session_objects]: https://requests.readthedocs.io/en/latest/user/advanced/#session-objects
 [provided_test_case_classes]: https://docs.djangoproject.com/en/stable/topics/testing/tools/#provided-test-case-classes

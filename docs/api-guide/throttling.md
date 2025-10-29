@@ -110,7 +110,7 @@ You'll need to remember to also set your custom throttle class in the `'DEFAULT_
 
 The built-in throttle implementations are open to [race conditions][race], so under high concurrency they may allow a few extra requests through.
 
-If your project relies on guaranteeing the number of requests during concurrent requests, you will need to implement your own throttle class.
+If your project relies on guaranteeing the number of requests during concurrent requests, you will need to implement your own throttle class. See [issue #5181][gh5181] for more details.
 
 ---
 
@@ -220,4 +220,5 @@ The following is an example of a rate throttle, that will randomly throttle 1 in
 [identifying-clients]: http://oxpedia.org/wiki/index.php?title=AppSuite:Grizzly#Multiple_Proxies_in_front_of_the_cluster
 [cache-setting]: https://docs.djangoproject.com/en/stable/ref/settings/#caches
 [cache-docs]: https://docs.djangoproject.com/en/stable/topics/cache/#setting-up-the-cache
+[gh5181]: https://github.com/encode/django-rest-framework/issues/5181
 [race]: https://en.wikipedia.org/wiki/Race_condition#Data_race

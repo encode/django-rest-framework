@@ -38,20 +38,83 @@ You can determine your currently installed version using `pip show`:
 
 ## 3.16.x series
 
+### 3.16.1
+
+**Date**: 6th August 2025
+
+This release fixes a few bugs, clean-up some old code paths for unsupported Python versions and improve translations.
+
+#### Minor changes
+
+* Cleanup optional `backports.zoneinfo` dependency and conditions on unsupported Python 3.8 and lower in [#9681](https://github.com/encode/django-rest-framework/pull/9681). Python versions prior to 3.9 were already unsupported so this shouldn't be a breaking change.
+
+#### Bug fixes
+
+* Fix regression in `unique_together` validation with `SerializerMethodField` in [#9712](https://github.com/encode/django-rest-framework/pull/9712)
+* Fix `UniqueTogetherValidator` to handle fields with `source` attribute in [#9688](https://github.com/encode/django-rest-framework/pull/9688)
+* Drop HTML line breaks on long headers in browsable API in [#9438](https://github.com/encode/django-rest-framework/pull/9438)
+
+#### Translations
+
+* Add Kazakh locale support in [#9713](https://github.com/encode/django-rest-framework/pull/9713)
+* Update translations for Korean translations in [#9571](https://github.com/encode/django-rest-framework/pull/9571)
+* Update German translations in [#9676](https://github.com/encode/django-rest-framework/pull/9676)
+* Update Chinese translations in [#9675](https://github.com/encode/django-rest-framework/pull/9675)
+* Update Arabic translations-sal in [#9595](https://github.com/encode/django-rest-framework/pull/9595)
+* Update Persian translations in [#9576](https://github.com/encode/django-rest-framework/pull/9576)
+* Update Spanish translations in [#9701](https://github.com/encode/django-rest-framework/pull/9701)
+* Update Turkish Translations in [#9749](https://github.com/encode/django-rest-framework/pull/9749)
+* Fix some typos in Brazilian Portuguese translations in [#9673](https://github.com/encode/django-rest-framework/pull/9673)
+
+#### Documentation
+
+* Removed reference to GitHub Issues and Discussions in [#9660](https://github.com/encode/django-rest-framework/pull/9660)
+* Add `drf-restwind` and update outdated images in `browsable-api.md` in [#9680](https://github.com/encode/django-rest-framework/pull/9680)
+* Updated funding page to represent current scope in [#9686](https://github.com/encode/django-rest-framework/pull/9686)
+* Fix broken Heroku JSON Schema link in [#9693](https://github.com/encode/django-rest-framework/pull/9693)
+* Update Django documentation links to use stable version in [#9698](https://github.com/encode/django-rest-framework/pull/9698)
+* Expand docs on unique constraints cause 'required=True' in [#9725](https://github.com/encode/django-rest-framework/pull/9725)
+* Revert extension back from `djangorestframework-guardian2` to `djangorestframework-guardian` in [#9734](https://github.com/encode/django-rest-framework/pull/9734)
+* Add note to tutorial about required `request` in serializer context when using `HyperlinkedModelSerializer` in [#9732](https://github.com/encode/django-rest-framework/pull/9732)
+
+#### Internal changes
+
+* Update GitHub Actions to use Ubuntu 24.04 for testing in [#9677](https://github.com/encode/django-rest-framework/pull/9677)
+* Update test matrix to use Django 5.2 stable version in [#9679](https://github.com/encode/django-rest-framework/pull/9679)
+* Add `pyupgrade` to `pre-commit` hooks in [#9682](https://github.com/encode/django-rest-framework/pull/9682)
+* Fix test with Django 5 when `pytz` is available in [#9715](https://github.com/encode/django-rest-framework/pull/9715)
+
+#### New Contributors
+
+* [`@araggohnxd`](https://github.com/araggohnxd) made their first contribution in [#9673](https://github.com/encode/django-rest-framework/pull/9673)
+* [`@mbeijen`](https://github.com/mbeijen) made their first contribution in [#9660](https://github.com/encode/django-rest-framework/pull/9660)
+* [`@stefan6419846`](https://github.com/stefan6419846) made their first contribution in [#9676](https://github.com/encode/django-rest-framework/pull/9676)
+* [`@ren000thomas`](https://github.com/ren000thomas) made their first contribution in [#9675](https://github.com/encode/django-rest-framework/pull/9675)
+* [`@ulgens`](https://github.com/ulgens) made their first contribution in [#9682](https://github.com/encode/django-rest-framework/pull/9682)
+* [`@bukh-sal`](https://github.com/bukh-sal) made their first contribution in [#9595](https://github.com/encode/django-rest-framework/pull/9595)
+* [`@rezatn0934`](https://github.com/rezatn0934) made their first contribution in [#9576](https://github.com/encode/django-rest-framework/pull/9576)
+* [`@Rohit10jr`](https://github.com/Rohit10jr) made their first contribution in [#9693](https://github.com/encode/django-rest-framework/pull/9693)
+* [`@kushibayev`](https://github.com/kushibayev) made their first contribution in [#9713](https://github.com/encode/django-rest-framework/pull/9713)
+* [`@alihassancods`](https://github.com/alihassancods) made their first contribution in [#9732](https://github.com/encode/django-rest-framework/pull/9732)
+* [`@kulikjak`](https://github.com/kulikjak) made their first contribution in [#9715](https://github.com/encode/django-rest-framework/pull/9715)
+* [`@Natgho`](https://github.com/Natgho) made their first contribution in [#9749](https://github.com/encode/django-rest-framework/pull/9749)
+
+**Full Changelog**: https://github.com/encode/django-rest-framework/compare/3.16.0...3.16.1
+
 ### 3.16.0
 
 **Date**: 28th March 2025
 
-This release is considered a significant release to improve upstream support with Django and Python. Some of these may change the behaviour of existing features and pre-existing behaviour. Specifically, some fixes were added to around the support of `UniqueConstraint` with nullable fields which will improve built-in serializer validation.
+This release is considered a significant release to improve upstream support with Django and Python. Some of these may change the behavior of existing features and pre-existing behavior. Specifically, some fixes were added to around the support of `UniqueConstraint` with nullable fields which will improve built-in serializer validation.
 
-## Features
+#### Features
 
 * Add official support for Django 5.1 and its new `LoginRequiredMiddleware` in [#9514](https://github.com/encode/django-rest-framework/pull/9514) and [#9657](https://github.com/encode/django-rest-framework/pull/9657)
 * Add official Django 5.2a1 support in [#9634](https://github.com/encode/django-rest-framework/pull/9634)
 * Add support for Python 3.13 in [#9527](https://github.com/encode/django-rest-framework/pull/9527) and [#9556](https://github.com/encode/django-rest-framework/pull/9556)
 * Support Django 2.1+ test client JSON data automatically serialized in [#6511](https://github.com/encode/django-rest-framework/pull/6511) and fix a regression in [#9615](https://github.com/encode/django-rest-framework/pull/9615)
 
-## Bug fixes
+#### Bug fixes
 
 * Fix unique together validator to respect condition's fields from `UniqueConstraint` in [#9360](https://github.com/encode/django-rest-framework/pull/9360)
 * Fix raising on nullable fields part of `UniqueConstraint` in [#9531](https://github.com/encode/django-rest-framework/pull/9531)
@@ -62,19 +125,19 @@ This release is considered a significant release to improve upstream support wit
 * Fix noisy warning and accept integers as min/max values of `DecimalField` in [#9515](https://github.com/encode/django-rest-framework/pull/9515)
 * Fix usages of `open()` in `setup.py` in [#9661](https://github.com/encode/django-rest-framework/pull/9661)
 
-## Translations
+#### Translations
 
 * Add some missing Chinese translations in [#9505](https://github.com/encode/django-rest-framework/pull/9505)
 * Fix spelling mistakes in Farsi language were corrected in [#9521](https://github.com/encode/django-rest-framework/pull/9521)
 * Fixing and adding missing Brazilian Portuguese translations in [#9535](https://github.com/encode/django-rest-framework/pull/9535)
 
-## Removals
+#### Removals
 
 * Remove support for Python 3.8 in [#9670](https://github.com/encode/django-rest-framework/pull/9670)
 * Remove long deprecated code from request wrapper in [#9441](https://github.com/encode/django-rest-framework/pull/9441)
 * Remove deprecated `AutoSchema._get_reference` method in [#9525](https://github.com/encode/django-rest-framework/pull/9525)
 
-## Documentation and internal changes
+#### Documentation and internal changes
 
 * Provide tests for hashing of `OperandHolder` in [#9437](https://github.com/encode/django-rest-framework/pull/9437)
 * Update documentation: Add `adrf` third party package in [#9198](https://github.com/encode/django-rest-framework/pull/9198)
@@ -94,7 +157,7 @@ This release is considered a significant release to improve upstream support wit
 * Fix a number of typos in the test suite in the docs in [#9662](https://github.com/encode/django-rest-framework/pull/9662)
 * Add `django-pyoidc` as a third party authentication library in [#9667](https://github.com/encode/django-rest-framework/pull/9667)
 
-## New Contributors
+#### New Contributors
 
 * [`@maerteijn`](https://github.com/maerteijn) made their first contribution in [#9198](https://github.com/encode/django-rest-framework/pull/9198)
 * [`@FraCata00`](https://github.com/FraCata00) made their first contribution in [#9444](https://github.com/encode/django-rest-framework/pull/9444)
@@ -152,7 +215,7 @@ Date: 15th March 2024
 * Partial serializer should not have required fields [[#7563](https://github.com/encode/django-rest-framework/pull/7563)]
 * Propagate 'default' from model field to serializer field. [[#9030](https://github.com/encode/django-rest-framework/pull/9030)]
 * Allow to override child.run_validation call in ListSerializer [[#8035](https://github.com/encode/django-rest-framework/pull/8035)]
-* Align SearchFilter behaviour to django.contrib.admin search [[#9017](https://github.com/encode/django-rest-framework/pull/9017)]
+* Align SearchFilter behavior to django.contrib.admin search [[#9017](https://github.com/encode/django-rest-framework/pull/9017)]
 * Class name added to unknown field error [[#9019](https://github.com/encode/django-rest-framework/pull/9019)]
 * Fix: Pagination response schemas. [[#9049](https://github.com/encode/django-rest-framework/pull/9049)]
 * Fix choices in ChoiceField to support IntEnum [[#8955](https://github.com/encode/django-rest-framework/pull/8955)]
@@ -306,7 +369,7 @@ Date: 28th September 2020
 
 * Add `--file` option to `generateschema` command. [#7130]
 * Support `tags` for OpenAPI schema generation. See [the schema docs](https://www.django-rest-framework.org/api-guide/schemas/#grouping-operations-with-tags). [#7184]
-* Support customising the operation ID for schema generation. See [the schema docs](https://www.django-rest-framework.org/api-guide/schemas/#operationid). [#7190]
+* Support customizing the operation ID for schema generation. See [the schema docs](https://www.django-rest-framework.org/api-guide/schemas/#operationid). [#7190]
 * Support OpenAPI components for schema generation. See [the schema docs](https://www.django-rest-framework.org/api-guide/schemas/#components). [#7124]
 * The following methods on `AutoSchema` become public API: `get_path_parameters`, `get_pagination_parameters`, `get_filter_parameters`, `get_request_body`, `get_responses`, `get_serializer`, `get_paginator`, `map_serializer`, `map_field`, `map_choice_field`, `map_field_validators`, `allows_filters`. See [the schema docs](https://www.django-rest-framework.org/api-guide/schemas/#autoschema)
 * Add support for Django 3.1's database-agnositic `JSONField`. [#7467]
@@ -344,7 +407,7 @@ Date: 28th September 2020
 * Fix `PrimaryKeyRelatedField` and `HyperlinkedRelatedField` when source field is actually a property. [#7142]
 * `Token.generate_key` is now a class method. [#7502]
 * `@action` warns if method is wrapped in a decorator that does not preserve information using `@functools.wraps`. [#7098]
-* Deprecate `serializers.NullBooleanField` in favour of `serializers.BooleanField` with `allow_null=True` [#7122]
+* Deprecate `serializers.NullBooleanField` in favor of `serializers.BooleanField` with `allow_null=True` [#7122]
 
 ---
 
@@ -354,7 +417,7 @@ Date: 28th September 2020
 
 **Date**: 30th September 2020
 
-* **Security**: Drop `urlize_quoted_links` template tag in favour of Django's built-in `urlize`. Removes a XSS vulnerability for some kinds of content in the browsable API.
+* **Security**: Drop `urlize_quoted_links` template tag in favor of Django's built-in `urlize`. Removes a XSS vulnerability for some kinds of content in the browsable API.
 
 ### 3.11.1
 
@@ -366,7 +429,7 @@ Date: 28th September 2020
 
 **Date**: 12th December 2019
 
-* Drop `.set_context` API [in favour of a `requires_context` marker](3.11-announcement.md#validator-default-context).
+* Drop `.set_context` API [in favor of a `requires_context` marker](3.11-announcement.md#validator-default-context).
 * Changed default widget for TextField with choices to select box. [#6892][gh6892]
 * Supported nested writes on non-relational fields, such as JSONField. [#6916][gh6916]
 * Include request/response media types in OpenAPI schemas, based on configured parsers/renderers. [#6865][gh6865]
@@ -558,13 +621,13 @@ Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.
 **Date**: [3rd April 2018][3.8.0-milestone]
 
 
-* **Breaking Change**: Alter `read_only` plus `default` behaviour. [#5886][gh5886]
+* **Breaking Change**: Alter `read_only` plus `default` behavior. [#5886][gh5886]
 
     `read_only` fields will now **always** be excluded from writable fields.
 
     Previously `read_only` fields with a `default` value would use the `default` for create and update operations.
 
-    In order to maintain the old behaviour you may need to pass the value of `read_only` fields when calling `save()` in
+    In order to maintain the old behavior you may need to pass the value of `read_only` fields when calling `save()` in
     the view:
 
         def perform_create(self, serializer):
@@ -572,13 +635,13 @@ Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.
 
     Alternatively you may override `save()` or `create()` or `update()` on the serializer as appropriate.
 
-* Correct allow_null behaviour when required=False [#5888][gh5888]
+* Correct allow_null behavior when required=False [#5888][gh5888]
 
     Without an explicit `default`, `allow_null` implies a default of `null` for outgoing serialization. Previously such
     fields were being skipped when read-only or otherwise not required.
 
     **Possible backwards compatibility break** if you were relying on such fields being excluded from the outgoing
-    representation. In order to restore the old behaviour you can override `data` to exclude the field when `None`.
+    representation. In order to restore the old behavior you can override `data` to exclude the field when `None`.
 
     For example:
 
@@ -635,7 +698,7 @@ Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.
 * Add HStoreField, postgres fields tests [#5654][gh5654]
 * Always fully qualify ValidationError in docs [#5751][gh5751]
 * Remove unreachable code from ManualSchema [#5766][gh5766]
-* Allowed customising API documentation code samples [#5752][gh5752]
+* Allowed customizing API documentation code samples [#5752][gh5752]
 * Updated docs to use `pip show` [#5757][gh5757]
 * Load 'static' instead of 'staticfiles' in templates [#5773][gh5773]
 * Fixed a typo in `fields` docs [#5783][gh5783]
@@ -698,7 +761,7 @@ Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.
 
 * Schema: Extract method for `manual_fields` processing [#5633][gh5633]
 
-    Allows for easier customisation of `manual_fields` processing, for example
+    Allows for easier customization of `manual_fields` processing, for example
     to provide per-method manual fields. `AutoSchema` adds `get_manual_fields`,
     as the intended override point, and a utility method `update_fields`, to
     handle by-name field replacement from a list, which, in general, you are not
@@ -820,7 +883,7 @@ Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.
 * Don't strip microseconds from `time` when encoding. Makes consistent with `datetime`.
     **BC Change**: Previously only milliseconds were encoded. [#5440][gh5440]
 * Added `STRICT_JSON` setting (default `True`) to raise exception for the extended float values (`nan`, `inf`, `-inf`) accepted by Python's `json` module.
-    **BC Change**: Previously these values would converted to corresponding strings. Set `STRICT_JSON` to `False` to restore the previous behaviour. [#5265][gh5265]
+    **BC Change**: Previously these values would converted to corresponding strings. Set `STRICT_JSON` to `False` to restore the previous behavior. [#5265][gh5265]
 * Add support for `page_size` parameter in CursorPaginator class [#5250][gh5250]
 * Make `DEFAULT_PAGINATION_CLASS` `None` by default.
     **BC Change**: If your were **just** setting `PAGE_SIZE` to enable pagination you will need to add `DEFAULT_PAGINATION_CLASS`.
@@ -858,10 +921,10 @@ Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.
 * Fix naming collisions in Schema Generation [#5464][gh5464]
 * Call Django's authenticate function with the request object [#5295][gh5295]
 * Update coreapi JS to 0.1.1 [#5479][gh5479]
-* Have `is_list_view` recognise RetrieveModel… views [#5480][gh5480]
+* Have `is_list_view` recognize RetrieveModel… views [#5480][gh5480]
 * Remove Django 1.8 & 1.9 compatibility code [#5481][gh5481]
 * Remove deprecated schema code from DefaultRouter [#5482][gh5482]
-* Refactor schema generation to allow per-view customisation.
+* Refactor schema generation to allow per-view customization.
     **BC Change**: `SchemaGenerator.get_serializer_fields` has been refactored as `AutoSchema.get_serializer_fields` and drops the `view` argument [#5354][gh5354]
 
 ## 3.6.x series
