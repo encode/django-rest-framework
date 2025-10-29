@@ -91,35 +91,35 @@ class JSONEncoderTests(TestCase):
         Tests encoding ipaddress IPv6Address object
         """
         obj = ipaddress.IPv6Address("2001:0db8:85a3:0000:0000:8a2e:0370:7334")
-        assert self.encoder.default(obj) == str(obj)
+        assert self.encoder.default(obj) == "2001:db8:85a3::8a2e:370:7334"
 
     def test_encode_ipaddress_ipv4network(self):
         """
         Tests encoding ipaddress IPv4Network object
         """
         obj = ipaddress.IPv4Network("192.0.2.8/29")
-        assert self.encoder.default(obj) == str(obj)
+        assert self.encoder.default(obj) == "192.0.2.8/29"
 
     def test_encode_ipaddress_ipv6network(self):
         """
         Tests encoding ipaddress IPv4Network object
         """
         obj = ipaddress.IPv6Network("2001:4860:0000::0000/32")
-        assert self.encoder.default(obj) == str(obj)
+        assert self.encoder.default(obj) == "2001:4860::/32"
 
     def test_encode_ipaddress_ipv4interface(self):
         """
         Tests encoding ipaddress IPv4Interface object
         """
         obj = ipaddress.IPv4Interface("192.0.2.8/29")
-        assert self.encoder.default(obj) == str(obj)
+        assert self.encoder.default(obj) == "192.0.2.8/29"
 
     def test_encode_ipaddress_ipv6interface(self):
         """
         Tests encoding ipaddress IPv4Network object
         """
         obj = ipaddress.IPv6Interface("2001:4860:4860::8888/32")
-        assert self.encoder.default(obj) == str(obj)
+        assert self.encoder.default(obj) == "2001:4860:4860::8888/32"
 
     @pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
     def test_encode_coreapi_raises_error(self):
