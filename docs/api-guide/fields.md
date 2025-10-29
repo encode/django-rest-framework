@@ -180,7 +180,7 @@ The `allow_null` option is also available for string fields, although its usage 
 
 ## EmailField
 
-A text representation, validates the text to be a valid e-mail address.
+A text representation, validates the text to be a valid email address.
 
 Corresponds to `django.db.models.fields.EmailField`
 
@@ -762,7 +762,7 @@ suitable for updating our target object. With `source='*'`, the return from
                      ('y_coordinate', 4),
                      ('x_coordinate', 3)])
 
-For completeness lets do the same thing again but with the nested serializer
+For completeness let's do the same thing again but with the nested serializer
 approach suggested above:
 
     class NestedCoordinateSerializer(serializers.Serializer):
