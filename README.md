@@ -54,7 +54,7 @@ Some reasons you might want to use REST framework:
 
 # Requirements
 
-* Python 3.9+
+* Python 3.10+
 * Django 4.2, 5.0, 5.1, 5.2
 
 We **highly recommend** and only officially support the latest patch release of
@@ -67,10 +67,11 @@ Install using `pip`...
     pip install djangorestframework
 
 Add `'rest_framework'` to your `INSTALLED_APPS` setting.
+
 ```python
 INSTALLED_APPS = [
-    ...
-    'rest_framework',
+    # ...
+    "rest_framework",
 ]
 ```
 
@@ -99,7 +100,7 @@ from rest_framework import routers, serializers, viewsets
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
-        fields = ['url', 'username', 'email', 'is_staff']
+        fields = ["url", "username", "email", "is_staff"]
 
 
 # ViewSets define the view behavior.
@@ -110,13 +111,13 @@ class UserViewSet(viewsets.ModelViewSet):
 
 # Routers provide a way of automatically determining the URL conf.
 router = routers.DefaultRouter()
-router.register(r'users', UserViewSet)
+router.register(r"users", UserViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
-    path('', include(router.urls)),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path("", include(router.urls)),
+    path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
 ]
 ```
 
@@ -126,15 +127,15 @@ Add the following to your `settings.py` module:
 
 ```python
 INSTALLED_APPS = [
-    ...  # Make sure to include the default installed apps here.
-    'rest_framework',
+    # ... make sure to include the default installed apps here.
+    "rest_framework",
 ]
 
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly",
     ]
 }
 ```
