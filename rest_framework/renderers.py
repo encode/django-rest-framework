@@ -10,6 +10,7 @@ REST framework also provides an HTML renderer that renders the browsable API.
 import base64
 import contextlib
 import datetime
+import sys
 from urllib import parse
 
 from django import forms
@@ -351,9 +352,14 @@ class HTMLFormRenderer(BaseRenderer):
             if format_ is not None:
                 # field.value is expected to be a string
                 # https://www.django-rest-framework.org/api-guide/fields/#datetimefield
+                field_value = field.value
+                if format_ == ISO_8601 and sys.version_info < (3, 11):
+                    # We can drop this branch once we drop support for Python < 3.11
+                    # https://docs.python.org/3/whatsnew/3.11.html#datetime
+                    field_value = field_value.rstrip('Z')
                 field.value = (
-                    datetime.datetime.fromisoformat(field.value.rstrip('Z')) if format_ == ISO_8601
-                    else datetime.datetime.strptime(field.value, format_)
+                    datetime.datetime.fromisoformat(field_value) if format_ == ISO_8601
+                    else datetime.datetime.strptime(field_value, format_)
                 )
 
             # The format of an input type="datetime-local" is "yyyy-MM-ddThh:mm"
