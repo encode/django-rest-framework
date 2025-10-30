@@ -24,5 +24,5 @@ ISO_8601 = 'iso-8601'
 DJANGO_DURATION_FORMAT = 'django'
 
 
-class RemovedInDRF317Warning(PendingDeprecationWarning):
+class RemovedInDRF318Warning(DeprecationWarning):
     pass

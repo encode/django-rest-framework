@@ -63,7 +63,7 @@ max_supported_python = "3.14"
 [tool.pytest.ini_options]
 addopts = "--tb=short --strict-markers -ra"
 testpaths = [ "tests" ]
-filterwarnings = [ "ignore:CoreAPI compatibility is deprecated*:rest_framework.RemovedInDRF317Warning" ]
+filterwarnings = [ "ignore:CoreAPI compatibility is deprecated*:rest_framework.RemovedInDRF318Warning" ]
 
 [tool.coverage.run]
 # NOTE: source is ignored with pytest-cov (but uses the same).
