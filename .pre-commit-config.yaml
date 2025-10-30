@@ -18,6 +18,7 @@ repos:
   - id: flake8
     additional_dependencies:
     - flake8-tidy-imports
+    - flake8-bugbear
 - repo: https://github.com/adamchainz/blacken-docs
   rev: 1.20.0
   hooks:
