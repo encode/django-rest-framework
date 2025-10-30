@@ -36,6 +36,86 @@ You can determine your currently installed version using `pip show`:
 
 ---
 
+## 3.17.x series
+
+### 3.17.0
+
+**Date**: 31th October 2025
+
+This is a significant release that includes improvements and bugfixes and well as keeping up with upstream Python support.
+
+This is also the first release made from the [@django-commons](https://github.com/django-commons) organization. The people in the maintenance team haven't changed much since the previous release.
+
+### Features
+
+* Add support for Python 3.14 by [@cclauss](https://github.com/cclauss) in [#9780](https://github.com/encode/django-rest-framework/pull/9780)
+* Drop support for Python 3.9 by [@auvipy](https://github.com/auvipy) in [#9781](https://github.com/encode/django-rest-framework/pull/9781)
+* Add ability to specify output format for `DurationField` by [@sevdog](https://github.com/sevdog) in [#8532](https://github.com/encode/django-rest-framework/pull/8532)
+* Add missing decorators: `@versioning_class()`, `@content_negotiation_class()`, `@metadata_class()` for function-based views  by [@qqii](https://github.com/qqii) in [#9719](https://github.com/encode/django-rest-framework/pull/9719)
+* Support `violation_error_code` and `violation_error_message` from `UniqueConstraint` in `UniqueTogetherValidator` by [@s-aleshin](https://github.com/s-aleshin) in [#9766](https://github.com/encode/django-rest-framework/pull/9766)
+* Add support for `ipaddress` objects in `JSONEncoder` by [@corenting](https://github.com/corenting) in [#9087](https://github.com/encode/django-rest-framework/pull/9087)
+* Delay CoreAPI deprecation until DRF 3.18 by [@browniebroke](https://github.com/browniebroke) in [#9810](https://github.com/encode/django-rest-framework/pull/9810). We didn't find the time to handle this for 3.17 as it was initially planned. The exception being raised has been renamed from `RemovedInDRF317Warning` to `RemovedInDRF318Warning` so you may have to update your warnings filters accordingly.
+
+### Packaging
+
+* Migrate packaging to `pyproject.toml` by [@deronnax](https://github.com/deronnax) in [#9056](https://github.com/encode/django-rest-framework/pull/9056).
+
+### Bug fixes
+
+* Refactor token generation to use the `secrets` module by [@mahdirahimi1999](https://github.com/mahdirahimi1999) in [#9760](https://github.com/encode/django-rest-framework/pull/9760)
+* Prevent small risk of `Token` overwrite by [@mahdirahimi1999](https://github.com/mahdirahimi1999) in [#9754](https://github.com/encode/django-rest-framework/pull/9754)
+* Fix `UniqueTogetherValidator` validation when condition references a read-only field by [@ticosax](https://github.com/ticosax) in [#9764](https://github.com/encode/django-rest-framework/pull/9764)
+* Fix validation on many to many field when `default=None` by [@Genarito](https://github.com/Genarito) in [#9790](https://github.com/encode/django-rest-framework/pull/9790)
+* Fix invalid SPDX license expression in `__init__.py` by [@TheFunctionalGuy](https://github.com/TheFunctionalGuy) in [#9799](https://github.com/encode/django-rest-framework/pull/9799)
+* Fix `HTMLFormRenderer` to ensure a valid `datetime-local` format by [@mgaligniana](https://github.com/mgaligniana) in [#9365](https://github.com/encode/django-rest-framework/pull/9365)
+* Fix mutable default arguments in OrderingFilter methods by [@killerdevildog](https://github.com/killerdevildog) in [#9742](https://github.com/encode/django-rest-framework/pull/9742)
+
+### Translations
+
+* Update french translation by [@SebCorbin](https://github.com/SebCorbin) in [#9770](https://github.com/encode/django-rest-framework/pull/9770)
+
+### Documentation and internal changes
+
+* Rename `master` branch to `main` by [@browniebroke](https://github.com/browniebroke) in [#9761](https://github.com/encode/django-rest-framework/pull/9761)
+* Restore references to GitHub Issues and Discussions by [@browniebroke](https://github.com/browniebroke) in [#9757](https://github.com/encode/django-rest-framework/pull/9757)
+* Fix a number of broken links in the documentation by [@browniebroke](https://github.com/browniebroke) in [#9758](https://github.com/encode/django-rest-framework/pull/9758)
+* Add `drf-shapeless-serializers` to third-party package documentation by [@khaledsukkar2](https://github.com/khaledsukkar2) in [#9717](https://github.com/encode/django-rest-framework/pull/9717)
+* Document how to transform factory request to DRF request by [@mgaligniana](https://github.com/mgaligniana) in [#9380](https://github.com/encode/django-rest-framework/pull/9380)
+* Remove outdated reference to `AllowPUTAsCreateMixin` in the documentation by [@zankoAn](https://github.com/zankoAn) in [#9788](https://github.com/encode/django-rest-framework/pull/9788)
+* Clarify where settings come from in filtering documentation by [@journpy](https://github.com/journpy) in [#9795](https://github.com/encode/django-rest-framework/pull/9795)
+* Add syntax highlighting to code examples in tutorial by [@Infamous003](https://github.com/Infamous003) in [#9794](https://github.com/encode/django-rest-framework/pull/9794)
+* Illustrate `last_page_strings` with an example in the documentation by [@mahdighadiriii](https://github.com/mahdighadiriii) in [#9800](https://github.com/encode/django-rest-framework/pull/9800)
+* Add section about avoiding N+1 queries in generic views by [@p-r-a-v-i-n](https://github.com/p-r-a-v-i-n) in [#9801](https://github.com/encode/django-rest-framework/pull/9801)
+* Add Apitally to third party packages documentation by [@itssimon](https://github.com/itssimon) in [#9718](https://github.com/encode/django-rest-framework/pull/9718)
+* Remove Transifex mentions from documentation by [@TGoddessana](https://github.com/TGoddessana) in [#9572](https://github.com/encode/django-rest-framework/pull/9572)
+* Add `drf-auth-kit` to third party authentication packages documentation by [@huynguyengl99](https://github.com/huynguyengl99) in [#9785](https://github.com/encode/django-rest-framework/pull/9785)
+* Standardize spelling to American English in documentation by [@p-r-a-v-i-n](https://github.com/p-r-a-v-i-n) in [#9804](https://github.com/encode/django-rest-framework/pull/9804)
+
+* Adjust CI matrix to reflect upstream Django support by [@browniebroke](https://github.com/browniebroke) in [#9768](https://github.com/encode/django-rest-framework/pull/9768)
+* Automate documentation deployment by [@browniebroke](https://github.com/browniebroke) in [#9759](https://github.com/encode/django-rest-framework/pull/9759)
+* Set minimum Python version to 3.10 in pyupgrade pre-commit hook by [@browniebroke](https://github.com/browniebroke) in [#9798](https://github.com/encode/django-rest-framework/pull/9798)
+* Update blacken-docs and black to latest versions by [@browniebroke](https://github.com/browniebroke) in [#9802](https://github.com/encode/django-rest-framework/pull/9802)
+* Update pre-commit hooks by [@browniebroke](https://github.com/browniebroke) in [#9805](https://github.com/encode/django-rest-framework/pull/9805)
+
+## New Contributors
+
+* [@khaledsukkar2](https://github.com/khaledsukkar2) made their first contribution in [#9717](https://github.com/encode/django-rest-framework/pull/9717)
+* [@qqii](https://github.com/qqii) made their first contribution in [#9719](https://github.com/encode/django-rest-framework/pull/9719)
+* [@zankoAn](https://github.com/zankoAn) made their first contribution in [#9788](https://github.com/encode/django-rest-framework/pull/9788)
+* [@journpy](https://github.com/journpy) made their first contribution in [#9795](https://github.com/encode/django-rest-framework/pull/9795)
+* [@s-aleshin](https://github.com/s-aleshin) made their first contribution in [#9766](https://github.com/encode/django-rest-framework/pull/9766)
+* [@Infamous003](https://github.com/Infamous003) made their first contribution in [#9794](https://github.com/encode/django-rest-framework/pull/9794)
+* [@Genarito](https://github.com/Genarito) made their first contribution in [#9790](https://github.com/encode/django-rest-framework/pull/9790)
+* [@TheFunctionalGuy](https://github.com/TheFunctionalGuy) made their first contribution in [#9799](https://github.com/encode/django-rest-framework/pull/9799)
+* [@mahdighadiriii](https://github.com/mahdighadiriii) made their first contribution in [#9800](https://github.com/encode/django-rest-framework/pull/9800)
+* [@p-r-a-v-i-n](https://github.com/p-r-a-v-i-n) made their first contribution in [#9801](https://github.com/encode/django-rest-framework/pull/9801)
+* [@itssimon](https://github.com/itssimon) made their first contribution in [#9718](https://github.com/encode/django-rest-framework/pull/9718)
+* [@huynguyengl99](https://github.com/huynguyengl99) made their first contribution in [#9785](https://github.com/encode/django-rest-framework/pull/9785)
+* [@corenting](https://github.com/corenting) made their first contribution in [#9087](https://github.com/encode/django-rest-framework/pull/9087)
+* [@killerdevildog](https://github.com/killerdevildog) made their first contribution in [#9742](https://github.com/encode/django-rest-framework/pull/9742)
+
+[Full Changelog](https://github.com/encode/django-rest-framework/compare/3.16.1...3.17.0)
+
 ## 3.16.x series
 
 ### 3.16.1
