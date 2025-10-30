@@ -114,7 +114,7 @@ This is also the first release made from the [@django-commons](https://github.co
 * [@corenting](https://github.com/corenting) made their first contribution in [#9087](https://github.com/django-commons/django-rest-framework/pull/9087)
 * [@killerdevildog](https://github.com/killerdevildog) made their first contribution in [#9742](https://github.com/django-commons/django-rest-framework/pull/9742)
 
-[Full Changelog](https://github.com/encode/django-rest-framework/compare/3.16.1...3.17.0)
+[Full Changelog](https://github.com/django-commons/django-rest-framework/compare/3.16.1...3.17.0)
 
 ## 3.16.x series
 
