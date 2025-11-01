@@ -1,17 +1,17 @@
 ---
 source:
-    - serializers.py
+  - serializers.py
 ---
 
 # Serializers
 
 > Expanding the usefulness of the serializers is something that we would
-like to address.  However, it's not a trivial problem, and it
-will take some serious design work.
+> like to address. However, it's not a trivial problem, and it
+> will take some serious design work.
 >
 > &mdash; Russell Keith-Magee, [Django users group][cite]
 
-Serializers allow complex data such as querysets and model instances to be converted to native Python datatypes that can then be easily rendered into `JSON`, `XML` or other content types.  Serializers also provide deserialization, allowing parsed data to be converted back into complex types, after first validating the incoming data.
+Serializers allow complex data such as querysets and model instances to be converted to native Python datatypes that can then be easily rendered into `JSON`, `XML` or other content types. Serializers also provide deserialization, allowing parsed data to be converted back into complex types, after first validating the incoming data.
 
 The serializers in REST framework work very similarly to Django's `Form` and `ModelForm` classes. We provide a `Serializer` class which gives you a powerful, generic way to control the output of your responses, as well as a `ModelSerializer` class which provides a useful shortcut for creating serializers that deal with model instances and querysets.
 
@@ -48,7 +48,7 @@ We can now use `CommentSerializer` to serialize a comment, or list of comments. 
     serializer.data
     # {'email': 'leila@example.com', 'content': 'foo bar', 'created': '2016-01-27T15:17:10.375877'}
 
-At this point we've translated the model instance into Python native datatypes.  To finalize the serialization process we render the data into `json`.
+At this point we've translated the model instance into Python native datatypes. To finalize the serialization process we render the data into `json`.
 
     from rest_framework.renderers import JSONRenderer
 
@@ -149,7 +149,7 @@ Note that in the case above we're now having to access the serializer `.validate
 
 ## Validation
 
-When deserializing data, you always need to call `is_valid()` before attempting to access the validated data, or save an object instance. If any validation errors occur, the `.errors` property will contain a dictionary representing the resulting error messages.  For example:
+When deserializing data, you always need to call `is_valid()` before attempting to access the validated data, or save an object instance. If any validation errors occur, the `.errors` property will contain a dictionary representing the resulting error messages. For example:
 
     serializer = CommentSerializer(data={'email': 'foobar', 'content': 'baz'})
     serializer.is_valid()
@@ -157,7 +157,7 @@ When deserializing data, you always need to call `is_valid()` before attempting 
     serializer.errors
     # {'email': ['Enter a valid email address.'], 'created': ['This field is required.']}
 
-Each key in the dictionary will be the field name, and the values will be lists of strings of any error messages corresponding to that field.  The `non_field_errors` key may also be present, and will list any general validation errors. The name of the `non_field_errors` key may be customized using the `NON_FIELD_ERRORS_KEY` REST framework setting.
+Each key in the dictionary will be the field name, and the values will be lists of strings of any error messages corresponding to that field. The `non_field_errors` key may also be present, and will list any general validation errors. The name of the `non_field_errors` key may be customized using the `NON_FIELD_ERRORS_KEY` REST framework setting.
 
 When deserializing a list of items, errors will be returned as a list of dictionaries representing each of the deserialized items.
 
@@ -172,11 +172,11 @@ These exceptions are automatically dealt with by the default exception handler t
 
 #### Field-level validation
 
-You can specify custom field-level validation by adding `.validate_<field_name>` methods to your `Serializer` subclass.  These are similar to the `.clean_<field_name>` methods on Django forms.
+You can specify custom field-level validation by adding `.validate_<field_name>` methods to your `Serializer` subclass. These are similar to the `.clean_<field_name>` methods on Django forms.
 
 These methods take a single argument, which is the field value that requires validation.
 
-Your `validate_<field_name>` methods should return the validated value or raise a `serializers.ValidationError`.  For example:
+Your `validate_<field_name>` methods should return the validated value or raise a `serializers.ValidationError`. For example:
 
     from rest_framework import serializers
 
@@ -200,7 +200,7 @@ Your `validate_<field_name>` methods should return the validated value or raise 
 
 #### Object-level validation
 
-To do any other validation that requires access to multiple fields, add a method called `.validate()` to your `Serializer` subclass.  This method takes a single argument, which is a dictionary of field values.  It should raise a `serializers.ValidationError` if necessary, or just return the validated values.  For example:
+To do any other validation that requires access to multiple fields, add a method called `.validate()` to your `Serializer` subclass. This method takes a single argument, which is a dictionary of field values. It should raise a `serializers.ValidationError` if necessary, or just return the validated values. For example:
 
     from rest_framework import serializers
 
@@ -325,10 +325,10 @@ The following example demonstrates how you might handle creating a user with a n
 
 For updates you'll want to think carefully about how to handle updates to relationships. For example if the data for the relationship is `None`, or not provided, which of the following should occur?
 
-* Set the relationship to `NULL` in the database.
-* Delete the associated instance.
-* Ignore the data and leave the instance as it is.
-* Raise a validation error.
+- Set the relationship to `NULL` in the database.
+- Delete the associated instance.
+- Ignore the data and leave the instance as it is.
+- Raise a validation error.
 
 Here's an example for an `.update()` method on our previous `UserSerializer` class.
 
@@ -397,7 +397,7 @@ The `Serializer` class can also handle serializing or deserializing lists of obj
 
 #### Serializing multiple objects
 
-To serialize a queryset or list of objects instead of a single object instance, you should pass the `many=True` flag when instantiating the serializer.  You can then pass a queryset or list of objects to be serialized.
+To serialize a queryset or list of objects instead of a single object instance, you should pass the `many=True` flag when instantiating the serializer. You can then pass a queryset or list of objects to be serialized.
 
     queryset = Book.objects.all()
     serializer = BookSerializer(queryset, many=True)
@@ -414,9 +414,9 @@ The default behavior for deserializing multiple objects is to support multiple o
 
 ## Including extra context
 
-There are some cases where you need to provide extra context to the serializer in addition to the object being serialized.  One common case is if you're using a serializer that includes hyperlinked relations, which requires the serializer to have access to the current request so that it can properly generate fully qualified URLs.
+There are some cases where you need to provide extra context to the serializer in addition to the object being serialized. One common case is if you're using a serializer that includes hyperlinked relations, which requires the serializer to have access to the current request so that it can properly generate fully qualified URLs.
 
-You can provide arbitrary additional context by passing a `context` argument when instantiating the serializer.  For example:
+You can provide arbitrary additional context by passing a `context` argument when instantiating the serializer. For example:
 
     serializer = AccountSerializer(account, context={'request': request})
     serializer.data
@@ -434,9 +434,9 @@ The `ModelSerializer` class provides a shortcut that let's you automatically cre
 
 **The `ModelSerializer` class is the same as a regular `Serializer` class, except that**:
 
-* It will automatically generate a set of fields for you, based on the model.
-* It will automatically generate validators for the serializer, such as unique_together validators.
-* It includes simple default implementations of `.create()` and `.update()`.
+- It will automatically generate a set of fields for you, based on the model.
+- It will automatically generate validators for the serializer, such as unique_together validators.
+- It includes simple default implementations of `.create()` and `.update()`.
 
 Declaring a `ModelSerializer` looks like this:
 
@@ -556,7 +556,6 @@ Please review the [Validators Documentation](/api-guide/validators/) for details
 
 ---
 
-
 ## Additional keyword arguments
 
 There is also a shortcut allowing you to specify arbitrary additional keyword arguments on fields, using the `extra_kwargs` option. As in the case of `read_only_fields`, this means you do not need to explicitly declare the field on the serializer.
@@ -582,7 +581,7 @@ Please keep in mind that, if the field has already been explicitly declared on t
 
 ## Relational fields
 
-When serializing model instances, there are a number of different ways you might choose to represent relationships.  The default representation for `ModelSerializer` is to use the primary keys of the related instances.
+When serializing model instances, there are a number of different ways you might choose to represent relationships. The default representation for `ModelSerializer` is to use the primary keys of the related instances.
 
 Alternative representations include serializing using hyperlinks, serializing complete nested representations, or serializing with a custom representation.
 
@@ -694,7 +693,7 @@ Rather than relative URLs, such as:
 
     /accounts/1/
 
-If you *do* want to use relative URLs, you should explicitly pass `{'request': None}`
+If you _do_ want to use relative URLs, you should explicitly pass `{'request': None}`
 in the serializer context.
 
 ## How hyperlinked views are determined
@@ -740,13 +739,13 @@ Alternatively you can set the fields on the serializer explicitly. For example:
 
 ## Changing the URL field name
 
-The name of the URL field defaults to 'url'.  You can override this globally, by using the `URL_FIELD_NAME` setting.
+The name of the URL field defaults to 'url'. You can override this globally, by using the `URL_FIELD_NAME` setting.
 
 ---
 
 # ListSerializer
 
-The `ListSerializer` class provides the behavior for serializing and validating multiple objects at once. You won't *typically* need to use `ListSerializer` directly, but should instead simply pass `many=True` when instantiating a serializer.
+The `ListSerializer` class provides the behavior for serializing and validating multiple objects at once. You won't _typically_ need to use `ListSerializer` directly, but should instead simply pass `many=True` when instantiating a serializer.
 
 When a serializer is instantiated and `many=True` is passed, a `ListSerializer` instance will be created. The serializer class then becomes a child of the parent `ListSerializer`
 
@@ -766,10 +765,10 @@ This is `None` by default, but can be set to a positive integer if you want to v
 
 ### Customizing `ListSerializer` behavior
 
-There *are* a few use cases when you might want to customize the `ListSerializer` behavior. For example:
+There _are_ a few use cases when you might want to customize the `ListSerializer` behavior. For example:
 
-* You want to provide particular validation of the lists, such as checking that one element does not conflict with another element in a list.
-* You want to customize the create or update behavior of multiple objects.
+- You want to provide particular validation of the lists, such as checking that one element does not conflict with another element in a list.
+- You want to customize the create or update behavior of multiple objects.
 
 For these cases you can modify the class that is used when `many=True` is passed, by using the `list_serializer_class` option on the serializer `Meta` class.
 
@@ -805,10 +804,10 @@ By default the `ListSerializer` class does not support multiple updates. This is
 
 To support multiple updates you'll need to do so explicitly. When writing your multiple update code make sure to keep the following in mind:
 
-* How do you determine which instance should be updated for each item in the list of data?
-* How should insertions be handled? Are they invalid, or do they create new objects?
-* How should removals be handled? Do they imply object deletion, or removing a relationship? Should they be silently ignored, or are they invalid?
-* How should ordering be handled? Does changing the position of two items imply any state change or is it ignored?
+- How do you determine which instance should be updated for each item in the list of data?
+- How should insertions be handled? Are they invalid, or do they create new objects?
+- How should removals be handled? Do they imply object deletion, or removing a relationship? Should they be silently ignored, or are they invalid?
+- How should ordering be handled? Does changing the position of two items imply any state change or is it ignored?
 
 You will need to add an explicit `id` field to the instance serializer. The default implicitly-generated `id` field is marked as `read_only`. This causes it to be removed on updates. Once you declare it explicitly, it will be available in the list serializer's `update` method.
 
@@ -868,17 +867,17 @@ Occasionally you might need to explicitly specify how the child and parent class
 
 This class implements the same basic API as the `Serializer` class:
 
-* `.data` - Returns the outgoing primitive representation.
-* `.is_valid()` - Deserializes and validates incoming data.
-* `.validated_data` - Returns the validated incoming data.
-* `.errors` - Returns any errors during validation.
-* `.save()` - Persists the validated data into an object instance.
+- `.data` - Returns the outgoing primitive representation.
+- `.is_valid()` - Deserializes and validates incoming data.
+- `.validated_data` - Returns the validated incoming data.
+- `.errors` - Returns any errors during validation.
+- `.save()` - Persists the validated data into an object instance.
 
 There are four methods that can be overridden, depending on what functionality you want the serializer class to support:
 
-* `.to_representation()` - Override this to support serialization, for read operations.
-* `.to_internal_value()` - Override this to support deserialization, for write operations.
-* `.create()` and `.update()` - Override either or both of these to support saving instances.
+- `.to_representation()` - Override this to support serialization, for read operations.
+- `.to_internal_value()` - Override this to support deserialization, for write operations.
+- `.create()` and `.update()` - Override either or both of these to support saving instances.
 
 Because this class provides the same interface as the `Serializer` class, you can use it with the existing generic class-based views exactly as you would for a regular `Serializer` or `ModelSerializer`.
 
@@ -1013,9 +1012,9 @@ If you need to alter the serialization or deserialization behavior of a serializ
 
 Some reasons this might be useful include...
 
-* Adding new behavior for new serializer base classes.
-* Modifying the behavior slightly for an existing class.
-* Improving serialization performance for a frequently accessed API endpoint that returns lots of data.
+- Adding new behavior for new serializer base classes.
+- Modifying the behavior slightly for an existing class.
+- Improving serialization performance for a frequently accessed API endpoint that returns lots of data.
 
 The signatures for these methods are as follows:
 
@@ -1031,7 +1030,7 @@ May be overridden in order to modify the representation style. For example:
         ret['username'] = ret['username'].lower()
         return ret
 
-#### ``to_internal_value(self, data)``
+#### `to_internal_value(self, data)`
 
 Takes the unvalidated incoming data as input and should return the validated data that will be made available as `serializer.validated_data`. The return value will also be passed to the `.create()` or `.update()` methods if `.save()` is called on the serializer class.
 
@@ -1058,12 +1057,12 @@ Like Django's `Model` and `ModelForm` classes, the inner `Meta` class on seriali
         class Meta(MyBaseSerializer.Meta):
             model = Account
 
-Typically we would recommend *not* using inheritance on inner Meta classes, but instead declaring all options explicitly.
+Typically we would recommend _not_ using inheritance on inner Meta classes, but instead declaring all options explicitly.
 
 Additionally, the following caveats apply to serializer inheritance:
 
-* Normal Python name resolution rules apply. If you have multiple base classes that declare a `Meta` inner class, only the first one will be used. This means the child’s `Meta`, if it exists, otherwise the `Meta` of the first parent, etc.
-* It’s possible to declaratively remove a `Field` inherited from a parent class by setting the name to be `None` on the subclass.
+- Normal Python name resolution rules apply. If you have multiple base classes that declare a `Meta` inner class, only the first one will be used. This means the child’s `Meta`, if it exists, otherwise the `Meta` of the first parent, etc.
+- It’s possible to declaratively remove a `Field` inherited from a parent class by setting the name to be `None` on the subclass.
 
         class MyBaseSerializer(ModelSerializer):
             my_field = serializers.CharField()
@@ -1071,11 +1070,11 @@ Additionally, the following caveats apply to serializer inheritance:
         class MySerializer(MyBaseSerializer):
             my_field = None
 
-    However, you can only use this technique to opt out from a field defined declaratively by a parent class; it won’t prevent the `ModelSerializer` from generating a default field. To opt-out from default fields, see [Specifying which fields to include](#specifying-which-fields-to-include).
+  However, you can only use this technique to opt out from a field defined declaratively by a parent class; it won’t prevent the `ModelSerializer` from generating a default field. To opt-out from default fields, see [Specifying which fields to include](#specifying-which-fields-to-include).
 
 ## Dynamically modifying fields
 
-Once a serializer has been initialized, the dictionary of fields that are set on the serializer may be accessed using the `.fields` attribute.  Accessing and modifying this attribute allows you to dynamically modify the serializer.
+Once a serializer has been initialized, the dictionary of fields that are set on the serializer may be accessed using the `.fields` attribute. Accessing and modifying this attribute allows you to dynamically modify the serializer.
 
 Modifying the `fields` argument directly allows you to do interesting things such as changing the arguments on serializer fields at runtime, rather than at the point of declaring the serializer.
 
@@ -1171,7 +1170,7 @@ blacklisted and child serializers can be optionally expanded.
 
 ## HTML JSON Forms
 
-The [html-json-forms][html-json-forms] package provides an algorithm and serializer for processing `<form>` submissions per the (inactive) [HTML JSON Form specification][json-form-spec].  The serializer facilitates processing of arbitrarily nested JSON structures within HTML.  For example, `<input name="items[0][id]" value="5">` will be interpreted as `{"items": [{"id": "5"}]}`.
+The [html-json-forms][html-json-forms] package provides an algorithm and serializer for processing `<form>` submissions per the (inactive) [HTML JSON Form specification][json-form-spec]. The serializer facilitates processing of arbitrarily nested JSON structures within HTML. For example, `<input name="items[0][id]" value="5">` will be interpreted as `{"items": [{"id": "5"}]}`.
 
 ## DRF-Base64
 
@@ -1192,7 +1191,6 @@ The [drf-encrypt-content][drf-encrypt-content] package helps you encrypt your da
 ## Shapeless Serializers
 
 The [drf-shapeless-serializers][drf-shapeless-serializers] package provides dynamic serializer configuration capabilities, allowing runtime field selection, renaming, attribute modification, and nested relationship configuration without creating multiple serializer classes. It helps eliminate serializer boilerplate while providing flexible API responses.
-
 
 [cite]: https://groups.google.com/d/topic/django-users/sVFaOfQi4wY/discussion
 [relations]: relations.md
@@ -1217,3 +1215,8 @@ The [drf-shapeless-serializers][drf-shapeless-serializers] package provides dyna
 [drf-writable-nested]: https://github.com/beda-software/drf-writable-nested
 [drf-encrypt-content]: https://github.com/oguzhancelikarslan/drf-encrypt-content
 [drf-shapeless-serializers]: https://github.com/khaledsukkar2/drf-shapeless-serializers
+
+> **Note**: The Browsable API internally simulates a `POST` request in order to
+> determine the serializer fields for its HTML form. Because of this,
+> `get_serializer_class()` or permission checks may observe `request.method`
+> as `"POST"` even during GET requests. This is expected behaviour.
