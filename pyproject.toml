@@ -25,6 +25,7 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Topic :: Internet :: WWW/HTTP",
 ]
 dynamic = [ "version" ]
@@ -56,10 +57,13 @@ known_first_party = [ "rest_framework", "tests" ]
 skip = "*/kickstarter-announcement.md,*.js,*.map,*.po"
 ignore-words-list = "fo,malcom,ser"
 
+[tool.pyproject-fmt]
+max_supported_python = "3.14"
+
 [tool.pytest.ini_options]
 addopts = "--tb=short --strict-markers -ra"
 testpaths = [ "tests" ]
-filterwarnings = [ "ignore:CoreAPI compatibility is deprecated*:rest_framework.RemovedInDRF317Warning" ]
+filterwarnings = [ "ignore:CoreAPI compatibility is deprecated*:rest_framework.RemovedInDRF318Warning" ]
 
 [tool.coverage.run]
 # NOTE: source is ignored with pytest-cov (but uses the same).

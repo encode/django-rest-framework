@@ -14,7 +14,7 @@ from django.utils.encoding import force_str
 from django.utils.text import smart_split, unescape_string_literal
 from django.utils.translation import gettext_lazy as _
 
-from rest_framework import RemovedInDRF317Warning
+from rest_framework import RemovedInDRF318Warning
 from rest_framework.compat import coreapi, coreschema
 from rest_framework.fields import CharField
 from rest_framework.settings import api_settings
@@ -51,7 +51,7 @@ class BaseFilterBackend:
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
         if coreapi is not None:
-            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.17', RemovedInDRF317Warning)
+            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.18', RemovedInDRF318Warning)
         assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
         return []
 
@@ -189,7 +189,7 @@ class SearchFilter(BaseFilterBackend):
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
         if coreapi is not None:
-            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.17', RemovedInDRF317Warning)
+            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.18', RemovedInDRF318Warning)
         assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
         return [
             coreapi.Field(
@@ -249,7 +249,9 @@ class OrderingFilter(BaseFilterBackend):
             return (ordering,)
         return ordering
 
-    def get_default_valid_fields(self, queryset, view, context={}):
+    def get_default_valid_fields(self, queryset, view, context=None):
+        if context is None:
+            context = {}
         # If `ordering_fields` is not specified, then we determine a default
         # based on the serializer class, if one exists on the view.
         if hasattr(view, 'get_serializer_class'):
@@ -286,7 +288,9 @@ class OrderingFilter(BaseFilterBackend):
             )
         ]
 
-    def get_valid_fields(self, queryset, view, context={}):
+    def get_valid_fields(self, queryset, view, context=None):
+        if context is None:
+            context = {}
         valid_fields = getattr(view, 'ordering_fields', self.ordering_fields)
 
         if valid_fields is None:
@@ -351,7 +355,7 @@ class OrderingFilter(BaseFilterBackend):
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
         if coreapi is not None:
-            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.17', RemovedInDRF317Warning)
+            warnings.warn('CoreAPI compatibility is deprecated and will be removed in DRF 3.18', RemovedInDRF318Warning)
         assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
         return [
             coreapi.Field(

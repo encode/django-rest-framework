@@ -53,7 +53,7 @@ Some reasons you might want to use REST framework:
 * [Serialization][serializers] that supports both [ORM][modelserializer-section] and [non-ORM][serializer-section] data sources.
 * Customizable all the way down - just use [regular function-based views][functionview-section] if you don't need the [more][generic-views] [powerful][viewsets] [features][routers].
 * Extensive documentation, and [great community support][group].
-* Used and trusted by internationally recognised companies including [Mozilla][mozilla], [Red Hat][redhat], [Heroku][heroku], and [Eventbrite][eventbrite].
+* Used and trusted by internationally recognized companies including [Mozilla][mozilla], [Red Hat][redhat], [Heroku][heroku], and [Eventbrite][eventbrite].
 
 ---
 
@@ -88,7 +88,7 @@ continued development by **[signing up for a paid plan][funding]**.
 REST framework requires the following:
 
 * Django (4.2, 5.0, 5.1, 5.2)
-* Python (3.10, 3.11, 3.12, 3.13)
+* Python (3.10, 3.11, 3.12, 3.13, 3.14)
 
 We **highly recommend** and only officially support the latest patch release of
 each Python and Django series.

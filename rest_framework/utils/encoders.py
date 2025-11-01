@@ -5,6 +5,7 @@ Helper classes for parsers.
 import contextlib
 import datetime
 import decimal
+import ipaddress
 import json  # noqa
 import uuid
 
@@ -44,6 +45,15 @@ class JSONEncoder(json.JSONEncoder):
             # Serializers will coerce decimals to strings by default.
             return float(obj)
         elif isinstance(obj, uuid.UUID):
+            return str(obj)
+        elif isinstance(obj, (
+            ipaddress.IPv4Address,
+            ipaddress.IPv6Address,
+            ipaddress.IPv4Network,
+            ipaddress.IPv6Network,
+            ipaddress.IPv4Interface,
+            ipaddress.IPv6Interface)
+        ):
             return str(obj)
         elif isinstance(obj, QuerySet):
             return tuple(obj)
