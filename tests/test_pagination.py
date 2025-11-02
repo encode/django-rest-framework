@@ -969,8 +969,9 @@ class TestCursorPagination(CursorPaginationTestsMixin):
                 self.created = idx
 
         class MockQuerySet:
-            def __init__(self, items):
+            def __init__(self, items, ordered=False):
                 self.items = items
+                self.ordered = ordered
 
             def filter(self, created__gt=None, created__lt=None):
                 if created__gt is not None:
@@ -987,7 +988,7 @@ class TestCursorPagination(CursorPaginationTestsMixin):
 
             def order_by(self, *ordering):
                 if ordering[0].startswith('-'):
-                    return MockQuerySet(list(reversed(self.items)))
+                    return MockQuerySet(list(reversed(self.items)), ordered=True)
                 return self
 
             def __getitem__(self, sliced):
