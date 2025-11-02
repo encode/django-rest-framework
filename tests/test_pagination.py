@@ -616,42 +616,6 @@ class CursorPaginationTestsMixin:
         with pytest.raises(exceptions.NotFound):
             self.pagination.paginate_queryset(self.queryset, request)
 
-    def test_use_with_ordering_filter(self):
-        class MockView:
-            filter_backends = (filters.OrderingFilter,)
-            ordering_fields = ['username', 'created']
-            ordering = 'created'
-
-        request = Request(factory.get('/', {'ordering': 'username'}))
-        ordering = self.pagination.get_ordering(request, [], MockView())
-        assert ordering == ('username',)
-
-        request = Request(factory.get('/', {'ordering': '-username'}))
-        ordering = self.pagination.get_ordering(request, [], MockView())
-        assert ordering == ('-username',)
-
-        request = Request(factory.get('/', {'ordering': 'invalid'}))
-        ordering = self.pagination.get_ordering(request, [], MockView())
-        assert ordering == ('created',)
-
-    def test_use_with_ordering_filter_without_ordering_default_value(self):
-        class MockView:
-            filter_backends = (filters.OrderingFilter,)
-            ordering_fields = ['username', 'created']
-
-        request = Request(factory.get('/'))
-        ordering = self.pagination.get_ordering(request, [], MockView())
-        # it gets the value of `ordering` provided by CursorPagination
-        assert ordering == ('created',)
-
-        request = Request(factory.get('/', {'ordering': 'username'}))
-        ordering = self.pagination.get_ordering(request, [], MockView())
-        assert ordering == ('username',)
-
-        request = Request(factory.get('/', {'ordering': 'invalid'}))
-        ordering = self.pagination.get_ordering(request, [], MockView())
-        assert ordering == ('created',)
-
     def test_cursor_pagination(self):
         (previous, current, next, previous_url, next_url) = self.get_pages('/')
 

@@ -615,7 +615,7 @@ class CursorPagination(BasePagination):
             return None
 
         self.base_url = request.build_absolute_uri()
-        self.ordering = self.get_ordering(request, queryset, view)
+        self.ordering = self.get_ordering()
 
         self.cursor = self.decode_cursor(request)
         if self.cursor is None:
@@ -802,27 +802,11 @@ class CursorPagination(BasePagination):
         cursor = Cursor(offset=offset, reverse=True, position=position)
         return self.encode_cursor(cursor)
 
-    def get_ordering(self, request, queryset, view):
+    def get_ordering(self):
         """
         Return a tuple of strings, that may be used in an `order_by` method.
         """
-        # The default case is to check for an `ordering` attribute
-        # on this pagination instance.
         ordering = self.ordering
-
-        ordering_filters = [
-            filter_cls for filter_cls in getattr(view, 'filter_backends', [])
-            if hasattr(filter_cls, 'get_ordering')
-        ]
-
-        if ordering_filters:
-            # If a filter exists on the view that implements `get_ordering`
-            # then we defer to that filter to determine the ordering.
-            filter_cls = ordering_filters[0]
-            filter_instance = filter_cls()
-            ordering_from_filter = filter_instance.get_ordering(request, queryset, view)
-            if ordering_from_filter:
-                ordering = ordering_from_filter
 
         assert ordering is not None, (
             'Using cursor pagination, but no ordering attribute was declared '
