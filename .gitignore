@@ -14,7 +14,6 @@
 /env/
 MANIFEST
 coverage.*
-venv/
 
 !.github
 !.gitignore
