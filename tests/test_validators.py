@@ -752,7 +752,7 @@ class TestUniqueConstraintValidation(TestCase):
 
         validators = serializer.fields['fancy_conditions'].validators
         assert len(validators) == 2 + extra_validators_qty
-        ids_in_qs = {frozenset(v.queryset.values_list('id',flat=True)) for v in validators if hasattr(v, "queryset")}
+        ids_in_qs = {frozenset(v.queryset.values_list('id', flat=True)) for v in validators if hasattr(v, "queryset")}
         assert ids_in_qs == {frozenset([1]), frozenset([3])}
 
     def test_nullable_unique_constraint_fields_are_not_required(self):
