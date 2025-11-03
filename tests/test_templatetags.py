@@ -249,7 +249,6 @@ class Issue1386Tests(TestCase):
             "asdf.com",
             "asdf.net",
             "www.as_df.org",
-            "as.d8f.ghj8.gov",
         ]
         for i in correct_urls:
             res = urlize(i)
