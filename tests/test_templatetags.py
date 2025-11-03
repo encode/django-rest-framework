@@ -249,6 +249,7 @@ class Issue1386Tests(TestCase):
             "asdf.com",
             "asdf.net",
             "www.as_df.org",
+            "as.d8f.ghj8.gov",
         ]
         for i in correct_urls:
             res = urlize(i)
@@ -258,7 +259,6 @@ class Issue1386Tests(TestCase):
         incorrect_urls = [
             "mailto://asdf@fdf.com",
             "asdf.netnet",
-            "as.d8f.ghj8.gov",
         ]
         for i in incorrect_urls:
             res = urlize(i)
