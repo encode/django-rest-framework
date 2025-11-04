@@ -11,6 +11,7 @@ from urllib import parse
 
 from django.core.paginator import InvalidPage
 from django.core.paginator import Paginator as DjangoPaginator
+from django.db.models import OrderBy
 from django.template import loader
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
@@ -615,7 +616,7 @@ class CursorPagination(BasePagination):
             return None
 
         self.base_url = request.build_absolute_uri()
-        self.ordering = self.get_ordering()
+        self.ordering = self.get_ordering(queryset)
 
         self.cursor = self.decode_cursor(request)
         if self.cursor is None:
@@ -802,10 +803,36 @@ class CursorPagination(BasePagination):
         cursor = Cursor(offset=offset, reverse=True, position=position)
         return self.encode_cursor(cursor)
 
-    def get_ordering(self):
+    def get_ordering_from_queryset(self, queryset):
+        if not queryset.ordered:
+            return False
+
+        qs_ordering = queryset.query.order_by
+
+        # Fallback to model's Meta ordering if no order_by is given
+        if not qs_ordering:
+            qs_ordering = queryset.query.get_meta().ordering
+
+        ordering = []
+        for expr in qs_ordering:
+            if isinstance(expr, str):
+                ordering.append(expr)
+
+            elif isinstance(expr, OrderBy):
+                field_name = expr.expression.name
+                descending = expr.descending
+                ordering.append(f"{'-' if descending else ''}{field_name}")
+
+        return ordering
+
+    def get_ordering(self, queryset):
         """
         Return a tuple of strings, that may be used in an `order_by` method.
         """
+        # Return the ordering value from the queryset if it has one.
+        if queryset.ordered:
+            return self.get_ordering_from_queryset(queryset)
+
         ordering = self.ordering
 
         assert ordering is not None, (
