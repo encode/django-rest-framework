@@ -1,7 +1,8 @@
 import unittest
 
+import django
 from django.template import Context, Template
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.utils.html import urlize
 
 from rest_framework.compat import coreapi, coreschema
@@ -240,6 +241,7 @@ class Issue1386Tests(TestCase):
     Covers #1386
     """
 
+    @override_settings(URLIZE_ASSUME_HTTPS=True)
     def test_issue_1386(self):
         """
         Test function urlize with different args
@@ -248,8 +250,9 @@ class Issue1386Tests(TestCase):
             "asdf.com",
             "asdf.net",
             "www.as_df.org",
-            "as.d8f.ghj8.gov",
         ]
+        if django.VERSION < (5, 3):
+            correct_urls.append("as.d8f.ghj8.gov")
         for i in correct_urls:
             res = urlize(i)
             self.assertNotEqual(res, i)
@@ -259,6 +262,8 @@ class Issue1386Tests(TestCase):
             "mailto://asdf@fdf.com",
             "asdf.netnet",
         ]
+        if django.VERSION >= (5, 3):
+            incorrect_urls.append("as.d8f.ghj8.gov")
         for i in incorrect_urls:
             res = urlize(i)
             self.assertEqual(i, res)
