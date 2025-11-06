@@ -1,6 +1,6 @@
 import unittest
-import django
 
+import django
 from django.template import Context, Template
 from django.test import TestCase, override_settings
 from django.utils.html import urlize
