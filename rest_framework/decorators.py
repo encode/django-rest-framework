@@ -87,8 +87,26 @@ def api_view(http_method_names=None):
     return decorator
 
 
+def _check_decorator_order(func, decorator_name):
+    """
+    Check if an API policy decorator is being applied after @api_view.
+    """
+    # Check if func is actually a view function (result of APIView.as_view())
+    if hasattr(func, 'cls') and issubclass(func.cls, APIView):
+        raise TypeError(
+            f"@{decorator_name} must be applied before @api_view. "
+            f"The correct order is:\n\n"
+            f"    @api_view(['GET'])\n"
+            f"    @{decorator_name}(...)\n"
+            f"    def my_view(request):\n"
+            f"        ...\n\n"
+            f"See https://www.django-rest-framework.org/api-guide/views/#api-policy-decorators"
+        )
+
+
 def renderer_classes(renderer_classes):
     def decorator(func):
+        _check_decorator_order(func, 'renderer_classes')
         func.renderer_classes = renderer_classes
         return func
     return decorator
@@ -96,6 +114,7 @@ def renderer_classes(renderer_classes):
 
 def parser_classes(parser_classes):
     def decorator(func):
+        _check_decorator_order(func, 'parser_classes')
         func.parser_classes = parser_classes
         return func
     return decorator
@@ -103,6 +122,7 @@ def parser_classes(parser_classes):
 
 def authentication_classes(authentication_classes):
     def decorator(func):
+        _check_decorator_order(func, 'authentication_classes')
         func.authentication_classes = authentication_classes
         return func
     return decorator
@@ -110,6 +130,7 @@ def authentication_classes(authentication_classes):
 
 def throttle_classes(throttle_classes):
     def decorator(func):
+        _check_decorator_order(func, 'throttle_classes')
         func.throttle_classes = throttle_classes
         return func
     return decorator
@@ -117,6 +138,7 @@ def throttle_classes(throttle_classes):
 
 def permission_classes(permission_classes):
     def decorator(func):
+        _check_decorator_order(func, 'permission_classes')
         func.permission_classes = permission_classes
         return func
     return decorator
@@ -124,6 +146,7 @@ def permission_classes(permission_classes):
 
 def content_negotiation_class(content_negotiation_class):
     def decorator(func):
+        _check_decorator_order(func, 'content_negotiation_class')
         func.content_negotiation_class = content_negotiation_class
         return func
     return decorator
@@ -131,6 +154,7 @@ def content_negotiation_class(content_negotiation_class):
 
 def metadata_class(metadata_class):
     def decorator(func):
+        _check_decorator_order(func, 'metadata_class')
         func.metadata_class = metadata_class
         return func
     return decorator
@@ -138,6 +162,7 @@ def metadata_class(metadata_class):
 
 def versioning_class(versioning_class):
     def decorator(func):
+        _check_decorator_order(func, 'versioning_class')
         func.versioning_class = versioning_class
         return func
     return decorator
@@ -145,6 +170,7 @@ def versioning_class(versioning_class):
 
 def schema(view_inspector):
     def decorator(func):
+        _check_decorator_order(func, 'schema')
         func.schema = view_inspector
         return func
     return decorator
