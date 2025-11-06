@@ -825,6 +825,7 @@ class AccountTests(APITestCase):
 <p>REST framework also provides a test case class for isolating <code>urlpatterns</code> on a per-class basis. Note that this inherits from Django's <code>SimpleTestCase</code>, and will most likely need to be mixed with another test case class.</p>
 <h2 id="example_1"><a class="toclink" href="#example_1">Example</a></h2>
 <pre><code>from django.urls import include, path, reverse
+from rest_framework import status
 from rest_framework.test import APITestCase, URLPatternsTestCase
 
 
