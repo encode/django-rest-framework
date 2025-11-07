@@ -24,6 +24,7 @@ REST framework's Request objects provide flexible request parsing that allows yo
 * It includes all parsed content, including *file and non-file* inputs.
 * It supports parsing the content of HTTP methods other than `POST`, meaning that you can access the content of `PUT` and `PATCH` requests.
 * It supports REST framework's flexible request parsing, rather than just supporting form data.  For example you can handle incoming [JSON data] similarly to how you handle incoming [form data].
+* If the client does not send any data and does not specify form encoding, the value of `.data` is determined by the `DEFAULT_MISSING_DATA` setting. If form encoding is used and no data is sent, `.data` will be an empty Django `QueryDict`.
 
 For more details see the [parsers documentation].
 
