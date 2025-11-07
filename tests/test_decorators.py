@@ -204,6 +204,124 @@ class DecoratorTestCase(TestCase):
 
         assert isinstance(view.cls.schema, CustomSchema)
 
+    def test_incorrect_decorator_order_permission_classes(self):
+        """
+        If @permission_classes is applied after @api_view, we should raise a TypeError.
+        """
+        with self.assertRaises(TypeError) as cm:
+            @permission_classes([IsAuthenticated])
+            @api_view(['GET'])
+            def view(request):
+                return Response({})
+
+        assert '@permission_classes must come after (below) the @api_view decorator' in str(cm.exception)
+
+    def test_incorrect_decorator_order_renderer_classes(self):
+        """
+        If @renderer_classes is applied after @api_view, we should raise a TypeError.
+        """
+        with self.assertRaises(TypeError) as cm:
+            @renderer_classes([JSONRenderer])
+            @api_view(['GET'])
+            def view(request):
+                return Response({})
+
+        assert '@renderer_classes must come after (below) the @api_view decorator' in str(cm.exception)
+
+    def test_incorrect_decorator_order_parser_classes(self):
+        """
+        If @parser_classes is applied after @api_view, we should raise a TypeError.
+        """
+        with self.assertRaises(TypeError) as cm:
+            @parser_classes([JSONParser])
+            @api_view(['GET'])
+            def view(request):
+                return Response({})
+
+        assert '@parser_classes must come after (below) the @api_view decorator' in str(cm.exception)
+
+    def test_incorrect_decorator_order_authentication_classes(self):
+        """
+        If @authentication_classes is applied after @api_view, we should raise a TypeError.
+        """
+        with self.assertRaises(TypeError) as cm:
+            @authentication_classes([BasicAuthentication])
+            @api_view(['GET'])
+            def view(request):
+                return Response({})
+
+        assert '@authentication_classes must come after (below) the @api_view decorator' in str(cm.exception)
+
+    def test_incorrect_decorator_order_throttle_classes(self):
+        """
+        If @throttle_classes is applied after @api_view, we should raise a TypeError.
+        """
+        class OncePerDayUserThrottle(UserRateThrottle):
+            rate = '1/day'
+
+        with self.assertRaises(TypeError) as cm:
+            @throttle_classes([OncePerDayUserThrottle])
+            @api_view(['GET'])
+            def view(request):
+                return Response({})
+
+        assert '@throttle_classes must come after (below) the @api_view decorator' in str(cm.exception)
+
+    def test_incorrect_decorator_order_versioning_class(self):
+        """
+        If @versioning_class is applied after @api_view, we should raise a TypeError.
+        """
+        with self.assertRaises(TypeError) as cm:
+            @versioning_class(QueryParameterVersioning)
+            @api_view(['GET'])
+            def view(request):
+                return Response({})
+
+        assert '@versioning_class must come after (below) the @api_view decorator' in str(cm.exception)
+
+    def test_incorrect_decorator_order_metadata_class(self):
+        """
+        If @metadata_class is applied after @api_view, we should raise a TypeError.
+        """
+        with self.assertRaises(TypeError) as cm:
+            @metadata_class(None)
+            @api_view(['GET'])
+            def view(request):
+                return Response({})
+
+        assert '@metadata_class must come after (below) the @api_view decorator' in str(cm.exception)
+
+    def test_incorrect_decorator_order_content_negotiation_class(self):
+        """
+        If @content_negotiation_class is applied after @api_view, we should raise a TypeError.
+        """
+        class CustomContentNegotiation(BaseContentNegotiation):
+            def select_renderer(self, request, renderers, format_suffix):
+                return (renderers[0], renderers[0].media_type)
+
+        with self.assertRaises(TypeError) as cm:
+            @content_negotiation_class(CustomContentNegotiation)
+            @api_view(['GET'])
+            def view(request):
+                return Response({})
+
+        assert '@content_negotiation_class must come after (below) the @api_view decorator' in str(cm.exception)
+
+    def test_incorrect_decorator_order_schema(self):
+        """
+        If @schema is applied after @api_view, we should raise a TypeError.
+        """
+        class CustomSchema(AutoSchema):
+            pass
+
+        with self.assertRaises(TypeError) as cm:
+            @schema(CustomSchema())
+            @api_view(['GET'])
+            def view(request):
+                return Response({})
+
+        assert '@schema must come after (below) the @api_view decorator' in str(cm.exception)
+
 
 class ActionDecoratorTestCase(TestCase):
 
