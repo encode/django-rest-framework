@@ -214,7 +214,7 @@ class DecoratorTestCase(TestCase):
             def view(request):
                 return Response({})
 
-        assert '@permission_classes must be applied before @api_view' in str(cm.exception)
+        assert '@permission_classes must come after (below) the @api_view decorator' in str(cm.exception)
 
     def test_incorrect_decorator_order_renderer_classes(self):
         """
@@ -226,7 +226,7 @@ class DecoratorTestCase(TestCase):
             def view(request):
                 return Response({})
 
-        assert '@renderer_classes must be applied before @api_view' in str(cm.exception)
+        assert '@renderer_classes must come after (below) the @api_view decorator' in str(cm.exception)
 
     def test_incorrect_decorator_order_parser_classes(self):
         """
@@ -238,7 +238,7 @@ class DecoratorTestCase(TestCase):
             def view(request):
                 return Response({})
 
-        assert '@parser_classes must be applied before @api_view' in str(cm.exception)
+        assert '@parser_classes must come after (below) the @api_view decorator' in str(cm.exception)
 
     def test_incorrect_decorator_order_authentication_classes(self):
         """
@@ -250,7 +250,7 @@ class DecoratorTestCase(TestCase):
             def view(request):
                 return Response({})
 
-        assert '@authentication_classes must be applied before @api_view' in str(cm.exception)
+        assert '@authentication_classes must come after (below) the @api_view decorator' in str(cm.exception)
 
     def test_incorrect_decorator_order_throttle_classes(self):
         """
@@ -265,7 +265,7 @@ class DecoratorTestCase(TestCase):
             def view(request):
                 return Response({})
 
-        assert '@throttle_classes must be applied before @api_view' in str(cm.exception)
+        assert '@throttle_classes must come after (below) the @api_view decorator' in str(cm.exception)
 
     def test_incorrect_decorator_order_versioning_class(self):
         """
@@ -277,7 +277,7 @@ class DecoratorTestCase(TestCase):
             def view(request):
                 return Response({})
 
-        assert '@versioning_class must be applied before @api_view' in str(cm.exception)
+        assert '@versioning_class must come after (below) the @api_view decorator' in str(cm.exception)
 
     def test_incorrect_decorator_order_metadata_class(self):
         """
@@ -289,7 +289,7 @@ class DecoratorTestCase(TestCase):
             def view(request):
                 return Response({})
 
-        assert '@metadata_class must be applied before @api_view' in str(cm.exception)
+        assert '@metadata_class must come after (below) the @api_view decorator' in str(cm.exception)
 
     def test_incorrect_decorator_order_content_negotiation_class(self):
         """
@@ -305,7 +305,7 @@ class DecoratorTestCase(TestCase):
             def view(request):
                 return Response({})
 
-        assert '@content_negotiation_class must be applied before @api_view' in str(cm.exception)
+        assert '@content_negotiation_class must come after (below) the @api_view decorator' in str(cm.exception)
 
     def test_incorrect_decorator_order_schema(self):
         """
@@ -320,7 +320,7 @@ class DecoratorTestCase(TestCase):
             def view(request):
                 return Response({})
 
-        assert '@schema must be applied before @api_view' in str(cm.exception)
+        assert '@schema must come after (below) the @api_view decorator' in str(cm.exception)
 
 
 class ActionDecoratorTestCase(TestCase):

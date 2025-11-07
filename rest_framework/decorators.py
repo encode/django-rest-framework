@@ -94,13 +94,13 @@ def _check_decorator_order(func, decorator_name):
     # Check if func is actually a view function (result of APIView.as_view())
     if hasattr(func, 'cls') and issubclass(func.cls, APIView):
         raise TypeError(
-            f"@{decorator_name} must be applied before @api_view. "
-            f"The correct order is:\n\n"
-            f"    @api_view(['GET'])\n"
+            f"@{decorator_name} must come after (below) the @api_view decorator. "
+            "The correct order is:\n\n"
+            "    @api_view(['GET'])\n"
             f"    @{decorator_name}(...)\n"
-            f"    def my_view(request):\n"
-            f"        ...\n\n"
-            f"See https://www.django-rest-framework.org/api-guide/views/#api-policy-decorators"
+            "    def my_view(request):\n"
+            "        ...\n\n"
+            "See https://www.django-rest-framework.org/api-guide/views/#api-policy-decorators"
         )
 
 
