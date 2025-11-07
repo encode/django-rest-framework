@@ -54,6 +54,7 @@ class TestSettings(TestCase):
             return next((error for error in errors if error.id == error_id), None)
 
         self.assertIsNone(api_settings.PAGE_SIZE)
+        self.assertIsNone(api_settings.MAX_PAGE_SIZE)
         self.assertIsNone(api_settings.DEFAULT_PAGINATION_CLASS)
 
         pagination_error = get_pagination_error('rest_framework.W001')
@@ -63,8 +64,16 @@ class TestSettings(TestCase):
             pagination_error = get_pagination_error('rest_framework.W001')
             self.assertIsNotNone(pagination_error)
 
+        with override_settings(REST_FRAMEWORK={'MAX_PAGE_SIZE': 10}):
+            pagination_error = get_pagination_error('rest_framework.W001')
+            self.assertIsNotNone(pagination_error)
+
         default_pagination_class = 'rest_framework.pagination.PageNumberPagination'
         with override_settings(REST_FRAMEWORK={'PAGE_SIZE': 10, 'DEFAULT_PAGINATION_CLASS': default_pagination_class}):
+            pagination_error = get_pagination_error('rest_framework.W001')
+            self.assertIsNone(pagination_error)
+
+        with override_settings(REST_FRAMEWORK={'MAX_PAGE_SIZE': 10, 'DEFAULT_PAGINATION_CLASS': default_pagination_class}):
             pagination_error = get_pagination_error('rest_framework.W001')
             self.assertIsNone(pagination_error)
 
