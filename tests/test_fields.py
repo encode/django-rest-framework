@@ -1158,7 +1158,9 @@ class TestCoercionBigIntegerField(TestCase):
 
     def test_force_coerce_to_string(self):
         field = serializers.BigIntegerField(coerce_to_string=True)
-        assert isinstance(field.to_representation(int('1')), str)
+        value = field.to_representation(1)
+        assert isinstance(value, str)
+        assert value == "1"
 
 
 class TestFloatField(FieldValues):

@@ -375,7 +375,7 @@ Default: `True`
 
 When returning biginteger objects in API representations that do not support numbers up to 2^64, it is best to return the value as a string. This avoids the loss of precision that occurs with biginteger implementations.
 
-When set to `True`, the serializer `BigIntegerField` class will return strings instead of `BigInteger` objects. When set to `False`, serializers will return `BigInteger` objects, which the default JSON encoder will return as numbers.
+When set to `True`, the serializer `BigIntegerField` class (by default) will return strings instead of `BigInteger` objects. When set to `False`, serializers will return `BigInteger` objects, which the default JSON encoder will return as numbers.
 
 Default: `False`
 
