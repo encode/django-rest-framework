@@ -271,7 +271,7 @@ Corresponds to `django.db.models.fields.IntegerField`, `django.db.models.fields.
 
 ## BigIntegerField
 
-An biginteger representation.
+A biginteger representation.
 
 Corresponds to `django.db.models.fields.BigIntegerField`.
 
