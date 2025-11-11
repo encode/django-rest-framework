@@ -597,7 +597,7 @@ class ListSerializer(BaseSerializer):
         'max_length': _('Ensure this field has no more than {max_length} elements.'),
         'min_length': _('Ensure this field has at least {min_length} elements.')
     }
-
+    
     def __init__(self, *args, **kwargs):
         self.child = kwargs.pop('child', copy.deepcopy(self.child))
         self.allow_empty = kwargs.pop('allow_empty', True)
@@ -618,9 +618,7 @@ class ListSerializer(BaseSerializer):
                 return [self.child.get_initial() for _ in self.initial_data]
             return []
         return []
-
-
-
+        
     def get_value(self, dictionary):
         """
         Given the input dictionary, return the field value.
