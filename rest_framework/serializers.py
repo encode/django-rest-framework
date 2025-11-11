@@ -608,14 +608,17 @@ class ListSerializer(BaseSerializer):
         super().__init__(*args, **kwargs)
         self.child.bind(field_name='', parent=self)
 
-   def get_initial(self):
-    if hasattr(self, 'initial_data'):
-        # If data is given, we should just return the raw input structure,
-        # but ensure it's represented in a consistent list format.
-        if isinstance(self.initial_data, list):
-            return [self.child.get_initial() for _ in self.initial_data]
+    def get_initial(self):
+        """
+        Return a list of initial values, one for each item in `initial_data`,
+        or an empty list if no input data was provided.
+        """
+        if hasattr(self, 'initial_data'):
+            if isinstance(self.initial_data, list):
+                return [self.child.get_initial() for _ in self.initial_data]
+            return []
         return []
-    return []
+
 
 
     def get_value(self, dictionary):
