@@ -53,7 +53,7 @@ from rest_framework.validators import (
 # This helps keep the separation between model fields, form fields, and
 # serializer fields more explicit.
 from rest_framework.fields import (  # NOQA # isort:skip
-    BooleanField, CharField, ChoiceField, DateField, DateTimeField, DecimalField,
+    BigIntegerField, BooleanField, CharField, ChoiceField, DateField, DateTimeField, DecimalField,
     DictField, DurationField, EmailField, Field, FileField, FilePathField, FloatField,
     HiddenField, HStoreField, IPAddressField, ImageField, IntegerField, JSONField,
     ListField, ModelField, MultipleChoiceField, ReadOnlyField,
@@ -906,7 +906,8 @@ class ModelSerializer(Serializer):
     """
     serializer_field_mapping = {
         models.AutoField: IntegerField,
-        models.BigIntegerField: IntegerField,
+        models.BigAutoField: BigIntegerField,
+        models.BigIntegerField: BigIntegerField,
         models.BooleanField: BooleanField,
         models.CharField: CharField,
         models.CommaSeparatedIntegerField: CharField,
