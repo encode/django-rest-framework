@@ -1136,7 +1136,7 @@ class TestBigIntegerField(FieldValues):
 
 class TestMinMaxBigIntegerField(FieldValues):
     """
-    Valid and invalid values for `IntegerField` with min and max limits.
+    Valid and invalid values for `BigIntegerField` with min and max limits.
     """
     valid_inputs = {
         '1': 1,
