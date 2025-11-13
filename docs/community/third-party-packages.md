@@ -266,3 +266,4 @@ To submit new content, [create a pull request][drf-create-pr].
 [django-pyoidc]: https://github.com/makinacorpus/django_pyoidc
 [apitally]: https://github.com/apitally/apitally-py
 [drf-shapeless-serializers]: https://github.com/khaledsukkar2/drf-shapeless-serializers
+[axioms-drf-py]: https://github.com/abhishektiwari/axioms-drf-py
