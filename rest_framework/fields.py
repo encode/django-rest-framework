@@ -937,18 +937,10 @@ class BigIntegerField(IntegerField):
             self.coerce_to_string = coerce_to_string
 
     def to_representation(self, value):
-        coerce_to_string = getattr(self, 'coerce_to_string', api_settings.COERCE_BIGINT_TO_STRING)
+        if getattr(self, 'coerce_to_string', api_settings.COERCE_BIGINT_TO_STRING):
+            return '' if value is None else str(value)
 
-        if value is None:
-            if coerce_to_string:
-                return ''
-            else:
-                return None
-
-        if coerce_to_string:
-            return str(value)
-        else:
-            return int(value)
+        return super().to_representation(value)
 
 
 class FloatField(Field):
