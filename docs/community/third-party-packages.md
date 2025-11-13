@@ -73,6 +73,7 @@ To submit new content, [create a pull request][drf-create-pr].
 * [dry-rest-permissions][dry-rest-permissions] - Provides a simple way to define permissions for individual api actions.
 * [drf-access-policy][drf-access-policy] - Declarative and flexible permissions inspired by AWS' IAM policies.
 * [drf-psq][drf-psq] - An extension that gives support for having action-based **permission_classes**, **serializer_class**, and **queryset** dependent on permission-based rules.
+* [axioms-drf-py][axioms-drf-py] - Supports authentication and claim-based fine-grained authorization (**scopes**, **roles**, **groups**, **permissions**, etc. including object-level checks) using JWT tokens issued by an OAuth2/OIDC Authorization Server. 
 
 ### Serializers
 
