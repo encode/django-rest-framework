@@ -87,3 +87,9 @@ nav:
      - 'Mozilla Grant': 'community/mozilla-grant.md'
      - 'Funding': 'community/funding.md'
      - 'Jobs': 'community/jobs.md'
+
+extra_css:
+  - css/copy-button.css
+
+extra_javascript:
+  - js/copy-button.js
