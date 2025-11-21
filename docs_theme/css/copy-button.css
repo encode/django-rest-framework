@@ -2,19 +2,29 @@
   position: absolute;
   top: 6px;
   right: 6px;
-  font-size: 12px;
-  padding: 2px 6px;
-  cursor: pointer;
-
-  background: #f7f7f9;
-  border: 1px solid #e1e1e8;
-  border-radius: 3px;
-
-  color: #dc322f !important;
-
-  box-shadow: 0 1px 1px rgba(0,0,0,0.04);
+  z-index: 10;
+  white-space: nowrap; /* Prevent text wrap */
 }
 
+/* Ensure the PRE container provides positioning context */
+pre {
+  position: relative;
+  padding-top: 35px; /* Room for the button */
+  overflow-x: auto;   /* Allow horizontal scrolling */
+}
+
+/* Code block scrollable */
+pre code {
+  display: block;
+  overflow-x: auto;
+}
+
+/* 
+  The MkDocs/DRF theme injects a <span> inside buttons and applies
+  a text color that overrides btn-inverse defaults.
+  This override is intentionally scoped and limited to color only.
+*/
+.copy-block-button,
 .copy-block-button span {
-  color: #dc322f !important;
+  color: #ffffff !important;
 }
