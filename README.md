@@ -10,30 +10,6 @@ Full documentation for the project is available at [https://www.django-rest-fram
 
 ---
 
-# Funding
-
-REST framework is a *collaboratively funded project*. If you use
-REST framework commercially we strongly encourage you to invest in its
-continued development by [signing up for a paid plan][funding].
-
-The initial aim is to provide a single full-time position on REST framework.
-*Every single sign-up makes a significant impact towards making that possible.*
-
-[![][sentry-img]][sentry-url]
-[![][stream-img]][stream-url]
-[![][spacinov-img]][spacinov-url]
-[![][retool-img]][retool-url]
-[![][bitio-img]][bitio-url]
-[![][posthog-img]][posthog-url]
-[![][cryptapi-img]][cryptapi-url]
-[![][fezto-img]][fezto-url]
-[![][svix-img]][svix-url]
-[![][zuplo-img]][zuplo-url]
-
-Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Sentry][sentry-url], [Stream][stream-url], [Spacinov][spacinov-url], [Retool][retool-url], [bit.io][bitio-url], [PostHog][posthog-url], [CryptAPI][cryptapi-url], [FEZTO][fezto-url], [Svix][svix-url], and [Zuplo][zuplo-url].
-
----
-
 # Overview
 
 Django REST framework is a powerful and flexible toolkit for building Web APIs.
@@ -198,17 +174,6 @@ Please see the [security policy][security-policy].
 [fezto-img]: https://raw.githubusercontent.com/encode/django-rest-framework/main/docs/img/premium/fezto-readme.png
 [svix-img]: https://raw.githubusercontent.com/encode/django-rest-framework/main/docs/img/premium/svix-premium.png
 [zuplo-img]: https://raw.githubusercontent.com/encode/django-rest-framework/main/docs/img/premium/zuplo-readme.png
-
-[sentry-url]: https://getsentry.com/welcome/
-[stream-url]: https://getstream.io/?utm_source=DjangoRESTFramework&utm_medium=Webpage_Logo_Ad&utm_content=Developer&utm_campaign=DjangoRESTFramework_Jan2022_HomePage
-[spacinov-url]: https://www.spacinov.com/
-[retool-url]: https://retool.com/?utm_source=djangorest&utm_medium=sponsorship
-[bitio-url]: https://bit.io/jobs?utm_source=DRF&utm_medium=sponsor&utm_campaign=DRF_sponsorship
-[posthog-url]: https://posthog.com?utm_source=drf&utm_medium=sponsorship&utm_campaign=open-source-sponsorship
-[cryptapi-url]: https://cryptapi.io
-[fezto-url]: https://www.fezto.xyz/?utm_source=DjangoRESTFramework
-[svix-url]: https://www.svix.com/?utm_source=django-REST&utm_medium=sponsorship
-[zuplo-url]: https://zuplo.link/django-gh
 
 [oauth1-section]: https://www.django-rest-framework.org/api-guide/authentication/#django-rest-framework-oauth
 [oauth2-section]: https://www.django-rest-framework.org/api-guide/authentication/#django-oauth-toolkit
