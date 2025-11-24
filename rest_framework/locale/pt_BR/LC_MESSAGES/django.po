@@ -558,7 +558,7 @@ msgstr "Este campo deve ser único para o mês de \"{date_field}\"."
 #: validators.py:271
 #, python-brace-format
 msgid "This field must be unique for the \"{date_field}\" year."
-msgstr "Este campo deve ser único para o ano de \"{date_field}\"
+msgstr "Este campo deve ser único para o ano de \"{date_field}\"."
 
 #: versioning.py:40
 msgid "Invalid version in \"Accept\" header."
