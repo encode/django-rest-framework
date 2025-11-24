@@ -9,6 +9,7 @@ import datetime
 import decimal
 import json  # noqa
 import re
+import sys
 import tempfile
 
 import pytest
@@ -26,7 +27,7 @@ from rest_framework import serializers
 from rest_framework.compat import postgres_fields
 
 from .models import NestedForeignKeySource
-import sys
+
 
 def dedent(blocktext):
     return '\n'.join([line[12:] for line in blocktext.splitlines()[1:-1]])
