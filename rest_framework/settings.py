@@ -128,6 +128,10 @@ DEFAULTS = {
         'retrieve': 'read',
         'destroy': 'delete'
     },
+    
+    # Query Optimization
+    'ENABLE_QUERY_OPTIMIZATION': True,
+    'WARN_ON_N_PLUS_ONE': None,  # None means auto-detect based on DEBUG
 }
 
 
