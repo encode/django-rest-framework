@@ -164,17 +164,6 @@ Please see the [security policy][security-policy].
 [funding]: https://fund.django-rest-framework.org/topics/funding/
 [sponsors]: https://fund.django-rest-framework.org/topics/funding/#our-sponsors
 
-[sentry-img]: https://raw.githubusercontent.com/encode/django-rest-framework/main/docs/img/premium/sentry-readme.png
-[stream-img]: https://raw.githubusercontent.com/encode/django-rest-framework/main/docs/img/premium/stream-readme.png
-[spacinov-img]: https://raw.githubusercontent.com/encode/django-rest-framework/main/docs/img/premium/spacinov-readme.png
-[retool-img]: https://raw.githubusercontent.com/encode/django-rest-framework/main/docs/img/premium/retool-readme.png
-[bitio-img]: https://raw.githubusercontent.com/encode/django-rest-framework/main/docs/img/premium/bitio-readme.png
-[posthog-img]: https://raw.githubusercontent.com/encode/django-rest-framework/main/docs/img/premium/posthog-readme.png
-[cryptapi-img]: https://raw.githubusercontent.com/encode/django-rest-framework/main/docs/img/premium/cryptapi-readme.png
-[fezto-img]: https://raw.githubusercontent.com/encode/django-rest-framework/main/docs/img/premium/fezto-readme.png
-[svix-img]: https://raw.githubusercontent.com/encode/django-rest-framework/main/docs/img/premium/svix-premium.png
-[zuplo-img]: https://raw.githubusercontent.com/encode/django-rest-framework/main/docs/img/premium/zuplo-readme.png
-
 [oauth1-section]: https://www.django-rest-framework.org/api-guide/authentication/#django-rest-framework-oauth
 [oauth2-section]: https://www.django-rest-framework.org/api-guide/authentication/#django-oauth-toolkit
 [serializer-section]: https://www.django-rest-framework.org/api-guide/serializers/#serializers
