@@ -781,7 +781,7 @@ class TestListSerializerDictErrorBehavior:
     """
     Tests for the proposed dict-based error structure for ListSerializer,
     and consistency with ListField.
-    
+
     https://github.com/encode/django-rest-framework/issues/7279
     """
 
@@ -847,7 +847,7 @@ class TestListSerializerDictErrorBehavior:
         assert isinstance(errors["list_serializer"], dict)
         assert isinstance(errors["list_field"], dict)
 
-        assert set(errors["list_serializer"].keys()) == {0, 1,}
+        assert set(errors["list_serializer"].keys()) == {1,3}
         assert set(errors["list_field"].keys()) == {1, 3}
 
         assert errors["list_serializer"][1] == {
