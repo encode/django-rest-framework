@@ -779,8 +779,7 @@ class TestToRepresentationManagerCheck:
 
 class TestListSerializerDictErrorBehavior:
     """
-    Tests for the proposed dict-based error structure for ListSerializer,
-    and consistency with ListField.
+    Tests dict-based error structure for ListSerializer, and consistency with ListField.
 
     https://github.com/encode/django-rest-framework/issues/7279
     """
@@ -805,8 +804,8 @@ class TestListSerializerDictErrorBehavior:
 
         data = [
             {"num": "1"},
-            {"num": "x"},      
-            {"num": "0"},  
+            {"num": "x"},
+            {"num": "0"},
             {"num": "hello"},
         ]
 
@@ -820,22 +819,20 @@ class TestListSerializerDictErrorBehavior:
                 "num": [ErrorDetail(string="Must be a valid boolean.", code="invalid")]
             }
 
-        
-
     def test_listserializer_and_listfield_consistency(self):
 
         data = {
             "list_serializer": [
                 {"num": "1"},
-                {"num": "wrong"},   
+                {"num": "wrong"},
                 {"num": "0"},
-                {"num": ""},        
+                {"num": ""},
             ],
             "list_field": [
                 {"ok": "x"},
                 {},
                 {"valid": "y"},
-                {},                 
+                {},
             ],
         }
 
@@ -847,7 +844,7 @@ class TestListSerializerDictErrorBehavior:
         assert isinstance(errors["list_serializer"], dict)
         assert isinstance(errors["list_field"], dict)
 
-        assert set(errors["list_serializer"].keys()) == {1,3}
+        assert set(errors["list_serializer"].keys()) == {1, 3}
         assert set(errors["list_field"].keys()) == {1, 3}
 
         assert errors["list_serializer"][1] == {
@@ -855,4 +852,4 @@ class TestListSerializerDictErrorBehavior:
         }
 
         for index, value in errors["list_field"].items():
-            assert value == [ErrorDetail(string='This dictionary may not be empty.', code='empty')] 
+            assert value == [ErrorDetail(string='This dictionary may not be empty.', code='empty')]
