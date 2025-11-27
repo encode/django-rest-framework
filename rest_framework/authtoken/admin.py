@@ -23,10 +23,11 @@ class TokenChangeList(ChangeList):
 
 class TokenAdmin(admin.ModelAdmin):
     list_display = ('key', 'user', 'created')
+    list_filter = ('created',)
     fields = ('user',)
-    search_fields = ('user__username',)
+    search_fields = ('user__%s' % User.USERNAME_FIELD,)
     search_help_text = _('Username')
-    ordering = ('-created',)
+    ordering = ('user__%s' % User.USERNAME_FIELD,)
     actions = None  # Actions not compatible with mapped IDs.
 
     def get_changelist(self, request, **kwargs):
