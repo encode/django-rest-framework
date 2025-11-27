@@ -814,10 +814,10 @@ class TestListSerializerDictErrorBehavior:
 
         errors = serializer.errors
         assert isinstance(errors, dict)
-        for _, value in errors.items():
-            assert value == {
-                "num": [ErrorDetail(string="Must be a valid boolean.", code="invalid")]
-            }
+        assert set(errors.keys()) == {1, 3}
+
+        assert errors[1] == {"num": [ErrorDetail(string="Must be a valid boolean.", code="invalid")]}
+        assert errors[3] == {"num": [ErrorDetail(string="Must be a valid boolean.", code="invalid")]}
 
     def test_listserializer_and_listfield_consistency(self):
 
@@ -847,9 +847,8 @@ class TestListSerializerDictErrorBehavior:
         assert set(errors["list_serializer"].keys()) == {1, 3}
         assert set(errors["list_field"].keys()) == {1, 3}
 
-        assert errors["list_serializer"][1] == {
-            "num": [ErrorDetail(string="Must be a valid boolean.", code="invalid")]
-        }
+        assert errors["list_serializer"][1] == {"num": [ErrorDetail(string="Must be a valid boolean.", code="invalid")]}
+        assert errors["list_serializer"][3] == {"num": [ErrorDetail(string="Must be a valid boolean.", code="invalid")]}
 
-        for index, value in errors["list_field"].items():
-            assert value == [ErrorDetail(string='This dictionary may not be empty.', code='empty')]
+        assert errors["list_field"][1] == [ErrorDetail(string='This dictionary may not be empty.', code='empty')]
+        assert errors["list_field"][3] == [ErrorDetail(string='This dictionary may not be empty.', code='empty')]
