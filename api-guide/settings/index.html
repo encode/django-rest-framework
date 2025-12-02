@@ -711,6 +711,10 @@ internally in the codebase.</p>
 <p>When returning decimal objects in API representations that do not support a native decimal type, it is normally best to return the value as a string. This avoids the loss of precision that occurs with binary floating point implementations.</p>
 <p>When set to <code>True</code>, the serializer <code>DecimalField</code> class will return strings instead of <code>Decimal</code> objects. When set to <code>False</code>, serializers will return <code>Decimal</code> objects, which the default JSON encoder will return as floats.</p>
 <p>Default: <code>True</code></p>
+<h4 id="coerce_bigint_to_string"><a class="toclink" href="#coerce_bigint_to_string">COERCE_BIGINT_TO_STRING</a></h4>
+<p>When returning biginteger objects in API representations that do not support numbers up to 2^64, it is best to return the value as a string. This avoids the loss of precision that occurs with biginteger implementations.</p>
+<p>When set to <code>True</code>, the serializer <code>BigIntegerField</code> class (by default) will return strings instead of <code>BigInteger</code> objects. When set to <code>False</code>, serializers will return <code>BigInteger</code> objects, which the default JSON encoder will return as numbers.</p>
+<p>Default: <code>False</code></p>
 <hr />
 <h2 id="view-names-and-descriptions"><a class="toclink" href="#view-names-and-descriptions">View names and descriptions</a></h2>
 <p><strong>The following settings are used to generate the view names and descriptions, as used in responses to <code>OPTIONS</code> requests, and as used in the browsable API.</strong></p>

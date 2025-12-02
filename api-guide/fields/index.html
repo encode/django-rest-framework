@@ -480,6 +480,10 @@
                     </li>
                   
                     <li>
+                      <a href="#bigintegerfield">BigIntegerField</a>
+                    </li>
+                  
+                    <li>
                       <a href="#floatfield">FloatField</a>
                     </li>
                   
@@ -815,6 +819,15 @@ explicitly declare the <code>BooleanField</code> on the serializer class, or use
 <ul>
 <li><code>max_value</code> Validate that the number provided is no greater than this value.</li>
 <li><code>min_value</code> Validate that the number provided is no less than this value.</li>
+</ul>
+<h2 id="bigintegerfield"><a class="toclink" href="#bigintegerfield">BigIntegerField</a></h2>
+<p>A biginteger representation.</p>
+<p>Corresponds to <code>django.db.models.fields.BigIntegerField</code>.</p>
+<p><strong>Signature</strong>: <code>BigIntegerField(max_value=None, min_value=None, coerce_to_string=None)</code></p>
+<ul>
+<li><code>max_value</code> Validate that the number provided is no greater than this value.</li>
+<li><code>min_value</code> Validate that the number provided is no less than this value.</li>
+<li><code>coerce_to_string</code> Set to <code>True</code> if string values should be returned for the representation, or <code>False</code> if <code>BigInteger</code> objects should be returned. Defaults to the same value as the <code>COERCE_BIGINT_TO_STRING</code> settings key, which will be <code>False</code> unless overridden. If <code>BigInteger</code> objects are returned by the serializer, then the final output format will be determined by the renderer.</li>
 </ul>
 <h2 id="floatfield"><a class="toclink" href="#floatfield">FloatField</a></h2>
 <p>A floating point representation.</p>
