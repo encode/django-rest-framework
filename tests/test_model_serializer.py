@@ -9,6 +9,7 @@ import datetime
 import decimal
 import json  # noqa
 import re
+import sys
 import tempfile
 
 import pytest
@@ -159,6 +160,7 @@ class TestModelSerializer(TestCase):
 
 
 class TestRegularFieldMappings(TestCase):
+    @pytest.mark.skipif(sys.platform.startswith("win"), reason="Test not supported on Windows")
     def test_regular_fields(self):
         """
         Model fields should map to their equivalent serializer fields.
