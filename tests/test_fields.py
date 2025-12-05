@@ -2060,6 +2060,7 @@ class TestMultipleChoiceField(FieldValues):
     valid_inputs = {
         (): list(),
         ('aircon',): ['aircon'],
+        ('aircon', 'aircon'): ['aircon'],
         ('aircon', 'manual'): ['aircon', 'manual'],
         ('manual', 'aircon'): ['manual', 'aircon'],
     }
@@ -2070,6 +2071,7 @@ class TestMultipleChoiceField(FieldValues):
     outputs = [
         (['aircon', 'manual', 'incorrect'], ['aircon', 'manual', 'incorrect']),
         (['manual', 'aircon', 'incorrect'], ['manual', 'aircon', 'incorrect']),
+        (['aircon', 'manual', 'aircon'], ['aircon', 'manual']),
     ]
     field = serializers.MultipleChoiceField(
         choices=[
