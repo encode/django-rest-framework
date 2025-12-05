@@ -921,6 +921,28 @@ class IntegerField(Field):
         return int(value)
 
 
+class BigIntegerField(IntegerField):
+
+    default_error_messages = {
+        'invalid': _('A valid biginteger is required.'),
+        'max_value': _('Ensure this value is less than or equal to {max_value}.'),
+        'min_value': _('Ensure this value is greater than or equal to {min_value}.'),
+        'max_string_length': _('String value too large.')
+    }
+
+    def __init__(self, coerce_to_string=None, **kwargs):
+        super().__init__(**kwargs)
+
+        if coerce_to_string is not None:
+            self.coerce_to_string = coerce_to_string
+
+    def to_representation(self, value):
+        if getattr(self, 'coerce_to_string', api_settings.COERCE_BIGINT_TO_STRING):
+            return '' if value is None else str(value)
+
+        return super().to_representation(value)
+
+
 class FloatField(Field):
     default_error_messages = {
         'invalid': _('A valid number is required.'),

@@ -16,7 +16,7 @@ def unicode_http_header(value):
     return value
 
 
-# django.contrib.postgres requires psycopg2
+# django.contrib.postgres requires psycopg
 try:
     from django.contrib.postgres import fields as postgres_fields
 except ImportError:
