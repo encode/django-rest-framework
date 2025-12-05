@@ -20,7 +20,7 @@ package and then subsequently retired over the next releases.
 
 As a full-fledged replacement, we recommend the [drf-spectacular] package.
 It has extensive support for generating OpenAPI 3 schemas from
-REST framework APIs, with both automatic and customisable options available.
+REST framework APIs, with both automatic and customizable options available.
 For further information please refer to
 [Documenting your API](../topics/documenting-your-api.md#drf-spectacular).
 
@@ -392,7 +392,7 @@ introspection.
 
 #### `get_operation_id()`
 
-There must be a unique [operationid](openapi-operationid) for each operation.
+There must be a unique [operationid][openapi-operationid] for each operation.
 By default the `operationId` is deduced from the model name, serializer name or
 view name. The operationId looks like "listItems", "retrieveItem",
 "updateItem", etc. The `operationId` is camelCase by convention.
@@ -453,12 +453,12 @@ create a base `AutoSchema` subclass for your project that takes additional
 
 [cite]: https://www.heroku.com/blog/json_schema_for_heroku_platform_api/
 [openapi]: https://github.com/OAI/OpenAPI-Specification
-[openapi-specification-extensions]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#specification-extensions
-[openapi-operation]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#operationObject
+[openapi-specification-extensions]: https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.2.md#specification-extensions
+[openapi-operation]: https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.2.md#operationObject
 [openapi-tags]: https://swagger.io/specification/#tagObject
-[openapi-operationid]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#fixed-fields-17
-[openapi-components]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#componentsObject
-[openapi-reference]: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#referenceObject
+[openapi-operationid]: https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.2.md#fixed-fields-17
+[openapi-components]: https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.2.md#componentsObject
+[openapi-reference]: https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.2.md#referenceObject
 [openapi-generator]: https://github.com/OpenAPITools/openapi-generator
 [swagger-codegen]: https://github.com/swagger-api/swagger-codegen
 [info-object]: https://swagger.io/specification/#infoObject

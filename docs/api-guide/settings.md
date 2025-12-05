@@ -314,6 +314,15 @@ May be a list including the string `'iso-8601'` or Python [strftime format][strf
 
 Default: `['iso-8601']`
 
+
+#### DURATION_FORMAT
+
+Indicates the default format that should be used for rendering the output of `DurationField` serializer fields.  If `None`, then `DurationField` serializer fields will return Python `timedelta` objects, and the duration encoding will be determined by the renderer.
+
+May be any of `None`, `'iso-8601'` or `'django'` (the format accepted by `django.utils.dateparse.parse_duration`).
+
+Default: `'django'`
+
 ---
 
 ## Encodings
@@ -361,6 +370,14 @@ When returning decimal objects in API representations that do not support a nati
 When set to `True`, the serializer `DecimalField` class will return strings instead of `Decimal` objects. When set to `False`, serializers will return `Decimal` objects, which the default JSON encoder will return as floats.
 
 Default: `True`
+
+#### COERCE_BIGINT_TO_STRING
+
+When returning biginteger objects in API representations that do not support numbers up to 2^64, it is best to return the value as a string. This avoids the loss of precision that occurs with biginteger implementations.
+
+When set to `True`, the serializer `BigIntegerField` class (by default) will return strings instead of `BigInteger` objects. When set to `False`, serializers will return `BigInteger` objects, which the default JSON encoder will return as numbers.
+
+Default: `False`
 
 ---
 

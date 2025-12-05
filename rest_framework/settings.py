@@ -24,7 +24,7 @@ from django.conf import settings
 from django.core.signals import setting_changed
 from django.utils.module_loading import import_string
 
-from rest_framework import ISO_8601
+from rest_framework import DJANGO_DURATION_FORMAT, ISO_8601
 
 DEFAULTS = {
     # Base API policies
@@ -109,11 +109,14 @@ DEFAULTS = {
     'TIME_FORMAT': ISO_8601,
     'TIME_INPUT_FORMATS': [ISO_8601],
 
+    'DURATION_FORMAT': DJANGO_DURATION_FORMAT,
+
     # Encoding
     'UNICODE_JSON': True,
     'COMPACT_JSON': True,
     'STRICT_JSON': True,
     'COERCE_DECIMAL_TO_STRING': True,
+    'COERCE_BIGINT_TO_STRING': False,
     'UPLOADED_FILES_USE_URL': True,
 
     # Browsable API

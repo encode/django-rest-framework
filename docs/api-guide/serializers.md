@@ -48,7 +48,7 @@ We can now use `CommentSerializer` to serialize a comment, or list of comments. 
     serializer.data
     # {'email': 'leila@example.com', 'content': 'foo bar', 'created': '2016-01-27T15:17:10.375877'}
 
-At this point we've translated the model instance into Python native datatypes.  To finalise the serialization process we render the data into `json`.
+At this point we've translated the model instance into Python native datatypes.  To finalize the serialization process we render the data into `json`.
 
     from rest_framework.renderers import JSONRenderer
 
@@ -155,7 +155,7 @@ When deserializing data, you always need to call `is_valid()` before attempting 
     serializer.is_valid()
     # False
     serializer.errors
-    # {'email': ['Enter a valid e-mail address.'], 'created': ['This field is required.']}
+    # {'email': ['Enter a valid email address.'], 'created': ['This field is required.']}
 
 Each key in the dictionary will be the field name, and the values will be lists of strings of any error messages corresponding to that field.  The `non_field_errors` key may also be present, and will list any general validation errors. The name of the `non_field_errors` key may be customized using the `NON_FIELD_ERRORS_KEY` REST framework setting.
 
@@ -298,7 +298,7 @@ When dealing with nested representations that support deserializing the data, an
     serializer.is_valid()
     # False
     serializer.errors
-    # {'user': {'email': ['Enter a valid e-mail address.']}, 'created': ['This field is required.']}
+    # {'user': {'email': ['Enter a valid email address.']}, 'created': ['This field is required.']}
 
 Similarly, the `.validated_data` property will include nested data structures.
 
@@ -1189,6 +1189,10 @@ The [drf-writable-nested][drf-writable-nested] package provides writable nested 
 
 The [drf-encrypt-content][drf-encrypt-content] package helps you encrypt your data, serialized through ModelSerializer. It also contains some helper functions. Which helps you to encrypt your data.
 
+## Shapeless Serializers
+
+The [drf-shapeless-serializers][drf-shapeless-serializers] package provides dynamic serializer configuration capabilities, allowing runtime field selection, renaming, attribute modification, and nested relationship configuration without creating multiple serializer classes. It helps eliminate serializer boilerplate while providing flexible API responses.
+
 
 [cite]: https://groups.google.com/d/topic/django-users/sVFaOfQi4wY/discussion
 [relations]: relations.md
@@ -1212,3 +1216,4 @@ The [drf-encrypt-content][drf-encrypt-content] package helps you encrypt your da
 [djangorestframework-queryfields]: https://djangorestframework-queryfields.readthedocs.io/
 [drf-writable-nested]: https://github.com/beda-software/drf-writable-nested
 [drf-encrypt-content]: https://github.com/oguzhancelikarslan/drf-encrypt-content
+[drf-shapeless-serializers]: https://github.com/khaledsukkar2/drf-shapeless-serializers

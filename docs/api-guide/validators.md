@@ -5,7 +5,7 @@ source:
 
 # Validators
 
-> Validators can be useful for re-using validation logic between different types of fields.
+> Validators can be useful for reusing validation logic between different types of fields.
 >
 > &mdash; [Django documentation][cite]
 
@@ -13,7 +13,7 @@ Most of the time you're dealing with validation in REST framework you'll simply 
 
 However, sometimes you'll want to place your validation logic into reusable components, so that it can easily be reused throughout your codebase. This can be achieved by using validator functions and validator classes.
 
-## Validation in REST framework
+## Validation in REST framework
 
 Validation in Django REST framework serializers is handled a little differently to how validation works in Django's `ModelForm` class.
 
@@ -75,7 +75,7 @@ This validator should be applied to *serializer fields*, like so:
         validators=[UniqueValidator(queryset=BlogPost.objects.all())]
     )
 
-## UniqueTogetherValidator
+## UniqueTogetherValidator
 
 This validator can be used to enforce `unique_together` constraints on model instances.
 It has two required arguments, and a single optional `messages` argument:
@@ -92,7 +92,7 @@ The validator should be applied to *serializer classes*, like so:
         # ...
         class Meta:
             # ToDo items belong to a parent list, and have an ordering defined
-            # by the 'position' field. No two items in a given list may share
+            # by the 'position' field. No two items in a given list may share
             # the same position.
             validators = [
                 UniqueTogetherValidator(
@@ -166,7 +166,7 @@ If you want the date field to be entirely hidden from the user, then use `Hidden
 
 ---
 
-**Note:** `HiddenField()` does not appear in `partial=True` serializer (when making `PATCH` request).
+**Note:** `HiddenField()` does not appear in `partial=True` serializer (when making `PATCH` request). 
 
 ---
 
@@ -175,7 +175,7 @@ If you want the date field to be entirely hidden from the user, then use `Hidden
 Validators that are applied across multiple fields in the serializer can sometimes require a field input that should not be provided by the API client, but that *is* available as input to the validator.
 For this purposes use `HiddenField`. This field will be present in `validated_data` but *will not* be used in the serializer output representation.
 
-**Note:** Using a `read_only=True` field is excluded from writable fields so it won't use a `default=…` argument. Look [3.8 announcement](https://www.django-rest-framework.org/community/3.8-announcement/#altered-the-behaviour-of-read_only-plus-default-on-field).
+**Note:** Using a `read_only=True` field is excluded from writable fields so it won't use a `default=…` argument. Look [3.8 announcement](https://www.django-rest-framework.org/community/3.8-announcement/#altered-the-behavior-of-read_only-plus-default-on-field).
 
 REST framework includes a couple of defaults that may be useful in this context.
 

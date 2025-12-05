@@ -181,7 +181,7 @@ The context that's available to the template:
 * `FORMAT_PARAM`        : The view can accept a format override
 * `METHOD_PARAM`        : The view can accept a method override
 
-You can override the `BrowsableAPIRenderer.get_context()` method to customise the context that gets passed to the template.
+You can override the `BrowsableAPIRenderer.get_context()` method to customize the context that gets passed to the template.
 
 #### Not using base.html
 

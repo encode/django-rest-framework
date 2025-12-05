@@ -180,7 +180,7 @@ The `allow_null` option is also available for string fields, although its usage 
 
 ## EmailField
 
-A text representation, validates the text to be a valid e-mail address.
+A text representation, validates the text to be a valid email address.
 
 Corresponds to `django.db.models.fields.EmailField`
 
@@ -268,6 +268,18 @@ Corresponds to `django.db.models.fields.IntegerField`, `django.db.models.fields.
 
 * `max_value` Validate that the number provided is no greater than this value.
 * `min_value` Validate that the number provided is no less than this value.
+
+## BigIntegerField
+
+A biginteger representation.
+
+Corresponds to `django.db.models.fields.BigIntegerField`.
+
+**Signature**: `BigIntegerField(max_value=None, min_value=None, coerce_to_string=None)`
+
+* `max_value` Validate that the number provided is no greater than this value.
+* `min_value` Validate that the number provided is no less than this value.
+* `coerce_to_string` Set to `True` if string values should be returned for the representation, or `False` if `BigInteger` objects should be returned. Defaults to the same value as the `COERCE_BIGINT_TO_STRING` settings key, which will be `False` unless overridden. If `BigInteger` objects are returned by the serializer, then the final output format will be determined by the renderer.
 
 ## FloatField
 
@@ -377,12 +389,15 @@ A Duration representation.
 Corresponds to `django.db.models.fields.DurationField`
 
 The `validated_data` for these fields will contain a `datetime.timedelta` instance.
-The representation is a string following this format `'[DD] [HH:[MM:]]ss[.uuuuuu]'`.
 
-**Signature:** `DurationField(max_value=None, min_value=None)`
+**Signature:** `DurationField(format=api_settings.DURATION_FORMAT, max_value=None, min_value=None)`
 
+* `format` - A string representing the output format.  If not specified, this defaults to the same value as the `DURATION_FORMAT` settings key, which will be `'django'` unless set. Formats are described below. Setting this value to `None` indicates that Python `timedelta` objects should be returned by `to_representation`. In this case the date encoding will be determined by the renderer.
 * `max_value` Validate that the duration provided is no greater than this value.
 * `min_value` Validate that the duration provided is no less than this value.
+
+#### `DurationField` formats
+Format may either be the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style intervals should be used (eg `'P4DT1H15M20S'`), or `'django'` which indicates that Django interval format `'[DD] [HH:[MM:]]ss[.uuuuuu]'` should be used (eg: `'4 1:15:20'`).
 
 ---
 
@@ -759,7 +774,7 @@ suitable for updating our target object. With `source='*'`, the return from
                      ('y_coordinate', 4),
                      ('x_coordinate', 3)])
 
-For completeness lets do the same thing again but with the nested serializer
+For completeness let's do the same thing again but with the nested serializer
 approach suggested above:
 
     class NestedCoordinateSerializer(serializers.Serializer):
