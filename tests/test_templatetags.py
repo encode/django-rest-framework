@@ -1,6 +1,5 @@
 import unittest
 
-import django
 from django.template import Context, Template
 from django.test import TestCase, override_settings
 from django.utils.html import urlize
@@ -250,9 +249,8 @@ class Issue1386Tests(TestCase):
             "asdf.com",
             "asdf.net",
             "www.as_df.org",
+            "as.d8f.ghj8.gov",
         ]
-        if django.VERSION < (5, 3):
-            correct_urls.append("as.d8f.ghj8.gov")
         for i in correct_urls:
             res = urlize(i)
             self.assertNotEqual(res, i)
@@ -262,8 +260,6 @@ class Issue1386Tests(TestCase):
             "mailto://asdf@fdf.com",
             "asdf.netnet",
         ]
-        if django.VERSION >= (5, 3):
-            incorrect_urls.append("as.d8f.ghj8.gov")
         for i in incorrect_urls:
             res = urlize(i)
             self.assertEqual(i, res)
