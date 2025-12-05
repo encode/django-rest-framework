@@ -1099,6 +1099,70 @@ class TestMinMaxIntegerField(FieldValues):
     field = serializers.IntegerField(min_value=1, max_value=3)
 
 
+class TestBigIntegerField(FieldValues):
+    """
+    Valid and invalid values for `BigIntegerField`.
+    """
+    valid_inputs = {
+        '1': 1,
+        '0': 0,
+        1: 1,
+        0: 0,
+        123: 123,
+        -123: -123,
+        '999999999999999999999999999': 999999999999999999999999999,
+        -999999999999999999999999999: -999999999999999999999999999,
+        1.0: 1,
+        0.0: 0,
+        '1.0': 1
+    }
+    invalid_inputs = {
+        0.5: ['A valid biginteger is required.'],
+        'abc': ['A valid biginteger is required.'],
+        '0.5': ['A valid biginteger is required.']
+    }
+    outputs = {
+        '1': 1,
+        '0': 0,
+        1: 1,
+        0: 0,
+        1.0: 1,
+        0.0: 0,
+        '999999999999999999999999999': 999999999999999999999999999,
+        -999999999999999999999999999: -999999999999999999999999999
+    }
+    field = serializers.BigIntegerField()
+
+
+class TestMinMaxBigIntegerField(FieldValues):
+    """
+    Valid and invalid values for `BigIntegerField` with min and max limits.
+    """
+    valid_inputs = {
+        '1': 1,
+        '3': 3,
+        1: 1,
+        3: 3,
+    }
+    invalid_inputs = {
+        0: ['Ensure this value is greater than or equal to 1.'],
+        4: ['Ensure this value is less than or equal to 3.'],
+        '0': ['Ensure this value is greater than or equal to 1.'],
+        '4': ['Ensure this value is less than or equal to 3.'],
+    }
+    outputs = {}
+    field = serializers.BigIntegerField(min_value=1, max_value=3)
+
+
+class TestCoercionBigIntegerField(TestCase):
+
+    def test_force_coerce_to_string(self):
+        field = serializers.BigIntegerField(coerce_to_string=True)
+        value = field.to_representation(1)
+        assert isinstance(value, str)
+        assert value == "1"
+
+
 class TestFloatField(FieldValues):
     """
     Valid and invalid values for `FloatField`.
