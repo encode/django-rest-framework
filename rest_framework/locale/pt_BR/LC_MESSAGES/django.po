@@ -143,7 +143,7 @@ msgstr "Não foi possível satisfazer a requisição do cabeçalho Accept."
 #: exceptions.py:212
 #, python-brace-format
 msgid "Unsupported media type \"{media_type}\" in request."
-msgstr "Tipo de mídia no pedido \"{media_type}\" não é suportado."
+msgstr "Tipo de mídia \"{media_type}\" não é suportado."
 
 #: exceptions.py:223
 msgid "Request was throttled."
