@@ -708,7 +708,7 @@ You can override a URL field view name and lookup field by using either, or both
     class AccountSerializer(serializers.HyperlinkedModelSerializer):
         class Meta:
             model = Account
-            fields = ['account_url', 'account_name', 'users', 'created']
+            fields = ['url', 'account_name', 'users', 'created']
             extra_kwargs = {
                 'url': {'view_name': 'accounts', 'lookup_field': 'account_name'},
                 'users': {'lookup_field': 'username'}
