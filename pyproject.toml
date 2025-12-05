@@ -7,6 +7,7 @@ name = "djangorestframework"
 description = "Web APIs for Django, made easy."
 readme = "README.md"
 license = "BSD-3-Clause"
+license-files = [ "LICENSE.md" ]
 authors = [ { name = "Tom Christie", email = "tom@tomchristie.com" } ]
 requires-python = ">=3.10"
 classifiers = [
@@ -43,6 +44,13 @@ version = { attr = "rest_framework.__version__" }
 
 [tool.setuptools.packages.find]
 include = [ "rest_framework*" ]
+
+[tool.setuptools.package-data]
+"rest_framework" = [
+  "templates/**/*",
+  "static/**/*",
+  "locale/**/*.mo",
+]
 
 [tool.isort]
 skip = [ ".tox" ]

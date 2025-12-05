@@ -315,7 +315,7 @@ if postgres_fields:
             required_db_features = {'supports_json_field'}
 
 
-@pytest.mark.skipif(not postgres_fields, reason='psycopg2 is not installed')
+@pytest.mark.skipif(not postgres_fields, reason='psycopg is not installed')
 class TestNestedNonRelationalFieldWrite:
     """
     Test that raise_errors_on_nested_writes does not raise `AssertionError` when the

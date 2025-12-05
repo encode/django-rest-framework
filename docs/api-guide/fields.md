@@ -269,6 +269,18 @@ Corresponds to `django.db.models.fields.IntegerField`, `django.db.models.fields.
 * `max_value` Validate that the number provided is no greater than this value.
 * `min_value` Validate that the number provided is no less than this value.
 
+## BigIntegerField
+
+A biginteger representation.
+
+Corresponds to `django.db.models.fields.BigIntegerField`.
+
+**Signature**: `BigIntegerField(max_value=None, min_value=None, coerce_to_string=None)`
+
+* `max_value` Validate that the number provided is no greater than this value.
+* `min_value` Validate that the number provided is no less than this value.
+* `coerce_to_string` Set to `True` if string values should be returned for the representation, or `False` if `BigInteger` objects should be returned. Defaults to the same value as the `COERCE_BIGINT_TO_STRING` settings key, which will be `False` unless overridden. If `BigInteger` objects are returned by the serializer, then the final output format will be determined by the renderer.
+
 ## FloatField
 
 A floating point representation.

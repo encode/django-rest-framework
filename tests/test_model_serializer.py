@@ -171,7 +171,7 @@ class TestRegularFieldMappings(TestCase):
         expected = dedent(r"""
             TestSerializer\(\):
                 auto_field = IntegerField\(read_only=True\)
-                big_integer_field = IntegerField\(.*\)
+                big_integer_field = BigIntegerField\(.*\)
                 boolean_field = BooleanField\(required=False\)
                 char_field = CharField\(max_length=100\)
                 comma_separated_integer_field = CharField\(max_length=100, validators=\[<django.core.validators.RegexValidator object>\]\)
