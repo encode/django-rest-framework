@@ -10,7 +10,7 @@ ______ _____ _____ _____    __
 __title__ = 'Django REST framework'
 __version__ = '3.16.1'
 __author__ = 'Tom Christie'
-__license__ = 'BSD 3-Clause'
+__license__ = 'BSD-3-Clause'
 __copyright__ = 'Copyright 2011-2023 Encode OSS Ltd'
 
 # Version synonym
@@ -24,5 +24,5 @@ ISO_8601 = 'iso-8601'
 DJANGO_DURATION_FORMAT = 'django'
 
 
-class RemovedInDRF317Warning(PendingDeprecationWarning):
+class RemovedInDRF318Warning(DeprecationWarning):
     pass

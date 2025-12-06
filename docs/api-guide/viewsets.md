@@ -231,7 +231,7 @@ Using the example from the previous section:
 Alternatively, you can use the `url_name` attribute set by the `@action` decorator.
 
 ```pycon
->>> view.reverse_action(view.set_password.url_name, args=['1'])
+>>> view.reverse_action(view.set_password.url_name, args=["1"])
 'http://localhost:8000/api/users/1/set_password'
 ```
 

@@ -3,7 +3,7 @@ name: mkdocs
 on:
   push:
     branches:
-      - master
+      - main
     paths:
       - docs/**
       - docs_theme/**
@@ -20,9 +20,9 @@ jobs:
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - run: git fetch --no-tags --prune --depth=1 origin gh-pages
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: 3.x
       - run: pip install -r requirements/requirements-documentation.txt
