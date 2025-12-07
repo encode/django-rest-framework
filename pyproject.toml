@@ -72,6 +72,8 @@ optional-dependencies.testing = [
   "pytest>=7.0.1,<8",
   "pytest-cov>=4,<5",
   "pytest-django>=4.5.2,<5",
+
+  # Remove when dropping support for Django<5.0
   "pytz",
 ]
 urls.Changelog = "https://www.django-rest-framework.org/community/release-notes/"
