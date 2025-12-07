@@ -60,7 +60,7 @@ jobs:
         python-version: '3.13'
 
     - name: Install dependencies
-      run: pip install -r requirements/requirements-documentation.txt
+      run: pip install -e .[testing]
     
     # Start mkdocs server and wait for it to be ready
     - run: mkdocs serve &
