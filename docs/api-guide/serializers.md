@@ -430,7 +430,7 @@ The context dictionary can be used within any serializer field logic, such as a 
 
 Often you'll want serializer classes that map closely to Django model definitions.
 
-The `ModelSerializer` class provides a shortcut that let's you automatically create a `Serializer` class with fields that correspond to the Model fields.
+The `ModelSerializer` class provides a shortcut that lets you automatically create a `Serializer` class with fields that correspond to the Model fields.
 
 **The `ModelSerializer` class is the same as a regular `Serializer` class, except that**:
 
@@ -708,7 +708,7 @@ You can override a URL field view name and lookup field by using either, or both
     class AccountSerializer(serializers.HyperlinkedModelSerializer):
         class Meta:
             model = Account
-            fields = ['account_url', 'account_name', 'users', 'created']
+            fields = ['url', 'account_name', 'users', 'created']
             extra_kwargs = {
                 'url': {'view_name': 'accounts', 'lookup_field': 'account_name'},
                 'users': {'lookup_field': 'username'}
