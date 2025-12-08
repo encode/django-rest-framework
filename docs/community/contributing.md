@@ -75,7 +75,7 @@ To run the tests, clone the repository, and then:
     # Setup the virtual environment
     python3 -m venv env
     source env/bin/activate
-    pip install -e .[testing,optional,packaging]
+    pip install -e . --group dev
 
     # Run the tests
     ./runtests.py
