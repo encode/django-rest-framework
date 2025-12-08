@@ -85,7 +85,6 @@ nav:
      - '3.0 Announcement': 'community/3.0-announcement.md'
      - 'Kickstarter Announcement': 'community/kickstarter-announcement.md'
      - 'Mozilla Grant': 'community/mozilla-grant.md'
-     - 'Funding': 'community/funding.md'
      - 'Jobs': 'community/jobs.md'
 
 extra_css:
