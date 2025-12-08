@@ -34,36 +34,14 @@ dynamic = [ "version" ]
 
 dependencies = [ "django>=4.2" ]
 
-optional-dependencies.documentation = [
-  # MkDocs to build our documentation.
-  "mkdocs==1.6",
-  # pylinkvalidator to check for broken links in documentation.
-  "pylinkvalidator==0.3",
+[dependency-groups]
+dev = [
+  { include-group = "docs" },
+  { include-group = "optional" },
+  { include-group = "test" },
 ]
-optional-dependencies.optional = [
-  # Optional packages which may be used with REST framework.
-  "coreapi==2.3.1",
-  "coreschema==0.0.4",
-  "django-filter",
-  "django-guardian>=2.4,<2.5",
-  "inflection==0.5.1",
-  "legacy-cgi; python_version>='3.13'",
-  "markdown>=3.3.7",
-  "psycopg[binary]>=3.1.8",
-  "pygments~=2.17.0",
-  "pyyaml>=5.3.1,<5.4",
-]
-optional-dependencies.packaging = [
-  # Transifex client for managing translation resources.
-  "transifex-client",
-  # Twine for secured PyPI uploads.
-  "twine>=3.4.2,<4.0.2",
 
-  # Wheel for PyPI installs.
-  "wheel>=0.36.2,<0.40",
-
-]
-optional-dependencies.testing = [
+test = [
   # temporary pin of attrs
   "attrs==22.1",
   "importlib-metadata<5",
@@ -75,6 +53,25 @@ optional-dependencies.testing = [
 
   # Remove when dropping support for Django<5.0
   "pytz",
+]
+docs = [
+  # MkDocs to build our documentation.
+  "mkdocs==1.6",
+  # pylinkvalidator to check for broken links in documentation.
+  "pylinkvalidator==0.3",
+]
+optional = [
+  # Optional packages which may be used with REST framework.
+  "coreapi==2.3.1",
+  "coreschema==0.0.4",
+  "django-filter",
+  "django-guardian>=2.4,<2.5",
+  "inflection==0.5.1",
+  "legacy-cgi; python_version>='3.13'",
+  "markdown>=3.3.7",
+  "psycopg[binary]>=3.1.8",
+  "pygments~=2.17.0",
+  "pyyaml>=5.3.1,<5.4",
 ]
 urls.Changelog = "https://www.django-rest-framework.org/community/release-notes/"
 urls.Funding = "https://fund.django-rest-framework.org/topics/funding/"
