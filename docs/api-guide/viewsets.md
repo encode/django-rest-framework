@@ -57,7 +57,8 @@ Typically we wouldn't do this, but would instead register the viewset with a rou
     router.register(r'users', UserViewSet, basename='user')
     urlpatterns = router.urls
 
-**Warning**: Do not use `.as_view()` with `@action` methods. It bypasses router setup and may ignore action settings like `permission_classes`. Use `DefaultRouter` for actions.
+!!! warning
+    Do not use `.as_view()` with `@action` methods. It bypasses router setup and may ignore action settings like `permission_classes`. Use `DefaultRouter` for actions.
 
 Rather than writing your own viewsets, you'll often want to use the existing base classes that provide a default set of behavior.  For example:
 
