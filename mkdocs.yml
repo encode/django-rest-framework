@@ -5,8 +5,17 @@ site_description: Django REST framework - Web APIs for Django
 repo_url: https://github.com/encode/django-rest-framework
 
 theme:
-    name: mkdocs
-    custom_dir: docs_theme
+    name: material
+    favicon: theme/img/favicon.ico
+    logo: ""
+    palette:
+      primary: custom
+      accent: custom
+    features:
+      - content.code.copy
+
+extra_css:
+  - theme/stylesheets/extra.css
 
 markdown_extensions:
  - admonition
