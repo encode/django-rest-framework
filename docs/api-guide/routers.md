@@ -40,17 +40,14 @@ The example above would generate the following URL patterns:
 * URL pattern: `^accounts/$`  Name: `'account-list'`
 * URL pattern: `^accounts/{pk}/$`  Name: `'account-detail'`
 
----
+!!! note
+    The `basename` argument is used to specify the initial part of the view name pattern.  In the example above, that's the `user` or `account` part.
 
-**Note**: The `basename` argument is used to specify the initial part of the view name pattern.  In the example above, that's the `user` or `account` part.
+    Typically you won't *need* to specify the `basename` argument, but if you have a viewset where you've defined a custom `get_queryset` method, then the viewset may not have a `.queryset` attribute set.  If you try to register that viewset you'll see an error like this:
 
-Typically you won't *need* to specify the `basename` argument, but if you have a viewset where you've defined a custom `get_queryset` method, then the viewset may not have a `.queryset` attribute set.  If you try to register that viewset you'll see an error like this:
+        'basename' argument not specified, and could not automatically determine the name from the viewset, as it does not have a '.queryset' attribute.
 
-    'basename' argument not specified, and could not automatically determine the name from the viewset, as it does not have a '.queryset' attribute.
-
-This means you'll need to explicitly set the `basename` argument when registering the viewset, as it could not be automatically determined from the model name.
-
----
+    This means you'll need to explicitly set the `basename` argument when registering the viewset, as it could not be automatically determined from the model name.
 
 ### Using `include` with routers
 
@@ -91,16 +88,13 @@ Or both an application and instance namespace:
 
 See Django's [URL namespaces docs][url-namespace-docs] and the [`include` API reference][include-api-reference] for more details.
 
----
-
-**Note**: If using namespacing with hyperlinked serializers you'll also need to ensure that any `view_name` parameters
-on the serializers correctly reflect the namespace. In the examples above you'd need to include a parameter such as
-`view_name='app_name:user-detail'` for serializer fields hyperlinked to the user detail view.
-
-The automatic `view_name` generation uses a pattern like `%(model_name)-detail`. Unless your models names actually clash
-you may be better off **not** namespacing your Django REST Framework views when using hyperlinked serializers.
-
----
+!!! note
+    If using namespacing with hyperlinked serializers you'll also need to ensure that any `view_name` parameters
+    on the serializers correctly reflect the namespace. In the examples above you'd need to include a parameter such as
+    `view_name='app_name:user-detail'` for serializer fields hyperlinked to the user detail view.
+    
+    The automatic `view_name` generation uses a pattern like `%(model_name)-detail`. Unless your models names actually clash
+    you may be better off **not** namespacing your Django REST Framework views when using hyperlinked serializers.
 
 ### Routing for extra actions
 

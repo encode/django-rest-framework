@@ -135,7 +135,8 @@ Now that snippets are associated with the user that created them, let's update o
 owner = serializers.ReadOnlyField(source="owner.username")
 ```
 
-**Note**: Make sure you also add `'owner',` to the list of fields in the inner `Meta` class.
+!!! note
+    Make sure you also add `'owner',` to the list of fields in the inner `Meta` class.
 
 This field is doing something quite interesting.  The `source` argument controls which attribute is used to populate a field, and can point at any attribute on the serialized instance.  It can also take the dotted notation shown above, in which case it will traverse the given attributes, in a similar way as it is used with Django's template language.
 
