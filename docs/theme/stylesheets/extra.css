@@ -1,0 +1,48 @@
+:root  > * {
+  /* primary */
+  --md-primary-fg-color:        #2c2c2c;
+  --md-primary-fg-color--light: #a8a8a8;
+  --md-primary-fg-color--dark: #181818;
+  /* accent */
+  --md-accent-fg-color:        #c50d0d;
+  --md-accent-fg-color--light: #ff8f8f;
+  --md-accent-fg-color--dark: #A30000;
+}
+
+.md-header {
+  border-top: 5px solid var(--md-accent-fg-color--dark);
+}
+
+body hr {
+  border-top: 1px dotted var(--md-accent-fg-color--dark);
+}
+
+/* Cutesy quote styling */
+[dir="ltr"] .md-typeset blockquote {
+  font-family: Georgia, serif;
+  font-size: 18px;
+  font-style: italic;
+  margin: 0.25em 0;
+  padding: 0.25em 40px;
+  line-height: 1.45;
+  position: relative;
+  color: #383838;
+  border-left: none;
+}
+
+[dir="ltr"] .md-typeset blockquote:before {
+  display: block;
+  content: "\201C";
+  font-size: 80px;
+  position: absolute;
+  left: -10px;
+  top: -20px;
+  color: #7a7a7a;
+}
+
+[dir="ltr"] .md-typeset blockquote p:last-child {
+  color: #999999;
+  font-size: 14px;
+  display: block;
+  margin-top: 5px;
+}
