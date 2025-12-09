@@ -534,7 +534,10 @@ router = DefaultRouter()
 router.register(r'users', UserViewSet, basename='user')
 urlpatterns = router.urls
 </code></pre>
-<p><strong>Warning</strong>: Do not use <code>.as_view()</code> with <code>@action</code> methods. It bypasses router setup and may ignore action settings like <code>permission_classes</code>. Use <code>DefaultRouter</code> for actions.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Do not use <code>.as_view()</code> with <code>@action</code> methods. It bypasses router setup and may ignore action settings like <code>permission_classes</code>. Use <code>DefaultRouter</code> for actions.</p>
+</div>
 <p>Rather than writing your own viewsets, you'll often want to use the existing base classes that provide a default set of behavior.  For example:</p>
 <pre><code>class UserViewSet(viewsets.ModelViewSet):
     """

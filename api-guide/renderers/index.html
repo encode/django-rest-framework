@@ -885,10 +885,11 @@ In this case you can underspecify the media types it should respond to, by using
 </code></pre>
 <h2 id="jsonp"><a class="toclink" href="#jsonp">JSONP</a></h2>
 <p><a href="https://jpadilla.github.io/django-rest-framework-jsonp/">REST framework JSONP</a> provides JSONP rendering support. It was previously included directly in the REST framework package, and is now instead supported as a third-party package.</p>
-<hr />
-<p><strong>Warning</strong>: If you require cross-domain AJAX requests, you should generally be using the more modern approach of <a href="https://www.w3.org/TR/cors/">CORS</a> as an alternative to <code>JSONP</code>. See the <a href="https://www.django-rest-framework.org/topics/ajax-csrf-cors/">CORS documentation</a> for more details.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If you require cross-domain AJAX requests, you should generally be using the more modern approach of <a href="https://www.w3.org/TR/cors/">CORS</a> as an alternative to <code>JSONP</code>. See the <a href="https://www.django-rest-framework.org/topics/ajax-csrf-cors/">CORS documentation</a> for more details.</p>
 <p>The <code>jsonp</code> approach is essentially a browser hack, and is <a href="https://stackoverflow.com/questions/613962/is-jsonp-safe-to-use">only appropriate for globally readable API endpoints</a>, where <code>GET</code> requests are unauthenticated and do not require any user permissions.</p>
-<hr />
+</div>
 <h4 id="installation-configuration_2"><a class="toclink" href="#installation-configuration_2">Installation &amp; configuration</a></h4>
 <p>Install using pip.</p>
 <pre><code>$ pip install djangorestframework-jsonp
