@@ -20,7 +20,7 @@ The set of valid parsers for a view is always defined as a list of classes.  Whe
 !!! note
     When developing client applications always remember to make sure you're setting the `Content-Type` header when sending data in an HTTP request.
 
-    If you don't set the content type, most clients will default to using `'application/x-www-form-urlencoded'`, which may not be what you wanted.
+    If you don't set the content type, most clients will default to using `'application/x-www-form-urlencoded'`, which may not be what you want.
 
     As an example, if you are sending `json` encoded data using jQuery with the [.ajax() method][jquery-ajax], you should make sure to include the `contentType: 'application/json'` setting.
 

@@ -26,7 +26,7 @@ pip install djangorestframework
 pip install pygments  # We'll be using this for the code highlighting
 ```
 
-!!! note
+!!! tip
     To exit the virtual environment at any time, just type `deactivate`.  For more information see the [venv documentation][venv].
 
 ## Getting started
