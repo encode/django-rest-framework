@@ -96,11 +96,8 @@ For example:
         user = self.request.user
         return user.accounts.all()
 
----
-
-**Note:** If the `serializer_class` used in the generic view spans orm relations, leading to an n+1 problem, you could optimize your queryset in this method using `select_related` and `prefetch_related`. To get more information about n+1 problem and use cases of the mentioned methods refer to related section in [django documentation][django-docs-select-related].
-
----
+!!! note
+    If the `serializer_class` used in the generic view spans orm relations, leading to an n+1 problem, you could optimize your queryset in this method using `select_related` and `prefetch_related`. To get more information about n+1 problem and use cases of the mentioned methods refer to related section in [django documentation][django-docs-select-related].
 
 ### Avoiding N+1 Queries
 

@@ -192,11 +192,8 @@ Your `validate_<field_name>` methods should return the validated value or raise 
                 raise serializers.ValidationError("Blog post is not about Django")
             return value
 
----
-
-**Note:** If your `<field_name>` is declared on your serializer with the parameter `required=False` then this validation step will not take place if the field is not included.
-
----
+!!! note
+    If your `<field_name>` is declared on your serializer with the parameter `required=False` then this validation step will not take place if the field is not included.
 
 #### Object-level validation
 
