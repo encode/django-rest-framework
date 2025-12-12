@@ -524,13 +524,14 @@ urlpatterns = router.urls
 <li>URL pattern: <code>^accounts/$</code>  Name: <code>'account-list'</code></li>
 <li>URL pattern: <code>^accounts/{pk}/$</code>  Name: <code>'account-detail'</code></li>
 </ul>
-<hr />
-<p><strong>Note</strong>: The <code>basename</code> argument is used to specify the initial part of the view name pattern.  In the example above, that's the <code>user</code> or <code>account</code> part.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code>basename</code> argument is used to specify the initial part of the view name pattern.  In the example above, that's the <code>user</code> or <code>account</code> part.</p>
 <p>Typically you won't <em>need</em> to specify the <code>basename</code> argument, but if you have a viewset where you've defined a custom <code>get_queryset</code> method, then the viewset may not have a <code>.queryset</code> attribute set.  If you try to register that viewset you'll see an error like this:</p>
 <pre><code>'basename' argument not specified, and could not automatically determine the name from the viewset, as it does not have a '.queryset' attribute.
 </code></pre>
 <p>This means you'll need to explicitly set the <code>basename</code> argument when registering the viewset, as it could not be automatically determined from the model name.</p>
-<hr />
+</div>
 <h3 id="using-include-with-routers"><a class="toclink" href="#using-include-with-routers">Using <code>include</code> with routers</a></h3>
 <p>The <code>.urls</code> attribute on a router instance is simply a standard list of URL patterns. There are a number of different styles for how you can include these URLs.</p>
 <p>For example, you can append <code>router.urls</code> to a list of existing views...</p>
@@ -563,13 +564,14 @@ urlpatterns += router.urls
 ]
 </code></pre>
 <p>See Django's <a href="https://docs.djangoproject.com/en/stable/topics/http/urls/#url-namespaces">URL namespaces docs</a> and the <a href="https://docs.djangoproject.com/en/stable/ref/urls/#include"><code>include</code> API reference</a> for more details.</p>
-<hr />
-<p><strong>Note</strong>: If using namespacing with hyperlinked serializers you'll also need to ensure that any <code>view_name</code> parameters
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If using namespacing with hyperlinked serializers you'll also need to ensure that any <code>view_name</code> parameters
 on the serializers correctly reflect the namespace. In the examples above you'd need to include a parameter such as
 <code>view_name='app_name:user-detail'</code> for serializer fields hyperlinked to the user detail view.</p>
 <p>The automatic <code>view_name</code> generation uses a pattern like <code>%(model_name)-detail</code>. Unless your models names actually clash
 you may be better off <strong>not</strong> namespacing your Django REST Framework views when using hyperlinked serializers.</p>
-<hr />
+</div>
 <h3 id="routing-for-extra-actions"><a class="toclink" href="#routing-for-extra-actions">Routing for extra actions</a></h3>
 <p>A viewset may <a href="../viewsets/#marking-extra-actions-for-routing">mark extra actions for routing</a> by decorating a method with the <code>@action</code> decorator. These extra actions will be included in the generated routes. For example, given the <code>set_password</code> method on the <code>UserViewSet</code> class:</p>
 <pre><code>from myapp.permissions import IsAdminOrIsSelf

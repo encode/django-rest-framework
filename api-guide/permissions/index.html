@@ -579,15 +579,16 @@ or if you override the <code>get_object</code> method on a generic view, then yo
     self.check_object_permissions(self.request, obj)
     return obj
 </code></pre>
-<hr />
-<p><strong>Note</strong>: With the exception of <code>DjangoObjectPermissions</code>, the provided
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>With the exception of <code>DjangoObjectPermissions</code>, the provided
 permission classes in <code>rest_framework.permissions</code> <strong>do not</strong> implement the
 methods necessary to check object permissions.</p>
 <p>If you wish to use the provided permission classes in order to check object
 permissions, <strong>you must</strong> subclass them and implement the
 <code>has_object_permission()</code> method described in the <a href="#custom-permissions"><em>Custom
 permissions</em></a> section (below).</p>
-<hr />
+</div>
 <h4 id="limitations-of-object-level-permissions"><a class="toclink" href="#limitations-of-object-level-permissions">Limitations of object level permissions</a></h4>
 <p>For performance reasons the generic views will not automatically apply object level permissions to each instance in a queryset when returning a list of objects.</p>
 <p>Often when you're using object level permissions you'll also want to <a href="../filtering/">filter the queryset</a> appropriately, to ensure that users only have visibility onto instances that they are permitted to view.</p>
@@ -633,7 +634,10 @@ def example_view(request, format=None):
     }
     return Response(content)
 </code></pre>
-<p><strong>Note:</strong> when you set new permission classes via the class attribute or decorators you're telling the view to ignore the default list set in the <strong>settings.py</strong> file.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When you set new permission classes via the class attribute or decorators you're telling the view to ignore the default list set in the <code>settings.py</code> file.</p>
+</div>
 <p>Provided they inherit from <code>rest_framework.permissions.BasePermission</code>, permissions can be composed using standard Python bitwise operators. For example, <code>IsAuthenticatedOrReadOnly</code> could be written:</p>
 <pre><code>from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS
 from rest_framework.response import Response
@@ -644,7 +648,7 @@ class ReadOnly(BasePermission):
         return request.method in SAFE_METHODS
 
 class ExampleView(APIView):
-    permission_classes = [IsAuthenticated|ReadOnly]
+    permission_classes = [IsAuthenticated | ReadOnly]
 
     def get(self, request, format=None):
         content = {
@@ -652,8 +656,10 @@ class ExampleView(APIView):
         }
         return Response(content)
 </code></pre>
-<p><strong>Note:</strong> it supports &amp; (and), | (or) and ~ (not).</p>
-<hr />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Composition of permissions supports <code>&amp;</code> (and), <code>|</code> (or) and <code>~</code> (not) operators.</p>
+</div>
 <h1 id="api-reference"><a class="toclink" href="#api-reference">API Reference</a></h1>
 <h2 id="allowany"><a class="toclink" href="#allowany">AllowAny</a></h2>
 <p>The <code>AllowAny</code> permission class will allow unrestricted access, <strong>regardless of if the request was authenticated or unauthenticated</strong>.</p>
@@ -688,9 +694,10 @@ class ExampleView(APIView):
 </ul>
 <p>Note that <code>DjangoObjectPermissions</code> <strong>does not</strong> require the <code>django-guardian</code> package, and should support other object-level backends equally well.</p>
 <p>As with <code>DjangoModelPermissions</code> you can use custom model permissions by overriding <code>DjangoObjectPermissions</code> and setting the <code>.perms_map</code> property.  Refer to the source code for details.</p>
-<hr />
-<p><strong>Note</strong>: If you need object level <code>view</code> permissions for <code>GET</code>, <code>HEAD</code> and <code>OPTIONS</code> requests and are using django-guardian for your object-level permissions backend, you'll want to consider using the <code>DjangoObjectPermissionsFilter</code> class provided by the <a href="https://github.com/rpkilby/django-rest-framework-guardian"><code>djangorestframework-guardian</code> package</a>. It ensures that list endpoints only return results including objects for which the user has appropriate view permissions.</p>
-<hr />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you need object level <code>view</code> permissions for <code>GET</code>, <code>HEAD</code> and <code>OPTIONS</code> requests and are using django-guardian for your object-level permissions backend, you'll want to consider using the <code>DjangoObjectPermissionsFilter</code> class provided by the <a href="https://github.com/rpkilby/django-rest-framework-guardian"><code>djangorestframework-guardian</code> package</a>. It ensures that list endpoints only return results including objects for which the user has appropriate view permissions.</p>
+</div>
 <h1 id="custom-permissions"><a class="toclink" href="#custom-permissions">Custom permissions</a></h1>
 <p>To implement a custom permission, override <code>BasePermission</code> and implement either, or both, of the following methods:</p>
 <ul>
@@ -704,9 +711,10 @@ class ExampleView(APIView):
 else:
     # Check permissions for write request
 </code></pre>
-<hr />
-<p><strong>Note</strong>: The instance-level <code>has_object_permission</code> method will only be called if the view-level <code>has_permission</code> checks have already passed. Also note that in order for the instance-level checks to run, the view code should explicitly call <code>.check_object_permissions(request, obj)</code>. If you are using the generic views then this will be handled for you by default. (Function-based views will need to check object permissions explicitly, raising <code>PermissionDenied</code> on failure.)</p>
-<hr />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The instance-level <code>has_object_permission</code> method will only be called if the view-level <code>has_permission</code> checks have already passed. Also note that in order for the instance-level checks to run, the view code should explicitly call <code>.check_object_permissions(request, obj)</code>. If you are using the generic views then this will be handled for you by default. (Function-based views will need to check object permissions explicitly, raising <code>PermissionDenied</code> on failure.)</p>
+</div>
 <p>Custom permissions will raise a <code>PermissionDenied</code> exception if the test fails. To change the error message associated with the exception, implement a <code>message</code> attribute directly on your custom permission. Otherwise the <code>default_detail</code> attribute from <code>PermissionDenied</code> will be used. Similarly, to change the code identifier associated with the exception, implement a <code>code</code> attribute directly on your custom permission - otherwise the <code>default_code</code> attribute from <code>PermissionDenied</code> will be used.</p>
 <pre><code>from rest_framework import permissions
 

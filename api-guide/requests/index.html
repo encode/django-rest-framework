@@ -535,10 +535,11 @@
 <h2 id="parsers"><a class="toclink" href="#parsers">.parsers</a></h2>
 <p>The <code>APIView</code> class or <code>@api_view</code> decorator will ensure that this property is automatically set to a list of <code>Parser</code> instances, based on the <code>parser_classes</code> set on the view or based on the <code>DEFAULT_PARSER_CLASSES</code> setting.</p>
 <p>You won't typically need to access this property.</p>
-<hr />
-<p><strong>Note:</strong> If a client sends malformed content, then accessing <code>request.data</code> may raise a <code>ParseError</code>.  By default REST framework's <code>APIView</code> class or <code>@api_view</code> decorator will catch the error and return a <code>400 Bad Request</code> response.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If a client sends malformed content, then accessing <code>request.data</code> may raise a <code>ParseError</code>.  By default REST framework's <code>APIView</code> class or <code>@api_view</code> decorator will catch the error and return a <code>400 Bad Request</code> response.</p>
 <p>If a client sends a request with a content-type that cannot be parsed then a <code>UnsupportedMediaType</code> exception will be raised, which by default will be caught and return a <code>415 Unsupported Media Type</code> response.</p>
-<hr />
+</div>
 <h1 id="content-negotiation"><a class="toclink" href="#content-negotiation">Content negotiation</a></h1>
 <p>The request exposes some properties that allow you to determine the result of the content negotiation stage. This allows you to implement behavior such as selecting a different serialization schemes for different media types.</p>
 <h2 id="accepted_renderer"><a class="toclink" href="#accepted_renderer">.accepted_renderer</a></h2>
@@ -564,9 +565,10 @@
 <h2 id="authenticators"><a class="toclink" href="#authenticators">.authenticators</a></h2>
 <p>The <code>APIView</code> class or <code>@api_view</code> decorator will ensure that this property is automatically set to a list of <code>Authentication</code> instances, based on the <code>authentication_classes</code> set on the view or based on the <code>DEFAULT_AUTHENTICATORS</code> setting.</p>
 <p>You won't typically need to access this property.</p>
-<hr />
-<p><strong>Note:</strong> You may see a <code>WrappedAttributeError</code> raised when calling the <code>.user</code> or <code>.auth</code> properties. These errors originate from an authenticator as a standard <code>AttributeError</code>, however it's necessary that they be re-raised as a different exception type in order to prevent them from being suppressed by the outer property access. Python will not recognize that the <code>AttributeError</code> originates from the authenticator and will instead assume that the request object does not have a <code>.user</code> or <code>.auth</code> property. The authenticator will need to be fixed.</p>
-<hr />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You may see a <code>WrappedAttributeError</code> raised when calling the <code>.user</code> or <code>.auth</code> properties. These errors originate from an authenticator as a standard <code>AttributeError</code>, however it's necessary that they be re-raised as a different exception type in order to prevent them from being suppressed by the outer property access. Python will not recognize that the <code>AttributeError</code> originates from the authenticator and will instead assume that the request object does not have a <code>.user</code> or <code>.auth</code> property. The authenticator will need to be fixed.</p>
+</div>
 <h1 id="browser-enhancements"><a class="toclink" href="#browser-enhancements">Browser enhancements</a></h1>
 <p>REST framework supports a few browser enhancements such as browser-based <code>PUT</code>, <code>PATCH</code> and <code>DELETE</code> forms.</p>
 <h2 id="method"><a class="toclink" href="#method">.method</a></h2>

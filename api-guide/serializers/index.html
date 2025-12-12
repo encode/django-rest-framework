@@ -816,9 +816,10 @@ class BlogPostSerializer(serializers.Serializer):
             raise serializers.ValidationError("Blog post is not about Django")
         return value
 </code></pre>
-<hr />
-<p><strong>Note:</strong> If your <code>&lt;field_name&gt;</code> is declared on your serializer with the parameter <code>required=False</code> then this validation step will not take place if the field is not included.</p>
-<hr />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If your <code>&lt;field_name&gt;</code> is declared on your serializer with the parameter <code>required=False</code> then this validation step will not take place if the field is not included.</p>
+</div>
 <h4 id="object-level-validation"><a class="toclink" href="#object-level-validation">Object-level validation</a></h4>
 <p>To do any other validation that requires access to multiple fields, add a method called <code>.validate()</code> to your <code>Serializer</code> subclass.  This method takes a single argument, which is a dictionary of field values.  It should raise a <code>serializers.ValidationError</code> if necessary, or just return the validated values.  For example:</p>
 <pre><code>from rest_framework import serializers
@@ -1090,14 +1091,15 @@ AccountSerializer():
         read_only_fields = ['account_name']
 </code></pre>
 <p>Model fields which have <code>editable=False</code> set, and <code>AutoField</code> fields will be set to read-only by default, and do not need to be added to the <code>read_only_fields</code> option.</p>
-<hr />
-<p><strong>Note</strong>: There is a special-case where a read-only field is part of a <code>unique_together</code> constraint at the model level. In this case the field is required by the serializer class in order to validate the constraint, but should also not be editable by the user.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>There is a special-case where a read-only field is part of a <code>unique_together</code> constraint at the model level. In this case the field is required by the serializer class in order to validate the constraint, but should also not be editable by the user.</p>
 <p>The right way to deal with this is to specify the field explicitly on the serializer, providing both the <code>read_only=True</code> and <code>default=…</code> keyword arguments.</p>
 <p>One example of this is a read-only relation to the currently authenticated <code>User</code> which is <code>unique_together</code> with another identifier. In this case you would declare the user field like so:</p>
 <pre><code>user = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
 </code></pre>
 <p>Please review the <a href="/api-guide/validators/">Validators Documentation</a> for details on the <a href="/api-guide/validators/#uniquetogethervalidator">UniqueTogetherValidator</a> and <a href="/api-guide/validators/#currentuserdefault">CurrentUserDefault</a> classes.</p>
-<hr />
+</div>
 <h2 id="additional-keyword-arguments"><a class="toclink" href="#additional-keyword-arguments">Additional keyword arguments</a></h2>
 <p>There is also a shortcut allowing you to specify arbitrary additional keyword arguments on fields, using the <code>extra_kwargs</code> option. As in the case of <code>read_only_fields</code>, this means you do not need to explicitly declare the field on the serializer.</p>
 <p>This option is a dictionary, mapping field names to a dictionary of keyword arguments. For example:</p>

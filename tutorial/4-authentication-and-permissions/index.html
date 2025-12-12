@@ -561,7 +561,10 @@ path(&quot;users/&lt;int:pk&gt;/&quot;, views.UserDetail.as_view()),
 <p>Now that snippets are associated with the user that created them, let's update our <code>SnippetSerializer</code> to reflect that.  Add the following field to the serializer definition in <code>serializers.py</code>:</p>
 <pre><code class="language-python">owner = serializers.ReadOnlyField(source=&quot;owner.username&quot;)
 </code></pre>
-<p><strong>Note</strong>: Make sure you also add <code>'owner',</code> to the list of fields in the inner <code>Meta</code> class.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Make sure you also add <code>'owner',</code> to the list of fields in the inner <code>Meta</code> class.</p>
+</div>
 <p>This field is doing something quite interesting.  The <code>source</code> argument controls which attribute is used to populate a field, and can point at any attribute on the serialized instance.  It can also take the dotted notation shown above, in which case it will traverse the given attributes, in a similar way as it is used with Django's template language.</p>
 <p>The field we've added is the untyped <code>ReadOnlyField</code> class, in contrast to the other typed fields, such as <code>CharField</code>, <code>BooleanField</code> etc...  The untyped <code>ReadOnlyField</code> is always read-only, and will be used for serialized representations, but will not be used for updating model instances when they are deserialized. We could have also used <code>CharField(read_only=True)</code> here.</p>
 <h2 id="adding-required-permissions-to-views"><a class="toclink" href="#adding-required-permissions-to-views">Adding required permissions to views</a></h2>

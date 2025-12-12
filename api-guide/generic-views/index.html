@@ -623,9 +623,10 @@ class UserList(generics.ListCreateAPIView):
     user = self.request.user
     return user.accounts.all()
 </code></pre>
-<hr />
-<p><strong>Note:</strong> If the <code>serializer_class</code> used in the generic view spans orm relations, leading to an n+1 problem, you could optimize your queryset in this method using <code>select_related</code> and <code>prefetch_related</code>. To get more information about n+1 problem and use cases of the mentioned methods refer to related section in <a href="https://docs.djangoproject.com/en/stable/ref/models/querysets/#django.db.models.query.QuerySet.select_related">django documentation</a>.</p>
-<hr />
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>If the <code>serializer_class</code> used in the generic view spans ORM relations, leading to an N+1 problem, you could optimize your queryset in this method using <code>select_related</code> and <code>prefetch_related</code>. To get more information about N+1 problem and use cases of the mentioned methods refer to related section in <a href="https://docs.djangoproject.com/en/stable/ref/models/querysets/#django.db.models.query.QuerySet.select_related">django documentation</a>.</p>
+</div>
 <h3 id="avoiding-n1-queries"><a class="toclink" href="#avoiding-n1-queries">Avoiding N+1 Queries</a></h3>
 <p>When listing objects (e.g. using <code>ListAPIView</code> or <code>ModelViewSet</code>), serializers may trigger an N+1 query pattern if related objects are accessed individually for each item.</p>
 <p>To prevent this, optimize the queryset in <code>get_queryset()</code> or by setting the <code>queryset</code> class attribute using <a href="https://docs.djangoproject.com/en/stable/ref/models/querysets/#select-related"><code>select_related()</code></a> and <a href="https://docs.djangoproject.com/en/stable/ref/models/querysets/#prefetch-related"><code>prefetch_related()</code></a>, depending on the type of relationship.</p>

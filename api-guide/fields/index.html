@@ -652,9 +652,10 @@
 <p>&mdash; <a href="https://docs.djangoproject.com/en/stable/ref/forms/api/#django.forms.Form.cleaned_data">Django documentation</a></p>
 </blockquote>
 <p>Serializer fields handle converting between primitive values and internal datatypes.  They also deal with validating input values, as well as retrieving and setting the values from their parent objects.</p>
-<hr />
-<p><strong>Note:</strong> The serializer fields are declared in <code>fields.py</code>, but by convention you should import them using <code>from rest_framework import serializers</code> and refer to fields as <code>serializers.&lt;FieldName&gt;</code>.</p>
-<hr />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The serializer fields are declared in <code>fields.py</code>, but by convention you should import them using <code>from rest_framework import serializers</code> and refer to fields as <code>serializers.&lt;FieldName&gt;</code>.</p>
+</div>
 <h2 id="core-arguments"><a class="toclink" href="#core-arguments">Core arguments</a></h2>
 <p>Each serializer field class constructor takes at least these arguments.  Some Field classes take additional, field-specific arguments, but the following should always be accepted:</p>
 <h3 id="read_only"><a class="toclink" href="#read_only"><code>read_only</code></a></h3>
@@ -1030,9 +1031,10 @@ Django's regular <a href="https://docs.djangoproject.com/en/stable/ref/settings/
 </code></pre>
 <p>The <code>HiddenField</code> class is usually only needed if you have some validation that needs to run based on some pre-provided field values, but you do not want to expose all of those fields to the end user.</p>
 <p>For further examples on <code>HiddenField</code> see the <a href="../validators/">validators</a> documentation.</p>
-<hr />
-<p><strong>Note:</strong> <code>HiddenField()</code> does not appear in <code>partial=True</code> serializer (when making <code>PATCH</code> request).</p>
-<hr />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>HiddenField()</code> does not appear in <code>partial=True</code> serializer (when making <code>PATCH</code> request).</p>
+</div>
 <h2 id="modelfield"><a class="toclink" href="#modelfield">ModelField</a></h2>
 <p>A generic field that can be tied to any arbitrary model field. The <code>ModelField</code> class delegates the task of serialization/deserialization to its associated model field.  This field can be used to create serializer fields for custom model fields, without having to create a new custom serializer field.</p>
 <p>This field is used by <code>ModelSerializer</code> to correspond to custom model field classes.</p>

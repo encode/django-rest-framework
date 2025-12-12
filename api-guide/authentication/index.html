@@ -562,10 +562,11 @@
 <p>Authentication always runs at the very start of the view, before the permission and throttling checks occur, and before any other code is allowed to proceed.</p>
 <p>The <code>request.user</code> property will typically be set to an instance of the <code>contrib.auth</code> package's <code>User</code> class.</p>
 <p>The <code>request.auth</code> property is used for any additional authentication information, for example, it may be used to represent an authentication token that the request was signed with.</p>
-<hr />
-<p><strong>Note:</strong> Don't forget that <strong>authentication by itself won't allow or disallow an incoming request</strong>, it simply identifies the credentials that the request was made with.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Don't forget that <strong>authentication by itself won't allow or disallow an incoming request</strong>, it simply identifies the credentials that the request was made with.</p>
 <p>For information on how to set up the permission policies for your API please see the <a href="../permissions/">permissions documentation</a>.</p>
-<hr />
+</div>
 <h2 id="how-authentication-is-determined"><a class="toclink" href="#how-authentication-is-determined">How authentication is determined</a></h2>
 <p>The authentication schemes are always defined as a list of classes.  REST framework will attempt to authenticate with each class in the list, and will set <code>request.user</code> and <code>request.auth</code> using the return value of the first class that successfully authenticates.</p>
 <p>If no class authenticates, <code>request.user</code> will be set to an instance of <code>django.contrib.auth.models.AnonymousUser</code>, and <code>request.auth</code> will be set to <code>None</code>.</p>
@@ -638,12 +639,16 @@ WSGIPassAuthorization On
 <p>Unauthenticated responses that are denied permission will result in an <code>HTTP 401 Unauthorized</code> response with an appropriate WWW-Authenticate header.  For example:</p>
 <pre><code>WWW-Authenticate: Basic realm="api"
 </code></pre>
-<p><strong>Note:</strong> If you use <code>BasicAuthentication</code> in production you must ensure that your API is only available over <code>https</code>.  You should also ensure that your API clients will always re-request the username and password at login, and will never store those details to persistent storage.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you use <code>BasicAuthentication</code> in production you must ensure that your API is only available over <code>https</code>.  You should also ensure that your API clients will always re-request the username and password at login, and will never store those details to persistent storage.</p>
+</div>
 <h2 id="tokenauthentication"><a class="toclink" href="#tokenauthentication">TokenAuthentication</a></h2>
-<hr />
-<p><strong>Note:</strong> The token authentication provided by Django REST framework is a fairly simple implementation.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The token authentication provided by Django REST framework is a fairly simple implementation.</p>
 <p>For an implementation which allows more than one token per user, has some tighter security implementation details, and supports token expiry, please see the <a href="https://github.com/James1345/django-rest-knox">Django REST Knox</a> third party package.</p>
-<hr />
+</div>
 <p>This authentication scheme uses a simple token-based HTTP Authentication scheme.  Token authentication is appropriate for client-server setups, such as native desktop and mobile clients.</p>
 <p>To use the <code>TokenAuthentication</code> scheme you'll need to <a href="#setting-the-authentication-scheme">configure the authentication classes</a> to include <code>TokenAuthentication</code>, and additionally include <code>rest_framework.authtoken</code> in your <code>INSTALLED_APPS</code> setting:</p>
 <pre><code>INSTALLED_APPS = [
@@ -674,9 +679,10 @@ print(token.key)
 <p>The <code>curl</code> command line tool may be useful for testing token authenticated APIs.  For example:</p>
 <pre><code>curl -X GET http://127.0.0.1:8000/api/example/ -H 'Authorization: Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b'
 </code></pre>
-<hr />
-<p><strong>Note:</strong> If you use <code>TokenAuthentication</code> in production you must ensure that your API is only available over <code>https</code>.</p>
-<hr />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you use <code>TokenAuthentication</code> in production you must ensure that your API is only available over <code>https</code>.</p>
+</div>
 <h3 id="generating-tokens"><a class="toclink" href="#generating-tokens">Generating Tokens</a></h3>
 <h4 id="by-using-signals"><a class="toclink" href="#by-using-signals">By using signals</a></h4>
 <p>If you want every user to have an automatically generated Token, you can simply catch the User's <code>post_save</code> signal.</p>
@@ -795,9 +801,10 @@ already exist. To change this and other behavior, consult the
 </ul>
 <p>You <em>may</em> also override the <code>.authenticate_header(self, request)</code> method.  If implemented, it should return a string that will be used as the value of the <code>WWW-Authenticate</code> header in a <code>HTTP 401 Unauthorized</code> response.</p>
 <p>If the <code>.authenticate_header()</code> method is not overridden, the authentication scheme will return <code>HTTP 403 Forbidden</code> responses when an unauthenticated request is denied access.</p>
-<hr />
-<p><strong>Note:</strong> When your custom authenticator is invoked by the request object's <code>.user</code> or <code>.auth</code> properties, you may see an <code>AttributeError</code> re-raised as a <code>WrappedAttributeError</code>. This is necessary to prevent the original exception from being suppressed by the outer property access. Python will not recognize that the <code>AttributeError</code> originates from your custom authenticator and will instead assume that the request object does not have a <code>.user</code> or <code>.auth</code> property. These errors should be fixed or otherwise handled by your authenticator.</p>
-<hr />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When your custom authenticator is invoked by the request object's <code>.user</code> or <code>.auth</code> properties, you may see an <code>AttributeError</code> re-raised as a <code>WrappedAttributeError</code>. This is necessary to prevent the original exception from being suppressed by the outer property access. Python will not recognize that the <code>AttributeError</code> originates from your custom authenticator and will instead assume that the request object does not have a <code>.user</code> or <code>.auth</code> property. These errors should be fixed or otherwise handled by your authenticator.</p>
+</div>
 <h2 id="example"><a class="toclink" href="#example">Example</a></h2>
 <p>The following example will authenticate any incoming request as the user given by the username in a custom request header named 'X-USERNAME'.</p>
 <pre><code>from django.contrib.auth.models import User

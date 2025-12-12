@@ -651,11 +651,12 @@ def user_count_view(request, format=None):
 <p>Renders data to HTML, using Django's standard template rendering.
 Unlike other renderers, the data passed to the <code>Response</code> does not need to be serialized.  Also, unlike other renderers, you may want to include a <code>template_name</code> argument when creating the <code>Response</code>.</p>
 <p>The TemplateHTMLRenderer will create a <code>RequestContext</code>, using the <code>response.data</code> as the context dict, and determine a template name to use to render the context.</p>
-<hr />
-<p><strong>Note:</strong> When used with a view that makes use of a serializer the <code>Response</code> sent for rendering may not be a dictionary and will need to be wrapped in a dict before returning to allow the <code>TemplateHTMLRenderer</code> to render it. For example:</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When used with a view that makes use of a serializer the <code>Response</code> sent for rendering may not be a dictionary and will need to be wrapped in a dict before returning to allow the <code>TemplateHTMLRenderer</code> to render it. For example:</p>
 <pre><code>response.data = {'results': response.data}
 </code></pre>
-<hr />
+</div>
 <p>The template name is determined by (in order of preference):</p>
 <ol>
 <li>An explicit <code>template_name</code> argument passed to the response.</li>
@@ -714,13 +715,17 @@ def simple_html_view(request):
 <p><img alt="The AdminRender view" src="../../img/admin.png" /></p>
 <p>This renderer is suitable for CRUD-style web APIs that should also present a user-friendly interface for managing the data.</p>
 <p>Note that views that have nested or list serializers for their input won't work well with the <code>AdminRenderer</code>, as the HTML forms are unable to properly support them.</p>
-<p><strong>Note</strong>: The <code>AdminRenderer</code> is only able to include links to detail pages when a properly configured <code>URL_FIELD_NAME</code> (<code>url</code> by default) attribute is present in the data. For <code>HyperlinkedModelSerializer</code> this will be the case, but for <code>ModelSerializer</code> or plain <code>Serializer</code> classes you'll need to make sure to include the field explicitly. For example here we use models <code>get_absolute_url</code> method:</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code>AdminRenderer</code> is only able to include links to detail pages when a properly configured <code>URL_FIELD_NAME</code> (<code>url</code> by default) attribute is present in the data. For <code>HyperlinkedModelSerializer</code> this will be the case, but for <code>ModelSerializer</code> or plain <code>Serializer</code> classes you'll need to make sure to include the field explicitly. </p>
+<p>For example here we use models <code>get_absolute_url</code> method:</p>
 <pre><code>class AccountSerializer(serializers.ModelSerializer):
     url = serializers.CharField(source='get_absolute_url', read_only=True)
 
     class Meta:
         model = Account
 </code></pre>
+</div>
 <p><strong>.media_type</strong>: <code>text/html</code></p>
 <p><strong>.format</strong>: <code>'admin'</code></p>
 <p><strong>.charset</strong>: <code>utf-8</code></p>
@@ -847,8 +852,10 @@ In this case you can underspecify the media types it should respond to, by using
 <li>Render the HTTP status code and text, for example "404 Not Found".</li>
 </ul>
 <p>Templates will render with a <code>RequestContext</code> which includes the <code>status_code</code> and <code>details</code> keys.</p>
-<p><strong>Note</strong>: If <code>DEBUG=True</code>, Django's standard traceback error page will be displayed instead of rendering the HTTP status code and text.</p>
-<hr />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If <code>DEBUG=True</code>, Django's standard traceback error page will be displayed instead of rendering the HTTP status code and text.</p>
+</div>
 <h1 id="third-party-packages"><a class="toclink" href="#third-party-packages">Third party packages</a></h1>
 <p>The following third party packages are also available.</p>
 <h2 id="yaml"><a class="toclink" href="#yaml">YAML</a></h2>

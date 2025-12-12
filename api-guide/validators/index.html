@@ -589,9 +589,10 @@ class ExampleSerializer(serializers.Serializer):
             )
         ]
 </code></pre>
-<hr />
-<p><strong>Note</strong>: The <code>UniqueTogetherValidator</code> class always imposes an implicit constraint that all the fields it applies to are always treated as required. Fields with <code>default</code> values are an exception to this as they always supply a value even when omitted from user input.</p>
-<hr />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code>UniqueTogetherValidator</code> class always imposes an implicit constraint that all the fields it applies to are always treated as required. Fields with <code>default</code> values are an exception to this as they always supply a value even when omitted from user input.</p>
+</div>
 <h2 id="uniquefordatevalidator"><a class="toclink" href="#uniquefordatevalidator">UniqueForDateValidator</a></h2>
 <h2 id="uniqueformonthvalidator"><a class="toclink" href="#uniqueformonthvalidator">UniqueForMonthValidator</a></h2>
 <h2 id="uniqueforyearvalidator"><a class="toclink" href="#uniqueforyearvalidator">UniqueForYearValidator</a></h2>
@@ -631,16 +632,21 @@ class ExampleSerializer(serializers.Serializer):
 <p>If you want the date field to be entirely hidden from the user, then use <code>HiddenField</code>. This field type does not accept user input, but instead always returns its default value to the <code>validated_data</code> in the serializer.</p>
 <pre><code>published = serializers.HiddenField(default=timezone.now)
 </code></pre>
-<hr />
-<p><strong>Note</strong>: The <code>UniqueFor&lt;Range&gt;Validator</code> classes impose an implicit constraint that the fields they are applied to are always treated as required. Fields with <code>default</code> values are an exception to this as they always supply a value even when omitted from user input.</p>
-<hr />
-<hr />
-<p><strong>Note:</strong> <code>HiddenField()</code> does not appear in <code>partial=True</code> serializer (when making <code>PATCH</code> request). </p>
-<hr />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code>UniqueFor&lt;Range&gt;Validator</code> classes impose an implicit constraint that the fields they are applied to are always treated as required. Fields with <code>default</code> values are an exception to this as they always supply a value even when omitted from user input.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>HiddenField()</code> does not appear in <code>partial=True</code> serializer (when making <code>PATCH</code> request). </p>
+</div>
 <h1 id="advanced-field-defaults"><a class="toclink" href="#advanced-field-defaults">Advanced field defaults</a></h1>
 <p>Validators that are applied across multiple fields in the serializer can sometimes require a field input that should not be provided by the API client, but that <em>is</em> available as input to the validator.
 For this purposes use <code>HiddenField</code>. This field will be present in <code>validated_data</code> but <em>will not</em> be used in the serializer output representation.</p>
-<p><strong>Note:</strong> Using a <code>read_only=True</code> field is excluded from writable fields so it won't use a <code>default=…</code> argument. Look <a href="https://www.django-rest-framework.org/community/3.8-announcement/#altered-the-behavior-of-read_only-plus-default-on-field">3.8 announcement</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Using a <code>read_only=True</code> field is excluded from writable fields so it won't use a <code>default=…</code> argument. Look <a href="https://www.django-rest-framework.org/community/3.8-announcement/#altered-the-behavior-of-read_only-plus-default-on-field">3.8 announcement</a>.</p>
+</div>
 <p>REST framework includes a couple of defaults that may be useful in this context.</p>
 <h4 id="currentuserdefault"><a class="toclink" href="#currentuserdefault">CurrentUserDefault</a></h4>
 <p>A default class that can be used to represent the current user. In order to use this, the 'request' must have been provided as part of the context dictionary when instantiating the serializer.</p>

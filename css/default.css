@@ -452,6 +452,12 @@ ul.sponsor {
   margin:  0 -.6rem 1em;
   padding: 0.4rem 0.6rem;
 }
+.admonition.tip {
+  border: .075rem solid #1e8d21;
+}
+.admonition.tip .admonition-title {
+  background: #1e8d211a;
+}
 .admonition.warning {
   border: .075rem solid #ff9844;
 }

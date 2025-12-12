@@ -512,8 +512,10 @@ def get_user_list(request):
     content = {&quot;user_feed&quot;: request.user.get_user_feed()}
     return Response(content)
 </code></pre>
-<p><strong>NOTE:</strong> The <a href="https://docs.djangoproject.com/en/stable/topics/cache/#the-per-view-cache"><code>cache_page</code></a> decorator only caches the
-<code>GET</code> and <code>HEAD</code> responses with status 200.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <a href="https://docs.djangoproject.com/en/stable/topics/cache/#the-per-view-cache"><code>cache_page</code></a> decorator only caches the <code>GET</code> and <code>HEAD</code> responses with status 200.</p>
+</div>
             
 
           </div> <!--/span-->

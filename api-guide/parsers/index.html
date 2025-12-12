@@ -522,11 +522,12 @@ sending more complex data than simple forms</p>
 <p>REST framework includes a number of built-in Parser classes, that allow you to accept requests with various media types.  There is also support for defining your own custom parsers, which gives you the flexibility to design the media types that your API accepts.</p>
 <h2 id="how-the-parser-is-determined"><a class="toclink" href="#how-the-parser-is-determined">How the parser is determined</a></h2>
 <p>The set of valid parsers for a view is always defined as a list of classes.  When <code>request.data</code> is accessed, REST framework will examine the <code>Content-Type</code> header on the incoming request, and determine which parser to use to parse the request content.</p>
-<hr />
-<p><strong>Note</strong>: When developing client applications always remember to make sure you're setting the <code>Content-Type</code> header when sending data in an HTTP request.</p>
-<p>If you don't set the content type, most clients will default to using <code>'application/x-www-form-urlencoded'</code>, which may not be what you wanted.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When developing client applications always remember to make sure you're setting the <code>Content-Type</code> header when sending data in an HTTP request.</p>
+<p>If you don't set the content type, most clients will default to using <code>'application/x-www-form-urlencoded'</code>, which may not be what you want.</p>
 <p>As an example, if you are sending <code>json</code> encoded data using jQuery with the <a href="https://api.jquery.com/jQuery.ajax/">.ajax() method</a>, you should make sure to include the <code>contentType: 'application/json'</code> setting.</p>
-<hr />
+</div>
 <h2 id="setting-the-parsers"><a class="toclink" href="#setting-the-parsers">Setting the parsers</a></h2>
 <p>The default set of parsers may be set globally, using the <code>DEFAULT_PARSER_CLASSES</code> setting. For example, the following settings would allow only requests with <code>JSON</code> content, instead of the default of JSON or form data.</p>
 <pre><code>REST_FRAMEWORK = {

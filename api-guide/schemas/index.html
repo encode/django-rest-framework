@@ -650,13 +650,14 @@ operation = auto_schema.get_operation(...)
 </code></pre>
 <p>In compiling the schema, <code>SchemaGenerator</code> calls <code>get_components()</code> and
 <code>get_operation()</code> for each view, allowed method, and path.</p>
-<hr />
-<p><strong>Note</strong>: The automatic introspection of components, and many operation
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The automatic introspection of components, and many operation
 parameters relies on the relevant attributes and methods of
 <code>GenericAPIView</code>: <code>get_serializer()</code>, <code>pagination_class</code>, <code>filter_backends</code>,
 etc. For basic <code>APIView</code> subclasses, default introspection is essentially limited to
 the URL kwarg path parameters for this reason.</p>
-<hr />
+</div>
 <p><code>AutoSchema</code> encapsulates the view introspection needed for schema generation.
 Because of this all the schema generation logic is kept in a single place,
 rather than being spread around the already extensive view, serializer and

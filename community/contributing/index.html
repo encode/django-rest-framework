@@ -548,8 +548,9 @@ pip install -r requirements.txt
 # Run the tests
 ./runtests.py
 </code></pre>
-<hr />
-<p><strong>Note:</strong> if your tests require access to the database, do not forget to inherit from <code>django.test.TestCase</code> or use the <code>@pytest.mark.django_db()</code> decorator.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>If your tests require access to the database, do not forget to inherit from <code>django.test.TestCase</code> or use the <code>@pytest.mark.django_db()</code> decorator.</p>
 <p>For example, with TestCase:</p>
 <pre><code>from django.test import TestCase
 
@@ -568,7 +569,7 @@ class MyDatabaseTest:
         pass
 </code></pre>
 <p>You can reuse existing models defined in <code>tests/models.py</code> for your tests.</p>
-<hr />
+</div>
 <h3 id="test-options"><a class="toclink" href="#test-options">Test options</a></h3>
 <p>Run using a more concise output style.</p>
 <pre><code>./runtests.py -q
@@ -585,7 +586,10 @@ class MyDatabaseTest:
 <p>Shorter form to run the tests for a given test method.</p>
 <pre><code>./runtests.py test_this_method
 </code></pre>
-<p>Note: The test case and test method matching is fuzzy and will sometimes run other tests that contain a partial string match to the given  command line input.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The test case and test method matching is fuzzy and will sometimes run other tests that contain a partial string match to the given  command line input.</p>
+</div>
 <h3 id="running-against-multiple-environments"><a class="toclink" href="#running-against-multiple-environments">Running against multiple environments</a></h3>
 <p>You can also use the excellent <a href="https://tox.readthedocs.io/en/latest/">tox</a> testing tool to run the tests against all supported versions of Python and Django.  Install <code>tox</code> globally, and then simply run:</p>
 <pre><code>tox
@@ -643,13 +647,11 @@ More text...
 </code></pre>
 <p>Linking in this style means you'll be able to click the hyperlink in your Markdown editor to open the referenced document.  When the documentation is built, these links will be converted into regular links to HTML pages.</p>
 <h5 id="3-notes"><a class="toclink" href="#3-notes">3. Notes</a></h5>
-<p>If you want to draw attention to a note or warning, use a pair of enclosing lines, like so:</p>
-<pre><code>---
-
-**Note:** A useful documentation note.
-
----
+<p>If you want to draw attention to a note or warning, use an <a href="https://python-markdown.github.io/extensions/admonition/">admonition</a>, like so:</p>
+<pre><code>!!! note
+    A useful documentation note.
 </code></pre>
+<p>The documentation theme styles <code>info</code>, <code>warning</code>, <code>tip</code> and <code>danger</code> admonition types, but more could be added if the need arise.</p>
             
 
           </div> <!--/span-->
