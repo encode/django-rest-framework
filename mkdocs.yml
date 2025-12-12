@@ -7,7 +7,7 @@ repo_url: https://github.com/encode/django-rest-framework
 theme:
     name: material
     favicon: theme/img/favicon.ico
-    logo: ""
+    logo: theme/img/logo.png
     palette:
       primary: custom
       accent: custom
