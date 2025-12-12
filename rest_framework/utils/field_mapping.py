@@ -86,6 +86,8 @@ def get_unique_validators(field_name, model_field):
             if condition is not None
             else set()
         )
+        # Only use UniqueValidator if the union of field and condition fields is 1
+        # (i.e. no additional fields referenced in conditions)
         if len(field_set | condition_fields) == 1:
             yield UniqueValidator(
                 queryset=queryset if condition is None else queryset.filter(condition),
