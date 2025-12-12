@@ -17,6 +17,13 @@ body hr {
   border-top: 1px dotted var(--md-accent-fg-color--dark);
 }
 
+.badges {
+  display: flex;
+  flex-direction: row-reverse;
+  align-content: end;
+  gap: 8px;
+}
+
 /* Cutesy quote styling */
 [dir="ltr"] .md-typeset blockquote {
   font-family: Georgia, serif;
