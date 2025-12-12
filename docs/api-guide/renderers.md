@@ -103,15 +103,10 @@ Unlike other renderers, the data passed to the `Response` does not need to be se
 
 The TemplateHTMLRenderer will create a `RequestContext`, using the `response.data` as the context dict, and determine a template name to use to render the context.
 
----
+!!! note
+    When used with a view that makes use of a serializer the `Response` sent for rendering may not be a dictionary and will need to be wrapped in a dict before returning to allow the `TemplateHTMLRenderer` to render it. For example:
 
-**Note:** When used with a view that makes use of a serializer the `Response` sent for rendering may not be a dictionary and will need to be wrapped in a dict before returning to allow the `TemplateHTMLRenderer` to render it. For example:
-
-```
-response.data = {'results': response.data}
-```
-
----
+        response.data = {'results': response.data}
 
 The template name is determined by (in order of preference):
 
@@ -202,13 +197,16 @@ This renderer is suitable for CRUD-style web APIs that should also present a use
 
 Note that views that have nested or list serializers for their input won't work well with the `AdminRenderer`, as the HTML forms are unable to properly support them.
 
-**Note**: The `AdminRenderer` is only able to include links to detail pages when a properly configured `URL_FIELD_NAME` (`url` by default) attribute is present in the data. For `HyperlinkedModelSerializer` this will be the case, but for `ModelSerializer` or plain `Serializer` classes you'll need to make sure to include the field explicitly. For example here we use models `get_absolute_url` method:
+!!! note
+    The `AdminRenderer` is only able to include links to detail pages when a properly configured `URL_FIELD_NAME` (`url` by default) attribute is present in the data. For `HyperlinkedModelSerializer` this will be the case, but for `ModelSerializer` or plain `Serializer` classes you'll need to make sure to include the field explicitly. 
 
-    class AccountSerializer(serializers.ModelSerializer):
-        url = serializers.CharField(source='get_absolute_url', read_only=True)
+    For example here we use models `get_absolute_url` method:
 
-        class Meta:
-            model = Account
+        class AccountSerializer(serializers.ModelSerializer):
+            url = serializers.CharField(source='get_absolute_url', read_only=True)
+    
+            class Meta:
+                model = Account
 
 
 **.media_type**: `text/html`
@@ -390,9 +388,8 @@ Exceptions raised and handled by an HTML renderer will attempt to render using o
 
 Templates will render with a `RequestContext` which includes the `status_code` and `details` keys.
 
-**Note**: If `DEBUG=True`, Django's standard traceback error page will be displayed instead of rendering the HTTP status code and text.
-
----
+!!! note
+    If `DEBUG=True`, Django's standard traceback error page will be displayed instead of rendering the HTTP status code and text.
 
 # Third party packages
 
