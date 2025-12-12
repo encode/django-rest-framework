@@ -220,5 +220,5 @@ The following is an example of a rate throttle, that will randomly throttle 1 in
 [identifying-clients]: http://oxpedia.org/wiki/index.php?title=AppSuite:Grizzly#Multiple_Proxies_in_front_of_the_cluster
 [cache-setting]: https://docs.djangoproject.com/en/stable/ref/settings/#caches
 [cache-docs]: https://docs.djangoproject.com/en/stable/topics/cache/#setting-up-the-cache
-[gh5181]: https://github.com/encode/django-rest-framework/issues/5181
+[gh5181]: https://github.com/django-commons/django-rest-framework/issues/5181
 [race]: https://en.wikipedia.org/wiki/Race_condition#Data_race
