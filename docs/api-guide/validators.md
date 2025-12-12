@@ -222,6 +222,28 @@ For example:
             extra_kwargs = {'client': {'required': False}}
             validators = []  # Remove a default "unique together" constraint.
 
+### UniqueConstraint with conditions
+
+When using Django's `UniqueConstraint` with conditions that reference other model fields, DRF will automatically use
+`UniqueTogetherValidator` instead of field-level `UniqueValidator`. This ensures proper validation behavior when the constraint
+effectively involves multiple fields.
+
+For example, a single-field constraint with a condition becomes a multi-field validation when the condition references other fields.
+
+    class MyModel(models.Model):
+        name = models.CharField(max_length=100)
+        status = models.CharField(max_length=20)
+
+        class Meta:
+            constraints = [
+                models.UniqueConstraint(
+                    fields=['name'],
+                    condition=models.Q(status='active'),
+                    name='unique_active_name'
+                )
+            ]
+
+
 ## Updating nested serializers
 
 When applying an update to an existing instance, uniqueness validators will

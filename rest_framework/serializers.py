@@ -1451,6 +1451,8 @@ class ModelSerializer(Serializer):
                             get_referenced_base_fields_from_q(constraint.condition)
                         )
 
+                    # Combine constraint fields and condition fields. If the union
+                    # involves multiple fields, treat as unique-together validation
                     required_fields = {*constraint.fields, *condition_fields}
                     if len(required_fields) > 1:
                         yield (

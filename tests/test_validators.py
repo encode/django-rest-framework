@@ -248,7 +248,7 @@ class TestUniquenessTogetherValidation(TestCase):
 
     def test_is_not_unique_together_condition_based(self):
         """
-        Failing unique together validation should result in non field errors when a condition-based
+        Failing unique together validation should result in non-field errors when a condition-based
         unique together constraint is violated.
         """
         ConditionUniquenessTogetherModel.objects.create(race_name='example', position=1)
@@ -275,10 +275,10 @@ class TestUniquenessTogetherValidation(TestCase):
             'position': 2
         }
 
-    def test_unique_together_condition_based(self):
+    def test_is_unique_together_condition_based(self):
         """
-        In a unique together validation, one field may be non-unique
-        so long as the set as a whole is unique.
+        In a condition-based unique together validation, data is valid when
+        the constrained field differs when the condition applies`.
         """
         ConditionUniquenessTogetherModel.objects.create(race_name='example', position=1)
 
@@ -288,6 +288,21 @@ class TestUniquenessTogetherValidation(TestCase):
         assert serializer.validated_data == {
             'race_name': 'other',
             'position': 1
+        }
+
+    def test_is_unique_together_when_condition_does_not_apply(self):
+        """
+        In a condition-based unique together validation, data is valid when
+        the condition does not apply, even if constrained fields match existing records.
+        """
+        ConditionUniquenessTogetherModel.objects.create(race_name='example', position=1)
+
+        data = {'race_name': 'example', 'position': 2}
+        serializer = ConditionUniquenessTogetherSerializer(data=data)
+        assert serializer.is_valid()
+        assert serializer.validated_data == {
+            'race_name': 'example',
+            'position': 2
         }
 
     def test_updated_instance_excluded_from_unique_together(self):
@@ -308,10 +323,10 @@ class TestUniquenessTogetherValidation(TestCase):
         When performing an update, the existing instance does not count
         as a match against uniqueness.
         """
-        ConditionUniquenessTogetherModel.objects.create(race_name='example', position=1)
+        instance = ConditionUniquenessTogetherModel.objects.create(race_name='example', position=1)
 
         data = {'race_name': 'example', 'position': 0}
-        serializer = ConditionUniquenessTogetherSerializer(self.instance, data=data)
+        serializer = ConditionUniquenessTogetherSerializer(instance, data=data)
         assert serializer.is_valid()
         assert serializer.validated_data == {
             'race_name': 'example',
