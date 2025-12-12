@@ -834,11 +834,11 @@ class TestUniqueConstraintValidation(TestCase):
         validators = serializer.fields['global_id'].validators
         assert len(validators) == 1 + extra_validators_qty
         assert validators[0].queryset == UniqueConstraintModel.objects
+        ids_in_qs = {frozenset(v.queryset.values_list('id', flat=True)) for v in validators if hasattr(v, "queryset")}
+        assert ids_in_qs == {frozenset({1, 2, 3})}
 
         validators = serializer.fields['fancy_conditions'].validators
-        assert len(validators) == 2 + extra_validators_qty
-        ids_in_qs = {frozenset(v.queryset.values_list('id', flat=True)) for v in validators if hasattr(v, "queryset")}
-        assert ids_in_qs == {frozenset([1]), frozenset([3])}
+        assert len(validators) == extra_validators_qty
 
     def test_nullable_unique_constraint_fields_are_not_required(self):
         serializer = UniqueConstraintNullableSerializer(data={'title': 'Bob'})
