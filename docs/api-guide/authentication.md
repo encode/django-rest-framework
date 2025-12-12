@@ -451,7 +451,7 @@ More information can be found in the [Documentation](https://django-rest-durin.r
 
 ## django-pyoidc
 
-[dango-pyoidc][django_pyoidc] adds support for OpenID Connect (OIDC) authentication. This allows you to delegate user management to an Identity Provider, which can be used to implement Single-Sign-On (SSO). It provides support for most uses-cases, such as customizing how token info are mapped to user models, using OIDC audiences for access control, etc.
+[django_pyoidc][django-pyoidc] adds support for OpenID Connect (OIDC) authentication. This allows you to delegate user management to an Identity Provider, which can be used to implement Single-Sign-On (SSO). It provides support for most uses-cases, such as customizing how token info are mapped to user models, using OIDC audiences for access control, etc.
 
 More information can be found in the [Documentation](https://django-pyoidc.readthedocs.io/latest/index.html).
 
