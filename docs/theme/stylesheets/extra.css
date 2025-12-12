@@ -7,6 +7,9 @@
   --md-accent-fg-color:        #c50d0d;
   --md-accent-fg-color--light: #ff8f8f;
   --md-accent-fg-color--dark: #A30000;
+
+  /* Style links */
+  --md-typeset-a-color: var(--md-typeset-color);
 }
 
 .md-header {
@@ -33,7 +36,7 @@ body hr {
   padding: 0.25em 40px;
   line-height: 1.45;
   position: relative;
-  color: #383838;
+  color: var(--md-typeset-color);
   border-left: none;
 }
 
@@ -52,4 +55,8 @@ body hr {
   font-size: 14px;
   display: block;
   margin-top: 5px;
+}
+
+.md-typeset p a {
+  color: var(--md-accent-fg-color--dark);
 }
