@@ -12,6 +12,10 @@
   --md-typeset-a-color: var(--md-typeset-color);
 }
 
+/* Dark theme customisation */
+[data-md-color-scheme="slate"]
+{}
+
 .md-header {
   border-top: 5px solid var(--md-accent-fg-color--dark);
 }
@@ -57,6 +61,6 @@ body hr {
   margin-top: 5px;
 }
 
-.md-typeset p a {
+.md-typeset a {
   color: var(--md-accent-fg-color--dark);
 }
