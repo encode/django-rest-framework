@@ -30,7 +30,19 @@ theme:
           icon: material/brightness-4
           name: "Switch to system preference"
     features:
-      - content.code.copy
+    - content.tabs.link
+    - content.code.annotate
+    - content.code.copy
+    - navigation.tabs
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.instant.progress
+    - navigation.path
+    - navigation.sections
+    - navigation.top
+    - navigation.tracking
+    - search.suggest
+    - toc.follow
 
 extra_css:
   - theme/stylesheets/extra.css
@@ -38,7 +50,7 @@ extra_css:
 markdown_extensions:
  - admonition
  - toc:
-    anchorlink: True
+     permalink: true
 
 nav:
  - Home: 'index.md'
