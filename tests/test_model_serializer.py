@@ -9,6 +9,7 @@ import datetime
 import decimal
 import json  # noqa
 import re
+import sys
 import tempfile
 
 import pytest
@@ -159,6 +160,7 @@ class TestModelSerializer(TestCase):
 
 
 class TestRegularFieldMappings(TestCase):
+    @pytest.mark.skipif(sys.platform.startswith("win"), reason="Test not supported on Windows")
     def test_regular_fields(self):
         """
         Model fields should map to their equivalent serializer fields.
@@ -171,7 +173,7 @@ class TestRegularFieldMappings(TestCase):
         expected = dedent(r"""
             TestSerializer\(\):
                 auto_field = IntegerField\(read_only=True\)
-                big_integer_field = IntegerField\(.*\)
+                big_integer_field = BigIntegerField\(.*\)
                 boolean_field = BooleanField\(required=False\)
                 char_field = CharField\(max_length=100\)
                 comma_separated_integer_field = CharField\(max_length=100, validators=\[<django.core.validators.RegexValidator object>\]\)

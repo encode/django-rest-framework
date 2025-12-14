@@ -45,11 +45,8 @@ For example:
             usernames = [user.username for user in User.objects.all()]
             return Response(usernames)
 
----
-
-**Note**: The full methods, attributes on, and relations between Django REST Framework's `APIView`, `GenericAPIView`, various `Mixins`, and `Viewsets` can be initially complex. In addition to the documentation here, the [Classy Django REST Framework][classy-drf] resource provides a browsable reference, with full methods and attributes, for each of Django REST Framework's class-based views.
-
----
+!!! note
+    The full methods, attributes on, and relations between Django REST Framework's `APIView`, `GenericAPIView`, various `Mixins`, and `Viewsets` can be initially complex. In addition to the documentation here, the [Classy Django REST Framework][classy-drf] resource provides a browsable reference, with full methods and attributes, for each of Django REST Framework's class-based views.
 
 
 ## API policy attributes
@@ -186,8 +183,13 @@ The available decorators are:
 * `@authentication_classes(...)`
 * `@throttle_classes(...)`
 * `@permission_classes(...)`
+* `@content_negotiation_class(...)`
+* `@metadata_class(...)`
+* `@versioning_class(...)`
 
-Each of these decorators takes a single argument which must be a list or tuple of classes.
+Each of these decorators is equivalent to setting their respective [api policy attributes][api-policy-attributes].
+
+All decorators take a single argument. The ones that end with `_class` expect a single class while the ones ending in `_classes` expect a list or tuple of classes.
 
 
 ## View schema decorator
@@ -224,4 +226,5 @@ You may pass `None` in order to exclude the view from schema generation.
 [throttling]: throttling.md
 [schemas]: schemas.md
 [classy-drf]: http://www.cdrf.co
+[api-policy-attributes]: views.md#api-policy-attributes
 

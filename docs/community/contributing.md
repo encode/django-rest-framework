@@ -81,11 +81,41 @@ To run the tests, clone the repository, and then:
     # Run the tests
     ./runtests.py
 
+!!! tip
+    If your tests require access to the database, do not forget to inherit from `django.test.TestCase` or use the `@pytest.mark.django_db()` decorator.
+
+    For example, with TestCase:
+    
+        from django.test import TestCase
+    
+        class MyDatabaseTest(TestCase):
+            def test_something(self):
+                # Your test code here
+                pass
+    
+    Or with decorator:
+    
+        import pytest
+    
+        @pytest.mark.django_db()
+        class MyDatabaseTest:
+            def test_something(self):
+                # Your test code here
+                pass
+    
+    You can reuse existing models defined in `tests/models.py` for your tests.
+
 ### Test options
 
 Run using a more concise output style.
 
     ./runtests.py -q
+
+
+If you do not want the output to be captured (for example, to see print statements directly), you can use the `-s` flag.
+
+    ./runtests.py -s
+
 
 Run the tests for a given test case.
 
@@ -99,7 +129,9 @@ Shorter form to run the tests for a given test method.
 
     ./runtests.py test_this_method
 
-Note: The test case and test method matching is fuzzy and will sometimes run other tests that contain a partial string match to the given  command line input.
+
+!!! note
+    The test case and test method matching is fuzzy and will sometimes run other tests that contain a partial string match to the given  command line input.
 
 ### Running against multiple environments
 
@@ -191,13 +223,12 @@ Linking in this style means you'll be able to click the hyperlink in your Markdo
 
 ##### 3. Notes
 
-If you want to draw attention to a note or warning, use a pair of enclosing lines, like so:
+If you want to draw attention to a note or warning, use an [admonition], like so:
 
-    ---
+    !!! note
+        A useful documentation note.
 
-    **Note:** A useful documentation note.
-
-    ---
+The documentation theme styles `info`, `warning`, `tip` and `danger` admonition types, but more could be added if the need arise.
 
 
 [cite]: https://www.w3.org/People/Berners-Lee/FAQ.html
@@ -213,3 +244,4 @@ If you want to draw attention to a note or warning, use a pair of enclosing line
 [mou]: http://mouapp.com/
 [repo]: https://github.com/encode/django-rest-framework
 [how-to-fork]: https://help.github.com/articles/fork-a-repo/
+[admonition]: https://python-markdown.github.io/extensions/admonition/
