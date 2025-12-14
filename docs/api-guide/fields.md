@@ -11,11 +11,8 @@ source:
 
 Serializer fields handle converting between primitive values and internal datatypes.  They also deal with validating input values, as well as retrieving and setting the values from their parent objects.
 
----
-
-**Note:** The serializer fields are declared in `fields.py`, but by convention you should import them using `from rest_framework import serializers` and refer to fields as `serializers.<FieldName>`.
-
----
+!!! note
+    The serializer fields are declared in `fields.py`, but by convention you should import them using `from rest_framework import serializers` and refer to fields as `serializers.<FieldName>`.
 
 ## Core arguments
 
@@ -42,7 +39,7 @@ Set to false if this field is not required to be present during deserialization.
 
 Setting this to `False` also allows the object attribute or dictionary key to be omitted from output when serializing the instance. If the key is not present it will simply not be included in the output representation.
 
-Defaults to `True`. If you're using [Model Serializer](https://www.django-rest-framework.org/api-guide/serializers/#modelserializer) default value will be `False` if you have specified `blank=True` or `default` or `null=True` at your field in your `Model`.
+Defaults to `True`. If you're using [Model Serializer](https://www.django-rest-framework.org/api-guide/serializers/#modelserializer), the default value will be `False` when you have specified a `default`, or when the corresponding `Model` field has `blank=True` or `null=True` and is not part of a unique constraint at the same time. (Note that without a `default` value, [unique constraints will cause the field to be required](https://www.django-rest-framework.org/api-guide/validators/#optional-fields).)
 
 ### `default`
 
@@ -180,7 +177,7 @@ The `allow_null` option is also available for string fields, although its usage 
 
 ## EmailField
 
-A text representation, validates the text to be a valid e-mail address.
+A text representation, validates the text to be a valid email address.
 
 Corresponds to `django.db.models.fields.EmailField`
 
@@ -268,6 +265,18 @@ Corresponds to `django.db.models.fields.IntegerField`, `django.db.models.fields.
 
 * `max_value` Validate that the number provided is no greater than this value.
 * `min_value` Validate that the number provided is no less than this value.
+
+## BigIntegerField
+
+A biginteger representation.
+
+Corresponds to `django.db.models.fields.BigIntegerField`.
+
+**Signature**: `BigIntegerField(max_value=None, min_value=None, coerce_to_string=None)`
+
+* `max_value` Validate that the number provided is no greater than this value.
+* `min_value` Validate that the number provided is no less than this value.
+* `coerce_to_string` Set to `True` if string values should be returned for the representation, or `False` if `BigInteger` objects should be returned. Defaults to the same value as the `COERCE_BIGINT_TO_STRING` settings key, which will be `False` unless overridden. If `BigInteger` objects are returned by the serializer, then the final output format will be determined by the renderer.
 
 ## FloatField
 
@@ -377,12 +386,15 @@ A Duration representation.
 Corresponds to `django.db.models.fields.DurationField`
 
 The `validated_data` for these fields will contain a `datetime.timedelta` instance.
-The representation is a string following this format `'[DD] [HH:[MM:]]ss[.uuuuuu]'`.
 
-**Signature:** `DurationField(max_value=None, min_value=None)`
+**Signature:** `DurationField(format=api_settings.DURATION_FORMAT, max_value=None, min_value=None)`
 
+* `format` - A string representing the output format.  If not specified, this defaults to the same value as the `DURATION_FORMAT` settings key, which will be `'django'` unless set. Formats are described below. Setting this value to `None` indicates that Python `timedelta` objects should be returned by `to_representation`. In this case the date encoding will be determined by the renderer.
 * `max_value` Validate that the duration provided is no greater than this value.
 * `min_value` Validate that the duration provided is no less than this value.
+
+#### `DurationField` formats
+Format may either be the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style intervals should be used (eg `'P4DT1H15M20S'`), or `'django'` which indicates that Django interval format `'[DD] [HH:[MM:]]ss[.uuuuuu]'` should be used (eg: `'4 1:15:20'`).
 
 ---
 
@@ -550,11 +562,8 @@ The `HiddenField` class is usually only needed if you have some validation that 
 
 For further examples on `HiddenField` see the [validators](validators.md) documentation.
 
----
-
-**Note:** `HiddenField()` does not appear in `partial=True` serializer (when making `PATCH` request). This behavior might change in future, follow updates on [github discussion](https://github.com/encode/django-rest-framework/discussions/8259). 
-
----
+!!! note
+    `HiddenField()` does not appear in `partial=True` serializer (when making `PATCH` request).
 
 ## ModelField
 
@@ -759,7 +768,7 @@ suitable for updating our target object. With `source='*'`, the return from
                      ('y_coordinate', 4),
                      ('x_coordinate', 3)])
 
-For completeness lets do the same thing again but with the nested serializer
+For completeness let's do the same thing again but with the nested serializer
 approach suggested above:
 
     class NestedCoordinateSerializer(serializers.Serializer):
@@ -857,4 +866,4 @@ The [django-rest-framework-hstore][django-rest-framework-hstore] package provide
 [django-hstore]: https://github.com/djangonauts/django-hstore
 [python-decimal-rounding-modes]: https://docs.python.org/3/library/decimal.html#rounding-modes
 [django-current-timezone]: https://docs.djangoproject.com/en/stable/topics/i18n/timezones/#default-time-zone-and-current-time-zone
-[django-docs-select-related]: https://docs.djangoproject.com/en/3.1/ref/models/querysets/#django.db.models.query.QuerySet.select_related
+[django-docs-select-related]: https://docs.djangoproject.com/en/stable/ref/models/querysets/#django.db.models.query.QuerySet.select_related

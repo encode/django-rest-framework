@@ -160,6 +160,7 @@ class TestModelSerializer(TestCase):
 
 
 class TestRegularFieldMappings(TestCase):
+    @pytest.mark.skipif(sys.platform.startswith("win"), reason="Test not supported on Windows")
     def test_regular_fields(self):
         """
         Model fields should map to their equivalent serializer fields.
@@ -172,7 +173,7 @@ class TestRegularFieldMappings(TestCase):
         expected = dedent(r"""
             TestSerializer\(\):
                 auto_field = IntegerField\(read_only=True\)
-                big_integer_field = IntegerField\(.*\)
+                big_integer_field = BigIntegerField\(.*\)
                 boolean_field = BooleanField\(required=False\)
                 char_field = CharField\(max_length=100\)
                 comma_separated_integer_field = CharField\(max_length=100, validators=\[<django.core.validators.RegexValidator object>\]\)
@@ -397,10 +398,6 @@ class TestDurationFieldMapping(TestCase):
                 fields = '__all__'
 
         expected = dedent("""
-            TestSerializer():
-                id = IntegerField(label='ID', read_only=True)
-                duration_field = DurationField(max_value=datetime.timedelta(3), min_value=datetime.timedelta(1))
-        """) if sys.version_info < (3, 7) else dedent("""
             TestSerializer():
                 id = IntegerField(label='ID', read_only=True)
                 duration_field = DurationField(max_value=datetime.timedelta(days=3), min_value=datetime.timedelta(days=1))

@@ -353,7 +353,7 @@ class ObjectPermissionsIntegrationTests(TestCase):
             'delete': f('delete', model_name)
         }
         for perm in perms.values():
-            perm = '{}.{}'.format(app_label, perm)
+            perm = f'{app_label}.{perm}'
             assign_perm(perm, everyone)
         everyone.user_set.add(*users.values())
 
@@ -718,7 +718,7 @@ class PermissionsCompositionTests(TestCase):
         assert hasperm is False
 
     def test_operand_holder_is_hashable(self):
-        assert hash((permissions.IsAuthenticated & permissions.IsAdminUser))
+        assert hash(permissions.IsAuthenticated & permissions.IsAdminUser)
 
     def test_operand_holder_hash_same_for_same_operands_and_operator(self):
         first_operand_holder = (

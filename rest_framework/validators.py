@@ -111,13 +111,15 @@ class UniqueTogetherValidator:
     message = _('The fields {field_names} must make a unique set.')
     missing_message = _('This field is required.')
     requires_context = True
+    code = 'unique'
 
-    def __init__(self, queryset, fields, message=None, condition_fields=None, condition=None):
+    def __init__(self, queryset, fields, message=None, condition_fields=None, condition=None, code=None):
         self.queryset = queryset
         self.fields = fields
         self.message = message or self.message
         self.condition_fields = [] if condition_fields is None else condition_fields
         self.condition = condition
+        self.code = code or self.code
 
     def enforce_required_fields(self, attrs, serializer):
         """
@@ -188,11 +190,17 @@ class UniqueTogetherValidator:
                 if attrs[field_name] != getattr(serializer.instance, field_name)
             ]
 
-        condition_kwargs = {source: attrs[source] for source in self.condition_fields}
+        condition_sources = (serializer.fields[field_name].source for field_name in self.condition_fields)
+        condition_kwargs = {
+            source: attrs[source]
+            if source in attrs
+            else getattr(serializer.instance, source)
+            for source in condition_sources
+        }
         if checked_values and None not in checked_values and qs_exists_with_condition(queryset, self.condition, condition_kwargs):
             field_names = ', '.join(self.fields)
             message = self.message.format(field_names=field_names)
-            raise ValidationError(message, code='unique')
+            raise ValidationError(message, code=self.code)
 
     def __repr__(self):
         return '<{}({})>'.format(
@@ -211,6 +219,7 @@ class UniqueTogetherValidator:
                 and self.missing_message == other.missing_message
                 and self.queryset == other.queryset
                 and self.fields == other.fields
+                and self.code == other.code
                 )
 
 

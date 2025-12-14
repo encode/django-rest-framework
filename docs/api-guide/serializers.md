@@ -48,7 +48,7 @@ We can now use `CommentSerializer` to serialize a comment, or list of comments. 
     serializer.data
     # {'email': 'leila@example.com', 'content': 'foo bar', 'created': '2016-01-27T15:17:10.375877'}
 
-At this point we've translated the model instance into Python native datatypes.  To finalise the serialization process we render the data into `json`.
+At this point we've translated the model instance into Python native datatypes.  To finalize the serialization process we render the data into `json`.
 
     from rest_framework.renderers import JSONRenderer
 
@@ -155,7 +155,7 @@ When deserializing data, you always need to call `is_valid()` before attempting 
     serializer.is_valid()
     # False
     serializer.errors
-    # {'email': ['Enter a valid e-mail address.'], 'created': ['This field is required.']}
+    # {'email': ['Enter a valid email address.'], 'created': ['This field is required.']}
 
 Each key in the dictionary will be the field name, and the values will be lists of strings of any error messages corresponding to that field.  The `non_field_errors` key may also be present, and will list any general validation errors. The name of the `non_field_errors` key may be customized using the `NON_FIELD_ERRORS_KEY` REST framework setting.
 
@@ -192,11 +192,8 @@ Your `validate_<field_name>` methods should return the validated value or raise 
                 raise serializers.ValidationError("Blog post is not about Django")
             return value
 
----
-
-**Note:** If your `<field_name>` is declared on your serializer with the parameter `required=False` then this validation step will not take place if the field is not included.
-
----
+!!! note
+    If your `<field_name>` is declared on your serializer with the parameter `required=False` then this validation step will not take place if the field is not included.
 
 #### Object-level validation
 
@@ -298,7 +295,7 @@ When dealing with nested representations that support deserializing the data, an
     serializer.is_valid()
     # False
     serializer.errors
-    # {'user': {'email': ['Enter a valid e-mail address.']}, 'created': ['This field is required.']}
+    # {'user': {'email': ['Enter a valid email address.']}, 'created': ['This field is required.']}
 
 Similarly, the `.validated_data` property will include nested data structures.
 
@@ -542,20 +539,16 @@ This option should be a list or tuple of field names, and is declared as follows
 
 Model fields which have `editable=False` set, and `AutoField` fields will be set to read-only by default, and do not need to be added to the `read_only_fields` option.
 
----
+!!! note
+    There is a special-case where a read-only field is part of a `unique_together` constraint at the model level. In this case the field is required by the serializer class in order to validate the constraint, but should also not be editable by the user.
 
-**Note**: There is a special-case where a read-only field is part of a `unique_together` constraint at the model level. In this case the field is required by the serializer class in order to validate the constraint, but should also not be editable by the user.
+    The right way to deal with this is to specify the field explicitly on the serializer, providing both the `read_only=True` and `default=…` keyword arguments.
 
-The right way to deal with this is to specify the field explicitly on the serializer, providing both the `read_only=True` and `default=…` keyword arguments.
+    One example of this is a read-only relation to the currently authenticated `User` which is `unique_together` with another identifier. In this case you would declare the user field like so:
 
-One example of this is a read-only relation to the currently authenticated `User` which is `unique_together` with another identifier. In this case you would declare the user field like so:
+        user = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
 
-    user = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
-
-Please review the [Validators Documentation](/api-guide/validators/) for details on the [UniqueTogetherValidator](/api-guide/validators/#uniquetogethervalidator) and [CurrentUserDefault](/api-guide/validators/#currentuserdefault) classes.
-
----
-
+    Please review the [Validators Documentation](/api-guide/validators/) for details on the [UniqueTogetherValidator](/api-guide/validators/#uniquetogethervalidator) and [CurrentUserDefault](/api-guide/validators/#currentuserdefault) classes.
 
 ## Additional keyword arguments
 
@@ -708,7 +701,7 @@ You can override a URL field view name and lookup field by using either, or both
     class AccountSerializer(serializers.HyperlinkedModelSerializer):
         class Meta:
             model = Account
-            fields = ['account_url', 'account_name', 'users', 'created']
+            fields = ['url', 'account_name', 'users', 'created']
             extra_kwargs = {
                 'url': {'view_name': 'accounts', 'lookup_field': 'account_name'},
                 'users': {'lookup_field': 'username'}
@@ -1189,6 +1182,10 @@ The [drf-writable-nested][drf-writable-nested] package provides writable nested 
 
 The [drf-encrypt-content][drf-encrypt-content] package helps you encrypt your data, serialized through ModelSerializer. It also contains some helper functions. Which helps you to encrypt your data.
 
+## Shapeless Serializers
+
+The [drf-shapeless-serializers][drf-shapeless-serializers] package provides dynamic serializer configuration capabilities, allowing runtime field selection, renaming, attribute modification, and nested relationship configuration without creating multiple serializer classes. It helps eliminate serializer boilerplate while providing flexible API responses.
+
 
 [cite]: https://groups.google.com/d/topic/django-users/sVFaOfQi4wY/discussion
 [relations]: relations.md
@@ -1212,3 +1209,4 @@ The [drf-encrypt-content][drf-encrypt-content] package helps you encrypt your da
 [djangorestframework-queryfields]: https://djangorestframework-queryfields.readthedocs.io/
 [drf-writable-nested]: https://github.com/beda-software/drf-writable-nested
 [drf-encrypt-content]: https://github.com/oguzhancelikarslan/drf-encrypt-content
+[drf-shapeless-serializers]: https://github.com/khaledsukkar2/drf-shapeless-serializers

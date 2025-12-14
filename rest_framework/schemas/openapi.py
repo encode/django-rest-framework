@@ -82,11 +82,11 @@ class SchemaGenerator(BaseSchemaGenerator):
                     continue
                 if components_schemas[k] == components[k]:
                     continue
-                warnings.warn('Schema component "{}" has been overridden with a different value.'.format(k))
+                warnings.warn(f'Schema component "{k}" has been overridden with a different value.')
 
             components_schemas.update(components)
 
-            # Normalise path for any provided mount url.
+            # Normalize path for any provided mount url.
             if path.startswith('/'):
                 path = path[1:]
             path = urljoin(self.url or '/', path)
@@ -428,7 +428,7 @@ class AutoSchema(ViewInspector):
             }
 
         # "Formats such as "email", "uuid", and so on, MAY be used even though undefined by this specification."
-        # see: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#data-types
+        # see: https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.2.md#data-types
         # see also: https://swagger.io/docs/specification/data-models/data-types/#string
         if isinstance(field, serializers.EmailField):
             return {
@@ -555,7 +555,7 @@ class AutoSchema(ViewInspector):
         """
         for v in field.validators:
             # "Formats such as "email", "uuid", and so on, MAY be used even though undefined by this specification."
-            # https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#data-types
+            # https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.2.md#data-types
             if isinstance(v, EmailValidator):
                 schema['format'] = 'email'
             if isinstance(v, URLValidator):
@@ -644,7 +644,7 @@ class AutoSchema(ViewInspector):
         return self.get_serializer(path, method)
 
     def get_reference(self, serializer):
-        return {'$ref': '#/components/schemas/{}'.format(self.get_component_name(serializer))}
+        return {'$ref': f'#/components/schemas/{self.get_component_name(serializer)}'}
 
     def get_request_body(self, path, method):
         if method not in ('PUT', 'PATCH', 'POST'):

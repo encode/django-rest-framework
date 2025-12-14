@@ -57,6 +57,9 @@ Typically we wouldn't do this, but would instead register the viewset with a rou
     router.register(r'users', UserViewSet, basename='user')
     urlpatterns = router.urls
 
+!!! warning
+    Do not use `.as_view()` with `@action` methods. It bypasses router setup and may ignore action settings like `permission_classes`. Use `DefaultRouter` for actions.
+
 Rather than writing your own viewsets, you'll often want to use the existing base classes that provide a default set of behavior.  For example:
 
     class UserViewSet(viewsets.ModelViewSet):
@@ -128,7 +131,8 @@ You may inspect these attributes to adjust behavior based on the current action.
             permission_classes = [IsAdminUser]
         return [permission() for permission in permission_classes]
 
-**Note**: the `action` attribute is not available in the `get_parsers`, `get_authenticators` and `get_content_negotiator` methods, as it is set _after_ they are called in the framework lifecycle. If you override one of these methods and try to access the `action` attribute in them, you will get an `AttributeError` error.
+!!! note
+    The `action` attribute is not available in the `get_parsers`, `get_authenticators` and `get_content_negotiator` methods, as it is set _after_ they are called in the framework lifecycle. If you override one of these methods and try to access the `action` attribute in them, you will get an `AttributeError` error.
 
 ## Marking extra actions for routing
 
@@ -231,7 +235,7 @@ Using the example from the previous section:
 Alternatively, you can use the `url_name` attribute set by the `@action` decorator.
 
 ```pycon
->>> view.reverse_action(view.set_password.url_name, args=['1'])
+>>> view.reverse_action(view.set_password.url_name, args=["1"])
 'http://localhost:8000/api/users/1/set_password'
 ```
 

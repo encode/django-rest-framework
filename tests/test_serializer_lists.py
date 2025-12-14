@@ -1,5 +1,3 @@
-import sys
-
 import pytest
 from django.http import QueryDict
 from django.utils.datastructures import MultiValueDict
@@ -60,10 +58,6 @@ class TestListSerializer:
         assert serializer.is_valid()
         assert serializer.validated_data == expected_output
 
-    @pytest.mark.skipif(
-        sys.version_info < (3, 7),
-        reason="subscriptable classes requires Python 3.7 or higher",
-    )
     def test_list_serializer_is_subscriptable(self):
         assert serializers.ListSerializer is serializers.ListSerializer["foo"]
 
@@ -293,7 +287,7 @@ class TestNestedListSerializer:
 
 
 class TestNestedListSerializerAllowEmpty:
-    """Tests the behaviour of allow_empty=False when a ListSerializer is used as a field."""
+    """Tests the behavior of allow_empty=False when a ListSerializer is used as a field."""
 
     @pytest.mark.parametrize('partial', (False, True))
     def test_allow_empty_true(self, partial):
@@ -649,7 +643,7 @@ class TestSerializerPartialUsage:
 
 class TestEmptyListSerializer:
     """
-    Tests the behaviour of ListSerializers when there is no data passed to it
+    Tests the behavior of ListSerializers when there is no data passed to it
     """
 
     def setup_method(self):
@@ -678,7 +672,7 @@ class TestEmptyListSerializer:
 
 class TestMaxMinLengthListSerializer:
     """
-    Tests the behaviour of ListSerializers when max_length and min_length are used
+    Tests the behavior of ListSerializers when max_length and min_length are used
     """
 
     def setup_method(self):

@@ -96,9 +96,39 @@ For example:
         user = self.request.user
         return user.accounts.all()
 
----
+!!! tip
+    If the `serializer_class` used in the generic view spans ORM relations, leading to an N+1 problem, you could optimize your queryset in this method using `select_related` and `prefetch_related`. To get more information about N+1 problem and use cases of the mentioned methods refer to related section in [django documentation][django-docs-select-related].
 
-**Note:** If the `serializer_class` used in the generic view spans orm relations, leading to an n+1 problem, you could optimize your queryset in this method using `select_related` and `prefetch_related`. To get more information about n+1 problem and use cases of the mentioned methods refer to related section in [django documentation][django-docs-select-related].
+### Avoiding N+1 Queries
+
+When listing objects (e.g. using `ListAPIView` or `ModelViewSet`), serializers may trigger an N+1 query pattern if related objects are accessed individually for each item.
+
+To prevent this, optimize the queryset in `get_queryset()` or by setting the `queryset` class attribute using [`select_related()`](https://docs.djangoproject.com/en/stable/ref/models/querysets/#select-related) and [`prefetch_related()`](https://docs.djangoproject.com/en/stable/ref/models/querysets/#prefetch-related), depending on the type of relationship.
+
+**For ForeignKey and OneToOneField**:
+
+Use `select_related()` to fetch related objects in the same query:
+
+    def get_queryset(self):
+        return Order.objects.select_related("customer", "billing_address")
+
+**For reverse and many-to-many relationships**:
+
+Use `prefetch_related()` to efficiently load collections of related objects:
+
+    def get_queryset(self):
+        return Book.objects.prefetch_related("categories", "reviews__user")
+
+**Combining both**:
+
+    def get_queryset(self):
+        return (
+            Order.objects
+            .select_related("customer")
+            .prefetch_related("items__product")
+        )
+
+These optimizations reduce repeated database access and improve list view performance.
 
 ---
 
@@ -374,8 +404,6 @@ Allowing `PUT` as create operations is problematic, as it necessarily exposes in
 
 Both styles "`PUT` as 404" and "`PUT` as create" can be valid in different circumstances, but from version 3.0 onwards we now use 404 behavior as the default, due to it being simpler and more obvious.
 
-If you need to generic PUT-as-create behavior you may want to include something like [this `AllowPUTAsCreateMixin` class](https://gist.github.com/tomchristie/a2ace4577eff2c603b1b) as a mixin to your views.
-
 ---
 
 # Third party packages
@@ -395,4 +423,4 @@ The following third party packages provide additional generic view implementatio
 [UpdateModelMixin]: #updatemodelmixin
 [DestroyModelMixin]: #destroymodelmixin
 [django-rest-multiple-models]: https://github.com/MattBroach/DjangoRestMultipleModels
-[django-docs-select-related]: https://docs.djangoproject.com/en/3.1/ref/models/querysets/#django.db.models.query.QuerySet.select_related
+[django-docs-select-related]: https://docs.djangoproject.com/en/stable/ref/models/querysets/#django.db.models.query.QuerySet.select_related

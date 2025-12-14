@@ -536,7 +536,7 @@ class TestLimitOffset:
         content = self.get_paginated_content(queryset)
         next_limit = self.pagination.default_limit
         next_offset = self.pagination.default_limit
-        next_url = 'http://testserver/?limit={}&offset={}'.format(next_limit, next_offset)
+        next_url = f'http://testserver/?limit={next_limit}&offset={next_offset}'
         assert queryset == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
         assert content.get('next') == next_url
 
@@ -549,7 +549,7 @@ class TestLimitOffset:
         content = self.get_paginated_content(queryset)
         next_limit = self.pagination.default_limit
         next_offset = self.pagination.default_limit
-        next_url = 'http://testserver/?limit={}&offset={}'.format(next_limit, next_offset)
+        next_url = f'http://testserver/?limit={next_limit}&offset={next_offset}'
         assert queryset == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
         assert content.get('next') == next_url
 
@@ -565,9 +565,9 @@ class TestLimitOffset:
         max_limit = self.pagination.max_limit
         next_offset = offset + max_limit
         prev_offset = offset - max_limit
-        base_url = 'http://testserver/?limit={}'.format(max_limit)
-        next_url = base_url + '&offset={}'.format(next_offset)
-        prev_url = base_url + '&offset={}'.format(prev_offset)
+        base_url = f'http://testserver/?limit={max_limit}'
+        next_url = base_url + f'&offset={next_offset}'
+        prev_url = base_url + f'&offset={prev_offset}'
         assert queryset == list(range(51, 66))
         assert content.get('next') == next_url
         assert content.get('previous') == prev_url
