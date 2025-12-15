@@ -16,6 +16,9 @@
   <link href="{{ 'css/bootstrap.css'|url }}" rel="stylesheet">
   <link href="{{ 'css/bootstrap-responsive.css'|url }}" rel="stylesheet">
   <link href="{{ 'css/default.css'|url }}" rel="stylesheet">
+  {% for path in config.extra_css %}
+    <link href="{{ path|url }}" rel="stylesheet">
+  {% endfor %}
 
 
   <script type="text/javascript">
