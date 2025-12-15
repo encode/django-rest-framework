@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
   document.querySelectorAll("pre > code").forEach(function (codeBlock) {
     const button = document.createElement("button");
-    button.className = "copy-block-button btn btn-inverse btn-small";
+    button.className = "copy-block-button btn btn-inverse btn-mini";
     button.type = "button";
     button.textContent = "Copy";
 
