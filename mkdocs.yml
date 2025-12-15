@@ -51,6 +51,11 @@ markdown_extensions:
  - admonition
  - toc:
      permalink: true
+ - pymdownx.highlight:
+     pygments_lang_class: true
+ - pymdownx.inlinehilite
+ - pymdownx.snippets
+ - pymdownx.superfences
 
 nav:
  - Home: 'index.md'
