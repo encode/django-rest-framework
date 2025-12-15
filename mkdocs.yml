@@ -31,14 +31,21 @@ theme:
           name: "Switch to system preference"
     features:
       - content.code.copy
+      - content.code.select
 
 extra_css:
   - theme/stylesheets/extra.css
 
 markdown_extensions:
- - admonition
- - toc:
-    anchorlink: True
+  - admonition
+  - toc:
+      anchorlink: True
+  - pymdownx.highlight:
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+
 
 nav:
  - Home: 'index.md'
@@ -113,9 +120,3 @@ nav:
      - 'Kickstarter Announcement': 'community/kickstarter-announcement.md'
      - 'Mozilla Grant': 'community/mozilla-grant.md'
      - 'Jobs': 'community/jobs.md'
-
-extra_css:
-  - css/copy-button.css
-
-extra_javascript:
-  - js/copy-button.js
