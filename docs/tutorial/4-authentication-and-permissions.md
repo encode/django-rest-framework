@@ -14,81 +14,103 @@ First, let's add a couple of fields.  One of those fields will be used to repres
 
 Add the following two fields to the `Snippet` model in `models.py`.
 
-    owner = models.ForeignKey('auth.User', related_name='snippets', on_delete=models.CASCADE)
-    highlighted = models.TextField()
+```python
+owner = models.ForeignKey(
+    "auth.User", related_name="snippets", on_delete=models.CASCADE
+)
+highlighted = models.TextField()
+```
 
 We'd also need to make sure that when the model is saved, that we populate the highlighted field, using the `pygments` code highlighting library.
 
 We'll need some extra imports:
 
-    from pygments.lexers import get_lexer_by_name
-    from pygments.formatters.html import HtmlFormatter
-    from pygments import highlight
+```python
+from pygments.lexers import get_lexer_by_name
+from pygments.formatters.html import HtmlFormatter
+from pygments import highlight
+```
 
 And now we can add a `.save()` method to our model class:
 
-    def save(self, *args, **kwargs):
-        """
-        Use the `pygments` library to create a highlighted HTML
-        representation of the code snippet.
-        """
-        lexer = get_lexer_by_name(self.language)
-        linenos = 'table' if self.linenos else False
-        options = {'title': self.title} if self.title else {}
-        formatter = HtmlFormatter(style=self.style, linenos=linenos,
-                                  full=True, **options)
-        self.highlighted = highlight(self.code, lexer, formatter)
-        super().save(*args, **kwargs)
+```python
+def save(self, *args, **kwargs):
+    """
+    Use the `pygments` library to create a highlighted HTML
+    representation of the code snippet.
+    """
+    lexer = get_lexer_by_name(self.language)
+    linenos = "table" if self.linenos else False
+    options = {"title": self.title} if self.title else {}
+    formatter = HtmlFormatter(style=self.style, linenos=linenos, full=True, **options)
+    self.highlighted = highlight(self.code, lexer, formatter)
+    super().save(*args, **kwargs)
+```
 
 When that's all done we'll need to update our database tables.
 Normally we'd create a database migration in order to do that, but for the purposes of this tutorial, let's just delete the database and start again.
 
-    rm -f db.sqlite3
-    rm -r snippets/migrations
-    python manage.py makemigrations snippets
-    python manage.py migrate
+```bash
+rm -f db.sqlite3
+rm -r snippets/migrations
+python manage.py makemigrations snippets
+python manage.py migrate
+```
 
 You might also want to create a few different users, to use for testing the API.  The quickest way to do this will be with the `createsuperuser` command.
 
-    python manage.py createsuperuser
+```bash
+python manage.py createsuperuser
+```
 
 ## Adding endpoints for our User models
 
 Now that we've got some users to work with, we'd better add representations of those users to our API.  Creating a new serializer is easy. In `serializers.py` add:
 
-    from django.contrib.auth.models import User
+```python
+from django.contrib.auth.models import User
 
-    class UserSerializer(serializers.ModelSerializer):
-        snippets = serializers.PrimaryKeyRelatedField(many=True, queryset=Snippet.objects.all())
 
-        class Meta:
-            model = User
-            fields = ['id', 'username', 'snippets']
+class UserSerializer(serializers.ModelSerializer):
+    snippets = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Snippet.objects.all()
+    )
+
+    class Meta:
+        model = User
+        fields = ["id", "username", "snippets"]
+```
 
 Because `'snippets'` is a *reverse* relationship on the User model, it will not be included by default when using the `ModelSerializer` class, so we needed to add an explicit field for it.
 
 We'll also add a couple of views to `views.py`.  We'd like to just use read-only views for the user representations, so we'll use the `ListAPIView` and `RetrieveAPIView` generic class-based views.
 
-    from django.contrib.auth.models import User
+```python
+from django.contrib.auth.models import User
 
 
-    class UserList(generics.ListAPIView):
-        queryset = User.objects.all()
-        serializer_class = UserSerializer
+class UserList(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
 
-    class UserDetail(generics.RetrieveAPIView):
-        queryset = User.objects.all()
-        serializer_class = UserSerializer
+class UserDetail(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+```
 
 Make sure to also import the `UserSerializer` class
 
-    from snippets.serializers import UserSerializer
+```python
+from snippets.serializers import UserSerializer
+```
 
 Finally we need to add those views into the API, by referencing them from the URL conf. Add the following to the patterns in `snippets/urls.py`.
 
-    path('users/', views.UserList.as_view()),
-    path('users/<int:pk>/', views.UserDetail.as_view()),
+```python
+path("users/", views.UserList.as_view()),
+path("users/<int:pk>/", views.UserDetail.as_view()),
+```
 
 ## Associating Snippets with Users
 
@@ -98,8 +120,10 @@ The way we deal with that is by overriding a `.perform_create()` method on our s
 
 On the `SnippetList` view class, add the following method:
 
-    def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+```python
+def perform_create(self, serializer):
+    serializer.save(owner=self.request.user)
+```
 
 The `create()` method of our serializer will now be passed an additional `'owner'` field, along with the validated data from the request.
 
@@ -107,9 +131,12 @@ The `create()` method of our serializer will now be passed an additional `'owner
 
 Now that snippets are associated with the user that created them, let's update our `SnippetSerializer` to reflect that.  Add the following field to the serializer definition in `serializers.py`:
 
-    owner = serializers.ReadOnlyField(source='owner.username')
+```python
+owner = serializers.ReadOnlyField(source="owner.username")
+```
 
-**Note**: Make sure you also add `'owner',` to the list of fields in the inner `Meta` class.
+!!! note
+    Make sure you also add `'owner',` to the list of fields in the inner `Meta` class.
 
 This field is doing something quite interesting.  The `source` argument controls which attribute is used to populate a field, and can point at any attribute on the serialized instance.  It can also take the dotted notation shown above, in which case it will traverse the given attributes, in a similar way as it is used with Django's template language.
 
@@ -123,11 +150,15 @@ REST framework includes a number of permission classes that we can use to restri
 
 First add the following import in the views module
 
-    from rest_framework import permissions
+```python
+from rest_framework import permissions
+```
 
 Then, add the following property to **both** the `SnippetList` and `SnippetDetail` view classes.
 
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+```python
+permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+```
 
 ## Adding login to the Browsable API
 
@@ -137,13 +168,17 @@ We can add a login view for use with the browsable API, by editing the URLconf i
 
 Add the following import at the top of the file:
 
-    from django.urls import path, include
+```python
+from django.urls import path, include
+```
 
 And, at the end of the file, add a pattern to include the login and logout views for the browsable API.
 
-    urlpatterns += [
-        path('api-auth/', include('rest_framework.urls')),
-    ]
+```python
+urlpatterns += [
+    path("api-auth/", include("rest_framework.urls")),
+]
+```
 
 The `'api-auth/'` part of pattern can actually be whatever URL you want to use.
 
@@ -159,31 +194,36 @@ To do that we're going to need to create a custom permission.
 
 In the snippets app, create a new file, `permissions.py`
 
-    from rest_framework import permissions
+```python
+from rest_framework import permissions
 
 
-    class IsOwnerOrReadOnly(permissions.BasePermission):
-        """
-        Custom permission to only allow owners of an object to edit it.
-        """
+class IsOwnerOrReadOnly(permissions.BasePermission):
+    """
+    Custom permission to only allow owners of an object to edit it.
+    """
 
-        def has_object_permission(self, request, view, obj):
-            # Read permissions are allowed to any request,
-            # so we'll always allow GET, HEAD or OPTIONS requests.
-            if request.method in permissions.SAFE_METHODS:
-                return True
+    def has_object_permission(self, request, view, obj):
+        # Read permissions are allowed to any request,
+        # so we'll always allow GET, HEAD or OPTIONS requests.
+        if request.method in permissions.SAFE_METHODS:
+            return True
 
-            # Write permissions are only allowed to the owner of the snippet.
-            return obj.owner == request.user
+        # Write permissions are only allowed to the owner of the snippet.
+        return obj.owner == request.user
+```
 
 Now we can add that custom permission to our snippet instance endpoint, by editing the `permission_classes` property on the `SnippetDetail` view class:
 
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly,
-                          IsOwnerOrReadOnly]
+```python
+permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+```
 
 Make sure to also import the `IsOwnerOrReadOnly` class.
 
-    from snippets.permissions import IsOwnerOrReadOnly
+```python
+from snippets.permissions import IsOwnerOrReadOnly
+```
 
 Now, if you open a browser again, you find that the 'DELETE' and 'PUT' actions only appear on a snippet instance endpoint if you're logged in as the same user that created the code snippet.
 
@@ -197,25 +237,29 @@ If we're interacting with the API programmatically we need to explicitly provide
 
 If we try to create a snippet without authenticating, we'll get an error:
 
-    http POST http://127.0.0.1:8000/snippets/ code="print(123)"
+```bash
+http POST http://127.0.0.1:8000/snippets/ code="print(123)"
 
-    {
-        "detail": "Authentication credentials were not provided."
-    }
+{
+    "detail": "Authentication credentials were not provided."
+}
+```
 
 We can make a successful request by including the username and password of one of the users we created earlier.
 
-    http -a admin:password123 POST http://127.0.0.1:8000/snippets/ code="print(789)"
+```bash
+http -a admin:password123 POST http://127.0.0.1:8000/snippets/ code="print(789)"
 
-    {
-        "id": 1,
-        "owner": "admin",
-        "title": "foo",
-        "code": "print(789)",
-        "linenos": false,
-        "language": "python",
-        "style": "friendly"
-    }
+{
+    "id": 1,
+    "owner": "admin",
+    "title": "foo",
+    "code": "print(789)",
+    "linenos": false,
+    "language": "python",
+    "style": "friendly"
+}
+```
 
 ## Summary
 

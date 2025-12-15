@@ -105,7 +105,7 @@ This release fixes a few bugs, clean-up some old code paths for unsupported Pyth
 
 **Date**: 28th March 2025
 
-This release is considered a significant release to improve upstream support with Django and Python. Some of these may change the behaviour of existing features and pre-existing behaviour. Specifically, some fixes were added to around the support of `UniqueConstraint` with nullable fields which will improve built-in serializer validation.
+This release is considered a significant release to improve upstream support with Django and Python. Some of these may change the behavior of existing features and pre-existing behavior. Specifically, some fixes were added to around the support of `UniqueConstraint` with nullable fields which will improve built-in serializer validation.
 
 #### Features
 
@@ -215,7 +215,7 @@ Date: 15th March 2024
 * Partial serializer should not have required fields [[#7563](https://github.com/encode/django-rest-framework/pull/7563)]
 * Propagate 'default' from model field to serializer field. [[#9030](https://github.com/encode/django-rest-framework/pull/9030)]
 * Allow to override child.run_validation call in ListSerializer [[#8035](https://github.com/encode/django-rest-framework/pull/8035)]
-* Align SearchFilter behaviour to django.contrib.admin search [[#9017](https://github.com/encode/django-rest-framework/pull/9017)]
+* Align SearchFilter behavior to django.contrib.admin search [[#9017](https://github.com/encode/django-rest-framework/pull/9017)]
 * Class name added to unknown field error [[#9019](https://github.com/encode/django-rest-framework/pull/9019)]
 * Fix: Pagination response schemas. [[#9049](https://github.com/encode/django-rest-framework/pull/9049)]
 * Fix choices in ChoiceField to support IntEnum [[#8955](https://github.com/encode/django-rest-framework/pull/8955)]
@@ -369,7 +369,7 @@ Date: 28th September 2020
 
 * Add `--file` option to `generateschema` command. [#7130]
 * Support `tags` for OpenAPI schema generation. See [the schema docs](https://www.django-rest-framework.org/api-guide/schemas/#grouping-operations-with-tags). [#7184]
-* Support customising the operation ID for schema generation. See [the schema docs](https://www.django-rest-framework.org/api-guide/schemas/#operationid). [#7190]
+* Support customizing the operation ID for schema generation. See [the schema docs](https://www.django-rest-framework.org/api-guide/schemas/#operationid). [#7190]
 * Support OpenAPI components for schema generation. See [the schema docs](https://www.django-rest-framework.org/api-guide/schemas/#components). [#7124]
 * The following methods on `AutoSchema` become public API: `get_path_parameters`, `get_pagination_parameters`, `get_filter_parameters`, `get_request_body`, `get_responses`, `get_serializer`, `get_paginator`, `map_serializer`, `map_field`, `map_choice_field`, `map_field_validators`, `allows_filters`. See [the schema docs](https://www.django-rest-framework.org/api-guide/schemas/#autoschema)
 * Add support for Django 3.1's database-agnositic `JSONField`. [#7467]
@@ -407,7 +407,7 @@ Date: 28th September 2020
 * Fix `PrimaryKeyRelatedField` and `HyperlinkedRelatedField` when source field is actually a property. [#7142]
 * `Token.generate_key` is now a class method. [#7502]
 * `@action` warns if method is wrapped in a decorator that does not preserve information using `@functools.wraps`. [#7098]
-* Deprecate `serializers.NullBooleanField` in favour of `serializers.BooleanField` with `allow_null=True` [#7122]
+* Deprecate `serializers.NullBooleanField` in favor of `serializers.BooleanField` with `allow_null=True` [#7122]
 
 ---
 
@@ -417,7 +417,7 @@ Date: 28th September 2020
 
 **Date**: 30th September 2020
 
-* **Security**: Drop `urlize_quoted_links` template tag in favour of Django's built-in `urlize`. Removes a XSS vulnerability for some kinds of content in the browsable API.
+* **Security**: Drop `urlize_quoted_links` template tag in favor of Django's built-in `urlize`. Removes a XSS vulnerability for some kinds of content in the browsable API.
 
 ### 3.11.1
 
@@ -429,7 +429,7 @@ Date: 28th September 2020
 
 **Date**: 12th December 2019
 
-* Drop `.set_context` API [in favour of a `requires_context` marker](3.11-announcement.md#validator-default-context).
+* Drop `.set_context` API [in favor of a `requires_context` marker](3.11-announcement.md#validator-default-context).
 * Changed default widget for TextField with choices to select box. [#6892][gh6892]
 * Supported nested writes on non-relational fields, such as JSONField. [#6916][gh6916]
 * Include request/response media types in OpenAPI schemas, based on configured parsers/renderers. [#6865][gh6865]
@@ -621,13 +621,13 @@ Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.
 **Date**: [3rd April 2018][3.8.0-milestone]
 
 
-* **Breaking Change**: Alter `read_only` plus `default` behaviour. [#5886][gh5886]
+* **Breaking Change**: Alter `read_only` plus `default` behavior. [#5886][gh5886]
 
     `read_only` fields will now **always** be excluded from writable fields.
 
     Previously `read_only` fields with a `default` value would use the `default` for create and update operations.
 
-    In order to maintain the old behaviour you may need to pass the value of `read_only` fields when calling `save()` in
+    In order to maintain the old behavior you may need to pass the value of `read_only` fields when calling `save()` in
     the view:
 
         def perform_create(self, serializer):
@@ -635,13 +635,13 @@ Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.
 
     Alternatively you may override `save()` or `create()` or `update()` on the serializer as appropriate.
 
-* Correct allow_null behaviour when required=False [#5888][gh5888]
+* Correct allow_null behavior when required=False [#5888][gh5888]
 
     Without an explicit `default`, `allow_null` implies a default of `null` for outgoing serialization. Previously such
     fields were being skipped when read-only or otherwise not required.
 
     **Possible backwards compatibility break** if you were relying on such fields being excluded from the outgoing
-    representation. In order to restore the old behaviour you can override `data` to exclude the field when `None`.
+    representation. In order to restore the old behavior you can override `data` to exclude the field when `None`.
 
     For example:
 
@@ -698,7 +698,7 @@ Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.
 * Add HStoreField, postgres fields tests [#5654][gh5654]
 * Always fully qualify ValidationError in docs [#5751][gh5751]
 * Remove unreachable code from ManualSchema [#5766][gh5766]
-* Allowed customising API documentation code samples [#5752][gh5752]
+* Allowed customizing API documentation code samples [#5752][gh5752]
 * Updated docs to use `pip show` [#5757][gh5757]
 * Load 'static' instead of 'staticfiles' in templates [#5773][gh5773]
 * Fixed a typo in `fields` docs [#5783][gh5783]
@@ -761,7 +761,7 @@ Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.
 
 * Schema: Extract method for `manual_fields` processing [#5633][gh5633]
 
-    Allows for easier customisation of `manual_fields` processing, for example
+    Allows for easier customization of `manual_fields` processing, for example
     to provide per-method manual fields. `AutoSchema` adds `get_manual_fields`,
     as the intended override point, and a utility method `update_fields`, to
     handle by-name field replacement from a list, which, in general, you are not
@@ -883,7 +883,7 @@ Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.
 * Don't strip microseconds from `time` when encoding. Makes consistent with `datetime`.
     **BC Change**: Previously only milliseconds were encoded. [#5440][gh5440]
 * Added `STRICT_JSON` setting (default `True`) to raise exception for the extended float values (`nan`, `inf`, `-inf`) accepted by Python's `json` module.
-    **BC Change**: Previously these values would converted to corresponding strings. Set `STRICT_JSON` to `False` to restore the previous behaviour. [#5265][gh5265]
+    **BC Change**: Previously these values would converted to corresponding strings. Set `STRICT_JSON` to `False` to restore the previous behavior. [#5265][gh5265]
 * Add support for `page_size` parameter in CursorPaginator class [#5250][gh5250]
 * Make `DEFAULT_PAGINATION_CLASS` `None` by default.
     **BC Change**: If your were **just** setting `PAGE_SIZE` to enable pagination you will need to add `DEFAULT_PAGINATION_CLASS`.
@@ -921,10 +921,10 @@ Be sure to upgrade to Python 3 before upgrading to Django REST Framework 3.10.
 * Fix naming collisions in Schema Generation [#5464][gh5464]
 * Call Django's authenticate function with the request object [#5295][gh5295]
 * Update coreapi JS to 0.1.1 [#5479][gh5479]
-* Have `is_list_view` recognise RetrieveModel… views [#5480][gh5480]
+* Have `is_list_view` recognize RetrieveModel… views [#5480][gh5480]
 * Remove Django 1.8 & 1.9 compatibility code [#5481][gh5481]
 * Remove deprecated schema code from DefaultRouter [#5482][gh5482]
-* Refactor schema generation to allow per-view customisation.
+* Refactor schema generation to allow per-view customization.
     **BC Change**: `SchemaGenerator.get_serializer_fields` has been refactored as `AutoSchema.get_serializer_fields` and drops the `view` argument [#5354][gh5354]
 
 ## 3.6.x series

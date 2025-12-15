@@ -20,7 +20,7 @@ package and then subsequently retired over the next releases.
 
 As a full-fledged replacement, we recommend the [drf-spectacular] package.
 It has extensive support for generating OpenAPI 3 schemas from
-REST framework APIs, with both automatic and customisable options available.
+REST framework APIs, with both automatic and customizable options available.
 For further information please refer to
 [Documenting your API](../topics/documenting-your-api.md#drf-spectacular).
 
@@ -238,15 +238,12 @@ operation = auto_schema.get_operation(...)
 In compiling the schema, `SchemaGenerator` calls `get_components()` and
 `get_operation()` for each view, allowed method, and path.
 
-----
-
-**Note**: The automatic introspection of components, and many operation
-parameters relies on the relevant attributes and methods of
-`GenericAPIView`: `get_serializer()`, `pagination_class`, `filter_backends`,
-etc. For basic `APIView` subclasses, default introspection is essentially limited to
-the URL kwarg path parameters for this reason.
-
-----
+!!! note
+    The automatic introspection of components, and many operation
+    parameters relies on the relevant attributes and methods of
+    `GenericAPIView`: `get_serializer()`, `pagination_class`, `filter_backends`,
+    etc. For basic `APIView` subclasses, default introspection is essentially limited to
+    the URL kwarg path parameters for this reason.
 
 `AutoSchema` encapsulates the view introspection needed for schema generation.
 Because of this all the schema generation logic is kept in a single place,
