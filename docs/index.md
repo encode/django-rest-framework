@@ -40,7 +40,7 @@
     clip: rect(0,0,0,0);
     border: 0;">Django REST Framework</h1>
 
-![Django REST Framework](img/logo.png#only-light)
+![Django REST Framework](img/logo-light.png#only-light)
 ![Django REST Framework](img/logo-dark.png#only-dark)
 
 Django REST framework is a powerful and flexible toolkit for building Web APIs.
