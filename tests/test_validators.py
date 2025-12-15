@@ -795,7 +795,7 @@ class UniqueConstraintWithRelationModel(models.Model):
 class UniqueConstraintWithRelationModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = UniqueConstraintWithRelationModel
-        fields = serializers.ALL_FIELDS
+        fields = '__all__'
 
 
 class TestUniqueConstraintWithRelationValidation(TestCase):
