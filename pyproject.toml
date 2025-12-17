@@ -31,8 +31,11 @@ classifiers = [
   "Topic :: Internet :: WWW/HTTP",
 ]
 dynamic = [ "version" ]
-
 dependencies = [ "django>=4.2" ]
+urls.Changelog = "https://www.django-rest-framework.org/community/release-notes/"
+urls.Funding = "https://fund.django-rest-framework.org/topics/funding/"
+urls.Homepage = "https://www.django-rest-framework.org"
+urls.Source = "https://github.com/encode/django-rest-framework"
 
 [dependency-groups]
 dev = [
@@ -40,7 +43,6 @@ dev = [
   { include-group = "optional" },
   { include-group = "test" },
 ]
-
 test = [
   # temporary pin of attrs
   "attrs==22.1",
@@ -73,10 +75,6 @@ optional = [
   "pygments~=2.17.0",
   "pyyaml>=5.3.1,<5.4",
 ]
-urls.Changelog = "https://www.django-rest-framework.org/community/release-notes/"
-urls.Funding = "https://fund.django-rest-framework.org/topics/funding/"
-urls.Homepage = "https://www.django-rest-framework.org"
-urls.Source = "https://github.com/encode/django-rest-framework"
 
 [tool.setuptools]
 
