@@ -11,42 +11,36 @@ source:
 
 Relational fields are used to represent model relationships.  They can be applied to `ForeignKey`, `ManyToManyField` and `OneToOneField` relationships, as well as to reverse relationships, and custom relationships such as `GenericForeignKey`.
 
----
+!!! note
+    The relational fields are declared in `relations.py`, but by convention you should import them from the `serializers` module, using `from rest_framework import serializers` and refer to fields as `serializers.<FieldName>`.
 
-**Note:** The relational fields are declared in `relations.py`, but by convention you should import them from the `serializers` module, using `from rest_framework import serializers` and refer to fields as `serializers.<FieldName>`.
+!!! note
+    REST Framework does not attempt to automatically optimize querysets passed to serializers in terms of `select_related` and `prefetch_related` since it would be too much magic. A serializer with a field spanning an ORM relation through its source attribute could require an additional database hit to fetch related objects from the database. It is the programmer's responsibility to optimize queries to avoid additional database hits which could occur while using such a serializer.
 
----
-
----
-
-**Note:** REST Framework does not attempt to automatically optimize querysets passed to serializers in terms of `select_related` and `prefetch_related` since it would be too much magic. A serializer with a field spanning an orm relation through its source attribute could require an additional database hit to fetch related objects from the database. It is the programmer's responsibility to optimize queries to avoid additional database hits which could occur while using such a serializer.
-
-For example, the following serializer would lead to a database hit each time evaluating the tracks field if it is not prefetched:
-
-    class AlbumSerializer(serializers.ModelSerializer):
-        tracks = serializers.SlugRelatedField(
-            many=True,
-            read_only=True,
-            slug_field='title'
-        )
-
-        class Meta:
-            model = Album
-            fields = ['album_name', 'artist', 'tracks']
-
-    # For each album object, tracks should be fetched from database
-    qs = Album.objects.all()
-    print(AlbumSerializer(qs, many=True).data)
-
-If `AlbumSerializer` is used to serialize a fairly large queryset with `many=True` then it could be a serious performance problem. Optimizing the queryset passed to `AlbumSerializer` with:
-
-    qs = Album.objects.prefetch_related('tracks')
-    # No additional database hits required
-    print(AlbumSerializer(qs, many=True).data)
-
-would solve the issue.
-
----
+    For example, the following serializer would lead to a database hit each time evaluating the tracks field if it is not prefetched:
+    
+        class AlbumSerializer(serializers.ModelSerializer):
+            tracks = serializers.SlugRelatedField(
+                many=True,
+                read_only=True,
+                slug_field='title'
+            )
+    
+            class Meta:
+                model = Album
+                fields = ['album_name', 'artist', 'tracks']
+    
+        # For each album object, tracks should be fetched from database
+        qs = Album.objects.all()
+        print(AlbumSerializer(qs, many=True).data)
+    
+    If `AlbumSerializer` is used to serialize a fairly large queryset with `many=True` then it could be a serious performance problem. Optimizing the queryset passed to `AlbumSerializer` with:
+    
+        qs = Album.objects.prefetch_related('tracks')
+        # No additional database hits required
+        print(AlbumSerializer(qs, many=True).data)
+    
+    would solve the issue.
 
 #### Inspecting relationships.
 
@@ -183,15 +177,12 @@ Would serialize to a representation like this:
 
 By default this field is read-write, although you can change this behavior using the `read_only` flag.
 
----
+!!! note
+    This field is designed for objects that map to a URL that accepts a single URL keyword argument, as set using the `lookup_field` and `lookup_url_kwarg` arguments.
 
-**Note**: This field is designed for objects that map to a URL that accepts a single URL keyword argument, as set using the `lookup_field` and `lookup_url_kwarg` arguments.
+    This is suitable for URLs that contain a single primary key or slug argument as part of the URL.
 
-This is suitable for URLs that contain a single primary key or slug argument as part of the URL.
-
-If you require more complex hyperlinked representation you'll need to customize the field, as described in the [custom hyperlinked fields](#custom-hyperlinked-fields) section, below.
-
----
+    If you require more complex hyperlinked representation you'll need to customize the field, as described in the [custom hyperlinked fields](#custom-hyperlinked-fields) section, below.
 
 **Arguments**:
 

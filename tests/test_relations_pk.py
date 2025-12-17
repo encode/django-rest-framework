@@ -1,3 +1,4 @@
+import pytest
 from django.test import TestCase
 
 from rest_framework import serializers
@@ -93,8 +94,6 @@ class OneToOnePKSourceSerializer(serializers.ModelSerializer):
         model = OneToOnePKSource
         fields = '__all__'
 
-
-# TODO: Add test that .data cannot be accessed prior to .is_valid
 
 class PKManyToManyTests(TestCase):
     def setUp(self):
@@ -217,6 +216,14 @@ class PKManyToManyTests(TestCase):
             {'id': 4, 'name': 'target-4', 'sources': [1, 3]}
         ]
         assert serializer.data == expected
+
+    def test_data_cannot_be_accessed_prior_to_is_valid(self):
+        """Test that .data cannot be accessed prior to .is_valid for primary key serializers."""
+        serializer = ManyToManySourceSerializer(
+            data={'name': 'test-source', 'targets': [1]}
+        )
+        with pytest.raises(AssertionError):
+            serializer.data
 
 
 class PKForeignKeyTests(TestCase):
