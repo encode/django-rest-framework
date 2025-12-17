@@ -45,12 +45,12 @@ dev = [
 ]
 test = [
   # temporary pin of attrs
-  "attrs==22.1",
-  "importlib-metadata<5",
+  "attrs==22.1.0",
+  "importlib-metadata<5.0",
 
   # Pytest for running the tests.
   "pytest>=7.0.1,<8",
-  "pytest-cov>=4,<5",
+  "pytest-cov>=4.0.0,<5.0",
   "pytest-django>=4.5.2,<5",
 
   # Remove when dropping support for Django<5.0
@@ -58,7 +58,7 @@ test = [
 ]
 docs = [
   # MkDocs to build our documentation.
-  "mkdocs==1.6",
+  "mkdocs==1.6.0",
   # pylinkvalidator to check for broken links in documentation.
   "pylinkvalidator==0.3",
 ]
@@ -67,7 +67,7 @@ optional = [
   "coreapi==2.3.1",
   "coreschema==0.0.4",
   "django-filter",
-  "django-guardian>=2.4,<2.5",
+  "django-guardian>=2.4.0,<2.5",
   "inflection==0.5.1",
   "legacy-cgi; python_version>='3.13'",
   "markdown>=3.3.7",
@@ -106,6 +106,7 @@ ignore-words-list = "fo,malcom,ser"
 
 [tool.pyproject-fmt]
 max_supported_python = "3.14"
+keep_full_version = true
 
 [tool.pytest.ini_options]
 addopts = "--tb=short --strict-markers -ra"
