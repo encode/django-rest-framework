@@ -1,7 +1,7 @@
 from django.http import QueryDict
 
 from rest_framework import serializers
-
+from rest_framework.exceptions import ValidationError
 
 class TestSimpleBoundField:
     def test_empty_bound_field(self):
@@ -210,6 +210,42 @@ class TestNestedBoundField:
 
             rendered_packed = ''.join(rendered.split())
             assert rendered_packed == expected_packed
+
+    def test_child_bound_field_after_parent_validation_error(self):
+        """
+        After a parent-level ValidationError on a nested serializer field,
+        child BoundFields should remain accessible and receive a mapping
+        for `errors` so the Browsable API can render safely.
+
+        Regression test for #4073.
+        """
+        class ChildSerializer(serializers.Serializer):
+            value = serializers.CharField()
+        class ParentSerializer(serializers.Serializer):
+            nested = ChildSerializer()
+
+            def validate_nested(self, nested):
+                # Raise parent-level (non-field) validation error
+                raise ValidationError(["parent-level nested error"])
+
+        serializer = ParentSerializer(data={"nested": {"value": "ignored"}})
+        assert not serializer.is_valid()
+
+        # Parent-level error is a list (current problematic case)
+        assert serializer.errors["nested"] == ["parent-level nested error"]
+
+        # Access nested bound field
+        parent_bound = serializer["nested"]
+
+        # Access child bound field – should not raise
+        child_bound = parent_bound["value"]
+
+        # Core contract: errors must be a mapping, not None or list
+        assert isinstance(child_bound.errors, dict)
+
+        # Sanity checks
+        assert child_bound.value == "ignored"
+        assert child_bound.name == "nested.value"
 
 
 class TestJSONBoundField:
