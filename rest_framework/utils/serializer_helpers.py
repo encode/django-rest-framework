@@ -144,7 +144,6 @@ class NestedBoundField(BoundField):
             return JSONBoundField(field, value, error, prefix=self.name + '.')
         return BoundField(field, value, error, prefix=self.name + '.')
 
-
     def as_form_field(self):
         values = {}
         for key, value in self.value.items():
