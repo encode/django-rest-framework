@@ -231,6 +231,7 @@ class TestNestedBoundField:
         parent_bound = serializer["nested"]
         child_bound = parent_bound["value"]
         assert isinstance(child_bound.errors, dict)
+        assert child_bound.errors == {}
         assert child_bound.value == "ignored"
         assert child_bound.name == "nested.value"
 
