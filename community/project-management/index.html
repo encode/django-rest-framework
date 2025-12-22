@@ -429,10 +429,6 @@
                     </li>
                   
                     <li>
-                      <a href="#project-requirements">Project requirements</a>
-                    </li>
-                  
-                    <li>
                       <a href="#project-ownership">Project ownership</a>
                     </li>
                   
@@ -519,10 +515,6 @@ Checklist:
 To modify this process for future releases make a pull request to the [project management](https://www.django-rest-framework.org/topics/project-management/) documentation.
 </code></pre>
 <p>When pushing the release to PyPI ensure that your environment has been installed from our development <code>requirement.txt</code>, so that documentation and PyPI installs are consistently being built against a pinned set of packages.</p>
-<hr />
-<h2 id="project-requirements"><a class="toclink" href="#project-requirements">Project requirements</a></h2>
-<p>All our test requirements are pinned to exact versions, in order to ensure that our test runs are reproducible. We maintain the requirements in the <code>requirements</code> directory. The requirements files are referenced from the <code>tox.ini</code> configuration file, ensuring we have a single source of truth for package versions used in testing.</p>
-<p>Package upgrades should generally be treated as isolated pull requests. You can check if there are any packages available at a newer version, by using the <code>pip list --outdated</code>.</p>
 <hr />
 <h2 id="project-ownership"><a class="toclink" href="#project-ownership">Project ownership</a></h2>
 <p>The PyPI package is owned by <code>@tomchristie</code>. As a backup <code>@j4mie</code> also has ownership of the package.</p>
