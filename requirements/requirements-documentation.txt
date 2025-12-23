@@ -1,5 +1,0 @@
-# MkDocs to build our documentation.
-mkdocs==1.6.0
-
-# pylinkvalidator to check for broken links in documentation.
-pylinkvalidator==0.3
