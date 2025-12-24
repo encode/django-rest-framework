@@ -417,7 +417,7 @@ Both the `allow_blank` and `allow_null` are valid options on `ChoiceField`, alth
 
 ## MultipleChoiceField
 
-A field that can accept a set of zero, one or many values, chosen from a limited set of choices. Takes a single mandatory argument. `to_internal_value` returns a `set` containing the selected values.
+A field that can accept a set of zero, one or many values, chosen from a limited list of choices. Takes a single mandatory argument. `to_internal_value` returns a `set` containing the selected values.
 
 **Signature:** `MultipleChoiceField(choices)`
 
