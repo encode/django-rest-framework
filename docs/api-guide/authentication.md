@@ -212,7 +212,7 @@ The `obtain_auth_token` view will return a JSON response when valid `username` a
 
     { 'token' : '9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b' }
 
-Note that the default `obtain_auth_token` view explicitly uses JSON requests and responses, rather than using default renderer and parser classes in your settings.
+Note that the default `obtain_auth_token` view explicitly uses JSON requests and responses, rather than using default renderer and parser classes in your settings. If you use a `custom User` model as `AUTH_USER_MODEL` in `settings.py`, authentication will use the `USERNAME_FIELD` and `password` defined in your custom model.
 
 By default, there are no permissions or throttling applied to the `obtain_auth_token` view. If you do wish to apply throttling you'll need to override the view class,
 and include them using the `throttle_classes` attribute.
