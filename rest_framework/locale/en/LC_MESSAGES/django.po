@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 msgid ""
 msgstr ""
@@ -357,6 +357,11 @@ msgstr "Ensure this field has at least {min_length} elements."
 msgid "Ensure this field has no more than {max_length} elements."
 msgstr "Ensure this field has no more than {max_length} elements."
 
+#: fields.py:1654
+#, python-brace-format
+msgid "List nesting depth exceeds maximum allowed depth of {max_depth}."
+msgstr "List nesting depth exceeds maximum allowed depth of {max_depth}."
+
 #: fields.py:1682
 #, python-brace-format
 msgid "Expected a dictionary of items but got type \"{input_type}\"."
@@ -365,6 +370,11 @@ msgstr "Expected a dictionary of items but got type \"{input_type}\"."
 #: fields.py:1683
 msgid "This dictionary may not be empty."
 msgstr "This dictionary may not be empty."
+
+#: fields.py:1733
+#, python-brace-format
+msgid "Dictionary nesting depth exceeds maximum allowed depth of {max_depth}."
+msgstr "Dictionary nesting depth exceeds maximum allowed depth of {max_depth}."
 
 #: fields.py:1755
 msgid "Value must be valid JSON."
