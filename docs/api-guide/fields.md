@@ -477,7 +477,7 @@ A field class that validates a list of objects.
 * `allow_empty` - Designates if empty lists are allowed.
 * `min_length` - Validates that the list contains no fewer than this number of elements.
 * `max_length` - Validates that the list contains no more than this number of elements.
-* `max_depth` - Validates that nesting depth does not exceed this value. This applies to both the field schema depth and the raw input data depth. Depth of 0 permits the field itself but no nesting. Defaults to `None` (no limit).
+* `max_depth` - Validates that nesting depth does not exceed this value. This applies to both the field schema depth and the raw input data depth. A value of 1 permits a flat structure (e.g., `[1, 2, 3]`) but rejects nested data (e.g., `[[1, 2]]`). Defaults to `None` (no limit).
 
 For example, to validate a list of integers you might use something like the following:
 
@@ -500,7 +500,7 @@ A field class that validates a dictionary of objects. The keys in `DictField` ar
 
 * `child` - A field instance that should be used for validating the values in the dictionary. If this argument is not provided then values in the mapping will not be validated.
 * `allow_empty` - Designates if empty dictionaries are allowed.
-* `max_depth` - Validates that nesting depth does not exceed this value. This applies to both the field schema depth and the raw input data depth. Depth of 0 permits the field itself but no nesting. Defaults to `None` (no limit).
+* `max_depth` - Validates that nesting depth does not exceed this value. This applies to both the field schema depth and the raw input data depth. A value of 1 permits a flat structure (e.g., `{"a": 1}`) but rejects nested data (e.g., `{"a": {"b": 1}}`). Defaults to `None` (no limit).
 
 For example, to create a field that validates a mapping of strings to strings, you would write something like this:
 
