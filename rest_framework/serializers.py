@@ -119,6 +119,23 @@ class BaseSerializer(Field):
         self._context = kwargs.pop('context', {})
         kwargs.pop('many', None)
         super().__init__(**kwargs)
+        self._current_depth = 0
+        self._root_max_depth = None
+
+    def bind(self, field_name, parent):
+        super().bind(field_name, parent)
+        if hasattr(parent, '_root_max_depth') and parent._root_max_depth is not None:
+            self._root_max_depth = parent._root_max_depth
+            self._current_depth = parent._current_depth + 1
+
+    def _propagate_depth_to_child(self):
+        if self._root_max_depth is not None and 'fields' in self.__dict__:
+            for field in self.__dict__['fields'].values():
+                if hasattr(field, '_root_max_depth'):
+                    field._root_max_depth = self._root_max_depth
+                    field._current_depth = self._current_depth + 1
+                    if hasattr(field, '_propagate_depth_to_child'):
+                        field._propagate_depth_to_child()
 
     def __new__(cls, *args, **kwargs):
         # We override this method in order to automatically create
@@ -373,6 +390,7 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
         fields = BindingDict(self)
         for key, value in self.get_fields().items():
             fields[key] = value
+        self._propagate_depth_to_child()
         return fields
 
     @property
