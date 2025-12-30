@@ -1692,22 +1692,14 @@ class ListField(Field):
             if hasattr(self.child, '_propagate_depth_to_child'):
                 self.child._propagate_depth_to_child()
 
-    def _check_data_depth(self, data, current=0):
-        if self._root_max_depth is not None:
-            if isinstance(data, (list, tuple)):
-                for item in data:
-                    if isinstance(item, (list, tuple, dict)):
-                        next_depth = current + 1
-                        if next_depth > self._root_max_depth:
-                            self.fail('max_depth', max_depth=self._root_max_depth)
-                        self._check_data_depth(item, next_depth)
-            elif isinstance(data, dict):
-                for value in data.values():
-                    if isinstance(value, (list, tuple, dict)):
-                        next_depth = current + 1
-                        if next_depth > self._root_max_depth:
-                            self.fail('max_depth', max_depth=self._root_max_depth)
-                        self._check_data_depth(value, next_depth)
+    def _check_data_depth(self, data, current_level):
+        items = data.values() if isinstance(data, dict) else data
+        for item in items:
+            if isinstance(item, (list, tuple, dict)):
+                next_level = current_level + 1
+                if next_level > self._root_max_depth:
+                    self.fail('max_depth', max_depth=self._root_max_depth)
+                self._check_data_depth(item, next_level)
 
     def get_value(self, dictionary):
         if self.field_name not in dictionary:
@@ -1734,9 +1726,12 @@ class ListField(Field):
             self.fail('not_a_list', input_type=type(data).__name__)
         if not self.allow_empty and len(data) == 0:
             self.fail('empty')
-        if self._root_max_depth is not None and self._current_depth > self._root_max_depth:
-            self.fail('max_depth', max_depth=self._root_max_depth)
-        self._check_data_depth(data, self._current_depth)
+        if self._root_max_depth is not None:
+            start_level = self._current_depth if self._current_depth > 0 else 1
+            if start_level > self._root_max_depth:
+                self.fail('max_depth', max_depth=self._root_max_depth)
+            if self.max_depth is not None:
+                self._check_data_depth(data, start_level)
         return self.run_child_validation(data)
 
     def to_representation(self, data):
@@ -1789,7 +1784,7 @@ class DictField(Field):
 
     def bind(self, field_name, parent):
         super().bind(field_name, parent)
-        if hasattr(parent, '_root_max_depth') and parent._root_max_depth is not None:
+        if self.max_depth is None and hasattr(parent, '_root_max_depth') and parent._root_max_depth is not None:
             self._root_max_depth = parent._root_max_depth
             self._current_depth = parent._current_depth + 1
         self._propagate_depth_to_child()
@@ -1801,22 +1796,14 @@ class DictField(Field):
             if hasattr(self.child, '_propagate_depth_to_child'):
                 self.child._propagate_depth_to_child()
 
-    def _check_data_depth(self, data, current=0):
-        if self._root_max_depth is not None:
-            if isinstance(data, dict):
-                for value in data.values():
-                    if isinstance(value, (list, tuple, dict)):
-                        next_depth = current + 1
-                        if next_depth > self._root_max_depth:
-                            self.fail('max_depth', max_depth=self._root_max_depth)
-                        self._check_data_depth(value, next_depth)
-            elif isinstance(data, (list, tuple)):
-                for item in data:
-                    if isinstance(item, (list, tuple, dict)):
-                        next_depth = current + 1
-                        if next_depth > self._root_max_depth:
-                            self.fail('max_depth', max_depth=self._root_max_depth)
-                        self._check_data_depth(item, next_depth)
+    def _check_data_depth(self, data, current_level):
+        items = data.values() if isinstance(data, dict) else data
+        for item in items:
+            if isinstance(item, (list, tuple, dict)):
+                next_level = current_level + 1
+                if next_level > self._root_max_depth:
+                    self.fail('max_depth', max_depth=self._root_max_depth)
+                self._check_data_depth(item, next_level)
 
     def get_value(self, dictionary):
         # We override the default field access in order to support
@@ -1835,9 +1822,12 @@ class DictField(Field):
             self.fail('not_a_dict', input_type=type(data).__name__)
         if not self.allow_empty and len(data) == 0:
             self.fail('empty')
-        if self._root_max_depth is not None and self._current_depth > self._root_max_depth:
-            self.fail('max_depth', max_depth=self._root_max_depth)
-        self._check_data_depth(data, self._current_depth)
+        if self._root_max_depth is not None:
+            start_level = self._current_depth if self._current_depth > 0 else 1
+            if start_level > self._root_max_depth:
+                self.fail('max_depth', max_depth=self._root_max_depth)
+            if self.max_depth is not None:
+                self._check_data_depth(data, start_level)
         return self.run_child_validation(data)
 
     def to_representation(self, value):
