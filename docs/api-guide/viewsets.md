@@ -59,6 +59,8 @@ Typically we wouldn't do this, but would instead register the viewset with a rou
 
 !!! warning
     Do not use `.as_view()` with `@action` methods. It bypasses router setup and may ignore action settings like `permission_classes`. Use `DefaultRouter` for actions.
+!!! warning
+    When registering viewsets, do not include a trailing slash in the prefix (e.g., use `r'users'`, not `r'users/'`). Unlike standard Django URL patterns, DRF routers append slashes automatically based on       your trailing slash configuration.
 
 Rather than writing your own viewsets, you'll often want to use the existing base classes that provide a default set of behavior.  For example:
 
