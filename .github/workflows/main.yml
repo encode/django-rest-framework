@@ -6,6 +6,10 @@ on:
     - main
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   tests:
     name: Python ${{ matrix.python-version }}
@@ -28,7 +32,6 @@ jobs:
         python-version: ${{ matrix.python-version }}
         allow-prereleases: true
         cache: 'pip'
-        cache-dependency-path: 'requirements/*.txt'
 
     - name: Upgrade packaging tools
       run: python -m pip install --upgrade pip setuptools virtualenv wheel
@@ -60,7 +63,7 @@ jobs:
         python-version: '3.13'
 
     - name: Install dependencies
-      run: pip install -r requirements/requirements-documentation.txt
+      run: pip install --group docs
     
     # Start mkdocs server and wait for it to be ready
     - run: mkdocs serve &

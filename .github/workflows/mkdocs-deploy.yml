@@ -7,7 +7,7 @@ on:
     paths:
       - docs/**
       - docs_theme/**
-      - requirements/requirements-documentation.txt
+      - pyproject.toml
       - mkdocs.yml
       - .github/workflows/mkdocs-deploy.yml
 
@@ -25,5 +25,5 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: 3.x
-      - run: pip install -r requirements/requirements-documentation.txt
+      - run: pip install --group docs
       - run: mkdocs gh-deploy
