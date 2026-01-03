@@ -1,0 +1,103 @@
+name: Test Python 🐍 distribution 📦 to TestPyPI
+
+on:
+  workflow_dispatch:
+    inputs:
+      iteration:
+        description: 'A unique iteration for the run. The tag will be suffixed with .devyyyymmdd<iteration>'
+        type: string
+        required: true
+        default: "0"
+  schedule:
+    # Run the second day of every month.
+    - cron: "12 3 2 * *"
+  push:
+    tags:
+      - '*'
+
+env:
+  PYPI_TEST_URL: https://test.pypi.org/p/djangorestframework
+  # The environment key that overrides the version number
+  DEV_VERSION_ENV_KEY: BEST_PRACTICES_VERSION_DEV
+
+jobs:
+  create-dev-version:
+    # Generate the dev version suffix based on the current date.
+    # Tag name:
+    #   <version>.dev<yyyymmdd><iteration>
+    name: Create dev version string
+    runs-on: ubuntu-latest
+    outputs:
+      dev_version: ${{ steps.output-dev-version.outputs.dev_version }}
+    steps:
+      - name: Set date suffix
+        id: set-date
+        run: echo "suffix=dev$(date +%Y%m%d)" >> $GITHUB_ENV
+      - name: Determine Iteration Value
+        id: set-iteration
+        # If the action is running on a schedule, default iteration to 0
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "iteration=${{ github.event.inputs.iteration }}" >> $GITHUB_ENV
+          else
+            echo "iteration=0" >> $GITHUB_ENV
+          fi
+      - name: Output dev version
+        id: output-dev-version
+        # Don't output a dev version if the push was for a tag.
+        run: |
+          if [[ "${{ startsWith(github.ref, 'refs/tags') }}" == "true" ]]; then
+            echo "dev_version=" >> "$GITHUB_OUTPUT"
+          else
+            echo "dev_version=${{ env.suffix }}${{ env.iteration }}" >> "$GITHUB_OUTPUT"
+          fi
+
+  build:
+    name: Build distribution 📦
+    needs:
+    - create-dev-version
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.x"
+    - name: Install pypa/build
+      run:
+        python3 -m pip install build --user
+    - name: Build a binary wheel and a source tarball
+      env:
+        DEV_VERSION: ${{needs.create-dev-version.outputs.dev_version}}
+      run: ${{ env.DEV_VERSION_ENV_KEY }}="${{ env.DEV_VERSION }}" python3 -m build
+    - name: Store the distribution packages
+      uses: actions/upload-artifact@v4
+      with:
+        name: python-package-distributions
+        path: dist/
+
+  publish-to-testpypi:
+    name: Publish Python 🐍 distribution 📦 to TestPyPI
+    needs:
+    - build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: testpypi
+      url: ${{ env.PYPI_TEST_URL }}
+
+    permissions:
+      id-token: write  # IMPORTANT: mandatory for trusted publishing
+
+    steps:
+    - name: Download all the dists
+      uses: actions/download-artifact@v4
+      with:
+        name: python-package-distributions
+        path: dist/
+    - name: Publish distribution 📦 to TestPyPI
+      uses: pypa/gh-action-pypi-publish@release/v1.12
+      with:
+        repository-url: https://test.pypi.org/legacy/
+        skip-existing: true

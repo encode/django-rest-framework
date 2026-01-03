@@ -177,9 +177,9 @@ To submit new content, [create a pull request][drf-create-pr].
 [pypi-register]: https://pypi.org/account/register/
 [semver]: https://semver.org/
 [tox-docs]: https://tox.readthedocs.io/en/latest/
-[drf-compat]: https://github.com/encode/django-rest-framework/blob/main/rest_framework/compat.py
+[drf-compat]: https://github.com/django-commons/django-rest-framework/blob/main/rest_framework/compat.py
 [rest-framework-grid]: https://www.djangopackages.com/grids/g/django-rest-framework/
-[drf-create-pr]: https://github.com/encode/django-rest-framework/compare
+[drf-create-pr]: https://github.com/django-commons/django-rest-framework/compare
 [authentication]: ../api-guide/authentication.md
 [permissions]: ../api-guide/permissions.md
 [third-party-packages]: #existing-third-party-packages

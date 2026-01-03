@@ -26,11 +26,11 @@ Please keep the tone polite & professional.  For some users a discussion on the 
 
 Be mindful in the language you choose.  As an example, in an environment that is heavily male-dominated, posts that start 'Hey guys,' can come across as unintentionally exclusive.  It's just as easy, and more inclusive to use gender neutral language in those situations.
 
-The [Django code of conduct][code-of-conduct] gives a fuller set of guidelines for participating in community forums.
+The [Django Commons Code of Conduct][code-of-conduct] gives a fuller set of guidelines for participating in community forums.
 
 # Issues
 
-Our contribution process is that the [GitHub discussions page](https://github.com/encode/django-rest-framework/discussions) should generally be your starting point. Some tips on good potential issue reporting:
+Our contribution process is that the [GitHub discussions page](https://github.com/django-commons/django-rest-framework/discussions) should generally be your starting point. Some tips on good potential issue reporting:
 
 * Django REST framework is considered feature-complete. Please do not file requests to change behavior, unless it is required for security reasons or to maintain compatibility with upcoming Django or Python versions.
 * Search the GitHub project page for related items, and make sure you're running the latest version of REST framework before reporting an issue.
@@ -231,7 +231,7 @@ The documentation theme styles `info`, `warning`, `tip` and `danger` admonition 
 
 
 [cite]: https://www.w3.org/People/Berners-Lee/FAQ.html
-[code-of-conduct]: https://www.djangoproject.com/conduct/
+[code-of-conduct]: https://github.com/django-commons/membership/blob/main/CODE_OF_CONDUCT.md
 [google-group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
 [so-filter]: https://stackexchange.com/filters/66475/rest-framework
 [pep-8]: https://www.python.org/dev/peps/pep-0008/
@@ -239,8 +239,8 @@ The documentation theme styles `info`, `warning`, `tip` and `danger` admonition 
 [pull-requests]: https://help.github.com/articles/using-pull-requests
 [tox]: https://tox.readthedocs.io/en/latest/
 [markdown]: https://daringfireball.net/projects/markdown/basics
-[docs]: https://github.com/encode/django-rest-framework/tree/main/docs
+[docs]: https://github.com/django-commons/django-rest-framework/tree/main/docs
 [mou]: http://mouapp.com/
-[repo]: https://github.com/encode/django-rest-framework
+[repo]: https://github.com/django-commons/django-rest-framework
 [how-to-fork]: https://help.github.com/articles/fork-a-repo/
 [admonition]: https://python-markdown.github.io/extensions/admonition/
