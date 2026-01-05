@@ -1680,7 +1680,7 @@ class ListField(Field):
 
     def bind(self, field_name, parent):
         super().bind(field_name, parent)
-        if hasattr(parent, '_root_max_depth') and parent._root_max_depth is not None:
+        if self.max_depth is None and hasattr(parent, '_root_max_depth') and parent._root_max_depth is not None:
             self._root_max_depth = parent._root_max_depth
             self._current_depth = parent._current_depth + 1
         self._propagate_depth_to_child()
