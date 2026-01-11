@@ -207,7 +207,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [heroku]: https://www.heroku.com/
 [eventbrite]: https://www.eventbrite.co.uk/about/
 [pyyaml]: https://pypi.org/project/PyYAML/
-[uriteemplate]: https://pypi.org/project/uritemplate/
+[uritemplate]: https://pypi.org/project/uritemplate/
 [markdown]: https://pypi.org/project/Markdown/
 [pygments]: https://pypi.org/project/Pygments/
 [django-filter]: https://pypi.org/project/django-filter/
@@ -233,3 +233,5 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [stack-overflow]: https://stackoverflow.com/
 [django-rest-framework-tag]: https://stackoverflow.com/questions/tagged/django-rest-framework
 [security-mail]: mailto:rest-framework-security@googlegroups.com
+
+
