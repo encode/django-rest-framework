@@ -75,3 +75,27 @@ jobs:
       run: pylinkvalidate.py -P http://localhost:8000/
   
     - run: echo "Done"
+
+  codeql:
+    name: CodeQL Security Scan
+    runs-on: ubuntu-latest
+
+    permissions:
+      security-events: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: python
+          queries: security-and-quality
+
+      # Para Python NO hace falta build ni dependencias
+      # CodeQL analiza el código fuente directamente
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
