@@ -39,11 +39,12 @@ class NonAtomicAPIExceptionView(APIView):
         return super().dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
-        BasicModel.objects.all()
+        list(BasicModel.objects.all())
         raise Http404
 
 
 urlpatterns = (
+    path('non-atomic-exception', NonAtomicAPIExceptionView.as_view()),
     path('', NonAtomicAPIExceptionView.as_view()),
 )
 
@@ -94,8 +95,8 @@ class DBTransactionErrorTests(TestCase):
             # 1 - begin savepoint
             # 2 - insert
             # 3 - release savepoint
-            with transaction.atomic():
-                self.assertRaises(Exception, self.view, request)
+            with transaction.atomic(), self.assertRaises(Exception):
+                self.view(request)
                 assert not transaction.get_rollback()
         assert BasicModel.objects.count() == 1
 
@@ -174,12 +175,15 @@ class NonAtomicDBTransactionAPIExceptionTests(TransactionTestCase):
     def setUp(self):
         connections.databases['default']['ATOMIC_REQUESTS'] = True
 
-    def tearDown(self):
-        connections.databases['default']['ATOMIC_REQUESTS'] = False
+        @self.addCleanup
+        def restore_atomic_requests():
+            connections.databases['default']['ATOMIC_REQUESTS'] = False
 
     def test_api_exception_rollback_transaction_non_atomic_view(self):
-        response = self.client.get('/')
+        response = self.client.get('/non-atomic-exception')
 
-        # without checking connection.in_atomic_block view raises 500
-        # due attempt to rollback without transaction
+        # without check for db.in_atomic_block, would raise 500 due to attempt
+        # to rollback without transaction
         assert response.status_code == status.HTTP_404_NOT_FOUND
+        # Check we can still perform DB queries
+        list(BasicModel.objects.all())
