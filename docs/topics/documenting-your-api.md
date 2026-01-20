@@ -7,7 +7,9 @@
 REST framework provides a range of different choices for documenting your API. The following
 is a non-exhaustive list of the most popular ones.
 
-## Third party packages for OpenAPI support
+## Third-party packages for OpenAPI support
+
+REST framework recommends using third-party packages for generating and presenting OpenAPI schemas, as they provide more features and flexibility than the built-in (deprecated) implementation.
 
 ### drf-spectacular
 
