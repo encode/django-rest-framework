@@ -4,8 +4,7 @@
 >
 > &mdash; Roy Fielding, [REST APIs must be hypertext driven][cite]
 
-REST framework provides a range of different choices for documenting your API. The following
-is a non-exhaustive list of the most popular ones.
+REST framework provides a range of different choices for documenting your API. The following is a non-exhaustive list of some of the most popular options.
 
 ## Third-party packages for OpenAPI support
 
