@@ -38,9 +38,9 @@ This also translates into a very useful interactive documentation viewer in the 
 
 ## Built-in OpenAPI schema generation (deprecated)
 
-**Deprecation notice: REST framework's built-in support for generating OpenAPI schemas is
-deprecated in favor of 3rd party packages that can provide this functionality instead.
-As replacement, we recommend using the [drf-spectacular](#drf-spectacular) package.**
+!!! warning
+    **Deprecation notice:** REST framework's built-in support for generating OpenAPI schemas is deprecated in favor of third-party packages that provide this functionality instead. As a replacement, we recommend using **drf-spectacular**.
+
 
 There are a number of packages available that allow you to generate HTML
 documentation pages from OpenAPI schemas.
