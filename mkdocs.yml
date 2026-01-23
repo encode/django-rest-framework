@@ -60,6 +60,7 @@ nav:
      - 'Browser Enhancements': 'topics/browser-enhancements.md'
      - 'The Browsable API': 'topics/browsable-api.md'
      - 'REST, Hypermedia & HATEOAS': 'topics/rest-hypermedia-hateoas.md'
+     - 'Observability': 'topics/observability.md'
  - Community:
      - 'Tutorials and Resources': 'community/tutorials-and-resources.md'
      - 'Third Party Packages': 'community/third-party-packages.md'
