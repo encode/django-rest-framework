@@ -24,7 +24,7 @@ repos:
   hooks:
   - id: blacken-docs
     additional_dependencies:
-    - black==25.9.0
+    - black==26.1.0
 - repo: https://github.com/codespell-project/codespell
   # Configuration for codespell is in pyproject.toml
   rev: v2.4.1
@@ -34,11 +34,11 @@ repos:
       # python doesn't come with a toml parser prior to 3.11
       - "tomli; python_version < '3.11'"
 - repo: https://github.com/asottile/pyupgrade
-  rev: v3.21.0
+  rev: v3.21.2
   hooks:
   - id: pyupgrade
     args: ["--py310-plus", "--keep-percent-format"]
 - repo: https://github.com/tox-dev/pyproject-fmt
-  rev: v2.11.0
+  rev: v2.11.1
   hooks:
   - id: pyproject-fmt
