@@ -5,3 +5,4 @@ At this point in its lifespan we consider Django REST framework to be essentiall
 Apart from minor documentation changes, the [GitHub discussions page](https://github.com/encode/django-rest-framework/discussions) should generally be your starting point. Please only open a pull request if you've been recommended to do so **after discussion**.
 
 The [Contributing guide in the documentation](https://www.django-rest-framework.org/community/contributing/) gives some more information on our process and code of conduct.
+Parth
