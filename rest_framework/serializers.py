@@ -841,6 +841,14 @@ def raise_errors_on_nested_writes(method_name, serializer, validated_data):
 
     This check is invoked internally by default `ModelSerializer.create()`
     and `ModelSerializer.update()` implementations.
+
+     Eg. Suppose we have a `UserSerializer` with a nested profile. How should
+    we handle the case of an update, where the `profile` relationship does
+    not exist? Any of the following might be valid:
+    
+    * Raise an application error.
+    * Silently ignore the nested part of the update.
+    * Automatically create a profile instance.
     """
 
     ModelClass = serializer.Meta.model
