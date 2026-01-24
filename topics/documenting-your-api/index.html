@@ -421,7 +421,7 @@
 
                   
                     <li>
-                      <a href="#third-party-packages-for-openapi-support">Third party packages for OpenAPI support</a>
+                      <a href="#third-party-packages-for-openapi-support">Third-party packages for OpenAPI support</a>
                     </li>
                   
                     <li>
@@ -456,9 +456,9 @@
 <p>A REST API should spend almost all of its descriptive effort in defining the media type(s) used for representing resources and driving application state.</p>
 <p>&mdash; Roy Fielding, <a href="https://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven">REST APIs must be hypertext driven</a></p>
 </blockquote>
-<p>REST framework provides a range of different choices for documenting your API. The following
-is a non-exhaustive list of the most popular ones.</p>
-<h2 id="third-party-packages-for-openapi-support"><a class="toclink" href="#third-party-packages-for-openapi-support">Third party packages for OpenAPI support</a></h2>
+<p>REST framework provides a range of different choices for documenting your API. The following is a non-exhaustive list of some of the most popular options.</p>
+<h2 id="third-party-packages-for-openapi-support"><a class="toclink" href="#third-party-packages-for-openapi-support">Third-party packages for OpenAPI support</a></h2>
+<p>REST framework recommends using third-party packages for generating and presenting OpenAPI schemas, as they provide more features and flexibility than the built-in (deprecated) implementation.</p>
 <h3 id="drf-spectacular"><a class="toclink" href="#drf-spectacular">drf-spectacular</a></h3>
 <p><a href="https://github.com/tfranzel/drf-spectacular/">drf-spectacular</a> is an <a href="https://openapis.org/">OpenAPI 3</a> schema generation library with explicit
 focus on extensibility, customizability and client generation. It is the recommended way for
@@ -477,9 +477,10 @@ generation tools like <code>swagger-codegen</code>.</p>
 <p><img alt="Screenshot - drf-yasg" src="../../img/drf-yasg.png" /></p>
 <hr />
 <h2 id="built-in-openapi-schema-generation-deprecated"><a class="toclink" href="#built-in-openapi-schema-generation-deprecated">Built-in OpenAPI schema generation (deprecated)</a></h2>
-<p><strong>Deprecation notice: REST framework's built-in support for generating OpenAPI schemas is
-deprecated in favor of 3rd party packages that can provide this functionality instead.
-As replacement, we recommend using the <a href="#drf-spectacular">drf-spectacular</a> package.</strong></p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><strong>Deprecation notice:</strong> REST framework's built-in support for generating OpenAPI schemas is deprecated in favor of third-party packages that provide this functionality instead. As a replacement, we recommend using <strong>drf-spectacular</strong>.</p>
+</div>
 <p>There are a number of packages available that allow you to generate HTML
 documentation pages from OpenAPI schemas.</p>
 <p>Two popular options are <a href="https://swagger.io/tools/swagger-ui/">Swagger UI</a> and <a href="https://github.com/Rebilly/ReDoc">ReDoc</a>.</p>
