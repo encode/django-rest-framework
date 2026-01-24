@@ -661,7 +661,8 @@ class ExampleView(APIView):
 </code></pre>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Composition of permissions supports <code>&amp;</code> (and), <code>|</code> (or) and <code>~</code> (not) operators.</p>
+<p>Composition of permissions supports the <code>&amp;</code> (and), <code>|</code> (or) and <code>~</code> (not) operators, and also allows the use of brackets <code>(</code> <code>)</code> to group expressions.</p>
+<p>Operators follow the same precedence and associativity rules as standard logical operators (<code>~</code> highest, then <code>&amp;</code>, then <code>|</code>).</p>
 </div>
 <h1 id="api-reference"><a class="toclink" href="#api-reference">API Reference</a></h1>
 <h2 id="allowany"><a class="toclink" href="#allowany">AllowAny</a></h2>
