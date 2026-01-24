@@ -313,11 +313,11 @@ class SerializerMetaclass(type):
 
 def as_serializer_error(exc):
     """
-    coerce validation exceptions into a standardized serializer error format.
+    Coerce validation exceptions into a standardized serialized error format.
 
-    this function normalizes both Django's 'ValidationError' and REST
-    framework's 'ValidationError' into a dictionary structure compatible
-    with serializer '.errors', ensuring all values are represented as
+    This function normalizes both Django's `ValidationError` and REST
+    framework's `ValidationError` into a dictionary structure compatible
+    with serializer `.errors`, ensuring all values are represented as
     lists of error details.
 
     The returned structure conforms to the serializer error contract:
