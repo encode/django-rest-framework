@@ -608,28 +608,13 @@ class ListSerializer(BaseSerializer):
         super().__init__(*args, **kwargs)
         self.child.bind(field_name='', parent=self)
 
-    def get_initial(self):
-        if hasattr(self, 'initial_data'):
-            return self.to_representation(self.initial_data)
-        return []
-
     def get_value(self, dictionary):
-        """
-        Given the input dictionary, return the field value.
-        """
-        # We override the default field access in order to support
-        # lists in HTML forms.
         if html.is_html_input(dictionary):
             return html.parse_html_list(dictionary, prefix=self.field_name, default=empty)
         return dictionary.get(self.field_name, empty)
 
     def run_validation(self, data=empty):
-        """
-        We override the default `run_validation`, because the validation
-        performed by validators and the `.validate()` method should
-        be coerced into an error dictionary with a 'non_fields_error' key.
-        """
-        (is_empty_value, data) = self.validate_empty_values(data)
+        is_empty_value, data = self.validate_empty_values(data)
         if is_empty_value:
             return data
 
@@ -644,72 +629,99 @@ class ListSerializer(BaseSerializer):
         return value
 
     def run_child_validation(self, data):
-        """
-        Run validation on child serializer.
-        You may need to override this method to support multiple updates. For example:
+        child = copy.deepcopy(self.child)
+        if getattr(self, 'partial', False) or getattr(self.root, 'partial', False):
+            child.partial = True
 
-        self.child.instance = self.instance.get(pk=data['id'])
-        self.child.initial_data = data
-        return super().run_child_validation(data)
-        """
-        return self.child.run_validation(data)
+        # Field.__deepcopy__ re-instantiates the field, wiping any state.
+        # If the subclass set an instance or initial_data on self.child,
+        # we manually restore them to the deepcopied child.
+        child_instance = getattr(self.child, 'instance', None)
+        if child_instance is not None and child_instance is not self.instance:
+            child.instance = child_instance
+        elif hasattr(self, '_instance_map') and isinstance(data, dict):
+            # Automated instance matching (#8926)
+            data_pk = data.get('id') or data.get('pk')
+            if data_pk is not None:
+                child.instance = self._instance_map.get(str(data_pk))
+            else:
+                child.instance = None
+        else:
+            child.instance = None
+
+        child_initial_data = getattr(self.child, 'initial_data', empty)
+        if child_initial_data is not empty:
+            child.initial_data = child_initial_data
+        else:
+            # Set initial_data for item-level validation if not already set.
+            child.initial_data = data
+
+        validated = child.run_validation(data)
+        return validated
 
     def to_internal_value(self, data):
-        """
-        List of dicts of native values <- List of dicts of primitive datatypes.
-        """
         if html.is_html_input(data):
             data = html.parse_html_list(data, default=[])
 
         if not isinstance(data, list):
-            message = self.error_messages['not_a_list'].format(
-                input_type=type(data).__name__
-            )
             raise ValidationError({
-                api_settings.NON_FIELD_ERRORS_KEY: [message]
-            }, code='not_a_list')
+                api_settings.NON_FIELD_ERRORS_KEY: [
+                    self.error_messages['not_a_list'].format(input_type=type(data).__name__)
+                ]
+            })
 
         if not self.allow_empty and len(data) == 0:
-            message = self.error_messages['empty']
             raise ValidationError({
-                api_settings.NON_FIELD_ERRORS_KEY: [message]
-            }, code='empty')
+                api_settings.NON_FIELD_ERRORS_KEY: [ErrorDetail(self.error_messages['empty'], code='empty')]
+            })
 
         if self.max_length is not None and len(data) > self.max_length:
-            message = self.error_messages['max_length'].format(max_length=self.max_length)
             raise ValidationError({
-                api_settings.NON_FIELD_ERRORS_KEY: [message]
-            }, code='max_length')
+                api_settings.NON_FIELD_ERRORS_KEY: [ErrorDetail(self.error_messages['max_length'].format(max_length=self.max_length), code='max_length')]
+            })
 
         if self.min_length is not None and len(data) < self.min_length:
-            message = self.error_messages['min_length'].format(min_length=self.min_length)
             raise ValidationError({
-                api_settings.NON_FIELD_ERRORS_KEY: [message]
-            }, code='min_length')
+                api_settings.NON_FIELD_ERRORS_KEY: [ErrorDetail(self.error_messages['min_length'].format(min_length=self.min_length), code='min_length')]
+            })
 
-        ret = []
-        errors = []
+        # Build a primary key mapping for instance updates (#8926)
+        instance_map = {}
+        if self.instance is not None:
+            if isinstance(self.instance, Mapping):
+                instance_map = {str(k): v for k, v in self.instance.items()}
+            elif hasattr(self.instance, '__iter__'):
+                for obj in self.instance:
+                    pk = getattr(obj, 'pk', getattr(obj, 'id', None))
+                    if pk is not None:
+                        instance_map[str(pk)] = obj
 
-        for item in data:
-            try:
-                validated = self.run_child_validation(item)
-            except ValidationError as exc:
-                errors.append(exc.detail)
-            else:
-                ret.append(validated)
-                errors.append({})
+        self._instance_map = instance_map
 
-        if any(errors):
-            raise ValidationError(errors)
+        try:
+            ret = []
+            errors = []
 
-        return ret
+            for item in data:
+                try:
+                    validated = self.run_child_validation(item)
+                except ValidationError as exc:
+                    errors.append(exc.detail)
+                else:
+                    ret.append(validated)
+                    errors.append({})
+
+            if any(errors):
+                raise ValidationError(errors)
+
+            return ret
+        finally:
+            delattr(self, '_instance_map')
 
     def to_representation(self, data):
-        """
-        List of object instances -> List of dicts of primitive datatypes.
-        """
         # Dealing with nested relationships, data can be a Manager,
-        # so, first get a queryset from the Manager if needed
+        # so, first get a queryset from the Manager if needed.
+        # We avoid .all() on QuerySets to preserve Issue #2704 behavior.
         iterable = data.all() if isinstance(data, models.manager.BaseManager) else data
 
         return [
@@ -719,62 +731,32 @@ class ListSerializer(BaseSerializer):
     def validate(self, attrs):
         return attrs
 
+    def create(self, validated_data):
+        return [self.child.create(item) for item in validated_data]
+
     def update(self, instance, validated_data):
         raise NotImplementedError(
-            "Serializers with many=True do not support multiple update by "
-            "default, only multiple create. For updates it is unclear how to "
-            "deal with insertions and deletions. If you need to support "
-            "multiple update, use a `ListSerializer` class and override "
-            "`.update()` so you can specify the behavior exactly."
+            "ListSerializer does not support multiple updates by default. "
+            "Override `.update()` if needed."
         )
-
-    def create(self, validated_data):
-        return [
-            self.child.create(attrs) for attrs in validated_data
-        ]
 
     def save(self, **kwargs):
-        """
-        Save and return a list of object instances.
-        """
-        # Guard against incorrect use of `serializer.save(commit=False)`
-        assert 'commit' not in kwargs, (
-            "'commit' is not a valid keyword argument to the 'save()' method. "
-            "If you need to access data before committing to the database then "
-            "inspect 'serializer.validated_data' instead. "
-            "You can also pass additional keyword arguments to 'save()' if you "
-            "need to set extra attributes on the saved model instance. "
-            "For example: 'serializer.save(owner=request.user)'.'"
-        )
-
-        validated_data = [
-            {**attrs, **kwargs} for attrs in self.validated_data
-        ]
+        assert hasattr(self, 'validated_data'), "Call `.is_valid()` before `.save()`."
+        validated_data = [{**item, **kwargs} for item in self.validated_data]
 
         if self.instance is not None:
             self.instance = self.update(self.instance, validated_data)
-            assert self.instance is not None, (
-                '`update()` did not return an object instance.'
-            )
         else:
             self.instance = self.create(validated_data)
-            assert self.instance is not None, (
-                '`create()` did not return an object instance.'
-            )
-
         return self.instance
 
     def is_valid(self, *, raise_exception=False):
-        # This implementation is the same as the default,
-        # except that we use lists, rather than dicts, as the empty case.
-        assert hasattr(self, 'initial_data'), (
-            'Cannot call `.is_valid()` as no `data=` keyword argument was '
-            'passed when instantiating the serializer instance.'
-        )
+        assert hasattr(self, 'initial_data'), "You must pass `data=` to the serializer."
 
         if not hasattr(self, '_validated_data'):
             try:
-                self._validated_data = self.run_validation(self.initial_data)
+                raw_validated = self.run_validation(self.initial_data)
+                self._validated_data = raw_validated
             except ValidationError as exc:
                 self._validated_data = []
                 self._errors = exc.detail
@@ -786,11 +768,12 @@ class ListSerializer(BaseSerializer):
 
         return not bool(self._errors)
 
-    def __repr__(self):
-        return representation.list_repr(self, indent=1)
-
-    # Include a backlink to the serializer class on return objects.
-    # Allows renderers such as HTMLFormRenderer to get the full field info.
+    @property
+    def validated_data(self):
+        if not hasattr(self, '_validated_data'):
+            msg = 'You must call `.is_valid()` before accessing `.validated_data`.'
+            raise AssertionError(msg)
+        return self._validated_data
 
     @property
     def data(self):
@@ -799,19 +782,17 @@ class ListSerializer(BaseSerializer):
 
     @property
     def errors(self):
-        ret = super().errors
-        if isinstance(ret, list) and len(ret) == 1 and getattr(ret[0], 'code', None) == 'null':
-            # Edge case. Provide a more descriptive error than
-            # "this field may not be null", when no data is passed.
-            detail = ErrorDetail('No data provided', code='null')
-            ret = {api_settings.NON_FIELD_ERRORS_KEY: [detail]}
+        ret = getattr(self, '_errors', [])
         if isinstance(ret, dict):
             return ReturnDict(ret, serializer=self)
         return ReturnList(ret, serializer=self)
 
+    def __repr__(self):
+        return f'<ListSerializer child={self.child}>'
 
 # ModelSerializer & HyperlinkedModelSerializer
 # --------------------------------------------
+
 
 def raise_errors_on_nested_writes(method_name, serializer, validated_data):
     """
