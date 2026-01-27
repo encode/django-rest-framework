@@ -156,3 +156,25 @@ else:
 SHORT_SEPARATORS = (',', ':')
 LONG_SEPARATORS = (', ', ': ')
 INDENT_SEPARATORS = (',', ': ')
+
+
+def get_referenced_base_fields_from_q(q_object):
+    """
+    Return the base field names referenced by a Q object.
+    This is a compatibility helper for Django versions that may not have
+    `referenced_base_fields` attribute on Q objects.
+    """
+    if q_object is None:
+        return set()
+
+    referenced_fields = set()
+    for child in q_object.children:
+        if isinstance(child, tuple):
+            # child[0] is the field name (e.g., 'status', 'global_id__lte')
+            # We strip off any lookup part (__lte, __exact, etc.)
+            field_name = child[0].split('__')[0]
+            referenced_fields.add(field_name)
+        else:
+            # child is another Q object
+            referenced_fields.update(get_referenced_base_fields_from_q(child))
+    return referenced_fields
