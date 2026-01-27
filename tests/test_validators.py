@@ -278,7 +278,7 @@ class TestUniquenessTogetherValidation(TestCase):
     def test_is_unique_together_condition_based(self):
         """
         In a condition-based unique together validation, data is valid when
-        the constrained field differs when the condition applies`.
+        the constrained field differs when the condition applies.
         """
         ConditionUniquenessTogetherModel.objects.create(race_name='example', position=1)
 
