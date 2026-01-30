@@ -118,7 +118,10 @@ keep_full_version = true
 [tool.pytest.ini_options]
 addopts = "--tb=short --strict-markers -ra"
 testpaths = [ "tests" ]
-filterwarnings = [ "ignore:CoreAPI compatibility is deprecated*:rest_framework.RemovedInDRF318Warning" ]
+filterwarnings = [
+  "ignore:CoreAPI compatibility is deprecated*:rest_framework.RemovedInDRF318Warning",
+  "ignore:'cgi' is deprecated:DeprecationWarning",
+]
 
 [tool.coverage.run]
 # NOTE: source is ignored with pytest-cov (but uses the same).
