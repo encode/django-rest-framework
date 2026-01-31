@@ -189,6 +189,13 @@ The class that should be used to initialize `request.auth` for unauthenticated r
 
 Default: `None`
 
+#### WWW_AUTHENTICATE_BEHAVIOR
+
+Determines whether a single or multiple challenges are presented in the `WWW-Authenticate` header.
+
+This should be set to `'first'` (the default value) or `'all'`. When set to `'first'`, the `WWW-Authenticate` header will be set to an appropriate challenge for the first authentication scheme in the list.
+When set to `'all'`, a comma-separated list of the challenge for all specified authentication schemes will be used instead (following the [syntax specification](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/WWW-Authenticate)).
+
 ---
 
 ## Test settings
