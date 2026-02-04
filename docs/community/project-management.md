@@ -96,5 +96,5 @@ The following issues still need to be addressed:
 * Document ownership and management of the security mailing list.
 
 [bus-factor]: https://en.wikipedia.org/wiki/Bus_factor
-[un-triaged]: https://github.com/encode/django-rest-framework/issues?q=is%3Aopen+no%3Alabel
+[un-triaged]: https://github.com/django-commons/django-rest-framework/issues?q=is%3Aopen+no%3Alabel
 [mailing-list]: https://groups.google.com/forum/#!forum/django-rest-framework
