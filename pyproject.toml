@@ -49,8 +49,8 @@ test = [
   "importlib-metadata<5.0",
 
   # Pytest for running the tests.
-  "pytest>=7.0.1,<10",
-  "pytest-cov>=4.0.0,<8.0",
+  "pytest==9.*",
+  "pytest-cov==7.*",
   "pytest-django>=4.5.2,<5",
 
   # Remove when dropping support for Django<5.0
