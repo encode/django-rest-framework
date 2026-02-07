@@ -44,9 +44,7 @@ dev = [
   { include-group = "test" },
 ]
 test = [
-  # temporary pin of attrs
-  "attrs==22.1.0",
-  "importlib-metadata<5.0",
+  "importlib-metadata<9.0",
 
   # Pytest for running the tests.
   "pytest==9.*",
