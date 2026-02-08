@@ -66,7 +66,7 @@ def parse_html_list(dictionary, prefix='', default=None):
     return [ret[item] for item in sorted(ret)] if ret else default
 
 
-def parse_html_dict(dictionary, prefix=''):
+def parse_html_dict(dictionary, prefix='', default=None):
     """
     Used to support dictionary values in HTML forms.
 
@@ -81,6 +81,9 @@ def parse_html_dict(dictionary, prefix=''):
             'email': 'example@example.com'
         }
     }
+
+    :returns a MultiValueDict of the parsed data, or the value specified in
+        ``default`` if the dict field was not present in the input
     """
     ret = MultiValueDict()
     regex = re.compile(r'^%s\.(.+)$' % re.escape(prefix))
@@ -92,4 +95,4 @@ def parse_html_dict(dictionary, prefix=''):
         value = dictionary.getlist(field)
         ret.setlist(key, value)
 
-    return ret
+    return ret if ret else default
