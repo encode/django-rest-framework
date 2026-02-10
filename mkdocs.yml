@@ -6,6 +6,7 @@ repo_url: https://github.com/encode/django-rest-framework
 
 theme:
     name: material
+    custom_dir: docs/theme
     favicon: theme/img/favicon.ico
     logo: theme/img/logo.png
     palette:
@@ -46,6 +47,9 @@ theme:
 
 extra_css:
   - theme/stylesheets/extra.css
+  - theme/stylesheets/prettify.css
+extra_javascript:
+  - theme/js/prettify-1.0.js
 
 markdown_extensions:
  - admonition
