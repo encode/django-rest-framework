@@ -68,7 +68,7 @@ each Python and Django series.
 
 The following packages are optional:
 
-* [PyYAML][pyyaml], [uritemplate][uriteemplate] (5.1+, 3.0.0+) - Schema generation support.
+* [PyYAML][pyyaml], [uritemplate][uritemplate] (5.1+, 3.0.0+) - Schema generation support.
 * [Markdown][markdown] (3.3.0+) - Markdown support for the browsable API.
 * [Pygments][pygments] (2.7.0+) - Add syntax highlighting to Markdown processing.
 * [django-filter][django-filter] (1.0.1+) - Filtering support.
@@ -221,7 +221,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [heroku]: https://www.heroku.com/
 [eventbrite]: https://www.eventbrite.co.uk/about/
 [pyyaml]: https://pypi.org/project/PyYAML/
-[uriteemplate]: https://pypi.org/project/uritemplate/
+[uritemplate]: https://pypi.org/project/uritemplate/
 [markdown]: https://pypi.org/project/Markdown/
 [pygments]: https://pypi.org/project/Pygments/
 [django-filter]: https://pypi.org/project/django-filter/

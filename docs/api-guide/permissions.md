@@ -138,7 +138,10 @@ Provided they inherit from `rest_framework.permissions.BasePermission`, permissi
             return Response(content)
 
 !!! note
-    Composition of permissions supports `&` (and), `|` (or) and `~` (not) operators.
+    Composition of permissions supports the `&` (and), `|` (or) and `~` (not) operators, and also allows the use of brackets `(` `)` to group expressions.
+
+    Operators follow the same precedence and associativity rules as standard logical operators (`~` highest, then `&`, then `|`).
+
 
 # API Reference
 

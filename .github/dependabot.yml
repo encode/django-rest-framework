@@ -11,3 +11,39 @@ updates:
           - "*"  # Group all Action updates into a single larger pull request
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 7
+  
+  - package-ecosystem: "pip"
+    directory: "/"
+
+    groups:
+      test:
+        patterns:
+          - "pytest*"
+          - "attrs"
+          - "importlib-metadata"
+          - "pytz"
+
+      docs:
+        patterns:
+          - "mkdocs"
+          - "pylinkvalidator"
+
+      optional:
+        patterns:
+          - "coreapi"
+          - "coreschema"
+          - "django-filter"
+          - "django-guardian"
+          - "inflection"
+          - "legacy-cgi"
+          - "markdown"
+          - "psycopg*"
+          - "pygments"
+          - "pyyaml"
+
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
