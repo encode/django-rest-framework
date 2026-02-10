@@ -22,6 +22,50 @@ Pagination is only performed automatically if you're using the generic views or 
 
 Pagination can be turned off by setting the pagination class to `None`.
 
+## Details and limitations
+
+Proper use of pagination requires a little attention to detail. You'll need to think about what ordering you want the scheme to be applied against.
+
+You can modify the ordering in multiple ways:
+
+* Using the `OrderingFilter` filter class together with the pagination class in the view definition. 
+* Setting the `ordering` attribute on the `Meta` class of the model whose records are being paginated.
+* Explicitly calling `order_by` on the view's `queryset`.
+* Overriding the `'ordering'` attribute if using the `CursorPagination` class.
+
+When using `OrderingFilter`, you should strongly consider restricting the fields that the user may order by.
+
+For `CursorPagination`, the default is to order by `"-created"`. This assumes that **there must be a 'created' timestamp field** on the model instances, and will present a "timeline" style paginated view, with the most recently added items first.
+
+Proper usage of pagination should have an ordering field that satisfies the following:
+
+* Should be an unchanging value, such as a timestamp, slug, or other field that is only set once, on creation.
+* Should be unique, or nearly unique if using `CursorPagination`. The `CursorPagination` implementation uses a smart "position plus offset" style that allows it to properly support not-strictly-unique values as the ordering. Millisecond precision timestamps are a good example.
+* Should be a non-nullable value that can be coerced to a string.
+* Should not be a float. Precision errors easily lead to incorrect results.
+  Hint: use decimals instead.
+  (If you already have a float field and must paginate on that, an
+  [example `CursorPagination` subclass that uses decimals to limit precision is available here][float_cursor_pagination_example].)
+* The field should have a database index.
+
+Using an ordering field that does not satisfy these constraints will generally still work, but the results might be suboptimal or outright inconsistent depending on the chosen scheme. These inconsistencies might manifest as either missing records or duplicate records.
+
+If the main field that you wish to order by does not satisfy these conditions, you can order by multiple fields, as long as one of the fields fulfills all of the conditions above the result set should remain consistent across database calls.
+
+    # inconsistent
+    class MyModel(models.Model):
+        foo = models.CharField()  # not unique, can change
+
+        class Meta:
+            ordering = "foo"  # page results will be inconsistent
+
+    # consistent
+    class MyOtherModel(models.Model):
+        foo = models.CharField()  # still not unique, can change
+
+        class Meta:
+            ordering = ["foo", "id"]  # id is unique, cannot change, cannot be null, etc.
+
 ## Setting the pagination style
 
 The pagination style may be set globally, using the `DEFAULT_PAGINATION_CLASS` and `PAGE_SIZE` setting keys. For example, to use the built-in limit/offset pagination, you would do something like this:
@@ -170,25 +214,6 @@ Cursor based pagination is more complex than other schemes. It also requires tha
 
 * Provides a consistent pagination view. When used properly `CursorPagination` ensures that the client will never see the same item twice when paging through records, even when new items are being inserted by other clients during the pagination process.
 * Supports usage with very large datasets. With extremely large datasets pagination using offset-based pagination styles may become inefficient or unusable. Cursor based pagination schemes instead have fixed-time properties, and do not slow down as the dataset size increases.
-
-#### Details and limitations
-
-Proper use of cursor based pagination requires a little attention to detail. You'll need to think about what ordering you want the scheme to be applied against. The default is to order by `"-created"`. This assumes that **there must be a 'created' timestamp field** on the model instances, and will present a "timeline" style paginated view, with the most recently added items first.
-
-You can modify the ordering by overriding the `'ordering'` attribute on the pagination class, or by using the `OrderingFilter` filter class together with `CursorPagination`. When used with `OrderingFilter` you should strongly consider restricting the fields that the user may order by.
-
-Proper usage of cursor pagination should have an ordering field that satisfies the following:
-
-* Should be an unchanging value, such as a timestamp, slug, or other field that is only set once, on creation.
-* Should be unique, or nearly unique. Millisecond precision timestamps are a good example. This implementation of cursor pagination uses a smart "position plus offset" style that allows it to properly support not-strictly-unique values as the ordering.
-* Should be a non-nullable value that can be coerced to a string.
-* Should not be a float. Precision errors easily lead to incorrect results.
-  Hint: use decimals instead.
-  (If you already have a float field and must paginate on that, an
-  [example `CursorPagination` subclass that uses decimals to limit precision is available here][float_cursor_pagination_example].)
-* The field should have a database index.
-
-Using an ordering field that does not satisfy these constraints will generally still work, but you'll be losing some of the benefits of cursor pagination.
 
 For more technical details on the implementation we use for cursor pagination, the ["Building cursors for the Disqus API"][disqus-cursor-api] blog post gives a good overview of the basic approach.
 
