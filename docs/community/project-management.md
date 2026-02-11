@@ -63,16 +63,13 @@ The following template should be used for the description of the issue, and serv
     - [ ] Ensure documentation validates
         - Build and serve docs `mkdocs serve`
         - Validate links `pylinkvalidate.py -P http://127.0.0.1:8000`
-    - [ ] Confirm with @tomchristie that release is finalized and ready to go.
+    - [ ] Confirm with other maintainers that the release is finalized and ready to go.
     - [ ] Ensure that release date is included in pull request.
     - [ ] Merge the release pull request.
-    - [ ] Install the release tools: `pip install build twine`
-    - [ ] Build the package: `python -m build`
-    - [ ] Push the package to PyPI with `twine upload dist/*`
-    - [ ] Tag the release, with `git tag -a *.*.* -m 'version *.*.*'; git push --tags`.
-    - [ ] Deploy the documentation with `mkdocs gh-deploy`.
+    - [ ] Tag the release, either with `git tag -a *.*.* -m 'version *.*.*'; git push --tags` or in GitHub.
+    - [ ] Wait for the release workflow to run. It will build the distribution, upload it to Test PyPI, PyPI and create the GitHub release.
     - [ ] Make a release announcement on the [discussion group](https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework).
-    - [ ] Make a release announcement on twitter.
+    - [ ] Make a release announcement on social media (Mastodon, etc...) and on the [Django forum](https://forum.djangoproject.com/).
     - [ ] Close the milestone on GitHub.
 
     To modify this process for future releases make a pull request to the [project management](https://www.django-rest-framework.org/topics/project-management/) documentation.
