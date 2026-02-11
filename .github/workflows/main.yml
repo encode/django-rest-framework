@@ -84,7 +84,6 @@ jobs:
     - run: if [ $WAIT_TIME == 5 ]; then echo cannot start mkdocs server on http://localhost:8000; exit 1; fi
     
     - name: Check links
-      continue-on-error: true
       run: pylinkvalidate.py -P http://localhost:8000/
   
     - run: echo "Done"
