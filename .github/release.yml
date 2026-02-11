@@ -21,6 +21,9 @@ changelog:
     - title: Translations
       labels:
         - Translations
+    - title: Packaging
+      labels:
+        - Packaging
     - title: Other changes
       labels:
         - '*'
