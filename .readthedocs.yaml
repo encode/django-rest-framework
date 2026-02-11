@@ -11,6 +11,7 @@ build:
     python: "3.13"
   jobs:
     install:
+      - pip install --upgrade pip
       - pip install -e . --group docs
 
 # Build documentation with Mkdocs
