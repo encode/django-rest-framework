@@ -7,6 +7,16 @@
 .typ, .atn, .dec, .var { color: teal; }
 .pln { color: #48484c; }
 
+[data-md-color-scheme="slate"]
+{
+  .com { color: #687272; }
+  .lit { color: #2481c7; }
+  .str, .atv { color: #e02642; }
+  .kwd, .prettyprint .tag { color: #5b7acb; }
+  .typ, .atn, .dec, .var { color: #05abab; }
+  .pln { color: #d3d3dc; }
+}
+
 .prettyprint {
   padding: 8px;
   background-color: #f7f7f9;

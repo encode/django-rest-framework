@@ -5,13 +5,61 @@ site_description: Django REST framework - Web APIs for Django
 repo_url: https://github.com/encode/django-rest-framework
 
 theme:
-    name: mkdocs
-    custom_dir: docs_theme
+    name: material
+    custom_dir: docs/theme
+    favicon: theme/img/favicon.ico
+    logo: theme/img/logo.png
+    palette:
+      - media: "(prefers-color-scheme)"
+        primary: custom
+        accent: custom
+        toggle:
+          icon: material/brightness-auto
+          name: "Switch to light mode"
+      - media: "(prefers-color-scheme: light)"
+        scheme: default
+        primary: custom
+        accent: custom
+        toggle:
+          icon: material/brightness-7
+          name: "Switch to dark mode"
+      - media: "(prefers-color-scheme: dark)"
+        scheme: slate
+        primary: custom
+        accent: custom
+        toggle:
+          icon: material/brightness-4
+          name: "Switch to system preference"
+    features:
+    - content.tabs.link
+    - content.code.annotate
+    - content.code.copy
+    - navigation.tabs
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.instant.progress
+    - navigation.path
+    - navigation.sections
+    - navigation.top
+    - navigation.tracking
+    - search.suggest
+    - toc.follow
+
+extra_css:
+  - theme/stylesheets/extra.css
+  - theme/stylesheets/prettify.css
+extra_javascript:
+  - theme/js/prettify-1.0.js
 
 markdown_extensions:
  - admonition
  - toc:
-    anchorlink: True
+     permalink: true
+ - pymdownx.highlight:
+     pygments_lang_class: true
+ - pymdownx.inlinehilite
+ - pymdownx.snippets
+ - pymdownx.superfences
 
 nav:
  - Home: 'index.md'
@@ -86,9 +134,3 @@ nav:
      - 'Kickstarter Announcement': 'community/kickstarter-announcement.md'
      - 'Mozilla Grant': 'community/mozilla-grant.md'
      - 'Jobs': 'community/jobs.md'
-
-extra_css:
-  - css/copy-button.css
-
-extra_javascript:
-  - js/copy-button.js
