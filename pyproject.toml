@@ -44,9 +44,7 @@ dev = [
   { include-group = "test" },
 ]
 test = [
-  # temporary pin of attrs
-  "attrs==22.1.0",
-  "importlib-metadata<5.0",
+  "importlib-metadata<9.0",
 
   # Pytest for running the tests.
   "pytest==9.*",
@@ -64,16 +62,18 @@ docs = [
 ]
 optional = [
   # Optional packages which may be used with REST framework.
-  "coreapi==2.3.1",
+  "coreapi==2.3.3",
   "coreschema==0.0.4",
   "django-filter",
-  "django-guardian>=2.4.0,<2.5",
+  "django-guardian>=2.4.0,<3.3",
   "inflection==0.5.1",
   "legacy-cgi; python_version>='3.13'",
   "markdown>=3.3.7",
   "psycopg[binary]>=3.1.8",
-  "pygments~=2.17.0",
-  "pyyaml>=5.3.1,<5.4",
+  "pygments>=2.17,<2.20",
+  "pyyaml>=5.3.1,<6.1",
+  # setuptools is needed for coreapi (imports pkg_resources)
+  "setuptools<82",
 ]
 django42 = [ "django>=4.2,<5.0" ]
 django50 = [ "django>=5.0,<5.1" ]
