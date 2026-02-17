@@ -10,7 +10,6 @@ from django.test import SimpleTestCase, TestCase
 from django.test.utils import override_settings
 
 from rest_framework import filters, generics, serializers
-from rest_framework.compat import coreschema
 from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIRequestFactory
 
@@ -38,24 +37,11 @@ class SearchSplitTests(SimpleTestCase):
 
 class BaseFilterTests(TestCase):
     def setUp(self):
-        self.original_coreapi = filters.coreapi
-        filters.coreapi = True  # mock it, because not None value needed
         self.filter_backend = filters.BaseFilterBackend()
-
-    def tearDown(self):
-        filters.coreapi = self.original_coreapi
 
     def test_filter_queryset_raises_error(self):
         with pytest.raises(NotImplementedError):
             self.filter_backend.filter_queryset(None, None, None)
-
-    @pytest.mark.skipif(not coreschema, reason='coreschema is not installed')
-    def test_get_schema_fields_checks_for_coreapi(self):
-        filters.coreapi = None
-        with pytest.raises(AssertionError):
-            self.filter_backend.get_schema_fields({})
-        filters.coreapi = True
-        assert self.filter_backend.get_schema_fields({}) == []
 
 
 class SearchFilterModel(models.Model):
