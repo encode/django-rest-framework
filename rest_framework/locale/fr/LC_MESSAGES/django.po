@@ -9,13 +9,14 @@
 # Stéphane Raimbault <stephane.raimbault@gmail.com>, 2019
 # Xavier Ordoquy <xordoquy@linovia.com>, 2015-2016
 # Sébastien Corbin <seb.corbin@gmail.com>, 2025
+# Mathieu Dupuy <deronnax@gmail.com>, 2026
 msgid ""
 msgstr ""
 "Project-Id-Version: Django REST framework\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-10-13 21:45+0200\n"
 "PO-Revision-Date: 2025-08-17 20:30+0200\n"
-"Last-Translator: Sébastien Corbin <seb.corbin@gmail.com>\n"
+"Last-Translator: Mathieu Dupuy <deronnax@gmail.com>\n"
 "Language-Team: French (http://www.transifex.com/django-rest-framework-1/django-rest-framework/language/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -105,7 +106,7 @@ msgstr "Une erreur du serveur est survenue."
 
 #: exceptions.py:142
 msgid "Invalid input."
-msgstr "Entrée invalide."
+msgstr "Saisie invalide."
 
 #: exceptions.py:161
 msgid "Malformed request."
@@ -125,7 +126,7 @@ msgstr "Vous n'avez pas la permission d'effectuer cette action."
 
 #: exceptions.py:185
 msgid "Not found."
-msgstr "Pas trouvé."
+msgstr "Non trouvé."
 
 #: exceptions.py:191
 #, python-brace-format
@@ -344,12 +345,12 @@ msgstr "Cette liste ne peut pas être vide."
 #: fields.py:1605
 #, python-brace-format
 msgid "Ensure this field has at least {min_length} elements."
-msgstr "Vérifier que ce champ a au moins {min_length} éléments."
+msgstr "Assurez-vous que ce champ a au moins {min_length} éléments."
 
 #: fields.py:1606
 #, python-brace-format
 msgid "Ensure this field has no more than {max_length} elements."
-msgstr "Vérifier que ce champ n'a pas plus de {max_length} éléments."
+msgstr "Assurez-vous que ce champ n'a pas plus de {max_length} éléments."
 
 #: fields.py:1682
 #, python-brace-format
