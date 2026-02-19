@@ -1,7 +1,6 @@
 *.pyc
 *.db
 *~
-.*
 *.py.bak
 
 
@@ -14,6 +13,8 @@
 /env/
 MANIFEST
 coverage.*
+.coverage
+.cache/
 
 !.github
 !.gitignore
