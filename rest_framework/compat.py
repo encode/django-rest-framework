@@ -23,24 +23,11 @@ except ImportError:
     postgres_fields = None
 
 
-# coreapi is required for CoreAPI schema generation
-try:
-    import coreapi
-except ImportError:
-    coreapi = None
-
-# uritemplate is required for OpenAPI and CoreAPI schema generation
+# uritemplate is required for OpenAPI schema generation
 try:
     import uritemplate
 except ImportError:
     uritemplate = None
-
-
-# coreschema is optional
-try:
-    import coreschema
-except ImportError:
-    coreschema = None
 
 
 # pyyaml is optional
