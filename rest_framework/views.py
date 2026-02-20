@@ -108,6 +108,7 @@ class APIView(View):
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
     parser_classes = api_settings.DEFAULT_PARSER_CLASSES
     authentication_classes = api_settings.DEFAULT_AUTHENTICATION_CLASSES
+    www_authenticate_behavior = api_settings.WWW_AUTHENTICATE_BEHAVIOR
     throttle_classes = api_settings.DEFAULT_THROTTLE_CLASSES
     permission_classes = api_settings.DEFAULT_PERMISSION_CLASSES
     content_negotiation_class = api_settings.DEFAULT_CONTENT_NEGOTIATION_CLASS
@@ -192,8 +193,13 @@ class APIView(View):
         header to use for 401 responses, if any.
         """
         authenticators = self.get_authenticators()
+        www_authenticate_behavior = self.www_authenticate_behavior
         if authenticators:
-            return authenticators[0].authenticate_header(request)
+            if www_authenticate_behavior == 'first':
+                return authenticators[0].authenticate_header(request)
+            elif www_authenticate_behavior == 'all':
+                challenges = (a.authenticate_header(request) for a in authenticators)
+                return ', '.join((c for c in challenges if c is not None))
 
     def get_parser_context(self, http_request):
         """
