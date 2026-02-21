@@ -529,7 +529,11 @@ class UserViewSet(viewsets.ViewSet):
 <pre><code>user_list = UserViewSet.as_view({'get': 'list'})
 user_detail = UserViewSet.as_view({'get': 'retrieve'})
 </code></pre>
-<p>Typically we wouldn't do this, but would instead register the viewset with a router, and allow the urlconf to be automatically generated.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Do not use <code>.as_view()</code> with <code>@action</code> methods. It bypasses router setup and may ignore action settings like <code>permission_classes</code>. Use <code>DefaultRouter</code> for actions.</p>
+</div>
+<p>Typically, we wouldn't do this, but would instead register the viewset with a router, and allow the urlconf to be automatically generated.</p>
 <pre><code>from myapp.views import UserViewSet
 from rest_framework.routers import DefaultRouter
 
@@ -539,7 +543,7 @@ urlpatterns = router.urls
 </code></pre>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>Do not use <code>.as_view()</code> with <code>@action</code> methods. It bypasses router setup and may ignore action settings like <code>permission_classes</code>. Use <code>DefaultRouter</code> for actions.</p>
+<p>When registering viewsets, do not include a trailing slash in the prefix (e.g., use <code>r'users'</code>, not <code>r'users/'</code>). Unlike standard Django URL patterns, DRF routers append slashes automatically based on your trailing slash configuration.</p>
 </div>
 <p>Rather than writing your own viewsets, you'll often want to use the existing base classes that provide a default set of behavior.  For example:</p>
 <pre><code>class UserViewSet(viewsets.ModelViewSet):
