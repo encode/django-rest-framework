@@ -508,7 +508,12 @@ class Field:
                 raise SkipField()
             if self.required:
                 self.fail('required')
-            return (True, self.get_default())
+            try:
+                return (True, self.get_default())
+            except SkipField:
+                if self.allow_null:
+                    return (True, None)
+                raise
 
         if data is None:
             if not self.allow_null:

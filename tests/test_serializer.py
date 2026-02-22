@@ -609,6 +609,95 @@ class TestDefaultInclusions:
         assert serializer.errors == {}
 
 
+class TestAllowNullNotRequiredInclusions:
+    """
+    Test that allow_null=True, required=False fields are included in
+    validated_data as None when partial=False. Refs #9501.
+    """
+
+    def test_allow_null_not_required_missing_field_included_on_create(self):
+        class ExampleSerializer(serializers.Serializer):
+            name = serializers.CharField()
+            nullable_field = serializers.CharField(
+                required=False, allow_null=True
+            )
+
+        serializer = ExampleSerializer(data={'name': 'test'})
+        assert serializer.is_valid()
+        assert serializer.validated_data == {
+            'name': 'test',
+            'nullable_field': None,
+        }
+
+    def test_allow_null_not_required_missing_field_included_on_update(self):
+        class ExampleSerializer(serializers.Serializer):
+            name = serializers.CharField()
+            nullable_field = serializers.CharField(
+                required=False, allow_null=True
+            )
+
+        instance = MockObject(name='old', nullable_field='old_value')
+        serializer = ExampleSerializer(instance, data={'name': 'test'})
+        assert serializer.is_valid()
+        assert serializer.validated_data == {
+            'name': 'test',
+            'nullable_field': None,
+        }
+
+    def test_allow_null_not_required_missing_field_skipped_on_partial_update(self):
+        class ExampleSerializer(serializers.Serializer):
+            name = serializers.CharField()
+            nullable_field = serializers.CharField(
+                required=False, allow_null=True
+            )
+
+        instance = MockObject(name='old', nullable_field='old_value')
+        serializer = ExampleSerializer(
+            instance, data={'name': 'test'}, partial=True
+        )
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'name': 'test'}
+
+    def test_allow_null_not_required_explicit_null_still_works(self):
+        class ExampleSerializer(serializers.Serializer):
+            name = serializers.CharField()
+            nullable_field = serializers.CharField(
+                required=False, allow_null=True
+            )
+
+        serializer = ExampleSerializer(
+            data={'name': 'test', 'nullable_field': None}
+        )
+        assert serializer.is_valid()
+        assert serializer.validated_data == {
+            'name': 'test',
+            'nullable_field': None,
+        }
+
+    def test_allow_null_not_required_with_explicit_default(self):
+        class ExampleSerializer(serializers.Serializer):
+            name = serializers.CharField()
+            nullable_field = serializers.CharField(
+                required=False, allow_null=True, default='fallback'
+            )
+
+        serializer = ExampleSerializer(data={'name': 'test'})
+        assert serializer.is_valid()
+        assert serializer.validated_data == {
+            'name': 'test',
+            'nullable_field': 'fallback',
+        }
+
+    def test_not_required_without_allow_null_still_skipped(self):
+        class ExampleSerializer(serializers.Serializer):
+            name = serializers.CharField()
+            optional_field = serializers.CharField(required=False)
+
+        serializer = ExampleSerializer(data={'name': 'test'})
+        assert serializer.is_valid()
+        assert serializer.validated_data == {'name': 'test'}
+
+
 class TestSerializerValidationWithCompiledRegexField:
     def setup_method(self):
         class ExampleSerializer(serializers.Serializer):
