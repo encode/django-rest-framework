@@ -552,6 +552,26 @@ class TestDefaultOutput:
         assert Serializer({'nested': {'a': '3', 'b': {}}}).data == {'nested': {'a': '3', 'c': '2'}}
         assert Serializer({'nested': {'a': '3', 'b': {'c': '4'}}}).data == {'nested': {'a': '3', 'c': '4'}}
 
+    def test_nested_serializer_not_required_with_querydict(self):
+        """
+        When a nested serializer is not required and the QueryDict does
+        not contain any matching prefixed keys, the nested serializer
+        should be omitted from validated_data. Regression test for #6234.
+        """
+        from django.http import QueryDict
+
+        class NestedSerializer(serializers.Serializer):
+            x = serializers.CharField()
+
+        class ParentSerializer(serializers.Serializer):
+            name = serializers.CharField()
+            nested = NestedSerializer(required=False)
+
+        serializer = ParentSerializer(data=QueryDict("name=test"))
+        assert serializer.is_valid(), serializer.errors
+        assert serializer.validated_data == {"name": "test"}
+        assert "nested" not in serializer.validated_data
+
     def test_default_for_allow_null(self):
         """
         Without an explicit default, allow_null implies default=None when serializing. #5518 #5708

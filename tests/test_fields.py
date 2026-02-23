@@ -2505,7 +2505,7 @@ class TestDictField(FieldValues):
             data = serializers.DictField(child=serializers.CharField())
 
         serializer = TestSerializer(data=QueryDict('data.a=1&data.b=2'))
-        assert serializer.is_valid()
+        assert serializer.is_valid(), serializer.errors
         assert serializer.validated_data == {'data': {'a': '1', 'b': '2'}}
 
     def test_querydict_dict_input_no_values_uses_default(self):
@@ -2518,7 +2518,7 @@ class TestDictField(FieldValues):
             data = serializers.DictField(default=lambda: {'x': 'y'})
 
         serializer = TestSerializer(data=QueryDict('a=1'))
-        assert serializer.is_valid()
+        assert serializer.is_valid(), serializer.errors
         assert serializer.validated_data == {'a': 1, 'data': {'x': 'y'}}
 
     def test_querydict_dict_input_no_values_no_default_and_not_required(self):
@@ -2531,7 +2531,7 @@ class TestDictField(FieldValues):
             data = serializers.DictField(required=False)
 
         serializer = TestSerializer(data=QueryDict(''))
-        assert serializer.is_valid()
+        assert serializer.is_valid(), serializer.errors
         assert serializer.validated_data == {}
 
     def test_querydict_dict_input_no_values_required(self):
