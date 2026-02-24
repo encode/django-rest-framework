@@ -641,7 +641,9 @@ class ListSerializer(BaseSerializer):
             child.instance = child_instance
         elif hasattr(self, '_instance_map') and isinstance(data, dict):
             # Automated instance matching (#8926)
-            data_pk = data.get('id') or data.get('pk')
+            data_pk = data.get('id')
+            if data_pk is None:
+                data_pk = data.get('pk')
             if data_pk is not None:
                 child.instance = self._instance_map.get(str(data_pk))
             else:
