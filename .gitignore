@@ -14,7 +14,7 @@
 /env/
 MANIFEST
 coverage.*
-venv/
+
 !.github
 !.gitignore
 !.pre-commit-config.yaml
