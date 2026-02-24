@@ -679,12 +679,16 @@ class ListSerializer(BaseSerializer):
             data = html.parse_html_list(data, default=[])
 
         if not isinstance(data, list):
-            message = self.error_messages['not_a_list'].format(
-                input_type=type(data).__name__
-            )
             raise ValidationError({
-                api_settings.NON_FIELD_ERRORS_KEY: [message]
-            }, code='not_a_list')
+                api_settings.NON_FIELD_ERRORS_KEY: [
+                    ErrorDetail(
+                        self.error_messages['not_a_list'].format(
+                            input_type=type(data).__name__
+                        ),
+                        code='not_a_list'
+                    )
+                ]
+            })
 
         if not self.allow_empty and len(data) == 0:
             message = self.error_messages['empty']
@@ -712,7 +716,7 @@ class ListSerializer(BaseSerializer):
         if self.instance is not None:
             if isinstance(self.instance, Mapping):
                 instance_map = {str(k): v for k, v in self.instance.items()}
-            elif hasattr(self.instance, '__iter__') and not isinstance(self.instance, (str, bytes)):
+            elif isinstance(self.instance, (list, tuple, models.query.QuerySet)):
                 for obj in self.instance:
                     pk = getattr(obj, 'pk', getattr(obj, 'id', None))
                     if pk is not None:
@@ -772,6 +776,13 @@ class ListSerializer(BaseSerializer):
         """
         Save and return a list of object instances.
         """
+        assert hasattr(self, '_errors'), (
+            'You must call `.is_valid()` before calling `.save()`.'
+        )
+        assert not self.errors, (
+            'You cannot call `.save()` on a serializer with invalid data.'
+        )
+
         # Guard against incorrect use of `serializer.save(commit=False)`
         assert 'commit' not in kwargs, (
             "'commit' is not a valid keyword argument to the 'save()' method. "
@@ -780,6 +791,14 @@ class ListSerializer(BaseSerializer):
             "You can also pass additional keyword arguments to 'save()' if you "
             "need to set extra attributes on the saved model instance. "
             "For example: 'serializer.save(owner=request.user)'.'"
+        )
+        assert not hasattr(self, '_data'), (
+            "You cannot call `.save()` after accessing `serializer.data`."
+            "If you need to access data before committing to the database then "
+            "inspect 'serializer.validated_data' instead. "
+        )
+        assert hasattr(self, '_validated_data'), (
+            'You must call `.is_valid()` before calling `.save()`.'
         )
 
         validated_data = [
