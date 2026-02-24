@@ -102,7 +102,7 @@ class TestMiddleware(APITestCase):
         key = 'abcd1234'
         Token.objects.create(key=key, user=user)
 
-        self.client.get('/auth', HTTP_AUTHORIZATION='Token %s' % key)
+        self.client.get('/auth', headers={"authorization": 'Token %s' % key})
 
     @override_settings(MIDDLEWARE=('tests.test_middleware.RequestPOSTMiddleware',))
     def test_middleware_can_access_request_post_when_processing_response(self):
