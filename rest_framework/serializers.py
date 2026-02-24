@@ -700,18 +700,17 @@ class ListSerializer(BaseSerializer):
             }, code='min_length')
 
         ret = []
-        errors = []
+        errors = {}
 
-        for item in data:
+        for index, item in enumerate(data):
             try:
                 validated = self.run_child_validation(item)
             except ValidationError as exc:
-                errors.append(exc.detail)
+                errors[index] = exc.detail
             else:
                 ret.append(validated)
-                errors.append({})
 
-        if any(errors):
+        if errors:
             raise ValidationError(errors)
 
         return ret

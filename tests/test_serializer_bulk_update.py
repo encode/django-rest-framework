@@ -65,11 +65,9 @@ class BulkCreateSerializerTests(TestCase):
                 'author': 'Haruki Murakami'
             }
         ]
-        expected_errors = [
-            {},
-            {},
-            {'id': ['A valid integer is required.']}
-        ]
+        expected_errors = {
+            2: {'id': ['A valid integer is required.']}
+        }
 
         serializer = self.BookSerializer(data=data, many=True)
         assert serializer.is_valid() is False
@@ -85,11 +83,7 @@ class BulkCreateSerializerTests(TestCase):
         assert serializer.is_valid() is False
 
         message = 'Invalid data. Expected a dictionary, but got str.'
-        expected_errors = [
-            {'non_field_errors': [message]},
-            {'non_field_errors': [message]},
-            {'non_field_errors': [message]}
-        ]
+        expected_errors = {idx: {'non_field_errors': [message]} for idx in range(len(data))}
 
         assert serializer.errors == expected_errors
 

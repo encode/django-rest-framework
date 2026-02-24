@@ -775,3 +775,80 @@ class TestToRepresentationManagerCheck:
         queryset = NullableOneToOneSource.objects.all()
         serializer = self.serializer(queryset, many=True)
         assert serializer.data
+
+
+class TestListSerializerDictErrorBehavior:
+    """
+    Tests dict-based error structure for ListSerializer, and consistency with ListField.
+
+    https://github.com/encode/django-rest-framework/issues/7279
+    """
+
+    def setup_method(self):
+        class SampleSerializer(serializers.Serializer):
+            num = serializers.BooleanField()
+
+        class ChildSerializer(serializers.Serializer):
+            num = serializers.BooleanField()
+
+        class WrapperSerializer(serializers.Serializer):
+            list_serializer = ChildSerializer(many=True)
+            list_field = serializers.ListField(
+                child=serializers.DictField(allow_empty=False)
+            )
+
+        self.SampleSerializer = SampleSerializer
+        self.WrapperSerializer = WrapperSerializer
+
+    def test_listserializer_dict_error_format(self):
+
+        data = [
+            {"num": "1"},
+            {"num": "x"},
+            {"num": "0"},
+            {"num": "hello"},
+        ]
+
+        serializer = self.SampleSerializer(data=data, many=True)
+        serializer.is_valid()
+
+        errors = serializer.errors
+        assert isinstance(errors, dict)
+        assert set(errors.keys()) == {1, 3}
+
+        assert errors[1] == {"num": [ErrorDetail(string="Must be a valid boolean.", code="invalid")]}
+        assert errors[3] == {"num": [ErrorDetail(string="Must be a valid boolean.", code="invalid")]}
+
+    def test_listserializer_and_listfield_consistency(self):
+
+        data = {
+            "list_serializer": [
+                {"num": "1"},
+                {"num": "wrong"},
+                {"num": "0"},
+                {"num": ""},
+            ],
+            "list_field": [
+                {"ok": "x"},
+                {},
+                {"valid": "y"},
+                {},
+            ],
+        }
+
+        serializer = self.WrapperSerializer(data=data)
+        serializer.is_valid()
+
+        errors = serializer.errors
+
+        assert isinstance(errors["list_serializer"], dict)
+        assert isinstance(errors["list_field"], dict)
+
+        assert set(errors["list_serializer"].keys()) == {1, 3}
+        assert set(errors["list_field"].keys()) == {1, 3}
+
+        assert errors["list_serializer"][1] == {"num": [ErrorDetail(string="Must be a valid boolean.", code="invalid")]}
+        assert errors["list_serializer"][3] == {"num": [ErrorDetail(string="Must be a valid boolean.", code="invalid")]}
+
+        assert errors["list_field"][1] == [ErrorDetail(string='This dictionary may not be empty.', code='empty')]
+        assert errors["list_field"][3] == [ErrorDetail(string='This dictionary may not be empty.', code='empty')]
