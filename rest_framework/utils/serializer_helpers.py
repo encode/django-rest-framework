@@ -130,14 +130,7 @@ class NestedBoundField(BoundField):
     def __getitem__(self, key):
         field = self.fields[key]
         value = self.value.get(key) if self.value else None
-
-        if isinstance(self.errors, dict):
-            error = self.errors.get(key)
-        elif isinstance(self.errors, list):
-            error = {}  # normalize list to empty dict for nested children
-        else:
-            error = None
-
+        error = self.errors.get(key) if isinstance(self.errors, dict) else None
         if hasattr(field, 'fields'):
             return NestedBoundField(field, value, error, prefix=self.name + '.')
         elif getattr(field, '_is_jsonfield', False):
