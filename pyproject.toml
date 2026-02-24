@@ -44,13 +44,11 @@ dev = [
   { include-group = "test" },
 ]
 test = [
-  # temporary pin of attrs
-  "attrs==22.1.0",
-  "importlib-metadata<5.0",
+  "importlib-metadata<9.0",
 
   # Pytest for running the tests.
-  "pytest>=7.0.1,<8",
-  "pytest-cov>=4.0.0,<5.0",
+  "pytest==9.*",
+  "pytest-cov==7.*",
   "pytest-django>=4.5.2,<5",
 
   # Remove when dropping support for Django<5.0
@@ -58,22 +56,24 @@ test = [
 ]
 docs = [
   # MkDocs to build our documentation.
-  "mkdocs==1.6.0",
+  "mkdocs==1.6.1",
   # pylinkvalidator to check for broken links in documentation.
   "pylinkvalidator==0.3",
 ]
 optional = [
   # Optional packages which may be used with REST framework.
-  "coreapi==2.3.1",
+  "coreapi==2.3.3",
   "coreschema==0.0.4",
   "django-filter",
-  "django-guardian>=2.4.0,<2.5",
+  "django-guardian>=2.4.0,<3.3",
   "inflection==0.5.1",
   "legacy-cgi; python_version>='3.13'",
   "markdown>=3.3.7",
   "psycopg[binary]>=3.1.8",
-  "pygments~=2.17.0",
-  "pyyaml>=5.3.1,<5.4",
+  "pygments>=2.17,<2.20",
+  "pyyaml>=5.3.1,<6.1",
+  # setuptools is needed for coreapi (imports pkg_resources)
+  "setuptools<82",
 ]
 django42 = [ "django>=4.2,<5.0" ]
 django50 = [ "django>=5.0,<5.1" ]
@@ -118,7 +118,10 @@ keep_full_version = true
 [tool.pytest.ini_options]
 addopts = "--tb=short --strict-markers -ra"
 testpaths = [ "tests" ]
-filterwarnings = [ "ignore:CoreAPI compatibility is deprecated*:rest_framework.RemovedInDRF318Warning" ]
+filterwarnings = [
+  "ignore:CoreAPI compatibility is deprecated*:rest_framework.RemovedInDRF318Warning",
+  "ignore:'cgi' is deprecated:DeprecationWarning",
+]
 
 [tool.coverage.run]
 # NOTE: source is ignored with pytest-cov (but uses the same).
