@@ -1757,7 +1757,9 @@ class DictField(Field):
         Dicts of native values <- Dicts of primitive datatypes.
         """
         if html.is_html_input(data):
-            data = html.parse_html_dict(data, default=data)
+            data = html.parse_html_dict(data, default={}) or {
+                k: v for k, v in data.items()
+            }
         if not isinstance(data, dict):
             self.fail('not_a_dict', input_type=type(data).__name__)
         if not self.allow_empty and len(data) == 0:
