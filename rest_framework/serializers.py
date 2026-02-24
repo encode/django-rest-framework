@@ -720,7 +720,10 @@ class ListSerializer(BaseSerializer):
                 for obj in self.instance:
                     pk = getattr(obj, 'pk', getattr(obj, 'id', None))
                     if pk is not None:
-                        instance_map[str(pk)] = obj
+                        key = str(pk)
+                        # If duplicate keys are present, keep the last value,
+                        # matching standard mapping assignment behavior.
+                        instance_map[key] = obj
 
         self._instance_map = instance_map
 
@@ -739,7 +742,8 @@ class ListSerializer(BaseSerializer):
 
             return ret
         finally:
-            delattr(self, '_instance_map')
+            if hasattr(self, '_instance_map'):
+                delattr(self, '_instance_map')
 
         return ret
 
