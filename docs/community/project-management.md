@@ -81,14 +81,6 @@ When pushing the release to PyPI ensure that your environment has been installed
 
 ---
 
-## Project requirements
-
-All our test requirements are pinned to exact versions, in order to ensure that our test runs are reproducible. We maintain the requirements in the `requirements` directory. The requirements files are referenced from the `tox.ini` configuration file, ensuring we have a single source of truth for package versions used in testing.
-
-Package upgrades should generally be treated as isolated pull requests. You can check if there are any packages available at a newer version, by using the `pip list --outdated`.
-
----
-
 ## Project ownership
 
 The PyPI package is owned by `@tomchristie`. As a backup `@j4mie` also has ownership of the package.

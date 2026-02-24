@@ -89,7 +89,7 @@ Note that when a request may successfully authenticate, but still be denied perm
 
 ## Django 5.1+ `LoginRequiredMiddleware`
 
-If you're running Django 5.1+ and use the [`LoginRequiredMiddleware`][login-required-middleware], please note that all views from DRF are opted-out of this middleware.  This is because the authentication in DRF is based authentication and permissions classes, which may be determined after the middleware has been applied.  Additionally, when the request is not authenticated, the middleware redirects the user to the login page, which is not suitable for API requests, where it's preferable to return a 401 status code.
+If you're running Django 5.1+ and use the [`LoginRequiredMiddleware`][login-required-middleware], please note that all views from DRF are opted-out of this middleware.  This is because the authentication in DRF is based on authentication and permissions classes, which may be determined after the middleware has been applied.  Additionally, when the request is not authenticated, the middleware redirects the user to the login page, which is not suitable for API requests, where it's preferable to return a 401 status code.
 
 REST framework offers an equivalent mechanism for DRF views via the global settings, `DEFAULT_AUTHENTICATION_CLASSES` and `DEFAULT_PERMISSION_CLASSES`.  They should be changed accordingly if you need to enforce that API requests are logged in.
 

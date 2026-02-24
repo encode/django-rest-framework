@@ -31,12 +31,56 @@ classifiers = [
   "Topic :: Internet :: WWW/HTTP",
 ]
 dynamic = [ "version" ]
-
 dependencies = [ "django>=4.2" ]
 urls.Changelog = "https://www.django-rest-framework.org/community/release-notes/"
 urls.Funding = "https://fund.django-rest-framework.org/topics/funding/"
 urls.Homepage = "https://www.django-rest-framework.org"
 urls.Source = "https://github.com/encode/django-rest-framework"
+
+[dependency-groups]
+dev = [
+  { include-group = "docs" },
+  { include-group = "optional" },
+  { include-group = "test" },
+]
+test = [
+  "importlib-metadata<9.0",
+
+  # Pytest for running the tests.
+  "pytest==9.*",
+  "pytest-cov==7.*",
+  "pytest-django>=4.5.2,<5",
+
+  # Remove when dropping support for Django<5.0
+  "pytz",
+]
+docs = [
+  # MkDocs to build our documentation.
+  "mkdocs==1.6.1",
+  # pylinkvalidator to check for broken links in documentation.
+  "pylinkvalidator==0.3",
+]
+optional = [
+  # Optional packages which may be used with REST framework.
+  "coreapi==2.3.3",
+  "coreschema==0.0.4",
+  "django-filter",
+  "django-guardian>=2.4.0,<3.3",
+  "inflection==0.5.1",
+  "legacy-cgi; python_version>='3.13'",
+  "markdown>=3.3.7",
+  "psycopg[binary]>=3.1.8",
+  "pygments>=2.17,<2.20",
+  "pyyaml>=5.3.1,<6.1",
+  # setuptools is needed for coreapi (imports pkg_resources)
+  "setuptools<82",
+]
+django42 = [ "django>=4.2,<5.0" ]
+django50 = [ "django>=5.0,<5.1" ]
+django51 = [ "django>=5.1,<5.2" ]
+django52 = [ "django>=5.2,<6.0" ]
+django60 = [ "django>=6.0,<6.1" ]
+djangomain = [ "django @ https://github.com/django/django/archive/main.tar.gz" ]
 
 [tool.setuptools]
 
@@ -63,16 +107,21 @@ known_first_party = [ "rest_framework", "tests" ]
 
 [tool.codespell]
 # Ref: https://github.com/codespell-project/codespell#using-a-config-file
-skip = "*/kickstarter-announcement.md,*.js,*.map,*.po"
-ignore-words-list = "fo,malcom,ser"
+skip = "*/kickstarter-announcement.md,*.js,*.map,*.po,*.css,locale"
+ignore-words = "codespell-ignore-words.txt"
+builtin = "clear,rare,code,names,en-GB_to_en-US"
 
 [tool.pyproject-fmt]
 max_supported_python = "3.14"
+keep_full_version = true
 
 [tool.pytest.ini_options]
 addopts = "--tb=short --strict-markers -ra"
 testpaths = [ "tests" ]
-filterwarnings = [ "ignore:CoreAPI compatibility is deprecated*:rest_framework.RemovedInDRF318Warning" ]
+filterwarnings = [
+  "ignore:CoreAPI compatibility is deprecated*:rest_framework.RemovedInDRF318Warning",
+  "ignore:'cgi' is deprecated:DeprecationWarning",
+]
 
 [tool.coverage.run]
 # NOTE: source is ignored with pytest-cov (but uses the same).
