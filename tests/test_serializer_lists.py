@@ -426,6 +426,28 @@ class TestSerializerPartialUsage:
         assert serializer.validated_data == {}
         assert serializer.errors == {}
 
+    def test_partial_listfield_with_indexed_keys(self):
+        """
+        Test that ListField respects ordered sequence in form data with partial updates.
+        Regression test for GitHub issue where indexed keys like field[0], field[1]
+        were not being parsed in partial updates.
+        """
+        class CommunitySerializer(serializers.Serializer):
+            colors = serializers.ListField(
+                allow_null=True,
+                child=serializers.CharField(label='Colors', max_length=7),
+                required=False
+            )
+        # Simulate form data with indexed keys
+        data = MultiValueDict({
+            'colors[0]': ['#ffffff'],
+            'colors[1]': ['#000000']
+        })
+        serializer = CommunitySerializer(data=data, partial=True)
+        assert serializer.is_valid(), f"Expected valid but got errors: {serializer.errors}"
+        assert 'colors' in serializer.validated_data
+        assert serializer.validated_data['colors'] == ['#ffffff', '#000000']
+
     def test_allow_empty_true(self):
         class ListSerializer(serializers.Serializer):
             update_field = serializers.IntegerField()
