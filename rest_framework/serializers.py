@@ -829,9 +829,6 @@ class ListSerializer(BaseSerializer):
             assert self.instance is not None, (
                 '`create()` did not return an object instance.'
             )
-            assert self.instance is not None, (
-                '`create()` did not return an object instance.'
-            )
 
         return self.instance
 
