@@ -757,8 +757,6 @@ class ListSerializer(BaseSerializer):
             if hasattr(self, '_instance_map'):
                 delattr(self, '_instance_map')
 
-        return ret
-
     def to_representation(self, data):
         """
         List of object instances -> List of dicts of primitive datatypes.
