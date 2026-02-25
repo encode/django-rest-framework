@@ -11,6 +11,7 @@ from urllib import parse
 
 from django.core.paginator import InvalidPage
 from django.core.paginator import Paginator as DjangoPaginator
+from django.db.models import OrderBy
 from django.template import loader
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
@@ -615,7 +616,7 @@ class CursorPagination(BasePagination):
             return None
 
         self.base_url = request.build_absolute_uri()
-        self.ordering = self.get_ordering(request, queryset, view)
+        self.ordering = self.get_ordering(queryset)
 
         self.cursor = self.decode_cursor(request)
         if self.cursor is None:
@@ -624,10 +625,11 @@ class CursorPagination(BasePagination):
             (offset, reverse, current_position) = self.cursor
 
         # Cursor pagination always enforces an ordering.
-        if reverse:
-            queryset = queryset.order_by(*_reverse_ordering(self.ordering))
-        else:
-            queryset = queryset.order_by(*self.ordering)
+        if not queryset.ordered:
+            if reverse:
+                queryset = queryset.order_by(*_reverse_ordering(self.ordering))
+            else:
+                queryset = queryset.order_by(*self.ordering)
 
         # If we have a cursor with a fixed position then filter by that.
         if current_position is not None:
@@ -801,27 +803,37 @@ class CursorPagination(BasePagination):
         cursor = Cursor(offset=offset, reverse=True, position=position)
         return self.encode_cursor(cursor)
 
-    def get_ordering(self, request, queryset, view):
+    def get_ordering_from_queryset(self, queryset):
+        if not queryset.ordered:
+            return False
+
+        qs_ordering = queryset.query.order_by
+
+        # Fallback to model's Meta ordering if no order_by is given
+        if not qs_ordering:
+            qs_ordering = queryset.query.get_meta().ordering
+
+        ordering = []
+        for expr in qs_ordering:
+            if isinstance(expr, str):
+                ordering.append(expr)
+
+            elif isinstance(expr, OrderBy):
+                field_name = expr.expression.name
+                descending = expr.descending
+                ordering.append(f"{'-' if descending else ''}{field_name}")
+
+        return ordering
+
+    def get_ordering(self, queryset):
         """
         Return a tuple of strings, that may be used in an `order_by` method.
         """
-        # The default case is to check for an `ordering` attribute
-        # on this pagination instance.
+        # Return the ordering value from the queryset if it has one.
+        if queryset.ordered:
+            return self.get_ordering_from_queryset(queryset)
+
         ordering = self.ordering
-
-        ordering_filters = [
-            filter_cls for filter_cls in getattr(view, 'filter_backends', [])
-            if hasattr(filter_cls, 'get_ordering')
-        ]
-
-        if ordering_filters:
-            # If a filter exists on the view that implements `get_ordering`
-            # then we defer to that filter to determine the ordering.
-            filter_cls = ordering_filters[0]
-            filter_instance = filter_cls()
-            ordering_from_filter = filter_instance.get_ordering(request, queryset, view)
-            if ordering_from_filter:
-                ordering = ordering_from_filter
 
         assert ordering is not None, (
             'Using cursor pagination, but no ordering attribute was declared '
