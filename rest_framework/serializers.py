@@ -312,6 +312,18 @@ class SerializerMetaclass(type):
 
 
 def as_serializer_error(exc):
+    """
+    Coerce validation exceptions into a standardized serialized error format.
+
+    This function normalizes both Django's `ValidationError` and REST
+    framework's `ValidationError` into a dictionary structure compatible
+    with serializer `.errors`, ensuring all values are represented as
+    lists of error details.
+
+    The returned structure conforms to the serializer error contract:
+    - Field-specific errors are returned as '{field-name: [errors]}'
+    - Non-field errors are returned under the 'NON_FIELD_ERRORS_KEY'
+    """
     assert isinstance(exc, (ValidationError, DjangoValidationError))
 
     if isinstance(exc, DjangoValidationError):
@@ -873,22 +885,29 @@ class ListSerializer(BaseSerializer):
 
 def raise_errors_on_nested_writes(method_name, serializer, validated_data):
     """
-    Give explicit errors when users attempt to pass writable nested data.
+    Enforce explicit handling of writable nested and dotted-source fields.
 
-    If we don't do this explicitly they'd get a less helpful error when
-    calling `.save()` on the serializer.
+    This helper raises clear and actionable errors when a serializer attempts
+    to perform writable nested updates or creates using the default
+    `ModelSerializer` behavior.
 
-    We don't *automatically* support these sorts of nested writes because
-    there are too many ambiguities to define a default behavior.
+    Writable nested relationships and dotted-source fields are intentionally
+    unsupported by default due to ambiguous persistence semantics. Developers
+    must either:
+    - Override the `.create()` / `.update()` methods explicitly, or
+    - Mark nested serializers as `read_only=True`
+
+    This check is invoked internally by default `ModelSerializer.create()`
+    and `ModelSerializer.update()` implementations.
 
     Eg. Suppose we have a `UserSerializer` with a nested profile. How should
     we handle the case of an update, where the `profile` relationship does
     not exist? Any of the following might be valid:
-
     * Raise an application error.
     * Silently ignore the nested part of the update.
     * Automatically create a profile instance.
     """
+
     ModelClass = serializer.Meta.model
     model_field_info = model_meta.get_field_info(ModelClass)
 
