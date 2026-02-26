@@ -11,8 +11,8 @@
 {
   .com { color: #687272; }
   .lit { color: #2481c7; }
-  .str, .atv { color: #e02642; }
-  .kwd, .prettyprint .tag { color: #5b7acb; }
+  .str, .atv { color: #e37e8e;; }
+  .kwd, .prettyprint .tag { color: #6e8ee1; }
   .typ, .atn, .dec, .var { color: #05abab; }
   .pln { color: #d3d3dc; }
 }
