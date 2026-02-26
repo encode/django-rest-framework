@@ -7,15 +7,15 @@ h1 {
 }
 
 pre.highlight code * {
-  white-space: nowrap;    // this sets all children inside to nowrap
+  white-space: nowrap;    /* this sets all children inside to nowrap */
 }
 
 pre.highlight {
-  overflow-x: auto;       // this sets the scrolling in x
+  overflow-x: auto;       /* this sets the scrolling in x */
 }
 
 pre.highlight code {
-  white-space: pre;       // forces <code> to respect <pre> formatting
+  white-space: pre;       /* forces <code> to respect <pre> formatting */
 }
 
 .main-container {

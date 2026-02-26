@@ -48,34 +48,12 @@ Django REST framework is a powerful and flexible toolkit for building Web APIs.
 
 Some reasons you might want to use REST framework:
 
-* The [Web browsable API][sandbox] is a huge usability win for your developers.
+* The Web browsable API is a huge usability win for your developers.
 * [Authentication policies][authentication] including packages for [OAuth1a][oauth1-section] and [OAuth2][oauth2-section].
 * [Serialization][serializers] that supports both [ORM][modelserializer-section] and [non-ORM][serializer-section] data sources.
 * Customizable all the way down - just use [regular function-based views][functionview-section] if you don't need the [more][generic-views] [powerful][viewsets] [features][routers].
 * Extensive documentation, and [great community support][group].
-* Used and trusted by internationally recognised companies including [Mozilla][mozilla], [Red Hat][redhat], [Heroku][heroku], and [Eventbrite][eventbrite].
-
----
-
-## Funding
-
-REST framework is a *collaboratively funded project*. If you use
-REST framework commercially we strongly encourage you to invest in its
-continued development by **[signing up for a paid plan][funding]**.
-
-*Every single sign-up helps us make REST framework long-term financially sustainable.*
-
-<ul class="premium-promo promo">
-    <li><a href="https://getsentry.com/welcome/" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/sentry130.png)">Sentry</a></li>
-    <li><a href="https://getstream.io/try-the-api/?utm_source=drf&utm_medium=banner&utm_campaign=drf" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/stream-130.png)">Stream</a></li>
-    <li><a href="https://software.esg-usa.com" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/esg-new-logo.png)">ESG</a></li>
-    <li><a href="https://rollbar.com" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/rollbar2.png)">Rollbar</a></li>
-    <li><a href="https://retool.com/?utm_source=djangorest&utm_medium=sponsorship" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/retool-sidebar.png)">Retool</a></li>
-    <li><a href="https://bit.io/jobs?utm_source=DRF&utm_medium=sponsor&utm_campaign=DRF_sponsorship" style="background-image: url(https://fund-rest-framework.s3.amazonaws.com/bitio_logo_gold_background.png)">bit.io</a></li>
-</ul>
-<div style="clear: both; padding-bottom: 20px;"></div>
-
-*Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Sentry](https://getsentry.com/welcome/), [Stream](https://getstream.io/?utm_source=drf&utm_medium=banner&utm_campaign=drf), [ESG](https://software.esg-usa.com/), [Rollbar](https://rollbar.com/?utm_source=django&utm_medium=sponsorship&utm_campaign=freetrial), [Cadre](https://cadre.com), [Kloudless](https://hubs.ly/H0f30Lf0), [Lights On Software](https://lightsonsoftware.com), [Retool](https://retool.com/?utm_source=djangorest&utm_medium=sponsorship), and [bit.io](https://bit.io/jobs?utm_source=DRF&utm_medium=sponsor&utm_campaign=DRF_sponsorship).*
+* Used and trusted by internationally recognized companies including [Mozilla][mozilla], [Red Hat][redhat], [Heroku][heroku], and [Eventbrite][eventbrite].
 
 ---
 
@@ -83,17 +61,17 @@ continued development by **[signing up for a paid plan][funding]**.
 
 REST framework requires the following:
 
-* Python (3.5, 3.6, 3.7, 3.8, 3.9)
-* Django (2.2, 3.0, 3.1)
+* Django (4.2, 5.0, 5.1, 5.2)
+* Python (3.10, 3.11, 3.12, 3.13, 3.14)
 
 We **highly recommend** and only officially support the latest patch release of
 each Python and Django series.
 
 The following packages are optional:
 
-* [PyYAML][pyyaml], [uritemplate][uriteemplate] (5.1+, 3.0.0+) - Schema generation support.
-* [Markdown][markdown] (3.0.0+) - Markdown support for the browsable API.
-* [Pygments][pygments] (2.4.0+) - Add syntax highlighting to Markdown processing.
+* [PyYAML][pyyaml], [uritemplate][uritemplate] (5.1+, 3.0.0+) - Schema generation support.
+* [Markdown][markdown] (3.3.0+) - Markdown support for the browsable API.
+* [Pygments][pygments] (2.7.0+) - Add syntax highlighting to Markdown processing.
 * [django-filter][django-filter] (1.0.1+) - Filtering support.
 * [django-guardian][django-guardian] (1.1.1+) - Object level permissions support.
 
@@ -181,20 +159,18 @@ Can't wait to get started? The [quickstart guide][quickstart] is the fastest way
 ## Development
 
 See the [Contribution guidelines][contributing] for information on how to clone
-the repository, run the test suite and contribute changes back to REST
+the repository, run the test suite and help maintain the code base of REST
 Framework.
 
 ## Support
 
-For support please see the [REST framework discussion group][group], try the  `#restframework` channel on `irc.freenode.net`, search [the IRC archives][botbot], or raise a  question on [Stack Overflow][stack-overflow], making sure to include the ['django-rest-framework'][django-rest-framework-tag] tag.
-
-For priority support please sign up for a [professional or premium sponsorship plan](https://fund.django-rest-framework.org/topics/funding/).
+For support please see the [REST framework discussion group][group], try the `#restframework` channel on `irc.libera.chat`, or raise a question on [Stack Overflow][stack-overflow], making sure to include the ['django-rest-framework'][django-rest-framework-tag] tag.
 
 ## Security
 
-If you believe you’ve found something in Django REST framework which has security implications, please **do not raise the issue in a public forum**.
+**Please report security issues by emailing security@encode.io**.
 
-Send a description of the issue via email to [rest-framework-security@googlegroups.com][security-mail].  The project maintainers will then work with you to resolve any issues where required, prior to any public disclosure.
+The project maintainers will then work with you to resolve any issues where required, prior to any public disclosure.
 
 ## License
 
@@ -231,7 +207,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [heroku]: https://www.heroku.com/
 [eventbrite]: https://www.eventbrite.co.uk/about/
 [pyyaml]: https://pypi.org/project/PyYAML/
-[uriteemplate]: https://pypi.org/project/uritemplate/
+[uritemplate]: https://pypi.org/project/uritemplate/
 [markdown]: https://pypi.org/project/Markdown/
 [pygments]: https://pypi.org/project/Pygments/
 [django-filter]: https://pypi.org/project/django-filter/
@@ -242,8 +218,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [serializer-section]: api-guide/serializers#serializers
 [modelserializer-section]: api-guide/serializers#modelserializer
 [functionview-section]: api-guide/views#function-based-views
-[sandbox]: https://restframework.herokuapp.com/
-[sponsors]: https://fund.django-rest-framework.org/topics/funding/#our-sponsors
 
 [quickstart]: tutorial/quickstart.md
 
@@ -254,11 +228,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [authentication]: api-guide/authentication.md
 
 [contributing]: community/contributing.md
-[funding]: community/funding.md
 
 [group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
-[botbot]: https://botbot.me/freenode/restframework/
 [stack-overflow]: https://stackoverflow.com/
 [django-rest-framework-tag]: https://stackoverflow.com/questions/tagged/django-rest-framework
 [security-mail]: mailto:rest-framework-security@googlegroups.com
-[twitter]: https://twitter.com/_tomchristie

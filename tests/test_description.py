@@ -1,5 +1,3 @@
-import sys
-
 import pytest
 from django.test import TestCase
 
@@ -23,7 +21,7 @@ indented
 
 # hash style header #
 
-``` json
+```json
 [{
     "alpha": 1,
     "beta": "this is a string"
@@ -33,7 +31,7 @@ indented
 
 # If markdown is installed we also test it's working
 # (and that our wrapped forces '=' to h2 and '-' to h3)
-MARKDOWN_BASE = """<h2 id="an-example-docstring">an example docstring</h2>
+MARKDOWN_DOCSTRING = """<h2 id="an-example-docstring">an example docstring</h2>
 <ul>
 <li>list</li>
 <li>list</li>
@@ -42,25 +40,8 @@ MARKDOWN_BASE = """<h2 id="an-example-docstring">an example docstring</h2>
 <pre><code>code block
 </code></pre>
 <p>indented</p>
-<h2 id="hash-style-header">hash style header</h2>%s"""
-
-MARKDOWN_gte_33 = """
-<div class="highlight"><pre><span></span><span class="p">[{</span><br />\
-    <span class="nt">&quot;alpha&quot;</span><span class="p">:</span>\
- <span class="mi">1</span><span class="p">,</span><br />\
-    <span class="nt">&quot;beta&quot;</span><span class="p">:</span>\
- <span class="s2">&quot;this is a string&quot;</span><br />\
-<span class="p">}]</span><br /></pre></div>
-<p><br /></p>"""
-
-MARKDOWN_lt_33 = """
-<div class="highlight"><pre><span></span><span class="p">[{</span><br />\
-    <span class="nt">&quot;alpha&quot;</span><span class="p">:</span>\
- <span class="mi">1</span><span class="p">,</span><br />\
-    <span class="nt">&quot;beta&quot;</span><span class="p">:</span>\
- <span class="s2">&quot;this is a string&quot;</span><br />\
-<span class="p">}]</span><br /></pre></div>
-
+<h2 id="hash-style-header">hash style header</h2>
+<div class="highlight"><pre><span></span><span class="p">[{</span><br /><span class="w">    </span><span class="nt">&quot;alpha&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><br /><span class="w">    </span><span class="nt">&quot;beta&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;this is a string&quot;</span><br /><span class="p">}]</span><br /></pre></div>
 <p><br /></p>"""
 
 
@@ -107,7 +88,7 @@ class TestViewNamesAndDescriptions(TestCase):
 
             # hash style header #
 
-            ``` json
+            ```json
             [{
                 "alpha": 1,
                 "beta": "this is a string"
@@ -163,11 +144,7 @@ class TestViewNamesAndDescriptions(TestCase):
         """
         Ensure markdown to HTML works as expected.
         """
-        # Markdown 3.3 is only supported on Python 3.6 and higher
-        if sys.version_info >= (3, 6):
-            assert apply_markdown(DESCRIPTION) == MARKDOWN_BASE % MARKDOWN_gte_33
-        else:
-            assert apply_markdown(DESCRIPTION) == MARKDOWN_BASE % MARKDOWN_lt_33
+        assert apply_markdown(DESCRIPTION) == MARKDOWN_DOCSTRING
 
 
 def test_dedent_tabs():

@@ -4,12 +4,43 @@
 >
 > &mdash; Roy Fielding, [REST APIs must be hypertext driven][cite]
 
-REST framework provides built-in support for generating OpenAPI schemas, which
-can be used with tools that allow you to build API documentation.
+REST framework provides a range of different choices for documenting your API. The following is a non-exhaustive list of some of the most popular options.
 
-There are also a number of great third-party documentation packages available.
+## Third-party packages for OpenAPI support
 
-## Generating documentation from OpenAPI schemas
+REST framework recommends using third-party packages for generating and presenting OpenAPI schemas, as they provide more features and flexibility than the built-in (deprecated) implementation.
+
+### drf-spectacular
+
+[drf-spectacular][drf-spectacular] is an [OpenAPI 3][open-api] schema generation library with explicit
+focus on extensibility, customizability and client generation. It is the recommended way for
+generating and presenting OpenAPI schemas.
+
+The library aims to extract as much schema information as possible, while providing decorators and extensions for easy
+customization. There is explicit support for [swagger-codegen][swagger], [SwaggerUI][swagger-ui] and [Redoc][redoc],
+i18n, versioning, authentication, polymorphism (dynamic requests and responses), query/path/header parameters,
+documentation and more. Several popular plugins for DRF are supported out-of-the-box as well.
+
+### drf-yasg
+
+[drf-yasg][drf-yasg] is a [Swagger / OpenAPI 2][swagger] generation tool implemented without using the schema generation provided
+by Django Rest Framework.
+
+It aims to implement as much of the [OpenAPI 2][open-api] specification as possible - nested schemas, named models,
+response bodies, enum/pattern/min/max validators, form parameters, etc. - and to generate documents usable with code
+generation tools like `swagger-codegen`.
+
+This also translates into a very useful interactive documentation viewer in the form of `swagger-ui`:
+
+![Screenshot - drf-yasg][image-drf-yasg]
+
+---
+
+## Built-in OpenAPI schema generation (deprecated)
+
+!!! warning
+    **Deprecation notice:** REST framework's built-in support for generating OpenAPI schemas is deprecated in favor of third-party packages that provide this functionality instead. As a replacement, we recommend using **drf-spectacular**.
+
 
 There are a number of packages available that allow you to generate HTML
 documentation pages from OpenAPI schemas.
@@ -66,10 +97,14 @@ urlpatterns = [
     # ...
     # Route TemplateView to serve Swagger UI template.
     #   * Provide `extra_context` with view name of `SchemaView`.
-    path('swagger-ui/', TemplateView.as_view(
-        template_name='swagger-ui.html',
-        extra_context={'schema_url':'openapi-schema'}
-    ), name='swagger-ui'),
+    path(
+        "swagger-ui/",
+        TemplateView.as_view(
+            template_name="swagger-ui.html",
+            extra_context={"schema_url": "openapi-schema"},
+        ),
+        name="swagger-ui",
+    ),
 ]
 ```
 
@@ -115,44 +150,18 @@ urlpatterns = [
     # ...
     # Route TemplateView to serve the ReDoc template.
     #   * Provide `extra_context` with view name of `SchemaView`.
-    path('redoc/', TemplateView.as_view(
-        template_name='redoc.html',
-        extra_context={'schema_url':'openapi-schema'}
-    ), name='redoc'),
+    path(
+        "redoc/",
+        TemplateView.as_view(
+            template_name="redoc.html", extra_context={"schema_url": "openapi-schema"}
+        ),
+        name="redoc",
+    ),
 ]
 ```
 
 See the [ReDoc documentation][redoc] for advanced usage.
 
-## Third party packages
-
-There are a number of mature third-party packages for providing API documentation.
-
-#### drf-yasg - Yet Another Swagger Generator
-
-[drf-yasg][drf-yasg] is a [Swagger][swagger] generation tool implemented without using the schema generation provided
-by Django Rest Framework.
-
-It aims to implement as much of the [OpenAPI][open-api] specification as possible - nested schemas, named models,
-response bodies, enum/pattern/min/max validators, form parameters, etc. - and to generate documents usable with code
-generation tools like `swagger-codegen`.
-
-This also translates into a very useful interactive documentation viewer in the form of `swagger-ui`:
-
-
-![Screenshot - drf-yasg][image-drf-yasg]
-
-#### drf-spectacular - Sane and flexible OpenAPI 3.0 schema generation for Django REST framework
-
-[drf-spectacular][drf-spectacular] is a [OpenAPI 3][open-api] schema generation tool with explicit focus on extensibility,
-customizability and client generation. Usage patterns are very similar to [drf-yasg][drf-yasg].
-
-It aims to extract as much schema information as possible, while providing decorators and extensions for easy
-customization. There is explicit support for [swagger-codegen][swagger], [SwaggerUI][swagger-ui] and [Redoc][redoc],
-i18n, versioning, authentication, polymorphism (dynamic requests and responses), query/path/header parameters,
-documentation and more. Several popular plugins for DRF are supported out-of-the-box as well.
-
----
 
 ## Self describing APIs
 

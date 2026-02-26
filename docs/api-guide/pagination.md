@@ -78,7 +78,7 @@ This pagination style accepts a single number page number in the request query p
 
     HTTP 200 OK
     {
-        "count": 1023
+        "count": 1023,
         "next": "https://api.example.org/accounts/?page=5",
         "previous": "https://api.example.org/accounts/?page=3",
         "results": [
@@ -108,7 +108,7 @@ To set these attributes you should override the `PageNumberPagination` class, an
 * `page_query_param` - A string value indicating the name of the query parameter to use for the pagination control.
 * `page_size_query_param` - If set, this is a string value indicating the name of a query parameter that allows the client to set the page size on a per-request basis. Defaults to `None`, indicating that the client may not control the requested page size.
 * `max_page_size` - If set, this is a numeric value indicating the maximum allowable requested page size. This attribute is only valid if `page_size_query_param` is also set.
-* `last_page_strings` - A list or tuple of string values indicating values that may be used with the `page_query_param` to request the final page in the set. Defaults to `('last',)`
+* `last_page_strings` - A list or tuple of string values indicating values that may be used with the `page_query_param` to request the final page in the set. Defaults to `('last',)`. For example, use `?page=last` to go directly to the last page.
 * `template` - The name of a template to use when rendering pagination controls in the browsable API. May be overridden to modify the rendering style, or set to `None` to disable HTML pagination controls completely. Defaults to `"rest_framework/pagination/numbers.html"`.
 
 ---
@@ -126,7 +126,7 @@ This pagination style mirrors the syntax used when looking up multiple database 
 
     HTTP 200 OK
     {
-        "count": 1023
+        "count": 1023,
         "next": "https://api.example.org/accounts/?limit=100&offset=500",
         "previous": "https://api.example.org/accounts/?limit=100&offset=300",
         "results": [
@@ -218,16 +218,16 @@ To set these attributes you should override the `CursorPagination` class, and th
 
 # Custom pagination styles
 
-To create a custom pagination serializer class you should subclass `pagination.BasePagination` and override the `paginate_queryset(self, queryset, request, view=None)` and `get_paginated_response(self, data)` methods:
+To create a custom pagination serializer class, you should inherit the subclass `pagination.BasePagination`, override the `paginate_queryset(self, queryset, request, view=None)`, and `get_paginated_response(self, data)` methods:
 
-* The `paginate_queryset` method is passed the initial queryset and should return an iterable object that contains only the data in the requested page.
-* The `get_paginated_response` method is passed the serialized page data and should return a `Response` instance.
+* The `paginate_queryset` method is passed to the initial queryset and should return an iterable object. That object contains only the data in the requested page.
+* The `get_paginated_response` method is passed to the serialized page data and should return a `Response` instance.
 
 Note that the `paginate_queryset` method may set state on the pagination instance, that may later be used by the `get_paginated_response` method.
 
 ## Example
 
-Suppose we want to replace the default pagination output style with a modified format that  includes the next and previous links under in a nested 'links' key. We could specify a custom pagination class like so:
+Suppose we want to replace the default pagination output style with a modified format that includes the next and previous links under in a nested 'links' key. We could specify a custom pagination class like so:
 
     class CustomPagination(pagination.PageNumberPagination):
         def get_paginated_response(self, data):
@@ -240,7 +240,7 @@ Suppose we want to replace the default pagination output style with a modified f
                 'results': data
             })
 
-We'd then need to setup the custom class in our configuration:
+We'd then need to set up the custom class in our configuration:
 
     REST_FRAMEWORK = {
         'DEFAULT_PAGINATION_CLASS': 'my_project.apps.core.pagination.CustomPagination',
@@ -262,16 +262,7 @@ API responses for list endpoints will now include a `Link` header, instead of in
 
 ![Link Header][link-header]
 
-*A custom pagination style, using the 'Link' header'*
-
-## Pagination & schemas
-
-You can also make the pagination controls available to the schema autogeneration
-that REST framework provides, by implementing a `get_schema_fields()` method. This method should have the following signature:
-
-`get_schema_fields(self, view)`
-
-The method should return a list of `coreapi.Field` instances.
+*A custom pagination style, using the 'Link' header*
 
 ---
 
@@ -312,7 +303,7 @@ The [`drf-proxy-pagination` package][drf-proxy-pagination] includes a `ProxyPagi
 
 ## link-header-pagination
 
-The [`django-rest-framework-link-header-pagination` package][drf-link-header-pagination] includes a `LinkHeaderPagination` class which provides pagination via an HTTP `Link` header as described in [Github's developer documentation](github-link-pagination).
+The [`django-rest-framework-link-header-pagination` package][drf-link-header-pagination] includes a `LinkHeaderPagination` class which provides pagination via an HTTP `Link` header as described in [GitHub REST API documentation][github-traversing-with-pagination].
 
 [cite]: https://docs.djangoproject.com/en/stable/topics/pagination/
 [link-header]: ../img/link-header-pagination.png
@@ -322,3 +313,4 @@ The [`django-rest-framework-link-header-pagination` package][drf-link-header-pag
 [drf-link-header-pagination]: https://github.com/tbeadle/django-rest-framework-link-header-pagination
 [disqus-cursor-api]: https://cra.mr/2011/03/08/building-cursors-for-the-disqus-api
 [float_cursor_pagination_example]: https://gist.github.com/keturn/8bc88525a183fd41c73ffb729b8865be#file-fpcursorpagination-py
+[github-traversing-with-pagination]: https://docs.github.com/en/rest/guides/traversing-with-pagination

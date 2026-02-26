@@ -6,6 +6,10 @@
 
 There are many ways you can contribute to Django REST framework.  We'd like it to be a community-led project, so please get involved and help shape the future of the project.
 
+!!! note
+
+    At this point in its lifespan we consider Django REST framework to be feature-complete. We focus on pull requests that track the continued development of Django versions, and generally do not accept new features or code formatting changes.
+
 ## Community
 
 The most important thing you can do to help push the REST framework project forward is to be actively involved wherever possible.  Code contributions are often overvalued as being the primary way to get involved in a project, we don't believe that needs to be the case.
@@ -26,15 +30,11 @@ The [Django code of conduct][code-of-conduct] gives a fuller set of guidelines f
 
 # Issues
 
-It's really helpful if you can make sure to address issues on the correct channel.  Usage questions should be directed to the [discussion group][google-group].  Feature requests, bug reports and other issues should be raised on the GitHub [issue tracker][issues].
+Our contribution process is that the [GitHub discussions page](https://github.com/encode/django-rest-framework/discussions) should generally be your starting point. Some tips on good potential issue reporting:
 
-Some tips on good issue reporting:
-
-* When describing issues try to phrase your ticket in terms of the *behavior* you think needs changing rather than the *code* you think need changing.
-* Search the issue list first for related items, and make sure you're running the latest version of REST framework before reporting an issue.
-* If reporting a bug, then try to include a pull request with a failing test case.  This will help us quickly identify if there is a valid issue, and make sure that it gets fixed more quickly if there is one.
-* Feature requests will often be closed with a recommendation that they be implemented outside of the core REST framework library.  Keeping new feature requests implemented as third party libraries allows us to keep down the maintenance overhead of REST framework, so that the focus can be on continued stability, bugfixes, and great documentation.
-* Closing an issue doesn't necessarily mean the end of a discussion.  If you believe your issue has been closed incorrectly, explain why and we'll consider if it needs to be reopened.
+* Django REST framework is considered feature-complete. Please do not file requests to change behavior, unless it is required for security reasons or to maintain compatibility with upcoming Django or Python versions.
+* Search the GitHub project page for related items, and make sure you're running the latest version of REST framework before reporting an issue.
+* Feature requests will typically be closed with a recommendation that they be implemented outside the core REST framework library (e.g. as third-party libraries).  This approach allows us to keep down the maintenance overhead of REST framework, so that the focus can be on continued stability and great documentation.
 
 ## Triaging issues
 
@@ -43,8 +43,8 @@ Getting involved in triaging incoming issues is a good way to start contributing
 * Read through the ticket - does it make sense, is it missing any context that would help explain it better?
 * Is the ticket reported in the correct place, would it be better suited as a discussion on the discussion group?
 * If the ticket is a bug report, can you reproduce it? Are you able to write a failing test case that demonstrates the issue and that can be submitted as a pull request?
-* If the ticket is a feature request, do you agree with it, and could the feature request instead be implemented as a third party package?
-* If a ticket hasn't had much activity and it addresses something you need, then comment on the ticket and try to find out what's needed to get it moving again.
+* If the ticket is a feature request, could the feature request instead be implemented as a third party package?
+* If a ticket hasn't had much activity and addresses something you need, then comment on the ticket and try to find out what's needed to get it moving again.
 
 # Development
 
@@ -75,17 +75,46 @@ To run the tests, clone the repository, and then:
     # Setup the virtual environment
     python3 -m venv env
     source env/bin/activate
-    pip install django
-    pip install -r requirements.txt
+    pip install -e . --group dev
 
     # Run the tests
     ./runtests.py
+
+!!! tip
+    If your tests require access to the database, do not forget to inherit from `django.test.TestCase` or use the `@pytest.mark.django_db()` decorator.
+
+    For example, with TestCase:
+    
+        from django.test import TestCase
+    
+        class MyDatabaseTest(TestCase):
+            def test_something(self):
+                # Your test code here
+                pass
+    
+    Or with decorator:
+    
+        import pytest
+    
+        @pytest.mark.django_db()
+        class MyDatabaseTest:
+            def test_something(self):
+                # Your test code here
+                pass
+    
+    You can reuse existing models defined in `tests/models.py` for your tests.
 
 ### Test options
 
 Run using a more concise output style.
 
     ./runtests.py -q
+
+
+If you do not want the output to be captured (for example, to see print statements directly), you can use the `-s` flag.
+
+    ./runtests.py -s
+
 
 Run the tests for a given test case.
 
@@ -99,7 +128,9 @@ Shorter form to run the tests for a given test method.
 
     ./runtests.py test_this_method
 
-Note: The test case and test method matching is fuzzy and will sometimes run other tests that contain a partial string match to the given  command line input.
+
+!!! note
+    The test case and test method matching is fuzzy and will sometimes run other tests that contain a partial string match to the given  command line input.
 
 ### Running against multiple environments
 
@@ -191,26 +222,25 @@ Linking in this style means you'll be able to click the hyperlink in your Markdo
 
 ##### 3. Notes
 
-If you want to draw attention to a note or warning, use a pair of enclosing lines, like so:
+If you want to draw attention to a note or warning, use an [admonition], like so:
 
-    ---
+    !!! note
+        A useful documentation note.
 
-    **Note:** A useful documentation note.
-
-    ---
+The documentation theme styles `info`, `warning`, `tip` and `danger` admonition types, but more could be added if the need arise.
 
 
 [cite]: https://www.w3.org/People/Berners-Lee/FAQ.html
 [code-of-conduct]: https://www.djangoproject.com/conduct/
 [google-group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
 [so-filter]: https://stackexchange.com/filters/66475/rest-framework
-[issues]: https://github.com/encode/django-rest-framework/issues?state=open
 [pep-8]: https://www.python.org/dev/peps/pep-0008/
 [build-status]: ../img/build-status.png
 [pull-requests]: https://help.github.com/articles/using-pull-requests
 [tox]: https://tox.readthedocs.io/en/latest/
 [markdown]: https://daringfireball.net/projects/markdown/basics
-[docs]: https://github.com/encode/django-rest-framework/tree/master/docs
+[docs]: https://github.com/encode/django-rest-framework/tree/main/docs
 [mou]: http://mouapp.com/
 [repo]: https://github.com/encode/django-rest-framework
 [how-to-fork]: https://help.github.com/articles/fork-a-repo/
+[admonition]: https://python-markdown.github.io/extensions/admonition/

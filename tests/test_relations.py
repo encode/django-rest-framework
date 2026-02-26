@@ -342,6 +342,142 @@ class TestSlugRelatedField(APISimpleTestCase):
         field.to_internal_value(self.instance.name)
 
 
+class TestNestedSlugRelatedField(APISimpleTestCase):
+    def setUp(self):
+        self.queryset = MockQueryset([
+            MockObject(
+                pk=1, name='foo', nested=MockObject(
+                    pk=2, name='bar', nested=MockObject(
+                        pk=7, name="foobar"
+                    )
+                )
+            ),
+            MockObject(
+                pk=3, name='hello', nested=MockObject(
+                    pk=4, name='world', nested=MockObject(
+                        pk=8, name="helloworld"
+                    )
+                )
+            ),
+            MockObject(
+                pk=5, name='harry', nested=MockObject(
+                    pk=6, name='potter', nested=MockObject(
+                        pk=9, name="harrypotter"
+                    )
+                )
+            )
+        ])
+        self.instance = self.queryset.items[2]
+        self.field = serializers.SlugRelatedField(
+            slug_field='name', queryset=self.queryset
+        )
+        self.nested_field = serializers.SlugRelatedField(
+            slug_field='nested__name', queryset=self.queryset
+        )
+
+        self.nested_nested_field = serializers.SlugRelatedField(
+            slug_field='nested__nested__name', queryset=self.queryset
+        )
+
+    # testing nested inside nested relations
+    def test_slug_related_nested_nested_lookup_exists(self):
+        instance = self.nested_nested_field.to_internal_value(
+            self.instance.nested.nested.name
+        )
+        assert instance is self.instance
+
+    def test_slug_related_nested_nested_lookup_does_not_exist(self):
+        with pytest.raises(serializers.ValidationError) as excinfo:
+            self.nested_nested_field.to_internal_value('doesnotexist')
+        msg = excinfo.value.detail[0]
+        assert msg == \
+            'Object with nested__nested__name=doesnotexist does not exist.'
+
+    def test_slug_related_nested_nested_lookup_invalid_type(self):
+        with pytest.raises(serializers.ValidationError) as excinfo:
+            self.nested_nested_field.to_internal_value(BadType())
+        msg = excinfo.value.detail[0]
+        assert msg == 'Invalid value.'
+
+    def test_nested_nested_representation(self):
+        representation =\
+            self.nested_nested_field.to_representation(self.instance)
+        assert representation == self.instance.nested.nested.name
+
+    def test_nested_nested_overriding_get_queryset(self):
+        qs = self.queryset
+
+        class NoQuerySetSlugRelatedField(serializers.SlugRelatedField):
+            def get_queryset(self):
+                return qs
+
+        field = NoQuerySetSlugRelatedField(slug_field='nested__nested__name')
+        field.to_internal_value(self.instance.nested.nested.name)
+
+    # testing nested relations
+    def test_slug_related_nested_lookup_exists(self):
+        instance = \
+            self.nested_field.to_internal_value(self.instance.nested.name)
+        assert instance is self.instance
+
+    def test_slug_related_nested_lookup_does_not_exist(self):
+        with pytest.raises(serializers.ValidationError) as excinfo:
+            self.nested_field.to_internal_value('doesnotexist')
+        msg = excinfo.value.detail[0]
+        assert msg == 'Object with nested__name=doesnotexist does not exist.'
+
+    def test_slug_related_nested_lookup_invalid_type(self):
+        with pytest.raises(serializers.ValidationError) as excinfo:
+            self.nested_field.to_internal_value(BadType())
+        msg = excinfo.value.detail[0]
+        assert msg == 'Invalid value.'
+
+    def test_nested_representation(self):
+        representation = self.nested_field.to_representation(self.instance)
+        assert representation == self.instance.nested.name
+
+    def test_nested_overriding_get_queryset(self):
+        qs = self.queryset
+
+        class NoQuerySetSlugRelatedField(serializers.SlugRelatedField):
+            def get_queryset(self):
+                return qs
+
+        field = NoQuerySetSlugRelatedField(slug_field='nested__name')
+        field.to_internal_value(self.instance.nested.name)
+
+    # testing non-nested relations
+    def test_slug_related_lookup_exists(self):
+        instance = self.field.to_internal_value(self.instance.name)
+        assert instance is self.instance
+
+    def test_slug_related_lookup_does_not_exist(self):
+        with pytest.raises(serializers.ValidationError) as excinfo:
+            self.field.to_internal_value('doesnotexist')
+        msg = excinfo.value.detail[0]
+        assert msg == 'Object with name=doesnotexist does not exist.'
+
+    def test_slug_related_lookup_invalid_type(self):
+        with pytest.raises(serializers.ValidationError) as excinfo:
+            self.field.to_internal_value(BadType())
+        msg = excinfo.value.detail[0]
+        assert msg == 'Invalid value.'
+
+    def test_representation(self):
+        representation = self.field.to_representation(self.instance)
+        assert representation == self.instance.name
+
+    def test_overriding_get_queryset(self):
+        qs = self.queryset
+
+        class NoQuerySetSlugRelatedField(serializers.SlugRelatedField):
+            def get_queryset(self):
+                return qs
+
+        field = NoQuerySetSlugRelatedField(slug_field='name')
+        field.to_internal_value(self.instance.name)
+
+
 class TestManyRelatedField(APISimpleTestCase):
     def setUp(self):
         self.instance = MockObject(pk=1, name='foo')
@@ -374,7 +510,7 @@ class TestManyRelatedField(APISimpleTestCase):
 
 
 class TestHyperlink:
-    def setup(self):
+    def setup_method(self):
         self.default_hyperlink = serializers.Hyperlink('http://example.com', 'test')
 
     def test_can_be_pickled(self):

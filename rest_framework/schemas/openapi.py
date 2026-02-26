@@ -1,6 +1,5 @@
 import re
 import warnings
-from collections import OrderedDict
 from decimal import Decimal
 from operator import attrgetter
 from urllib.parse import urljoin
@@ -12,10 +11,8 @@ from django.core.validators import (
 from django.db import models
 from django.utils.encoding import force_str
 
-from rest_framework import (
-    RemovedInDRF314Warning, exceptions, renderers, serializers
-)
-from rest_framework.compat import uritemplate
+from rest_framework import exceptions, renderers, serializers
+from rest_framework.compat import inflection, uritemplate
 from rest_framework.fields import _UnvalidatedField, empty
 from rest_framework.settings import api_settings
 
@@ -85,11 +82,11 @@ class SchemaGenerator(BaseSchemaGenerator):
                     continue
                 if components_schemas[k] == components[k]:
                     continue
-                warnings.warn('Schema component "{}" has been overriden with a different value.'.format(k))
+                warnings.warn(f'Schema component "{k}" has been overridden with a different value.')
 
             components_schemas.update(components)
 
-            # Normalise path for any provided mount url.
+            # Normalize path for any provided mount url.
             if path.startswith('/'):
                 path = path[1:]
             path = urljoin(self.url or '/', path)
@@ -247,8 +244,9 @@ class AutoSchema(ViewInspector):
             if name.endswith(action.title()):  # ListView, UpdateAPIView, ThingDelete ...
                 name = name[:-len(action)]
 
-        if action == 'list' and not name.endswith('s'):  # listThings instead of listThing
-            name += 's'
+        if action == 'list':
+            assert inflection, '`inflection` must be installed for OpenAPI schema support.'
+            name = inflection.pluralize(name)
 
         return name
 
@@ -338,7 +336,7 @@ class AutoSchema(ViewInspector):
         return paginator.get_schema_operation_parameters(view)
 
     def map_choicefield(self, field):
-        choices = list(OrderedDict.fromkeys(field.choices))  # preserve order and remove duplicates
+        choices = list(dict.fromkeys(field.choices))  # preserve order and remove duplicates
         if all(isinstance(choice, bool) for choice in choices):
             type = 'boolean'
         elif all(isinstance(choice, int) for choice in choices):
@@ -385,6 +383,8 @@ class AutoSchema(ViewInspector):
                 'items': self.map_field(field.child_relation)
             }
         if isinstance(field, serializers.PrimaryKeyRelatedField):
+            if getattr(field, "pk_field", False):
+                return self.map_field(field=field.pk_field)
             model = getattr(field.queryset, 'model', None)
             if model is not None:
                 model_field = model._meta.pk
@@ -428,7 +428,7 @@ class AutoSchema(ViewInspector):
             }
 
         # "Formats such as "email", "uuid", and so on, MAY be used even though undefined by this specification."
-        # see: https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#data-types
+        # see: https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.2.md#data-types
         # see also: https://swagger.io/docs/specification/data-models/data-types/#string
         if isinstance(field, serializers.EmailField):
             return {
@@ -522,8 +522,8 @@ class AutoSchema(ViewInspector):
             if isinstance(field, serializers.HiddenField):
                 continue
 
-            if field.required:
-                required.append(field.field_name)
+            if field.required and not serializer.partial:
+                required.append(self.get_field_name(field))
 
             schema = self.map_field(field)
             if field.read_only:
@@ -538,7 +538,7 @@ class AutoSchema(ViewInspector):
                 schema['description'] = str(field.help_text)
             self.map_field_validators(field, schema)
 
-            properties[field.field_name] = schema
+            properties[self.get_field_name(field)] = schema
 
         result = {
             'type': 'object',
@@ -555,7 +555,7 @@ class AutoSchema(ViewInspector):
         """
         for v in field.validators:
             # "Formats such as "email", "uuid", and so on, MAY be used even though undefined by this specification."
-            # https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#data-types
+            # https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.2.md#data-types
             if isinstance(v, EmailValidator):
                 schema['format'] = 'email'
             if isinstance(v, URLValidator):
@@ -588,6 +588,13 @@ class AutoSchema(ViewInspector):
                         digits -= v.decimal_places
                     schema['maximum'] = int(digits * '9') + 1
                     schema['minimum'] = -schema['maximum']
+
+    def get_field_name(self, field):
+        """
+        Override this method if you want to change schema field name.
+        For example, convert snake_case field name to camelCase.
+        """
+        return field.field_name
 
     def get_paginator(self):
         pagination_class = getattr(self.view, 'pagination_class', None)
@@ -636,8 +643,8 @@ class AutoSchema(ViewInspector):
         """
         return self.get_serializer(path, method)
 
-    def _get_reference(self, serializer):
-        return {'$ref': '#/components/schemas/{}'.format(self.get_component_name(serializer))}
+    def get_reference(self, serializer):
+        return {'$ref': f'#/components/schemas/{self.get_component_name(serializer)}'}
 
     def get_request_body(self, path, method):
         if method not in ('PUT', 'PATCH', 'POST'):
@@ -650,7 +657,7 @@ class AutoSchema(ViewInspector):
         if not isinstance(serializer, serializers.Serializer):
             item_schema = {}
         else:
-            item_schema = self._get_reference(serializer)
+            item_schema = self.get_reference(serializer)
 
         return {
             'content': {
@@ -674,7 +681,7 @@ class AutoSchema(ViewInspector):
         if not isinstance(serializer, serializers.Serializer):
             item_schema = {}
         else:
-            item_schema = self._get_reference(serializer)
+            item_schema = self.get_reference(serializer)
 
         if is_list_view(path, method, self.view):
             response_schema = {
@@ -712,99 +719,3 @@ class AutoSchema(ViewInspector):
             path = path[1:]
 
         return [path.split('/')[0].replace('_', '-')]
-
-    def _get_path_parameters(self, path, method):
-        warnings.warn(
-            "Method `_get_path_parameters()` has been renamed to `get_path_parameters()`. "
-            "The old name will be removed in DRF v3.14.",
-            RemovedInDRF314Warning, stacklevel=2
-        )
-        return self.get_path_parameters(path, method)
-
-    def _get_filter_parameters(self, path, method):
-        warnings.warn(
-            "Method `_get_filter_parameters()` has been renamed to `get_filter_parameters()`. "
-            "The old name will be removed in DRF v3.14.",
-            RemovedInDRF314Warning, stacklevel=2
-        )
-        return self.get_filter_parameters(path, method)
-
-    def _get_responses(self, path, method):
-        warnings.warn(
-            "Method `_get_responses()` has been renamed to `get_responses()`. "
-            "The old name will be removed in DRF v3.14.",
-            RemovedInDRF314Warning, stacklevel=2
-        )
-        return self.get_responses(path, method)
-
-    def _get_request_body(self, path, method):
-        warnings.warn(
-            "Method `_get_request_body()` has been renamed to `get_request_body()`. "
-            "The old name will be removed in DRF v3.14.",
-            RemovedInDRF314Warning, stacklevel=2
-        )
-        return self.get_request_body(path, method)
-
-    def _get_serializer(self, path, method):
-        warnings.warn(
-            "Method `_get_serializer()` has been renamed to `get_serializer()`. "
-            "The old name will be removed in DRF v3.14.",
-            RemovedInDRF314Warning, stacklevel=2
-        )
-        return self.get_serializer(path, method)
-
-    def _get_paginator(self):
-        warnings.warn(
-            "Method `_get_paginator()` has been renamed to `get_paginator()`. "
-            "The old name will be removed in DRF v3.14.",
-            RemovedInDRF314Warning, stacklevel=2
-        )
-        return self.get_paginator()
-
-    def _map_field_validators(self, field, schema):
-        warnings.warn(
-            "Method `_map_field_validators()` has been renamed to `map_field_validators()`. "
-            "The old name will be removed in DRF v3.14.",
-            RemovedInDRF314Warning, stacklevel=2
-        )
-        return self.map_field_validators(field, schema)
-
-    def _map_serializer(self, serializer):
-        warnings.warn(
-            "Method `_map_serializer()` has been renamed to `map_serializer()`. "
-            "The old name will be removed in DRF v3.14.",
-            RemovedInDRF314Warning, stacklevel=2
-        )
-        return self.map_serializer(serializer)
-
-    def _map_field(self, field):
-        warnings.warn(
-            "Method `_map_field()` has been renamed to `map_field()`. "
-            "The old name will be removed in DRF v3.14.",
-            RemovedInDRF314Warning, stacklevel=2
-        )
-        return self.map_field(field)
-
-    def _map_choicefield(self, field):
-        warnings.warn(
-            "Method `_map_choicefield()` has been renamed to `map_choicefield()`. "
-            "The old name will be removed in DRF v3.14.",
-            RemovedInDRF314Warning, stacklevel=2
-        )
-        return self.map_choicefield(field)
-
-    def _get_pagination_parameters(self, path, method):
-        warnings.warn(
-            "Method `_get_pagination_parameters()` has been renamed to `get_pagination_parameters()`. "
-            "The old name will be removed in DRF v3.14.",
-            RemovedInDRF314Warning, stacklevel=2
-        )
-        return self.get_pagination_parameters(path, method)
-
-    def _allows_filters(self, path, method):
-        warnings.warn(
-            "Method `_allows_filters()` has been renamed to `allows_filters()`. "
-            "The old name will be removed in DRF v3.14.",
-            RemovedInDRF314Warning, stacklevel=2
-        )
-        return self.allows_filters(path, method)
