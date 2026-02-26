@@ -35,6 +35,7 @@ theme:
     - content.code.annotate
     - content.code.copy
     - navigation.tabs
+    - navigation.tabs.sticky
     - navigation.instant
     - navigation.instant.prefetch
     - navigation.instant.progress
