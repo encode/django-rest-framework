@@ -1,6 +1,7 @@
 import re
-from collections import OrderedDict
 from collections.abc import MutableMapping
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 import pytest
 from django.core.cache import cache
@@ -409,7 +410,7 @@ class UnicodeJSONRendererTests(TestCase):
         obj = {'should_escape': '\u2028\u2029'}
         renderer = JSONRenderer()
         content = renderer.render(obj, 'application/json')
-        self.assertEqual(content, '{"should_escape":"\\u2028\\u2029"}'.encode())
+        self.assertEqual(content, b'{"should_escape":"\\u2028\\u2029"}')
 
 
 class AsciiJSONRendererTests(TestCase):
@@ -422,7 +423,7 @@ class AsciiJSONRendererTests(TestCase):
         obj = {'countries': ['United Kingdom', 'France', 'España']}
         renderer = AsciiJSONRenderer()
         content = renderer.render(obj, 'application/json')
-        self.assertEqual(content, '{"countries":["United Kingdom","France","Espa\\u00f1a"]}'.encode())
+        self.assertEqual(content, b'{"countries":["United Kingdom","France","Espa\\u00f1a"]}')
 
 
 # Tests for caching issue, #346
@@ -457,12 +458,12 @@ class CacheRenderTest(TestCase):
 class TestJSONIndentationStyles:
     def test_indented(self):
         renderer = JSONRenderer()
-        data = OrderedDict([('a', 1), ('b', 2)])
+        data = {"a": 1, "b": 2}
         assert renderer.render(data) == b'{"a":1,"b":2}'
 
     def test_compact(self):
         renderer = JSONRenderer()
-        data = OrderedDict([('a', 1), ('b', 2)])
+        data = {"a": 1, "b": 2}
         context = {'indent': 4}
         assert (
             renderer.render(data, renderer_context=context) ==
@@ -472,7 +473,7 @@ class TestJSONIndentationStyles:
     def test_long_form(self):
         renderer = JSONRenderer()
         renderer.compact = False
-        data = OrderedDict([('a', 1), ('b', 2)])
+        data = {"a": 1, "b": 2}
         assert renderer.render(data) == b'{"a": 1, "b": 2}'
 
 
@@ -487,6 +488,85 @@ class TestHiddenFieldHTMLFormRenderer(TestCase):
         field = serializer['published']
         rendered = renderer.render_field(field, {})
         assert rendered == ''
+
+
+class TestDateTimeFieldHTMLFormRender(TestCase):
+    """
+    Default USE_TZ is True.
+    Default TIME_ZONE is 'America/Chicago'.
+    """
+
+    def _assert_datetime_rendering(self, appointment, expected, datetimefield_kwargs=None):
+        datetimefield_kwargs = datetimefield_kwargs or {}
+
+        class TestSerializer(serializers.Serializer):
+            appointment = serializers.DateTimeField(**datetimefield_kwargs)
+
+        serializer = TestSerializer(data={"appointment": appointment})
+        serializer.is_valid()
+        renderer = HTMLFormRenderer()
+        field = serializer['appointment']
+        rendered = renderer.render_field(field, {})
+        expected_html = (
+            '<input name="appointment" class="form-control" '
+            f'type="datetime-local" value="{expected}">'
+        )
+
+        self.assertInHTML(expected_html, rendered)
+
+    def test_datetime_field_rendering_milliseconds(self):
+        self._assert_datetime_rendering(
+            datetime(2024, 12, 24, 0, 55, 30, 345678), "2024-12-24T00:55:30.345"
+        )
+
+    def test_datetime_field_rendering_no_seconds_and_no_milliseconds(self):
+        self._assert_datetime_rendering(
+            datetime(2024, 12, 24, 0, 55, 0, 0), "2024-12-24T00:55:00.000"
+        )
+
+    def test_datetime_field_rendering_with_format_as_none(self):
+        self._assert_datetime_rendering(
+            datetime(2024, 12, 24, 0, 55, 30, 345678),
+            "2024-12-24T00:55:30.345",
+            {"format": None}
+        )
+
+    def test_datetime_field_rendering_with_format(self):
+        self._assert_datetime_rendering(
+            datetime(2024, 12, 24, 0, 55, 30, 345678),
+            "2024-12-24T00:55:00.000",
+            {"format": "%a %d %b %Y, %I:%M%p"}
+        )
+
+    # New project templates default to 'UTC'.
+    @override_settings(TIME_ZONE='UTC')
+    def test_datetime_field_rendering_utc(self):
+        self._assert_datetime_rendering(
+            datetime(2024, 12, 24, 0, 55, 30, 345678),
+            "2024-12-24T00:55:30.345"
+        )
+
+    @override_settings(REST_FRAMEWORK={'DATETIME_FORMAT': '%a %d %b %Y, %I:%M%p'})
+    def test_datetime_field_rendering_with_custom_datetime_format(self):
+        self._assert_datetime_rendering(
+            datetime(2024, 12, 24, 0, 55, 30, 345678),
+            "2024-12-24T00:55:00.000"
+        )
+
+    @override_settings(REST_FRAMEWORK={'DATETIME_FORMAT': None})
+    def test_datetime_field_rendering_datetime_format_is_none(self):
+        self._assert_datetime_rendering(
+            datetime(2024, 12, 24, 0, 55, 30, 345678),
+            "2024-12-24T00:55:30.345"
+        )
+
+    # Enforce it in True because in Django versions under 4.2 was False by default.
+    @override_settings(USE_TZ=True)
+    def test_datetime_field_rendering_timezone_aware_datetime(self):
+        self._assert_datetime_rendering(
+            datetime(2024, 12, 24, 0, 55, 30, 345678, tzinfo=ZoneInfo('Asia/Tokyo')),  # +09:00
+            "2024-12-23T09:55:30.345"  # Rendered in -06:00
+        )
 
 
 class TestHTMLFormRenderer(TestCase):
@@ -634,6 +714,9 @@ class BrowsableAPIRendererTests(URLPatternsTestCase):
     class AuthExampleViewSet(ExampleViewSet):
         permission_classes = [permissions.IsAuthenticated]
 
+    class SimpleSerializer(serializers.Serializer):
+        name = serializers.CharField()
+
     router = SimpleRouter()
     router.register('examples', ExampleViewSet, basename='example')
     router.register('auth-examples', AuthExampleViewSet, basename='auth-example')
@@ -641,6 +724,62 @@ class BrowsableAPIRendererTests(URLPatternsTestCase):
 
     def setUp(self):
         self.renderer = BrowsableAPIRenderer()
+        self.renderer.accepted_media_type = ''
+        self.renderer.renderer_context = {}
+
+    def test_render_form_for_serializer(self):
+        with self.subTest('Serializer'):
+            serializer = BrowsableAPIRendererTests.SimpleSerializer(data={'name': 'Name'})
+            form = self.renderer.render_form_for_serializer(serializer)
+            assert isinstance(form, str), 'Must return form for serializer'
+
+        with self.subTest('ListSerializer'):
+            list_serializer = BrowsableAPIRendererTests.SimpleSerializer(data=[{'name': 'Name'}], many=True)
+            form = self.renderer.render_form_for_serializer(list_serializer)
+            assert form is None, 'Must not return form for list serializer'
+
+    def test_get_raw_data_form(self):
+        with self.subTest('Serializer'):
+            class DummyGenericViewsetLike(APIView):
+                def get_serializer(self, **kwargs):
+                    return BrowsableAPIRendererTests.SimpleSerializer(**kwargs)
+
+                def get(self, request):
+                    response = Response()
+                    response.view = self
+                    return response
+
+                post = get
+
+            view = DummyGenericViewsetLike.as_view()
+            _request = APIRequestFactory().get('/')
+            request = Request(_request)
+            response = view(_request)
+            view = response.view
+
+            raw_data_form = self.renderer.get_raw_data_form({'name': 'Name'}, view, 'POST', request)
+            assert raw_data_form['_content'].initial == '{\n    "name": ""\n}'
+
+        with self.subTest('ListSerializer'):
+            class DummyGenericViewsetLike(APIView):
+                def get_serializer(self, **kwargs):
+                    return BrowsableAPIRendererTests.SimpleSerializer(many=True, **kwargs)  # returns ListSerializer
+
+                def get(self, request):
+                    response = Response()
+                    response.view = self
+                    return response
+
+                post = get
+
+            view = DummyGenericViewsetLike.as_view()
+            _request = APIRequestFactory().get('/')
+            request = Request(_request)
+            response = view(_request)
+            view = response.view
+
+            raw_data_form = self.renderer.get_raw_data_form([{'name': 'Name'}], view, 'POST', request)
+            assert raw_data_form['_content'].initial == '[\n    {\n        "name": ""\n    }\n]'
 
     def test_get_description_returns_empty_string_for_401_and_403_statuses(self):
         assert self.renderer.get_description({}, status_code=401) == ''
@@ -852,7 +991,7 @@ class TestDocumentationRenderer(TestCase):
             'link': coreapi.Link(url='/data/', action='get', fields=[]),
         }
         html = template.render(context)
-        assert 'testcases list' in html
+        assert 'testcases<span class="w"> </span>list' in html
 
 
 @pytest.mark.skipif(not coreapi, reason='coreapi is not installed')

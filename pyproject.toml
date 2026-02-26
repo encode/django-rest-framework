@@ -1,0 +1,137 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = [ "setuptools>=77.0.3" ]
+
+[project]
+name = "djangorestframework"
+description = "Web APIs for Django, made easy."
+readme = "README.md"
+license = "BSD-3-Clause"
+license-files = [ "LICENSE.md" ]
+authors = [ { name = "Tom Christie", email = "tom@tomchristie.com" } ]
+requires-python = ">=3.10"
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Environment :: Web Environment",
+  "Framework :: Django",
+  "Framework :: Django :: 4.2",
+  "Framework :: Django :: 5.0",
+  "Framework :: Django :: 5.1",
+  "Framework :: Django :: 5.2",
+  "Framework :: Django :: 6.0",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Internet :: WWW/HTTP",
+]
+dynamic = [ "version" ]
+dependencies = [ "django>=4.2" ]
+urls.Changelog = "https://www.django-rest-framework.org/community/release-notes/"
+urls.Funding = "https://fund.django-rest-framework.org/topics/funding/"
+urls.Homepage = "https://www.django-rest-framework.org"
+urls.Source = "https://github.com/encode/django-rest-framework"
+
+[dependency-groups]
+dev = [
+  { include-group = "docs" },
+  { include-group = "optional" },
+  { include-group = "test" },
+]
+test = [
+  "importlib-metadata<9.0",
+
+  # Pytest for running the tests.
+  "pytest==9.*",
+  "pytest-cov==7.*",
+  "pytest-django>=4.5.2,<5",
+
+  # Remove when dropping support for Django<5.0
+  "pytz",
+]
+docs = [
+  # MkDocs to build our documentation.
+  "mkdocs==1.6.1",
+  # pylinkvalidator to check for broken links in documentation.
+  "pylinkvalidator==0.3",
+]
+optional = [
+  # Optional packages which may be used with REST framework.
+  "coreapi==2.3.3",
+  "coreschema==0.0.4",
+  "django-filter",
+  "django-guardian>=2.4.0,<3.3",
+  "inflection==0.5.1",
+  "legacy-cgi; python_version>='3.13'",
+  "markdown>=3.3.7",
+  "psycopg[binary]>=3.1.8",
+  "pygments>=2.17,<2.20",
+  "pyyaml>=5.3.1,<6.1",
+  # setuptools is needed for coreapi (imports pkg_resources)
+  "setuptools<82",
+]
+django42 = [ "django>=4.2,<5.0" ]
+django50 = [ "django>=5.0,<5.1" ]
+django51 = [ "django>=5.1,<5.2" ]
+django52 = [ "django>=5.2,<6.0" ]
+django60 = [ "django>=6.0,<6.1" ]
+djangomain = [ "django @ https://github.com/django/django/archive/main.tar.gz" ]
+
+[tool.setuptools]
+
+[tool.setuptools.dynamic]
+version = { attr = "rest_framework.__version__" }
+
+[tool.setuptools.packages.find]
+include = [ "rest_framework*" ]
+
+[tool.setuptools.package-data]
+"rest_framework" = [
+  "templates/**/*",
+  "static/**/*",
+  "locale/**/*.mo",
+]
+
+[tool.isort]
+skip = [ ".tox" ]
+atomic = true
+multi_line_output = 5
+extra_standard_library = [ "types" ]
+known_third_party = [ "pytest", "_pytest", "django", "pytz", "uritemplate" ]
+known_first_party = [ "rest_framework", "tests" ]
+
+[tool.codespell]
+# Ref: https://github.com/codespell-project/codespell#using-a-config-file
+skip = "*/kickstarter-announcement.md,*.js,*.map,*.po,*.css,locale"
+ignore-words = "codespell-ignore-words.txt"
+builtin = "clear,rare,code,names,en-GB_to_en-US"
+
+[tool.pyproject-fmt]
+max_supported_python = "3.14"
+keep_full_version = true
+
+[tool.pytest.ini_options]
+addopts = "--tb=short --strict-markers -ra"
+testpaths = [ "tests" ]
+filterwarnings = [
+  "ignore:CoreAPI compatibility is deprecated*:rest_framework.RemovedInDRF318Warning",
+  "ignore:'cgi' is deprecated:DeprecationWarning",
+]
+
+[tool.coverage.run]
+# NOTE: source is ignored with pytest-cov (but uses the same).
+source = [ "." ]
+include = [ "rest_framework/*", "tests/*" ]
+branch = true
+
+[tool.coverage.report]
+include = [ "rest_framework/*", "tests/*" ]
+exclude_lines = [
+  "pragma: no cover",
+  "raise NotImplementedError",
+]

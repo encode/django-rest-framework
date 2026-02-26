@@ -6,20 +6,24 @@ on the response, such as JSON encoded data or HTML output.
 
 REST framework also provides an HTML renderer that renders the browsable API.
 """
+
 import base64
-from collections import OrderedDict
+import contextlib
+import datetime
+import sys
 from urllib import parse
 
 from django import forms
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.paginator import Page
-from django.http.multipartparser import parse_header
 from django.template import engines, loader
 from django.urls import NoReverseMatch
 from django.utils.html import mark_safe
+from django.utils.http import parse_header_parameters
+from django.utils.safestring import SafeString
 
-from rest_framework import VERSION, exceptions, serializers, status
+from rest_framework import ISO_8601, VERSION, exceptions, serializers, status
 from rest_framework.compat import (
     INDENT_SEPARATORS, LONG_SEPARATORS, SHORT_SEPARATORS, coreapi, coreschema,
     pygments_css, yaml
@@ -72,12 +76,9 @@ class JSONRenderer(BaseRenderer):
             # If the media type looks like 'application/json; indent=4',
             # then pretty print the result.
             # Note that we coerce `indent=0` into `indent=None`.
-            base_media_type, params = parse_header(accepted_media_type.encode('ascii'))
-            try:
+            base_media_type, params = parse_header_parameters(accepted_media_type)
+            with contextlib.suppress(KeyError, ValueError, TypeError):
                 return zero_as_none(max(min(int(params['indent']), 8), 0))
-            except (KeyError, ValueError, TypeError):
-                pass
-
         # If 'indent' is provided in the context, then pretty print the result.
         # E.g. If we're being called by the BrowsableAPIRenderer.
         return renderer_context.get('indent', None)
@@ -171,6 +172,10 @@ class TemplateHTMLRenderer(BaseRenderer):
 
     def get_template_context(self, data, renderer_context):
         response = renderer_context['response']
+        # in case a ValidationError is caught the data parameter may be a list
+        # see rest_framework.views.exception_handler
+        if isinstance(data, list):
+            return {'details': data, 'status_code': response.status_code}
         if response.exception:
             data['status_code'] = response.status_code
         return data
@@ -335,11 +340,32 @@ class HTMLFormRenderer(BaseRenderer):
             style['template_pack'] = parent_style.get('template_pack', self.template_pack)
         style['renderer'] = self
 
-        # Get a clone of the field with text-only value representation.
+        # Get a clone of the field with text-only value representation ('' if None or False).
         field = field.as_form_field()
 
-        if style.get('input_type') == 'datetime-local' and isinstance(field.value, str):
-            field.value = field.value.rstrip('Z')
+        if style.get('input_type') == 'datetime-local':
+            try:
+                format_ = field._field.format
+            except AttributeError:
+                format_ = api_settings.DATETIME_FORMAT
+
+            if format_ is not None:
+                # field.value is expected to be a string
+                # https://www.django-rest-framework.org/api-guide/fields/#datetimefield
+                field_value = field.value
+                if format_ == ISO_8601 and sys.version_info < (3, 11):
+                    # We can drop this branch once we drop support for Python < 3.11
+                    # https://docs.python.org/3/whatsnew/3.11.html#datetime
+                    field_value = field_value.rstrip('Z')
+                field.value = (
+                    datetime.datetime.fromisoformat(field_value) if format_ == ISO_8601
+                    else datetime.datetime.strptime(field_value, format_)
+                )
+
+            # The format of an input type="datetime-local" is "yyyy-MM-ddThh:mm"
+            # followed by optional ":ss" or ":ss.SSS", so keep only the first three
+            # digits of milliseconds to avoid browser console error.
+            field.value = field.value.replace(tzinfo=None).isoformat(timespec="milliseconds")
 
         if 'template' in style:
             template_name = style['template']
@@ -489,11 +515,8 @@ class BrowsableAPIRenderer(BaseRenderer):
                 return
 
             if existing_serializer is not None:
-                try:
+                with contextlib.suppress(TypeError):
                     return self.render_form_for_serializer(existing_serializer)
-                except TypeError:
-                    pass
-
             if has_serializer:
                 if method in ('PUT', 'PATCH'):
                     serializer = view.get_serializer(instance=instance, **kwargs)
@@ -511,6 +534,9 @@ class BrowsableAPIRenderer(BaseRenderer):
             return self.render_form_for_serializer(serializer)
 
     def render_form_for_serializer(self, serializer):
+        if isinstance(serializer, serializers.ListSerializer):
+            return None
+
         if hasattr(serializer, 'initial_data'):
             serializer.is_valid()
 
@@ -560,10 +586,13 @@ class BrowsableAPIRenderer(BaseRenderer):
                 context['indent'] = 4
 
                 # strip HiddenField from output
+                is_list_serializer = isinstance(serializer, serializers.ListSerializer)
+                serializer = serializer.child if is_list_serializer else serializer
                 data = serializer.data.copy()
                 for name, field in serializer.fields.items():
                     if isinstance(field, serializers.HiddenField):
                         data.pop(name, None)
+                data = [data] if is_list_serializer else data
                 content = renderer.render(data, accepted, context)
                 # Renders returns bytes, but CharField expects a str.
                 content = content.decode()
@@ -657,7 +686,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         raw_data_patch_form = self.get_raw_data_form(data, view, 'PATCH', request)
         raw_data_put_or_patch_form = raw_data_put_form or raw_data_patch_form
 
-        response_headers = OrderedDict(sorted(response.items()))
+        response_headers = dict(sorted(response.items()))
         renderer_content_type = ''
         if renderer:
             renderer_content_type = '%s' % renderer.media_type
@@ -1060,6 +1089,8 @@ class OpenAPIRenderer(BaseRenderer):
         class Dumper(yaml.Dumper):
             def ignore_aliases(self, data):
                 return True
+        Dumper.add_representer(SafeString, Dumper.represent_str)
+        Dumper.add_representer(datetime.timedelta, encoders.CustomScalar.represent_timedelta)
         return yaml.dump(data, default_flow_style=False, sort_keys=False, Dumper=Dumper).encode('utf-8')
 
 

@@ -34,13 +34,11 @@ If the requested view was only configured with renderers for `YAML` and `HTML`, 
 
 For more information on the `HTTP Accept` header, see [RFC 2616][accept-header]
 
----
 
-**Note**: "q" values are not taken into account by REST framework when determining preference.  The use of "q" values negatively impacts caching, and in the author's opinion they are an unnecessary and overcomplicated approach to content negotiation.
+!!! note
+    "q" values are not taken into account by REST framework when determining preference.  The use of "q" values negatively impacts caching, and in the author's opinion they are an unnecessary and overcomplicated approach to content negotiation.
 
-This is a valid approach as the HTTP spec deliberately underspecifies how a server should weight server-based preferences against client-based preferences.
-
----
+    This is a valid approach as the HTTP spec deliberately underspecifies how a server should weight server-based preferences against client-based preferences.
 
 # Custom content negotiation
 
@@ -82,7 +80,7 @@ The default content negotiation class may be set globally, using the `DEFAULT_CO
 
 You can also set the content negotiation used for an individual view, or viewset, using the `APIView` class-based views.
 
-	from myapp.negotiation import IgnoreClientContentNegotiation
+    from myapp.negotiation import IgnoreClientContentNegotiation
     from rest_framework.response import Response
     from rest_framework.views import APIView
 

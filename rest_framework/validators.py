@@ -6,7 +6,9 @@ This gives us better separation of concerns, allows us to use single-step
 object creation, and makes it possible to switch between using the implicit
 `ModelSerializer` class and an equivalent explicit `Serializer` class.
 """
+from django.core.exceptions import FieldError
 from django.db import DataError
+from django.db.models import Exists
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework.exceptions import ValidationError
@@ -20,6 +22,17 @@ def qs_exists(queryset):
     try:
         return queryset.exists()
     except (TypeError, ValueError, DataError):
+        return False
+
+
+def qs_exists_with_condition(queryset, condition, against):
+    if condition is None:
+        return qs_exists(queryset)
+    try:
+        # use the same query as UniqueConstraint.validate
+        # https://github.com/django/django/blob/7ba2a0db20c37a5b1500434ca4ed48022311c171/django/db/models/constraints.py#L672
+        return (condition & Exists(queryset.filter(condition))).check(against)
+    except (TypeError, ValueError, DataError, FieldError):
         return False
 
 
@@ -79,6 +92,15 @@ class UniqueValidator:
             smart_repr(self.queryset)
         )
 
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return (self.message == other.message
+                and self.requires_context == other.requires_context
+                and self.queryset == other.queryset
+                and self.lookup == other.lookup
+                )
+
 
 class UniqueTogetherValidator:
     """
@@ -89,11 +111,15 @@ class UniqueTogetherValidator:
     message = _('The fields {field_names} must make a unique set.')
     missing_message = _('This field is required.')
     requires_context = True
+    code = 'unique'
 
-    def __init__(self, queryset, fields, message=None):
+    def __init__(self, queryset, fields, message=None, condition_fields=None, condition=None, code=None):
         self.queryset = queryset
         self.fields = fields
         self.message = message or self.message
+        self.condition_fields = [] if condition_fields is None else condition_fields
+        self.condition = condition
+        self.code = code or self.code
 
     def enforce_required_fields(self, attrs, serializer):
         """
@@ -105,7 +131,7 @@ class UniqueTogetherValidator:
 
         missing_items = {
             field_name: self.missing_message
-            for field_name in self.fields
+            for field_name in (*self.fields, *self.condition_fields)
             if serializer.fields[field_name].source not in attrs
         }
         if missing_items:
@@ -150,21 +176,51 @@ class UniqueTogetherValidator:
         queryset = self.filter_queryset(attrs, queryset, serializer)
         queryset = self.exclude_current_instance(attrs, queryset, serializer.instance)
 
-        # Ignore validation if any field is None
-        checked_values = [
-            value for field, value in attrs.items() if field in self.fields
+        checked_names = [
+            serializer.fields[field_name].source for field_name in self.fields
         ]
-        if None not in checked_values and qs_exists(queryset):
+        # Ignore validation if any field is None
+        if serializer.instance is None:
+            checked_values = [attrs[field_name] for field_name in checked_names]
+        else:
+            # Ignore validation if all field values are unchanged
+            checked_values = [
+                attrs[field_name]
+                for field_name in checked_names
+                if attrs[field_name] != getattr(serializer.instance, field_name)
+            ]
+
+        condition_sources = (serializer.fields[field_name].source for field_name in self.condition_fields)
+        condition_kwargs = {
+            source: attrs[source]
+            if source in attrs
+            else getattr(serializer.instance, source)
+            for source in condition_sources
+        }
+        if checked_values and None not in checked_values and qs_exists_with_condition(queryset, self.condition, condition_kwargs):
             field_names = ', '.join(self.fields)
             message = self.message.format(field_names=field_names)
-            raise ValidationError(message, code='unique')
+            raise ValidationError(message, code=self.code)
 
     def __repr__(self):
-        return '<%s(queryset=%s, fields=%s)>' % (
+        return '<{}({})>'.format(
             self.__class__.__name__,
-            smart_repr(self.queryset),
-            smart_repr(self.fields)
+            ', '.join(
+                f'{attr}={smart_repr(getattr(self, attr))}'
+                for attr in ('queryset', 'fields', 'condition')
+                if getattr(self, attr) is not None)
         )
+
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return (self.message == other.message
+                and self.requires_context == other.requires_context
+                and self.missing_message == other.missing_message
+                and self.queryset == other.queryset
+                and self.fields == other.fields
+                and self.code == other.code
+                )
 
 
 class ProhibitSurrogateCharactersValidator:
@@ -176,6 +232,13 @@ class ProhibitSurrogateCharactersValidator:
                                     if 0xD800 <= ord(ch) <= 0xDFFF):
             message = self.message.format(code_point=ord(surrogate_character))
             raise ValidationError(message, code=self.code)
+
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return (self.message == other.message
+                and self.code == other.code
+                )
 
 
 class BaseUniqueForValidator:
@@ -229,6 +292,17 @@ class BaseUniqueForValidator:
             raise ValidationError({
                 self.field: message
             }, code='unique')
+
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return (self.message == other.message
+                and self.missing_message == other.missing_message
+                and self.requires_context == other.requires_context
+                and self.queryset == other.queryset
+                and self.field == other.field
+                and self.date_field == other.date_field
+                )
 
     def __repr__(self):
         return '<%s(queryset=%s, field=%s, date_field=%s)>' % (

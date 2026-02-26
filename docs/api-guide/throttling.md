@@ -19,9 +19,9 @@ Multiple throttles can also be used if you want to impose both burst throttling 
 
 Throttles do not necessarily only refer to rate-limiting requests.  For example a storage service might also need to throttle against bandwidth, and a paid data service might want to throttle against a certain number of a records being accessed.
 
-**The application-level throttling that REST framework provides should not be considered a security measure or protection against brute forcing or denial-of-service attacks. Deliberately malicious actors will always be able to spoof IP origins. In addition to this, the built-in throttling implementations are implemented using Django's cache framework, and use non-atomic operations to determine the request rate, which may sometimes result in some fuzziness.
+**The application-level throttling that REST framework provides should not be considered a security measure or protection against brute forcing or denial-of-service attacks. Deliberately malicious actors will always be able to spoof IP origins. In addition to this, the built-in throttling implementations are implemented using Django's cache framework, and use non-atomic operations to determine the request rate, which may sometimes result in some fuzziness.**
 
-The application-level throttling provided by REST framework is intended for implementing policies such as different business tiers and basic protections against service over-use.**
+**The application-level throttling provided by REST framework is intended for implementing policies such as different business tiers and basic protections against service over-use.**
 
 ## How throttling is determined
 
@@ -45,14 +45,14 @@ The default throttling policy may be set globally, using the `DEFAULT_THROTTLE_C
         }
     }
 
-The rate descriptions used in `DEFAULT_THROTTLE_RATES` may include `second`, `minute`, `hour` or `day` as the throttle period.
+The rates used in `DEFAULT_THROTTLE_RATES` can be specified over a period of second, minute, hour or day. The period must be specified after the `/` separator using `s`, `m`, `h` or `d`, respectively. For increased clarity, extended units such as `second`, `minute`, `hour`, `day` or even abbreviations like `sec`, `min`, `hr` are allowed, as only the first character is relevant to identify the rate.
 
 You can also set the throttling policy on a per-view or per-viewset basis,
 using the `APIView` class-based views.
 
-	from rest_framework.response import Response
+    from rest_framework.response import Response
     from rest_framework.throttling import UserRateThrottle
-	from rest_framework.views import APIView
+    from rest_framework.views import APIView
 
     class ExampleView(APIView):
         throttle_classes = [UserRateThrottle]

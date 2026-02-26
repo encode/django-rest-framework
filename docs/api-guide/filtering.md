@@ -213,25 +213,29 @@ This will allow the client to filter the items in the list by making queries suc
 You can also perform a related lookup on a ForeignKey or ManyToManyField with the lookup API double-underscore notation:
 
     search_fields = ['username', 'email', 'profile__profession']
-    
+
 For [JSONField][JSONField] and [HStoreField][HStoreField] fields you can filter based on nested values within the data structure using the same double-underscore notation:
 
     search_fields = ['data__breed', 'data__owner__other_pets__0__name']
 
-By default, searches will use case-insensitive partial matches.  The search parameter may contain multiple search terms, which should be whitespace and/or comma separated.  If multiple search terms are used then objects will be returned in the list only if all the provided terms are matched.
+By default, searches will use case-insensitive partial matches. The search parameter may contain multiple search terms, which should be whitespace and/or comma separated. If multiple search terms are used then objects will be returned in the list only if all the provided terms are matched. Searches may contain _quoted phrases_ with spaces, each phrase is considered as a single search term.
 
-The search behavior may be restricted by prepending various characters to the `search_fields`.
 
-* '^' Starts-with search.
-* '=' Exact matches.
-* '@' Full-text search.  (Currently only supported Django's [PostgreSQL backend][postgres-search].)
-* '$' Regex search.
+The search behavior may be specified by prefixing field names in `search_fields` with one of the following characters (which is equivalent to adding `__<lookup>` to the field):
+
+| Prefix | Lookup        |                    |
+| ------ | --------------| ------------------ |
+| `^`    | `istartswith` | Starts-with search.|
+| `=`    | `iexact`      | Exact matches.     |
+| `$`    | `iregex`      | Regex search.      |
+| `@`    | `search`      | Full-text search (Currently only supported Django's [PostgreSQL backend][postgres-search]). |
+| None   | `icontains`   | Contains search (Default).  |
 
 For example:
 
     search_fields = ['=username', '=email']
 
-By default, the search parameter is named `'search'`, but this may be overridden with the `SEARCH_PARAM` setting.
+By default, the search parameter is named `'search'`, but this may be overridden with the `SEARCH_PARAM` setting in the `REST_FRAMEWORK` configuration.
 
 To dynamically change search fields based on request content, it's possible to subclass the `SearchFilter` and override the `get_search_fields()` function. For example, the following subclass will only search on `title` if the query parameter `title_only` is in the request:
 
@@ -253,7 +257,7 @@ The `OrderingFilter` class supports simple query parameter controlled ordering o
 
 ![Ordering Filter](../img/ordering-filter.png)
 
-By default, the query parameter is named `'ordering'`, but this may by overridden with the `ORDERING_PARAM` setting.
+By default, the query parameter is named `'ordering'`, but this may be overridden with the `ORDERING_PARAM` setting in the `REST_FRAMEWORK` configuration.
 
 For example, to order users by username:
 
@@ -269,7 +273,7 @@ Multiple orderings may also be specified:
 
 ### Specifying which fields may be ordered against
 
-It's recommended that you explicitly specify which fields the API should allowing in the ordering filter.  You can do this by setting an `ordering_fields` attribute on the view, like so:
+It's recommended that you explicitly specify which fields the API should allow in the ordering filter.  You can do this by setting an `ordering_fields` attribute on the view, like so:
 
     class UserListView(generics.ListAPIView):
         queryset = User.objects.all()
@@ -335,15 +339,6 @@ Generic filters may also present an interface in the browsable API. To do so you
 
 The method should return a rendered HTML string.
 
-## Filtering & schemas
-
-You can also make the filter controls available to the schema autogeneration
-that REST framework provides, by implementing a `get_schema_fields()` method. This method should have the following signature:
-
-`get_schema_fields(self, view)`
-
-The method should return a list of `coreapi.Field` instances.
-
 # Third party packages
 
 The following third party packages provide additional filter implementations.
@@ -372,6 +367,6 @@ The [djangorestframework-word-filter][django-rest-framework-word-search-filter] 
 [django-rest-framework-word-search-filter]: https://github.com/trollknurr/django-rest-framework-word-search-filter
 [django-url-filter]: https://github.com/miki725/django-url-filter
 [drf-url-filter]: https://github.com/manjitkumar/drf-url-filters
-[HStoreField]: https://docs.djangoproject.com/en/3.0/ref/contrib/postgres/fields/#hstorefield
-[JSONField]: https://docs.djangoproject.com/en/3.0/ref/contrib/postgres/fields/#jsonfield
+[HStoreField]: https://docs.djangoproject.com/en/stable/ref/contrib/postgres/fields/#hstorefield
+[JSONField]: https://docs.djangoproject.com/en/stable/ref/models/fields/#django.db.models.JSONField
 [postgres-search]: https://docs.djangoproject.com/en/stable/ref/contrib/postgres/search/

@@ -10,41 +10,17 @@ Full documentation for the project is available at [https://www.django-rest-fram
 
 ---
 
-# Funding
-
-REST framework is a *collaboratively funded project*. If you use
-REST framework commercially we strongly encourage you to invest in its
-continued development by [signing up for a paid plan][funding].
-
-The initial aim is to provide a single full-time position on REST framework.
-*Every single sign-up makes a significant impact towards making that possible.*
-
-[![][sentry-img]][sentry-url]
-[![][stream-img]][stream-url]
-[![][rollbar-img]][rollbar-url]
-[![][esg-img]][esg-url]
-[![][retool-img]][retool-url]
-[![][bitio-img]][bitio-url]
-[![][posthog-img]][posthog-url]
-[![][cryptapi-img]][cryptapi-url]
-
-Many thanks to all our [wonderful sponsors][sponsors], and in particular to our premium backers, [Sentry][sentry-url], [Stream][stream-url], [Rollbar][rollbar-url], [ESG][esg-url], [Retool][retool-url], [bit.io][bitio-url], [PostHog][posthog-url], and [CryptAPI][cryptapi-url].
-
----
-
 # Overview
 
 Django REST framework is a powerful and flexible toolkit for building Web APIs.
 
 Some reasons you might want to use REST framework:
 
-* The [Web browsable API][sandbox] is a huge usability win for your developers.
+* The Web browsable API is a huge usability win for your developers.
 * [Authentication policies][authentication] including optional packages for [OAuth1a][oauth1-section] and [OAuth2][oauth2-section].
 * [Serialization][serializers] that supports both [ORM][modelserializer-section] and [non-ORM][serializer-section] data sources.
 * Customizable all the way down - just use [regular function-based views][functionview-section] if you don't need the [more][generic-views] [powerful][viewsets] [features][routers].
 * [Extensive documentation][docs], and [great community support][group].
-
-There is a live example API for testing purposes, [available here][sandbox].
 
 **Below**: *Screenshot from the browsable API*
 
@@ -54,8 +30,8 @@ There is a live example API for testing purposes, [available here][sandbox].
 
 # Requirements
 
-* Python (3.6, 3.7, 3.8, 3.9, 3.10)
-* Django (2.2, 3.0, 3.1, 3.2, 4.0)
+* Python 3.10+
+* Django 4.2, 5.0, 5.1, 5.2, 6.0
 
 We **highly recommend** and only officially support the latest patch release of
 each Python and Django series.
@@ -67,10 +43,11 @@ Install using `pip`...
     pip install djangorestframework
 
 Add `'rest_framework'` to your `INSTALLED_APPS` setting.
+
 ```python
 INSTALLED_APPS = [
-    ...
-    'rest_framework',
+    # ...
+    "rest_framework",
 ]
 ```
 
@@ -78,7 +55,7 @@ INSTALLED_APPS = [
 
 Let's take a look at a quick example of using REST framework to build a simple model-backed API for accessing users and groups.
 
-Startup up a new project like so...
+Start up a new project like so...
 
     pip install django
     pip install djangorestframework
@@ -90,15 +67,16 @@ Startup up a new project like so...
 Now edit the `example/urls.py` module in your project:
 
 ```python
-from django.urls import path, include
 from django.contrib.auth.models import User
-from rest_framework import serializers, viewsets, routers
+from django.urls import include, path
+from rest_framework import routers, serializers, viewsets
+
 
 # Serializers define the API representation.
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
-        fields = ['url', 'username', 'email', 'is_staff']
+        fields = ["url", "username", "email", "is_staff"]
 
 
 # ViewSets define the view behavior.
@@ -109,14 +87,13 @@ class UserViewSet(viewsets.ModelViewSet):
 
 # Routers provide a way of automatically determining the URL conf.
 router = routers.DefaultRouter()
-router.register(r'users', UserViewSet)
-
+router.register(r"users", UserViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
-    path('', include(router.urls)),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path("", include(router.urls)),
+    path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
 ]
 ```
 
@@ -126,15 +103,15 @@ Add the following to your `settings.py` module:
 
 ```python
 INSTALLED_APPS = [
-    ...  # Make sure to include the default installed apps here.
-    'rest_framework',
+    # ... make sure to include the default installed apps here.
+    "rest_framework",
 ]
 
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly",
     ]
 }
 ```
@@ -173,42 +150,20 @@ Full documentation for the project is available at [https://www.django-rest-fram
 
 For questions and support, use the [REST framework discussion group][group], or `#restframework` on libera.chat IRC.
 
-You may also want to [follow the author on Twitter][twitter].
-
 # Security
 
 Please see the [security policy][security-policy].
 
 [build-status-image]: https://github.com/encode/django-rest-framework/actions/workflows/main.yml/badge.svg
 [build-status]: https://github.com/encode/django-rest-framework/actions/workflows/main.yml
-[coverage-status-image]: https://img.shields.io/codecov/c/github/encode/django-rest-framework/master.svg
-[codecov]: https://codecov.io/github/encode/django-rest-framework?branch=master
+[coverage-status-image]: https://img.shields.io/codecov/c/github/encode/django-rest-framework/main.svg
+[codecov]: https://codecov.io/github/encode/django-rest-framework?branch=main
 [pypi-version]: https://img.shields.io/pypi/v/djangorestframework.svg
 [pypi]: https://pypi.org/project/djangorestframework/
-[twitter]: https://twitter.com/_tomchristie
 [group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
-[sandbox]: https://restframework.herokuapp.com/
 
 [funding]: https://fund.django-rest-framework.org/topics/funding/
 [sponsors]: https://fund.django-rest-framework.org/topics/funding/#our-sponsors
-
-[sentry-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/sentry-readme.png
-[stream-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/stream-readme.png
-[rollbar-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/rollbar-readme.png
-[esg-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/esg-readme.png
-[retool-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/retool-readme.png
-[bitio-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/bitio-readme.png
-[posthog-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/posthog-readme.png
-[cryptapi-img]: https://raw.githubusercontent.com/encode/django-rest-framework/master/docs/img/premium/cryptapi-readme.png
-
-[sentry-url]: https://getsentry.com/welcome/
-[stream-url]: https://getstream.io/?utm_source=DjangoRESTFramework&utm_medium=Webpage_Logo_Ad&utm_content=Developer&utm_campaign=DjangoRESTFramework_Jan2022_HomePage
-[rollbar-url]: https://rollbar.com/?utm_source=django&utm_medium=sponsorship&utm_campaign=freetrial
-[esg-url]: https://software.esg-usa.com/
-[retool-url]: https://retool.com/?utm_source=djangorest&utm_medium=sponsorship
-[bitio-url]: https://bit.io/jobs?utm_source=DRF&utm_medium=sponsor&utm_campaign=DRF_sponsorship
-[posthog-url]: https://posthog.com?utm_source=drf&utm_medium=sponsorship&utm_campaign=open-source-sponsorship
-[cryptapi-url]: https://cryptapi.io
 
 [oauth1-section]: https://www.django-rest-framework.org/api-guide/authentication/#django-rest-framework-oauth
 [oauth2-section]: https://www.django-rest-framework.org/api-guide/authentication/#django-oauth-toolkit

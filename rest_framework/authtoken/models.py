@@ -1,5 +1,4 @@
-import binascii
-import os
+import secrets
 
 from django.conf import settings
 from django.db import models
@@ -28,13 +27,22 @@ class Token(models.Model):
         verbose_name_plural = _("Tokens")
 
     def save(self, *args, **kwargs):
+        """
+        Save the token instance.
+
+        If no key is provided, generates a cryptographically secure key.
+        For new tokens, ensures they are inserted as new (not updated).
+        """
         if not self.key:
             self.key = self.generate_key()
+            # For new objects, force INSERT to prevent overwriting existing tokens
+            if self._state.adding:
+                kwargs['force_insert'] = True
         return super().save(*args, **kwargs)
 
     @classmethod
     def generate_key(cls):
-        return binascii.hexlify(os.urandom(20)).decode()
+        return secrets.token_hex(20)
 
     def __str__(self):
         return self.key
@@ -51,4 +59,5 @@ class TokenProxy(Token):
     class Meta:
         proxy = 'rest_framework.authtoken' in settings.INSTALLED_APPS
         abstract = 'rest_framework.authtoken' not in settings.INSTALLED_APPS
-        verbose_name = "token"
+        verbose_name = _("Token")
+        verbose_name_plural = _("Tokens")

@@ -1,0 +1,49 @@
+# Keep GitHub Actions up to date with GitHub's Dependabot...
+# https://docs.github.com/en/code-security/dependabot/working-with-dependabot/keeping-your-actions-up-to-date-with-dependabot
+# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file#package-ecosystem
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    groups:
+      github-actions:
+        patterns:
+          - "*"  # Group all Action updates into a single larger pull request
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+  
+  - package-ecosystem: "pip"
+    directory: "/"
+
+    groups:
+      test:
+        patterns:
+          - "pytest*"
+          - "attrs"
+          - "importlib-metadata"
+          - "pytz"
+
+      docs:
+        patterns:
+          - "mkdocs"
+          - "pylinkvalidator"
+
+      optional:
+        patterns:
+          - "coreapi"
+          - "coreschema"
+          - "django-filter"
+          - "django-guardian"
+          - "inflection"
+          - "legacy-cgi"
+          - "markdown"
+          - "psycopg*"
+          - "pygments"
+          - "pyyaml"
+
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7

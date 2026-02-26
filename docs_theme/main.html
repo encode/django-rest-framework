@@ -16,6 +16,9 @@
   <link href="{{ 'css/bootstrap.css'|url }}" rel="stylesheet">
   <link href="{{ 'css/bootstrap-responsive.css'|url }}" rel="stylesheet">
   <link href="{{ 'css/default.css'|url }}" rel="stylesheet">
+  {% for path in config.extra_css %}
+    <link href="{{ path|url }}" rel="stylesheet">
+  {% endfor %}
 
 
   <script type="text/javascript">
@@ -110,7 +113,7 @@
             {% block content %}
               {% if page.meta.source %}
                 {% for filename in page.meta.source %}
-                  <a class="github" href="https://github.com/encode/django-rest-framework/tree/master/rest_framework/{{ filename }}">
+                  <a class="github" href="https://github.com/encode/django-rest-framework/tree/main/rest_framework/{{ filename }}">
                     <span class="label label-info">{{ filename }}</span>
                   </a>
                 {% endfor %}

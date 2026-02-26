@@ -48,7 +48,7 @@ We can now use `CommentSerializer` to serialize a comment, or list of comments. 
     serializer.data
     # {'email': 'leila@example.com', 'content': 'foo bar', 'created': '2016-01-27T15:17:10.375877'}
 
-At this point we've translated the model instance into Python native datatypes.  To finalise the serialization process we render the data into `json`.
+At this point we've translated the model instance into Python native datatypes.  To finalize the serialization process we render the data into `json`.
 
     from rest_framework.renderers import JSONRenderer
 
@@ -155,7 +155,7 @@ When deserializing data, you always need to call `is_valid()` before attempting 
     serializer.is_valid()
     # False
     serializer.errors
-    # {'email': ['Enter a valid e-mail address.'], 'created': ['This field is required.']}
+    # {'email': ['Enter a valid email address.'], 'created': ['This field is required.']}
 
 Each key in the dictionary will be the field name, and the values will be lists of strings of any error messages corresponding to that field.  The `non_field_errors` key may also be present, and will list any general validation errors. The name of the `non_field_errors` key may be customized using the `NON_FIELD_ERRORS_KEY` REST framework setting.
 
@@ -192,11 +192,8 @@ Your `validate_<field_name>` methods should return the validated value or raise 
                 raise serializers.ValidationError("Blog post is not about Django")
             return value
 
----
-
-**Note:** If your `<field_name>` is declared on your serializer with the parameter `required=False` then this validation step will not take place if the field is not included.
-
----
+!!! note
+    If your `<field_name>` is declared on your serializer with the parameter `required=False` then this validation step will not take place if the field is not included.
 
 #### Object-level validation
 
@@ -226,14 +223,14 @@ Individual fields on a serializer can include validators, by declaring them on t
             raise serializers.ValidationError('Not a multiple of ten')
 
     class GameRecord(serializers.Serializer):
-        score = IntegerField(validators=[multiple_of_ten])
+        score = serializers.IntegerField(validators=[multiple_of_ten])
         ...
 
 Serializer classes can also include reusable validators that are applied to the complete set of field data. These validators are included by declaring them on an inner `Meta` class, like so:
 
     class EventSerializer(serializers.Serializer):
         name = serializers.CharField()
-        room_number = serializers.IntegerField(choices=[101, 102, 103, 201])
+        room_number = serializers.ChoiceField(choices=[101, 102, 103, 201])
         date = serializers.DateField()
 
         class Meta:
@@ -298,7 +295,7 @@ When dealing with nested representations that support deserializing the data, an
     serializer.is_valid()
     # False
     serializer.errors
-    # {'user': {'email': ['Enter a valid e-mail address.']}, 'created': ['This field is required.']}
+    # {'user': {'email': ['Enter a valid email address.']}, 'created': ['This field is required.']}
 
 Similarly, the `.validated_data` property will include nested data structures.
 
@@ -542,20 +539,16 @@ This option should be a list or tuple of field names, and is declared as follows
 
 Model fields which have `editable=False` set, and `AutoField` fields will be set to read-only by default, and do not need to be added to the `read_only_fields` option.
 
----
+!!! note
+    There is a special-case where a read-only field is part of a `unique_together` constraint at the model level. In this case the field is required by the serializer class in order to validate the constraint, but should also not be editable by the user.
 
-**Note**: There is a special-case where a read-only field is part of a `unique_together` constraint at the model level. In this case the field is required by the serializer class in order to validate the constraint, but should also not be editable by the user.
+    The right way to deal with this is to specify the field explicitly on the serializer, providing both the `read_only=True` and `default=…` keyword arguments.
 
-The right way to deal with this is to specify the field explicitly on the serializer, providing both the `read_only=True` and `default=…` keyword arguments.
+    One example of this is a read-only relation to the currently authenticated `User` which is `unique_together` with another identifier. In this case you would declare the user field like so:
 
-One example of this is a read-only relation to the currently authenticated `User` which is `unique_together` with another identifier. In this case you would declare the user field like so:
+        user = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
 
-    user = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
-
-Please review the [Validators Documentation](/api-guide/validators/) for details on the [UniqueTogetherValidator](/api-guide/validators/#uniquetogethervalidator) and [CurrentUserDefault](/api-guide/validators/#currentuserdefault) classes.
-
----
-
+    Please review the [Validators Documentation](/api-guide/validators/) for details on the [UniqueTogetherValidator](/api-guide/validators/#uniquetogethervalidator) and [CurrentUserDefault](/api-guide/validators/#currentuserdefault) classes.
 
 ## Additional keyword arguments
 
@@ -594,25 +587,25 @@ The ModelSerializer class also exposes an API that you can override in order to 
 
 Normally if a `ModelSerializer` does not generate the fields you need by default then you should either add them to the class explicitly, or simply use a regular `Serializer` class instead. However in some cases you may want to create a new base class that defines how the serializer fields are created for any given model.
 
-### `.serializer_field_mapping`
+### `serializer_field_mapping`
 
 A mapping of Django model fields to REST framework serializer fields. You can override this mapping to alter the default serializer fields that should be used for each model field.
 
-### `.serializer_related_field`
+### `serializer_related_field`
 
 This property should be the serializer field class, that is used for relational fields by default.
 
-For `ModelSerializer` this defaults to `PrimaryKeyRelatedField`.
+For `ModelSerializer` this defaults to `serializers.PrimaryKeyRelatedField`.
 
 For `HyperlinkedModelSerializer` this defaults to `serializers.HyperlinkedRelatedField`.
 
-### `.serializer_url_field`
+### `serializer_url_field`
 
 The serializer field class that should be used for any `url` field on the serializer.
 
 Defaults to `serializers.HyperlinkedIdentityField`
 
-### `.serializer_choice_field`
+### `serializer_choice_field`
 
 The serializer field class that should be used for any choice fields on the serializer.
 
@@ -622,13 +615,13 @@ Defaults to `serializers.ChoiceField`
 
 The following methods are called to determine the class and keyword arguments for each field that should be automatically included on the serializer. Each of these methods should return a two tuple of `(field_class, field_kwargs)`.
 
-### `.build_standard_field(self, field_name, model_field)`
+### `build_standard_field(self, field_name, model_field)`
 
 Called to generate a serializer field that maps to a standard model field.
 
 The default implementation returns a serializer class based on the `serializer_field_mapping` attribute.
 
-### `.build_relational_field(self, field_name, relation_info)`
+### `build_relational_field(self, field_name, relation_info)`
 
 Called to generate a serializer field that maps to a relational model field.
 
@@ -636,7 +629,7 @@ The default implementation returns a serializer class based on the `serializer_r
 
 The `relation_info` argument is a named tuple, that contains `model_field`, `related_model`, `to_many` and `has_through_model` properties.
 
-### `.build_nested_field(self, field_name, relation_info, nested_depth)`
+### `build_nested_field(self, field_name, relation_info, nested_depth)`
 
 Called to generate a serializer field that maps to a relational model field, when the `depth` option has been set.
 
@@ -646,17 +639,17 @@ The `nested_depth` will be the value of the `depth` option, minus one.
 
 The `relation_info` argument is a named tuple, that contains `model_field`, `related_model`, `to_many` and `has_through_model` properties.
 
-### `.build_property_field(self, field_name, model_class)`
+### `build_property_field(self, field_name, model_class)`
 
 Called to generate a serializer field that maps to a property or zero-argument method on the model class.
 
 The default implementation returns a `ReadOnlyField` class.
 
-### `.build_url_field(self, field_name, model_class)`
+### `build_url_field(self, field_name, model_class)`
 
 Called to generate a serializer field for the serializer's own `url` field. The default implementation returns a `HyperlinkedIdentityField` class.
 
-### `.build_unknown_field(self, field_name, model_class)`
+### `build_unknown_field(self, field_name, model_class)`
 
 Called when the field name did not map to any model field or model property.
 The default implementation raises an error, although subclasses may customize this behavior.
@@ -708,7 +701,7 @@ You can override a URL field view name and lookup field by using either, or both
     class AccountSerializer(serializers.HyperlinkedModelSerializer):
         class Meta:
             model = Account
-            fields = ['account_url', 'account_name', 'users', 'created']
+            fields = ['url', 'account_name', 'users', 'created']
             extra_kwargs = {
                 'url': {'view_name': 'accounts', 'lookup_field': 'account_name'},
                 'users': {'lookup_field': 'username'}
@@ -758,11 +751,11 @@ This is `True` by default, but can be set to `False` if you want to disallow emp
 
 ### `max_length`
 
-This is `None` by default, but can be set to a positive integer if you want to validates that the list contains no more than this number of elements.
+This is `None` by default, but can be set to a positive integer if you want to validate that the list contains no more than this number of elements.
 
 ### `min_length`
 
-This is `None` by default, but can be set to a positive integer if you want to validates that the list contains no fewer than this number of elements.
+This is `None` by default, but can be set to a positive integer if you want to validate that the list contains no fewer than this number of elements.
 
 ### Customizing `ListSerializer` behavior
 
@@ -845,8 +838,6 @@ Here's an example of how you might choose to implement multiple updates:
         class Meta:
             list_serializer_class = BookListSerializer
 
-It is possible that a third party package may be included alongside the 3.1 release that provides some automatic support for multiple update operations, similar to the `allow_add_remove` behavior that was present in REST framework 2.
-
 #### Customizing ListSerializer initialization
 
 When a serializer with `many=True` is instantiated, we need to determine which arguments and keyword arguments should be passed to the `.__init__()` method for both the child `Serializer` class, and for the parent `ListSerializer` class.
@@ -886,7 +877,7 @@ Because this class provides the same interface as the `Serializer` class, you ca
 
 The only difference you'll notice when doing so is the `BaseSerializer` classes will not generate HTML forms in the browsable API. This is because the data they return does not include all the field information that would allow each field to be rendered into a suitable HTML input.
 
-##### Read-only `BaseSerializer` classes
+#### Read-only `BaseSerializer` classes
 
 To implement a read-only serializer using the `BaseSerializer` class, we just need to override the `.to_representation()` method. Let's take a look at an example using a simple Django model:
 
@@ -910,7 +901,7 @@ We can now use this class to serialize single `HighScore` instances:
     def high_score(request, pk):
         instance = HighScore.objects.get(pk=pk)
         serializer = HighScoreSerializer(instance)
-	    return Response(serializer.data)
+        return Response(serializer.data)
 
 Or use it to serialize multiple instances:
 
@@ -918,9 +909,9 @@ Or use it to serialize multiple instances:
     def all_high_scores(request):
         queryset = HighScore.objects.order_by('-score')
         serializer = HighScoreSerializer(queryset, many=True)
-	    return Response(serializer.data)
+        return Response(serializer.data)
 
-##### Read-write `BaseSerializer` classes
+#### Read-write `BaseSerializer` classes
 
 To create a read-write serializer we first need to implement a `.to_internal_value()` method. This method returns the validated values that will be used to construct the object instance, and may raise a `serializers.ValidationError` if the supplied data is in an incorrect format.
 
@@ -949,8 +940,8 @@ Here's a complete example of our previous `HighScoreSerializer`, that's been upd
                     'player_name': 'May not be more than 10 characters.'
                 })
 
-			# Return the validated values. This will be available as
-			# the `.validated_data` property.
+            # Return the validated values. This will be available as
+            # the `.validated_data` property.
             return {
                 'score': int(score),
                 'player_name': player_name
@@ -969,7 +960,7 @@ Here's a complete example of our previous `HighScoreSerializer`, that's been upd
 
 The `BaseSerializer` class is also useful if you want to implement new generic serializer classes for dealing with particular serialization styles, or for integrating with alternative storage backends.
 
-The following class is an example of a generic serializer that can handle coercing arbitrary objects into primitive representations.
+The following class is an example of a generic serializer that can handle coercing arbitrary complex objects into primitive representations.
 
     class ObjectSerializer(serializers.BaseSerializer):
         """
@@ -1021,7 +1012,7 @@ Some reasons this might be useful include...
 
 The signatures for these methods are as follows:
 
-#### `.to_representation(self, instance)`
+#### `to_representation(self, instance)`
 
 Takes the object instance that requires serialization, and should return a primitive representation. Typically this means returning a structure of built-in Python datatypes. The exact types that can be handled will depend on the render classes you have configured for your API.
 
@@ -1033,7 +1024,7 @@ May be overridden in order to modify the representation style. For example:
         ret['username'] = ret['username'].lower()
         return ret
 
-#### ``.to_internal_value(self, data)``
+#### ``to_internal_value(self, data)``
 
 Takes the unvalidated incoming data as input and should return the validated data that will be made available as `serializer.validated_data`. The return value will also be passed to the `.create()` or `.update()` methods if `.save()` is called on the serializer class.
 
@@ -1189,7 +1180,11 @@ The [drf-writable-nested][drf-writable-nested] package provides writable nested 
 
 ## DRF Encrypt Content
 
-The [drf-encrypt-content][drf-encrypt-content] package helps you encrypt your data, serialized through ModelSerializer. It also contains some helper functions. Which helps you to encrypt your data. 
+The [drf-encrypt-content][drf-encrypt-content] package helps you encrypt your data, serialized through ModelSerializer. It also contains some helper functions. Which helps you to encrypt your data.
+
+## Shapeless Serializers
+
+The [drf-shapeless-serializers][drf-shapeless-serializers] package provides dynamic serializer configuration capabilities, allowing runtime field selection, renaming, attribute modification, and nested relationship configuration without creating multiple serializer classes. It helps eliminate serializer boilerplate while providing flexible API responses.
 
 
 [cite]: https://groups.google.com/d/topic/django-users/sVFaOfQi4wY/discussion
@@ -1214,3 +1209,4 @@ The [drf-encrypt-content][drf-encrypt-content] package helps you encrypt your da
 [djangorestframework-queryfields]: https://djangorestframework-queryfields.readthedocs.io/
 [drf-writable-nested]: https://github.com/beda-software/drf-writable-nested
 [drf-encrypt-content]: https://github.com/oguzhancelikarslan/drf-encrypt-content
+[drf-shapeless-serializers]: https://github.com/khaledsukkar2/drf-shapeless-serializers

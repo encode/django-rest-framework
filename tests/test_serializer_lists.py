@@ -1,11 +1,12 @@
-import sys
-
 import pytest
 from django.http import QueryDict
 from django.utils.datastructures import MultiValueDict
 
 from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail
+from tests.models import (
+    CustomManagerModel, NullableOneToOneSource, OneToOneTarget
+)
 
 
 class BasicObject:
@@ -32,7 +33,7 @@ class TestListSerializer:
     Note that this is in contrast to using ListSerializer as a field.
     """
 
-    def setup(self):
+    def setup_method(self):
         class IntegerListSerializer(serializers.ListSerializer):
             child = serializers.IntegerField()
         self.Serializer = IntegerListSerializer
@@ -57,10 +58,6 @@ class TestListSerializer:
         assert serializer.is_valid()
         assert serializer.validated_data == expected_output
 
-    @pytest.mark.skipif(
-        sys.version_info < (3, 7),
-        reason="subscriptable classes requires Python 3.7 or higher",
-    )
     def test_list_serializer_is_subscriptable(self):
         assert serializers.ListSerializer is serializers.ListSerializer["foo"]
 
@@ -70,7 +67,7 @@ class TestListSerializerContainingNestedSerializer:
     Tests for using a ListSerializer containing another serializer.
     """
 
-    def setup(self):
+    def setup_method(self):
         class TestSerializer(serializers.Serializer):
             integer = serializers.IntegerField()
             boolean = serializers.BooleanField()
@@ -150,13 +147,68 @@ class TestListSerializerContainingNestedSerializer:
         assert serializer.is_valid()
         assert serializer.validated_data == expected_output
 
+    def test_update_allow_custom_child_validation(self):
+        """
+        Update a list of objects thanks custom run_child_validation implementation.
+        """
+
+        class TestUpdateSerializer(serializers.Serializer):
+            integer = serializers.IntegerField()
+            boolean = serializers.BooleanField()
+
+            def update(self, instance, validated_data):
+                instance._data.update(validated_data)
+                return instance
+
+            def validate(self, data):
+                # self.instance is set to current BasicObject instance
+                assert isinstance(self.instance, BasicObject)
+                # self.initial_data is current dictionary
+                assert isinstance(self.initial_data, dict)
+                assert self.initial_data["pk"] == self.instance.pk
+                return super().validate(data)
+
+        class ListUpdateSerializer(serializers.ListSerializer):
+            child = TestUpdateSerializer()
+
+            def run_child_validation(self, data):
+                # find related instance in self.instance list
+                child_instance = next(o for o in self.instance if o.pk == data["pk"])
+                # set instance and initial_data for child serializer
+                self.child.instance = child_instance
+                self.child.initial_data = data
+                return super().run_child_validation(data)
+
+            def update(self, instance, validated_data):
+                return [
+                    self.child.update(instance, attrs)
+                    for instance, attrs in zip(self.instance, validated_data)
+                ]
+
+        instance = [
+            BasicObject(pk=1, integer=11, private_field="a"),
+            BasicObject(pk=2, integer=22, private_field="b"),
+        ]
+        input_data = [
+            {"pk": 1, "integer": "123", "boolean": "true"},
+            {"pk": 2, "integer": "456", "boolean": "false"},
+        ]
+        expected_output = [
+            BasicObject(pk=1, integer=123, boolean=True, private_field="a"),
+            BasicObject(pk=2, integer=456, boolean=False, private_field="b"),
+        ]
+        serializer = ListUpdateSerializer(instance, data=input_data)
+        assert serializer.is_valid()
+        updated_instances = serializer.save()
+        assert updated_instances == expected_output
+
 
 class TestNestedListSerializer:
     """
     Tests for using a ListSerializer as a field.
     """
 
-    def setup(self):
+    def setup_method(self):
         class TestSerializer(serializers.Serializer):
             integers = serializers.ListSerializer(child=serializers.IntegerField())
             booleans = serializers.ListSerializer(child=serializers.BooleanField())
@@ -235,7 +287,7 @@ class TestNestedListSerializer:
 
 
 class TestNestedListSerializerAllowEmpty:
-    """Tests the behaviour of allow_empty=False when a ListSerializer is used as a field."""
+    """Tests the behavior of allow_empty=False when a ListSerializer is used as a field."""
 
     @pytest.mark.parametrize('partial', (False, True))
     def test_allow_empty_true(self, partial):
@@ -278,7 +330,7 @@ class TestNestedListSerializerAllowEmpty:
 
 
 class TestNestedListOfListsSerializer:
-    def setup(self):
+    def setup_method(self):
         class TestSerializer(serializers.Serializer):
             integers = serializers.ListSerializer(
                 child=serializers.ListSerializer(
@@ -478,7 +530,7 @@ class TestSerializerPartialUsage:
         assert serializer.validated_data == {}
         assert serializer.errors == {}
 
-    def test_udate_as_field_allow_empty_true(self):
+    def test_update_as_field_allow_empty_true(self):
         class ListSerializer(serializers.Serializer):
             update_field = serializers.IntegerField()
             store_field = serializers.IntegerField()
@@ -591,10 +643,10 @@ class TestSerializerPartialUsage:
 
 class TestEmptyListSerializer:
     """
-    Tests the behaviour of ListSerializers when there is no data passed to it
+    Tests the behavior of ListSerializers when there is no data passed to it
     """
 
-    def setup(self):
+    def setup_method(self):
         class ExampleListSerializer(serializers.ListSerializer):
             child = serializers.IntegerField()
 
@@ -620,10 +672,10 @@ class TestEmptyListSerializer:
 
 class TestMaxMinLengthListSerializer:
     """
-    Tests the behaviour of ListSerializers when max_length and min_length are used
+    Tests the behavior of ListSerializers when max_length and min_length are used
     """
 
-    def setup(self):
+    def setup_method(self):
         class IntegerSerializer(serializers.Serializer):
             some_int = serializers.IntegerField()
 
@@ -683,3 +735,43 @@ class TestMaxMinLengthListSerializer:
         assert min_serializer.validated_data == input_data
 
         assert not max_min_serializer.is_valid()
+
+
+@pytest.mark.django_db()
+class TestToRepresentationManagerCheck:
+    """
+    https://github.com/encode/django-rest-framework/issues/8726
+    """
+
+    def setup_method(self):
+        class CustomManagerModelSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = CustomManagerModel
+                fields = '__all__'
+
+        class OneToOneTargetSerializer(serializers.ModelSerializer):
+            my_model = CustomManagerModelSerializer(many=True, source="custommanagermodel_set")
+
+            class Meta:
+                model = OneToOneTarget
+                fields = '__all__'
+                depth = 3
+
+        class NullableOneToOneSourceSerializer(serializers.ModelSerializer):
+            target = OneToOneTargetSerializer()
+
+            class Meta:
+                model = NullableOneToOneSource
+                fields = '__all__'
+
+        self.serializer = NullableOneToOneSourceSerializer
+
+    def test(self):
+        o2o_target = OneToOneTarget.objects.create(name='OneToOneTarget')
+        NullableOneToOneSource.objects.create(
+            name='NullableOneToOneSource',
+            target=o2o_target
+        )
+        queryset = NullableOneToOneSource.objects.all()
+        serializer = self.serializer(queryset, many=True)
+        assert serializer.data

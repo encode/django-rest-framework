@@ -1,14 +1,16 @@
-from datetime import date, datetime, timedelta
+import ipaddress
+from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal
 from uuid import uuid4
 
 import pytest
 from django.test import TestCase
-from django.utils.timezone import utc
 
 from rest_framework.compat import coreapi
 from rest_framework.utils.encoders import JSONEncoder
 from rest_framework.utils.serializer_helpers import ReturnList
+
+utc = timezone.utc
 
 
 class MockList:
@@ -76,6 +78,48 @@ class JSONEncoderTests(TestCase):
         """
         unique_id = uuid4()
         assert self.encoder.default(unique_id) == str(unique_id)
+
+    def test_encode_ipaddress_ipv4address(self):
+        """
+        Tests encoding ipaddress IPv4Address object
+        """
+        obj = ipaddress.IPv4Address("192.168.1.1")
+        assert self.encoder.default(obj) == "192.168.1.1"
+
+    def test_encode_ipaddress_ipv6address(self):
+        """
+        Tests encoding ipaddress IPv6Address object
+        """
+        obj = ipaddress.IPv6Address("2001:0db8:85a3:0000:0000:8a2e:0370:7334")
+        assert self.encoder.default(obj) == "2001:db8:85a3::8a2e:370:7334"
+
+    def test_encode_ipaddress_ipv4network(self):
+        """
+        Tests encoding ipaddress IPv4Network object
+        """
+        obj = ipaddress.IPv4Network("192.0.2.8/29")
+        assert self.encoder.default(obj) == "192.0.2.8/29"
+
+    def test_encode_ipaddress_ipv6network(self):
+        """
+        Tests encoding ipaddress IPv4Network object
+        """
+        obj = ipaddress.IPv6Network("2001:4860:0000::0000/32")
+        assert self.encoder.default(obj) == "2001:4860::/32"
+
+    def test_encode_ipaddress_ipv4interface(self):
+        """
+        Tests encoding ipaddress IPv4Interface object
+        """
+        obj = ipaddress.IPv4Interface("192.0.2.8/29")
+        assert self.encoder.default(obj) == "192.0.2.8/29"
+
+    def test_encode_ipaddress_ipv6interface(self):
+        """
+        Tests encoding ipaddress IPv4Network object
+        """
+        obj = ipaddress.IPv6Interface("2001:4860:4860::8888/32")
+        assert self.encoder.default(obj) == "2001:4860:4860::8888/32"
 
     @pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
     def test_encode_coreapi_raises_error(self):

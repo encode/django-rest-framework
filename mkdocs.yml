@@ -9,6 +9,7 @@ theme:
     custom_dir: docs_theme
 
 markdown_extensions:
+ - admonition
  - toc:
     anchorlink: True
 
@@ -53,7 +54,6 @@ nav:
     - 'Settings': 'api-guide/settings.md'
  - Topics:
      - 'Documenting your API': 'topics/documenting-your-api.md'
-     - 'API Clients': 'topics/api-clients.md'
      - 'Internationalization': 'topics/internationalization.md'
      - 'AJAX, CSRF & CORS': 'topics/ajax-csrf-cors.md'
      - 'HTML & Forms': 'topics/html-and-forms.md'
@@ -66,6 +66,9 @@ nav:
      - 'Contributing to REST framework': 'community/contributing.md'
      - 'Project management': 'community/project-management.md'
      - 'Release Notes': 'community/release-notes.md'
+     - '3.16 Announcement': 'community/3.16-announcement.md'
+     - '3.15 Announcement': 'community/3.15-announcement.md'
+     - '3.14 Announcement': 'community/3.14-announcement.md'
      - '3.13 Announcement': 'community/3.13-announcement.md'
      - '3.12 Announcement': 'community/3.12-announcement.md'
      - '3.11 Announcement': 'community/3.11-announcement.md'
@@ -82,5 +85,10 @@ nav:
      - '3.0 Announcement': 'community/3.0-announcement.md'
      - 'Kickstarter Announcement': 'community/kickstarter-announcement.md'
      - 'Mozilla Grant': 'community/mozilla-grant.md'
-     - 'Funding': 'community/funding.md'
      - 'Jobs': 'community/jobs.md'
+
+extra_css:
+  - css/copy-button.css
+
+extra_javascript:
+  - js/copy-button.js

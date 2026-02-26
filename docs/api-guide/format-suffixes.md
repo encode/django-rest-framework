@@ -23,8 +23,8 @@ Returns a URL pattern list which includes format suffix patterns appended to eac
 Arguments:
 
 * **urlpatterns**: Required.  A URL pattern list.
-* **suffix_required**:  Optional.  A boolean indicating if suffixes in the URLs should be optional or mandatory.  Defaults to `False`, meaning that suffixes are optional by default.
-* **allowed**:  Optional.  A list or tuple of valid format suffixes.  If not provided, a wildcard format suffix pattern will be used.
+* **suffix_required**: Optional.  A boolean indicating if suffixes in the URLs should be optional or mandatory.  Defaults to `False`, meaning that suffixes are optional by default.
+* **allowed**: Optional.  A list or tuple of valid format suffixes.  If not provided, a wildcard format suffix pattern will be used.
 
 Example:
 
