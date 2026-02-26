@@ -927,7 +927,7 @@ Corresponds to <code>django.db.models.fields.DurationField</code></p>
 </ul>
 <p>Both the <code>allow_blank</code> and <code>allow_null</code> are valid options on <code>ChoiceField</code>, although it is highly recommended that you only use one and not both. <code>allow_blank</code> should be preferred for textual choices, and <code>allow_null</code> should be preferred for numeric or other non-textual choices.</p>
 <h2 id="multiplechoicefield"><a class="toclink" href="#multiplechoicefield">MultipleChoiceField</a></h2>
-<p>A field that can accept a set of zero, one or many values, chosen from a limited set of choices. Takes a single mandatory argument. <code>to_internal_value</code> returns a <code>set</code> containing the selected values.</p>
+<p>A field that can accept a list of zero, one or many values, chosen from a limited set of choices. Takes a single mandatory argument. <code>to_internal_value</code> returns a <code>list</code> containing the selected values, deduplicated.</p>
 <p><strong>Signature:</strong> <code>MultipleChoiceField(choices)</code></p>
 <ul>
 <li><code>choices</code> - A list of valid values, or a list of <code>(key, display_name)</code> tuples.</li>
