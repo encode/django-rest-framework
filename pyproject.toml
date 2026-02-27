@@ -14,7 +14,6 @@ classifiers = [
   "Development Status :: 5 - Production/Stable",
   "Environment :: Web Environment",
   "Framework :: Django",
-  "Framework :: Django :: 4.2",
   "Framework :: Django :: 5.0",
   "Framework :: Django :: 5.1",
   "Framework :: Django :: 5.2",
@@ -31,7 +30,7 @@ classifiers = [
   "Topic :: Internet :: WWW/HTTP",
 ]
 dynamic = [ "version" ]
-dependencies = [ "django>=4.2" ]
+dependencies = [ "django>=5.0" ]
 urls.Changelog = "https://www.django-rest-framework.org/community/release-notes/"
 urls.Funding = "https://fund.django-rest-framework.org/topics/funding/"
 urls.Homepage = "https://www.django-rest-framework.org"
@@ -51,8 +50,6 @@ test = [
   "pytest-cov==7.*",
   "pytest-django>=4.5.2,<5",
 
-  # Remove when dropping support for Django<5.0
-  "pytz",
 ]
 docs = [
   # MkDocs to build our documentation.
@@ -75,7 +72,6 @@ optional = [
   # setuptools is needed for coreapi (imports pkg_resources)
   "setuptools<82",
 ]
-django42 = [ "django>=4.2,<5.0" ]
 django50 = [ "django>=5.0,<5.1" ]
 django51 = [ "django>=5.1,<5.2" ]
 django52 = [ "django>=5.2,<6.0" ]
@@ -102,7 +98,7 @@ skip = [ ".tox" ]
 atomic = true
 multi_line_output = 5
 extra_standard_library = [ "types" ]
-known_third_party = [ "pytest", "_pytest", "django", "pytz", "uritemplate" ]
+known_third_party = [ "pytest", "_pytest", "django", "uritemplate" ]
 known_first_party = [ "rest_framework", "tests" ]
 
 [tool.codespell]
