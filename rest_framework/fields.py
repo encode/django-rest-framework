@@ -1680,9 +1680,6 @@ class ListField(Field):
             self.validators.append(MinLengthValidator(self.min_length, message=message))
 
     def get_value(self, dictionary):
-        if self.field_name not in dictionary:
-            if getattr(self.root, 'partial', False):
-                return empty
         # We override the default field access in order to support
         # lists in HTML forms.
         if html.is_html_input(dictionary):
@@ -1690,7 +1687,18 @@ class ListField(Field):
             if len(val) > 0:
                 # Support QueryDict lists in HTML input.
                 return val
-            return html.parse_html_list(dictionary, prefix=self.field_name, default=empty)
+            # Check for indexed keys like field_name[0], field_name[1], etc.
+            # before returning empty on partial updates
+            html_list = html.parse_html_list(dictionary, prefix=self.field_name, default=empty)
+            if html_list is not empty:
+                return html_list
+            # If no HTML list data found and this is a partial update, return empty
+            if getattr(self.root, 'partial', False):
+                return empty
+            return html_list
+        if self.field_name not in dictionary:
+            if getattr(self.root, 'partial', False):
+                return empty
 
         return dictionary.get(self.field_name, empty)
 
