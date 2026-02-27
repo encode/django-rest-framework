@@ -76,9 +76,9 @@ LIST_SERIALIZER_KWARGS = (
     'read_only', 'write_only', 'required', 'default', 'initial', 'source',
     'label', 'help_text', 'style', 'error_messages', 'allow_empty',
     'instance', 'data', 'partial', 'context', 'allow_null',
-    'max_length', 'min_length'
+    'max_length', 'min_length', 'max_depth'
 )
-LIST_SERIALIZER_KWARGS_REMOVE = ('allow_empty', 'min_length', 'max_length')
+LIST_SERIALIZER_KWARGS_REMOVE = ('allow_empty', 'min_length', 'max_length', 'max_depth')
 
 ALL_FIELDS = '__all__'
 
@@ -111,6 +111,10 @@ class BaseSerializer(Field):
     .data - Available.
     """
 
+    default_error_messages = {
+        'max_depth': _('Nesting depth exceeds maximum allowed depth of {max_depth}.')
+    }
+
     def __init__(self, instance=None, data=empty, **kwargs):
         self.instance = instance
         if data is not empty:
@@ -118,7 +122,51 @@ class BaseSerializer(Field):
         self.partial = kwargs.pop('partial', False)
         self._context = kwargs.pop('context', {})
         kwargs.pop('many', None)
+        self.max_depth = kwargs.pop('max_depth', None)
         super().__init__(**kwargs)
+        self._current_depth = 0
+        self._root_max_depth = self.max_depth
+
+    def bind(self, field_name, parent):
+        super().bind(field_name, parent)
+        if self.max_depth is None and hasattr(parent, '_root_max_depth') and parent._root_max_depth is not None:
+            self._root_max_depth = parent._root_max_depth
+            self._current_depth = parent._current_depth + 1
+
+    def _propagate_depth_to_child(self):
+        if self._root_max_depth is not None and 'fields' in self.__dict__:
+            for field in self.__dict__['fields'].values():
+                if hasattr(field, '_root_max_depth'):
+                    field._root_max_depth = self._root_max_depth
+                    field._current_depth = self._current_depth + 1
+                    if hasattr(field, '_propagate_depth_to_child'):
+                        field._propagate_depth_to_child()
+
+    def _check_data_depth(self, data, current_level):
+        if isinstance(data, dict):
+            for value in data.values():
+                if isinstance(value, (list, tuple, dict)):
+                    next_level = current_level + 1
+                    if next_level > self._root_max_depth:
+                        message = self.error_messages['max_depth'].format(
+                            max_depth=self._root_max_depth
+                        )
+                        raise ValidationError({
+                            api_settings.NON_FIELD_ERRORS_KEY: [message]
+                        }, code='max_depth')
+                    self._check_data_depth(value, next_level)
+        elif isinstance(data, (list, tuple)):
+            for item in data:
+                if isinstance(item, (list, tuple, dict)):
+                    next_level = current_level + 1
+                    if next_level > self._root_max_depth:
+                        message = self.error_messages['max_depth'].format(
+                            max_depth=self._root_max_depth
+                        )
+                        raise ValidationError({
+                            api_settings.NON_FIELD_ERRORS_KEY: [message]
+                        }, code='max_depth')
+                    self._check_data_depth(item, next_level)
 
     def __new__(cls, *args, **kwargs):
         # We override this method in order to automatically create
@@ -385,6 +433,8 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
         fields = BindingDict(self)
         for key, value in self.get_fields().items():
             fields[key] = value
+        if self._root_max_depth is not None:
+            self._propagate_depth_to_child()
         return fields
 
     @property
@@ -501,6 +551,9 @@ class Serializer(BaseSerializer, metaclass=SerializerMetaclass):
             raise ValidationError({
                 api_settings.NON_FIELD_ERRORS_KEY: [message]
             }, code='invalid')
+        if self._root_max_depth is not None and self.max_depth is not None:
+            start_level = self._current_depth
+            self._check_data_depth(data, start_level)
 
         ret = {}
         errors = {}
@@ -666,6 +719,32 @@ class ListSerializer(BaseSerializer):
         """
         return self.child.run_validation(data)
 
+    def _check_data_depth(self, data, current_level):
+        if isinstance(data, (list, tuple)):
+            for item in data:
+                if isinstance(item, (list, tuple, dict)):
+                    next_level = current_level + 1
+                    if next_level > self._root_max_depth:
+                        message = self.error_messages['max_depth'].format(
+                            max_depth=self._root_max_depth
+                        )
+                        raise ValidationError({
+                            api_settings.NON_FIELD_ERRORS_KEY: [message]
+                        }, code='max_depth')
+                    self._check_data_depth(item, next_level)
+        elif isinstance(data, dict):
+            for value in data.values():
+                if isinstance(value, (list, tuple, dict)):
+                    next_level = current_level + 1
+                    if next_level > self._root_max_depth:
+                        message = self.error_messages['max_depth'].format(
+                            max_depth=self._root_max_depth
+                        )
+                        raise ValidationError({
+                            api_settings.NON_FIELD_ERRORS_KEY: [message]
+                        }, code='max_depth')
+                    self._check_data_depth(value, next_level)
+
     def to_internal_value(self, data):
         """
         List of dicts of native values <- List of dicts of primitive datatypes.
@@ -680,6 +759,10 @@ class ListSerializer(BaseSerializer):
             raise ValidationError({
                 api_settings.NON_FIELD_ERRORS_KEY: [message]
             }, code='not_a_list')
+
+        if self._root_max_depth is not None and self.max_depth is not None:
+            start_level = self._current_depth
+            self._check_data_depth(data, start_level)
 
         if not self.allow_empty and len(data) == 0:
             message = self.error_messages['empty']

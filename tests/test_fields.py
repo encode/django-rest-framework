@@ -2571,6 +2571,474 @@ class TestUnvalidatedDictField(FieldValues):
     field = serializers.DictField()
 
 
+class TestListFieldMaxDepth:
+    def test_flat_list_with_max_depth_none(self):
+        field = serializers.ListField(child=serializers.IntegerField(), max_depth=None)
+        output = field.run_validation([1, 2, 3])
+        assert output == [1, 2, 3]
+
+    def test_nested_list_with_max_depth_none(self):
+        field = serializers.ListField(
+            child=serializers.ListField(child=serializers.ListField(child=serializers.IntegerField())),
+            max_depth=None
+        )
+        output = field.run_validation([[[1, 2]], [[3]]])
+        assert output == [[[1, 2]], [[3]]]
+
+    def test_max_depth_zero_rejects_everything(self):
+        field = serializers.ListField(child=serializers.IntegerField(), max_depth=0)
+        with pytest.raises(serializers.ValidationError) as exc_info:
+            field.run_validation([1, 2, 3])
+        assert 'max_depth' in str(exc_info.value.detail)
+
+    def test_max_depth_one_allows_flat_list(self):
+        field = serializers.ListField(child=serializers.IntegerField(), max_depth=1)
+        output = field.run_validation([1, 2, 3])
+        assert output == [1, 2, 3]
+
+    def test_max_depth_one_rejects_nested_list(self):
+        field = serializers.ListField(child=serializers.IntegerField(), max_depth=1)
+        with pytest.raises(serializers.ValidationError) as exc_info:
+            field.run_validation([[1, 2]])
+        assert 'max_depth' in str(exc_info.value.detail)
+
+    def test_max_depth_two_allows_one_level_nesting(self):
+        field = serializers.ListField(
+            child=serializers.ListField(child=serializers.IntegerField()),
+            max_depth=2
+        )
+        output = field.run_validation([[1, 2], [3, 4]])
+        assert output == [[1, 2], [3, 4]]
+
+    def test_max_depth_two_rejects_two_levels_nesting(self):
+        field = serializers.ListField(
+            child=serializers.ListField(child=serializers.IntegerField()),
+            max_depth=2
+        )
+        with pytest.raises(serializers.ValidationError) as exc_info:
+            field.run_validation([[[1, 2]], [[3]]])
+        assert 'max_depth' in str(exc_info.value.detail)
+
+    def test_deeply_nested_exceeds_max_depth(self):
+        field = serializers.ListField(
+            child=serializers.ListField(
+                child=serializers.ListField(
+                    child=serializers.ListField(
+                        child=serializers.ListField(child=serializers.IntegerField())
+                    )
+                )
+            ),
+            max_depth=3
+        )
+        with pytest.raises(serializers.ValidationError):
+            field.run_validation([[[[[1]]]]])
+
+    def test_max_depth_with_mixed_nesting_list_and_dict(self):
+        field = serializers.ListField(
+            child=serializers.DictField(child=serializers.ListField(child=serializers.IntegerField())),
+            max_depth=3
+        )
+        output = field.run_validation([{'a': [1, 2], 'b': [3]}])
+        assert output == [{'a': [1, 2], 'b': [3]}]
+
+    def test_max_depth_with_mixed_nesting_exceeds_limit(self):
+        field = serializers.ListField(
+            child=serializers.DictField(
+                child=serializers.ListField(child=serializers.ListField(child=serializers.IntegerField()))
+            ),
+            max_depth=2
+        )
+        with pytest.raises(serializers.ValidationError):
+            field.run_validation([{'a': [[1, 2]]}])
+
+    def test_error_message_contains_max_depth_value(self):
+        field = serializers.ListField(
+            child=serializers.ListField(child=serializers.IntegerField()),
+            max_depth=0
+        )
+        with pytest.raises(serializers.ValidationError) as exc_info:
+            field.run_validation([[1, 2]])
+        error_msg = str(exc_info.value.detail[0])
+        assert '0' in error_msg
+
+
+class TestDictFieldMaxDepth:
+    def test_flat_dict_with_max_depth_none(self):
+        field = serializers.DictField(child=serializers.IntegerField(), max_depth=None)
+        output = field.run_validation({'a': 1, 'b': 2})
+        assert output == {'a': 1, 'b': 2}
+
+    def test_nested_dict_with_max_depth_none(self):
+        field = serializers.DictField(
+            child=serializers.DictField(child=serializers.DictField(child=serializers.IntegerField())),
+            max_depth=None
+        )
+        output = field.run_validation({'a': {'b': {'c': 1}}})
+        assert output == {'a': {'b': {'c': 1}}}
+
+    def test_max_depth_zero_rejects_everything(self):
+        field = serializers.DictField(child=serializers.IntegerField(), max_depth=0)
+        with pytest.raises(serializers.ValidationError) as exc_info:
+            field.run_validation({'a': 1, 'b': 2})
+        assert 'max_depth' in str(exc_info.value.detail)
+
+    def test_max_depth_one_allows_flat_dict(self):
+        field = serializers.DictField(child=serializers.IntegerField(), max_depth=1)
+        output = field.run_validation({'a': 1, 'b': 2})
+        assert output == {'a': 1, 'b': 2}
+
+    def test_max_depth_one_rejects_two_levels_nesting(self):
+        field = serializers.DictField(
+            child=serializers.DictField(child=serializers.DictField(child=serializers.IntegerField())),
+            max_depth=1
+        )
+        with pytest.raises(serializers.ValidationError) as exc_info:
+            field.run_validation({'a': {'b': {'c': 1}}})
+        assert 'max_depth' in str(exc_info.value.detail)
+
+    def test_max_depth_with_mixed_nesting_dict_and_list(self):
+        field = serializers.DictField(
+            child=serializers.ListField(child=serializers.DictField(child=serializers.IntegerField())),
+            max_depth=3
+        )
+        output = field.run_validation({'a': [{'b': 1, 'c': 2}]})
+        assert output == {'a': [{'b': 1, 'c': 2}]}
+
+    def test_max_depth_with_mixed_nesting_exceeds_limit(self):
+        field = serializers.DictField(
+            child=serializers.ListField(
+                child=serializers.DictField(child=serializers.DictField(child=serializers.IntegerField()))
+            ),
+            max_depth=2
+        )
+        with pytest.raises(serializers.ValidationError):
+            field.run_validation({'a': [{'b': {'c': 1}}]})
+
+    def test_error_message_contains_max_depth_value(self):
+        field = serializers.DictField(
+            child=serializers.DictField(child=serializers.IntegerField()),
+            max_depth=0
+        )
+        with pytest.raises(serializers.ValidationError) as exc_info:
+            field.run_validation({'a': {'b': 1}})
+        error_msg = str(exc_info.value.detail)
+        assert '0' in error_msg
+
+
+class TestMaxDepthEdgeCases:
+    def test_field_reuse_does_not_leak_depth_state(self):
+        child_field = serializers.ListField(child=serializers.IntegerField())
+        field = serializers.ListField(child=child_field, max_depth=2)
+        output1 = field.run_validation([[1, 2], [3, 4]])
+        assert output1 == [[1, 2], [3, 4]]
+        output2 = field.run_validation([[5, 6], [7, 8]])
+        assert output2 == [[5, 6], [7, 8]]
+
+    def test_max_depth_with_empty_nested_structures(self):
+        field = serializers.ListField(
+            child=serializers.ListField(child=serializers.IntegerField()),
+            max_depth=2
+        )
+        output = field.run_validation([[], []])
+        assert output == [[], []]
+
+    def test_very_deep_nesting_rejected_immediately(self):
+        child = serializers.IntegerField()
+        for _ in range(10):
+            child = serializers.ListField(child=child)
+        field = serializers.ListField(child=child, max_depth=5)
+        data = [1]
+        for _ in range(10):
+            data = [data]
+        with pytest.raises(serializers.ValidationError):
+            field.run_validation(data)
+
+
+class TestMaxDepthDataInspection:
+    def test_flat_field_rejects_deeply_nested_data(self):
+        field = serializers.ListField(max_depth=1)
+        field.run_validation([1, 2, 3])
+        with pytest.raises(serializers.ValidationError) as exc_info:
+            field.run_validation([[1, 2]])
+        assert 'max_depth' in str(exc_info.value.detail)
+
+    def test_flat_dict_field_rejects_deeply_nested_data(self):
+        field = serializers.DictField(max_depth=1)
+        field.run_validation({'a': 1, 'b': 2})
+        with pytest.raises(serializers.ValidationError) as exc_info:
+            field.run_validation({'a': {'b': 1}})
+        assert 'max_depth' in str(exc_info.value.detail)
+
+    def test_max_depth_zero_rejects_any_nesting_in_data(self):
+        field = serializers.ListField(max_depth=0)
+        with pytest.raises(serializers.ValidationError):
+            field.run_validation([1, 2, 3])
+
+    def test_data_depth_check_with_mixed_structures(self):
+        field = serializers.ListField(max_depth=1)
+        field.run_validation([1, 2, 3])
+        with pytest.raises(serializers.ValidationError):
+            field.run_validation([{'a': 1}, [2], 3])
+
+    def test_dict_field_data_depth_with_nested_lists(self):
+        field = serializers.DictField(max_depth=1)
+        field.run_validation({'a': 1, 'b': 2})
+        with pytest.raises(serializers.ValidationError):
+            field.run_validation({'a': [1, 2]})
+
+    def test_data_depth_respects_current_depth(self):
+        inner = serializers.ListField(child=serializers.IntegerField())
+        outer = serializers.ListField(child=inner, max_depth=2)
+        outer.run_validation([[1, 2], [3, 4]])
+        with pytest.raises(serializers.ValidationError):
+            outer.run_validation([[[1]]])
+
+    def test_max_depth_one_means_flat_only(self):
+        field = serializers.ListField(child=serializers.IntegerField(), max_depth=1)
+        field.run_validation([1, 2, 3])
+        with pytest.raises(serializers.ValidationError) as exc_info:
+            field.run_validation([[1, 2]])
+        assert 'max_depth' in str(exc_info.value.detail)
+
+    def test_serializer_with_list_field_respects_depth(self):
+        class TestSerializer(serializers.Serializer):
+            data = serializers.ListField(child=serializers.IntegerField(), max_depth=1)
+
+        serializer = TestSerializer(data={'data': [1, 2, 3]})
+        assert serializer.is_valid()
+
+        serializer = TestSerializer(data={'data': [[1, 2]]})
+        assert not serializer.is_valid()
+        assert 'max_depth' in str(serializer.errors)
+
+    def test_serializer_with_max_depth_inspects_raw_data(self):
+        class TestSerializer(serializers.Serializer):
+            name = serializers.CharField()
+            value = serializers.IntegerField()
+
+        serializer = TestSerializer(data={'name': 'test', 'value': 1}, max_depth=1)
+        assert serializer.is_valid()
+
+        serializer = TestSerializer(data={'name': 'test', 'value': {'nested': 1}}, max_depth=1)
+        assert not serializer.is_valid()
+        assert 'max_depth' in str(serializer.errors) or 'invalid' in str(serializer.errors)
+
+    def test_standalone_serializer_protects_against_deep_json(self):
+        class SimpleSerializer(serializers.Serializer):
+            data = serializers.CharField()
+
+        serializer = SimpleSerializer(data={'data': 'value'}, max_depth=1)
+        assert serializer.is_valid()
+
+        deep_data = {'data': {'nested': {'deep': 'value'}}}
+        serializer = SimpleSerializer(data=deep_data, max_depth=1)
+        assert not serializer.is_valid()
+        assert 'max_depth' in str(serializer.errors)
+
+    def test_list_serializer_many_true_respects_max_depth(self):
+        class MySerializer(serializers.Serializer):
+            name = serializers.CharField()
+
+        serializer = MySerializer(data=[{'name': 'test'}], many=True, max_depth=1)
+        assert serializer.is_valid()
+
+        deep_list_data = [{'name': 'test'}, [1, 2, 3]]
+        serializer = MySerializer(data=deep_list_data, many=True, max_depth=1)
+        assert not serializer.is_valid()
+
+    def test_list_serializer_protects_against_deeply_nested_lists(self):
+        class ItemSerializer(serializers.Serializer):
+            value = serializers.IntegerField()
+
+        serializer = ItemSerializer(data=[{'value': 1}, {'value': 2}], many=True, max_depth=1)
+        assert serializer.is_valid()
+
+        deep_data = [{'value': {'nested': 1}}]
+        serializer = ItemSerializer(data=deep_data, many=True, max_depth=1)
+        assert not serializer.is_valid()
+
+
+class TestMaxDepthWithSerializers:
+    def test_list_field_containing_serializer_with_nested_list(self):
+        class InnerSerializer(serializers.Serializer):
+            numbers = serializers.ListField(child=serializers.IntegerField())
+
+        field = serializers.ListField(child=InnerSerializer(), max_depth=3)
+        valid_data = [{'numbers': [1, 2]}, {'numbers': [3, 4]}]
+        output = field.run_validation(valid_data)
+        assert output == [{'numbers': [1, 2]}, {'numbers': [3, 4]}]
+
+    def test_list_field_containing_serializer_exceeds_max_depth(self):
+        class InnerSerializer(serializers.Serializer):
+            nested_list = serializers.ListField(
+                child=serializers.ListField(child=serializers.IntegerField())
+            )
+
+        field = serializers.ListField(child=InnerSerializer(), max_depth=3)
+        with pytest.raises(serializers.ValidationError):
+            field.run_validation([{'nested_list': [[1, 2]]}])
+
+    def test_serializer_within_dict_field_respects_depth(self):
+        class ValueSerializer(serializers.Serializer):
+            data = serializers.ListField(child=serializers.IntegerField())
+
+        field = serializers.DictField(child=ValueSerializer(), max_depth=3)
+        valid_data = {'key1': {'data': [1, 2]}, 'key2': {'data': [3, 4]}}
+        output = field.run_validation(valid_data)
+        assert output == {'key1': {'data': [1, 2]}, 'key2': {'data': [3, 4]}}
+
+    def test_deeply_nested_serializer_structure_rejected(self):
+        class Level3Serializer(serializers.Serializer):
+            values = serializers.ListField(child=serializers.IntegerField())
+
+        class Level2Serializer(serializers.Serializer):
+            level3 = Level3Serializer()
+
+        class Level1Serializer(serializers.Serializer):
+            level2 = Level2Serializer()
+
+        field = serializers.ListField(child=Level1Serializer(), max_depth=4)
+        with pytest.raises(serializers.ValidationError):
+            field.run_validation([{'level2': {'level3': {'values': [1, 2]}}}])
+
+
+class TestListFieldBindWithExplicitMaxDepth:
+    def test_child_listfield_keeps_explicit_max_depth_zero(self):
+        inner_list = serializers.ListField(
+            child=serializers.IntegerField(),
+            max_depth=0
+        )
+        outer_list = serializers.ListField(
+            child=inner_list,
+            max_depth=10
+        )
+        assert inner_list._root_max_depth == 0
+        with pytest.raises(serializers.ValidationError):
+            outer_list.run_validation([[1, 2]])
+
+
+class TestListFieldBindWithoutExplicitMaxDepth:
+    def test_child_without_max_depth_inherits_from_parent(self):
+        inner_list = serializers.ListField(
+            child=serializers.IntegerField()
+        )
+        outer_list = serializers.ListField(
+            child=inner_list,
+            max_depth=3
+        )
+        assert inner_list._root_max_depth == 3
+        assert inner_list._current_depth == 1
+        output = outer_list.run_validation([[1, 2]])
+        assert output == [[1, 2]]
+        with pytest.raises(serializers.ValidationError):
+            outer_list.run_validation([[[[1]]]])
+
+    def test_multiple_children_some_inherit_some_explicit(self):
+        child_a = serializers.ListField(
+            child=serializers.IntegerField(),
+            max_depth=2
+        )
+        child_b = serializers.ListField(
+            child=serializers.IntegerField()
+        )
+        child_c = serializers.ListField(
+            child=serializers.IntegerField(),
+            max_depth=4
+        )
+
+        class MySerializerA(serializers.Serializer):
+            field = child_a
+
+        class MySerializerB(serializers.Serializer):
+            field = child_b
+
+        class MySerializerC(serializers.Serializer):
+            field = child_c
+
+        s_a = MySerializerA(max_depth=5)
+        s_b = MySerializerB(max_depth=5)
+        s_c = MySerializerC(max_depth=5)
+
+        assert s_a.fields['field']._root_max_depth == 2
+        assert s_b.fields['field']._root_max_depth == 5
+        assert s_c.fields['field']._root_max_depth == 4
+
+
+class TestListFieldBindDepthPropagation:
+    def test_depth_propagation_through_multiple_levels(self):
+        level3 = serializers.ListField(child=serializers.IntegerField())
+        level2 = serializers.ListField(child=level3)
+        level1 = serializers.ListField(child=level2, max_depth=10)
+
+        assert level1._current_depth == 0
+        assert level2._current_depth == 1
+        assert level3._current_depth == 2
+        assert level1._root_max_depth == 10
+        assert level2._root_max_depth == 10
+        assert level3._root_max_depth == 10
+
+
+class TestListFieldBindWithDictField:
+    def test_listfield_child_of_dictfield_keeps_explicit_max_depth(self):
+        list_field = serializers.ListField(
+            child=serializers.IntegerField(),
+            max_depth=2
+        )
+        dict_field = serializers.DictField(
+            child=list_field,
+            max_depth=10
+        )
+        assert dict_field.child._root_max_depth == 2
+        output = dict_field.run_validation({'key': [1, 2]})
+        assert output == {'key': [1, 2]}
+        with pytest.raises(serializers.ValidationError):
+            dict_field.run_validation({'key': [[1, 2]]})
+
+
+class TestListFieldBindWithSerializers:
+    def test_listfield_in_serializer_with_explicit_max_depth(self):
+        class MySerializer(serializers.Serializer):
+            explicit_field = serializers.ListField(
+                child=serializers.IntegerField(),
+                max_depth=2
+            )
+            inherit_field = serializers.ListField(
+                child=serializers.IntegerField()
+            )
+
+        serializer = MySerializer(max_depth=5)
+        assert serializer.fields['explicit_field']._root_max_depth == 2
+        assert serializer.fields['inherit_field']._root_max_depth == 5
+
+    def test_nested_serializers_with_listfield(self):
+        class InnerSerializer(serializers.Serializer):
+            values = serializers.ListField(
+                child=serializers.IntegerField(),
+                max_depth=3
+            )
+
+        class OuterSerializer(serializers.Serializer):
+            inner = InnerSerializer(max_depth=10)
+
+        serializer = OuterSerializer(max_depth=20)
+        values_field = serializer.fields['inner'].fields['values']
+        assert values_field._root_max_depth == 3
+
+
+class TestListFieldBindEdgeCases:
+    def test_field_max_depth_one(self):
+        inner = serializers.ListField(
+            child=serializers.IntegerField(),
+            max_depth=1
+        )
+        outer = serializers.ListField(child=inner, max_depth=10)
+        assert inner._root_max_depth == 1
+        output = outer.run_validation([[1, 2, 3]])
+        assert output == [[1, 2, 3]]
+        with pytest.raises(serializers.ValidationError):
+            outer.run_validation([[[1]]])
+
+
 class TestHStoreField(FieldValues):
     """
     Values for `ListField` with CharField as child.
