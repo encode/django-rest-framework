@@ -169,9 +169,6 @@ class PageNumberPagination(BasePagination):
     http://api.example.org/accounts/?page=4
     http://api.example.org/accounts/?page=4&page_size=100
     """
-    # The default page size.
-    # Defaults to `None`, meaning pagination is disabled.
-    page_size = api_settings.PAGE_SIZE
 
     django_paginator_class = DjangoPaginator
 
@@ -184,15 +181,32 @@ class PageNumberPagination(BasePagination):
     page_size_query_param = None
     page_size_query_description = _('Number of results to return per page.')
 
-    # Set to an integer to limit the maximum page size the client may request.
-    # Only relevant if 'page_size_query_param' has also been set.
-    max_page_size = None
-
     last_page_strings = ('last',)
 
     template = 'rest_framework/pagination/numbers.html'
 
     invalid_page_message = _('Invalid page.')
+
+    @property
+    def page_size(self) -> int:
+        """Get default page size.
+
+        Defaults to `None`, meaning pagination is disabled.
+
+        """
+        return api_settings.PAGE_SIZE
+
+    @property
+    def max_page_size(self) -> int:
+        """Limit page size.
+
+        Set to an integer to limit the maximum page size the client may request.
+        Only relevant if 'page_size_query_param' has also been set.
+        Defaults to `None`, meaning page size is unlimited.
+        It's recommended that you would set a limit to avoid api abuse.
+
+        """
+        return api_settings.MAX_PAGE_SIZE
 
     def paginate_queryset(self, queryset, request, view=None):
         """
@@ -377,13 +391,32 @@ class LimitOffsetPagination(BasePagination):
     http://api.example.org/accounts/?limit=100
     http://api.example.org/accounts/?offset=400&limit=100
     """
-    default_limit = api_settings.PAGE_SIZE
     limit_query_param = 'limit'
     limit_query_description = _('Number of results to return per page.')
     offset_query_param = 'offset'
     offset_query_description = _('The initial index from which to return the results.')
-    max_limit = None
     template = 'rest_framework/pagination/numbers.html'
+
+    @property
+    def max_limit(self) -> int:
+        """Limit maximum page size.
+
+        Set to an integer to limit the maximum page size the client may request.
+        Only relevant if 'page_size_query_param' has also been set.
+        Defaults to `None`, meaning page size is unlimited.
+        It's recommended that you would set a limit to avoid api abuse.
+
+        """
+        return api_settings.MAX_PAGE_SIZE
+
+    @property
+    def default_limit(self) -> int:
+        """Get default page size.
+
+        Defaults to `None`, meaning pagination is disabled.
+
+        """
+        return api_settings.PAGE_SIZE
 
     def paginate_queryset(self, queryset, request, view=None):
         self.request = request
@@ -588,7 +621,6 @@ class CursorPagination(BasePagination):
     """
     cursor_query_param = 'cursor'
     cursor_query_description = _('The pagination cursor value.')
-    page_size = api_settings.PAGE_SIZE
     invalid_cursor_message = _('Invalid cursor')
     ordering = '-created'
     template = 'rest_framework/pagination/previous_and_next.html'
@@ -598,15 +630,32 @@ class CursorPagination(BasePagination):
     page_size_query_param = None
     page_size_query_description = _('Number of results to return per page.')
 
-    # Set to an integer to limit the maximum page size the client may request.
-    # Only relevant if 'page_size_query_param' has also been set.
-    max_page_size = None
-
     # The offset in the cursor is used in situations where we have a
     # nearly-unique index. (Eg millisecond precision creation timestamps)
     # We guard against malicious users attempting to cause expensive database
     # queries, by having a hard cap on the maximum possible size of the offset.
     offset_cutoff = 1000
+
+    @property
+    def page_size(self) -> int:
+        """Get default page size.
+
+        Defaults to `None`, meaning pagination is disabled.
+
+        """
+        return api_settings.PAGE_SIZE
+
+    @property
+    def max_page_size(self) -> int:
+        """Limit page size.
+
+        Set to an integer to limit the maximum page size the client may request.
+        Only relevant if 'page_size_query_param' has also been set.
+        Defaults to `None`, meaning page size is unlimited.
+        It's recommended that you would set a limit to avoid api abuse.
+
+        """
+        return api_settings.MAX_PAGE_SIZE
 
     def paginate_queryset(self, queryset, request, view=None):
         self.request = request
