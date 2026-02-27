@@ -616,6 +616,23 @@ class UniqueConstraintNullableModel(models.Model):
         ]
 
 
+# Only define nulls_distinct model for Django 5.0+
+if django_version >= (5, 0):
+    class UniqueConstraintNullsDistinctModel(models.Model):
+        name = models.CharField(max_length=100)
+        code = models.CharField(max_length=100, null=True)
+        category = models.CharField(max_length=100, null=True)
+
+        class Meta:
+            constraints = [
+                models.UniqueConstraint(
+                    name='unique_code_category_nulls_not_distinct',
+                    fields=('code', 'category'),
+                    nulls_distinct=False,
+                ),
+            ]
+
+
 class UniqueConstraintCustomMessageCodeModel(models.Model):
     username = models.CharField(max_length=32)
     company_id = models.IntegerField()
@@ -1063,3 +1080,118 @@ class ValidatorsTests(TestCase):
         assert validator == validator2
         validator2.date_field = "bar2"
         assert validator != validator2
+
+
+# Tests for `nulls_distinct` option (Django 5.0+)
+# -----------------------------------------------
+
+@pytest.mark.skipif(
+    django_version < (5, 0),
+    reason="nulls_distinct requires Django 5.0+"
+)
+class TestUniqueConstraintNullsDistinct(TestCase):
+    """
+    Tests for UniqueConstraint with nulls_distinct=False option.
+    When nulls_distinct=False, NULL values should be treated as equal
+    for uniqueness validation.
+    """
+
+    def setUp(self):
+        from tests.test_validators import UniqueConstraintNullsDistinctModel
+
+        class UniqueConstraintNullsDistinctSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = UniqueConstraintNullsDistinctModel
+                fields = ('name', 'code', 'category')
+
+        self.serializer_class = UniqueConstraintNullsDistinctSerializer
+
+    def test_nulls_distinct_false_validates_null_as_duplicate(self):
+        """
+        When nulls_distinct=False, creating a second record with NULL values
+        in the constrained fields should fail validation.
+        """
+        from tests.test_validators import UniqueConstraintNullsDistinctModel
+
+        # Create first record with NULL values
+        UniqueConstraintNullsDistinctModel.objects.create(
+            name='First',
+            code=None,
+            category=None
+        )
+
+        # Attempt to create second record with same NULL values
+        serializer = self.serializer_class(data={
+            'name': 'Second',
+            'code': None,
+            'category': None
+        })
+
+        # Should fail validation because nulls_distinct=False
+        assert not serializer.is_valid()
+
+    def test_nulls_distinct_false_allows_different_non_null_values(self):
+        """
+        Non-NULL values should still work normally with uniqueness validation.
+        """
+        from tests.test_validators import UniqueConstraintNullsDistinctModel
+
+        # Create first record with non-NULL values
+        UniqueConstraintNullsDistinctModel.objects.create(
+            name='First',
+            code='A',
+            category='X'
+        )
+
+        # Create second record with different values - should pass
+        serializer = self.serializer_class(data={
+            'name': 'Second',
+            'code': 'B',
+            'category': 'Y'
+        })
+        assert serializer.is_valid(), serializer.errors
+
+    def test_nulls_distinct_false_rejects_duplicate_non_null_values(self):
+        """
+        Duplicate non-NULL values should still fail validation.
+        """
+        from tests.test_validators import UniqueConstraintNullsDistinctModel
+
+        # Create first record
+        UniqueConstraintNullsDistinctModel.objects.create(
+            name='First',
+            code='A',
+            category='X'
+        )
+
+        # Attempt to create duplicate - should fail
+        serializer = self.serializer_class(data={
+            'name': 'Second',
+            'code': 'A',
+            'category': 'X'
+        })
+        assert not serializer.is_valid()
+
+    def test_unique_together_validator_nulls_distinct_equality(self):
+        """
+        Test that UniqueTogetherValidator equality considers nulls_distinct.
+        """
+        mock_queryset = MagicMock()
+        validator1 = UniqueTogetherValidator(
+            queryset=mock_queryset,
+            fields=('a', 'b'),
+            nulls_distinct=False
+        )
+        validator2 = UniqueTogetherValidator(
+            queryset=mock_queryset,
+            fields=('a', 'b'),
+            nulls_distinct=False
+        )
+        validator3 = UniqueTogetherValidator(
+            queryset=mock_queryset,
+            fields=('a', 'b'),
+            nulls_distinct=True
+        )
+
+        assert validator1 == validator2
+        assert validator1 != validator3
