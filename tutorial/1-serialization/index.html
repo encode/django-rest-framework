@@ -486,7 +486,7 @@
 <h2 id="setting-up-a-new-environment"><a class="toclink" href="#setting-up-a-new-environment">Setting up a new environment</a></h2>
 <p>Before we do anything else we'll create a new virtual environment, using <a href="https://docs.python.org/3/library/venv.html">venv</a>. This will make sure our package configuration is kept nicely isolated from any other projects we're working on.</p>
 <pre><code class="language-bash">python3 -m venv env
-source env/bin/activate
+source env/bin/activate   # On Windows use `env\Scripts\activate`
 </code></pre>
 <p>Now that we're inside a virtual environment, we can install our package requirements.</p>
 <pre><code class="language-bash">pip install django
@@ -631,7 +631,11 @@ True
 <p>In the same way that Django provides both <code>Form</code> classes and <code>ModelForm</code> classes, REST framework includes both <code>Serializer</code> classes, and <code>ModelSerializer</code> classes.</p>
 <p>Let's look at refactoring our serializer using the <code>ModelSerializer</code> class.
 Open the file <code>snippets/serializers.py</code> again, and replace the <code>SnippetSerializer</code> class with the following.</p>
-<pre><code class="language-python">class SnippetSerializer(serializers.ModelSerializer):
+<pre><code class="language-python">from rest_framework import serializers
+from snippets.models import Snippet
+
+
+class SnippetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Snippet
         fields = [&quot;id&quot;, &quot;title&quot;, &quot;code&quot;, &quot;linenos&quot;, &quot;language&quot;, &quot;style&quot;]
@@ -744,8 +748,8 @@ Starting Development server at http://127.0.0.1:8000/
 Quit the server with CONTROL-C.
 </code></pre>
 <p>In another terminal window, we can test the server.</p>
-<p>We can test our API using <a href="https://curl.haxx.se/">curl</a> or <a href="https://github.com/httpie/httpie#installation">httpie</a>. Httpie is a user friendly http client that's written in Python. Let's install that.</p>
-<p>You can install httpie using pip:</p>
+<p>We can test our API using <a href="https://curl.haxx.se/">curl</a> or <a href="https://github.com/httpie/httpie#installation">HTTPie</a>. HTTPie is a user-friendly http client that's written in Python. Let's install that.</p>
+<p>You can install HTTPie using pip:</p>
 <pre><code class="language-bash">pip install httpie
 </code></pre>
 <p>Finally, we can get a list of all of the snippets:</p>
