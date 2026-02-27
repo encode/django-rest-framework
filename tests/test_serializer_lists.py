@@ -5,7 +5,8 @@ from django.utils.datastructures import MultiValueDict
 from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail
 from tests.models import (
-    CustomManagerModel, NullableOneToOneSource, OneToOneTarget
+    CustomManagerModel, EmailPKModel, ListModelForTest, NullableOneToOneSource,
+    OneToOneTarget, PersonUUID
 )
 
 
@@ -775,3 +776,102 @@ class TestToRepresentationManagerCheck:
         queryset = NullableOneToOneSource.objects.all()
         serializer = self.serializer(queryset, many=True)
         assert serializer.data
+
+
+@pytest.mark.django_db
+class TestManyTrueValidationCheck:
+    """
+    Tests ListSerializer validation with many=True across different primary key types
+    (integer and email).
+    """
+
+    class PersonUUIDSerializer(serializers.ModelSerializer):
+        uuid = serializers.UUIDField(source="id")
+
+        class Meta:
+            model = PersonUUID
+            fields = ("uuid", "name")
+            read_only_fields = ("uuid",)
+
+        def validate_name(self, value):
+            if value and not self.instance.is_valid:
+                return False
+            return value
+
+    def setup_method(self):
+        self.obj1 = ListModelForTest.objects.create(name="valid", status="new")
+        self.obj2 = ListModelForTest.objects.create(name="invalid", status="")
+        self.email_obj1 = EmailPKModel.objects.create(email="test@test.com", name="A")
+        self.email_obj2 = EmailPKModel.objects.create(email="test2@test.com", name="B")
+
+        self.serializer, self.email_serializer = self.get_serializers()
+
+    def get_serializers(self):
+        class ListModelForTestSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = ListModelForTest
+                fields = ("id", "name", "status")
+
+            def validate_status(self, value):
+                if value and not self.instance.is_valid:
+                    return False
+                return value
+
+        class EmailPKSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = EmailPKModel
+                fields = ("email", "name")
+                read_only_fields = ('email',)
+
+            def validate_name(self, value):
+                if value and not self.instance.is_valid:
+                    return False
+                return value
+
+        return ListModelForTestSerializer, EmailPKSerializer
+
+    def test_run_child_validation_with_many_true(self):
+        input_data = [
+            {"id": self.obj1.pk, "name": "other", "status": "new"},
+            {"id": self.obj2.pk, "name": "valid", "status": "progress"},
+        ]
+
+        serializer = self.serializer([self.obj1, self.obj2], data=input_data, many=True)
+        assert serializer.is_valid(), serializer.errors
+
+        serializer = self.serializer(ListModelForTest.objects.all(), data=input_data, many=True)
+        assert serializer.is_valid(), serializer.errors
+
+    def test_validation_error_for_invalid_data(self):
+        input_data = [{"id": self.obj1.pk, "name": "", "status": "mystatus"}]
+
+        serializer = self.serializer([self.obj1], data=input_data, many=True)
+        assert not serializer.is_valid()
+        assert "name" in serializer.errors[0]
+
+    def test_email_pk_instance_validation(self):
+        input_data = [{"email": "test@test.com", "name": "bar"}]
+        serializer = self.email_serializer(instance=EmailPKModel.objects.all(), data=input_data, many=True)
+        assert serializer.is_valid(), serializer.errors
+
+    def test_uuid_validate_many(self):
+        PersonUUID.objects.create(id="c20f2f31-65a3-451f-ae7d-e939b7d9f84b", name="valid")
+        PersonUUID.objects.create(id="3308237e-18d8-4074-9d05-79cc0fdb5bb3", name="other")
+
+        input_data = [
+            {
+                "uuid": "c20f2f31-65a3-451f-ae7d-e939b7d9f84b",
+                "name": "bar",
+            },
+        ]
+        serializer = self.PersonUUIDSerializer(instance=list(PersonUUID.objects.all()), data=input_data, many=True)
+        assert serializer.is_valid(), serializer.errors
+
+    def test_uuid_validate_single(self):
+        instance = PersonUUID.objects.create(id="c20f2f31-65a3-451f-ae7d-e939b7d9f84b", name="food")
+
+        serializer = self.PersonUUIDSerializer(
+            instance=instance,
+            data={"uuid": "c20f2f31-65a3-451f-ae7d-e939b7d9f84b", "name": "valid"},
+        )
+        assert serializer.is_valid(), serializer.errors

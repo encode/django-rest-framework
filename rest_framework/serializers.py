@@ -664,6 +664,52 @@ class ListSerializer(BaseSerializer):
         self.child.initial_data = data
         return super().run_child_validation(data)
         """
+        child_instance = getattr(self.child, "instance", None)
+
+        if self.instance is not None:
+            pk_name = None
+            child_meta = getattr(self.child, "Meta", None)
+            model = getattr(child_meta, "model", None) if child_meta else None
+
+            if model is not None:
+                pk_name = model._meta.pk.name
+
+            obj_id = None
+            if pk_name:
+                for field_name, field in self.child.fields.items():
+                    if getattr(field, "source", None) == pk_name:
+                        obj_id = data.get(field_name)
+                        if obj_id is not None:
+                            break
+
+                if obj_id is None:
+                    obj_id = data.get(pk_name) or data.get("pk") or data.get("id")
+
+            resolved_instance = None
+
+            if obj_id is not None and pk_name:
+                try:
+                    obj_id = model._meta.pk.to_python(obj_id)
+                except Exception:
+                    pass
+
+                if not hasattr(self, "_instance_index"):
+                    self._instance_index = {
+                        getattr(obj, pk_name): obj for obj in self.instance
+                    }
+
+                resolved_instance = self._instance_index.get(obj_id)
+
+            if resolved_instance is None:
+                if model is not None and self.context.get("allow_create", True):
+                    resolved_instance = model()
+                else:
+                    resolved_instance = child_instance
+
+            child_instance = resolved_instance
+
+        self.child.instance = child_instance
+        self.child.initial_data = data
         return self.child.run_validation(data)
 
     def to_internal_value(self, data):

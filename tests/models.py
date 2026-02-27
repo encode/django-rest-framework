@@ -150,3 +150,30 @@ class CustomManagerModel(RESTFrameworkModel):
                                    help_text='OneToOneTarget',
                                    verbose_name='OneToOneTarget',
                                    on_delete=models.CASCADE)
+
+
+class ListModelForTest(RESTFrameworkModel):
+    name = models.CharField(max_length=100)
+    status = models.CharField(max_length=100, blank=True)
+
+    @property
+    def is_valid(self):
+        return self.name == 'valid'
+
+
+class EmailPKModel(RESTFrameworkModel):
+    email = models.EmailField(primary_key=True)
+    name = models.CharField(max_length=100)
+
+    @property
+    def is_valid(self):
+        return self.name == 'valid'
+
+
+class PersonUUID(RESTFrameworkModel):
+    id = models.UUIDField(primary_key=True)
+    name = models.CharField(max_length=100)
+
+    @property
+    def is_valid(self):
+        return self.name == 'valid'
