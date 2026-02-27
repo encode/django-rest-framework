@@ -202,7 +202,7 @@ decorator. For example:
     from rest_framework.schemas import AutoSchema
 
     class CustomAutoSchema(AutoSchema):
-        def get_link(self, path, method, base_url):
+        def get_operation(self, path, method):
             # override view introspection here...
 
     @api_view(['GET'])
@@ -210,8 +210,8 @@ decorator. For example:
     def view(request):
         return Response({"message": "Hello for today! See you tomorrow!"})
 
-This decorator takes a single `AutoSchema` instance, an `AutoSchema` subclass
-instance or `ManualSchema` instance as described in the [Schemas documentation][schemas].
+This decorator takes a single `AutoSchema` instance or an `AutoSchema` subclass
+instance as described in the [Schemas documentation][schemas].
 You may pass `None` in order to exclude the view from schema generation.
 
     @api_view(['GET'])

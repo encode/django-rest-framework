@@ -13,7 +13,7 @@ from django.test.client import RequestFactory as DjangoRequestFactory
 from django.utils.encoding import force_bytes
 from django.utils.http import urlencode
 
-from rest_framework.compat import coreapi, requests
+from rest_framework.compat import requests
 from rest_framework.settings import api_settings
 
 
@@ -117,22 +117,6 @@ if requests is not None:
 else:
     def RequestsClient(*args, **kwargs):
         raise ImproperlyConfigured('requests must be installed in order to use RequestsClient.')
-
-
-if coreapi is not None:
-    class CoreAPIClient(coreapi.Client):
-        def __init__(self, *args, **kwargs):
-            self._session = RequestsClient()
-            kwargs['transports'] = [coreapi.transports.HTTPTransport(session=self.session)]
-            super().__init__(*args, **kwargs)
-
-        @property
-        def session(self):
-            return self._session
-
-else:
-    def CoreAPIClient(*args, **kwargs):
-        raise ImproperlyConfigured('coreapi must be installed in order to use CoreAPIClient.')
 
 
 class APIRequestFactory(DjangoRequestFactory):

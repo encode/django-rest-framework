@@ -6,7 +6,6 @@ from uuid import uuid4
 import pytest
 from django.test import TestCase
 
-from rest_framework.compat import coreapi
 from rest_framework.utils.encoders import JSONEncoder
 from rest_framework.utils.serializer_helpers import ReturnList
 
@@ -120,17 +119,6 @@ class JSONEncoderTests(TestCase):
         """
         obj = ipaddress.IPv6Interface("2001:4860:4860::8888/32")
         assert self.encoder.default(obj) == "2001:4860:4860::8888/32"
-
-    @pytest.mark.skipif(not coreapi, reason='coreapi is not installed')
-    def test_encode_coreapi_raises_error(self):
-        """
-        Tests encoding a coreapi objects raises proper error
-        """
-        with pytest.raises(RuntimeError):
-            self.encoder.default(coreapi.Document())
-
-        with pytest.raises(RuntimeError):
-            self.encoder.default(coreapi.Error())
 
     def test_encode_object_with_tolist(self):
         """
