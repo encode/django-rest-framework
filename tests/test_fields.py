@@ -24,6 +24,7 @@ from rest_framework.fields import (
     BuiltinSignatureError, DjangoImageField, SkipField, empty,
     is_simple_callable
 )
+from rest_framework.utils import json
 from tests.models import UUIDForeignKeyTarget
 
 utc = datetime.timezone.utc
@@ -2178,16 +2179,20 @@ class TestMultipleChoiceField(FieldValues):
     Valid and invalid values for `MultipleChoiceField`.
     """
     valid_inputs = {
-        (): set(),
-        ('aircon',): {'aircon'},
-        ('aircon', 'manual'): {'aircon', 'manual'},
+        (): list(),
+        ('aircon',): ['aircon'],
+        ('aircon', 'aircon'): ['aircon'],
+        ('aircon', 'manual'): ['aircon', 'manual'],
+        ('manual', 'aircon'): ['manual', 'aircon'],
     }
     invalid_inputs = {
         'abc': ['Expected a list of items but got type "str".'],
         ('aircon', 'incorrect'): ['"incorrect" is not a valid choice.']
     }
     outputs = [
-        (['aircon', 'manual', 'incorrect'], {'aircon', 'manual', 'incorrect'})
+        (['aircon', 'manual', 'incorrect'], ['aircon', 'manual', 'incorrect']),
+        (['manual', 'aircon', 'incorrect'], ['manual', 'aircon', 'incorrect']),
+        (['aircon', 'manual', 'aircon'], ['aircon', 'manual']),
     ]
     field = serializers.MultipleChoiceField(
         choices=[
@@ -2203,6 +2208,27 @@ class TestMultipleChoiceField(FieldValues):
         assert field.get_value(QueryDict('')) == []
         field.partial = True
         assert field.get_value(QueryDict('')) == rest_framework.fields.empty
+
+    def test_valid_inputs_is_json_serializable(self):
+        for input_value, _ in get_items(self.valid_inputs):
+            validated = self.field.run_validation(input_value)
+
+            try:
+                json.dumps(validated)
+            except TypeError as e:
+                pytest.fail(f'Validated output not JSON serializable: {repr(validated)}; Error: {e}')
+
+    def test_output_is_json_serializable(self):
+        for output_value, _ in get_items(self.outputs):
+            representation = self.field.to_representation(output_value)
+
+            try:
+                json.dumps(representation)
+            except TypeError as e:
+                pytest.fail(
+                    f'to_representation output not JSON serializable: '
+                    f'{repr(representation)}; Error: {e}'
+                )
 
 
 class TestEmptyMultipleChoiceField(FieldValues):
