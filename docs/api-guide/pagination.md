@@ -97,6 +97,18 @@ To enable the `PageNumberPagination` style globally, use the following configura
 
 On `GenericAPIView` subclasses you may also set the `pagination_class` attribute to select `PageNumberPagination` on a per-view basis.
 
+By default, the query parameter name used for pagination is `page`.  
+This can be customized by subclassing `PageNumberPagination` and overriding the `page_query_param` attribute.
+
+For example:
+
+    from rest_framework.pagination import PageNumberPagination
+
+    class CustomPagination(PageNumberPagination):
+        page_query_param = 'p'
+
+With this configuration, clients would request pages using `?p=2` instead of `?page=2`.
+
 #### Configuration
 
 The `PageNumberPagination` class includes a number of attributes that may be overridden to modify the pagination style.
