@@ -22,6 +22,8 @@ Before we do anything else we'll create a new virtual environment called `.venv`
 
 === ":fontawesome-brands-windows: Windows"
 
+    If you use Bash for Windows
+
     ```bash
     python3 -m venv .venv
     source .venv\Scripts\activate

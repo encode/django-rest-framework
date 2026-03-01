@@ -29,6 +29,8 @@ Create a new Django project named `tutorial`, then start a new app called `quick
 
 === ":fontawesome-brands-windows: Windows"
 
+    If you use Bash for Windows
+
     ```bash
     # Create the project directory
     mkdir tutorial
