@@ -48,7 +48,11 @@ If we need to, we can bind this viewset into two separate views, like so:
     user_list = UserViewSet.as_view({'get': 'list'})
     user_detail = UserViewSet.as_view({'get': 'retrieve'})
 
-Typically we wouldn't do this, but would instead register the viewset with a router, and allow the urlconf to be automatically generated.
+!!! warning
+    Do not use `.as_view()` with `@action` methods. It bypasses router setup and may ignore action settings like `permission_classes`. Use `DefaultRouter` for actions.
+
+
+Typically, we wouldn't do this, but would instead register the viewset with a router, and allow the urlconf to be automatically generated.
 
     from myapp.views import UserViewSet
     from rest_framework.routers import DefaultRouter
@@ -58,7 +62,7 @@ Typically we wouldn't do this, but would instead register the viewset with a rou
     urlpatterns = router.urls
 
 !!! warning
-    Do not use `.as_view()` with `@action` methods. It bypasses router setup and may ignore action settings like `permission_classes`. Use `DefaultRouter` for actions.
+    When registering viewsets, do not include a trailing slash in the prefix (e.g., use `r'users'`, not `r'users/'`). Unlike standard Django URL patterns, DRF routers append slashes automatically based on your trailing slash configuration.
 
 Rather than writing your own viewsets, you'll often want to use the existing base classes that provide a default set of behavior.  For example:
 

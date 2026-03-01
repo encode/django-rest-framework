@@ -55,7 +55,7 @@ INSTALLED_APPS = [
 
 Let's take a look at a quick example of using REST framework to build a simple model-backed API for accessing users and groups.
 
-Startup up a new project like so...
+Start up a new project like so...
 
     pip install django
     pip install djangorestframework
